@@ -4,21 +4,40 @@
 #
 # Stage 8: Alias and Function Configuration
 #
-# This script sets up a suite of shell aliases and helper functions to
-# streamline the user's command-line workflow. It resets any conflicting
-# existing aliases before defining new ones.
+# This script marks the stage in the installation process where shell aliases
+# and functions are configured. However, it does not directly modify the live
+# shell environment.
 #
-# Its responsibilities include:
+# Implementation Strategy:
 #
-#   8.1. Resetting existing aliases to avoid conflicts.
-#   8.2. Defining a set of core command aliases.
-#   8.3. Defining custom helper functions for common tasks.
+# The most robust and maintainable way to manage shell configuration is to
+# define aliases and functions in dedicated files (e.g., `.../shell/aliases`,
+# `.../shell/functions`). The installer's role is to deploy these files to the
+# correct location. The user's shell startup script (e.g., `.zshrc`) is then
+# responsible for sourcing them.
+#
+# This approach avoids interfering with the user's current shell session and
+# cleanly separates the deployment of configuration from its application.
+#
+# Therefore, the actual file copying and symlinking operations for these
+# configuration files will be handled in Stage 10: Dotfiles Deployment.
 #
 # ==============================================================================
 
 #
-# This is a placeholder for the alias and function configuration logic.
+# The main logic for the alias and function configuration stage.
 #
+main() {
+  msg_info "Stage 8: Alias and Function Configuration"
+  msg_info "This stage is a placeholder. Alias and function files will be deployed in Stage 10."
 
-msg_info "Stage 8: Alias and Function Configuration"
-msg_warning "Placeholder: Alias and function configuration logic has not been implemented yet."
+  # No direct actions are taken in this script. It serves as a marker for this
+  # stage of the installation process.
+
+  msg_success "Alias and function configuration stage marked as complete."
+}
+
+#
+# Execute the main function.
+#
+main
