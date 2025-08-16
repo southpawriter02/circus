@@ -35,8 +35,8 @@ main() {
     "install-mac-cli.sh"
     "install-mas-cli.sh"
     "install-m-cli.sh"
+    "install-outset.sh"
     # "update-homebrew.sh" # TODO: Implement
-    # "install-outset.sh" # TODO: Implement
     # "install-redis.sh" # TODO: Implement
   )
 
