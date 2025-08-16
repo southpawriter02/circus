@@ -10,52 +10,23 @@
 #
 # ==============================================================================
 
+#
+# The main logic of the script.
+#
+main() {
+  msg_info "Checking for root user..."
 
-# ------------------------------------------------------------------------------
-# Functions
-# ------------------------------------------------------------------------------
-
-#
-# Echo a formatted message to the console.
-#
-# @param string $1 The message to echo.
-#
-function e_msg() {
-  printf " [37;1m%s[0m\n" "$1"
+  # The `id -u` command returns the user ID. The root user always has a UID of 0.
+  if [ "$(id -u)" -eq "0" ]; then
+    msg_error "Running as the root user is not supported. Please run as a regular user."
+    return 1
+  else
+    msg_success "Not running as the root user."
+    return 0
+  fi
 }
 
 #
-# Echo a success message to the console.
+# Execute the main function.
 #
-# @param string $1 The message to echo.
-#
-function e_success() {
-  printf " [32;1m✔[0m %s\n" "$1"
-}
-
-#
-# Echo an error message to the console and exit.
-#
-# @param string $1 The message to echo.
-#
-function e_error() {
-  printf " [31;1m✖[0m %s\n" "$1"
-}
-
-
-# ------------------------------------------------------------------------------
-# Main Script
-# ------------------------------------------------------------------------------
-
-e_msg "Checking for root user..."
-
-#
-# The `id -u` command returns the user ID. The root user always has a UID of 0.
-#
-if [ "$(id -u)" -eq "0" ]; then
-  e_error "Running as the root user is not supported. Please run as a regular user."
-  exit 1
-else
-  e_success "Not running as the root user."
-  exit 0
-fi
+main
