@@ -1,0 +1,7 @@
+# This file is used by Homebrew to manage packages.
+# You can add your desired packages here, for example:
+#
+# brew "git"
+# brew "wget"
+# cask "iterm2"
+# cask "visual-studio-code"
