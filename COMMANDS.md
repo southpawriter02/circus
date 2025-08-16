@@ -107,6 +107,20 @@ Displays a summary of the system's hardware and software configuration.
 
 **Usage:** `fc info`
 
+### Redis
+
+Manages the Redis server using Homebrew services. Redis is a development tool often used for caching and session management.
+
+**Usage:** `fc redis <action>`
+
+**Actions:**
+
+-   `start`: Start the Redis server in the background.
+-   `stop`: Stop the Redis server.
+-   `restart`: Restart the Redis server.
+-   `status`: Show the current status of the Redis service.
+-   `update`: Update the Redis formula to the latest version via Homebrew.
+
 ### Wi-Fi
 
 Manages the system's Wi-Fi adapter using the built-in `networksetup` command.
