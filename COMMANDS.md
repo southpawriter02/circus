@@ -12,22 +12,6 @@ The `fc` command works like a dispatcher. It is a single entry point that looks 
 
 This pattern makes the CLI highly extensible. To add a new command, you simply create a new script in the `lib/commands/` directory.
 
-## First-Time Setup: Making Scripts Executable
-
-Before you can use the `fc` command, you need to make the main dispatcher script and its subcommands executable. This is a **one-time action** for the initial setup.
-
-```sh
-# Make the main dispatcher executable
-chmod +x bin/fc
-
-# Make the initial subcommands executable
-chmod +x lib/commands/fc-bluetooth
-chmod +x lib/commands/fc-wifi
-chmod +x lib/commands/fc-template
-```
-
-**Note:** Every time you add a new subcommand, you will also need to make it executable.
-
 ## General Usage
 
 To see a list of all available commands, run `fc` with no arguments:
@@ -79,7 +63,7 @@ Adding a new command is simple:
 
 1.  **Copy the Template:** Make a copy of the `lib/commands/fc-template` file.
 2.  **Rename the File:** Rename your new file to `fc-<your-command-name>`. For example, to create a `firewall` command, you would name the file `fc-firewall`.
-3.  **Make it Executable:** This is a crucial step. Run `chmod +x lib/commands/fc-<your-command-name>`.
-4.  **Customize the Logic:** Edit the new file to implement the desired functionality, updating the `usage()` message and the `case` statement in the `main()` function.
+3.  **Customize the Logic:** Edit the new file to implement the desired functionality, updating the `usage()` message and the `case` statement in the `main()` function.
+4.  **Update the Installer:** This is a crucial step. Add the full path to your new script to the `FILES_TO_MAKE_EXECUTABLE` array in the `install/10-dotfiles-deployment.sh` script. This ensures the installer will automatically make your new command executable.
 
-Your new command will be automatically available the next time you run `fc`.
+Your new command will be automatically available the next time you run `fc` after running the main installer.
