@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# ==============================================================================
+#
+# FILE:         .shenv
+#
+# DESCRIPTION:  This file is dedicated to setting and exporting environment
+#               variables for POSIX-compliant shells. It is sourced early
+#               to ensure all other scripts have access to these variables.
+#
+# ==============================================================================
+
+#
+# Set the default editor.
+#
+export EDITOR='vi'
+
+#
+# Set the default pager.
+#
+export PAGER='less'
+
+#
+# Set the language and locale to UTF-8.
+#
+export LANG='en_US.UTF-8'
+export LC_ALL='en_US.UTF-8'
