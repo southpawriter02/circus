@@ -34,8 +34,8 @@ main() {
     "install-dorothy.sh"
     "install-mac-cli.sh"
     "install-mas-cli.sh"
+    "install-m-cli.sh"
     # "update-homebrew.sh" # TODO: Implement
-    # "install-m-cli.sh" # TODO: Implement
     # "install-outset.sh" # TODO: Implement
     # "install-redis.sh" # TODO: Implement
   )
