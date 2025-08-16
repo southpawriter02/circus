@@ -11,6 +11,19 @@
 # ==============================================================================
 
 #
-# Example: Display a welcome message.
+# Source the helper library for colored messages and other utilities.
+# The $DOTFILES_DIR variable is set in .zshenv.
 #
-# echo "Welcome back, $(whoami)!"
+if [[ -f "$DOTFILES_DIR/lib/helpers.sh" ]]; then
+  # shellcheck source=/dev/null
+  source "$DOTFILES_DIR/lib/helpers.sh"
+fi
+
+#
+# Display a welcome message when a new shell is opened.
+#
+if command -v msg_info &> /dev/null; then
+  msg_info "Welcome to the Dotfiles Flying Circus! Your shell is ready."
+else
+  echo "Welcome to the Dotfiles Flying Circus!"
+fi
