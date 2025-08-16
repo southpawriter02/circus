@@ -83,6 +83,7 @@ main() {
     "$DOTFILES_DIR/lib/commands/fc-template"
     "$DOTFILES_DIR/lib/commands/fc-bluetooth"
     "$DOTFILES_DIR/lib/commands/fc-wifi"
+    "$DOTFILES_DIR/lib/commands/fc-firewall"
   )
 
   # --- Backup -----------------------------------------------------------------

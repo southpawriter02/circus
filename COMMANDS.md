@@ -45,6 +45,20 @@ Manages the system's Bluetooth adapter using the `blueutil` command-line tool.
 
 *Note: This command depends on `blueutil`, which is automatically installed by the main installer via Homebrew.*
 
+### Firewall
+
+Manages the macOS application firewall using the built-in `socketfilterfw` command.
+
+**Usage:** `fc firewall <action>`
+
+**Actions:**
+
+-   `on`: Turn the firewall on.
+-   `off`: Turn the firewall off.
+-   `status`: Show the current firewall status.
+
+*Note: This command requires administrator privileges (`sudo`) to change the firewall state.*
+
 ### Wi-Fi
 
 Manages the system's Wi-Fi adapter using the built-in `networksetup` command.
