@@ -1,7 +1,39 @@
-# This file is used by Homebrew to manage packages.
-# You can add your desired packages here, for example:
+# ==============================================================================
 #
-# brew "git"
-# brew "wget"
-# cask "iterm2"
-# cask "visual-studio-code"
+# FILE:         Brewfile
+#
+# DESCRIPTION:  This file is the central configuration for Homebrew. It lists
+#               all the taps, formulae (command-line tools), casks (GUI apps),
+#               and fonts that should be installed.
+#
+#               Use `brew bundle` to install everything in this file.
+#               Use `brew bundle dump` to generate a new Brewfile with all
+#               currently installed packages.
+#
+# ==============================================================================
+
+# --- Taps -------------------------------------------------------------------
+# Add third-party repositories.
+#
+tap "homebrew/bundle"
+tap "homebrew/cask-fonts"
+
+# --- Formulae ---------------------------------------------------------------
+# Install command-line tools.
+#
+brew "git"
+brew "node"
+brew "wget"
+
+# --- Casks ------------------------------------------------------------------
+# Install GUI applications.
+#
+cask "visual-studio-code"
+cask "iterm2"
+cask "google-chrome"
+
+# --- Fonts ------------------------------------------------------------------
+# Install fonts.
+#
+cask "font-fira-code"
+cask "font-hack-nerd-font"
