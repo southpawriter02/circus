@@ -21,12 +21,31 @@ if [ -f "$HOME/.bash_exports" ]; then
   source "$HOME/.bash_exports"
 fi
 
+# Configure shell options.
+if [ -f "$HOME/.bash_options" ]; then
+  source "$HOME/.bash_options"
+fi
+
+# Source aliases and functions.
+if [ -f "$HOME/.bash_aliases" ]; then
+  source "$HOME/.bash_aliases"
+fi
+
+if [ -f "$HOME/.bash_functions" ]; then
+  source "$HOME/.bash_functions"
+fi
+
 # Source the shell prompt configuration.
 if [ -f "$HOME/.bash_prompt" ]; then
   source "$HOME/.bash_prompt"
 fi
 
-# TODO: Add sourcing for other modular files, such as:
-# - .bash_aliases
-# - .bash_functions
-# - .bash_options
+# Source shell completion settings.
+if [ -f "$HOME/.bash_autocompletion" ]; then
+  source "$HOME/.bash_autocompletion"
+fi
+
+# Source local, user-specific configurations last, to allow for overrides.
+if [ -f "$HOME/.bash.local" ]; then
+  source "$HOME/.bash.local"
+fi

@@ -83,3 +83,4 @@ out/
 secrets.sh
 *.pem
 *.key
+*.local
