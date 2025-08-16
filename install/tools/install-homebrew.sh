@@ -2,42 +2,46 @@
 
 # ==============================================================================
 #
-# Tool: Homebrew
+# Tool: Homebrew (Orchestrator)
 #
-# This script checks for the presence of Homebrew, the package manager for
-# macOS, and installs it if it is missing.
+# This script orchestrates the entire Homebrew setup process by sourcing a
+# series of modular scripts from the `homebrew/` subdirectory. This keeps
+# the installation process clean, organized, and easy to maintain.
 #
 # ==============================================================================
 
 #
-# The main logic for installing Homebrew.
+# The main logic for the Homebrew installation orchestrator.
 #
 main() {
-  msg_info "Checking for Homebrew..."
+  msg_info "Starting Homebrew setup process..."
 
-  # The `command -v` command checks if a command is available in the system's
-  # PATH. We use it to check for the `brew` command.
-  if command -v "brew" >/dev/null 2>&1; then
-    msg_success "Homebrew is already installed."
-    return 0
-  fi
+  # --- Configuration ----------------------------------------------------------
+  # @description: The directory where individual Homebrew setup scripts are stored.
+  local HOMEBREW_SCRIPTS_DIR="$INSTALL_DIR/tools/homebrew"
 
-  msg_warning "Homebrew is not installed."
-  msg_info "The installer will now download and run the official Homebrew installation script."
+  # @description: An array defining the order of the Homebrew setup steps.
+  local HOMEBREW_STAGES=(
+    "01-install-homebrew.sh"
+    "02-set-variables.sh"
+    "03-add-taps.sh"
+    "04-install-formulae.sh"
+    "05-install-casks.sh"
+    "06-install-fonts.sh"
+  )
 
-  # Download and execute the official Homebrew installation script.
-  # The script is run with `-c` to execute it from the string.
-  # The `NONINTERACTIVE=1` environment variable is used to run the script
-  # without user prompts, which is suitable for an automated installer.
-  if NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
-    msg_success "Homebrew installed successfully."
-    # It is often necessary to add Homebrew to the PATH in the current shell session.
-    # This will be handled in a later, dedicated stage for environment setup.
-  else
-    msg_error "Homebrew installation failed."
-    msg_error "Please check the output above for details."
-    return 1
-  fi
+  # --- Installation Logic ---------------------------------------------------
+  for stage_script in "${HOMEBREW_STAGES[@]}"; do
+    local script_path="$HOMEBREW_SCRIPTS_DIR/$stage_script"
+    if [ -f "$script_path" ]; then
+      # shellcheck source=/dev/null
+      source "$script_path"
+    else
+      msg_warning "Homebrew setup script not found: $script_path. Skipping."
+    fi
+  done
+
+  msg_success "Homebrew setup process complete."
 }
 
 #
