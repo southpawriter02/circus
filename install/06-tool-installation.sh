@@ -37,6 +37,7 @@ main() {
     "install-m-cli.sh"
     "install-outset.sh"
     "install-redis.sh"
+    "install-bats-core.sh"
     # "update-homebrew.sh" # TODO: Implement
   )
 
