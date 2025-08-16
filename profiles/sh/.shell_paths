@@ -1,0 +1,42 @@
+#!/bin/sh
+
+# ==============================================================================
+#
+# FILE:         .shell_paths
+#
+# DESCRIPTION:  This file manages the PATH environment variable in a clean and
+#               maintainable way. It adds directories to the path only if
+#               they exist, preventing clutter and potential errors.
+#
+# ==============================================================================
+
+#
+# Prepend a directory to the PATH, but only if it exists.
+#
+# @param $1 The directory to prepend to the PATH.
+#
+prepend_to_path() {
+  if [ -d "$1" ]; then
+    PATH="$1:$PATH"
+  fi
+}
+
+#
+# Add the user's local bin directory to the PATH.
+#
+prepend_to_path "$HOME/.local/bin"
+
+#
+# Add Homebrew's binary path.
+#
+prepend_to_path "/usr/local/bin"
+
+#
+# Export the modified PATH.
+#
+export PATH
+
+#
+# Clean up the helper function so it doesn't pollute the global scope.
+#
+unset -f prepend_to_path
