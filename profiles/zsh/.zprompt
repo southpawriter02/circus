@@ -1,0 +1,37 @@
+#!/usr/bin/env zsh
+
+# ==============================================================================
+#
+# FILE:         .zprompt
+#
+# DESCRIPTION:  This file configures the Zsh shell prompt.
+#
+# ==============================================================================
+
+#
+# Load required Zsh modules.
+#
+autoload -U colors && colors
+autoload -U promptinit && promptinit
+
+#
+# Enable git support in the prompt.
+#
+autoload -Uz vcs_info
+precmd() { vcs_info }
+
+#
+# Set the format for the git information.
+# %b: branch name, %r: repository root
+#
+zstyle ':vcs_info:git:*' formats ' on %{$fg[yellow]%}%b%{$reset_color%}'
+
+#
+# Set the prompt theme.
+# This example creates a prompt that displays the current directory and
+# git branch information.
+#
+# %~: Current directory, starting from home (~)
+# %#: The prompt character (# for root, % for normal users)
+#
+PROMPT='%{$fg[cyan]%}%~%{$reset_color%}${vcs_info_msg_0_} %# '
