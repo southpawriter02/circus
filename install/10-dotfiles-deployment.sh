@@ -18,8 +18,8 @@
 # 1.  **Backup:** Any existing files or directories at the target locations
 #     are moved to a timestamped backup directory.
 # 2.  **Directory Creation:** All necessary directories are created using `mkdir -p`.
-# 3.  **File Deployment:** Files are copied and symlinked from the repository
-#     to their target locations as defined in the configuration arrays.
+# 3.  **File Deployment:** Files are copied, symlinked, and made executable
+#     as defined in the configuration arrays.
 #
 # ==============================================================================
 
@@ -31,7 +31,6 @@ main() {
 
   # --- Configuration ----------------------------------------------------------
   # @description: A list of directories to be created in the home directory.
-  # @customization: Add any directories that your dotfiles or tools require.
   local DIRECTORIES_TO_CREATE=(
     "$HOME/.config"
     "$HOME/.config/zsh"
@@ -40,15 +39,10 @@ main() {
   )
 
   # @description: An associative array of files to be copied.
-  # @customization: Use this for files that should be copied, not symlinked,
-  #                such as templates for local-only configuration.
   declare -A FILES_TO_COPY
   # FILES_TO_COPY["$DOTFILES_DIR/.gitconfig.local.template"]="$HOME/.gitconfig.local"
 
   # @description: An associative array of files and directories to be symlinked.
-  # @customization: This is the primary mechanism for deploying your dotfiles.
-  #   - Key: The path to the source file/directory within the dotfiles repository.
-  #   - Value: The absolute path to the symlink in your home directory.
   declare -A FILES_TO_SYMLINK
 
   # --- Shell (sh) Dotfiles ---
@@ -83,18 +77,20 @@ main() {
   # --- Other Dotfiles ---
   FILES_TO_SYMLINK["$DOTFILES_DIR/.config/git/config"]="$HOME/.gitconfig"
 
+  # @description: A list of files to make executable.
+  local FILES_TO_MAKE_EXECUTABLE=(
+    "$DOTFILES_DIR/bin/fc"
+    "$DOTFILES_DIR/lib/commands/fc-template"
+    "$DOTFILES_DIR/lib/commands/fc-bluetooth"
+    "$DOTFILES_DIR/lib/commands/fc-wifi"
+  )
 
   # --- Backup -----------------------------------------------------------------
   msg_info "Backing up existing dotfiles..."
   local backup_dir="$HOME/.dotfiles-backup-$(date +%Y-%m-%d-%H%M%S)"
   local needs_backup=false
 
-  # Combine all target paths into a single list for checking.
-  local all_targets=(
-    "${DIRECTORIES_TO_CREATE[@]}"
-    "${FILES_TO_COPY[@]}"
-    "${FILES_TO_SYMLINK[@]}"
-  )
+  local all_targets=("${DIRECTORIES_TO_CREATE[@]}" "${FILES_TO_COPY[@]}" "${FILES_TO_SYMLINK[@]}")
 
   for target in "${all_targets[@]}"; do
     if [ -e "$target" ]; then
@@ -149,6 +145,18 @@ main() {
       msg_success "Linked '$src' to '$dest'"
     else
       msg_error "Failed to link '$src' to '$dest'"
+    fi
+  done
+
+  # --- Make Executable --------------------------------------------------------
+  msg_info "Making scripts executable..."
+  for file in "${FILES_TO_MAKE_EXECUTABLE[@]}"; do
+    if [ -f "$file" ]; then
+      if chmod +x "$file"; then
+        msg_success "Made executable: $file"
+      else
+        msg_error "Failed to make executable: $file"
+      fi
     fi
   done
 
