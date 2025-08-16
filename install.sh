@@ -13,8 +13,7 @@
 # ║ AUTHOR:      southpawriter02 <southpawriter@pm.me>                         ║
 # ║                                                                            ║
 # ║ DESCRIPTION: This script automates the setup of a new macOS device by      ║
-# ║              installing applications, configuring system settings, and     ║
-# ║              symlinking dotfiles from this repository.                     ║
+# ║              orchestrating a series of modular installation scripts.       ║
 # ║                                                                            ║
 # ║ LICENSE:     MIT                                                           ║
 # ║ COPYRIGHT:   Copyright (c) $(date +'%Y') southpawriter02                   ║
@@ -94,9 +93,8 @@ main() {
   done
 
   # ----------------------------------------------------------------------------
-  # SUB-SECTION: Pre-flight Checks
+  # SUB-SECTION: Source Helper Library
   # ----------------------------------------------------------------------------
-  # Source the helper library
   if [[ -f "$HELPERS_LIB" ]]; then
     # shellcheck source=/dev/null
     source "$HELPERS_LIB"
@@ -106,85 +104,41 @@ main() {
     exit 1
   fi
 
-  # Run the pre-flight sanity check
-  msg_info "Running pre-flight checks..."
-  local sanity_check_script="$INSTALL_DIR/preflight/preflight-21-install-sanity-check.sh"
-  if [[ -f "$sanity_check_script" ]]; then
-    # The pre-flight checks have their own messaging, so we just source it.
-    # shellcheck source=/dev/null
-    source "$sanity_check_script"
-  else
-    # Use standard echo for this error as we can't be sure msg_error is available.
-    echo "Error: Sanity check script not found at $sanity_check_script" >&2
-    echo "Please ensure the repository is complete." >&2
-    exit 1
-  fi
-
   # ----------------------------------------------------------------------------
-  # SUB-SECTION: Script Body
+  # SUB-SECTION: Installation Stages
   # ----------------------------------------------------------------------------
   msg_info "Starting Dotfiles Flying Circus setup..."
 
-  # Request sudo privileges upfront and keep them alive.
-  msg_info "Requesting sudo privileges..."
-  local sudo_keep_alive_script="$INSTALL_DIR/sudo-keep-alive.sh"
-  if [[ -f "$sudo_keep_alive_script" ]]; then
-    # shellcheck source=/dev/null
-    source "$sudo_keep_alive_script"
-  else
-    echo "Error: Sudo keep-alive script not found at $sudo_keep_alive_script" >&2
-    echo "Please ensure the repository is complete." >&2
-    exit 1
-  fi
+  # Define all installation stages in order.
+  local INSTALL_STAGES=(
+    "01-repository-management.sh"
+    "02-archive-handling.sh"
+    "03-preflight-system-checks.sh"
+    "04-introduction-and-user-interaction.sh"
+    "05-logging-setup.sh"
+    "06-tool-installation.sh"
+    "07-variable-and-path-setup.sh"
+    "08-alias-and-function-configuration.sh"
+    "09-system-and-app-command-configuration.sh"
+    "10-dotfiles-deployment.sh"
+    "11-defaults-and-additional-configuration.sh"
+    "12-privacy-and-security.sh"
+    "13-cleanup.sh"
+    "14-finalization-and-reporting.sh"
+  )
 
-  # Back up existing dotfiles
-  local backup_script="$INSTALL_DIR/backup-dotfiles.sh"
-  if [[ -f "$backup_script" ]]; then
-    # shellcheck source=/dev/null
-    source "$backup_script"
-  else
-    echo "Error: Backup script not found at $backup_script" >&2
-    echo "Please ensure the repository is complete." >&2
-    exit 1
-  fi
-
-  # Symlink dotfiles
-  local symlink_script="$INSTALL_DIR/symlink-dotfiles.sh"
-  if [[ -f "$symlink_script" ]]; then
-    # shellcheck source=/dev/null
-    source "$symlink_script"
-  else
-    echo "Error: Symlink script not found at $symlink_script" >&2
-    echo "Please ensure the repository is complete." >&2
-    exit 1
-  fi
-
-  # Set macOS defaults
-  local macos_defaults_script="$INSTALL_DIR/set-macos-defaults.sh"
-  if [[ -f "$macos_defaults_script" ]]; then
-    # shellcheck source=/dev/null
-    source "$macos_defaults_script"
-  else
-    echo "Error: macOS defaults script not found at $macos_defaults_script" >&2
-    echo "Please ensure the repository is complete." >&2
-    exit 1
-  fi
-
-  # Install Homebrew packages
-  local homebrew_script="$INSTALL_DIR/install-homebrew-packages.sh"
-  if [[ -f "$homebrew_script" ]]; then
-    # shellcheck source=/dev/null
-    source "$homebrew_script"
-  else
-    echo "Error: Homebrew installation script not found at $homebrew_script" >&2
-    echo "Please ensure the repository is complete." >&2
-    exit 1
-  fi
-
-  # ----------------------------------------------------------------------------
-  # SUB-SECTION: Post-flight & Cleanup
-  # ----------------------------------------------------------------------------
-  msg_success "Setup complete! Please restart your terminal."
+  # Iterate through the installation stages and execute them.
+  for stage_script in "${INSTALL_STAGES[@]}"; do
+    local stage_path="$INSTALL_DIR/$stage_script"
+    if [[ -f "$stage_path" ]]; then
+      # shellcheck source=/dev/null
+      source "$stage_path"
+    else
+      msg_error "Installation stage script not found: $stage_path"
+      msg_error "Please ensure the repository is complete."
+      exit 1
+    fi
+  done
 }
 
 # ------------------------------------------------------------------------------
