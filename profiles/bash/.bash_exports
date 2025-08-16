@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         .bash_exports
+#
+# DESCRIPTION:  This file is dedicated to setting and exporting environment
+#               variables. Centralizing all `export` statements here makes
+#               it easy to manage the shell's environment.
+#
+# ==============================================================================
+
+#
+# Set the default editor.
+#
+export EDITOR='vim'
+
+#
+# Add the user's local bin directory to the PATH.
+# This allows for the execution of locally installed scripts and binaries.
+#
+export PATH="$HOME/.local/bin:$PATH"
+
+#
+# Add Homebrew's binary path.
+#
+export PATH="/usr/local/bin:$PATH"
