@@ -30,8 +30,8 @@ main() {
   local TOOL_SCRIPTS=(
     "install-xcode-cli.sh"
     "install-homebrew.sh"
+    "install-oh-my-zsh.sh"
     # "update-homebrew.sh" # TODO: Implement
-    # "install-oh-my-zsh.sh" # TODO: Implement
     # "install-dorothy.sh" # TODO: Implement
     # "install-mac-cli.sh" # TODO: Implement
     # "install-mas-cli.sh" # TODO: Implement
