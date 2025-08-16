@@ -11,6 +11,12 @@
 # ==============================================================================
 
 #
+# Define the location of the dotfiles repository.
+# This assumes the repository is cloned to ~/.dotfiles.
+#
+export DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+
+#
 # Set the default editor.
 #
 export EDITOR='vi'
