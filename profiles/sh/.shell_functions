@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# ==============================================================================
+#
+# FILE:         .shell_functions
+#
+# DESCRIPTION:  This file is dedicated to defining custom shell functions that
+#               are written in a POSIX-compliant way to ensure they work
+#               across different shells.
+#
+# ==============================================================================
+
+#
+# Create a directory and change into it.
+#
+# @param $1 The name of the directory to create.
+#
+mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
