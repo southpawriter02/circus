@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-dns
+#
+# DESCRIPTION:  This command manages the system's DNS settings.
+#
+# ==============================================================================
+
+# --- Setup ------------------------------------------------------------------
+set -e
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  echo "Usage: fc dns <action> [dns_servers...]"
+  echo ""
+  echo "Manages the DNS settings for the active network service."
+  echo "This command requires administrator privileges to change settings."
+  echo ""
+  echo "Actions:"
+  echo "  get             - Show the current DNS servers."
+  echo "  set <ip>...     - Set one or more custom DNS servers (e.g., 8.8.8.8 1.1.1.1)."
+  echo "  clear           - Clear custom DNS servers, reverting to the default."
+  echo "  status          - Alias for 'get'."
+  echo ""
+  exit 1
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [ -z "$1" ] || [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  # Find the active network service (e.g., Wi-Fi, Ethernet).
+  local service
+  service=$(networksetup -listallnetworkservices | grep -i 'connected' | head -n 1)
+
+  if [ -z "$service" ]; then
+    echo "Error: No active network service found." >&2
+    exit 1
+  fi
+  echo "Active network service: $service"
+
+  ACTION="$1"
+  shift # Remove the action from the argument list
+
+  case "$ACTION" in
+    get|status)
+      echo "Current DNS servers:"
+      networksetup -getdnsservers "$service"
+      ;;
+    set)
+      if [ -z "$1" ]; then
+        echo "Error: You must provide at least one DNS server IP address." >&2
+        usage
+      fi
+      echo "Setting DNS servers to: $@"
+      sudo networksetup -setdnsservers "$service" "$@"
+      echo "DNS servers have been updated."
+      ;;
+    clear)
+      echo "Clearing DNS servers..."
+      sudo networksetup -setdnsservers "$service" "Empty"
+      echo "DNS servers have been cleared. The system will now use the default (DHCP-provided) servers."
+      ;;
+    *)
+      echo "Error: Unknown action '$ACTION'" >&2
+      usage
+      ;;
+  esac
+}
+
+main "$@"

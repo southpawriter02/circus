@@ -72,6 +72,21 @@ Manages the system's Bluetooth adapter using the `blueutil` command-line tool.
 
 *Note: This command depends on `blueutil`, which is automatically installed by the main installer via Homebrew.*
 
+### DNS
+
+Manages the DNS settings for the active network service using the built-in `networksetup` command.
+
+**Usage:** `fc dns <action> [dns_servers...]`
+
+**Actions:**
+
+-   `get`: Show the current DNS servers.
+-   `set <ip>...`: Set one or more custom DNS servers (e.g., 8.8.8.8 1.1.1.1).
+-   `clear`: Clear custom DNS servers, reverting to the default.
+-   `status`: Alias for 'get'.
+
+*Note: This command requires administrator privileges (`sudo`) to change DNS settings.*
+
 ### Firewall
 
 Manages the macOS application firewall using the built-in `socketfilterfw` command.
