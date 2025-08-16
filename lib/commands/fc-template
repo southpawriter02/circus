@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-template
+#
+# DESCRIPTION:  This is a template for creating new subcommands for the `fc`
+#               CLI. To create a new command, copy this file, rename it to
+#               `fc-<your-command-name>`, and fill in the logic.
+#
+# ==============================================================================
+
+# --- Setup ------------------------------------------------------------------
+
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+# --- Help and Usage ---------------------------------------------------------
+
+# Display a help message for this specific subcommand.
+usage() {
+  echo "Usage: fc template <action>"
+  echo ""
+  echo "A template for creating new commands."
+  echo ""
+  echo "Actions:"
+  echo "  on      - Turn the feature on."
+  echo "  off     - Turn the feature off."
+  echo "  status  - Show the current status."
+  echo ""
+  exit 1
+}
+
+# --- Main Logic -------------------------------------------------------------
+
+# The main function that handles the subcommand's logic.
+main() {
+  # If no action is provided, or if the user asks for help, show the usage.
+  if [ -z "$1" ] || [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  # The first argument is the action (e.g., "on", "off").
+  ACTION="$1"
+
+  # Use a case statement to handle the different actions.
+  case "$ACTION" in
+    on)
+      echo "Turning the feature on..."
+      # TODO: Add the logic to turn the feature on.
+      ;;
+    off)
+      echo "Turning the feature off..."
+      # TODO: Add the logic to turn the feature off.
+      ;;
+    status)
+      echo "Checking the status..."
+      # TODO: Add the logic to check the status.
+      ;;
+    *)
+      # Handle any unknown actions.
+      echo "Error: Unknown action '$ACTION'" >&2
+      usage
+      ;;
+  esac
+}
+
+#
+# Execute the main function with all provided arguments.
+#
+main "$@"
