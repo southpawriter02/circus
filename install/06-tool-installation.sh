@@ -32,8 +32,8 @@ main() {
     "install-homebrew.sh"
     "install-oh-my-zsh.sh"
     "install-dorothy.sh"
+    "install-mac-cli.sh"
     # "update-homebrew.sh" # TODO: Implement
-    # "install-mac-cli.sh" # TODO: Implement
     # "install-mas-cli.sh" # TODO: Implement
     # "install-m-cli.sh" # TODO: Implement
     # "install-outset.sh" # TODO: Implement
