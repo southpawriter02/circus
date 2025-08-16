@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         .bash_init
+#
+# DESCRIPTION:  This is the central initialization script for the Bash shell.
+#               It is responsible for sourcing all other modular configuration
+#               files in the correct order.
+#
+# ==============================================================================
+
+#
+# Source all modular configuration files.
+# The `if [ -f ... ]` check ensures that the script doesn't fail if a file
+# is missing.
+#
+
+# Source environment variables first, as other scripts may depend on them.
+if [ -f "$HOME/.bash_exports" ]; then
+  source "$HOME/.bash_exports"
+fi
+
+# Source the shell prompt configuration.
+if [ -f "$HOME/.bash_prompt" ]; then
+  source "$HOME/.bash_prompt"
+fi
+
+# TODO: Add sourcing for other modular files, such as:
+# - .bash_aliases
+# - .bash_functions
+# - .bash_options
