@@ -42,8 +42,6 @@ main() {
   # @description: An associative array of files to be copied.
   # @customization: Use this for files that should be copied, not symlinked,
   #                such as templates for local-only configuration.
-  #   - Key: The path to the source file within the dotfiles repository.
-  #   - Value: The absolute path to the destination.
   declare -A FILES_TO_COPY
   # FILES_TO_COPY["$DOTFILES_DIR/.gitconfig.local.template"]="$HOME/.gitconfig.local"
 
@@ -52,9 +50,39 @@ main() {
   #   - Key: The path to the source file/directory within the dotfiles repository.
   #   - Value: The absolute path to the symlink in your home directory.
   declare -A FILES_TO_SYMLINK
-  FILES_TO_SYMLINK["$DOTFILES_DIR/.config/zsh/.zshenv"]="$HOME/.zshenv"
-  FILES_TO_SYMLINK["$DOTFILES_DIR/.config/zsh/.zshrc"]="$HOME/.zshrc"
+
+  # --- Shell (sh) Dotfiles ---
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/sh/.profile"]="$HOME/.profile"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/sh/.shenv"]="$HOME/.shenv"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/sh/.shell_aliases"]="$HOME/.shell_aliases"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/sh/.shell_functions"]="$HOME/.shell_functions"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/sh/.shell_paths"]="$HOME/.shell_paths"
+
+  # --- Bash Dotfiles ---
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/bash/.bash_profile"]="$HOME/.bash_profile"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/bash/.bashrc"]="$HOME/.bashrc"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/bash/.bash_logout"]="$HOME/.bash_logout"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/bash/.bash_login"]="$HOME/.bash_login"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/bash/.bash_init"]="$HOME/.bash_init"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/bash/.bash_prompt"]="$HOME/.bash_prompt"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/bash/.bash_exports"]="$HOME/.bash_exports"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/bash/.bash_aliases"]="$HOME/.bash_aliases"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/bash/.bash_functions"]="$HOME/.bash_functions"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/bash/.bash_autocompletion"]="$HOME/.bash_autocompletion"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/bash/.bash_options"]="$HOME/.bash_options"
+
+  # --- Zsh Dotfiles ---
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/zsh/.zshenv"]="$HOME/.zshenv"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/zsh/.zshrc"]="$HOME/.zshrc"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/zsh/.zprofile"]="$HOME/.zprofile"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/zsh/.zlogin"]="$HOME/.zlogin"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/zsh/.zlogout"]="$HOME/.zlogout"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/zsh/.zoptions"]="$HOME/.zoptions"
+  FILES_TO_SYMLINK["$DOTFILES_DIR/profiles/zsh/.zprompt"]="$HOME/.zprompt"
+
+  # --- Other Dotfiles ---
   FILES_TO_SYMLINK["$DOTFILES_DIR/.config/git/config"]="$HOME/.gitconfig"
+
 
   # --- Backup -----------------------------------------------------------------
   msg_info "Backing up existing dotfiles..."
