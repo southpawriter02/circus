@@ -11,83 +11,46 @@
 #
 # ==============================================================================
 
-
-# ------------------------------------------------------------------------------
-# Functions
-# ------------------------------------------------------------------------------
-
 #
-# Echo a formatted message to the console.
+# The main logic of the script.
 #
-# @param string $1 The message to echo.
-#
-function e_msg() {
-  printf " [37;1m%s[0m\n" "$1"
-}
-
-#
-# Echo a success message to the console.
-#
-# @param string $1 The message to echo.
-#
-function e_success() {
-  printf " [32;1m✔[0m %s\n" "$1"
-}
-
-#
-# Echo a warning message to the console.
-#
-# @param string $1 The message to echo.
-#
-function e_warning() {
-  printf " [33;1mWarning[0m: %s\n" "$1"
-}
-
-
-# ------------------------------------------------------------------------------
-# Main Script
-# ------------------------------------------------------------------------------
-
-#
-# CUSTOMIZATION:
-# Add any other process names to this array that you want to check for.
-# For example:
-#
-# CONFLICTING_PROCESSES=("bash" "zsh" "fish")
-#
-CONFLICTING_PROCESSES=("zsh")
-
-e_msg "Checking for conflicting processes..."
-
-#
-# A flag to track if any conflicting processes were found.
-#
-found_process=false
-
-#
-# Iterate through the list of conflicting processes.
-#
-for process in "${CONFLICTING_PROCESSES[@]}"; do
+main() {
   #
-  # The `pgrep -x` command searches for processes by exact name.
-  # We redirect output to /dev/null to keep the output clean.
+  # CUSTOMIZATION:
+  # Add any other process names to this array that you want to check for.
+  # For example:
   #
-  if pgrep -x "$process" >/dev/null; then
-    e_warning "A potentially conflicting process is running: $process"
-    found_process=true
+  # CONFLICTING_PROCESSES=("bash" "zsh" "fish")
+  #
+  local CONFLICTING_PROCESSES=("zsh")
+
+  msg_info "Checking for conflicting processes..."
+
+  # A flag to track if any conflicting processes were found.
+  local found_process=false
+
+  # Iterate through the list of conflicting processes.
+  for process in "${CONFLICTING_PROCESSES[@]}"; do
+    # The `pgrep -x` command searches for processes by exact name.
+    # We redirect output to /dev/null to keep the output clean.
+    if pgrep -x "$process" >/dev/null; then
+      msg_warning "A potentially conflicting process is running: $process"
+      found_process=true
+    fi
+  done
+
+  # If any conflicting processes were found, display a general warning.
+  if [ "$found_process" = true ]; then
+    msg_warning "It is recommended to close any conflicting processes before proceeding."
+  else
+    msg_success "No conflicting processes were found."
   fi
-done
+
+  # This check is informational, so we always return success.
+  return 0
+}
 
 #
-# If any conflicting processes were found, display a general warning.
+# Execute the main function.
 #
-if [ "$found_process" = true ]; then
-  e_warning "It is recommended to close any conflicting processes before proceeding."
-else
-  e_success "No conflicting processes were found."
-fi
-
-#
-# This check is informational, so we always exit with success.
-#
-exit 0
+main

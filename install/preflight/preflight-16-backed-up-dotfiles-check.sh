@@ -10,47 +10,6 @@
 #
 # ==============================================================================
 
-
-# ------------------------------------------------------------------------------
-# Functions
-# ------------------------------------------------------------------------------
-
-#
-# Echo a formatted message to the console.
-#
-# @param string $1 The message to echo.
-#
-function e_msg() {
-  printf " [37;1m%s[0m\n" "$1"
-}
-
-#
-# Echo a success message to the console.
-#
-# @param string $1 The message to echo.
-#
-function e_success() {
-  printf " [32;1m✔[0m %s\n" "$1"
-}
-
-#
-# Echo an error message to the console and exit.
-#
-# @param string $1 The message to echo.
-#
-function e_error() {
-  printf " [31;1m✖[0m %s\n" "$1"
-}
-
-#
-# Echo a warning message to the console.
-#
-# @param string $1 The message to echo.
-#
-function e_warning() {
-  printf " [33;1mWarning[0m: %s\n" "$1"
-}
-
 #
 # Asks the user a yes/no question.
 #
@@ -59,7 +18,7 @@ function e_warning() {
 #
 # @return 0 for "yes", 1 for "no".
 #
-function ask() {
+ask() {
   # http://djm.me/ask
   while true; do
     if [ "${2:-}" = "Y" ]; then
@@ -89,32 +48,37 @@ function ask() {
   done
 }
 
-
-# ------------------------------------------------------------------------------
-# Main Script
-# ------------------------------------------------------------------------------
-
 #
-# CUSTOMIZATION:
-# If you want to change the name of the backup directory, you can modify the
-# path in the line below.
+# The main logic of the script.
 #
-BACKUP_DIR="$HOME/.dotfiles-backup"
+main() {
+  #
+  # CUSTOMIZATION:
+  # If you want to change the name of the backup directory, you can modify the
+  # path in the line below.
+  #
+  local BACKUP_DIR="$HOME/.dotfiles-backup"
 
-e_msg "Checking for backed up dotfiles..."
+  msg_info "Checking for backed up dotfiles..."
 
-if [ -d "$BACKUP_DIR" ]; then
-  e_warning "An existing dotfiles backup was found at: $BACKUP_DIR"
-  if ask "Do you want to overwrite the existing backup?" N; then
-    e_msg "Overwriting the existing backup..."
-    rm -rf "$BACKUP_DIR"
-    e_success "The existing backup has been overwritten."
-    exit 0
-  else
-    e_error "Please manually remove the existing backup and try again."
-    exit 1
+  if [ -d "$BACKUP_DIR" ]; then
+    msg_warning "An existing dotfiles backup was found at: $BACKUP_DIR"
+    if ask "Do you want to overwrite the existing backup?" N; then
+      msg_info "Overwriting the existing backup..."
+      rm -rf "$BACKUP_DIR"
+      msg_success "The existing backup has been overwritten."
+      return 0
+    else
+      msg_error "Please manually remove the existing backup and try again."
+      return 1
+    fi
   fi
-fi
 
-e_success "No existing dotfiles backup was found."
-exit 0
+  msg_success "No existing dotfiles backup was found."
+  return 0
+}
+
+#
+# Execute the main function.
+#
+main
