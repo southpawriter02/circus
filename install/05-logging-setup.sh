@@ -5,8 +5,8 @@
 # Stage 5: Logging Setup
 #
 # This script configures the logging system for the installation process.
-# It sets up the log file location, format, and rotation policy. It also
-# logs the initial environment details.
+# It initializes the log file for the current run by writing a header with
+# key environment details.
 #
 # Its responsibilities include:
 #
@@ -16,8 +16,41 @@
 # ==============================================================================
 
 #
-# This is a placeholder for the logging setup logic.
+# The main logic for the logging setup stage.
 #
+main() {
+  msg_info "Stage 5: Logging Setup"
 
-msg_info "Stage 5: Logging Setup"
-msg_warning "Placeholder: Logging setup logic has not been implemented yet."
+  # --- Configuration ----------------------------------------------------------
+  # The log file path is determined by the `$LOG_FILE_BASE` variable, which is
+  # set in `lib/helpers.sh`. The default is `$HOME/.dotfiles-log`.
+  local DATE
+  DATE=$(date "+%Y-%m-%d")
+  local LOG_FILE="$LOG_FILE_BASE-$DATE.log"
+
+  # --- Log Header Initialization ----------------------------------------------
+  msg_info "Initializing log file for this session at: $LOG_FILE"
+
+  # Create a header for the current installation log.
+  # This makes it easy to distinguish different installation runs in the same file.
+  # We append to the log file, as it may already contain logs from previous runs.
+  {
+    echo ""
+    echo "=============================================================================="
+    echo " Dotfiles Flying Circus Installation Log"
+    echo "=============================================================================="
+    echo " Start Time:  $(date)"
+    echo " User:        $(whoami)"
+    echo " Host:        $(hostname)"
+    echo " OS Version:  $(sw_vers -productName) $(sw_vers -productVersion) ($(sw_vers -buildVersion))"
+    # TODO: Log user selections from Stage 4 when that feature is implemented.
+    echo "------------------------------------------------------------------------------"
+  } >> "$LOG_FILE"
+
+  msg_success "Logging system initialized."
+}
+
+#
+# Execute the main function.
+#
+main
