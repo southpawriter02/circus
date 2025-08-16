@@ -56,10 +56,13 @@ e_msg "Performing install integrity check..."
 # CUSTOMIZATION:
 # If you modify any of the preflight scripts, you will need to update their
 # checksums in this associative array. You can generate a new checksum using
-# the following command from within the 'install' directory:
+# the following command from within the 'install/preflight' directory:
 #
 # shasum -a 256 <script_name>
 #
+
+# TODO: Generate and update the checksums for all preflight scripts.
+# The current values are placeholders and will cause the integrity check to fail.
 declare -A CHECKSUMS
 CHECKSUMS["preflight-01-macos-check.sh"]="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 CHECKSUMS["preflight-02-root-check.sh"]="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"

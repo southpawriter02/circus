@@ -54,11 +54,7 @@ PREFLIGHT_CHECKS=(
 #
 for check in "${PREFLIGHT_CHECKS[@]}"; do
   #
-  # Source the preflight check script.
-  #
-  # The `source` command executes the script in the current shell, so that
-  # any changes to the environment (e.g., exiting) will affect the main
-  # script.
+  # Source the preflight check script from the same directory.
   #
   source "$script_dir/$check"
 

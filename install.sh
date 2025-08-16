@@ -108,7 +108,7 @@ main() {
 
   # Run the pre-flight sanity check
   msg_info "Running pre-flight checks..."
-  local sanity_check_script="$INSTALL_DIR/preflight-21-install-sanity-check.sh"
+  local sanity_check_script="$INSTALL_DIR/preflight/preflight-21-install-sanity-check.sh"
   if [[ -f "$sanity_check_script" ]]; then
     # The pre-flight checks have their own messaging, so we just source it.
     # shellcheck source=/dev/null
