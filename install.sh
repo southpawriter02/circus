@@ -12,6 +12,10 @@
 # ║ REPOSITORY:  https://github.com/southpawriter02/dotfiles                   ║
 # ║ AUTHOR:      southpawriter02 <southpawriter@pm.me>                         ║
 # ║                                                                            ║
+# ║ USAGE:       This script should be run via the `init.sh` script in the     ║
+# ║              project root. The `init.sh` script handles making this file   ║
+# ║              executable and then returns it to a non-executable state.     ║
+# ║                                                                            ║
 # ║ DESCRIPTION: This script automates the setup of a new macOS device by      ║
 # ║              orchestrating a series of modular installation scripts.       ║
 # ║                                                                            ║
