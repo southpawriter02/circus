@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         .bash_autocompletion
+#
+# DESCRIPTION:  This file configures the Bash programmable completion system.
+#               It sources completion scripts for various command-line tools.
+#
+# ==============================================================================
+
+#
+# Load Homebrew's bash completion if it is available.
+#
+if type -p brew &>/dev/null && [ -f "$(brew --prefix)/etc/bash_completion" ]; then
+  source "$(brew --prefix)/etc/bash_completion"
+fi
