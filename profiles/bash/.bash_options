@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         .bash_options
+#
+# DESCRIPTION:  This file configures various shell options using the `shopt`
+#               and `setopt` built-in commands. This allows for fine-grained
+#               control over the shell's behavior.
+#
+# ==============================================================================
+
+#
+# Enable case-insensitive globbing.
+#
+shopt -s nocaseglob
+
+#
+# Check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+#
+shopt -s checkwinsize
+
+#
+# Append to the history file, rather than overwriting it.
+#
+shopt -s histappend
