@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# ==============================================================================
+#
+# FILE:         .shell_aliases
+#
+# DESCRIPTION:  This file is dedicated to defining shell aliases that are
+#               generic enough to work across all POSIX-compliant shells.
+#
+# ==============================================================================
+
+#
+# General Aliases
+#
+alias ls='ls -G'          # Enable colorized output for ls on systems that support it
+alias ll='ls -l'          # Long listing format (POSIX standard)
+alias la='ls -la'         # Long listing format, including hidden files
