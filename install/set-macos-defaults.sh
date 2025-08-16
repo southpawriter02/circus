@@ -19,4 +19,4 @@
 msg_info "Setting macOS defaults..."
 
 # For now, we will just print a message indicating that this step is a placeholder.
-e_warning "Placeholder: macOS defaults logic has not been implemented yet."
+msg_warning "Placeholder: macOS defaults logic has not been implemented yet."

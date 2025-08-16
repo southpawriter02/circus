@@ -20,4 +20,4 @@
 msg_info "Installing Homebrew packages..."
 
 # For now, we will just print a message indicating that this step is a placeholder.
-e_warning "Placeholder: Homebrew installation logic has not been implemented yet."
+msg_warning "Placeholder: Homebrew installation logic has not been implemented yet."

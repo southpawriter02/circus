@@ -21,4 +21,4 @@
 msg_info "Backing up existing dotfiles..."
 
 # For now, we will just print a message indicating that this step is a placeholder.
-e_warning "Placeholder: Dotfiles backup logic has not been implemented yet."
+msg_warning "Placeholder: Dotfiles backup logic has not been implemented yet."

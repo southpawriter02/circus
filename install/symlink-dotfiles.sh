@@ -22,4 +22,4 @@
 msg_info "Symlinking dotfiles..."
 
 # For now, we will just print a message indicating that this step is a placeholder.
-e_warning "Placeholder: Dotfiles symlinking logic has not been implemented yet."
+msg_warning "Placeholder: Dotfiles symlinking logic has not been implemented yet."
