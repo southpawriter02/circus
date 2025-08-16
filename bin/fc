@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc (Dotfiles Flying Circus)
+#
+# DESCRIPTION:  This script is the main entry point and dispatcher for a suite
+#               of custom shell commands. It uses a "dispatcher" pattern to
+#               execute subcommand scripts.
+#
+# USAGE:        fc <subcommand> [options]
+#
+# EXAMPLE:      fc bluetooth off
+#
+# ==============================================================================
+
+# --- Setup ------------------------------------------------------------------
+
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+# Define the directory where the subcommand scripts are located.
+# This is assumed to be in `../lib/commands` relative to this script.
+readonly COMMAND_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/commands"
+
+# --- Help and Usage ---------------------------------------------------------
+
+# Display a general help message that lists all available subcommands.
+usage() {
+  echo "Usage: fc <command> [options]"
+  echo ""
+  echo "Available commands:"
+  # Find all executable files in the command directory, remove the 'fc-' prefix,
+  # and print them in a formatted list.
+  find "$COMMAND_DIR" -maxdepth 1 -type f -executable -exec basename {} \; | sed 's/^fc-//' | sort | awk '{printf "  - %s\n", $1}'
+  echo ""
+  echo "Run 'fc <command> --help' for more information on a specific command."
+  exit 1
+}
+
+# --- Dispatcher Logic -------------------------------------------------------
+
+# If no arguments are provided, display the main usage message.
+if [ -z "$1" ]; then
+  usage
+fi
+
+# The first argument is the subcommand (e.g., "bluetooth").
+SUBCOMMAND="$1"
+
+# Construct the full path to the subcommand's script file.
+COMMAND_SCRIPT="$COMMAND_DIR/fc-$SUBCOMMAND"
+
+# Check if the subcommand script exists and is executable.
+if [ -x "$COMMAND_SCRIPT" ]; then
+  # If it exists, shift away the first argument (the subcommand name itself)
+  # and pass all remaining arguments to the subcommand script.
+  shift
+  exec "$COMMAND_SCRIPT" "$@"
+else
+  # If the subcommand script doesn't exist, print an error and show the usage.
+  echo "Error: Unknown command '$SUBCOMMAND'" >&2
+  usage
+fi
