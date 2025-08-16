@@ -8,24 +8,55 @@
 # applications. It ensures that the system has the necessary software to
 # support the dotfiles and the user's development workflow.
 #
-# Its responsibilities include:
-#
-#   6.1.  Installing Xcode Command Line Tools.
-#   6.2.  Installing Homebrew.
-#   6.3.  Updating Homebrew and installed packages.
-#   6.4.  Installing Oh My Zsh.
-#   6.5.  Installing Dorothy.
-#   6.6.  Installing mac-cli.
-#   6.7.  Installing mas-cli.
-#   6.8.  Installing m-cli.
-#   6.9.  Installing Outset.
-#   6.10. Installing Redis.
+# This script acts as an orchestrator, sourcing individual installation
+# scripts from the `install/tools` directory.
 #
 # ==============================================================================
 
 #
-# This is a placeholder for the tool installation logic.
+# The main logic for the tool installation stage.
 #
+main() {
+  msg_info "Stage 6: Tool Installation"
 
-msg_info "Stage 6: Tool Installation"
-msg_warning "Placeholder: Tool installation logic has not been implemented yet."
+  # --- Configuration ----------------------------------------------------------
+  # @description: The directory where individual tool installation scripts are stored.
+  local TOOLS_DIR="$INSTALL_DIR/tools"
+
+  # @description: An array defining the order of tool installations.
+  # @customization: Add or remove scripts from this list to control which
+  #                tools are installed. The order is important, as some tools
+  #                may depend on others (e.g., most tools depend on Homebrew).
+  local TOOL_SCRIPTS=(
+    "install-xcode-cli.sh"
+    "install-homebrew.sh"
+    # "update-homebrew.sh" # TODO: Implement
+    # "install-oh-my-zsh.sh" # TODO: Implement
+    # "install-dorothy.sh" # TODO: Implement
+    # "install-mac-cli.sh" # TODO: Implement
+    # "install-mas-cli.sh" # TODO: Implement
+    # "install-m-cli.sh" # TODO: Implement
+    # "install-outset.sh" # TODO: Implement
+    # "install-redis.sh" # TODO: Implement
+  )
+
+  # --- Installation Logic ---------------------------------------------------
+  msg_info "Beginning tool installation process..."
+
+  for tool_script in "${TOOL_SCRIPTS[@]}"; do
+    local script_path="$TOOLS_DIR/$tool_script"
+    if [ -f "$script_path" ]; then
+      # shellcheck source=/dev/null
+      source "$script_path"
+    else
+      msg_warning "Tool installation script not found: $script_path. Skipping."
+    fi
+  done
+
+  msg_success "Tool installation stage complete."
+}
+
+#
+# Execute the main function.
+#
+main
