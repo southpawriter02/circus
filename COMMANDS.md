@@ -44,6 +44,20 @@ Manages AirDrop visibility using the `defaults` command.
 -   `contacts`: Enable AirDrop for contacts only.
 -   `status`: Show the current AirDrop visibility status.
 
+### Backup
+
+Creates a timestamped backup of essential dotfiles to a cloud or local directory.
+
+**Usage:** `fc backup`
+
+**Description:**
+
+This command uses `rsync` to create a new backup of key configuration files in a timestamped directory (e.g., `dotfiles-backup-YYYY-MM-DD-HHMMSS`). This provides an easy way to save a snapshot of your configuration before making significant changes.
+
+**Customization:**
+
+You can customize the backup location and the list of files to be backed up by editing the `lib/commands/fc-backup` script directly.
+
 ### Bluetooth
 
 Manages the system's Bluetooth adapter using the `blueutil` command-line tool.

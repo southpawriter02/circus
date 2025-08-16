@@ -85,6 +85,7 @@ main() {
     "$DOTFILES_DIR/lib/commands/fc-wifi"
     "$DOTFILES_DIR/lib/commands/fc-firewall"
     "$DOTFILES_DIR/lib/commands/fc-airdrop"
+    "$DOTFILES_DIR/lib/commands/fc-backup"
   )
 
   # --- Backup -----------------------------------------------------------------
