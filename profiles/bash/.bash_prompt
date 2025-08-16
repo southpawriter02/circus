@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         .bash_prompt
+#
+# DESCRIPTION:  This file configures the Bash shell prompt.
+#
+# ==============================================================================
+
+#
+# Define the shell prompt.
+# This example creates a simple, colored prompt that displays the user,
+# hostname, and current working directory.
+#
+
+# Define colors for the prompt.
+COLOR_BLUE="\[\033[1;34m\]"
+COLOR_GREEN="\[\033[0;32m\]"
+COLOR_RESET="\[\033[0m\]"
+
+# Set the PS1 variable, which defines the primary prompt string.
+PS1="${COLOR_BLUE}\u@\h${COLOR_RESET}:${COLOR_GREEN}\w${COLOR_RESET}\$ "
