@@ -31,6 +31,19 @@ fc bluetooth --help
 
 ## Available Commands
 
+### AirDrop
+
+Manages AirDrop visibility using the `defaults` command.
+
+**Usage:** `fc airdrop <action>`
+
+**Actions:**
+
+-   `on`: Enable AirDrop for everyone.
+-   `off`: Disable AirDrop.
+-   `contacts`: Enable AirDrop for contacts only.
+-   `status`: Show the current AirDrop visibility status.
+
 ### Bluetooth
 
 Manages the system's Bluetooth adapter using the `blueutil` command-line tool.
