@@ -101,6 +101,12 @@ Manages the macOS application firewall using the built-in `socketfilterfw` comma
 
 *Note: This command requires administrator privileges (`sudo`) to change the firewall state.*
 
+### Info
+
+Displays a summary of the system's hardware and software configuration.
+
+**Usage:** `fc info`
+
 ### Wi-Fi
 
 Manages the system's Wi-Fi adapter using the built-in `networksetup` command.
