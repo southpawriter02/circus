@@ -4,19 +4,37 @@
 #
 # Stage 12: Privacy and Security
 #
-# This script applies system settings that are specifically focused on
-# enhancing user privacy and hardening the overall security of the system.
+# This script marks the stage in the installation process where privacy and
+# security settings are applied to the system.
 #
-# Its responsibilities include:
+# Implementation Strategy:
 #
-#   12.1. Applying privacy-related system settings.
-#   12.2. Hardening system security options.
+# All commands related to privacy and security (e.g., disabling tracking,
+# configuring the firewall) should be consolidated into a single, dedicated
+# script (e.g., `system/privacy.sh`). This creates a single, auditable file
+# for all security-related settings.
+#
+# This installer's role is to execute that dedicated script. This maintains a
+# clean separation between the installation process and the specific security
+# configurations.
 #
 # ==============================================================================
 
 #
-# This is a placeholder for the privacy and security logic.
+# The main logic for the privacy and security stage.
 #
+main() {
+  msg_info "Stage 12: Privacy and Security"
+  msg_info "This stage is a placeholder. The dedicated privacy and security script will be executed from here."
 
-msg_info "Stage 12: Privacy and Security"
-msg_warning "Placeholder: Privacy and security logic has not been implemented yet."
+  # TODO: Add the logic to execute the dedicated privacy and security script.
+  # Example:
+  # source "$DOTFILES_DIR/system/privacy.sh"
+
+  msg_success "Privacy and security stage marked as complete."
+}
+
+#
+# Execute the main function.
+#
+main
