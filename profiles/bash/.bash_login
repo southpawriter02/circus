@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         .bash_login
+#
+# DESCRIPTION:  This file is executed for login shells if .bash_profile is
+#               not found. Like .bash_profile, its primary purpose is to
+#               load the user's shell configuration from .bashrc.
+#
+# ==============================================================================
+
+#
+# Check if .bashrc exists and is readable, then source it.
+#
+if [ -f "$HOME/.bashrc" ]; then
+  source "$HOME/.bashrc"
+fi
