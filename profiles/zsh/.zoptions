@@ -1,0 +1,29 @@
+#!/usr/bin/env zsh
+
+# ==============================================================================
+#
+# FILE:         .zoptions
+#
+# DESCRIPTION:  This file configures Zsh-specific options using the `setopt`
+#               command. This allows for fine-grained control over the
+#               shell's behavior.
+#
+# ==============================================================================
+
+#
+# Change directory behavior
+#
+setopt AUTO_CD  # Change directory just by typing the directory name
+setopt AUTO_PUSHD # Automatically push directories onto the directory stack
+
+#
+# History options
+#
+setopt HIST_IGNORE_DUPS # Don't record duplicate commands in the history
+setopt HIST_IGNORE_SPACE  # Don't record commands that start with a space
+setopt SHARE_HISTORY  # Share history between all shell sessions
+
+#
+# General options
+#
+setopt extendedglob # Enable extended globbing features
