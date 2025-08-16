@@ -31,24 +31,35 @@ main() {
     usage
   fi
 
+  # Dependency Check: Ensure blueutil is installed.
+  if ! command -v "blueutil" >/dev/null 2>&1; then
+    echo "Error: The 'blueutil' command is required but not found." >&2
+    echo "Please run the main installer to install it via Homebrew." >&2
+    exit 1
+  fi
+
   ACTION="$1"
 
   case "$ACTION" in
     on)
       echo "Turning Bluetooth on..."
-      # TODO: This functionality typically requires a tool like `blueutil`.
-      # Example: brew install blueutil && blueutil --power 1
-      echo "(Placeholder: Bluetooth functionality not yet implemented.)"
+      blueutil --power 1
+      echo "Bluetooth is now on."
       ;;
     off)
       echo "Turning Bluetooth off..."
-      # Example: blueutil --power 0
-      echo "(Placeholder: Bluetooth functionality not yet implemented.)"
+      blueutil --power 0
+      echo "Bluetooth is now off."
       ;;
     status)
       echo "Checking Bluetooth status..."
-      # Example: blueutil --power
-      echo "(Placeholder: Bluetooth functionality not yet implemented.)"
+      local power_state
+      power_state=$(blueutil --power)
+      if [ "$power_state" -eq 1 ]; then
+        echo "Bluetooth is currently on."
+      else
+        echo "Bluetooth is currently off."
+      fi
       ;;
     *)
       echo "Error: Unknown action '$ACTION'" >&2

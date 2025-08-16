@@ -33,7 +33,7 @@ fc bluetooth --help
 
 ### Bluetooth
 
-Manages the system's Bluetooth adapter.
+Manages the system's Bluetooth adapter using the `blueutil` command-line tool.
 
 **Usage:** `fc bluetooth <action>`
 
@@ -43,7 +43,7 @@ Manages the system's Bluetooth adapter.
 -   `off`: Turn Bluetooth off.
 -   `status`: Show the current Bluetooth status.
 
-*Note: This command is currently a placeholder and requires a tool like `blueutil` to be fully functional.*
+*Note: This command depends on `blueutil`, which is automatically installed by the main installer via Homebrew.*
 
 ### Wi-Fi
 

@@ -24,6 +24,7 @@ tap "homebrew/cask-fonts"
 brew "git"
 brew "node"
 brew "wget"
+brew "blueutil" # For controlling Bluetooth
 
 # --- Casks ------------------------------------------------------------------
 # Install GUI applications.
