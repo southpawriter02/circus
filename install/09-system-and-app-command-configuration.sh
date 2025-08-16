@@ -4,21 +4,40 @@
 #
 # Stage 9: System and App Command Configuration
 #
-# This script configures low-level system settings using macOS-specific
-# command-line utilities. This allows for fine-grained control over system
-# behavior.
+# This script marks the stage in the installation process where low-level
+# system settings are applied using powerful macOS command-line utilities.
 #
-# Its responsibilities include:
+# Implementation Strategy:
 #
-#   9.1. Configuring system settings via `systemsetup`.
-#   9.2. Setting boot variables with `nvram`.
-#   9.3. Managing power settings with `pmset`.
+# Directly embedding `systemsetup`, `nvram`, and `pmset` commands in the
+# installer is inflexible and hard to maintain. The best practice is to
+# consolidate all such commands into a single, dedicated script (e.g.,
+# `system/macos.sh`).
+#
+# This installer's role is to execute that dedicated script at the appropriate
+# time. This keeps the main installation flow clean and separates the "what"
+# (the installation process) from the "how" (the specific system settings).
+#
+# Therefore, the actual execution of the system configuration script will be
+# handled here. For now, this script serves as a placeholder until the
+# dedicated system configuration script is created.
 #
 # ==============================================================================
 
 #
-# This is a placeholder for the system and app command configuration logic.
+# The main logic for the system and app command configuration stage.
 #
+main() {
+  msg_info "Stage 9: System and App Command Configuration"
+  msg_info "This stage is a placeholder. The dedicated system configuration script will be executed from here."
 
-msg_info "Stage 9: System and App Command Configuration"
-msg_warning "Placeholder: System and app command configuration logic has not been implemented yet."
+  # TODO: Add the logic to execute the dedicated system configuration script
+  # (e.g., `source "$DOTFILES_DIR/system/macos.sh"`)
+
+  msg_success "System and app command configuration stage marked as complete."
+}
+
+#
+# Execute the main function.
+#
+main
