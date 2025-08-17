@@ -19,6 +19,15 @@
 [ -f "$HOME/.zcompletions" ] && . "$HOME/.zcompletions"
 [ -f "$HOME/.githelpers" ] && . "$HOME/.githelpers"
 
+# Source all modular environment files from the dedicated env directory.
+if [ -d "$HOME/.config/shell/env" ]; then
+  for env_file in "$HOME"/.config/shell/env/*.sh; do
+    if [ -r "$env_file" ]; then
+      . "$env_file"
+    fi
+  done
+fi
+
 # Source all modular alias files from the dedicated aliases directory.
 if [ -d "$HOME/.config/shell/aliases" ]; then
   for alias_file in "$HOME"/.config/shell/aliases/*.sh; do
