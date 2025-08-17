@@ -22,6 +22,9 @@ brew "git"
 # The Zsh shell
 brew "zsh"
 
+# The Bash shell
+brew "bash"
+
 # Testing framework
 brew "bats-core"
 
