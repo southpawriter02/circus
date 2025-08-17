@@ -1,0 +1,22 @@
+# ==============================================================================
+#
+# FILE:         .gitconfig.local.template
+#
+# DESCRIPTION:  This is a template for your local, user-specific Git config.
+#               Copy this file to ~/.gitconfig.local and fill in your details.
+#               This file should NOT be committed to the repository.
+#
+# ==============================================================================
+
+[user]
+    # --------------------------------------------------------------------------
+    # TODO: Replace the following with your name and email address.
+    # --------------------------------------------------------------------------
+    name = Your Name
+    email = your.email@example.com
+
+#[github]
+    # --------------------------------------------------------------------------
+    # TODO: Uncomment the line below and add your GitHub username.
+    # --------------------------------------------------------------------------
+    # user = your-github-username

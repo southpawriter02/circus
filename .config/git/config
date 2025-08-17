@@ -1,0 +1,49 @@
+# ==============================================================================
+#
+# FILE:         .config/git/config
+#
+# DESCRIPTION:  This is the main Git configuration file. It sets modern
+#               defaults, enables color, and defines powerful aliases.
+#
+# ==============================================================================
+
+# --- Include Local Config ---------------------------------------------------
+# Automatically include the user-specific .gitconfig.local file. This allows
+# for personal details (name, email) to be kept separate from the repository.
+[include]
+    path = ~/.gitconfig.local
+
+# --- Core Settings ----------------------------------------------------------
+[core]
+    # Use colors in Git commands.
+    ui = auto
+    # Set the default branch name for new repositories to `main`.
+    defaultBranch = main
+
+# --- Pull Settings ----------------------------------------------------------
+[pull]
+    # Use rebase by default when pulling to maintain a linear history.
+    rebase = true
+
+# --- Fetch Settings ---------------------------------------------------------
+[fetch]
+    # Prune remote-tracking branches that no longer exist on the remote.
+    prune = true
+
+# --- Alias Definitions ------------------------------------------------------
+# These are powerful internal Git aliases.
+[alias]
+    # Show a beautifully formatted, one-line log graph.
+    lg = log --graph --pretty=format:'%C(yellow)%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+    # Show the last commit.
+    last = log -1 HEAD
+    # Show all local and remote branches.
+    branches = branch -a
+    # Unstage a file.
+    unstage = reset HEAD --
+    # Stash changes with a message.
+    sa = stash save
+    # Apply the most recent stash.
+    sp = stash pop
+    # List all stashes.
+    sl = stash list

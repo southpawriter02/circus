@@ -1,0 +1,4 @@
+The best way to predict the future is to invent it. - Alan Kay
+Talk is cheap. Show me the code. - Linus Torvalds
+Programs must be written for people to read, and only incidentally for machines to execute. - Abelson & Sussman
+Simplicity is the ultimate sophistication. - Leonardo da Vinci
