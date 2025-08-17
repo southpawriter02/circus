@@ -28,22 +28,25 @@ Here is a summary of the currently available roles:
 
 This role is designed for a software development machine. It includes:
 
-*   **Applications:** `nvm`, `postgresql`, `mariadb`, `visual-studio-code`, `iterm2`, `docker`.
-*   **Dotfiles:** No specific dotfiles are added yet, but this is where you could add developer-centric aliases or environment variables.
+*   **Applications:** `rider`, `warp`, `docker`, `dotnet-sdk`, `nvm`, `postgresql`, `mariadb`.
+*   **Aliases:** Docker and web development aliases.
+*   **Environment:** .NET SDK path configuration.
+*   **Configuration Scripts:** Programmatically configures the macOS Dock with developer-centric applications.
 
 ### `personal`
 
 This role is designed for a personal-use machine. It includes:
 
-*   **Applications:** `spotify`, `vlc`, `rectangle`.
+*   **Applications:** `spotify`, `vlc`.
 *   **Aliases:** A `media.aliases.sh` file with shortcuts for controlling Spotify from the command line.
+*   **Configuration Scripts:** Programmatically configures the macOS Dock with media applications.
 
 ### `work`
 
 This role is designed for a corporate or work-from-home machine. It includes:
 
 *   **Applications:** `slack`, `zoom`.
-*   **Configuration Scripts:** A placeholder script (`configure-vpn.sh`) to demonstrate where you would add complex, work-specific setup tasks.
+*   **Configuration Scripts:** Programmatically configures the macOS Dock with communication applications.
 
 ## How to Create a New Role
 
@@ -67,5 +70,7 @@ Creating a new role is simple and is the primary way to extend the functionality
 
 5.  **Add Configuration Scripts (Optional):**
     If your role requires complex setup tasks (like configuring software or system settings), create a `defaults` subdirectory (`roles/designer/defaults/`) and add one or more `.sh` scripts inside it. The installer will automatically execute them.
+
+    **Example:** You could create a `roles/designer/defaults/configure-dock.sh` script that uses `dockutil` to add applications like Figma and Sketch to the Dock, providing a tailored user experience for that role.
 
 That's it! The installer will automatically detect the new role directory and its contents. You can then run `./install.sh --role designer` to use your new role.

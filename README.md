@@ -2,52 +2,60 @@
 
 This repository contains my personal dotfiles and a comprehensive, automated installer for setting up a new macOS device. The installer is designed to be modular, idempotent, and safe.
 
+## Features
+
+*   **Role-Based Installation:** Use roles (`developer`, `personal`, `work`) to install different sets of applications and configurations for different machines.
+*   **Programmatic Dock Management:** Each role automatically configures the macOS Dock with a clean, role-specific set of applications.
+*   **Secure Secrets Management:** Integrates with 1Password to securely fetch and deploy API tokens and other sensitive credentials.
+*   **Backup & Restore System:** A powerful `fc sync` command to back up your applications and data to a portable archive and restore it on a new machine.
+*   **Comprehensive Testing:** A full test suite using `bats-core` to ensure the reliability and stability of the installer and shell environment.
+
 ## Getting Started
 
-To set up a new machine using this repository, follow these steps. The process has been designed to be as safe as possible, preventing accidental runs.
+Setting up a new machine is a simple, guided process.
 
-### 1. Clone the Repository
+1.  **Clone the Repository:**
+    ```sh
+    git clone https://github.com/southpawriter02/circus.git
+    cd circus
+    ```
 
-First, clone this repository to your local machine. A common location is `$HOME/Projects/dotfiles`.
+2.  **Run the Installer:**
+    The installer is interactive and will prompt for confirmation before taking any action. To install a specific role, use the `--role` flag.
+    ```sh
+    # Run the default installation
+    ./install.sh
+
+    # Or, install the developer role
+    ./install.sh --role developer
+    ```
+
+## Usage (`fc` command)
+
+This repository includes a custom command-line utility, `fc`, for system management. For detailed usage instructions, please see the [Commands Guide](COMMANDS.md).
 
 ```sh
-git clone https://github.com/southpawriter02/dotfiles.git
+# Display system information
+fc info
+
+# Back up your system state
+fc sync backup
 ```
 
-### 2. Make the Initializer Executable
+## Testing
 
-To prevent the main installer from being run by accident, it is kept non-executable. You must first enable the safe `init.sh` wrapper script. This is a **one-time action**.
-
-```sh
-# Navigate into the repository directory
-cd dotfiles
-
-# Make the init script executable
-chmod +x init.sh
-```
-
-### 3. Run the Installer
-
-Now, you can run the main installer via the `init.sh` script. This script will handle making the main installer executable, running it, and then safely returning it to a non-executable state when it's finished.
+The project includes a full test suite. To run the tests, first ensure you have installed the base dependencies with `./install.sh`, then run:
 
 ```sh
-./init.sh
-```
-
-The installer will guide you through the rest of the process. To see all available options, such as performing a dry run, use the `--help` flag:
-
-```sh
-./init.sh --help
+bats tests/
 ```
 
 ## Documentation
 
 This project is extensively documented. Please see the following guides for more information:
 
--   **[Dotfiles Guide](docs/DOTFILES.md):** An explanation of the Zsh startup sequence and the purpose of each dotfile.
--   **[Custom Commands Guide (`fc`)](docs/COMMANDS.md):** A detailed user manual for the custom `fc` command-line interface.
--   **[Architecture Guide](docs/ARCHITECTURE.md):** A deep dive into the design philosophy and technical architecture of the installer.
--   **[Testing Guide](docs/TESTING.md):** Instructions on how to run and write tests for the project using the Bats framework.
+-   **[Roles Guide](ROLES.md):** An explanation of the role-based installation system and how to create new roles.
+-   **[Commands Guide](COMMANDS.md):** A detailed user manual for the custom `fc` command-line interface.
 
 ## Inspiration and Resources
 

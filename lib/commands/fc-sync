@@ -12,6 +12,21 @@
 #
 # ==============================================================================
 
+# --- Configuration ---
+
+# Define the destination for your backups. This can be a local folder, or a
+# folder in a cloud-synced service like Dropbox or iCloud Drive.
+readonly BACKUP_DIR="$HOME/CircusBackups"
+
+# Define the list of files and directories to back up. Add any critical
+# configuration files or data directories to this list.
+readonly BACKUP_TARGETS=(
+  "$HOME/.ssh"
+  "$HOME/.gnupg"
+  "$HOME/Documents"
+  # Add other directories like "$HOME/Projects" here.
+)
+
 # --- Setup & Helpers ---
 
 # Exit immediately if a command exits with a non-zero status.
@@ -36,24 +51,70 @@ usage() {
 
 # --- Command Logic ---
 
-# @description Placeholder function for the backup logic.
 do_backup() {
   msg_info "Starting system backup..."
+  mkdir -p "$BACKUP_DIR"
+  msg_info "Backup destination: $BACKUP_DIR"
 
-  # --- Placeholder Logic ---
-  msg_info "[Placeholder] Would run 'brew bundle dump' to create a Brewfile.dump."
-  msg_info "[Placeholder] Would use rsync to copy critical files (e.g., ~/.ssh) to a backup location."
+  local brewfile_dump_path="$BACKUP_DIR/Brewfile.dump"
+  msg_info "Creating a complete inventory of installed applications..."
+  if brew bundle dump --force --file="$brewfile_dump_path"; then
+    msg_success "Successfully created application inventory at: $brewfile_dump_path"
+  else
+    msg_error "Failed to create application inventory."
+    return 1
+  fi
+
+  msg_info "Backing up critical files and directories..."
+  for target in "${BACKUP_TARGETS[@]}"; do
+    local expanded_target
+    eval expanded_target="$target"
+    if [ -e "$expanded_target" ]; then
+      msg_info "  -> Backing up $expanded_target"
+      rsync -a "$expanded_target" "$BACKUP_DIR/"
+    else
+      msg_warning "  -> Source not found, skipping: $expanded_target"
+    fi
+  done
 
   msg_success "System backup complete."
 }
 
-# @description Placeholder function for the restore logic.
 do_restore() {
   msg_info "Starting system restoration..."
+  if [ ! -d "$BACKUP_DIR" ]; then
+    msg_error "Backup directory not found: $BACKUP_DIR"
+    return 1
+  fi
+  msg_info "Backup source: $BACKUP_DIR"
 
-  # --- Placeholder Logic ---
-  msg_info "[Placeholder] Would run 'brew bundle install' from a Brewfile.dump."
-  msg_info "[Placeholder] Would use rsync to restore critical files from a backup location."
+  # 1. Restore the list of installed applications.
+  local brewfile_dump_path="$BACKUP_DIR/Brewfile.dump"
+  if [ -f "$brewfile_dump_path" ]; then
+    msg_info "Restoring all applications from inventory..."
+    if brew bundle install --file="$brewfile_dump_path"; then
+      msg_success "Application restoration complete."
+    else
+      msg_error "Application restoration failed."
+    fi
+  else
+    msg_warning "Application inventory not found, skipping: $brewfile_dump_path"
+  fi
+
+  # 2. Restore critical files and directories.
+  msg_info "Restoring critical files and directories..."
+  for target in "${BACKUP_TARGETS[@]}"; do
+    local backup_source="$BACKUP_DIR/$(basename "$target")"
+    local restore_dest
+    eval restore_dest="$target"
+    if [ -e "$backup_source" ]; then
+      msg_info "  -> Restoring $backup_source to $restore_dest"
+      # We restore to the parent directory of the target.
+      rsync -a "$backup_source" "$(dirname "$restore_dest")"
+    else
+      msg_warning "  -> Backup source not found, skipping: $backup_source"
+    fi
+  done
 
   msg_success "System restoration complete."
 }
@@ -61,7 +122,6 @@ do_restore() {
 # --- Main Dispatcher ---
 
 main() {
-  # If no subcommand is provided, display the usage message.
   if [ -z "$1" ]; then
     usage
   fi
