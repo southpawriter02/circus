@@ -36,7 +36,8 @@ main() {
     "11-defaults-and-additional-configuration.sh"
     "12-aliases-configuration.sh"
     "13-env-configuration.sh"
-    "14-finalization-and-reporting.sh"
+    "14-cleanup.sh"
+    "15-finalization-and-reporting.sh"
   )
 
   for stage_script in "${INSTALL_STAGES[@]}"; do
