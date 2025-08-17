@@ -1,0 +1,36 @@
+# ==============================================================================
+#
+# FILE:         .gitignore_global
+#
+# DESCRIPTION:  A global .gitignore file for all projects.
+#
+# ==============================================================================
+
+# --- General ---
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# --- Editor Files ---
+*.swp
+*~
+*.bak
+*.tmp
+
+# --- Build & Dependency Directories ---
+node_modules/
+vendor/
+build/
+dist/
+
+# --- macOS ---
+.AppleDB
+.AppleDesktop
+.com.apple.timemachine.supported
+.fseventsd
+
+# --- Logs ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
