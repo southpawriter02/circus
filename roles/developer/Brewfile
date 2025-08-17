@@ -22,8 +22,8 @@ brew "mariadb"
 # .NET/C# Development SDK
 cask "dotnet-sdk"
 
-# The editor
-cask "visual-studio-code"
+# The .NET/C# IDE
+cask "rider"
 
 # iTerm2 for a better terminal experience
 cask "iterm2"
