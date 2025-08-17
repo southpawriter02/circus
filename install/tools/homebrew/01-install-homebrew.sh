@@ -4,8 +4,9 @@
 #
 # Homebrew Step 1: Install Homebrew
 #
-# This script checks for the presence of Homebrew, the package manager for
-# macOS, and installs it if it is missing.
+# This script runs the official Homebrew installation script.
+# It is only run if the preflight check in Stage 3 determines that Homebrew
+# is missing.
 #
 # ==============================================================================
 
@@ -13,16 +14,7 @@
 # The main logic for installing Homebrew.
 #
 main() {
-  msg_info "Checking for Homebrew..."
-
-  # The `command -v` command checks if a command is available in the system's
-  # PATH. We use it to check for the `brew` command.
-  if command -v "brew" >/dev/null 2>&1; then
-    msg_success "Homebrew is already installed."
-    return 0
-  fi
-
-  msg_warning "Homebrew is not installed."
+  msg_info "Installing Homebrew..."
   msg_info "The installer will now download and run the official Homebrew installation script."
 
   # Download and execute the official Homebrew installation script.
