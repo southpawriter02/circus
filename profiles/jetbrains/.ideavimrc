@@ -1,0 +1,27 @@
+" ==============================================================================
+" FILE: .ideavimrc
+" DESCRIPTION: Configuration for the IdeaVim plugin in JetBrains IDEs.
+" ==============================================================================
+
+" --- Editor Settings ---
+set number         " Show line numbers
+set relativenumber " Show relative line numbers
+set scrolloff=5    " Keep 5 lines of context around the cursor
+
+" --- Key Mappings ---
+" Map jj to <Esc> for easier mode switching
+nnoremap jj <Esc>
+inoremap jj <Esc>
+
+" Map leader to space
+let mapleader = " "
+
+" Example leader shortcut: <leader>w to save the current file
+nnoremap <leader>w :w<CR>
+
+" --- IdeaVim Specific Settings ---
+" Enable smooth scrolling
+set smoothscrolling
+
+" Allow IdeaVim to handle all shortcuts
+set ideajoin
