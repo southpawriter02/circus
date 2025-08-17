@@ -113,18 +113,18 @@ main() {
   # ----------------------------------------------------------------------------
   msg_info "Starting Dotfiles Flying Circus setup..."
 
-  # Define all installation stages in order.
+  # Define all installation stages in their new, logical order.
   local INSTALL_STAGES=(
-    "01-repository-management.sh"
-    "02-archive-handling.sh"
+    "01-introduction-and-user-interaction.sh"
+    "02-logging-setup.sh"
     "03-preflight-system-checks.sh"
-    "04-introduction-and-user-interaction.sh"
-    "05-logging-setup.sh"
-    "06-tool-installation.sh"
+    "04-tool-installation.sh"
+    "05-repository-management.sh"
+    "06-archive-handling.sh"
     "07-variable-and-path-setup.sh"
     "08-alias-and-function-configuration.sh"
-    "09-system-and-app-command-configuration.sh"
-    "10-dotfiles-deployment.sh"
+    "09-dotfiles-deployment.sh"
+    "10-system-and-app-command-configuration.sh"
     "11-defaults-and-additional-configuration.sh"
     "12-privacy-and-security.sh"
     "13-cleanup.sh"
