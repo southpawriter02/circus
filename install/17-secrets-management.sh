@@ -11,6 +11,47 @@
 #
 # ==============================================================================
 
+#
+# @description Fetches a GitHub token from 1Password and configures Git to use it
+#              for secure authentication over HTTPS.
+#
+configure_git_with_token() {
+  # --- Configuration ---
+  # Define the 1Password secret reference URI for your GitHub Personal Access Token.
+  #
+  # How to set this up in 1Password:
+  # 1. Create a new item of type "Password".
+  # 2. Name it something descriptive, like "GitHub PAT".
+  # 3. Save your Personal Access Token in the "password" field of this item.
+  # 4. Update the URI below to point to your vault, the item name, and the field.
+  #    Example: op://<YourVault>/<ItemName>/password
+  local github_token_uri="op://Personal/github.com/token"
+
+  msg_info "Attempting to fetch GitHub token from 1Password..."
+
+  # Fetch the token using the 1Password CLI.
+  # The `op read` command will return a non-zero exit code if the secret is not found.
+  local github_token
+  if ! github_token=$(op read "$github_token_uri" 2>/dev/null); then
+    msg_warning "Could not find GitHub token at: $github_token_uri"
+    msg_info "Please ensure you have created the item in 1Password and that the URI is correct."
+    msg_info "Skipping Git token configuration."
+    return
+  fi
+
+  if [ -z "$github_token" ]; then
+    msg_warning "GitHub token at '$github_token_uri' is empty. Skipping."
+    return
+  fi
+
+  # Configure Git to use the token for all HTTPS operations with github.com.
+  # This replaces any `https://github.com/` URL with a URL that includes the
+  # OAuth token for authentication.
+  git config --global "url.https://oauth2:$github_token@github.com/.insteadOf" "https://github.com/"
+
+  msg_success "Successfully configured Git to use the secure token from 1Password."
+}
+
 main() {
   msg_info "Stage 17: Secrets Management"
 
@@ -22,7 +63,8 @@ main() {
   fi
 
   # Check if the user is signed in to the 1Password CLI
-  if ! op account get >/dev/null 2>&1; then
+  # We use `op user get --me` as a more reliable check for a signed-in session.
+  if ! op user get --me >/dev/null 2>&1; then
     msg_warning "You are not signed in to the 1Password CLI. Skipping secrets management."
     return 0
   fi
@@ -30,20 +72,12 @@ main() {
   msg_info "1Password CLI is installed and you are signed in. Proceeding with secrets deployment..."
 
   # --- Secrets Deployment ---
-  # This is where you would add the logic to fetch your secrets and create
-  # the necessary configuration files.
+  configure_git_with_token
 
-  # Example: Creating a .npmrc file with a private registry token
-  # local npm_token=$(op read "op://your-vault/your-npm-token/password")
-  # if [ -n "$npm_token" ]; then
-  #   echo "//registry.npmjs.org/:_authToken=$npm_token" > "$HOME/.npmrc"
-  #   msg_success "Created .npmrc with your NPM token."
-  # else
-  #   msg_error "Failed to fetch NPM token from 1Password."
-  # fi
-
-  msg_info "[Placeholder] No secrets are currently configured for deployment."
-  msg_info "Edit 'install/17-secrets-management.sh' to add your own secrets."
+  # You can add more functions here to deploy other secrets.
+  # For example:
+  #   configure_npm_with_token
+  #   deploy_license_keys
 
   msg_success "Secrets management stage complete."
 }
