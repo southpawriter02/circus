@@ -12,25 +12,17 @@
 # ==============================================================================
 
 #
-# @description Fetches a GitHub token from 1Password and configures Git to use it
-#              for secure authentication over HTTPS.
+# @description Fetches a GitHub token from 1Password and securely stores it in
+#              the macOS Keychain for Git to use.
 #
 configure_git_with_token() {
   # --- Configuration ---
   # Define the 1Password secret reference URI for your GitHub Personal Access Token.
-  #
-  # How to set this up in 1Password:
-  # 1. Create a new item of type "Password".
-  # 2. Name it something descriptive, like "GitHub PAT".
-  # 3. Save your Personal Access Token in the "password" field of this item.
-  # 4. Update the URI below to point to your vault, the item name, and the field.
-  #    Example: op://<YourVault>/<ItemName>/password
   local github_token_uri="op://Personal/github.com/token"
 
   msg_info "Attempting to fetch GitHub token from 1Password..."
 
   # Fetch the token using the 1Password CLI.
-  # The `op read` command will return a non-zero exit code if the secret is not found.
   local github_token
   if ! github_token=$(op read "$github_token_uri" 2>/dev/null); then
     msg_warning "Could not find GitHub token at: $github_token_uri"
@@ -44,12 +36,21 @@ configure_git_with_token() {
     return
   fi
 
-  # Configure Git to use the token for all HTTPS operations with github.com.
-  # This replaces any `https://github.com/` URL with a URL that includes the
-  # OAuth token for authentication.
-  git config --global "url.https://oauth2:$github_token@github.com/.insteadOf" "https://github.com/"
+  # --- Secure Token Storage ---
 
-  msg_success "Successfully configured Git to use the secure token from 1Password."
+  # 1. Configure Git to use the macOS Keychain for credential storage.
+  #    This is a one-time setup that makes Git use the helper.
+  git config --global credential.helper osxkeychain
+  msg_info "Configured Git to use the macOS Keychain for credential storage."
+
+  # 2. Securely store the fetched token in the Keychain.
+  #    We pipe the credentials to the `git credential-osxkeychain` helper.
+  #    This avoids having the token appear in process lists or shell history.
+  #    The username 'oauth2' is standard for GitHub token authentication.
+  printf "protocol=https\nhost=github.com\nusername=oauth2\npassword=%s" "$github_token" | git credential-osxkeychain store
+
+  msg_success "Successfully and securely stored GitHub token in the macOS Keychain."
+  msg_info "Git will now use this token for authentication with github.com."
 }
 
 main() {
@@ -62,8 +63,6 @@ main() {
     return 0
   fi
 
-  # Check if the user is signed in to the 1Password CLI
-  # We use `op user get --me` as a more reliable check for a signed-in session.
   if ! op user get --me >/dev/null 2>&1; then
     msg_warning "You are not signed in to the 1Password CLI. Skipping secrets management."
     return 0
@@ -73,11 +72,6 @@ main() {
 
   # --- Secrets Deployment ---
   configure_git_with_token
-
-  # You can add more functions here to deploy other secrets.
-  # For example:
-  #   configure_npm_with_token
-  #   deploy_license_keys
 
   msg_success "Secrets management stage complete."
 }
