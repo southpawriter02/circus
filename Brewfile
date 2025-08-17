@@ -25,8 +25,10 @@ brew "zsh"
 # The Bash shell
 brew "bash"
 
-# Testing framework
+# Testing framework and helpers
 brew "bats-core"
+brew "bats-support"
+brew "bats-assert"
 
 # Dock management utility
 brew "dockutil"

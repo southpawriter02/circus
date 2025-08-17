@@ -2,16 +2,20 @@
 
 # ==============================================================================
 #
-# BATS:         tests/fc_commands.bats
+# FILE:         fc_commands.bats
 #
 # DESCRIPTION:  This file contains integration tests for the `fc` command-line
 #               interface and its subcommands.
 #
 # ==============================================================================
 
-# --- Setup: Define the path to the main executable ---
+# Load the new, unified test helper.
+load 'test_helper'
+
+# --- Test Setup -------------------------------------------------------------
 setup() {
-  FC_COMMAND="./bin/fc"
+  # Use the $PROJECT_ROOT variable from the helper for robust path handling.
+  FC_COMMAND="$PROJECT_ROOT/bin/fc"
 }
 
 # ------------------------------------------------------------------------------
@@ -19,14 +23,10 @@ setup() {
 # ------------------------------------------------------------------------------
 
 @test "fc with no arguments should display the main help message" {
-  run $FC_COMMAND
-
-  # Assert that the command executed successfully.
-  [ "$status" -eq 0 ]
-
-  # Assert that the output contains the expected help text.
-  [[ "$output" == *"Usage: fc <command>"* ]]
-  [[ "$output" == *"Available commands:"* ]]
+  run "$FC_COMMAND"
+  assert_success
+  assert_output --partial "Usage: fc <command>"
+  assert_output --partial "Available commands:"
 }
 
 # ------------------------------------------------------------------------------
@@ -34,14 +34,11 @@ setup() {
 # ------------------------------------------------------------------------------
 
 @test "fc info should run successfully and print system information" {
-  run $FC_COMMAND info
-
-  [ "$status" -eq 0 ]
-
-  # Assert that the output contains the expected section headers.
-  [[ "$output" == *"Hardware Information"* ]]
-  [[ "$output" == *"Software Information"* ]]
-  [[ "$output" == *"Network Information"* ]]
+  run "$FC_COMMAND" info
+  assert_success
+  assert_output --partial "Hardware Information"
+  assert_output --partial "Software Information"
+  assert_output --partial "Network Information"
 }
 
 # ------------------------------------------------------------------------------
@@ -50,6 +47,6 @@ setup() {
 
 @test "fc bluetooth status should run successfully" {
   # This test just ensures the command runs without error.
-  run $FC_COMMAND bluetooth status
-  [ "$status" -eq 0 ]
+  run "$FC_COMMAND" bluetooth status
+  assert_success
 }
