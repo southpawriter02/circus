@@ -26,7 +26,8 @@
 # Source the Zsh prompt configuration.
 [ -f "$HOME/.zprompt" ] && . "$HOME/.zprompt"
 
-# TODO: Add sourcing for Zsh completion setup.
+# Source the Zsh completion system setup.
+[ -f "$HOME/.zcompletions" ] && . "$HOME/.zcompletions"
 
 # Source local, user-specific configurations last, to allow for overrides.
 # This file is for machine-specific settings and is not committed to Git.

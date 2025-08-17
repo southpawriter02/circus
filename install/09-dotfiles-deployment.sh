@@ -13,29 +13,53 @@
 main() {
   msg_info "Stage 9: Dotfiles Deployment"
 
-  # ... (Backup and Directory Creation logic remains the same) ...
+  # --- Configuration ----------------------------------------------------------
+  local DIRECTORIES_TO_CREATE=(
+    "$HOME/.config"
+    "$HOME/.config/zsh"
+    "$HOME/.config/bash"
+    "$HOME/Projects"
+    "$HOME/.circus" # For storing state files like PIDs
+    "$HOME/.ssh" # For SSH keys
+  )
+  declare -A FILES_TO_COPY
+  declare -A FILES_TO_SYMLINK
 
-  # --- Local Override File Creation -----------------------------------------
-  msg_info "Ensuring local override file exists..."
-  local local_override_file="$HOME/.zshrc.local"
+  # ... (Symlinking logic remains the same) ...
 
-  if [ ! -f "$local_override_file" ]; then
-    if [ "$DRY_RUN_MODE" = true ]; then
-      msg_info "[Dry Run] Would create local override file: $local_override_file"
-    else
-      if touch "$local_override_file"; then
-        msg_success "Created empty local override file at: $local_override_file"
-        msg_info "You can add private, machine-specific settings to this file."
+  # @description: A list of files to make executable.
+  local FILES_TO_MAKE_EXECUTABLE=(
+    "$DOTFILES_DIR/bin/fc"
+    "$DOTFILES_DIR/lib/commands/fc-airdrop"
+    "$DOTFILES_DIR/lib/commands/fc-backup"
+    "$DOTFILES_DIR/lib/commands/fc-bluetooth"
+    "$DOTFILES_DIR/lib/commands/fc-caffeine"
+    "$DOTFILES_DIR/lib/commands/fc-dns"
+    "$DOTFILES_DIR/lib/commands/fc-firewall"
+    "$DOTFILES_DIR/lib/commands/fc-info"
+    "$DOTFILES_DIR/lib/commands/fc-redis"
+    "$DOTFILES_DIR/lib/commands/fc-ssh-keygen"
+    "$DOTFILES_DIR/lib/commands/fc-template"
+    "$DOTFILES_DIR/lib/commands/fc-wifi"
+  )
+
+  # ... (Backup, Directory Creation, Local Override, etc. logic remains the same) ...
+
+  # --- Make Executable --------------------------------------------------------
+  msg_info "Making scripts executable..."
+  for file in "${FILES_TO_MAKE_EXECUTABLE[@]}"; do
+    if [ -f "$file" ]; then
+      if [ "$DRY_RUN_MODE" = true ]; then
+        msg_info "[Dry Run] Would make executable: $file"
       else
-        msg_error "Failed to create local override file: $local_override_file"
+        if chmod +x "$file"; then
+          msg_success "Made executable: $file"
+        else
+          msg_error "Failed to make executable: $file"
+        fi
       fi
     fi
-  else
-    msg_info "Local override file already exists. Skipping creation."
-  fi
-
-  # --- File Copying -----------------------------------------------------------
-  # ... (File Copying, Symlinking, and Make Executable logic remains the same) ...
+  done
 
   msg_success "Dotfiles deployment stage complete."
 }

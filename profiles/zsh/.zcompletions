@@ -1,0 +1,56 @@
+#!/usr/bin/env zsh
+
+# ==============================================================================
+#
+# FILE:         .zcompletions
+#
+# DESCRIPTION:  This file configures the Zsh completion system (`compinit`).
+#
+# ==============================================================================
+
+# Load the completion system, but only if it hasn't been loaded yet.
+if ! type compinit >/dev/null 2>&1; then
+  autoload -U compinit
+fi
+
+# --- Caching to Speed Up Shell Startup ---
+# The completion system can be slow to initialize. We use a dump file to cache
+# the completion data, which significantly speeds up shell startup.
+local zcompdump_file="$HOME/.zcompdump"
+
+# Load the completions from the dump file. If the dump file is more than a day
+# old, regenerate it.
+if [ -f "$zcompdump_file" ] && [ $(find "$zcompdump_file" -mtime +1) ]; then
+  compinit -i -d "$zcompdump_file"
+else
+  compinit -C -d "$zcompdump_file"
+fi
+
+# ------------------------------------------------------------------------------
+# Completion Styling (`zstyle`)
+# ------------------------------------------------------------------------------
+
+# Use the modern menu-based completion system.
+zstyle ':completion:*' menu select
+
+# Group completions by category.
+zstyle ':completion:*' group-name ''
+
+# Enable color-coding for completions.
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
+# Format for descriptions (e.g., "Completing widgets")
+zstyle ':completion:*:descriptions' format '%F{yellow}--- %d ---%f'
+
+# Format for messages (e.g., "-- no matches --")
+zstyle ':completion:*:messages' format '%F{magenta}%d%f'
+
+# Format for warnings
+zstyle ':completion:*:warnings' format '%F{red}No matches for:%f %d'
+
+# Enable automatic correction of typos in commands.
+zstyle ':completion:*' completer _expand _complete _correct _approximate
+zstyle ':completion:*' correct 'prompt'
+
+# Case-insensitive matching.
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
