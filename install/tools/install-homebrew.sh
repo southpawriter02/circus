@@ -17,17 +17,14 @@ main() {
   msg_info "Starting Homebrew setup process..."
 
   # --- Configuration ----------------------------------------------------------
-  # @description: The directory where individual Homebrew setup scripts are stored.
   local HOMEBREW_SCRIPTS_DIR="$INSTALL_DIR/tools/homebrew"
 
   # @description: An array defining the order of the Homebrew setup steps.
+  # The process is now much simpler thanks to `brew bundle`.
   local HOMEBREW_STAGES=(
-    "01-install-homebrew.sh"
-    "02-set-variables.sh"
-    "03-add-taps.sh"
-    "04-install-formulae.sh"
-    "05-install-casks.sh"
-    "06-install-fonts.sh"
+    "01-install-homebrew.sh"      # Install Homebrew itself if missing.
+    "02-set-variables.sh"         # Set environment variables for Homebrew.
+    "04-install-formulae.sh"      # Install all dependencies from the Brewfile.
   )
 
   # --- Installation Logic ---------------------------------------------------

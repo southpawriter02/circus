@@ -46,6 +46,9 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly DOTFILES_DIR="$SCRIPT_DIR"
 readonly INSTALL_DIR="$DOTFILES_DIR/install"
 
+# Global state variables
+DRY_RUN_MODE=false
+
 # Helper library
 readonly HELPERS_LIB="$DOTFILES_DIR/lib/helpers.sh"
 
@@ -66,9 +69,9 @@ Usage: $SCRIPT_NAME [options]
 Automates the setup of a new macOS device.
 
 OPTIONS:
-   -h, --help     Show this help message and exit.
-   --no-op        Perform a dry run; show what would be done without
-                  making any changes.
+   -h, --help         Show this help message and exit.
+   --no-op, --dry-run   Perform a dry run; show what would be done without
+                        making any changes.
 
 EOF
   exit 1
@@ -88,6 +91,9 @@ main() {
       -h|--help)
         usage
         ;;
+      --no-op|--dry-run)
+        DRY_RUN_MODE=true
+        ;;
       *)
         echo "Error: Unknown option '$1'" >&2
         usage
@@ -106,6 +112,11 @@ main() {
     echo "Error: Helper library not found at $HELPERS_LIB" >&2
     echo "Please ensure the repository is complete." >&2
     exit 1
+  fi
+
+  # --- Announce Dry Run Mode --------------------------------------------------
+  if [ "$DRY_RUN_MODE" = true ]; then
+    msg_warning "Running in Dry Run Mode. No changes will be made to the system."
   fi
 
   # ----------------------------------------------------------------------------
