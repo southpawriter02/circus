@@ -31,6 +31,9 @@ brew "dockutil"
 # Node Version Manager
 brew "nvm"
 
+# PostgreSQL database
+brew "postgresql"
+
 # --- Casks (GUI Applications) -----------------------------------------------
 
 # The editor
