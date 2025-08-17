@@ -18,6 +18,7 @@
 [ -f "$HOME/.zoptions" ] && . "$HOME/.zoptions"
 [ -f "$HOME/.zprompt" ] && . "$HOME/.zprompt"
 [ -f "$HOME/.zcompletions" ] && . "$HOME/.zcompletions"
+[ -f "$HOME/.githelpers" ] && . "$HOME/.githelpers"
 
 # --- NVM (Node Version Manager) Setup ---------------------------------------
 # Lazily load nvm to keep shell startup fast.
