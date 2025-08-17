@@ -19,6 +19,9 @@ brew "mariadb"
 
 # --- Casks (GUI Applications) -----------------------------------------------
 
+# .NET/C# Development SDK
+cask "dotnet-sdk"
+
 # The editor
 cask "visual-studio-code"
 
