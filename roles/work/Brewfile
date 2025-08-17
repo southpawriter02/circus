@@ -1,0 +1,15 @@
+# ==============================================================================
+#
+# FILE:         roles/work/Brewfile
+#
+# DESCRIPTION:  This file lists all the Homebrew packages for the 'work' role.
+#
+# ==============================================================================
+
+# --- Casks (GUI Applications) -----------------------------------------------
+
+# Team communication
+cask "slack"
+
+# Video conferencing
+cask "zoom"
