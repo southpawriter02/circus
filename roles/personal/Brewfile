@@ -1,0 +1,18 @@
+# ==============================================================================
+#
+# FILE:         roles/personal/Brewfile
+#
+# DESCRIPTION:  This file lists all the Homebrew packages for the 'personal' role.
+#
+# ==============================================================================
+
+# --- Casks (GUI Applications) -----------------------------------------------
+
+# Music streaming
+cask "spotify"
+
+# Versatile media player
+cask "vlc"
+
+# Window management utility
+cask "rectangle"
