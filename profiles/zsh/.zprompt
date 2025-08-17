@@ -4,34 +4,59 @@
 #
 # FILE:         .zprompt
 #
-# DESCRIPTION:  This file configures the Zsh shell prompt.
+# DESCRIPTION:  This file configures the Zsh shell prompt, including Git
+#               integration and other dynamic information.
 #
 # ==============================================================================
 
-#
-# Load required Zsh modules.
-#
+# Load required Zsh modules for color and version control information.
 autoload -U colors && colors
-autoload -U promptinit && promptinit
-
-#
-# Enable git support in the prompt.
-#
 autoload -Uz vcs_info
-precmd() { vcs_info }
 
-#
-# Set the format for the git information.
-# %b: branch name, %r: repository root
-#
-zstyle ':vcs_info:git:*' formats ' on %{$fg[yellow]%}%b%{$reset_color%}'
+# ------------------------------------------------------------------------------
+# Git Information Setup (vcs_info)
+# ------------------------------------------------------------------------------
 
-#
-# Set the prompt theme.
-# This example creates a prompt that displays the current directory and
-# git branch information.
-#
-# %~: Current directory, starting from home (~)
-# %#: The prompt character (# for root, % for normal users)
-#
-PROMPT='%{$fg[cyan]%}%~%{$reset_color%}${vcs_info_msg_0_} %# '
+# Enable vcs_info for Git.
+zstyle ':vcs_info:*' enable git
+
+# Define the format for the Git information string.
+# %b: branch name
+# %u: unstaged changes indicator
+# %c: staged changes indicator
+zstyle ':vcs_info:git:*' formats '(%F{yellow}%b%f%u%c)'
+
+# Define the format when a Git action (like rebase) is in progress.
+# %a: the action name
+zstyle ':vcs_info:git:*' actionformats '(%F{yellow}%b%f|%F{magenta}%a%f%u%c)'
+
+# Define the strings to show for different Git states.
+# These will be substituted into the %u and %c placeholders.
+zstyle ':vcs_info:*' unstagedstr ' %F{red}M%f'   # Modified
+zstyle ':vcs_info:*' stagedstr ' %F{green}A%f'  # Added
+
+
+# ------------------------------------------------------------------------------
+# precmd: Runs Before Each Prompt
+# ------------------------------------------------------------------------------
+
+# This function is executed just before the prompt is displayed. It's the
+# ideal place to update dynamic information, like the Git status.
+precmd() {
+  # Update the vcs_info string. The result is stored in the $vcs_info_msg_0_ variable.
+  vcs_info
+}
+
+# ------------------------------------------------------------------------------
+# Prompt Construction
+# ------------------------------------------------------------------------------
+
+# Set the main prompt (left side).
+# %F{cyan}%~%f: The current path relative to home, in cyan.
+# %(?..%F{red}%?%f ): If the last command failed (non-zero exit code), show the exit code in red.
+# %F{green}❯%f: The prompt symbol (a right-pointing arrow), in green.
+PROMPT='%F{cyan}%~%f %(?..%F{red}%?%f )%F{green}❯%f '
+
+# Set the right-side prompt.
+# This is where we display the Git information from vcs_info.
+RPROMPT='${vcs_info_msg_0_}'
