@@ -5,25 +5,83 @@
 # FILE:         .zoptions
 #
 # DESCRIPTION:  This file configures Zsh-specific options using the `setopt`
-#               command. This allows for fine-grained control over the
-#               shell's behavior.
+#               and `unsetopt` commands. This allows for fine-grained control
+#               over the shell's behavior.
 #
 # ==============================================================================
 
-#
-# Change directory behavior
-#
-setopt AUTO_CD  # Change directory just by typing the directory name
-setopt AUTO_PUSHD # Automatically push directories onto the directory stack
+# ------------------------------------------------------------------------------
+# History Configuration
+# ------------------------------------------------------------------------------
 
-#
-# History options
-#
-setopt HIST_IGNORE_DUPS # Don't record duplicate commands in the history
-setopt HIST_IGNORE_SPACE  # Don't record commands that start with a space
-setopt SHARE_HISTORY  # Share history between all shell sessions
+# Append to the history file, don't overwrite it.
+setopt APPEND_HISTORY
 
-#
-# General options
-#
-setopt extendedglob # Enable extended globbing features
+# Immediately append commands to the history file, not just when the shell exits.
+# This is crucial for sharing history between concurrent sessions.
+setopt INC_APPEND_HISTORY
+
+# Share history between all active shell sessions.
+setopt SHARE_HISTORY
+
+# When searching history, don't display duplicates of a command in a row.
+setopt HIST_FIND_NO_DUPS
+
+# Do not enter commands into the history that are duplicates of the previous command.
+setopt HIST_IGNORE_DUPS
+
+# Do not enter commands that begin with a space into the history.
+setopt HIST_IGNORE_SPACE
+
+# Remove superfluous blanks from history entries before saving them.
+setopt HIST_REDUCE_BLANKS
+
+
+# ------------------------------------------------------------------------------
+# Completion System
+# ------------------------------------------------------------------------------
+
+# Automatically show a menu of completions after a few characters are typed.
+setopt AUTO_MENU
+
+# When completing from within a word, move the cursor to the end of the word.
+setopt ALWAYS_TO_END
+
+# Allow completion to occur from within a word, not just at the end.
+setopt COMPLETE_IN_WORD
+
+
+# ------------------------------------------------------------------------------
+# Navigation & Directory Handling
+# ------------------------------------------------------------------------------
+
+# If you type the name of a directory, `cd` into it automatically.
+setopt AUTO_CD
+
+# Automatically push the old directory onto the directory stack when you `cd`.
+setopt AUTO_PUSHD
+
+# Don't push directories onto the stack that are already there.
+setopt PUSHD_IGNORE_DUPS
+
+# Allow comments in an interactive shell (e.g., for annotating commands).
+setopt INTERACTIVE_COMMENTS
+
+# If a globbing pattern has no match, return an empty string instead of an error.
+setopt NOMATCH
+
+
+# ------------------------------------------------------------------------------
+# General Shell Behavior
+# ------------------------------------------------------------------------------
+
+# Enable extended globbing features, allowing for more powerful file matching.
+setopt EXTENDED_GLOB
+
+# Allow parameter expansion, command substitution, and arithmetic expansion
+# in the shell prompt.
+setopt PROMPT_SUBST
+
+# If you `cd` to a directory that is a symbolic link, set the shell's current
+# working directory to the target of the link.
+unsetopt CHASE_LINKS
