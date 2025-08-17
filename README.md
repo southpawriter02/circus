@@ -5,10 +5,11 @@ This repository contains my personal dotfiles and a comprehensive, automated ins
 ## Features
 
 *   **Role-Based Installation:** Use roles (`developer`, `personal`, `work`) to install different sets of applications and configurations for different machines.
-*   **Programmatic Dock Management:** Each role automatically configures the macOS Dock with a clean, role-specific set of applications.
-*   **Secure Secrets Management:** Integrates with 1Password to securely fetch and deploy API tokens and other sensitive credentials.
-*   **Backup & Restore System:** A powerful `fc sync` command to back up your applications and data to a portable archive and restore it on a new machine.
-*   **Comprehensive Testing:** A full test suite using `bats-core` to ensure the reliability and stability of the installer and shell environment.
+*   **Deep System Configuration:** Automates the configuration of the Finder, Dock, keyboard, and other system-level preferences.
+*   **Automated Security Hardening:** Automatically configures the macOS firewall, screen saver security, and other security settings for a safer default environment.
+*   **Secure Secrets Management:** Integrates with 1Password to securely fetch and deploy API tokens and other sensitive credentials into the macOS Keychain.
+*   **Encrypted Backup & Restore System:** A powerful `fc sync` command to create an end-to-end encrypted backup of your applications and data.
+*   **Comprehensive Testing:** A full test suite using `bats-core` and `shellcheck` to ensure the reliability and security of the entire codebase.
 
 ## Getting Started
 
@@ -38,7 +39,7 @@ This repository includes a custom command-line utility, `fc`, for system managem
 # Display system information
 fc info
 
-# Back up your system state
+# Create an encrypted backup of your system state
 fc sync backup
 ```
 
