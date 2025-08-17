@@ -12,23 +12,21 @@
 
 #
 # Source all modular configuration files.
-# The `if [ -f ... ]` check ensures that the script doesn't fail if a file
-# is missing.
 #
-
-# Source the generic, POSIX-compliant aliases and functions.
 [ -f "$HOME/.shell_aliases" ] && . "$HOME/.shell_aliases"
 [ -f "$HOME/.shell_functions" ] && . "$HOME/.shell_functions"
-
-# Source Zsh-specific options.
 [ -f "$HOME/.zoptions" ] && . "$HOME/.zoptions"
-
-# Source the Zsh prompt configuration.
 [ -f "$HOME/.zprompt" ] && . "$HOME/.zprompt"
-
-# Source the Zsh completion system setup.
 [ -f "$HOME/.zcompletions" ] && . "$HOME/.zcompletions"
 
+# --- NVM (Node Version Manager) Setup ---------------------------------------
+# Lazily load nvm to keep shell startup fast.
+if [ -s "/opt/homebrew/opt/nvm/nvm.sh" ]; then
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && . "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+fi
+
+# --- Local Overrides --------------------------------------------------------
 # Source local, user-specific configurations last, to allow for overrides.
-# This file is for machine-specific settings and is not committed to Git.
 [ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"

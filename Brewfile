@@ -25,6 +25,12 @@ brew "zsh"
 # Testing framework
 brew "bats-core"
 
+# Dock management utility
+brew "dockutil"
+
+# Node Version Manager
+brew "nvm"
+
 # --- Casks (GUI Applications) -----------------------------------------------
 
 # The editor
