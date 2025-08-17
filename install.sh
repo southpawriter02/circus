@@ -37,6 +37,7 @@ main() {
     "12-aliases-configuration.sh"
     "13-env-configuration.sh"
     "16-jetbrains-configuration.sh"
+    "17-secrets-management.sh"
     "14-cleanup.sh"
     "15-finalization-and-reporting.sh"
   )
