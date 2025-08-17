@@ -5,11 +5,8 @@
 # Stage 4: Tool Installation
 #
 # This script handles the installation of all required command-line tools and
-# applications. It ensures that the system has the necessary software to
-# support the dotfiles and the user's development workflow.
-#
-# This script acts as an orchestrator, sourcing individual installation
-# scripts from the `install/tools` directory.
+# applications. It intelligently uses the state variables set by the preflight
+# checks in Stage 3 to determine which tools need to be installed.
 #
 # ==============================================================================
 
@@ -20,16 +17,32 @@ main() {
   msg_info "Stage 4: Tool Installation"
 
   # --- Configuration ----------------------------------------------------------
-  # @description: The directory where individual tool installation scripts are stored.
   local TOOLS_DIR="$INSTALL_DIR/tools"
 
-  # @description: An array defining the order of tool installations.
-  # @customization: Add or remove scripts from this list to control which
-  #                tools are installed. The order is important, as some tools
-  #                may depend on others (e.g., most tools depend on Homebrew).
-  local TOOL_SCRIPTS=(
-    "install-xcode-cli.sh"
-    "install-homebrew.sh"
+  # --- Xcode Command Line Tools ---------------------------------------------
+  # The preflight check in Stage 3 determined if the tools were installed.
+  # We only run the installer if they are missing.
+  if [ "$SYSTEM_HAS_XCODE_CLI" = false ]; then
+    source "$TOOLS_DIR/install-xcode-cli.sh"
+  else
+    msg_info "Skipping Xcode Command Line Tools installation (already present)."
+  fi
+
+  # --- Homebrew ---------------------------------------------------------------
+  # We only run the Homebrew installer if it was not found in Stage 3.
+  if [ "$SYSTEM_HAS_HOMEBREW" = false ]; then
+    source "$TOOLS_DIR/install-homebrew.sh"
+  else
+    msg_info "Skipping Homebrew installation (already present)."
+  fi
+
+  # --- Other Tools (Dependent on Homebrew, Pip, etc.) -----------------------
+  # Now that we have attempted to install the core dependencies, we can
+  # proceed with the other tools. Their individual scripts contain their own
+  # idempotency checks.
+  msg_info "Proceeding with installation of additional tools..."
+
+  local additional_tools=(
     "install-oh-my-zsh.sh"
     "install-dorothy.sh"
     "install-mac-cli.sh"
@@ -38,16 +51,12 @@ main() {
     "install-outset.sh"
     "install-redis.sh"
     "install-bats-core.sh"
-    # "update-homebrew.sh" # TODO: Implement
   )
 
-  # --- Installation Logic ---------------------------------------------------
-  msg_info "Beginning tool installation process..."
-
-  for tool_script in "${TOOL_SCRIPTS[@]}"; do
+  for tool_script in "${additional_tools[@]}"; do
     local script_path="$TOOLS_DIR/$tool_script"
     if [ -f "$script_path" ]; then
-      # shellcheck source=/dev/null
+      # The individual scripts will print their own status messages.
       source "$script_path"
     else
       msg_warning "Tool installation script not found: $script_path. Skipping."
