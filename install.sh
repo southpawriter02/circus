@@ -34,6 +34,7 @@ main() {
     "09-dotfiles-deployment.sh"
     "10-git-configuration.sh"
     "11-defaults-and-additional-configuration.sh"
+    "12-aliases-configuration.sh"
     "14-finalization-and-reporting.sh"
   )
 
