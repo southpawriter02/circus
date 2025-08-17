@@ -1,0 +1,29 @@
+# ==============================================================================
+#
+# FILE:         roles/developer/Brewfile
+#
+# DESCRIPTION:  This file lists all the Homebrew packages for the 'developer' role.
+#
+# ==============================================================================
+
+# --- Core Formulae ----------------------------------------------------------
+
+# Node Version Manager
+brew "nvm"
+
+# PostgreSQL database
+brew "postgresql"
+
+# MariaDB database (MySQL-compatible)
+brew "mariadb"
+
+# --- Casks (GUI Applications) -----------------------------------------------
+
+# The editor
+cask "visual-studio-code"
+
+# iTerm2 for a better terminal experience
+cask "iterm2"
+
+# Containerization platform
+cask "docker"

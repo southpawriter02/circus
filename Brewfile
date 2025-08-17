@@ -2,8 +2,8 @@
 #
 # FILE:         Brewfile
 #
-# DESCRIPTION:  This file lists all the Homebrew packages to be installed.
-#               It is used by the `brew bundle` command.
+# DESCRIPTION:  This is the base Brewfile. It lists all the Homebrew packages
+#               that should be installed for ALL roles.
 #
 # ==============================================================================
 
@@ -28,28 +28,10 @@ brew "bats-core"
 # Dock management utility
 brew "dockutil"
 
-# Node Version Manager
-brew "nvm"
-
-# PostgreSQL database
-brew "postgresql"
-
-# MariaDB database (MySQL-compatible)
-brew "mariadb"
-
 # --- Casks (GUI Applications) -----------------------------------------------
-
-# The editor
-cask "visual-studio-code"
 
 # GPG Suite for signing commits
 cask "gpg-suite"
 
-# iTerm2 for a better terminal experience
-cask "iterm2"
-
 # A modern web browser
 cask "google-chrome"
-
-# Containerization platform
-cask "docker"
