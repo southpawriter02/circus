@@ -1,4 +1,4 @@
-# Feature Proposal: 08 - SSH Key Management
+# Feature: 08 - SSH Key Management
 
 ## 1. Feature Overview
 

@@ -1,4 +1,4 @@
-# Feature Proposal: 07 - Theme Management
+# Feature: 07 - Theme Management
 
 ## 1. Feature Overview
 

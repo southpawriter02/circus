@@ -1,4 +1,4 @@
-# Feature Proposal: 05 - System Health Check
+# Feature: 05 - System Health Check
 
 ## 1. Feature Overview
 
