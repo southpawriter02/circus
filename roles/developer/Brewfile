@@ -25,8 +25,8 @@ cask "dotnet-sdk"
 # The .NET/C# IDE
 cask "rider"
 
-# iTerm2 for a better terminal experience
-cask "iterm2"
+# The modern terminal
+cask "warp"
 
 # Containerization platform
 cask "docker"
