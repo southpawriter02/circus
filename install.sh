@@ -60,10 +60,27 @@ main() {
   # Export the PARANOID_MODE so it's available to all sourced scripts
   export PARANOID_MODE
 
-  # ... (rest of the script remains the same) ...
-
   # --- Installation Stages ---
-  # ...
+  msg_info "Starting Dotfiles Flying Circus setup..."
+  prompt_for_confirmation "Ready to begin the installation."
+
+  local INSTALL_STAGES=(
+    "01-introduction-and-user-interaction.sh"
+    "02-logging-setup.sh"
+    "03-homebrew-installation.sh"
+    "04-macos-system-settings.sh"
+    "09-dotfiles-deployment.sh"
+    "10-git-configuration.sh"
+    "11-defaults-and-additional-configuration.sh"
+    "12-aliases-configuration.sh"
+    "13-env-configuration.sh"
+    "16-jetbrains-configuration.sh"
+    "17-secrets-management.sh"
+    "14-cleanup.sh"
+    "15-finalization-and-reporting.sh"
+  )
+
+  # ... (rest of the script remains the same) ...
 }
 
 main "$@"
