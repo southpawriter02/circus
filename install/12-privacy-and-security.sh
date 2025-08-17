@@ -4,19 +4,8 @@
 #
 # Stage 12: Privacy and Security
 #
-# This script marks the stage in the installation process where privacy and
-# security settings are applied to the system.
-#
-# Implementation Strategy:
-#
-# All commands related to privacy and security (e.g., disabling tracking,
-# configuring the firewall) should be consolidated into a single, dedicated
-# script (e.g., `system/privacy.sh`). This creates a single, auditable file
-# for all security-related settings.
-#
-# This installer's role is to execute that dedicated script. This maintains a
-# clean separation between the installation process and the specific security
-# configurations.
+# This script orchestrates the application of security and privacy settings by
+# sourcing all shell scripts found in the top-level `security/` directory.
 #
 # ==============================================================================
 
@@ -25,13 +14,35 @@
 #
 main() {
   msg_info "Stage 12: Privacy and Security"
-  msg_info "This stage is a placeholder. The dedicated privacy and security script will be executed from here."
 
-  # TODO: Add the logic to execute the dedicated privacy and security script.
-  # Example:
-  # source "$DOTFILES_DIR/system/privacy.sh"
+  local security_dir="$DOTFILES_DIR/security"
 
-  msg_success "Privacy and security stage marked as complete."
+  # Check if the security configuration directory exists.
+  if [ ! -d "$security_dir" ]; then
+    msg_info "Security configuration directory not found. Skipping."
+    return 0
+  fi
+
+  # Check if there are any .sh files to source.
+  local sh_files
+  sh_files=$(find "$security_dir" -name "*.sh" 2>/dev/null)
+  if [ -z "$sh_files" ]; then
+    msg_info "No security configuration scripts found in '$security_dir'. Skipping."
+    return 0
+  fi
+
+  msg_info "Applying security configurations from '$security_dir'..."
+
+  # Loop through all .sh files in the directory and source them.
+  for file in $sh_files; do
+    if [ -f "$file" ]; then
+      msg_info "Running configuration script: '$file'..."
+      # shellcheck source=/dev/null
+      source "$file"
+    fi
+  done
+
+  msg_success "Privacy and security stage complete."
 }
 
 #
