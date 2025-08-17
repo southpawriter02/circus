@@ -5,48 +5,50 @@
 # Stage 11: Defaults and Additional Configuration
 #
 # This script orchestrates the application of macOS system and application
-# defaults by sourcing all shell scripts found in the top-level `defaults/`
-# directory. This provides a modular way to manage user preferences.
+# defaults. It first applies all common defaults and then applies any
+# profile-specific defaults if a profile is selected.
 #
 # ==============================================================================
 
-#
-# The main logic for the defaults and additional configuration stage.
-#
 main() {
   msg_info "Stage 11: Defaults and Additional Configuration"
 
-  local defaults_dir="$DOTFILES_DIR/defaults"
-
-  # Check if the defaults configuration directory exists.
-  if [ ! -d "$defaults_dir" ]; then
-    msg_info "Defaults configuration directory not found. Skipping."
-    return 0
-  fi
-
-  # Check if there are any .sh files to source.
-  local sh_files
-  sh_files=$(find "$defaults_dir" -name "*.sh" 2>/dev/null)
-  if [ -z "$sh_files" ]; then
-    msg_info "No defaults configuration scripts found in '$defaults_dir'. Skipping."
-    return 0
-  fi
-
-  msg_info "Applying macOS defaults from '$defaults_dir'..."
-
-  # Loop through all .sh files in the directory and source them.
-  for file in $sh_files; do
-    if [ -f "$file" ]; then
-      msg_info "Running configuration script: '$file'..."
-      # shellcheck source=/dev/null
-      source "$file"
+  # --- Helper function to source scripts from a directory ---
+  source_defaults_from_dir() {
+    local dir_to_source="$1"
+    if [ ! -d "$dir_to_source" ]; then
+      msg_info "Defaults directory not found: '$dir_to_source'. Skipping."
+      return 0
     fi
-  done
+
+    local sh_files
+    sh_files=$(find "$dir_to_source" -name "*.sh" 2>/dev/null)
+    if [ -z "$sh_files" ]; then
+      msg_info "No defaults scripts found in '$dir_to_source'. Skipping."
+      return 0
+    fi
+
+    msg_info "Applying defaults from '$dir_to_source'..."
+    for file in $sh_files; do
+      if [ -f "$file" ]; then
+        msg_info "Running configuration script: '$file'..."
+        source "$file"
+      fi
+    done
+  }
+
+  # --- Apply Common Defaults ---
+  local common_defaults_dir="$DOTFILES_DIR/defaults"
+  source_defaults_from_dir "$common_defaults_dir"
+
+  # --- Apply Profile-Specific Defaults ---
+  if [ -n "$INSTALL_PROFILE" ]; then
+    local profile_defaults_dir="$DOTFILES_DIR/defaults/profiles/$INSTALL_PROFILE"
+    msg_info "Applying defaults for profile: $INSTALL_PROFILE"
+    source_defaults_from_dir "$profile_defaults_dir"
+  fi
 
   msg_success "Defaults and additional configuration complete."
 }
 
-#
-# Execute the main function.
-#
 main
