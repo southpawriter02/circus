@@ -1,0 +1,58 @@
+#!/usr/bin/env zsh
+
+# ==============================================================================
+#
+# FILE:         bin/circus-update
+#
+# DESCRIPTION:  This script is designed to be run automatically by a launchd
+#               agent to keep the system up-to-date. It updates the dotfiles
+#               repository and all Homebrew packages.
+#
+# ==============================================================================
+
+# Ensure the script is run from the user's home directory
+cd "$HOME"
+
+# Define the path to the dotfiles repository.
+# This assumes the repository is cloned at ~/Projects/dotfiles.
+# TODO: Make this configurable in lib/config.sh
+readonly DOTFILES_DIR="$HOME/Projects/dotfiles"
+
+# Define the log file for this script's output.
+readonly LOG_DIR="$HOME/.circus/logs"
+readonly LOG_FILE="$LOG_DIR/updater.log"
+
+# --- Helper function for logging ---
+echo_log() {
+  echo "[$(date "+%Y-%m-%d %H:%M:%S")] - $1"
+}
+
+# Ensure the log directory exists.
+mkdir -p "$LOG_DIR"
+
+# Redirect all output to the log file.
+exec >> "$LOG_FILE" 2>&1
+
+echo_log "Starting scheduled update process..."
+
+# --- 1. Update Dotfiles Repository ---
+echo_log "Updating the dotfiles repository..."
+if [ -d "$DOTFILES_DIR/.git" ]; then
+  cd "$DOTFILES_DIR"
+  git pull
+  cd "$HOME"
+else
+  echo_log "Dotfiles repository not found at $DOTFILES_DIR. Skipping."
+fi
+
+# --- 2. Update Homebrew ---
+echo_log "Updating Homebrew and upgrading packages..."
+if command -v brew >/dev/null 2>&1; then
+  brew update
+  brew upgrade
+  brew cleanup
+else
+  echo_log "Homebrew command not found. Skipping."
+fi
+
+echo_log "Scheduled update process complete."
