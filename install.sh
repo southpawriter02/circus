@@ -49,8 +49,31 @@ readonly INSTALL_DIR="$DOTFILES_DIR/install"
 # Global state variables
 DRY_RUN_MODE=false
 
-# Helper library
+# Library files
 readonly HELPERS_LIB="$DOTFILES_DIR/lib/helpers.sh"
+readonly CONFIG_FILE="$DOTFILES_DIR/lib/config.sh"
+
+# ------------------------------------------------------------------------------
+# SECTION: SOURCE LIBRARIES
+#
+# Description: Source all required library and configuration files.
+# ------------------------------------------------------------------------------
+
+if [[ -f "$HELPERS_LIB" ]]; then
+  # shellcheck source=/dev/null
+  source "$HELPERS_LIB"
+else
+  echo "Error: Helper library not found at $HELPERS_LIB. Aborting." >&2
+  exit 1
+fi
+
+if [[ -f "$CONFIG_FILE" ]]; then
+  # shellcheck source=/dev/null
+  source "$CONFIG_FILE"
+else
+  # This is a non-fatal error, as the config file may not be used.
+  echo "Warning: Configuration file not found at $CONFIG_FILE." >&2
+fi
 
 # ------------------------------------------------------------------------------
 # SECTION: FUNCTIONS
@@ -101,18 +124,6 @@ main() {
     esac
     shift
   done
-
-  # ----------------------------------------------------------------------------
-  # SUB-SECTION: Source Helper Library
-  # ----------------------------------------------------------------------------
-  if [[ -f "$HELPERS_LIB" ]]; then
-    # shellcheck source=/dev/null
-    source "$HELPERS_LIB"
-  else
-    echo "Error: Helper library not found at $HELPERS_LIB" >&2
-    echo "Please ensure the repository is complete." >&2
-    exit 1
-  fi
 
   # --- Announce Dry Run Mode --------------------------------------------------
   if [ "$DRY_RUN_MODE" = true ]; then

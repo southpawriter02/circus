@@ -4,23 +4,8 @@
 #
 # Stage 10: System and App Command Configuration
 #
-# This script marks the stage in the installation process where low-level
-# system settings are applied using powerful macOS command-line utilities.
-#
-# Implementation Strategy:
-#
-# Directly embedding `systemsetup`, `nvram`, and `pmset` commands in the
-# installer is inflexible and hard to maintain. The best practice is to
-# consolidate all such commands into a single, dedicated script (e.g.,
-# `system/macos.sh`).
-#
-# This installer's role is to execute that dedicated script at the appropriate
-# time. This keeps the main installation flow clean and separates the "what"
-# (the installation process) from the "how" (the specific system settings).
-#
-# Therefore, the actual execution of the system configuration script will be
-# handled here. For now, this script serves as a placeholder until the
-# dedicated system configuration script is created.
+# This script orchestrates the application of low-level system settings by
+# sourcing all shell scripts found in the top-level `system/` directory.
 #
 # ==============================================================================
 
@@ -29,12 +14,35 @@
 #
 main() {
   msg_info "Stage 10: System and App Command Configuration"
-  msg_info "This stage is a placeholder. The dedicated system configuration script will be executed from here."
 
-  # TODO: Add the logic to execute the dedicated system configuration script
-  # (e.g., `source "$DOTFILES_DIR/system/macos.sh"`)
+  local system_config_dir="$DOTFILES_DIR/system"
 
-  msg_success "System and app command configuration stage marked as complete."
+  # Check if the system configuration directory exists.
+  if [ ! -d "$system_config_dir" ]; then
+    msg_info "System configuration directory not found. Skipping."
+    return 0
+  fi
+
+  # Check if there are any .sh files to source.
+  local sh_files
+  sh_files=$(find "$system_config_dir" -name "*.sh" 2>/dev/null)
+  if [ -z "$sh_files" ]; then
+    msg_info "No system configuration scripts found in '$system_config_dir'. Skipping."
+    return 0
+  fi
+
+  msg_info "Applying system configurations from '$system_config_dir'..."
+
+  # Loop through all .sh files in the directory and source them.
+  for file in $sh_files; do
+    if [ -f "$file" ]; then
+      msg_info "Running configuration script: '$file'..."
+      # shellcheck source=/dev/null
+      source "$file"
+    fi
+  done
+
+  msg_success "System and app command configuration complete."
 }
 
 #
