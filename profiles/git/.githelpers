@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         .githelpers
+#
+# DESCRIPTION:  A collection of useful shell functions to enhance Git.
+#               This file is intended to be sourced by your .zshrc or .bashrc.
+#
+# ==============================================================================
+
+#
+# Create a new branch and switch to it.
+# Usage: gb <branch-name>
+#
+gb() {
+  git checkout -b "$1"
+}
+
+#
+# Add all changes and commit with a message.
+# Usage: gac "Your commit message"
+#
+gac() {
+  git add -A && git commit -m "$1"
+}
+
+#
+# Push the current branch to the remote and set it to track.
+# Usage: gp
+#
+gp() {
+  git push --set-upstream origin "$(git rev-parse --abbrev-ref HEAD)"
+}
+
+#
+# Force push the current branch.
+# Usage: gpf
+#
+gpf() {
+  git push --force
+}
+
+#
+# A quick way to view the log.
+# Usage: gl
+#
+gl() {
+  git lg
+}
