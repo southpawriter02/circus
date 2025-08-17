@@ -5,13 +5,8 @@
 # Stage 2: Logging Setup
 #
 # This script configures the logging system for the installation process.
-# It initializes the log file for the current run by writing a header with
-# key environment details.
-#
-# Its responsibilities include:
-#
-#   2.1. Configuring the log file location and format.
-#   2.2. Starting the logging of actions and errors.
+# It creates a unique, timestamped log file for the current run and sets
+# the global LOG_FILE_PATH variable that helper functions will use.
 #
 # ==============================================================================
 
@@ -19,23 +14,34 @@
 # The main logic for the logging setup stage.
 #
 main() {
+  # This initial message is printed to the console only, as the log file
+  # has not been created yet.
   msg_info "Stage 2: Logging Setup"
 
   # --- Configuration ----------------------------------------------------------
-  # The log file path is determined by the `$LOG_FILE_BASE` variable, which is
-  # set in `lib/helpers.sh`. The default is `$HOME/.dotfiles-log`.
-  local DATE
-  DATE=$(date "+%Y-%m-%d")
-  local LOG_FILE="$LOG_FILE_BASE-$DATE.log"
+  local LOG_DIR="$HOME/.circus/logs"
+  local TIMESTAMP
+  TIMESTAMP=$(date +%Y-%m-%d-%H%M%S)
+  
+  # Set the global variable for the log file path. This will be used by the
+  # helper functions in `lib/helpers.sh` from this point forward.
+  LOG_FILE_PATH="$LOG_DIR/install-$TIMESTAMP.log"
 
-  # --- Log Header Initialization ----------------------------------------------
-  msg_info "Initializing log file for this session at: $LOG_FILE"
+  # --- Log File Initialization ----------------------------------------------
+  
+  # Ensure the log directory exists.
+  if ! mkdir -p "$LOG_DIR"; then
+    # If we can't create the log directory, we must abort.
+    msg_critical "Failed to create log directory at: $LOG_DIR"
+    msg_critical "Please check permissions and try again. Aborting."
+    exit 1
+  fi
 
-  # Create a header for the current installation log.
-  # This makes it easy to distinguish different installation runs in the same file.
-  # We append to the log file, as it may already contain logs from previous runs.
+  # Inform the user where the log file will be stored.
+  msg_info "Initializing log file for this session at: $LOG_FILE_PATH"
+
+  # Create a header for the new log file.
   {
-    echo ""
     echo "=============================================================================="
     echo " Dotfiles Flying Circus Installation Log"
     echo "=============================================================================="
@@ -43,9 +49,8 @@ main() {
     echo " User:        $(whoami)"
     echo " Host:        $(hostname)"
     echo " OS Version:  $(sw_vers -productName) $(sw_vers -productVersion) ($(sw_vers -buildVersion))"
-    # TODO: Log user selections from Stage 1 when that feature is implemented.
     echo "------------------------------------------------------------------------------"
-  } >> "$LOG_FILE"
+  } >> "$LOG_FILE_PATH"
 
   msg_success "Logging system initialized."
 }
