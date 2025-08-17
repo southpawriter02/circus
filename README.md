@@ -34,12 +34,32 @@ Now, you can run the main installer via the `init.sh` script. This script will h
 ./init.sh
 ```
 
-The installer will guide you through the rest of the process.
+The installer will guide you through the rest of the process. To see all available options, such as performing a dry run, use the `--help` flag:
 
-## Custom Commands (`fc`)
+```sh
+./init.sh --help
+```
 
-This repository also includes a custom command-line interface, `fc` (Flying Circus), for managing common system tasks. For detailed usage instructions, please see the [Custom Commands Guide](COMMANDS.md).
+## Documentation
 
-## Testing
+This project is extensively documented. Please see the following guides for more information:
 
-This project uses the Bats (Bash Automated Testing System) framework to ensure the reliability of its scripts. For more information on how to run or write tests, please see the [Testing Guide](TESTING.md).
+-   **[Dotfiles Guide](docs/DOTFILES.md):** An explanation of the Zsh startup sequence and the purpose of each dotfile.
+-   **[Custom Commands Guide (`fc`)](docs/COMMANDS.md):** A detailed user manual for the custom `fc` command-line interface.
+-   **[Architecture Guide](docs/ARCHITECTURE.md):** A deep dive into the design philosophy and technical architecture of the installer.
+-   **[Testing Guide](docs/TESTING.md):** Instructions on how to run and write tests for the project using the Bats framework.
+
+## Inspiration and Resources
+
+This repository stands on the shoulders of giants. It draws inspiration from many excellent dotfiles projects and uses powerful built-in macOS tools.
+
+### Inspired by
+
+-   [Mathias Bynens' dotfiles](https://github.com/mathiasbynens/dotfiles): One of the most popular and comprehensive dotfiles repositories, serving as a canonical source for macOS `defaults` commands.
+-   [Zach Holman's dotfiles](https://github.com/holman/dotfiles): A project that popularized a topic-based, modular approach to dotfiles management.
+
+### Key macOS Commands
+
+-   [`defaults`](https://ss64.com/osx/defaults.html): The primary tool for modifying macOS user preferences.
+-   [`pmset`](https://ss64.com/osx/pmset.html): A powerful command for managing power settings.
+-   [`spctl`](https://ss64.com/osx/spctl.html): The command-line interface for managing Gatekeeper and security policies.
