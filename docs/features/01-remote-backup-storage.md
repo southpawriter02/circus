@@ -1,4 +1,4 @@
-# Feature Proposal: 01 - Remote Backup Storage
+# Feature: 01 - Remote Backup Storage
 
 ## 1. Feature Overview
 

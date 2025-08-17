@@ -1,4 +1,4 @@
-# Feature Proposal: 06 - Plugin System for `fc` command
+# Feature: 06 - Plugin System for `fc` command
 
 ## 1. Feature Overview
 

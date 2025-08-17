@@ -1,4 +1,4 @@
-# Feature Proposal: 03 - Dotfile Management Command
+# Feature: 03 - Dotfile Management Command
 
 ## 1. Feature Overview
 

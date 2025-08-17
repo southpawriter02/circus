@@ -1,4 +1,4 @@
-# Feature Proposal: 02 - Scheduled Backups
+# Feature: 02 - Scheduled Backups
 
 ## 1. Feature Overview
 

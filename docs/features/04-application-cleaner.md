@@ -1,4 +1,4 @@
-# Feature Proposal: 04 - Application Cleaner
+# Feature: 04 - Application Cleaner
 
 ## 1. Feature Overview
 
