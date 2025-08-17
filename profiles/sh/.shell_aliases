@@ -13,65 +13,70 @@
 # Navigation & Listing
 # ------------------------------------------------------------------------------
 
-# Enable colorized output for ls on macOS.
-alias ls='ls -G'
-
-# List all files colorized in long format, including hidden files.
-alias l='ls -lah'
-
-# List all files colorized in long format.
-alias ll='ls -lh'
-
-# Go up one directory.
-alias ..='cd ..'
-
-# Go up two directories.
-alias ...='cd ../..'
-
-# Go up three directories.
-alias ....='cd ../../..'
-
-# Go up four directories.
-alias .....='cd ../../../..'
-
+alias ls='ls -G'         # Enable colorized output for ls on macOS.
+alias l='ls -lah'        # List all files colorized in long format, including hidden.
+alias ll='ls -lh'        # List all files colorized in long format.
+alias ..='cd ..'         # Go up one directory.
+alias ...='cd ../..'       # Go up two directories.
+alias ....='cd ../../..'    # Go up three directories.
 
 # ------------------------------------------------------------------------------
 # Safety & Confirmation
 # ------------------------------------------------------------------------------
 
-# Prompt before overwriting a file.
-alias cp='cp -i'
+alias cp='cp -i'         # Prompt before overwriting a file.
+alias mv='mv -i'         # Prompt before moving a file if it would overwrite another.
+alias rm='rm -i'         # Prompt before every removal.
 
-# Prompt before moving a file if it would overwrite another.
-alias mv='mv -i'
+# ------------------------------------------------------------------------------
+# Git Aliases
+# ------------------------------------------------------------------------------
 
-# Prompt before every removal.
-alias rm='rm -i'
-
+alias g='git'
+alias ga='git add'
+alias gaa='git add --all'
+alias gap='git add --patch'
+alias gb='git branch'
+alias gbr='git branch -r'
+alias gc='git commit -v'
+alias gcm='git commit -m'
+alias gca='git commit -v -a'
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gf='git fetch'
+alias gl='git log --oneline --decorate --graph --all'
+alias gld='git log --pretty=format:"%h - %an, %ar : %s"'
+alias gp='git push'
+alias gpf='git push --force-with-lease' # Safer force push
+alias gpl='git pull'
+alias gr='git remote -v'
+alias gs='git status -s'
+alias gst='git status'
+alias gunstage='git reset HEAD --'
 
 # ------------------------------------------------------------------------------
 # Utility & Information
 # ------------------------------------------------------------------------------
 
-# Colorize grep output.
 alias grep='grep --color=auto'
+alias df='df -h'         # Show human-readable disk usage.
+alias du='du -h -d 1'    # Show human-readable directory usage (depth 1).
+alias h='history'        # Show command history.
+alias reload='exec $SHELL -l' # Reload the shell completely.
 
-# Show human-readable disk usage.
-alias df='df -h'
+# ------------------------------------------------------------------------------
+# Network Utilities
+# ------------------------------------------------------------------------------
 
-# Show human-readable directory usage for the current directory (depth 1).
-alias du='du -h -d 1'
-
-# Show command history.
-alias h='history'
-
-# Reload the shell completely.
-alias reload='exec $SHELL -l'
-
+alias ping='ping -c 5'   # Ping with a count of 5.
+alias dig='dig +short'   # Quickly get DNS info.
+alias ports='netstat -tulanp' # Show open ports (requires lsof on macOS)
 
 # ------------------------------------------------------------------------------
 # Process Management
 # ------------------------------------------------------------------------------
 
-# Grep for a process from the process list.
-alias psgrep='ps aux | grep -v grep | grep -i'
+alias psgrep='ps aux | grep -v grep | grep -i' # Grep for a process.
+

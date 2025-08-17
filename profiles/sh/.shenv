@@ -10,24 +10,23 @@
 #
 # ==============================================================================
 
-#
-# Define the location of the dotfiles repository.
-# This assumes the repository is cloned to ~/.dotfiles.
-#
-export DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+# --- Core Application Settings ----------------------------------------------
 
-#
-# Set the default editor.
-#
-export EDITOR='vi'
+# Set the default editor for command-line tools (e.g., git).
+# The -w flag is crucial: it tells the editor to wait for the file to be
+# closed before returning control to the terminal.
+export EDITOR='code -w'
 
-#
-# Set the default pager.
-#
+# Set the default pager for viewing long text files.
 export PAGER='less'
 
-#
-# Set the language and locale to UTF-8.
-#
+# --- Locale and Language Settings -------------------------------------------
+
+# Set the language and locale to UTF-8 to ensure proper character handling.
 export LANG='en_US.UTF-8'
 export LC_ALL='en_US.UTF-8'
+
+# --- Homebrew Settings ------------------------------------------------------
+
+# Disable Homebrew's analytics to protect privacy.
+export HOMEBREW_NO_ANALYTICS=1
