@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-sync
+#
+# DESCRIPTION:  This script handles the backup and restoration of system state,
+#               including application settings, user data, and a list of
+#               installed packages.
+#
+# USAGE:        fc sync <subcommand>
+#
+# ==============================================================================
+
+# --- Setup & Helpers ---
+
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+# Source the main helper library for logging functions.
+# shellcheck source=../helpers.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../helpers.sh"
+
+# --- Usage Information ---
+
+usage() {
+  echo "Usage: fc sync <subcommand>"
+  echo ""
+  echo "Manages the backup and restoration of system and application state."
+  echo ""
+  echo "Subcommands:"
+  echo "  backup    - Backs up critical data and configurations."
+  echo "  restore   - Restores data and configurations to a new machine."
+  exit 1
+}
+
+# --- Command Logic ---
+
+# @description Placeholder function for the backup logic.
+do_backup() {
+  msg_info "Starting system backup..."
+
+  # --- Placeholder Logic ---
+  msg_info "[Placeholder] Would run 'brew bundle dump' to create a Brewfile.dump."
+  msg_info "[Placeholder] Would use rsync to copy critical files (e.g., ~/.ssh) to a backup location."
+
+  msg_success "System backup complete."
+}
+
+# @description Placeholder function for the restore logic.
+do_restore() {
+  msg_info "Starting system restoration..."
+
+  # --- Placeholder Logic ---
+  msg_info "[Placeholder] Would run 'brew bundle install' from a Brewfile.dump."
+  msg_info "[Placeholder] Would use rsync to restore critical files from a backup location."
+
+  msg_success "System restoration complete."
+}
+
+# --- Main Dispatcher ---
+
+main() {
+  # If no subcommand is provided, display the usage message.
+  if [ -z "$1" ]; then
+    usage
+  fi
+
+  local subcommand="$1"
+  shift
+
+  case "$subcommand" in
+    backup)
+      prompt_for_confirmation "Ready to begin the backup process."
+      do_backup
+      ;;
+    restore)
+      prompt_for_confirmation "Ready to restore system state. This may overwrite existing files."
+      do_restore
+      ;;
+    *)
+      msg_error "Unknown subcommand: $subcommand"
+      usage
+      ;;
+  esac
+}
+
+main "$@"
