@@ -7,34 +7,29 @@
 #               and fonts that should be installed.
 #
 #               Use `brew bundle` to install everything in this file.
-#               Use `brew bundle dump` to generate a new Brewfile with all
-#               currently installed packages.
 #
 # ==============================================================================
 
 # --- Taps -------------------------------------------------------------------
-# Add third-party repositories.
-#
 tap "homebrew/bundle"
 tap "homebrew/cask-fonts"
 
-# --- Formulae ---------------------------------------------------------------
-# Install command-line tools.
-#
+# --- Formulae (Command-Line Tools) ------------------------------------------
+brew "bats-core" # Bash Automated Testing System
+brew "blueutil"  # For controlling Bluetooth
 brew "git"
+brew "mas"       # Mac App Store command-line interface
+brew "m-cli"     # Swiss army knife for macOS
 brew "node"
+brew "redis"
 brew "wget"
-brew "blueutil" # For controlling Bluetooth
 
-# --- Casks ------------------------------------------------------------------
-# Install GUI applications.
-#
-cask "visual-studio-code"
-cask "iterm2"
+# --- Casks (GUI & Other Applications) ---------------------------------------
 cask "google-chrome"
+cask "iterm2"
+cask "outset"     # Scripting framework for login/boot actions
+cask "visual-studio-code"
 
 # --- Fonts ------------------------------------------------------------------
-# Install fonts.
-#
 cask "font-fira-code"
 cask "font-hack-nerd-font"

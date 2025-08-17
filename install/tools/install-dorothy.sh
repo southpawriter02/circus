@@ -4,8 +4,8 @@
 #
 # Tool: Dorothy
 #
-# This script checks for the presence of Dorothy and installs it if it is
-# missing. Dorothy is a utility for finding orphaned dotfiles.
+# This script installs Dorothy, a utility for finding orphaned dotfiles.
+# It supports Dry Run mode.
 #
 # ==============================================================================
 
@@ -13,15 +13,19 @@
 # The main logic for installing Dorothy.
 #
 main() {
-  msg_info "Checking for Dorothy..."
-
-  # Check if the dorothy command is already available.
+  # Check if the dorothy command is already available. If so, do nothing.
   if command -v "dorothy" >/dev/null 2>&1; then
-    msg_success "Dorothy is already installed."
+    msg_success "Dorothy is already installed. Skipping."
     return 0
   fi
 
-  msg_warning "Dorothy is not installed."
+  msg_info "Installing Dorothy..."
+
+  if [ "$DRY_RUN_MODE" = true ]; then
+    msg_info "[Dry Run] Would install Dorothy using RubyGems."
+    return 0
+  fi
+
   msg_info "The installer will now attempt to install Dorothy using RubyGems."
 
   # Install Dorothy using the `gem` command.
