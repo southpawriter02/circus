@@ -47,3 +47,6 @@ cask "iterm2"
 
 # A modern web browser
 cask "google-chrome"
+
+# Containerization platform
+cask "docker"
