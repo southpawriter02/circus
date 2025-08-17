@@ -1,0 +1,21 @@
+# ==============================================================================
+#
+# FILE:         extensions.txt
+#
+# DESCRIPTION:  This file lists the VS Code extensions to be installed.
+#               Use the extension ID, which can be found on the marketplace page.
+#
+# ==============================================================================
+
+# --- Core Language & Framework Support ---
+esbenp.prettier-vscode
+dbaeumer.vscode-eslint
+
+# --- Git & Version Control ---
+eamodio.gitlens
+
+# --- UI & Theming ---
+vscode-icons-team.vscode-icons
+
+# --- General Productivity ---
+streetsidesoftware.code-spell-checker
