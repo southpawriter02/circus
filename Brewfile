@@ -34,6 +34,9 @@ brew "nvm"
 # PostgreSQL database
 brew "postgresql"
 
+# MariaDB database (MySQL-compatible)
+brew "mariadb"
+
 # --- Casks (GUI Applications) -----------------------------------------------
 
 # The editor
