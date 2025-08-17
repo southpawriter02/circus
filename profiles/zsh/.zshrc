@@ -29,4 +29,5 @@
 # TODO: Add sourcing for Zsh completion setup.
 
 # Source local, user-specific configurations last, to allow for overrides.
-[ -f "$HOME/.zsh.local" ] && . "$HOME/.zsh.local"
+# This file is for machine-specific settings and is not committed to Git.
+[ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"
