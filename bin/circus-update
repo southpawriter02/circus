@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
 # ==============================================================================
 #
@@ -10,49 +10,43 @@
 #
 # ==============================================================================
 
-# Ensure the script is run from the user's home directory
-cd "$HOME"
+# --- Initialization ---------------------------------------------------------
+# Source the centralized initialization script to set up the environment.
+# We need to find the root of the repo from this script's location.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../lib/init.sh"
 
-# Define the path to the dotfiles repository.
-# This assumes the repository is cloned at ~/Projects/dotfiles.
-# TODO: Make this configurable in lib/config.sh
-readonly DOTFILES_DIR="$HOME/Projects/dotfiles"
+# --- Configuration ----------------------------------------------------------
+# Set the log file path for this script's output. The helper library will use it.
+export LOG_FILE_PATH="$HOME/.circus/logs/updater.log"
+# Ensure the log directory exists.
+mkdir -p "$(dirname "$LOG_FILE_PATH")"
 
-# Define the log file for this script's output.
-readonly LOG_DIR="$HOME/.circus/logs"
-readonly LOG_FILE="$LOG_DIR/updater.log"
+# --- Main Logic -------------------------------------------------------------
+main() {
+  msg_info "Starting scheduled update process..."
 
-# --- Helper function for logging ---
-echo_log() {
-  echo "[$(date "+%Y-%m-%d %H:%M:%S")] - $1"
+  # --- 1. Update Dotfiles Repository ---
+  msg_info "Updating the dotfiles repository..."
+  if [ -d "$DOTFILES_ROOT/.git" ]; then
+    cd "$DOTFILES_ROOT"
+    git pull
+    cd - >/dev/null # Go back to previous directory silently
+  else
+    msg_warning "Dotfiles repository not found at $DOTFILES_ROOT. Skipping."
+  fi
+
+  # --- 2. Update Homebrew ---
+  msg_info "Updating Homebrew and upgrading packages..."
+  if command -v brew >/dev/null 2>&1; then
+    brew update
+    brew upgrade
+    brew cleanup
+  else
+    msg_warning "Homebrew command not found. Skipping."
+  fi
+
+  msg_success "Scheduled update process complete."
 }
 
-# Ensure the log directory exists.
-mkdir -p "$LOG_DIR"
-
-# Redirect all output to the log file.
-exec >> "$LOG_FILE" 2>&1
-
-echo_log "Starting scheduled update process..."
-
-# --- 1. Update Dotfiles Repository ---
-echo_log "Updating the dotfiles repository..."
-if [ -d "$DOTFILES_DIR/.git" ]; then
-  cd "$DOTFILES_DIR"
-  git pull
-  cd "$HOME"
-else
-  echo_log "Dotfiles repository not found at $DOTFILES_DIR. Skipping."
-fi
-
-# --- 2. Update Homebrew ---
-echo_log "Updating Homebrew and upgrading packages..."
-if command -v brew >/dev/null 2>&1; then
-  brew update
-  brew upgrade
-  brew cleanup
-else
-  echo_log "Homebrew command not found. Skipping."
-fi
-
-echo_log "Scheduled update process complete."
+main "$@"

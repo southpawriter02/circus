@@ -30,16 +30,25 @@ main() {
     usage
   fi
 
+  if ! command -v git >/dev/null 2>&1; then
+    die "This command requires 'git'. Please install it first."
+  fi
+
+  if ! command -v brew >/dev/null 2>&1; then
+    die "This command requires 'brew'. Please install it first."
+  fi
+
   cd "$DOTFILES_ROOT" || die "Could not navigate to the dotfiles directory: $DOTFILES_ROOT"
 
   # --- Stash Local Changes (if any) ---
   msg_info "Checking for local changes..."
   local stashed=false
-  if ! git diff-index --quiet HEAD --; then
+  # Check for both staged and unstaged changes.
+  if ! git diff-index --quiet HEAD -- || ! git diff-files --quiet; then
     msg_warning "You have uncommitted changes in your local repository."
     prompt_for_confirmation "Would you like to stash them before updating?"
-    msg_info "Stashing local changes..."
-    git stash
+    msg_info "Stashing local changes (including untracked files)..."
+    git stash push --include-untracked
     stashed=true
     msg_success "Local changes have been stashed."
   fi

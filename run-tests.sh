@@ -26,7 +26,9 @@
 # This ensures that bats can find the support and assert libraries.
 #
 export BATS_LIB_PATH="$(brew --prefix)/lib"
-echo "BATS_LIB_PATH is set to: $BATS_LIB_PATH"
+echo "BATS_LIB_PATH in run-tests.sh is set to: $BATS_LIB_PATH"
+echo "Contents of BATS_LIB_PATH:"
+ls -l "$BATS_LIB_PATH"
 
 #
 # Run the bats command on the tests directory.

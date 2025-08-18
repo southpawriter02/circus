@@ -88,8 +88,7 @@ EOF
   if ask "Do you want to proceed with the installation?" N; then
     msg_success "Installation confirmed. Let's begin!"
   else
-    msg_error "Installation aborted by user."
-    exit 1
+    die "Installation aborted by user."
   fi
 }
 

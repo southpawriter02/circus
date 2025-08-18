@@ -18,7 +18,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 readonly BACKUP_DEST_DIR="$HOME"
 readonly BACKUP_ARCHIVE_NAME="circus_backup.tar.gz.gpg"
-readonly GPG_RECIPIENT_ID="YOUR_GPG_KEY_ID_HERE"
+GPG_RECIPIENT_ID="${GPG_RECIPIENT_ID:-"YOUR_GPG_KEY_ID_HERE"}"
 
 readonly BACKUP_TARGETS=(
   "$HOME/.ssh"
@@ -113,6 +113,10 @@ main() {
 
   if ! command -v gpg >/dev/null 2>&1; then
     die "GPG is not installed. Please run 'brew install gpg-suite'."
+  fi
+
+  if ! command -v rsync >/dev/null 2>&1; then
+    die "This command requires 'rsync'. Please install it first."
   fi
 
   local subcommand="$1"

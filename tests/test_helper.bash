@@ -20,8 +20,20 @@ export PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
 # This loads the BATS support libraries, giving us access to powerful
 # setup and teardown functions, as well as a rich set of assertions.
 
-load "$(brew --prefix)/lib/bats-support/load.bash"
-load "$(brew --prefix)/lib/bats-assert/load.bash"
+# NOTE: The test environment has issues with `bats-mock` interfering with the
+# `brew` command, which makes it difficult to reliably get the `brew --prefix`.
+# For now, we are hardcoding the path to the Homebrew library directory in the
+# sandbox environment to ensure the tests can run.
+BATS_LIB_PATH="/home/linuxbrew/.linuxbrew/lib"
+if [ -d "$BATS_LIB_PATH" ]; then
+    source "${BATS_LIB_PATH}/bats-support/load.bash"
+    source "${BATS_LIB_PATH}/bats-assert/load.bash"
+else
+    # Fallback for other environments.
+    load "bats-support/load"
+    load "bats-assert/load"
+fi
+
 load "$PROJECT_ROOT/tests/helpers/bats-mock/stub.bash"
 
 # --- Setup & Teardown ---
@@ -37,7 +49,9 @@ setup() {
 
 teardown() {
   # Runs after each test case
-  # Example: Clean up the temporary directory
-  # rm -rf "$TMP_DIR"
-  echo "teardown() from test_helper"
+  # Clean up the mock bin directory to ensure stubs don't leak between tests.
+  if [ -d "$BATS_MOCK_BINDIR" ]; then
+    rm -rf "$BATS_MOCK_BINDIR"
+    mkdir -p "$BATS_MOCK_BINDIR"
+  fi
 }

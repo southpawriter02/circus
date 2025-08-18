@@ -38,10 +38,23 @@ main() {
   fi
 
   local key_path="$HOME/.ssh/id_ed25519"
+
+  # Check if the key already exists and ask for confirmation.
+  if [ -f "$key_path" ]; then
+    msg_warning "SSH key already exists at $key_path."
+    read -p "Do you want to overwrite it? (y/n) " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      die "Aborted by user."
+    fi
+  fi
+
   msg_info "Generating a new ed25519 SSH key at $key_path..."
 
   # 2. Generate the SSH key
-  ssh-keygen -t ed25519 -C "$email" -f "$key_path"
+  # The -N "" provides an empty passphrase to avoid interactive prompts here.
+  # The user will be prompted by ssh-add later to set it in the keychain.
+  ssh-keygen -t ed25519 -C "$email" -f "$key_path" -N ""
 
   msg_success "SSH key generated successfully."
 

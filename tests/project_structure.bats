@@ -10,6 +10,8 @@
 
 # Source the test helper to get access to our setup, teardown, and helper functions.
 load 'test_helper'
+# Explicitly load bats-assert because it seems to be failing in this file.
+source "/home/linuxbrew/.linuxbrew/lib/bats-assert/load.bash"
 
 # --- Test Cases ---
 

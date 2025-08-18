@@ -8,9 +8,9 @@
 #
 # ==============================================================================
 
-# --- Setup ------------------------------------------------------------------
-# Source the helper library to get the error handling and logging functions.
-source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
+# --- Initialization ---------------------------------------------------------
+# Source the centralized initialization script to set up the environment.
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
@@ -34,7 +34,7 @@ main() {
 
   # Find the primary Wi-Fi hardware port (usually en0 or en1).
   local wifi_port
-  wifi_port=$(networksetup -listallhardwareports | awk '/Wi-Fi|AirPort/{getline; print $2}')
+  wifi_port=$(networksetup -listallhardwareports | grep -A 1 'Wi-Fi' | awk '/Device:/{print $2}')
 
   if [ -z "$wifi_port" ]; then
     die "No active Wi-Fi hardware port found."
