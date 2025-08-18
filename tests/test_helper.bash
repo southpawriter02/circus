@@ -10,18 +10,19 @@
 #
 # ==============================================================================
 
-# --- Load Support Libraries ---
-# This loads the BATS support libraries, giving us access to powerful
-# setup and teardown functions, as well as a rich set of assertions.
-
-load '/usr/local/lib/bats-support/load.bash'
-load '/usr/local/lib/bats-assert/load.bash'
-
 # --- Project Root ---
 # This sets a global variable that points to the root of our project.
 # This is useful for sourcing scripts and accessing files within our tests.
 
 export PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
+
+# --- Load Support Libraries ---
+# This loads the BATS support libraries, giving us access to powerful
+# setup and teardown functions, as well as a rich set of assertions.
+
+load "$(brew --prefix)/lib/bats-support/load.bash"
+load "$(brew --prefix)/lib/bats-assert/load.bash"
+load "$PROJECT_ROOT/tests/helpers/bats-mock/stub.bash"
 
 # --- Setup & Teardown ---
 # These functions run before and after each test case.
