@@ -110,6 +110,7 @@ main() {
     "02-logging-setup.sh"
     "03-homebrew-installation.sh"
     "04-macos-system-settings.sh"
+    "05-oh-my-zsh-installation.sh"
     "09-dotfiles-deployment.sh"
     "10-git-configuration.sh"
     "11-defaults-and-additional-configuration.sh"
