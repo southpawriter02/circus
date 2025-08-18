@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         update
+#
+# DESCRIPTION:  This command provides a safe and robust way to update the
+#               Dotfiles Flying Circus to the latest version.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+# Source the centralized initialization script to set up the environment.
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc update"
+  echo ""
+  msg_info "Safely updates the Dotfiles Flying Circus to the latest version."
+  msg_info "It checks for local changes, stashes them, pulls the latest version,"
+  msg_info "and then re-applies your local changes."
+  echo ""
+  exit 0
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  # Navigate to the root of the dotfiles repository.
+  # This is critical for ensuring git commands run in the correct context.
+  cd "$DOTFILES_ROOT" || die "Could not navigate to the dotfiles directory: $DOTFILES_ROOT"
+
+  msg_info "Checking for local changes..."
+  
+  local stashed=false
+  # Check if there are any uncommitted changes.
+  if ! git diff-index --quiet HEAD --; then
+    msg_warning "You have uncommitted changes in your local repository."
+    prompt_for_confirmation "Would you like to stash them before updating?"
+    
+    msg_info "Stashing local changes..."
+    git stash
+    stashed=true
+    msg_success "Local changes have been stashed."
+  fi
+
+  msg_info "Pulling the latest version from the remote repository..."
+  
+  # The `|| true` is a safeguard. If the pull fails, the script will not
+  # exit immediately, allowing us to handle the stash pop gracefully.
+  if git pull --rebase; then
+    msg_success "Update successful!"
+  else
+    msg_error "The update failed. Please resolve any conflicts and then run 'git pull' manually."
+  fi
+
+  if [ "$stashed" = true ]; then
+    msg_info "Re-applying your stashed local changes..."
+    git stash pop
+    msg_success "Your local changes have been restored."
+  fi
+
+  msg_success "The Dotfiles Flying Circus is now up-to-date."
+}
+
+main "$@"
