@@ -9,6 +9,6 @@
 msg_info "Configuring Dock settings..."
 
 # Automatically hide and show the Dock
-defaults write com.apple.dock autohide -bool true
+run_defaults write com.apple.dock autohide -bool true
 
 msg_success "Dock settings configured."

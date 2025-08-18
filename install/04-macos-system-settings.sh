@@ -30,9 +30,13 @@ main() {
   done
 
   # Restart affected applications to apply all the changes at once.
-  msg_info "Restarting Finder and Dock to apply settings..."
-  killall Finder
-  killall Dock
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
+    msg_info "[Dry Run] Skipping restart of Finder and Dock."
+  else
+    msg_info "Restarting Finder and Dock to apply settings..."
+    killall Finder
+    killall Dock
+  fi
 
   msg_success "macOS system settings stage complete."
 }
