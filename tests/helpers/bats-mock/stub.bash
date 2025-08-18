@@ -8,7 +8,7 @@ PATH="$BATS_MOCK_BINDIR:$PATH"
 stub() {
   local program="$1"
   local prefix
-  prefix="$(echo "$program" | tr a-z- A-Z_)"
+  prefix="$(echo "$program" | tr '[:lower:]' '[:upper:]' | tr -cs '[:alnum:]' '_')"
   shift
 
   export "${prefix}_STUB_PLAN"="${BATS_MOCK_TMPDIR}/${program}-stub-plan"

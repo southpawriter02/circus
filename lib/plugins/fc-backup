@@ -26,6 +26,10 @@ usage() {
 
 # --- Main Logic -------------------------------------------------------------
 main() {
+  if ! command -v rsync &> /dev/null; then
+    die "This command requires 'rsync'. Please install it first."
+  fi
+
   if [ "$1" == "--help" ]; then
     usage
   fi

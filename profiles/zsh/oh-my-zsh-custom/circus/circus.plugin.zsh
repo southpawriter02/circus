@@ -8,9 +8,19 @@
 #
 # ==============================================================================
 
-# Get the directory of the current script.
-# This allows us to source other files relative to this one.
-local circus_plugin_dir="${0:A:h}"
+# Get the directory of the current script in a way that is compatible
+# with both Zsh and Bash (for testing).
+local circus_plugin_dir
+if [ -n "$BASH_VERSION" ]; then
+  # We are in Bash
+  circus_plugin_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+elif [ -n "$ZSH_VERSION" ]; then
+  # We are in Zsh
+  circus_plugin_dir="${0:A:h}"
+else
+  # Fallback for other shells
+  circus_plugin_dir=$(dirname "$0")
+fi
 
 # Source all alias files.
 for alias_file in "$circus_plugin_dir"/aliases/*.sh; do

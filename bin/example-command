@@ -1,35 +1,25 @@
-#!/usr/bin/env zsh
-# ------------------------------------------------------------------------------
-# It is best practice to use `#!/usr/bin/env zsh` instead of a hardcoded
-# path like `#!/bin/zsh`. This makes the script more portable, as it
-# allows the system's `env` command to find the `zsh` interpreter in the
-# user's PATH.
-# ------------------------------------------------------------------------------
+#!/usr/bin/env bash
 
-# ╔════════════════════════════════════════════════════════════════════════════╗
-# ║ FILE:        bin/example-command                                           ║
-# ║ PROJECT:     Dotfiles Flying Circus                                        ║
-# ║ REPOSITORY:  https://github.com/southpawriter02/dotfiles                   ║
-# ║ AUTHOR:      southpawriter02 <southpawriter@pm.me>                         ║
-# ║                                                                            ║
-# ║ DESCRIPTION: This is an example of a standalone command that can be placed ║
-# ║              in the 'bin' directory. Because 'bin' is added to the PATH by ║
-# ║              .zshrc, this script can be run simply by typing its name.     ║
-# ║                                                                            ║
-# ║ LICENSE:     MIT                                                           ║
-# ║ COPYRIGHT:   Copyright (c) $(date +'%Y') southpawriter02                   ║
-# ║ STATUS:      DRAFT                                                         ║
-# ╚════════════════════════════════════════════════════════════════════════════╝
+# ==============================================================================
+#
+# FILE:         bin/example-command
+#
+# DESCRIPTION:  This is an example of a standalone command that can be placed
+#               in the 'bin' directory. Because 'bin' is added to the PATH by
+#               the shell configuration, this script can be run simply by
+#               typing its name.
+#
+# ==============================================================================
 
-# ------------------------------------------------------------------------------
-# SECTION: OPTIONS
-# ------------------------------------------------------------------------------
-set -euo pipefail
+# --- Initialization ---------------------------------------------------------
+# Source the centralized initialization script to set up the environment.
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/init.sh"
 
-# ------------------------------------------------------------------------------
-# SECTION: MAIN LOGIC
-# ------------------------------------------------------------------------------
+# --- Main Logic -------------------------------------------------------------
+main() {
+  msg_info "🎪 Welcome to the Dotfiles Flying Circus!"
+  msg_info "This is an example command from the 'bin' directory."
+  msg_info "You can add your own custom scripts here."
+}
 
-echo "🎪 Welcome to the Dotfiles Flying Circus!"
-echo "This is an example command from the 'bin' directory."
-echo "You can add your own custom scripts here."
+main "$@"
