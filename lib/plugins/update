@@ -5,12 +5,12 @@
 # FILE:         update
 #
 # DESCRIPTION:  This command provides a safe and robust way to update the
-#               Dotfiles Flying Circus to the latest version.
+#               Dotfiles Flying Circus to the latest version. It also handles
+#               dependency changes automatically.
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
-# Source the centralized initialization script to set up the environment.
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
@@ -19,7 +19,7 @@ usage() {
   echo ""
   msg_info "Safely updates the Dotfiles Flying Circus to the latest version."
   msg_info "It checks for local changes, stashes them, pulls the latest version,"
-  msg_info "and then re-applies your local changes."
+  msg_info "re-applies local changes, and installs any new dependencies."
   echo ""
   exit 0
 }
@@ -30,34 +30,55 @@ main() {
     usage
   fi
 
-  # Navigate to the root of the dotfiles repository.
-  # This is critical for ensuring git commands run in the correct context.
   cd "$DOTFILES_ROOT" || die "Could not navigate to the dotfiles directory: $DOTFILES_ROOT"
 
+  # --- Stash Local Changes (if any) ---
   msg_info "Checking for local changes..."
-  
   local stashed=false
-  # Check if there are any uncommitted changes.
   if ! git diff-index --quiet HEAD --; then
     msg_warning "You have uncommitted changes in your local repository."
     prompt_for_confirmation "Would you like to stash them before updating?"
-    
     msg_info "Stashing local changes..."
     git stash
     stashed=true
     msg_success "Local changes have been stashed."
   fi
 
+  # --- Pull Latest Version ---
   msg_info "Pulling the latest version from the remote repository..."
-  
-  # The `|| true` is a safeguard. If the pull fails, the script will not
-  # exit immediately, allowing us to handle the stash pop gracefully.
-  if git pull --rebase; then
-    msg_success "Update successful!"
-  else
+  local old_head
+  old_head=$(git rev-parse HEAD)
+  if ! git pull --rebase; then
     msg_error "The update failed. Please resolve any conflicts and then run 'git pull' manually."
+    # If the pull failed, try to restore the stash anyway.
+    if [ "$stashed" = true ]; then git stash pop; fi
+    exit 1
+  fi
+  local new_head
+  new_head=$(git rev-parse HEAD)
+  msg_success "Code update successful!"
+
+  # --- Handle Dependency Changes ---
+  local role_file="$HOME/.circus/role"
+  if [ -f "$role_file" ]; then
+    local current_role
+    current_role=$(cat "$role_file")
+    local brewfile_path="roles/$current_role/Brewfile"
+    
+    if [ -f "$brewfile_path" ]; then
+      # Check if the Brewfile was modified in the commits we just pulled.
+      if git diff --quiet "$old_head" "$new_head" -- "$brewfile_path"; then
+        msg_info "No dependency changes detected for role '$current_role'."
+      else
+        msg_warning "Dependencies for role '$current_role' have changed."
+        msg_info "Running 'brew bundle' to install/update dependencies..."
+        brew bundle install --file="$DOTFILES_ROOT/$brewfile_path"
+        msg_success "Dependencies are now up-to-date."
+      fi
+    fi
   fi
 
+  # --- Restore Stashed Changes ---
   if [ "$stashed" = true ]; then
     msg_info "Re-applying your stashed local changes..."
     git stash pop

@@ -104,6 +104,16 @@ main() {
     fi
   done
 
+  # --- Finalization & State Management ----------------------------------------
+  # After a successful installation, record the installed role.
+  # This allows other commands (like `fc update`) to be context-aware.
+  if [ -n "$INSTALL_ROLE" ]; then
+    local state_dir="$HOME/.circus"
+    msg_info "Recording installed role: $INSTALL_ROLE"
+    mkdir -p "$state_dir"
+    echo "$INSTALL_ROLE" > "$state_dir/role"
+  fi
+
   msg_success "Dotfiles Flying Circus setup complete!"
 }
 
