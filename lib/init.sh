@@ -20,6 +20,9 @@
 export DOTFILES_ROOT
 DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)"
 
+# The root directory for the installer scripts.
+export INSTALL_DIR="$DOTFILES_ROOT/install"
+
 # --- Source Helper Libraries ------------------------------------------------
 
 # The order of sourcing is important.

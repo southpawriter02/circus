@@ -33,7 +33,7 @@ readonly LOG_LEVEL_CRITICAL=5
 CONSOLE_LOG_LEVEL=${CONSOLE_LOG_LEVEL:-$LOG_LEVEL_INFO}
 
 # The global path to the log file. If this is set, all messages will be written to it.
-LOG_FILE_PATH=""
+LOG_FILE_PATH="${LOG_FILE_PATH:-}"
 
 # ------------------------------------------------------------------------------
 # SECTION: ERROR HANDLING
@@ -99,7 +99,12 @@ log() {
       return 0
     fi
     local color_reset="\033[0m"
-    printf "${color_code}[%-8s]${color_reset} %s\n" "$level_name" "$message"
+    local formatted_message="${color_code}[%-8s]${color_reset} %s\n"
+    if [ "$level_num" -ge "$LOG_LEVEL_ERROR" ]; then
+      printf "$formatted_message" "$level_name" "$message" >&2
+    else
+      printf "$formatted_message" "$level_name" "$message"
+    fi
   fi
 }
 
@@ -113,8 +118,8 @@ msg_debug()   { log $LOG_LEVEL_DEBUG   "$1"; }
 msg_info()    { log $LOG_LEVEL_INFO    "$1"; }
 msg_success() { log $LOG_LEVEL_SUCCESS "$1"; }
 msg_warning() { log $LOG_LEVEL_WARN    "$1"; }
-msg_error()   { log $LOG_LEVEL_ERROR   "$1" >&2; }
-msg_critical(){ log $LOG_LEVEL_CRITICAL "$1" >&2; }
+msg_error()   { log $LOG_LEVEL_ERROR   "$1"; }
+msg_critical(){ log $LOG_LEVEL_CRITICAL "$1"; }
 
 # ------------------------------------------------------------------------------
 # SECTION: USER INTERACTION FUNCTIONS

@@ -24,6 +24,9 @@ main() {
   elif [ -x "/usr/local/bin/brew" ]; then
     # Intel Macs
     brew_prefix="/usr/local"
+  elif [ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+    # Linux
+    brew_prefix="/home/linuxbrew/.linuxbrew"
   else
     msg_error "Homebrew is not installed in a standard location."
     return 1
