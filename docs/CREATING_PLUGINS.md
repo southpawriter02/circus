@@ -16,7 +16,7 @@ The easiest way to start is to copy the provided plugin template.
 
 ```bash
 # From the root of the repository
-cp lib/plugins/template lib/plugins/my-new-command
+cp lib/plugins/fc-template lib/plugins/fc-my-new-command
 ```
 
 ### 2. Make it Executable
@@ -24,12 +24,12 @@ cp lib/plugins/template lib/plugins/my-new-command
 The `fc` dispatcher will only recognize plugins that have execute permissions. You must make your new plugin script executable.
 
 ```bash
-chmod +x lib/plugins/my-new-command
+chmod +x lib/plugins/fc-my-new-command
 ```
 
 ### 3. Customize the Script
 
-Open your new `lib/plugins/my-new-command` file in a text editor. The template provides a basic structure with a `usage` function and a `main` function containing a `case` statement. You can now fill in the logic for your new command.
+Open your new `lib/plugins/fc-my-new-command` file in a text editor. The template provides a basic structure with a `usage` function and a `main` function containing a `case` statement. You can now fill in the logic for your new command.
 
 ### 4. Run Your New Command
 
@@ -39,6 +39,8 @@ That's it! Your new command is now part of the `fc` ecosystem. You can run it li
 fc my-new-command --help
 fc my-new-command on
 ```
+
+Note that while the script is named `fc-my-new-command`, you invoke it with `fc my-new-command`.
 
 ## Best Practices
 
