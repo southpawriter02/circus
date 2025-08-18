@@ -25,6 +25,11 @@ export PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
 # For now, we are hardcoding the path to the Homebrew library directory in the
 # sandbox environment to ensure the tests can run.
 BATS_LIB_PATH="/home/linuxbrew/.linuxbrew/lib"
+echo "BATS_LIB_PATH is $BATS_LIB_PATH"
+echo "Checking for bats-support: ${BATS_LIB_PATH}/bats-support/load.bash"
+[ -f "${BATS_LIB_PATH}/bats-support/load.bash" ] && echo "bats-support found" || echo "bats-support NOT found"
+echo "Checking for bats-assert: ${BATS_LIB_PATH}/bats-assert/load.bash"
+[ -f "${BATS_LIB_PATH}/bats-assert/load.bash" ] && echo "bats-assert found" || echo "bats-assert NOT found"
 if [ -d "$BATS_LIB_PATH" ]; then
     source "${BATS_LIB_PATH}/bats-support/load.bash"
     source "${BATS_LIB_PATH}/bats-assert/load.bash"
