@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         redis
+#
+# DESCRIPTION:  This command manages the Redis server, a key-value store
+#               often used for development.
+#
+# ==============================================================================
+
+# --- Setup ------------------------------------------------------------------
+set -e
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  echo "Usage: fc redis <action>"
+  echo ""
+  echo "Manages the Redis server using Homebrew services."
+  echo ""
+  echo "Actions:"
+  echo "  start    - Start the Redis server in the background."
+  echo "  stop     - Stop the Redis server."
+  echo "  restart  - Restart the Redis server."
+  echo "  status   - Show the current status of the Redis service."
+  echo "  update   - Update the Redis formula to the latest version."
+  echo ""
+  exit 1
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [ -z "$1" ] || [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  # Dependency Check: Ensure brew is installed.
+  if ! command -v "brew" >/dev/null 2>&1; then
+    echo "Error: The 'brew' command is required but not found." >&2
+    echo "Please run the main installer." >&2
+    exit 1
+  fi
+
+  ACTION="$1"
+
+  case "$ACTION" in
+    start)
+      echo "Starting Redis server..."
+      brew services start redis
+      ;;
+    stop)
+      echo "Stopping Redis server..."
+      brew services stop redis
+      ;;
+    restart)
+      echo "Restarting Redis server..."
+      brew services restart redis
+      ;;
+    status)
+      echo "Checking Redis service status..."
+      # The `brew services list` command can be slow, so we grep to be specific.
+      brew services list | grep redis || echo "Redis service not found or not running."
+      ;;
+    update)
+      echo "Updating Redis formula..."
+      brew upgrade redis
+      ;;
+    *)
+      echo "Error: Unknown action '$ACTION'" >&2
+      usage
+      ;;
+  esac
+}
+
+main "$@"

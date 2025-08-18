@@ -5,34 +5,42 @@
 # FILE:         fc (Dotfiles Flying Circus)
 #
 # DESCRIPTION:  This script is the main entry point and dispatcher for a suite
-#               of custom shell commands. It uses a "dispatcher" pattern to
-#               execute subcommand scripts.
+#               of custom shell commands. It uses a plugin-based architecture
+#               to discover and execute subcommands.
 #
-# USAGE:        fc <subcommand> [options]
-#
-# EXAMPLE:      fc bluetooth off
+# USAGE:        fc <command> [options]
 #
 # ==============================================================================
 
-# --- Setup ------------------------------------------------------------------
+# --- Setup & Configuration --------------------------------------------------
 
-# Exit immediately if a command exits with a non-zero status.
+# Exit immediately if a command exits with a non-zero status for safety.
 set -e
 
-# Define the directory where the subcommand scripts are located.
-# This is assumed to be in `../lib/commands` relative to this script.
-readonly COMMAND_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/commands"
+# Define the absolute path to the directory where plugins are stored.
+# Any executable file in this directory is treated as a valid command.
+#
+# The `cd` and `pwd` construct ensures that this path is always correct,
+# regardless of where the `fc` script is called from.
+readonly PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/plugins"
 
 # --- Help and Usage ---------------------------------------------------------
 
-# Display a general help message that lists all available subcommands.
+# @description
+#   Displays a general help message that dynamically lists all available
+#   commands (plugins) and then exits.
 usage() {
   echo "Usage: fc <command> [options]"
   echo ""
+  echo "A modular, plugin-based command-line utility for system management."
+  echo ""
   echo "Available commands:"
-  # Find all executable files in the command directory, remove the 'fc-' prefix,
-  # and print them in a formatted list.
-  find "$COMMAND_DIR" -maxdepth 1 -type f -executable -exec basename {} \; | sed 's/^fc-//' | sort | awk '{printf "  - %s\n", $1}'
+
+  # Scan the plugin directory for all executable files, get their basenames,
+  # sort them alphabetically, and print them in a formatted list.
+  # This ensures the help message is always up-to-date with the available plugins.
+  find "$PLUGIN_DIR" -maxdepth 1 -type f -executable -exec basename {} \; | sort | awk '{printf "  - %s\n", $1}'
+
   echo ""
   echo "Run 'fc <command> --help' for more information on a specific command."
   exit 1
@@ -45,20 +53,27 @@ if [ -z "$1" ]; then
   usage
 fi
 
-# The first argument is the subcommand (e.g., "bluetooth").
+# The first argument is the potential subcommand (e.g., "info", "sync").
 SUBCOMMAND="$1"
 
-# Construct the full path to the subcommand's script file.
-COMMAND_SCRIPT="$COMMAND_DIR/fc-$SUBCOMMAND"
+# Construct the full, absolute path to the corresponding plugin script.
+# Using an absolute path is a security best practice that prevents PATH hijacking.
+PLUGIN_SCRIPT="$PLUGIN_DIR/$SUBCOMMAND"
 
-# Check if the subcommand script exists and is executable.
-if [ -x "$COMMAND_SCRIPT" ]; then
-  # If it exists, shift away the first argument (the subcommand name itself)
-  # and pass all remaining arguments to the subcommand script.
+# Check if a plugin script exists at the constructed path and is executable.
+if [ -x "$PLUGIN_SCRIPT" ]; then
+  # If the plugin is valid, transfer control to it.
+  #
+  # - `shift`: Removes the subcommand name from the argument list, so the
+  #            plugin only receives its own arguments.
+  # - `exec`: Replaces the current shell process with the plugin script. This
+  #           is efficient and cleanly passes control.
   shift
-  exec "$COMMAND_SCRIPT" "$@"
+  exec "$PLUGIN_SCRIPT" "$@"
 else
-  # If the subcommand script doesn't exist, print an error and show the usage.
+  # If no valid plugin was found, print an error message to stderr
+  # and display the main usage information.
   echo "Error: Unknown command '$SUBCOMMAND'" >&2
+  echo ""
   usage
 fi

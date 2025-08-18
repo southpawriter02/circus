@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         caffeine
+#
+# DESCRIPTION:  A wrapper around the built-in `caffeinate` command to prevent
+#               the system from sleeping. This is useful for long-running
+#               tasks or presentations.
+#
+# ==============================================================================
+
+# --- Setup ------------------------------------------------------------------
+set -e
+
+# The file where we store the process ID (PID) of the background caffeinate process.
+readonly PID_FILE="$HOME/.circus/caffeinate.pid"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  echo "Usage: fc caffeine <action> [duration]"
+  echo ""
+  echo "Prevents the system from sleeping."
+  echo ""
+  echo "Actions:"
+  echo "  on        - Prevent sleep indefinitely. Runs in the background."
+  echo "  off       - Allow the system to sleep again."
+  echo "  for [min] - Prevent sleep for a specific number of minutes."
+  echo "  status    - Check if caffeine is currently active."
+  echo ""
+  exit 1
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [ -z "$1" ] || [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  ACTION="$1"
+
+  case "$ACTION" in
+    on)
+      if [ -f "$PID_FILE" ]; then
+        echo "Caffeine is already active. Run 'fc caffeine off' to disable it."
+        exit 0
+      fi
+      echo "Preventing sleep indefinitely. Run 'fc caffeine off' to restore normal behavior."
+      # -d: Prevent display sleep
+      # -i: Prevent system idle sleep
+      # -s: Prevent disk idle sleep (on AC power)
+      caffeinate -dis & 
+      # Save the PID of the background process to our file.
+      echo $! > "$PID_FILE"
+      ;;
+    off)
+      if [ ! -f "$PID_FILE" ]; then
+        echo "Caffeine is not currently active."
+        exit 0
+      fi
+      echo "Allowing the system to sleep normally again."
+      # Read the PID from the file and kill the process.
+      kill "$(cat "$PID_FILE")"
+      rm "$PID_FILE"
+      ;;
+    for)
+      if [ -z "$2" ]; then
+        echo "Error: Please provide a duration in minutes." >&2
+        usage
+      fi
+      local minutes="$2"
+      local seconds=$((minutes * 60))
+      echo "Preventing sleep for $minutes minutes..."
+      # -t: Specifies the timeout in seconds.
+      caffeinate -dit "$seconds"
+      ;;
+    status)
+      if [ -f "$PID_FILE" ]; then
+        echo "Caffeine is ON (preventing sleep indefinitely). PID: $(cat "$PID_FILE")"
+      else
+        echo "Caffeine is OFF."
+      fi
+      ;;
+    *)
+      echo "Error: Unknown action '$ACTION'" >&2
+      usage
+      ;;
+  esac
+}
+
+main "$@"

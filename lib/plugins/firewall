@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         firewall
+#
+# DESCRIPTION:  This command manages the macOS application firewall.
+#
+# ==============================================================================
+
+# --- Setup ------------------------------------------------------------------
+set -e
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  echo "Usage: fc firewall <action>"
+  echo ""
+  echo "Manages the macOS application firewall."
+  echo "This command requires administrator privileges to change settings."
+  echo ""
+  echo "Actions:"
+  echo "  on      - Turn the firewall on."
+  echo "  off     - Turn the firewall off."
+  echo "  status  - Show the current firewall status."
+  echo ""
+  exit 1
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [ -z "$1" ] || [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  ACTION="$1"
+
+  case "$ACTION" in
+    on)
+      echo "Turning the firewall on..."
+      sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+      echo "Firewall is now on."
+      ;;
+    off)
+      echo "Turning the firewall off..."
+      sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
+      echo "Firewall is now off."
+      ;;
+    status)
+      echo "Checking firewall status..."
+      sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+      ;;
+    *)
+      echo "Error: Unknown action '$ACTION'" >&2
+      usage
+      ;;
+  esac
+}
+
+main "$@"

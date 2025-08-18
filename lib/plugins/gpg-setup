@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         gpg-setup
+#
+# DESCRIPTION:  An interactive utility to generate a GPG key and configure Git
+#               to use it for signing commits.
+#
+# ==============================================================================
+
+# --- Setup ------------------------------------------------------------------
+set -e
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  echo "Usage: fc gpg-setup"
+  echo ""
+  echo "Interactively generates a new GPG key and configures Git for signing."
+  echo ""
+  exit 1
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  echo "This utility will guide you through generating a GPG key and configuring Git."
+
+  # 1. Check if GPG is installed
+  if ! command -v gpg >/dev/null 2>&1; then
+    echo "Error: gpg command not found. Please install GPG Suite first." >&2
+    exit 1
+  fi
+
+  # 2. Generate the GPG key
+  echo ""
+  echo "First, let's generate a new GPG key."
+  # This command starts the interactive key generation process.
+  # We use the default options which are generally secure.
+  gpg --full-generate-key
+
+  echo ""
+  echo "GPG key generated successfully."
+
+  # 3. Get the new key ID
+  echo "Now, let's find the ID of the key you just created."
+  # List the secret keys, the last one created should be the new one.
+  local key_id=$(gpg --list-secret-keys --keyid-format LONG | grep 'sec' | tail -n 1 | awk '{print $2}' | cut -d'/' -f2)
+
+  if [ -z "$key_id" ]; then
+    echo "Error: Could not automatically determine the new GPG key ID." >&2
+    exit 1
+  fi
+
+  echo "Found GPG Key ID: $key_id"
+
+  # 4. Configure Git
+  echo ""
+  echo "Configuring Git to use this key for signing..."
+  git config --global user.signingkey "$key_id"
+  git config --global commit.gpgsign true
+
+  echo "Git configuration updated."
+
+  # 5. Export and display the public key
+  echo ""
+  echo "Your public GPG key is below. Copy and paste it into your GitHub account."
+  echo "(Settings -> SSH and GPG keys -> New GPG key)"
+  echo "----------------------------------------------------------------------"
+  gpg --armor --export "$key_id"
+  echo "----------------------------------------------------------------------"
+
+  echo ""
+  echo "Success! Git is now configured to sign your commits with your new GPG key."
+}
+
+main "$@"

@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         wifi
+#
+# DESCRIPTION:  This command manages the system's Wi-Fi adapter.
+#
+# ==============================================================================
+
+# --- Setup ------------------------------------------------------------------
+set -e
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  echo "Usage: fc wifi <action>"
+  echo ""
+  echo "Manages the system's Wi-Fi adapter."
+  echo ""
+  echo "Actions:"
+  echo "  on      - Turn Wi-Fi on."
+  echo "  off     - Turn Wi-Fi off."
+  echo "  status  - Show the current Wi-Fi status."
+  echo ""
+  exit 1
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [ -z "$1" ] || [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  ACTION="$1"
+
+  # Find the primary Wi-Fi hardware port (usually en0 or en1).
+  local wifi_port
+  wifi_port=$(networksetup -listallhardwareports | awk '/Wi-Fi|AirPort/{getline; print $2}')
+
+  if [ -z "$wifi_port" ]; then
+    echo "Error: No Wi-Fi hardware port found." >&2
+    exit 1
+  fi
+
+  case "$ACTION" in
+    on)
+      echo "Turning Wi-Fi on..."
+      networksetup -setairportpower "$wifi_port" on
+      echo "Wi-Fi is now on."
+      ;;
+    off)
+      echo "Turning Wi-Fi off..."
+      networksetup -setairportpower "$wifi_port" off
+      echo "Wi-Fi is now off."
+      ;;
+    status)
+      echo "Checking Wi-Fi status..."
+      networksetup -getairportpower "$wifi_port"
+      ;;
+    *)
+      echo "Error: Unknown action '$ACTION'" >&2
+      usage
+      ;;
+  esac
+}
+
+main "$@"

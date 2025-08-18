@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         ssh-keygen
+#
+# DESCRIPTION:  A utility to streamline the creation of a new SSH key.
+#               It generates a key, adds it to the ssh-agent, and copies the
+#               public key to the clipboard.
+#
+# ==============================================================================
+
+# --- Setup ------------------------------------------------------------------
+set -e
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  echo "Usage: fc ssh-keygen"
+  echo ""
+  echo "Generates a new ed25519 SSH key, adds it to the ssh-agent, and copies"
+  echo "the public key to the clipboard."
+  echo ""
+  exit 1
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  # 1. Prompt for user email
+  read -p "Enter your email address for the SSH key: " email
+  if [ -z "$email" ]; then
+    echo "Email address cannot be empty." >&2
+    exit 1
+  fi
+
+  local key_path="$HOME/.ssh/id_ed25519"
+  echo "Generating a new ed25519 SSH key at $key_path..."
+
+  # 2. Generate the SSH key
+  # -t ed25519: Specifies the modern ed25519 algorithm
+  # -C "$email": Provides a comment (label) for the key
+  # -f "$key_path": Specifies the file path
+  # -N "": Sets an empty passphrase initially, user will be prompted
+  ssh-keygen -t ed25519 -C "$email" -f "$key_path"
+
+  echo "SSH key generated successfully."
+
+  # 3. Start the ssh-agent if it's not running
+  if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    echo "Starting ssh-agent..."
+    eval "$(ssh-agent -s)"
+  fi
+
+  # 4. Add the key to the ssh-agent and store passphrase in Keychain
+  echo "Adding SSH key to the ssh-agent and storing passphrase in Keychain..."
+  # --apple-use-keychain is a macOS-specific flag
+  ssh-add --apple-use-keychain "$key_path"
+
+  # 5. Copy the public key to the clipboard
+  echo "Copying public key to clipboard..."
+  pbcopy < "${key_path}.pub"
+
+  echo ""
+  echo "Success! Your new public SSH key has been copied to the clipboard."
+  echo "You can now paste it into GitHub, GitLab, or any other service."
+}
+
+main "$@"
