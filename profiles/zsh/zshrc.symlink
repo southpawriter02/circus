@@ -23,6 +23,10 @@ plugins=(
   common-aliases
   macos
 
+  # Powerful community plugins
+  zsh-syntax-highlighting
+  zsh-autosuggestions
+
   # The custom plugin for the Dotfiles Flying Circus
   circus
 )
