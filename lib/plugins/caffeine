@@ -10,10 +10,11 @@
 #
 # ==============================================================================
 
-# --- Setup ------------------------------------------------------------------
-# Source the helper library to get the error handling and logging functions.
-source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
+# --- Initialization ---------------------------------------------------------
+# Source the centralized initialization script to set up the environment.
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
+# --- Configuration ----------------------------------------------------------
 # The directory where we store state files like PIDs.
 readonly STATE_DIR="$HOME/.circus"
 # The file where we store the process ID (PID) of the background caffeinate process.

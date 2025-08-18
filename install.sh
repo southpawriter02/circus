@@ -10,14 +10,9 @@
 #
 # ==============================================================================
 
-# --- Globals ------------------------------------------------------------------
-export DOTFILES_ROOT
-DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# --- Library Sourcing ---------------------------------------------------------
-# This must be done before any other logic, as it sets up error handling.
-source "$DOTFILES_ROOT/lib/helpers.sh"
-source "$DOTFILES_ROOT/lib/config.sh"
+# --- Initialization ---------------------------------------------------------
+# Source the centralized initialization script to set up the environment.
+source "$(dirname "${BASH_SOURCE[0]}")/lib/init.sh"
 
 # --- Global State Variables -------------------------------------------------
 DRY_RUN_MODE=false
@@ -77,7 +72,6 @@ main() {
   # --- Installation Stages ----------------------------------------------------
   msg_info "Starting Dotfiles Flying Circus setup..."
   if [ -n "$LOG_FILE_PATH" ]; then
-    # Create the log file and its directory if they don't exist.
     mkdir -p "$(dirname "$LOG_FILE_PATH")"
     touch "$LOG_FILE_PATH"
     msg_info "Logging to file: $LOG_FILE_PATH"

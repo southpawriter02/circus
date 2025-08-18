@@ -12,11 +12,13 @@
 #
 # ==============================================================================
 
-# --- Setup & Configuration --------------------------------------------------
-# Source the helper library to get error handling and logging functions.
-source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
+# --- Initialization ---------------------------------------------------------
+# Source the centralized initialization script to set up the environment.
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/init.sh"
 
-readonly PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/plugins"
+# --- Configuration ----------------------------------------------------------
+# Define the absolute path to the directory where plugins are stored.
+readonly PLUGIN_DIR="$DOTFILES_ROOT/lib/plugins"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
