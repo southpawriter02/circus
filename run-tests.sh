@@ -10,25 +10,26 @@
 #
 # USAGE:        ./run-tests.sh
 #
-# TODO:         The test suite is currently failing due to a persistent issue
-#               with the test environment. The `bats` executable does not seem
-#               to correctly load helper libraries (like `bats-support`) in
-#               the current execution environment, failing with an error like:
-#               `bats_load_safe: Could not find '/lib/bats-support/load.bash'`.
-#               This seems to be caused by `brew --prefix` returning an empty
-#               string in the `bats` execution context. This needs to be
-#               investigated and fixed.
+# TODO:         The original script failed in non-macOS environments because
+#               it relied on `brew` to set the `BATS_LIB_PATH`. This has been
+#               updated to be OS-aware. The next step is to address any
+#               macOS-specific commands within the tests themselves.
 #
 # ==============================================================================
 
 #
-# Set the BATS_LIB_PATH to include the Homebrew library directory.
-# This ensures that bats can find the support and assert libraries.
+# Set BATS_LIB_PATH to ensure bats can find helper libraries.
+# This approach is OS-aware, checking for macOS (Darwin) and assuming a
+# Linux-like environment otherwise.
 #
-export BATS_LIB_PATH="$(brew --prefix)/lib"
-echo "BATS_LIB_PATH in run-tests.sh is set to: $BATS_LIB_PATH"
-echo "Contents of BATS_LIB_PATH:"
-ls -l "$BATS_LIB_PATH"
+if [[ "$(uname)" == "Darwin" ]]; then
+  # For macOS, use Homebrew to find the library path.
+  export BATS_LIB_PATH
+  BATS_LIB_PATH="$(brew --prefix)/lib"
+else
+  # For Linux/other systems, assume libraries are in /usr/lib/bats.
+  export BATS_LIB_PATH="/usr/lib/bats"
+fi
 
 #
 # Run the bats command on the tests directory.

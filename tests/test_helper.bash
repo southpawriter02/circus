@@ -20,26 +20,15 @@ export PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
 # This loads the BATS support libraries, giving us access to powerful
 # setup and teardown functions, as well as a rich set of assertions.
 
-# NOTE: The test environment has issues with `bats-mock` interfering with the
-# `brew` command, which makes it difficult to reliably get the `brew --prefix`.
-# For now, we are hardcoding the path to the Homebrew library directory in the
-# sandbox environment to ensure the tests can run.
-BATS_LIB_PATH="/home/linuxbrew/.linuxbrew/lib"
-echo "BATS_LIB_PATH is $BATS_LIB_PATH"
-echo "Checking for bats-support: ${BATS_LIB_PATH}/bats-support/load.bash"
-[ -f "${BATS_LIB_PATH}/bats-support/load.bash" ] && echo "bats-support found" || echo "bats-support NOT found"
-echo "Checking for bats-assert: ${BATS_LIB_PATH}/bats-assert/load.bash"
-[ -f "${BATS_LIB_PATH}/bats-assert/load.bash" ] && echo "bats-assert found" || echo "bats-assert NOT found"
-if [ -d "$BATS_LIB_PATH" ]; then
-    source "${BATS_LIB_PATH}/bats-support/load.bash"
-    source "${BATS_LIB_PATH}/bats-assert/load.bash"
-else
-    # Fallback for other environments.
-    load "bats-support/load"
-    load "bats-assert/load"
-fi
-
+# Load the `bats-mock` library first, as it can interfere with other helpers
+# if loaded after them.
 load "$PROJECT_ROOT/tests/helpers/bats-mock/stub.bash"
+
+# The BATS helper libraries (`bats-support` and `bats-assert`) have been
+# copied into the `tests/helpers` directory to ensure the test suite is
+# self-contained and avoids environment-related loading issues.
+load "helpers/bats-support/load.bash"
+load "helpers/bats-assert/load.bash"
 
 # --- Setup & Teardown ---
 # These functions run before and after each test case.

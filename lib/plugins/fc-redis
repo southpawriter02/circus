@@ -31,12 +31,14 @@ usage() {
 
 # --- Main Logic -------------------------------------------------------------
 main() {
+  local brew_cmd=${BREW_CMD:-brew}
+
   if [ -z "$1" ] || [ "$1" == "--help" ]; then
     usage
   fi
 
   # Dependency Check: Ensure brew is installed before proceeding.
-  if ! command -v "brew" >/dev/null 2>&1; then
+  if ! command -v "$brew_cmd" >/dev/null 2>&1; then
     die "The 'brew' command is required but not found. Please run the main installer."
   fi
 
@@ -45,27 +47,27 @@ main() {
   case "$ACTION" in
     start)
       msg_info "Starting Redis server..."
-      brew services start redis
+      "$brew_cmd" services start redis
       msg_success "Redis server started."
       ;;
     stop)
       msg_info "Stopping Redis server..."
-      brew services stop redis
+      "$brew_cmd" services stop redis
       msg_success "Redis server stopped."
       ;;
     restart)
       msg_info "Restarting Redis server..."
-      brew services restart redis
+      "$brew_cmd" services restart redis
       msg_success "Redis server restarted."
       ;;
     status)
       msg_info "Checking Redis service status..."
       # The `brew services list` command can be slow, so we grep to be specific.
-      brew services list | grep redis || msg_warning "Redis service not found or not running."
+      "$brew_cmd" services list | grep redis || msg_warning "Redis service not found or not running."
       ;;
     update)
       msg_info "Updating Redis formula..."
-      brew upgrade redis
+      "$brew_cmd" upgrade redis
       msg_success "Redis formula updated."
       ;;
     *)

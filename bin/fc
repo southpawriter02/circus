@@ -82,7 +82,11 @@ PLUGIN_SCRIPT="$PLUGIN_DIR/$SUBCOMMAND"
 # Check if the plugin script exists and is executable.
 if [ -x "$PLUGIN_SCRIPT" ]; then
   shift
-  exec "$PLUGIN_SCRIPT" "$@"
+  # We use `source` instead of `exec` here to ensure that the script runs
+  # in the current shell environment, which is critical for the `bats-mock`
+  # testing framework to work correctly. `exec` replaces the current process,
+  # which would cause the mock environment to be lost.
+  source "$PLUGIN_SCRIPT" "$@"
 else
   die "Unknown command '$SUBCOMMAND'. Run 'fc --help' to see a list of available commands."
 fi

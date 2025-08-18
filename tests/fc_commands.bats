@@ -45,18 +45,23 @@ setup() {
 
 # --- `info` plugin ---
 @test "Plugin 'info': should run successfully" {
-  stub sw_vers "-productName : echo 'macOS'; -productVersion : echo '12.0'; -buildVersion : echo '21A559'"
-  stub sysctl "hw.model: echo 'MacBookPro18,1'; machdep.cpu.brand_string: echo 'Apple M1 Pro'; hw.memsize: echo '17179869184'"
+  stub sw_vers \
+    "-productVersion : echo 14.5"
+  stub sysctl \
+    "hw.model : echo MacBookPro18,1" \
+    "machdep.cpu.brand_string : echo Apple M1 Pro"
   run "$FC_COMMAND" fc-info
   assert_success
-  assert_output --partial "macOS"
+  assert_output --partial "14.5"
   assert_output --partial "MacBookPro18,1"
+  assert_output --partial "Apple M1 Pro"
 }
 
 # --- `bluetooth` plugin ---
 @test "Plugin 'bluetooth': should run successfully when blueutil is present" {
   # Stub the `blueutil` command to simulate its presence and output.
-  stub blueutil "--power : echo 1"
+  stub blueutil \
+    "--power : echo 1"
   run "$FC_COMMAND" fc-bluetooth status
   assert_success
   assert_output --partial "Bluetooth is currently on."
@@ -73,10 +78,11 @@ setup() {
 # --- `redis` plugin ---
 @test "Plugin 'redis': should run successfully when brew is present" {
   # Stub the `brew` command to simulate its presence and output.
-  stub brew "services list : echo 'redis started'"
+  stub brew \
+    "services list : echo 'redis    started'"
   run "$FC_COMMAND" fc-redis status
   assert_success
-  assert_output --partial "redis started"
+  assert_output --partial "redis    started"
 }
 
 @test "Plugin 'redis': should fail gracefully when brew is missing" {
@@ -89,6 +95,7 @@ setup() {
 
 # --- `backup` plugin ---
 @test "Plugin 'backup': should fail gracefully when rsync is missing" {
+  touch ~/.zshrc
   stub "command -v rsync" "return 1"
   run "$FC_COMMAND" fc-backup
   assert_failure
@@ -97,25 +104,30 @@ setup() {
 
 # --- `sync` plugin ---
 @test "Plugin 'sync': should fail gracefully when gpg is missing" {
-  stub "command -v gpg" "return 1"
+  export GPG_RECIPIENT_ID="test-key"
+  stub "command -v gpg" ": return 1"
   run "$FC_COMMAND" fc-sync backup
   assert_failure
   assert_output --partial "GPG is not installed."
+  unset GPG_RECIPIENT_ID
 }
 
 @test "Plugin 'sync': should fail gracefully when rsync is missing" {
-  stub "command -v gpg" "return 0"
-  stub "command -v rsync" "return 1"
+  export GPG_RECIPIENT_ID="test-key"
+  stub "command -v gpg" ": return 0"
+  stub "command -v rsync" ": return 1"
   run "$FC_COMMAND" fc-sync backup
   assert_failure
   assert_output --partial "This command requires 'rsync'. Please install it first."
+  unset GPG_RECIPIENT_ID
 }
 
 @test "Plugin 'sync': should run successfully when dependencies are present" {
   export GPG_RECIPIENT_ID="test-key"
-  stub "command -v gpg" "return 0"
-  stub "command -v rsync" "return 0"
-  stub mktemp "echo '/tmp/backup-dir'"
+  touch ~/.zshrc
+  stub "command -v gpg" ": return 0"
+  stub "command -v rsync" ": return 0"
+  stub mktemp ": echo '/tmp/backup-dir'"
   stub tar
   stub gpg
   run "$FC_COMMAND" fc-sync backup

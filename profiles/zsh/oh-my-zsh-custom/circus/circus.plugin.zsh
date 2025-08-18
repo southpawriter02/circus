@@ -10,7 +10,7 @@
 
 # Get the directory of the current script in a way that is compatible
 # with both Zsh and Bash (for testing).
-local circus_plugin_dir
+circus_plugin_dir=""
 if [ -n "$BASH_VERSION" ]; then
   # We are in Bash
   circus_plugin_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

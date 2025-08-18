@@ -21,12 +21,16 @@ set -eo pipefail
 # ------------------------------------------------------------------------------
 
 # Define log levels as numerical values. This allows us to easily compare them.
-readonly LOG_LEVEL_DEBUG=0
-readonly LOG_LEVEL_INFO=1
-readonly LOG_LEVEL_SUCCESS=2
-readonly LOG_LEVEL_WARN=3
-readonly LOG_LEVEL_ERROR=4
-readonly LOG_LEVEL_CRITICAL=5
+# We check if the variable is already defined to prevent "readonly" errors
+# when this script is sourced multiple times in the test environment.
+if [ -z "$LOG_LEVEL_DEBUG" ]; then
+  readonly LOG_LEVEL_DEBUG=0
+  readonly LOG_LEVEL_INFO=1
+  readonly LOG_LEVEL_SUCCESS=2
+  readonly LOG_LEVEL_WARN=3
+  readonly LOG_LEVEL_ERROR=4
+  readonly LOG_LEVEL_CRITICAL=5
+fi
 
 # Set the default log level for console output. Can be overridden by flags.
 # For example, if set to WARN, only WARN, ERROR, and CRITICAL messages will be shown.

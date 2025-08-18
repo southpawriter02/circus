@@ -1,3 +1,18 @@
 #!/usr/bin/env bash
-# Mock for the macOS sw_vers command
+#
+# Mock for the macOS `sw_vers` command.
+# This allows testing scripts that rely on `sw_vers` in a Linux environment.
+#
+
+if [[ "$1" == "-productVersion" ]]; then
+  echo "14.5"
+elif [[ "$1" == "-buildVersion" ]]; then
+  echo "23F79"
+else
+  # Default behavior if no specific flag is matched.
+  echo "ProductName:	macOS"
+  echo "ProductVersion:	14.5"
+  echo "BuildVersion:	23F79"
+fi
+
 exit 0

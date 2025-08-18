@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+if [[ "$1" == "-productName" ]]; then
+  echo "macOS"
+elif [[ "$1" == "-productVersion" ]]; then
+  echo "14.5"
+elif [[ "$1" == "-buildVersion" ]]; then
+  echo "23F79"
+else
+  exit 1
+fi
