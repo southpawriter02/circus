@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         doctor
+#
+# DESCRIPTION:  This plugin runs a series of diagnostic checks to ensure the
+#               system is in a healthy and correctly configured state.
+#
+# ==============================================================================
+
+# --- Setup & Helpers ---
+set -e
+source "$(dirname "${BASH_SOURCE[0]}")/../helpers.sh"
+
+# --- Usage Information ---
+usage() {
+  echo "Usage: fc doctor"
+  echo ""
+  echo "Runs a series of diagnostic checks on your system."
+  exit 1
+}
+
+# --- Check Functions ---
+
+check_brew() {
+  msg_info "Checking Homebrew status..."
+  if ! command -v brew >/dev/null 2>&1; then
+    msg_error "Homebrew is not installed. Please run the main installer."
+    return 1
+  fi
+
+  if brew doctor; then
+    msg_success "Homebrew is healthy."
+  else
+    msg_warning "Homebrew has some issues. Please review the output above."
+  fi
+}
+
+check_critical_tools() {
+  msg_info "Checking for critical tools..."
+  local all_found=true
+  local tools_to_check=("git" "zsh" "op" "shellcheck")
+
+  for tool in "${tools_to_check[@]}"; do
+    if command -v "$tool" >/dev/null 2>&1; then
+      msg_success "  -> Found '$tool'"
+    else
+      msg_error "  -> '$tool' is missing."
+      all_found=false
+    fi
+  done
+
+  if [ "$all_found" = false ]; then
+    msg_warning "One or more critical tools are missing. Consider running the installer."
+  fi
+}
+
+# --- Main Logic ---
+main() {
+  if [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  msg_info "Starting system health check..."
+  echo ""
+
+  check_brew
+  echo ""
+
+  check_critical_tools
+  echo ""
+
+  msg_success "System health check complete."
+}
+
+main "$@"
