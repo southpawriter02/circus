@@ -14,9 +14,13 @@
 # The main logic for the logging setup stage.
 #
 main() {
-  # This initial message is printed to the console only, as the log file
-  # has not been created yet.
   msg_info "Stage 2: Logging Setup"
+
+  # If in dry-run mode, skip log file creation.
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
+    msg_info "[Dry Run] Skipping log file creation."
+    return 0
+  fi
 
   # --- Configuration ----------------------------------------------------------
   local LOG_DIR="$HOME/.circus/logs"

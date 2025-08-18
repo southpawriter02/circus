@@ -26,6 +26,11 @@
 # @return 0 for "yes", 1 for "no".
 #
 ask() {
+  # If the installer is not in interactive mode, assume "yes" to all prompts.
+  if [ "${INTERACTIVE_MODE:-true}" = false ]; then
+    return 0
+  fi
+
   # http://djm.me/ask
   while true; do
     if [ "${2:-}" = "Y" ]; then

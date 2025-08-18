@@ -80,3 +80,35 @@ prompt_for_confirmation() {
     read -p "Press Enter to continue..."
   fi
 }
+
+###
+# @description
+#   A wrapper for the `defaults` command that respects `DRY_RUN_MODE`.
+#   In dry-run mode, it prints the command instead of executing it.
+# @param $@
+#   The arguments to pass to the `defaults` command.
+###
+run_defaults() {
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
+    msg_info "[Dry Run] Would run: defaults $*"
+  else
+    defaults "$@"
+  fi
+}
+
+###
+# @description
+#   A wrapper for the `sudo` command that respects `DRY_RUN_MODE`.
+#   In dry-run mode, it prints the command instead of executing it.
+# @param $@
+#   The arguments to pass to the `sudo` command.
+###
+run_sudo() {
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
+    msg_info "[Dry Run] Would run: sudo $*"
+    # In a dry run, we assume the command would have succeeded.
+    return 0
+  else
+    sudo "$@"
+  fi
+}
