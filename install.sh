@@ -11,71 +11,77 @@
 # ==============================================================================
 
 # --- Globals ------------------------------------------------------------------
-# The root directory of the dotfiles repository.
 export DOTFILES_ROOT
 DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Global state variables
+# --- Library Sourcing ---------------------------------------------------------
+# This must be done before any other logic, as it sets up error handling.
+source "$DOTFILES_ROOT/lib/helpers.sh"
+source "$DOTFILES_ROOT/lib/config.sh"
+
+# --- Global State Variables -------------------------------------------------
 DRY_RUN_MODE=false
 INTERACTIVE_MODE=true
 INSTALL_ROLE=""
 FORCE_MODE=false
-PARANOID_MODE=false
-
-# ==============================================================================
-# SCRIPT SETUP
-# ==============================================================================
-
-# --- Library Sourcing ---------------------------------------------------------
-# Source all the necessary helper libraries. This must be done before the
-# main script logic begins.
-source "$DOTFILES_ROOT/lib/helpers.sh"
-source "$DOTFILES_ROOT/lib/config.sh"
 
 # ==============================================================================
 # FUNCTIONS
 # ==============================================================================
 
-#
-# @description
-#   Prints the installer's usage information and exits.
-#
 usage() {
-  echo "Usage: ./install.sh [options]"
+  msg_info "Usage: ./install.sh [options]"
   echo ""
-  echo "Options:"
+  msg_info "Options:"
   echo "  --role <name>      Specify the role to install (e.g., developer)."
   echo "  --dry-run          Run the installer without making any changes."
   echo "  --force            Force re-running of already completed stages."
   echo "  --non-interactive  Run the installer without prompting for confirmation."
-  echo "  --silent           Run the installer with minimal output to protect privacy."
+  echo "  --log-file <path>  Redirect all log output to the specified file."
+  echo "  --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR)."
+  echo "  --silent           Alias for --log-level CRITICAL. Overrides --log-level."
   echo "  --help             Display this help message."
-  exit 1
+  exit 0
 }
 
-#
-# @description
-#   The main function of the installer. It orchestrates the entire process,
-#   from parsing arguments to executing the installation stages.
-#
 main() {
   # --- Argument Parsing -------------------------------------------------------
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --role) INSTALL_ROLE="$2"; shift 2 ;; 
+      --role) INSTALL_ROLE="$2"; shift 2 ;;
       --dry-run) DRY_RUN_MODE=true; shift ;;
       --force) FORCE_MODE=true; shift ;; 
       --non-interactive) INTERACTIVE_MODE=false; shift ;; 
-      --silent) PARANOID_MODE=true; shift ;; 
+      --log-file) export LOG_FILE_PATH="$2"; shift 2 ;;
+      --log-level)
+        level_name=$(echo "$2" | tr '[:lower:]' '[:upper:]')
+        case "$level_name" in
+          DEBUG) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_DEBUG ;; 
+          INFO) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_INFO ;; 
+          WARN) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_WARN ;; 
+          ERROR) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_ERROR ;; 
+          CRITICAL) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL ;; 
+          *) die "Invalid log level: $2. Use DEBUG, INFO, WARN, or ERROR." ;;
+        esac
+        shift 2
+        ;;
+      --silent)
+        export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL
+        shift
+        ;;
       --help) usage ;; 
       *) usage ;; 
     esac
   done
 
-  export PARANOID_MODE
-
   # --- Installation Stages ----------------------------------------------------
   msg_info "Starting Dotfiles Flying Circus setup..."
+  if [ -n "$LOG_FILE_PATH" ]; then
+    # Create the log file and its directory if they don't exist.
+    mkdir -p "$(dirname "$LOG_FILE_PATH")"
+    touch "$LOG_FILE_PATH"
+    msg_info "Logging to file: $LOG_FILE_PATH"
+  fi
   prompt_for_confirmation "Ready to begin the installation."
 
   local INSTALL_STAGES=(
@@ -100,7 +106,6 @@ main() {
       msg_info "Executing stage: $stage"
       source "$stage_path"
     else
-      # If a critical stage script is missing, we should not continue.
       die "Critical installation stage not found: $stage_path"
     fi
   done

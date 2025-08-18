@@ -14,85 +14,107 @@
 # SECTION: SCRIPT SETUP & ROBUSTNESS
 # ------------------------------------------------------------------------------
 
-# -e: Exit immediately if a command exits with a non-zero status.
-# -o pipefail: The return value of a pipeline is the status of the last
-#              command to exit with a non-zero status, or zero if no
-#              command exited with a non-zero status.
 set -eo pipefail
+
+# ------------------------------------------------------------------------------
+# SECTION: LOGGING CONFIGURATION & SETUP
+# ------------------------------------------------------------------------------
+
+# Define log levels as numerical values. This allows us to easily compare them.
+readonly LOG_LEVEL_DEBUG=0
+readonly LOG_LEVEL_INFO=1
+readonly LOG_LEVEL_SUCCESS=2
+readonly LOG_LEVEL_WARN=3
+readonly LOG_LEVEL_ERROR=4
+readonly LOG_LEVEL_CRITICAL=5
+
+# Set the default log level for console output. Can be overridden by flags.
+# For example, if set to WARN, only WARN, ERROR, and CRITICAL messages will be shown.
+CONSOLE_LOG_LEVEL=${CONSOLE_LOG_LEVEL:-$LOG_LEVEL_INFO}
+
+# The global path to the log file. If this is set, all messages will be written to it.
+LOG_FILE_PATH=""
 
 # ------------------------------------------------------------------------------
 # SECTION: ERROR HANDLING
 # ------------------------------------------------------------------------------
 
-#
-# @description
-#   The global error handler. This function is called by the `trap` command
-#   whenever a command fails. It prints a detailed error report and then exits.
-#
-# @param $1 The line number where the error occurred.
-# @param $2 The name of the script where the error occurred.
-#
 error_handler() {
   local line_number="$1"
   local script_name="$2"
   local error_message="An unexpected error occurred in '$script_name' on line $line_number."
-
-  # Use the existing logging function to print the error in red.
-  logm "CRITICAL" "$error_message"
-  logm "CRITICAL" "Aborting execution."
+  log $LOG_LEVEL_CRITICAL "$error_message"
+  log $LOG_LEVEL_CRITICAL "Aborting execution."
   exit 1
 }
 
-# Set the global error trap.
-# The `ERR` signal is triggered when a command fails.
-# We pass the line number and script name to our handler function.
 trap 'error_handler ${LINENO} ${BASH_SOURCE[0]}' ERR
+
+die() {
+  log $LOG_LEVEL_ERROR "$1"
+  exit 1
+}
+
+# ------------------------------------------------------------------------------
+# SECTION: CORE LOGGING ENGINE
+# ------------------------------------------------------------------------------
 
 #
 # @description
-#   Prints a fatal error message and exits the script. This is for handling
-#   expected errors gracefully (e.g., a missing dependency).
+#   The new, centralized logging function. This is the single point of control
+#   for all logging output. It decides whether to print to the console and/or
+#   write to a file based on the global configuration.
 #
-# @param $1 The error message to display.
+# @param $1 The numerical log level of the message.
+# @param $2 The message to log.
 #
-die() {
-  logm "ERROR" "$1"
-  exit 1
-}
-
-# ------------------------------------------------------------------------------
-# SECTION: LOGGING FUNCTIONS
-# ------------------------------------------------------------------------------
-
-logm() {
-  if [ "${PARANOID_MODE:-false}" = true ]; then
-    return 0
-  fi
-
-  local log_level="$1"
+log() {
+  local level_num="$1"
   local message="$2"
+  local level_name
   local color_code
 
-  case "$log_level" in
-    INFO)     color_code="\033[1;34m" ;; # Blue
-    SUCCESS)  color_code="\033[1;32m" ;; # Green
-    WARN)     color_code="\033[1;33m" ;; # Yellow
-    ERROR)    color_code="\033[1;31m" ;; # Red
-    CRITICAL) color_code="\033[1;41m" ;; # White on Red
-    DEBUG)    color_code="\033[0;35m" ;; # Purple
-    *)        echo "Unknown message type: $log_level" >&2; return 1 ;;
+  # --- Determine Level Name and Color ---
+  case "$level_num" in
+    $LOG_LEVEL_DEBUG)   level_name="DEBUG";   color_code="\033[0;35m" ;; # Purple
+    $LOG_LEVEL_INFO)    level_name="INFO";    color_code="\033[1;34m" ;; # Blue
+    $LOG_LEVEL_SUCCESS) level_name="SUCCESS"; color_code="\033[1;32m" ;; # Green
+    $LOG_LEVEL_WARN)    level_name="WARN";    color_code="\033[1;33m" ;; # Yellow
+    $LOG_LEVEL_ERROR)   level_name="ERROR";   color_code="\033[1;31m" ;; # Red
+    $LOG_LEVEL_CRITICAL)level_name="CRITICAL";color_code="\033[1;41m" ;; # White on Red
+    *) level_name="UNKNOWN"; color_code="" ;;
   esac
 
-  local color_reset="\033[0m"
-  printf "${color_code}[%-8s]${color_reset} %s\n" "$log_level" "$message"
+  # --- Log to File (if configured) ---
+  if [ -n "$LOG_FILE_PATH" ]; then
+    # Format with a timestamp for the log file.
+    local timestamp
+    timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+    echo "[$timestamp] [$level_name] $message" >> "$LOG_FILE_PATH"
+  fi
+
+  # --- Log to Console (if level is high enough) ---
+  if [ "$level_num" -ge "$CONSOLE_LOG_LEVEL" ]; then
+    if [ "${PARANOID_MODE:-false}" = true ]; then
+      return 0
+    fi
+    local color_reset="\033[0m"
+    printf "${color_code}[%-8s]${color_reset} %s\n" "$level_name" "$message"
+  fi
 }
 
-msg_info()    { logm "INFO"    "$1"; }
-msg_success() { logm "SUCCESS" "$1"; }
-msg_warning() { logm "WARN"    "$1"; }
-msg_error()   { logm "ERROR"   "$1" >&2; }
-msg_critical(){ logm "CRITICAL" "$1" >&2; }
-msg_debug()   { logm "DEBUG"   "$1"; }
+# ------------------------------------------------------------------------------
+# SECTION: CONVENIENCE WRAPPER FUNCTIONS
+# ------------------------------------------------------------------------------
+# These functions provide a simple, readable interface for the logging engine.
+# They maintain backwards compatibility with the old `msg_*` functions.
+
+msg_debug()   { log $LOG_LEVEL_DEBUG   "$1"; }
+msg_info()    { log $LOG_LEVEL_INFO    "$1"; }
+msg_success() { log $LOG_LEVEL_SUCCESS "$1"; }
+msg_warning() { log $LOG_LEVEL_WARN    "$1"; }
+msg_error()   { log $LOG_LEVEL_ERROR   "$1" >&2; }
+msg_critical(){ log $LOG_LEVEL_CRITICAL "$1" >&2; }
 
 # ------------------------------------------------------------------------------
 # SECTION: USER INTERACTION FUNCTIONS

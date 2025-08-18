@@ -22,16 +22,23 @@ The project uses a centralized and robust error-handling system, implemented in 
 
 3.  **Graceful Exits with `die()`:** For *expected* errors (e.g., a missing dependency), scripts use the `die "message"` function. This prints a clean, user-friendly error message and immediately terminates the script, providing a better user experience than a raw, unexpected error.
 
+## Logging System
+
+The project features a powerful and flexible logging system, also centralized in `lib/helpers.sh`. This system is designed to provide deep insight into the execution flow and make debugging straightforward.
+
+Key features include:
+
+1.  **Log Levels:** The system uses a numerical hierarchy of log levels (`DEBUG`, `INFO`, `SUCCESS`, `WARN`, `ERROR`, `CRITICAL`) to provide fine-grained control over what is displayed.
+2.  **File Logging:** Using the `--log-file <path>` flag, all log messages, regardless of level, can be written to a specified file with timestamps. This creates a permanent and detailed record for post-mortem analysis.
+3.  **Console Verbosity Control:** The `--log-level <level>` flag allows the user to control the verbosity of the console output. For example, setting `--log-level WARN` will only display warnings and errors, providing a cleaner output for standard runs.
+
 ## Directory Structure
 
 -   `bin/`: Contains the main `fc` executable for the custom CLI.
 -   `docs/`: Contains all project documentation.
 -   `install/`: Contains the staged installation scripts.
 -   `lib/`: Contains shared shell libraries.
-    -   `lib/plugins/`: Contains all the executable plugin scripts for the `fc` command.
--   `profiles/`: Contains the dotfiles themselves.
-    -   `profiles/zsh/zshrc.symlink`: The main `.zshrc` file that loads and configures Oh My Zsh.
-    -   `profiles/zsh/oh-my-zsh-custom/`: The source for our custom Oh My Zsh plugin.
+-   `profiles/`: Contains the dotfiles and shell configuration.
 -   `roles/`: Contains the role-specific configurations.
 -   `system/`: Contains modular scripts for base system configuration.
 -   `tests/`: Contains the Bats test files for the project.
