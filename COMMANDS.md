@@ -26,6 +26,18 @@ fc info
 
 ---
 
+## `fc doctor`
+
+Runs a series of diagnostic checks to ensure your system is healthy and correctly configured. This includes checking Homebrew status and verifying that critical command-line tools are installed.
+
+**Usage:**
+
+```bash
+fc doctor
+```
+
+---
+
 ## `fc bluetooth`
 
 Provides simple commands for managing your system's Bluetooth adapter.
@@ -45,9 +57,7 @@ fc bluetooth <subcommand>
 
 ## `fc sync`
 
-This is a powerful command for managing the full lifecycle of your machine's state. It allows you to create a complete backup of your applications and data and then restore that state to a new machine.
-
-This provides a robust workflow for migrating to a new computer with minimal manual intervention.
+This is a powerful command for managing the full lifecycle of your machine's state. It allows you to create a complete, end-to-end encrypted backup of your applications and data and then restore that state to a new machine.
 
 ### The Migration Workflow
 
@@ -55,19 +65,19 @@ Here is the recommended workflow for using `fc sync` to migrate to a new machine
 
 **1. On Your OLD Machine:**
 
-Run the `backup` command. This will create a `~/CircusBackups` directory containing a complete inventory of your installed applications (`Brewfile.dump`) and a copy of all critical files and directories defined in the `BACKUP_TARGETS` array in the script.
+Run the `backup` command. This will create an encrypted `circus_backup.tar.gz.gpg` file in your home directory.
 
 ```bash
 fc sync backup
 ```
 
-Once complete, copy the `~/CircusBackups` directory to an external drive or cloud storage service.
+Once complete, copy this encrypted archive to an external drive or cloud storage service.
 
 **2. On Your NEW Machine:**
 
-First, run the main `./install.sh` script to lay down the foundational scaffolding for your chosen role. Then, copy your `CircusBackups` directory to your new machine's home folder.
+First, run the main `./install.sh` script to lay down the foundational scaffolding for your chosen role. Then, copy your encrypted backup archive to your new machine's home folder.
 
-Finally, run the `restore` command. This will read the `Brewfile.dump` and install every application from your old machine. It will then use `rsync` to restore all your backed-up files and directories.
+Finally, run the `restore` command. This will prompt for your GPG passphrase, decrypt the archive, and then restore your applications and data.
 
 ```bash
 fc sync restore
