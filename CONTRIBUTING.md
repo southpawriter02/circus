@@ -32,6 +32,8 @@ To activate these hooks for your local repository, run the developer setup scrip
 
 This script will install the hooks defined in `.pre-commit-config.yaml`. Now, every time you run `git commit`, the hooks will automatically run.
 
+For more details on the specific tests that are run and the overall testing strategy, please see the [Testing Guide](TESTING.md).
+
 **Step 3: Make Your Changes**
 
 Now you're ready to make your changes. Create a new branch for your feature or bugfix:

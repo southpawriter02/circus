@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Mock for the macOS defaults command
+exit 0

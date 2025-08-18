@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Mock for the macOS sw_vers command
+exit 0
