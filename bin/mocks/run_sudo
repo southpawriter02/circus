@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Mock for the missing run_sudo command
+# This mock will just execute its arguments, simulating running a command with sudo.
+"$@"
+exit 0
