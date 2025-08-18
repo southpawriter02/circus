@@ -9,20 +9,21 @@
 # ==============================================================================
 
 # --- Setup ------------------------------------------------------------------
-set -e
+# Source the helper library to get the error handling and logging functions.
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
-  echo "Usage: fc bluetooth <action>"
+  msg_info "Usage: fc bluetooth <action>"
   echo ""
-  echo "Manages the system's Bluetooth adapter."
+  msg_info "Manages the system's Bluetooth adapter."
   echo ""
-  echo "Actions:"
+  msg_info "Actions:"
   echo "  on      - Turn Bluetooth on."
   echo "  off     - Turn Bluetooth off."
   echo "  status  - Show the current Bluetooth status."
   echo ""
-  exit 1
+  exit 0
 }
 
 # --- Main Logic -------------------------------------------------------------
@@ -31,39 +32,36 @@ main() {
     usage
   fi
 
-  # Dependency Check: Ensure blueutil is installed.
+  # Dependency Check: Ensure blueutil is installed before proceeding.
   if ! command -v "blueutil" >/dev/null 2>&1; then
-    echo "Error: The 'blueutil' command is required but not found." >&2
-    echo "Please run the main installer to install it via Homebrew." >&2
-    exit 1
+    die "The 'blueutil' command is required but not found. Please run the main installer."
   fi
 
   ACTION="$1"
 
   case "$ACTION" in
     on)
-      echo "Turning Bluetooth on..."
+      msg_info "Turning Bluetooth on..."
       blueutil --power 1
-      echo "Bluetooth is now on."
+      msg_success "Bluetooth is now on."
       ;;
     off)
-      echo "Turning Bluetooth off..."
+      msg_info "Turning Bluetooth off..."
       blueutil --power 0
-      echo "Bluetooth is now off."
+      msg_success "Bluetooth is now off."
       ;;
     status)
-      echo "Checking Bluetooth status..."
+      msg_info "Checking Bluetooth status..."
       local power_state
       power_state=$(blueutil --power)
       if [ "$power_state" -eq 1 ]; then
-        echo "Bluetooth is currently on."
+        msg_success "Bluetooth is currently on."
       else
-        echo "Bluetooth is currently off."
+        msg_warning "Bluetooth is currently off."
       fi
       ;;
     *)
-      echo "Error: Unknown action '$ACTION'" >&2
-      usage
+      die "Unknown action '$ACTION'. Run 'fc bluetooth --help' for available actions."
       ;;
   esac
 }

@@ -10,22 +10,23 @@
 # ==============================================================================
 
 # --- Setup ------------------------------------------------------------------
-set -e
+# Source the helper library to get the error handling and logging functions.
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
-  echo "Usage: fc redis <action>"
+  msg_info "Usage: fc redis <action>"
   echo ""
-  echo "Manages the Redis server using Homebrew services."
+  msg_info "Manages the Redis server using Homebrew services."
   echo ""
-  echo "Actions:"
+  msg_info "Actions:"
   echo "  start    - Start the Redis server in the background."
   echo "  stop     - Stop the Redis server."
   echo "  restart  - Restart the Redis server."
   echo "  status   - Show the current status of the Redis service."
   echo "  update   - Update the Redis formula to the latest version."
   echo ""
-  exit 1
+  exit 0
 }
 
 # --- Main Logic -------------------------------------------------------------
@@ -34,40 +35,41 @@ main() {
     usage
   fi
 
-  # Dependency Check: Ensure brew is installed.
+  # Dependency Check: Ensure brew is installed before proceeding.
   if ! command -v "brew" >/dev/null 2>&1; then
-    echo "Error: The 'brew' command is required but not found." >&2
-    echo "Please run the main installer." >&2
-    exit 1
+    die "The 'brew' command is required but not found. Please run the main installer."
   fi
 
   ACTION="$1"
 
   case "$ACTION" in
     start)
-      echo "Starting Redis server..."
+      msg_info "Starting Redis server..."
       brew services start redis
+      msg_success "Redis server started."
       ;;
     stop)
-      echo "Stopping Redis server..."
+      msg_info "Stopping Redis server..."
       brew services stop redis
+      msg_success "Redis server stopped."
       ;;
     restart)
-      echo "Restarting Redis server..."
+      msg_info "Restarting Redis server..."
       brew services restart redis
+      msg_success "Redis server restarted."
       ;;
     status)
-      echo "Checking Redis service status..."
+      msg_info "Checking Redis service status..."
       # The `brew services list` command can be slow, so we grep to be specific.
-      brew services list | grep redis || echo "Redis service not found or not running."
+      brew services list | grep redis || msg_warning "Redis service not found or not running."
       ;;
     update)
-      echo "Updating Redis formula..."
+      msg_info "Updating Redis formula..."
       brew upgrade redis
+      msg_success "Redis formula updated."
       ;;
     *)
-      echo "Error: Unknown action '$ACTION'" >&2
-      usage
+      die "Unknown action '$ACTION'. Run 'fc redis --help' for available actions."
       ;;
   esac
 }

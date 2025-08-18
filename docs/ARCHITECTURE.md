@@ -2,15 +2,25 @@
 
 This document provides a deep dive into the architecture and design philosophy of the Dotfiles Flying Circus. It is intended for developers who want to understand, maintain, or extend the installer.
 
-## Installer Design Philosophy
+## Core Design Philosophy
 
-The installer is built on three core principles:
+1.  **Staged Execution:** The installation process is broken down into a series of numbered stages (e.g., `01-`, `02-`, etc.). This makes the process predictable, repeatable, and easy to debug.
 
-1.  **Staged Execution:** The installation process is broken down into a series of numbered stages (e.g., `01-`, `02-`, etc.). This makes the process predictable, repeatable, and easy to debug. The order of these stages is defined in the `INSTALL_STAGES` array in the main `install.sh` script.
+2.  **Modularity:** The installer is designed to be highly modular. Instead of having one monolithic script, the logic is broken down into small, focused files for different concerns (e.g., `system/`, `roles/`, `lib/plugins/`).
 
-2.  **Modularity:** The installer is designed to be highly modular. Instead of having one monolithic script, the logic is broken down into small, focused files. For user-configurable settings, the installer uses an orchestrator pattern with dedicated directories (`/system`, `/defaults`, `/security`).
+3.  **Idempotence:** The scripts are designed to be run multiple times without causing harm. They check for the existence of files, packages, and settings before attempting to create or install them.
 
-3.  **Idempotence:** The scripts are designed to be run multiple times without causing harm. They check for the existence of files, packages, and settings before attempting to create or install them. This makes the installer safe to re-run to update a system.
+4.  **Robustness:** The entire system is built with a "fail-fast" mentality. Scripts are designed to exit immediately and provide clear, helpful error messages when something goes wrong.
+
+## Error Handling & Robustness
+
+The project uses a centralized and robust error-handling system, implemented in `lib/helpers.sh`. This library is sourced by all major scripts and provides two key features:
+
+1.  **Fail-Fast Mode:** The library immediately runs `set -eo pipefail`. This ensures that any script will exit automatically if a command fails, preventing unexpected behavior and cascading errors.
+
+2.  **Global Error Trap:** The library sets a global `trap` on the `ERR` signal. If any command fails unexpectedly, this trap calls a custom `error_handler` function that prints a detailed report, including the script name and the line number where the error occurred. This makes debugging dramatically easier.
+
+3.  **Graceful Exits with `die()`:** For *expected* errors (e.g., a missing dependency), scripts use the `die "message"` function. This prints a clean, user-friendly error message and immediately terminates the script, providing a better user experience than a raw, unexpected error.
 
 ## Directory Structure
 
@@ -28,21 +38,8 @@ The installer is built on three core principles:
 
 ## Shell Environment: Oh My Zsh
 
-The shell environment is built upon **Oh My Zsh**, a popular and robust framework for managing Zsh configuration. This provides several key advantages:
-
-*   **Extensibility:** We gain access to a massive ecosystem of community-developed plugins and themes.
-*   **Stability:** The core of the shell environment is maintained by the large Oh My Zsh community.
-*   **Clean Customization:** All of this project's custom aliases, environment variables, and functions are neatly encapsulated in a single custom plugin named `circus`, which is located in `profiles/zsh/oh-my-zsh-custom/circus`.
-
-The installation process automatically clones the Oh My Zsh repository, symlinks the custom `circus` plugin into place, and deploys the `.zshrc` file that activates it.
+The shell environment is built upon **Oh My Zsh**, a popular and robust framework for managing Zsh configuration. All custom aliases, environment variables, and functions are neatly encapsulated in a single custom plugin named `circus`.
 
 ## `fc` CLI Architecture: A Plugin-Based System
 
-The `fc` command uses a modern and highly extensible **plugin-based architecture**.
-
-1.  The main `bin/fc` script is a pure **dispatcher**. Its only job is to find and execute the correct plugin.
-2.  It scans the `lib/plugins/` directory for any **executable file**.
-3.  Each executable file found in this directory is automatically registered as a subcommand. For example, the script `lib/plugins/info` is available as `fc info`.
-4.  The dispatcher then transfers control to the plugin script, passing along all subsequent arguments.
-
-This pattern makes the CLI incredibly easy to extend. To add a new command, you simply create a new executable file in the `lib/plugins/` directory. For more details, see the [Creating Plugins Guide](CREATING_PLUGINS.md).
+The `fc` command uses a modern and highly extensible **plugin-based architecture**. The main `bin/fc` script is a pure dispatcher that discovers and executes any executable file in the `lib/plugins/` directory. For more details, see the [Creating Plugins Guide](docs/CREATING_PLUGINS.md).

@@ -14,14 +14,12 @@
 
 # --- Setup & Configuration --------------------------------------------------
 
-# Exit immediately if a command exits with a non-zero status for safety.
-set -e
+# Source the helper library. This is critical as it sets up our error handling
+# (set -e, traps) and provides the logging functions.
+# The path is relative to the script's location.
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
 # Define the absolute path to the directory where plugins are stored.
-# Any executable file in this directory is treated as a valid command.
-#
-# The `cd` and `pwd` construct ensures that this path is always correct,
-# regardless of where the `fc` script is called from.
 readonly PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/plugins"
 
 # --- Help and Usage ---------------------------------------------------------
@@ -30,20 +28,18 @@ readonly PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/plugin
 #   Displays a general help message that dynamically lists all available
 #   commands (plugins) and then exits.
 usage() {
-  echo "Usage: fc <command> [options]"
+  msg_info "Usage: fc <command> [options]"
   echo ""
-  echo "A modular, plugin-based command-line utility for system management."
+  msg_info "A modular, plugin-based command-line utility for system management."
   echo ""
-  echo "Available commands:"
+  msg_info "Available commands:"
 
-  # Scan the plugin directory for all executable files, get their basenames,
-  # sort them alphabetically, and print them in a formatted list.
-  # This ensures the help message is always up-to-date with the available plugins.
+  # Scan the plugin directory for all executable files and print them.
   find "$PLUGIN_DIR" -maxdepth 1 -type f -executable -exec basename {} \; | sort | awk '{printf "  - %s\n", $1}'
 
   echo ""
-  echo "Run 'fc <command> --help' for more information on a specific command."
-  exit 1
+  msg_info "Run 'fc <command> --help' for more information on a specific command."
+  exit 0
 }
 
 # --- Dispatcher Logic -------------------------------------------------------
@@ -53,27 +49,18 @@ if [ -z "$1" ]; then
   usage
 fi
 
-# The first argument is the potential subcommand (e.g., "info", "sync").
+# The first argument is the potential subcommand.
 SUBCOMMAND="$1"
 
 # Construct the full, absolute path to the corresponding plugin script.
-# Using an absolute path is a security best practice that prevents PATH hijacking.
 PLUGIN_SCRIPT="$PLUGIN_DIR/$SUBCOMMAND"
 
 # Check if a plugin script exists at the constructed path and is executable.
 if [ -x "$PLUGIN_SCRIPT" ]; then
   # If the plugin is valid, transfer control to it.
-  #
-  # - `shift`: Removes the subcommand name from the argument list, so the
-  #            plugin only receives its own arguments.
-  # - `exec`: Replaces the current shell process with the plugin script. This
-  #           is efficient and cleanly passes control.
   shift
   exec "$PLUGIN_SCRIPT" "$@"
 else
-  # If no valid plugin was found, print an error message to stderr
-  # and display the main usage information.
-  echo "Error: Unknown command '$SUBCOMMAND'" >&2
-  echo ""
-  usage
+  # If no valid plugin was found, use the `die` function to exit gracefully.
+  die "Unknown command '$SUBCOMMAND'. Run 'fc --help' to see a list of available commands."
 fi

@@ -11,11 +11,7 @@
 # ==============================================================================
 
 # --- Globals ------------------------------------------------------------------
-# All global variables are prefixed with 'DFC_' to avoid conflicts.
-
 # The root directory of the dotfiles repository.
-# The `readlink -f` command resolves the full, absolute path to the script,
-# which allows the installer to be run from any directory.
 export DOTFILES_ROOT
 DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -31,7 +27,8 @@ PARANOID_MODE=false
 # ==============================================================================
 
 # --- Library Sourcing ---------------------------------------------------------
-# Source all the necessary helper libraries.
+# Source all the necessary helper libraries. This must be done before the
+# main script logic begins.
 source "$DOTFILES_ROOT/lib/helpers.sh"
 source "$DOTFILES_ROOT/lib/config.sh"
 
@@ -63,48 +60,24 @@ usage() {
 #
 main() {
   # --- Argument Parsing -------------------------------------------------------
-  # This loop parses the command-line arguments and sets the global state
-  # variables accordingly.
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --role)
-        INSTALL_ROLE="$2"
-        shift 2
-        ;;
-      --dry-run)
-        DRY_RUN_MODE=true
-        shift
-        ;;
-      --force)
-        FORCE_MODE=true
-        shift
-        ;;
-      --non-interactive)
-        INTERACTIVE_MODE=false
-        shift
-        ;;
-      --silent)
-        PARANOID_MODE=true
-        shift
-        ;;
-      --help)
-        usage
-        ;;
-      *)
-        usage
-        ;;
+      --role) INSTALL_ROLE="$2"; shift 2 ;; 
+      --dry-run) DRY_RUN_MODE=true; shift ;;
+      --force) FORCE_MODE=true; shift ;; 
+      --non-interactive) INTERACTIVE_MODE=false; shift ;; 
+      --silent) PARANOID_MODE=true; shift ;; 
+      --help) usage ;; 
+      *) usage ;; 
     esac
   done
 
-  # Export the PARANOID_MODE so it's available to all sourced scripts
   export PARANOID_MODE
 
   # --- Installation Stages ----------------------------------------------------
   msg_info "Starting Dotfiles Flying Circus setup..."
   prompt_for_confirmation "Ready to begin the installation."
 
-  # The canonical list of installation stages. The installer will execute
-  # these scripts in the specified order.
   local INSTALL_STAGES=(
     "01-introduction-and-user-interaction.sh"
     "02-logging-setup.sh"
@@ -125,11 +98,10 @@ main() {
     local stage_path="$DOTFILES_ROOT/install/$stage"
     if [ -f "$stage_path" ]; then
       msg_info "Executing stage: $stage"
-      # We source the script so that it runs in the current shell context,
-      # giving it access to all the helper functions and global variables.
       source "$stage_path"
     else
-      msg_warning "Stage script not found, skipping: $stage_path"
+      # If a critical stage script is missing, we should not continue.
+      die "Critical installation stage not found: $stage_path"
     fi
   done
 
@@ -140,8 +112,4 @@ main() {
 # EXECUTION
 # ==============================================================================
 
-#
-# This is the main entry point of the script. We call the `main` function,
-# passing all the command-line arguments to it.
-#
 main "$@"

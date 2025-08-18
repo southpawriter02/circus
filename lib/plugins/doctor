@@ -10,15 +10,14 @@
 # ==============================================================================
 
 # --- Setup & Helpers ---
-set -e
-source "$(dirname "${BASH_SOURCE[0]}")/../helpers.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
 # --- Usage Information ---
 usage() {
-  echo "Usage: fc doctor"
+  msg_info "Usage: fc doctor"
   echo ""
-  echo "Runs a series of diagnostic checks on your system."
-  exit 1
+  msg_info "Runs a series of diagnostic checks on your system."
+  exit 0
 }
 
 # --- Check Functions ---
@@ -26,33 +25,43 @@ usage() {
 check_brew() {
   msg_info "Checking Homebrew status..."
   if ! command -v brew >/dev/null 2>&1; then
-    msg_error "Homebrew is not installed. Please run the main installer."
-    return 1
+    die "Homebrew is not installed. Please run the main installer."
   fi
 
-  if brew doctor; then
+  # We temporarily disable `set -e` because `brew doctor` can return a non-zero
+  # exit code for warnings, which we want to handle gracefully.
+  set +e
+  local brew_output
+  brew_output=$(brew doctor 2>&1)
+  local brew_status=$?
+  set -e
+
+  if [ $brew_status -eq 0 ]; then
     msg_success "Homebrew is healthy."
   else
-    msg_warning "Homebrew has some issues. Please review the output above."
+    msg_warning "Homebrew has some issues. Please review the output below:"
+    echo "$brew_output"
   fi
 }
 
 check_critical_tools() {
   msg_info "Checking for critical tools..."
-  local all_found=true
-  local tools_to_check=("git" "zsh" "op" "shellcheck")
+  local missing_tools=0
+  local tools_to_check=("git" "zsh" "op" "shellcheck" "gpg")
 
   for tool in "${tools_to_check[@]}"; do
     if command -v "$tool" >/dev/null 2>&1; then
-      msg_success "  -> Found '$tool'"
+      msg_success "  [✓] Found '$tool'"
     else
-      msg_error "  -> '$tool' is missing."
-      all_found=false
+      msg_error "  [✗] '$tool' is missing."
+      ((missing_tools++))
     fi
   done
 
-  if [ "$all_found" = false ]; then
-    msg_warning "One or more critical tools are missing. Consider running the installer."
+  if [ $missing_tools -gt 0 ]; then
+    msg_warning "$missing_tools critical tool(s) are missing. Consider running the installer."
+  else
+    msg_success "All critical tools are installed."
   fi
 }
 
