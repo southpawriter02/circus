@@ -10,10 +10,9 @@
 #
 # ==============================================================================
 
-# --- Setup ------------------------------------------------------------------
-# Source the helper library to get the error handling and logging functions.
-# This will also enable `set -e` and the global error trap.
-source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
+# --- Initialization ---------------------------------------------------------
+# Source the centralized initialization script to set up the environment.
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
 

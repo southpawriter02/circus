@@ -12,32 +12,44 @@ This document provides a deep dive into the architecture and design philosophy o
 
 4.  **Robustness:** The entire system is built with a "fail-fast" mentality. Scripts are designed to exit immediately and provide clear, helpful error messages when something goes wrong.
 
+## Centralized Initialization
+
+To ensure consistency and robustness, every executable script in the project begins by sourcing the centralized initialization script: `lib/init.sh`.
+
+This single script is responsible for setting up the entire shell environment. It performs the following critical tasks in order:
+
+1.  **Defines `DOTFILES_ROOT`:** It establishes the absolute path to the root of the repository, providing a reliable anchor for all other scripts.
+2.  **Sources `lib/helpers.sh`:** It loads the core library that provides the logging and error-handling systems.
+3.  **Sources `lib/config.sh`:** It loads the library responsible for managing role-based configurations.
+
+This centralized approach means that every script operates in a consistent, predictable, and robust environment.
+
 ## Error Handling & Robustness
 
-The project uses a centralized and robust error-handling system, implemented in `lib/helpers.sh`. This library is sourced by all major scripts and provides two key features:
+The project uses a centralized error-handling system, which is loaded by `lib/init.sh`. This system provides two key features:
 
-1.  **Fail-Fast Mode:** The library immediately runs `set -eo pipefail`. This ensures that any script will exit automatically if a command fails, preventing unexpected behavior and cascading errors.
+1.  **Fail-Fast Mode:** The `set -eo pipefail` command ensures that any script will exit automatically if a command fails, preventing unexpected behavior and cascading errors.
 
-2.  **Global Error Trap:** The library sets a global `trap` on the `ERR` signal. If any command fails unexpectedly, this trap calls a custom `error_handler` function that prints a detailed report, including the script name and the line number where the error occurred. This makes debugging dramatically easier.
+2.  **Global Error Trap:** A global `trap` is set on the `ERR` signal. If any command fails unexpectedly, this trap calls a custom `error_handler` function that prints a detailed report, including the script name and the line number where the error occurred.
 
-3.  **Graceful Exits with `die()`:** For *expected* errors (e.g., a missing dependency), scripts use the `die "message"` function. This prints a clean, user-friendly error message and immediately terminates the script, providing a better user experience than a raw, unexpected error.
+3.  **Graceful Exits with `die()`:** For *expected* errors (e.g., a missing dependency), scripts use the `die "message"` function to print a clean, user-friendly error message and exit gracefully.
 
 ## Logging System
 
-The project features a powerful and flexible logging system, also centralized in `lib/helpers.sh`. This system is designed to provide deep insight into the execution flow and make debugging straightforward.
+The project features a powerful and flexible logging system, which is also loaded by `lib/init.sh`. This system is designed to provide deep insight into the execution flow and make debugging straightforward.
 
 Key features include:
 
-1.  **Log Levels:** The system uses a numerical hierarchy of log levels (`DEBUG`, `INFO`, `SUCCESS`, `WARN`, `ERROR`, `CRITICAL`) to provide fine-grained control over what is displayed.
-2.  **File Logging:** Using the `--log-file <path>` flag, all log messages, regardless of level, can be written to a specified file with timestamps. This creates a permanent and detailed record for post-mortem analysis.
-3.  **Console Verbosity Control:** The `--log-level <level>` flag allows the user to control the verbosity of the console output. For example, setting `--log-level WARN` will only display warnings and errors, providing a cleaner output for standard runs.
+1.  **Log Levels:** A numerical hierarchy of log levels (`DEBUG`, `INFO`, `SUCCESS`, `WARN`, `ERROR`, `CRITICAL`) provides fine-grained control over what is displayed.
+2.  **File Logging:** The `--log-file <path>` flag can be used to write all log messages to a specified file with timestamps.
+3.  **Console Verbosity Control:** The `--log-level <level>` flag allows the user to control the verbosity of the console output.
 
 ## Directory Structure
 
--   `bin/`: Contains the main `fc` executable for the custom CLI.
+-   `bin/`: Contains the main `fc` executable and other setup scripts.
 -   `docs/`: Contains all project documentation.
 -   `install/`: Contains the staged installation scripts.
--   `lib/`: Contains shared shell libraries.
+-   `lib/`: Contains shared shell libraries, including `init.sh`.
 -   `profiles/`: Contains the dotfiles and shell configuration.
 -   `roles/`: Contains the role-specific configurations.
 -   `system/`: Contains modular scripts for base system configuration.

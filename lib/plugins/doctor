@@ -9,8 +9,9 @@
 #
 # ==============================================================================
 
-# --- Setup & Helpers ---
-source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
+# --- Initialization ---------------------------------------------------------
+# Source the centralized initialization script to set up the environment.
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Usage Information ---
 usage() {
