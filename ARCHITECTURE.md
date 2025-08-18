@@ -46,32 +46,32 @@ The project uses `bats-core` for testing. Tests are located in the `tests/` dire
 *   **`tests/shell_config.bats`:** Tests the interactive shell environment, including the `circus` plugin, aliases, functions, and role loading.
 *   **`tests/fc_commands.bats`:** Tests the `fc` command and its plugins.
 
-## Scripting Standards and Helpers
+## Centralized Script Initialization
 
-To ensure consistency and robustness across all shell scripts in this project, we have established a set of standards and a centralized helper library.
+To ensure consistency and robustness across all shell scripts in this project, we have established a centralized initialization process.
 
-### The Helper Library: `lib/helpers.sh`
+### The `lib/init.sh` Entry Point
 
-All executable scripts (in `bin/`, `install/`, `lib/plugins/`, etc.) should source the main initialization script at `lib/init.sh`. This script, in turn, sources `lib/helpers.sh`, which provides the following key features:
+All executable scripts (in `bin/`, `install/`, `lib/plugins/`, etc.) **must** source the main initialization script at `lib/init.sh` as their first action. This script is the single entry point for setting up a consistent shell environment.
 
-1.  **Robustness (`set -eo pipefail`):** All scripts automatically run with settings that cause them to exit immediately if a command fails (`set -e`) or if a command in a pipeline fails (`set -o pipefail`). This "fail-fast" approach prevents scripts from continuing in an unpredictable state.
+Sourcing `lib/init.sh` provides the following:
 
-2.  **Global Error Trap:** A global `trap` is set on the `ERR` signal. If any command fails, it will trigger the `error_handler` function in `lib/helpers.sh`, which logs a critical error message with the script name and line number before exiting.
+1.  **Global Constants:** Defines critical environment variables like `DOTFILES_ROOT`, providing a reliable anchor for pathing.
+2.  **Configuration Loading:** Sources `lib/config.sh` to load role-based configurations.
+3.  **Helper Library:** Sources `lib/helpers.sh`, which provides:
+    *   **Robustness (`set -eo pipefail`):** Scripts will exit immediately if a command fails.
+    *   **Global Error Trap:** A global `trap` is set on the `ERR` signal to catch and report unexpected errors with context (script name and line number).
+    *   **Standardized Logging Functions:** A suite of `msg_*` functions (`msg_info`, `msg_success`, `msg_error`, etc.) for consistent, color-coded logging.
+    *   **The `die` command:** A function to immediately terminate the script with a clear error message.
 
-3.  **Standardized Logging Functions:** Instead of using `echo`, all scripts should use the following standardized logging functions. These functions provide color-coded, prefixed output and can be configured to write to a log file via the `LOG_FILE_PATH` environment variable.
-    *   `msg_info "message"`: For general informational messages (blue).
-    *   `msg_success "message"`: For success messages (green).
-    *   `msg_warning "message"`: For warnings that don't stop execution (yellow).
-    *   `msg_error "message"`: For fatal errors. Note: this does not exit the script.
-    *   `die "message"`: For fatal errors. This function prints the message and immediately terminates the script with a non-zero exit code.
-
-### Error Handling Best Practices
+### Scripting Best Practices
 
 When writing or modifying scripts, please adhere to the following principles:
 
-1.  **Source `lib/init.sh`:** Every executable script must source `lib/init.sh` at the beginning to inherit the helper functions and environment.
+1.  **Source `lib/init.sh` First:** Every executable script must begin by sourcing `lib/init.sh`:
+    ```bash
+    source "$(dirname "${BASH_SOURCE[0]}")/path/to/lib/init.sh"
+    ```
 2.  **Use `die` for Fatal Errors:** For any condition that should halt the script, use `die "A clear error message."`. Do not use `msg_error "..."` followed by `exit 1`.
-3.  **Check Preconditions:** Before performing an action, check that the necessary conditions are met. For example:
-    *   Check for the existence of required commands with `if ! command -v "command" >/dev/null 2>&1; then die "..."; fi`.
-    *   Check for the existence of required files or directories with `if [ ! -f "path" ]; then die "..."; fi`.
-4.  **Provide Context:** Error messages should be clear and helpful. Explain what the script was trying to do, what went wrong, and, if possible, how the user can fix it.
+3.  **Check Preconditions:** Before performing an action, check that the necessary conditions are met (e.g., required commands or files exist).
+4.  **Provide Context:** Error messages should be clear and helpful.

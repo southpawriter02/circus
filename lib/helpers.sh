@@ -121,6 +121,8 @@ msg_warning() { log $LOG_LEVEL_WARN    "$1"; }
 msg_error()   { log $LOG_LEVEL_ERROR   "$1"; }
 msg_critical(){ log $LOG_LEVEL_CRITICAL "$1"; }
 
+export -f log msg_debug msg_info msg_success msg_warning msg_error msg_critical die
+
 # ------------------------------------------------------------------------------
 # SECTION: USER INTERACTION FUNCTIONS
 # ------------------------------------------------------------------------------
@@ -131,3 +133,5 @@ prompt_for_confirmation() {
     read -p "Press Enter to continue..."
   fi
 }
+
+export -f prompt_for_confirmation

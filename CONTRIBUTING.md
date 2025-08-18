@@ -53,7 +53,7 @@ Once your changes are committed and pushed to your fork, you can open a pull req
 ## Code Style and Philosophy
 
 *   **Clarity and Readability:** Write code that is easy to understand. Use clear variable names and add comments to explain complex logic.
-*   **Robustness:** Use the helper functions in `lib/helpers.sh` for logging and error handling. Use `die "message"` for handling expected errors gracefully.
+*   **Robustness:** All executable scripts **must** source `lib/init.sh` at the beginning. This provides a centralized way to set shell options, load helper functions (like `die` and `msg_info`), and define global constants. See `ARCHITECTURE.md` for more details.
 *   **Consistency:** Follow the existing code style. The `shfmt` pre-commit hook will help to automate this.
 
 Thank you for your contribution!

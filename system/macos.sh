@@ -1,8 +1,8 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 # ------------------------------------------------------------------------------
-# It is best practice to use `#!/usr/bin/env zsh` instead of a hardcoded
-# path like `#!/bin/zsh`. This makes the script more portable, as it
-# allows the system's `env` command to find the `zsh` interpreter in the
+# It is best practice to use `#!/usr/bin/env bash` instead of a hardcoded
+# path like `#!/bin/bash`. This makes the script more portable, as it
+# allows the system's `env` command to find the `bash` interpreter in the
 # user's PATH.
 # ------------------------------------------------------------------------------
 
@@ -22,21 +22,13 @@
 # ╚════════════════════════════════════════════════════════════════════════════╝
 
 # ------------------------------------------------------------------------------
-# SECTION: OPTIONS
+# SECTION: INITIALIZATION
 # ------------------------------------------------------------------------------
 
-set -e
-set -u
-set -o pipefail
-
-# ------------------------------------------------------------------------------
-# SECTION: VARIABLES & CONSTANTS
-# ------------------------------------------------------------------------------
-
-# Dynamically determine the root directory of the dotfiles repository.
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-readonly HELPERS_LIB="$DOTFILES_DIR/lib/helpers.sh"
+# Source the centralized initialization script to set up the environment,
+# which includes setting shell options, defining global constants, and
+# loading helper functions.
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/init.sh"
 
 # ------------------------------------------------------------------------------
 # SECTION: FUNCTIONS
@@ -47,15 +39,6 @@ readonly HELPERS_LIB="$DOTFILES_DIR/lib/helpers.sh"
 #   Main function to execute all macOS configuration settings.
 ###
 main() {
-  # Source the helper library
-  if [[ -f "$HELPERS_LIB" ]]; then
-    # shellcheck source=/dev/null
-    source "$HELPERS_LIB"
-  else
-    echo "Error: Helper library not found at $HELPERS_LIB" >&2
-    exit 1
-  fi
-
   msg_info "Configuring macOS defaults..."
 
   # ----------------------------------------------------------------------------
