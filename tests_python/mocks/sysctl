@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+if [[ "$2" == "hw.model" ]]; then
+  echo "MacBookPro18,1"
+elif [[ "$2" == "machdep.cpu.brand_string" ]]; then
+  echo "Apple M1 Pro"
+elif [[ "$2" == "hw.memsize" ]]; then
+  echo "17179869184"
+else
+  exit 1
+fi

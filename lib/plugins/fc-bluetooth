@@ -28,12 +28,14 @@ usage() {
 
 # --- Main Logic -------------------------------------------------------------
 main() {
+  local blueutil_cmd=${BLUEUTIL_CMD:-blueutil}
+
   if [ -z "$1" ] || [ "$1" == "--help" ]; then
     usage
   fi
 
   # Dependency Check: Ensure blueutil is installed before proceeding.
-  if ! command -v "blueutil" >/dev/null 2>&1; then
+  if ! command -v "$blueutil_cmd" >/dev/null 2>&1; then
     die "The 'blueutil' command is required but not found. Please run the main installer."
   fi
 
@@ -42,18 +44,18 @@ main() {
   case "$ACTION" in
     on)
       msg_info "Turning Bluetooth on..."
-      blueutil --power 1
+      "$blueutil_cmd" --power 1
       msg_success "Bluetooth is now on."
       ;;
     off)
       msg_info "Turning Bluetooth off..."
-      blueutil --power 0
+      "$blueutil_cmd" --power 0
       msg_success "Bluetooth is now off."
       ;;
     status)
       msg_info "Checking Bluetooth status..."
       local power_state
-      power_state=$(blueutil --power)
+      power_state=$("$blueutil_cmd" --power)
       if [ "$power_state" -eq 1 ]; then
         msg_success "Bluetooth is currently on."
       else

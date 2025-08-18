@@ -41,16 +41,19 @@ usage() {
 # --- Command Logic ---
 
 do_backup() {
+  local brew_cmd=${BREW_CMD:-brew}
+  local tar_cmd=${TAR_CMD:-tar}
+  local mktemp_cmd=${MKTEMP_CMD:-mktemp}
   if [ "$GPG_RECIPIENT_ID" == "YOUR_GPG_KEY_ID_HERE" ]; then
     die "GPG_RECIPIENT_ID is not configured. Please edit the sync plugin to set it."
   fi
 
   local temp_backup_dir
-  temp_backup_dir=$(mktemp -d)
+  temp_backup_dir=$($mktemp_cmd -d)
   msg_info "Created temporary backup directory: $temp_backup_dir"
 
   msg_info "Creating application inventory..."
-  brew bundle dump --force --file="$temp_backup_dir/Brewfile.dump"
+  "$brew_cmd" bundle dump --force --file="$temp_backup_dir/Brewfile.dump"
 
   msg_info "Backing up critical files..."
   for target in "${BACKUP_TARGETS[@]}"; do
@@ -63,7 +66,7 @@ do_backup() {
 
   msg_info "Creating and encrypting backup archive..."
   local final_archive_path="$BACKUP_DEST_DIR/$BACKUP_ARCHIVE_NAME"
-  tar -czf - -C "$temp_backup_dir" . | gpg -e -r "$GPG_RECIPIENT_ID" -o "$final_archive_path"
+  "$tar_cmd" -czf - -C "$temp_backup_dir" . | "$gpg_cmd" -e -r "$GPG_RECIPIENT_ID" -o "$final_archive_path"
 
   msg_info "Cleaning up temporary files..."
   rm -rf "$temp_backup_dir"
@@ -107,15 +110,18 @@ do_restore() {
 
 # --- Main Dispatcher ---
 main() {
+  local gpg_cmd=${GPG_CMD:-gpg}
+  local rsync_cmd=${RSYNC_CMD:-rsync}
+
   if [ -z "$1" ] || [ "$1" == "--help" ]; then
     usage
   fi
 
-  if ! command -v gpg >/dev/null 2>&1; then
+  if ! command -v "$gpg_cmd" >/dev/null 2>&1; then
     die "GPG is not installed. Please run 'brew install gpg-suite'."
   fi
 
-  if ! command -v rsync >/dev/null 2>&1; then
+  if ! command -v "$rsync_cmd" >/dev/null 2>&1; then
     die "This command requires 'rsync'. Please install it first."
   fi
 

@@ -24,6 +24,12 @@ usage() {
 
 # --- Main Logic -------------------------------------------------------------
 main() {
+  # Allow overriding commands for testing purposes.
+  local sw_vers_cmd=${SW_VERS_CMD:-sw_vers}
+  local sysctl_cmd=${SYSCTL_CMD:-sysctl}
+  local hostname_cmd=${HOSTNAME_CMD:-hostname}
+  local uptime_cmd=${UPTIME_CMD:-uptime}
+
   if [ "$1" == "--help" ]; then
     usage
   fi
@@ -33,19 +39,19 @@ main() {
 
   # --- Software Info ---
   msg_info "Software:"
-  echo "  OS Version:   $(sw_vers -productName) $(sw_vers -productVersion) ($(sw_vers -buildVersion))"
-  echo "  Hostname:     $(hostname)"
-  echo "  Uptime:       $(uptime | awk -F, '{print $1}' | cut -d' ' -f 4-)"
+  echo "  OS Version:   $($sw_vers_cmd -productName) $($sw_vers_cmd -productVersion) ($($sw_vers_cmd -buildVersion))"
+  echo "  Hostname:     $($hostname_cmd)"
+  echo "  Uptime:       $($uptime_cmd | awk -F, '{print $1}' | cut -d' ' -f 4-)"
 
   # --- Hardware Info ---
   echo ""
   msg_info "Hardware:"
-  echo "  Model:        $(sysctl -n hw.model)"
-  echo "  CPU:          $(sysctl -n machdep.cpu.brand_string)"
+  echo "  Model:        $($sysctl_cmd -n hw.model)"
+  echo "  CPU:          $($sysctl_cmd -n machdep.cpu.brand_string)"
   
   # Get memory size in bytes and convert to GB
   local mem_bytes
-  mem_bytes=$(sysctl -n hw.memsize)
+  mem_bytes=$($sysctl_cmd -n hw.memsize)
   local mem_gb=$((mem_bytes / 1024 / 1024 / 1024))
   echo "  Memory:       ${mem_gb} GB"
 
