@@ -14,39 +14,32 @@ The installer is built on three core principles:
 
 ## Execution Flow
 
-The installation process begins with the `init.sh` script, which provides a crucial safety layer.
+The installation process begins with the `install.sh` script itself.
 
-1.  **`init.sh` (The Safety Wrapper):** This script's only job is to make the main `install.sh` script executable, run it, and then use a `trap` to guarantee that `install.sh` is returned to a non-executable state upon exit. This prevents accidental runs.
-
-2.  **`install.sh` (The Orchestrator):** This is the main installer. It performs the following actions:
-    *   Parses command-line arguments (like `--dry-run`).
+1.  **`install.sh` (The Orchestrator):** This is the main installer. It performs the following actions:
+    *   Parses command-line arguments (like `--dry-run` or `--silent`).
     *   Sources the helper and configuration libraries (`/lib`).
     *   Iterates through the `INSTALL_STAGES` array, sourcing each stage script in its logical order.
 
 ## Directory Structure
 
 -   `bin/`: Contains the main `fc` executable for the custom CLI.
--   `defaults/`: Contains scripts that configure macOS application and system preferences using the `defaults` command.
--   `etc/`: Contains static configuration files, most importantly the `Brewfile`.
+-   `docs/`: Contains all project documentation.
 -   `install/`: Contains the staged installation scripts.
-    -   `install/management/`: Modular scripts for Git repository management (Stage 5).
-    -   `install/tools/`: Scripts for installing individual software packages.
-    -   `install/tools/homebrew/`: Modular scripts for the Homebrew setup process.
 -   `lib/`: Contains shared shell libraries.
-    -   `lib/commands/`: The individual subcommand scripts for the `fc` CLI.
-    -   `lib/installer_source/`: Scripts sourced by the installer to add functions/aliases to its own environment.
+    -   `lib/plugins/`: Contains all the executable plugin scripts for the `fc` command.
 -   `profiles/`: Contains the dotfiles themselves, organized by shell (`sh`, `bash`, `zsh`).
--   `security/`: Contains scripts that apply security-focused configurations.
--   `system/`: Contains scripts that apply low-level system settings using commands like `pmset`.
+-   `roles/`: Contains the role-specific configurations.
+-   `system/`: Contains modular scripts for base system configuration.
 -   `tests/`: Contains the Bats test files for the project.
 
-## `fc` CLI Architecture
+## `fc` CLI Architecture: A Plugin-Based System
 
-The `fc` command uses a classic **dispatcher pattern**.
+The `fc` command uses a modern and highly extensible **plugin-based architecture**.
 
-1.  The main `bin/fc` script is the entry point. It does not contain any command logic itself.
-2.  It inspects the first argument (e.g., `bluetooth`).
-3.  It then searches for and executes a corresponding script in the `lib/commands/` directory (e.g., `lib/commands/fc-bluetooth`).
-4.  All subsequent arguments are passed directly to the subcommand script.
+1.  The main `bin/fc` script is a pure **dispatcher**. Its only job is to find and execute the correct plugin.
+2.  It scans the `lib/plugins/` directory for any **executable file**.
+3.  Each executable file found in this directory is automatically registered as a subcommand. For example, the script `lib/plugins/info` is available as `fc info`.
+4.  The dispatcher then transfers control to the plugin script, passing along all subsequent arguments.
 
-This pattern makes the CLI incredibly easy to extend. To add a new command, you simply create a new `fc-*` file in the `lib/commands/` directory.
+This pattern makes the CLI incredibly easy to extend. To add a new command, you simply create a new executable file in the `lib/plugins/` directory. For more details, see the [Creating Plugins Guide](CREATING_PLUGINS.md).
