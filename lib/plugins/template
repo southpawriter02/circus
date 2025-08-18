@@ -11,24 +11,24 @@
 # ==============================================================================
 
 # --- Setup ------------------------------------------------------------------
-
-# Exit immediately if a command exits with a non-zero status.
-set -e
+# Source the helper library to get the error handling and logging functions.
+# This will also enable `set -e` and the global error trap.
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
 # --- Help and Usage ---------------------------------------------------------
 
 # Display a help message for this specific subcommand.
 usage() {
-  echo "Usage: fc template <action>"
+  msg_info "Usage: fc template <action>"
   echo ""
-  echo "A template for creating new commands."
+  msg_info "A template for creating new commands."
   echo ""
-  echo "Actions:"
+  msg_info "Actions:"
   echo "  on      - Turn the feature on."
   echo "  off     - Turn the feature off."
   echo "  status  - Show the current status."
   echo ""
-  exit 1
+  exit 0
 }
 
 # --- Main Logic -------------------------------------------------------------
@@ -46,21 +46,23 @@ main() {
   # Use a case statement to handle the different actions.
   case "$ACTION" in
     on)
-      echo "Turning the feature on..."
+      msg_info "Turning the feature on..."
       # TODO: Add the logic to turn the feature on.
+      msg_success "Feature is now on."
       ;;
     off)
-      echo "Turning the feature off..."
+      msg_info "Turning the feature off..."
       # TODO: Add the logic to turn the feature off.
+      msg_success "Feature is now off."
       ;;
     status)
-      echo "Checking the status..."
+      msg_info "Checking the status..."
       # TODO: Add the logic to check the status.
+      msg_success "Status is OK."
       ;;
     *)
-      # Handle any unknown actions.
-      echo "Error: Unknown action '$ACTION'" >&2
-      usage
+      # Handle any unknown actions using the standardized `die` function.
+      die "Unknown action '$ACTION'. Run 'fc template --help' for available actions."
       ;;
   esac
 }

@@ -11,24 +11,27 @@
 # ==============================================================================
 
 # --- Setup ------------------------------------------------------------------
-set -e
+# Source the helper library to get the error handling and logging functions.
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
+# The directory where we store state files like PIDs.
+readonly STATE_DIR="$HOME/.circus"
 # The file where we store the process ID (PID) of the background caffeinate process.
-readonly PID_FILE="$HOME/.circus/caffeinate.pid"
+readonly PID_FILE="$STATE_DIR/caffeinate.pid"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
-  echo "Usage: fc caffeine <action> [duration]"
+  msg_info "Usage: fc caffeine <action> [duration]"
   echo ""
-  echo "Prevents the system from sleeping."
+  msg_info "Prevents the system from sleeping."
   echo ""
-  echo "Actions:"
+  msg_info "Actions:"
   echo "  on        - Prevent sleep indefinitely. Runs in the background."
   echo "  off       - Allow the system to sleep again."
   echo "  for [min] - Prevent sleep for a specific number of minutes."
   echo "  status    - Check if caffeine is currently active."
   echo ""
-  exit 1
+  exit 0
 }
 
 # --- Main Logic -------------------------------------------------------------
@@ -42,48 +45,49 @@ main() {
   case "$ACTION" in
     on)
       if [ -f "$PID_FILE" ]; then
-        echo "Caffeine is already active. Run 'fc caffeine off' to disable it."
+        msg_warning "Caffeine is already active. Run 'fc caffeine off' to disable it."
         exit 0
       fi
-      echo "Preventing sleep indefinitely. Run 'fc caffeine off' to restore normal behavior."
-      # -d: Prevent display sleep
-      # -i: Prevent system idle sleep
-      # -s: Prevent disk idle sleep (on AC power)
+      msg_info "Preventing sleep indefinitely. Run 'fc caffeine off' to restore normal behavior."
+      # Ensure the state directory exists.
+      mkdir -p "$STATE_DIR"
+      # -d: Prevent display sleep, -i: Prevent system idle sleep, -s: Prevent disk idle sleep
       caffeinate -dis & 
       # Save the PID of the background process to our file.
       echo $! > "$PID_FILE"
+      msg_success "Caffeine is now ON."
       ;;
     off)
       if [ ! -f "$PID_FILE" ]; then
-        echo "Caffeine is not currently active."
+        msg_warning "Caffeine is not currently active."
         exit 0
       fi
-      echo "Allowing the system to sleep normally again."
+      msg_info "Allowing the system to sleep normally again..."
       # Read the PID from the file and kill the process.
       kill "$(cat "$PID_FILE")"
       rm "$PID_FILE"
+      msg_success "Caffeine is now OFF."
       ;;
     for)
       if [ -z "$2" ]; then
-        echo "Error: Please provide a duration in minutes." >&2
-        usage
+        die "Please provide a duration in minutes."
       fi
       local minutes="$2"
       local seconds=$((minutes * 60))
-      echo "Preventing sleep for $minutes minutes..."
+      msg_info "Preventing sleep for $minutes minutes..."
       # -t: Specifies the timeout in seconds.
       caffeinate -dit "$seconds"
+      msg_success "Caffeine will remain active for $minutes minutes."
       ;;
     status)
       if [ -f "$PID_FILE" ]; then
-        echo "Caffeine is ON (preventing sleep indefinitely). PID: $(cat "$PID_FILE")"
+        msg_success "Caffeine is ON (preventing sleep indefinitely). PID: $(cat "$PID_FILE")"
       else
-        echo "Caffeine is OFF."
+        msg_warning "Caffeine is OFF."
       fi
       ;;
     *)
-      echo "Error: Unknown action '$ACTION'" >&2
-      usage
+      die "Unknown action '$ACTION'. Run 'fc caffeine --help' for available actions."
       ;;
   esac
 }

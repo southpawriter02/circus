@@ -9,22 +9,23 @@
 # ==============================================================================
 
 # --- Setup ------------------------------------------------------------------
-set -e
+# Source the helper library to get the error handling and logging functions.
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
-  echo "Usage: fc dns <action> [dns_servers...]"
+  msg_info "Usage: fc dns <action> [dns_servers...]"
   echo ""
-  echo "Manages the DNS settings for the active network service."
-  echo "This command requires administrator privileges to change settings."
+  msg_info "Manages the DNS settings for the active network service."
+  msg_info "This command requires administrator privileges to change settings."
   echo ""
-  echo "Actions:"
+  msg_info "Actions:"
   echo "  get             - Show the current DNS servers."
   echo "  set <ip>...     - Set one or more custom DNS servers (e.g., 8.8.8.8 1.1.1.1)."
   echo "  clear           - Clear custom DNS servers, reverting to the default."
   echo "  status          - Alias for 'get'."
   echo ""
-  exit 1
+  exit 0
 }
 
 # --- Main Logic -------------------------------------------------------------
@@ -34,40 +35,38 @@ main() {
   fi
 
   # Find the active network service (e.g., Wi-Fi, Ethernet).
+  # The `|| true` is important here to prevent `set -e` from exiting if grep finds no match.
   local service
-  service=$(networksetup -listallnetworkservices | grep -i 'connected' | head -n 1)
+  service=$(networksetup -listallnetworkservices | grep -i 'connected' | head -n 1 || true)
 
   if [ -z "$service" ]; then
-    echo "Error: No active network service found." >&2
-    exit 1
+    die "No active and connected network service found."
   fi
-  echo "Active network service: $service"
+  msg_info "Active network service: $service"
 
   ACTION="$1"
   shift # Remove the action from the argument list
 
   case "$ACTION" in
     get|status)
-      echo "Current DNS servers:"
+      msg_info "Current DNS servers:"
       networksetup -getdnsservers "$service"
       ;;
     set)
       if [ -z "$1" ]; then
-        echo "Error: You must provide at least one DNS server IP address." >&2
-        usage
+        die "You must provide at least one DNS server IP address."
       fi
-      echo "Setting DNS servers to: $@"
+      msg_info "Setting DNS servers to: $@"
       sudo networksetup -setdnsservers "$service" "$@"
-      echo "DNS servers have been updated."
+      msg_success "DNS servers have been updated."
       ;;
     clear)
-      echo "Clearing DNS servers..."
+      msg_info "Clearing DNS servers..."
       sudo networksetup -setdnsservers "$service" "Empty"
-      echo "DNS servers have been cleared. The system will now use the default (DHCP-provided) servers."
+      msg_success "DNS servers have been cleared. The system will now use the default (DHCP-provided) servers."
       ;;
     *)
-      echo "Error: Unknown action '$ACTION'" >&2
-      usage
+      die "Unknown action '$ACTION'. Run 'fc dns --help' for available actions."
       ;;
   esac
 }

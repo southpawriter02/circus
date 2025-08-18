@@ -9,21 +9,22 @@
 # ==============================================================================
 
 # --- Setup ------------------------------------------------------------------
-set -e
+# Source the helper library to get the error handling and logging functions.
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
-  echo "Usage: fc airdrop <action>"
+  msg_info "Usage: fc airdrop <action>"
   echo ""
-  echo "Manages AirDrop visibility."
+  msg_info "Manages AirDrop visibility."
   echo ""
-  echo "Actions:"
+  msg_info "Actions:"
   echo "  on        - Enable AirDrop for everyone."
   echo "  off       - Disable AirDrop."
   echo "  contacts  - Enable AirDrop for contacts only."
   echo "  status    - Show the current AirDrop status."
   echo ""
-  exit 1
+  exit 0
 }
 
 # --- Main Logic -------------------------------------------------------------
@@ -36,29 +37,28 @@ main() {
 
   case "$ACTION" in
     on)
-      echo "Enabling AirDrop for everyone..."
+      msg_info "Enabling AirDrop for everyone..."
       defaults write com.apple.sharingd DiscoverableMode -string "Everyone"
-      echo "AirDrop is now discoverable by everyone."
+      msg_success "AirDrop is now discoverable by everyone."
       ;;
     off)
-      echo "Disabling AirDrop..."
+      msg_info "Disabling AirDrop..."
       defaults write com.apple.sharingd DiscoverableMode -string "Off"
-      echo "AirDrop is now off."
+      msg_success "AirDrop is now off."
       ;;
     contacts)
-      echo "Enabling AirDrop for contacts only..."
+      msg_info "Enabling AirDrop for contacts only..."
       defaults write com.apple.sharingd DiscoverableMode -string "Contacts Only"
-      echo "AirDrop is now discoverable by contacts only."
+      msg_success "AirDrop is now discoverable by contacts only."
       ;;
     status)
-      echo "Checking AirDrop status..."
+      msg_info "Checking AirDrop status..."
       local mode
       mode=$(defaults read com.apple.sharingd DiscoverableMode)
-      echo "AirDrop is currently set to: $mode"
+      msg_success "AirDrop is currently set to: $mode"
       ;;
     *)
-      echo "Error: Unknown action '$ACTION'" >&2
-      usage
+      die "Unknown action '$ACTION'. Run 'fc airdrop --help' for available actions."
       ;;
   esac
 }

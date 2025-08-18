@@ -10,15 +10,16 @@
 # ==============================================================================
 
 # --- Setup ------------------------------------------------------------------
-set -e
+# Source the helper library to get the error handling and logging functions.
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
-  echo "Usage: fc info"
+  msg_info "Usage: fc info"
   echo ""
-  echo "Displays a summary of the system's configuration."
+  msg_info "Displays a summary of the system's configuration."
   echo ""
-  exit 1
+  exit 0
 }
 
 # --- Main Logic -------------------------------------------------------------
@@ -27,18 +28,18 @@ main() {
     usage
   fi
 
-  echo "Gathering system information..."
+  msg_info "Gathering system information..."
   echo ""
 
   # --- Software Info ---
-  echo "Software:"
+  msg_info "Software:"
   echo "  OS Version:   $(sw_vers -productName) $(sw_vers -productVersion) ($(sw_vers -buildVersion))"
   echo "  Hostname:     $(hostname)"
   echo "  Uptime:       $(uptime | awk -F, '{print $1}' | cut -d' ' -f 4-)"
 
   # --- Hardware Info ---
   echo ""
-  echo "Hardware:"
+  msg_info "Hardware:"
   echo "  Model:        $(sysctl -n hw.model)"
   echo "  CPU:          $(sysctl -n machdep.cpu.brand_string)"
   
@@ -48,6 +49,8 @@ main() {
   local mem_gb=$((mem_bytes / 1024 / 1024 / 1024))
   echo "  Memory:       ${mem_gb} GB"
 
+  echo ""
+  msg_success "System information gathering complete."
 }
 
 main "$@"
