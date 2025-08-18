@@ -8,18 +8,9 @@ The installer is built on three core principles:
 
 1.  **Staged Execution:** The installation process is broken down into a series of numbered stages (e.g., `01-`, `02-`, etc.). This makes the process predictable, repeatable, and easy to debug. The order of these stages is defined in the `INSTALL_STAGES` array in the main `install.sh` script.
 
-2.  **Modularity:** The installer is designed to be highly modular. Instead of having one monolithic script, the logic is broken down into small, focused files. For user-configurable settings, the installer uses an orchestrator pattern with dedicated directories (`/system`, `/defaults`, `/security`). To add a new power management setting, for example, you simply edit the script in `/system`; you don't need to touch the core installer logic.
+2.  **Modularity:** The installer is designed to be highly modular. Instead of having one monolithic script, the logic is broken down into small, focused files. For user-configurable settings, the installer uses an orchestrator pattern with dedicated directories (`/system`, `/defaults`, `/security`).
 
 3.  **Idempotence:** The scripts are designed to be run multiple times without causing harm. They check for the existence of files, packages, and settings before attempting to create or install them. This makes the installer safe to re-run to update a system.
-
-## Execution Flow
-
-The installation process begins with the `install.sh` script itself.
-
-1.  **`install.sh` (The Orchestrator):** This is the main installer. It performs the following actions:
-    *   Parses command-line arguments (like `--dry-run` or `--silent`).
-    *   Sources the helper and configuration libraries (`/lib`).
-    *   Iterates through the `INSTALL_STAGES` array, sourcing each stage script in its logical order.
 
 ## Directory Structure
 
@@ -28,10 +19,22 @@ The installation process begins with the `install.sh` script itself.
 -   `install/`: Contains the staged installation scripts.
 -   `lib/`: Contains shared shell libraries.
     -   `lib/plugins/`: Contains all the executable plugin scripts for the `fc` command.
--   `profiles/`: Contains the dotfiles themselves, organized by shell (`sh`, `bash`, `zsh`).
+-   `profiles/`: Contains the dotfiles themselves.
+    -   `profiles/zsh/zshrc.symlink`: The main `.zshrc` file that loads and configures Oh My Zsh.
+    -   `profiles/zsh/oh-my-zsh-custom/`: The source for our custom Oh My Zsh plugin.
 -   `roles/`: Contains the role-specific configurations.
 -   `system/`: Contains modular scripts for base system configuration.
 -   `tests/`: Contains the Bats test files for the project.
+
+## Shell Environment: Oh My Zsh
+
+The shell environment is built upon **Oh My Zsh**, a popular and robust framework for managing Zsh configuration. This provides several key advantages:
+
+*   **Extensibility:** We gain access to a massive ecosystem of community-developed plugins and themes.
+*   **Stability:** The core of the shell environment is maintained by the large Oh My Zsh community.
+*   **Clean Customization:** All of this project's custom aliases, environment variables, and functions are neatly encapsulated in a single custom plugin named `circus`, which is located in `profiles/zsh/oh-my-zsh-custom/circus`.
+
+The installation process automatically clones the Oh My Zsh repository, symlinks the custom `circus` plugin into place, and deploys the `.zshrc` file that activates it.
 
 ## `fc` CLI Architecture: A Plugin-Based System
 

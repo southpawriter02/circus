@@ -114,8 +114,6 @@ main() {
     "09-dotfiles-deployment.sh"
     "10-git-configuration.sh"
     "11-defaults-and-additional-configuration.sh"
-    "12-aliases-configuration.sh"
-    "13-env-configuration.sh"
     "16-jetbrains-configuration.sh"
     "17-secrets-management.sh"
     "14-cleanup.sh"

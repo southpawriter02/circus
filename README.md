@@ -1,13 +1,15 @@
 # Dotfiles Flying Circus
 
-This repository contains my personal dotfiles and a comprehensive, automated installer for setting up a new macOS device. The installer is designed to be modular, idempotent, and safe.
+This repository contains my personal dotfiles and a comprehensive, automated installer for setting up a new macOS device. It is built upon the **Oh My Zsh** framework to provide a powerful, extensible, and community-maintained shell experience.
 
 ## Features
 
+*   **Framework-Based Shell:** Built on Oh My Zsh and features a custom `circus` plugin that cleanly encapsulates all custom aliases, functions, and environment variables.
+*   **Extensible CLI Platform:** Includes a custom `fc` command built on a clean plugin architecture. Adding new commands is as simple as creating a new executable file.
 *   **Role-Based Installation:** Use roles (`developer`, `personal`, `work`) to install different sets of applications and configurations for different machines.
 *   **Deep System Configuration:** Automates the configuration of the Finder, Dock, keyboard, and other system-level preferences.
 *   **Automated Security Hardening:** Automatically configures the macOS firewall, screen saver security, and other security settings for a safer default environment.
-*   **Secure Secrets Management:** Integrates with 1Password to securely fetch and deploy API tokens and other sensitive credentials into the macOS Keychain.
+*   **Secure Secrets Management:** Integrates with 1Password to securely fetch and deploy API tokens into the macOS Keychain.
 *   **Encrypted Backup & Restore System:** A powerful `fc sync` command to create an end-to-end encrypted backup of your applications and data.
 *   **Comprehensive Testing:** A full test suite using `bats-core` and `shellcheck` to ensure the reliability and security of the entire codebase.
 
@@ -31,32 +33,14 @@ Setting up a new machine is a simple, guided process.
     ./install.sh --role developer
     ```
 
-## Usage (`fc` command)
-
-This repository includes a custom command-line utility, `fc`, for system management. For detailed usage instructions, please see the [Commands Guide](COMMANDS.md).
-
-```sh
-# Display system information
-fc info
-
-# Create an encrypted backup of your system state
-fc sync backup
-```
-
-## Testing
-
-The project includes a full test suite. To run the tests, first ensure you have installed the base dependencies with `./install.sh`, then run:
-
-```sh
-bats tests/
-```
-
 ## Documentation
 
 This project is extensively documented. Please see the following guides for more information:
 
+-   **[Architecture Guide](docs/ARCHITECTURE.md):** A deep dive into the design philosophy and technical architecture of the installer, shell, and CLI.
 -   **[Roles Guide](ROLES.md):** An explanation of the role-based installation system and how to create new roles.
 -   **[Commands Guide](COMMANDS.md):** A detailed user manual for the custom `fc` command-line interface.
+-   **[Creating Plugins Guide](docs/CREATING_PLUGINS.md):** A guide for developers who want to create their own plugins for the `fc` command.
 
 ## Inspiration and Resources
 
@@ -64,11 +48,6 @@ This repository stands on the shoulders of giants. It draws inspiration from man
 
 ### Inspired by
 
+-   [Oh My Zsh](https://ohmyz.sh/): The framework that now powers our shell environment.
 -   [Mathias Bynens' dotfiles](https://github.com/mathiasbynens/dotfiles): One of the most popular and comprehensive dotfiles repositories, serving as a canonical source for macOS `defaults` commands.
 -   [Zach Holman's dotfiles](https://github.com/holman/dotfiles): A project that popularized a topic-based, modular approach to dotfiles management.
-
-### Key macOS Commands
-
--   [`defaults`](https://ss64.com/osx/defaults.html): The primary tool for modifying macOS user preferences.
--   [`pmset`](https://ss64.com/osx/pmset.html): A powerful command for managing power settings.
--   [`spctl`](https://ss64.com/osx/spctl.html): The command-line interface for managing Gatekeeper and security policies.

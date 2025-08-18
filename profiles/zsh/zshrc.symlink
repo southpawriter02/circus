@@ -7,46 +7,29 @@
 #
 # ==============================================================================
 
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time Oh My Zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
+# Set name of the theme to load.
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="robbyrussell"
 
-# Set list of plugins to load (Oh My Zsh comes with a lot of plugins).
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Plugins
+# Set list of plugins to load.
+# The order is important. The custom 'circus' plugin is loaded last so that
+# it can override any settings from the default plugins if needed.
 plugins=(
+  # Standard plugins that come with Oh My Zsh
   git
   common-aliases
   macos
-  # Add other plugins here...
+
+  # The custom plugin for the Dotfiles Flying Circus
+  circus
 )
 
 # Load Oh My Zsh.
 source "$ZSH/oh-my-zsh.sh"
 
 # User configuration
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# Set personal aliases, overriding those provided by plugins
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+# You can add any personal overrides or configurations here, after Oh My Zsh
+# and all plugins have been loaded.
