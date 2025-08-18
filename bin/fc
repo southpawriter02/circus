@@ -8,59 +8,79 @@
 #               of custom shell commands. It uses a plugin-based architecture
 #               to discover and execute subcommands.
 #
-# USAGE:        fc <command> [options]
+# USAGE:        fc [global options] <command> [command options]
 #
 # ==============================================================================
 
 # --- Setup & Configuration --------------------------------------------------
-
-# Source the helper library. This is critical as it sets up our error handling
-# (set -e, traps) and provides the logging functions.
-# The path is relative to the script's location.
+# Source the helper library to get error handling and logging functions.
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
-# Define the absolute path to the directory where plugins are stored.
 readonly PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib/plugins"
 
 # --- Help and Usage ---------------------------------------------------------
-
-# @description
-#   Displays a general help message that dynamically lists all available
-#   commands (plugins) and then exits.
 usage() {
-  msg_info "Usage: fc <command> [options]"
+  msg_info "Usage: fc [global options] <command> [command options]"
+  echo ""
+  msg_info "Global Options:"
+  echo "  --log-file <path>  Redirect all log output to the specified file."
+  echo "  --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR)."
   echo ""
   msg_info "A modular, plugin-based command-line utility for system management."
   echo ""
   msg_info "Available commands:"
-
-  # Scan the plugin directory for all executable files and print them.
-  find "$PLUGIN_DIR" -maxdepth 1 -type f -executable -exec basename {} \; | sort | awk '{printf "  - %s\n", $1}'
-
+  find "$PLUGIN_DIR" -maxdepth 1 -type f -executable -exec basename {} \; | sort
   echo ""
   msg_info "Run 'fc <command> --help' for more information on a specific command."
   exit 0
 }
 
-# --- Dispatcher Logic -------------------------------------------------------
+# --- Main Dispatcher Logic --------------------------------------------------
 
-# If no arguments are provided, display the main usage message.
+# First, parse any global options before we look for the subcommand.
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --log-file)
+      export LOG_FILE_PATH="$2"
+      mkdir -p "$(dirname "$LOG_FILE_PATH")"
+      touch "$LOG_FILE_PATH"
+      shift 2
+      ;;
+    --log-level)
+      level_name=$(echo "$2" | tr '[:lower:]' '[:upper:]')
+      case "$level_name" in
+        DEBUG) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_DEBUG ;; 
+        INFO) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_INFO ;; 
+        WARN) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_WARN ;; 
+        ERROR) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_ERROR ;; 
+        CRITICAL) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL ;; 
+        *) die "Invalid log level: $2. Use DEBUG, INFO, WARN, or ERROR." ;;
+      esac
+      shift 2
+      ;;
+    --help)
+      usage
+      ;;
+    # If the argument is not a recognized flag, we assume it's the subcommand.
+    *)
+      break
+      ;;
+  esac
+done
+
+# If no arguments are left, it means no subcommand was provided.
 if [ -z "$1" ]; then
   usage
 fi
 
-# The first argument is the potential subcommand.
+# The first remaining argument is the subcommand.
 SUBCOMMAND="$1"
-
-# Construct the full, absolute path to the corresponding plugin script.
 PLUGIN_SCRIPT="$PLUGIN_DIR/$SUBCOMMAND"
 
-# Check if a plugin script exists at the constructed path and is executable.
+# Check if the plugin script exists and is executable.
 if [ -x "$PLUGIN_SCRIPT" ]; then
-  # If the plugin is valid, transfer control to it.
   shift
   exec "$PLUGIN_SCRIPT" "$@"
 else
-  # If no valid plugin was found, use the `die` function to exit gracefully.
   die "Unknown command '$SUBCOMMAND'. Run 'fc --help' to see a list of available commands."
 fi
