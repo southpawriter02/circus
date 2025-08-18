@@ -17,6 +17,11 @@ brew "postgresql"
 # MariaDB database (MySQL-compatible)
 brew "mariadb"
 
+# --- Developer Tools --------------------------------------------------------
+
+# Git hooks manager for code quality
+brew "pre-commit"
+
 # --- Casks (GUI Applications) -----------------------------------------------
 
 # .NET/C# Development SDK

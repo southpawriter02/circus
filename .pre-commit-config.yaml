@@ -1,0 +1,46 @@
+# ==============================================================================
+#
+# FILE:         .pre-commit-config.yaml
+#
+# DESCRIPTION:  Configuration for the pre-commit framework. This file defines
+#               the Git hooks that are run automatically before each commit
+#               to enforce code quality and prevent regressions.
+#
+# ==============================================================================
+
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+repos:
+  # - repo: https://github.com/pre-commit/pre-commit-hooks
+  #   rev: v4.3.0
+  #   hooks:
+  #     - id: trailing-whitespace
+  #     - id: end-of-file-fixer
+  #     - id: check-yaml
+  #     - id: check-added-large-files
+
+  - repo: https://github.com/koalaman/shellcheck-pre-commit
+    rev: v0.8.0
+    hooks:
+      - id: shellcheck
+        # We exclude the template file, as it may contain placeholder errors.
+        exclude: "^lib/plugins/template$"
+
+  - repo: https://github.com/mvdan/sh
+    rev: v3.5.1
+    hooks:
+      - id: shfmt
+        # Format shell scripts to a consistent style.
+        args: [-i, "2", -s, -w]
+
+  - repo: local
+    hooks:
+      - id: bats-tests
+        name: Run BATS Test Suite
+        entry: bats tests/
+        language: system
+        types: [shell]
+        # Run tests if any shell script or test file changes.
+        files: \.(sh|bats)$
+        pass_filenames: false

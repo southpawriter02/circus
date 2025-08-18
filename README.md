@@ -7,11 +7,12 @@ This repository contains my personal dotfiles and a comprehensive, automated ins
 *   **Framework-Based Shell:** Built on Oh My Zsh and features a custom `circus` plugin that cleanly encapsulates all custom aliases, functions, and environment variables.
 *   **Extensible CLI Platform:** Includes a custom `fc` command built on a clean plugin architecture. Adding new commands is as simple as creating a new executable file.
 *   **Role-Based Installation:** Use roles (`developer`, `personal`, `work`) to install different sets of applications and configurations for different machines.
+*   **Automated Quality Assurance:** Uses a `pre-commit` hook to automatically run `shellcheck`, format code, and run the `bats` test suite before every commit.
 *   **Deep System Configuration:** Automates the configuration of the Finder, Dock, keyboard, and other system-level preferences.
 *   **Automated Security Hardening:** Automatically configures the macOS firewall, screen saver security, and other security settings for a safer default environment.
 *   **Secure Secrets Management:** Integrates with 1Password to securely fetch and deploy API tokens into the macOS Keychain.
 *   **Encrypted Backup & Restore System:** A powerful `fc sync` command to create an end-to-end encrypted backup of your applications and data.
-*   **Comprehensive Testing:** A full test suite using `bats-core` and `shellcheck` to ensure the reliability and security of the entire codebase.
+*   **Comprehensive Testing:** A full test suite using `bats-core` to ensure the reliability and security of the entire codebase.
 
 ## Getting Started
 
@@ -33,6 +34,10 @@ Setting up a new machine is a simple, guided process.
     ./install.sh --role developer
     ```
 
+## Contributing
+
+Contributions are welcome! This project uses a `pre-commit` framework to enforce code quality and run tests. Please see the **[Contributing Guide](CONTRIBUTING.md)** for instructions on how to set up the development environment.
+
 ## Documentation
 
 This project is extensively documented. Please see the following guides for more information:
@@ -49,5 +54,6 @@ This repository stands on the shoulders of giants. It draws inspiration from man
 ### Inspired by
 
 -   [Oh My Zsh](https://ohmyz.sh/): The framework that now powers our shell environment.
+-   [pre-commit](https://pre-commit.com/): The framework used to manage our automated Git hooks.
 -   [Mathias Bynens' dotfiles](https://github.com/mathiasbynens/dotfiles): One of the most popular and comprehensive dotfiles repositories, serving as a canonical source for macOS `defaults` commands.
 -   [Zach Holman's dotfiles](https://github.com/holman/dotfiles): A project that popularized a topic-based, modular approach to dotfiles management.

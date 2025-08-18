@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         setup-dev
+#
+# DESCRIPTION:  This script sets up the local development environment for this
+#               project. It should be run after the main installer has been
+#               used with the 'developer' role.
+#
+# ==============================================================================
+
+# --- Setup ------------------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  msg_info "Setting up the development environment..."
+
+  # Check for the pre-commit command
+  if ! command -v pre-commit >/dev/null 2>&1; then
+    die "The 'pre-commit' command is not found. Please run './install.sh --role developer' first."
+  fi
+
+  # Install the git hooks
+  msg_info "Installing pre-commit hooks..."
+  pre-commit install
+
+  msg_success "Development environment setup is complete!"
+  msg_info "The pre-commit hooks will now run automatically before each commit."
+}
+
+main "$@"
