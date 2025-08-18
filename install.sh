@@ -105,12 +105,15 @@ main() {
   done
 
   # --- Finalization & State Management ----------------------------------------
-  # After a successful installation, record the installed role.
-  # This allows other commands (like `fc update`) to be context-aware.
+  # After a successful installation, record the repository root and the
+  # installed role. This allows other commands to be context-aware.
+  local state_dir="$HOME/.circus"
+  msg_info "Recording installation state in $state_dir..."
+  mkdir -p "$state_dir"
+  echo "$DOTFILES_ROOT" > "$state_dir/root"
+
   if [ -n "$INSTALL_ROLE" ]; then
-    local state_dir="$HOME/.circus"
-    msg_info "Recording installed role: $INSTALL_ROLE"
-    mkdir -p "$state_dir"
+    msg_info "  -> Recording installed role: $INSTALL_ROLE"
     echo "$INSTALL_ROLE" > "$state_dir/role"
   fi
 

@@ -13,7 +13,7 @@ alias di="docker images"
 alias drun="docker run -it"
 alias dexec="docker exec -it"
 alias dlogs="docker logs -f"
-dalias dstopall='docker stop $(docker ps -a -q)'
+alias dstopall='docker stop $(docker ps -a -q)'
 alias drmall='docker rm $(docker ps -a -q)'
 
 # Docker Compose
