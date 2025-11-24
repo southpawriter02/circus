@@ -25,16 +25,8 @@ brew "zsh"
 # The Bash shell
 brew "bash"
 
-# Testing framework and helpers
-brew "bats-core"
-brew "bats-support"
-brew "bats-assert"
-
 # Static analysis for shell scripts
 brew "shellcheck"
-
-# Dock management utility
-brew "dockutil"
 
 # --- Casks (GUI Applications) -----------------------------------------------
 

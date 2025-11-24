@@ -57,12 +57,12 @@ main() {
 
   # --- Symlinking ---
   # 1. Symlink base environment files for all roles.
-  local base_env_dir="$DOTFILES_DIR/profiles/env"
+  local base_env_dir="$DOTFILES_ROOT/profiles/env"
   symlink_env_from_dir "$base_env_dir" "$env_target_dir" "base"
 
   # 2. If a role is specified, symlink role-specific environment files.
   if [ -n "$INSTALL_ROLE" ]; then
-    local role_env_dir="$DOTFILES_DIR/roles/$INSTALL_ROLE/env"
+    local role_env_dir="$DOTFILES_ROOT/roles/$INSTALL_ROLE/env"
     symlink_env_from_dir "$role_env_dir" "$env_target_dir" "role-specific ($INSTALL_ROLE)"
   fi
 
