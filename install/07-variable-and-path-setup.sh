@@ -29,7 +29,7 @@ main() {
 
     if [ "$DRY_RUN_MODE" = true ]; then
       msg_info "[Dry Run] Would configure the shell environment for Homebrew by running:"
-      msg_info "[Dry Run] eval \"$brew_shellenv_command\""
+      msg_info "[Dry Run] eval "$brew_shellenv_command""
     else
       # We use `eval` to execute the output of the `brew shellenv` command.
       # This will export the correct PATH and other variables for this session.
