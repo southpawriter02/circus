@@ -57,12 +57,12 @@ main() {
 
   # --- Symlinking ---
   # 1. Symlink base aliases for all roles.
-  local base_aliases_dir="$DOTFILES_DIR/profiles/aliases"
+  local base_aliases_dir="$DOTFILES_ROOT/profiles/aliases"
   symlink_aliases_from_dir "$base_aliases_dir" "$aliases_target_dir" "base"
 
   # 2. If a role is specified, symlink role-specific aliases.
   if [ -n "$INSTALL_ROLE" ]; then
-    local role_aliases_dir="$DOTFILES_DIR/roles/$INSTALL_ROLE/aliases"
+    local role_aliases_dir="$DOTFILES_ROOT/roles/$INSTALL_ROLE/aliases"
     symlink_aliases_from_dir "$role_aliases_dir" "$aliases_target_dir" "role-specific ($INSTALL_ROLE)"
   fi
 

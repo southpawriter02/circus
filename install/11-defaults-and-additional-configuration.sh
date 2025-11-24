@@ -42,12 +42,12 @@ main() {
   msg_info "Stage 11: Defaults and Additional Configuration"
 
   # --- Apply Base Defaults ---
-  local base_defaults_dir="$DOTFILES_DIR/defaults"
+  local base_defaults_dir="$DOTFILES_ROOT/defaults"
   source_defaults_from_dir "$base_defaults_dir" "base"
 
   # --- Apply Role-Specific Defaults ---
   if [ -n "$INSTALL_ROLE" ]; then
-    local role_defaults_dir="$DOTFILES_DIR/roles/$INSTALL_ROLE/defaults"
+    local role_defaults_dir="$DOTFILES_ROOT/roles/$INSTALL_ROLE/defaults"
     source_defaults_from_dir "$role_defaults_dir" "role-specific ($INSTALL_ROLE)"
   fi
 

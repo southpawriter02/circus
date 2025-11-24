@@ -29,7 +29,7 @@ main() {
 
   # --- Role-Specific Summary ---
   if [ -n "$INSTALL_ROLE" ]; then
-    local role_dir="$DOTFILES_DIR/roles/$INSTALL_ROLE"
+    local role_dir="$DOTFILES_ROOT/roles/$INSTALL_ROLE"
     msg_info "Role-Specific Configuration Summary for '$INSTALL_ROLE':"
 
     [ -f "$role_dir/Brewfile" ] && msg_info "  - Applied role-specific Brewfile."

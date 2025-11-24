@@ -16,7 +16,7 @@
 main() {
   msg_info "Stage 8: Alias and Function Configuration"
 
-  local source_dir="$DOTFILES_DIR/lib/installer_source"
+  local source_dir="$DOTFILES_ROOT/lib/installer_source"
 
   # Check if the source directory exists. If not, there's nothing to do.
   if [ ! -d "$source_dir" ]; then

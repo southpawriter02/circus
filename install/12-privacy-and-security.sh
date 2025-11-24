@@ -15,7 +15,7 @@
 main() {
   msg_info "Stage 12: Privacy and Security"
 
-  local security_dir="$DOTFILES_DIR/security"
+  local security_dir="$DOTFILES_ROOT/security"
 
   # Check if the security configuration directory exists.
   if [ ! -d "$security_dir" ]; then

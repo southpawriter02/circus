@@ -43,7 +43,7 @@ main() {
   # @description: The directory where bundled archives are stored.
   # @customization: Place any archives you want to be automatically extracted
   #                into this directory within the repository.
-  local ARCHIVE_DIR="$DOTFILES_DIR/assets/archives"
+  local ARCHIVE_DIR="$DOTFILES_ROOT/assets/archives"
 
   # @description: An associative array mapping archive files to their extraction targets.
   # @customization: For each archive in the `$ARCHIVE_DIR`, add an entry here.

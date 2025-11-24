@@ -22,6 +22,9 @@ brew "mariadb"
 # Git hooks manager for code quality
 brew "pre-commit"
 
+# Testing framework (helpers are included as git submodules)
+brew "bats-core"
+
 # --- Casks (GUI Applications) -----------------------------------------------
 
 # .NET/C# Development SDK

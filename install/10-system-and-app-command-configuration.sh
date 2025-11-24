@@ -15,7 +15,7 @@
 main() {
   msg_info "Stage 10: System and App Command Configuration"
 
-  local system_config_dir="$DOTFILES_DIR/system"
+  local system_config_dir="$DOTFILES_ROOT/system"
 
   # Check if the system configuration directory exists.
   if [ ! -d "$system_config_dir" ]; then
