@@ -15,10 +15,10 @@
 source "$(dirname "${BASH_SOURCE[0]}")/lib/init.sh"
 
 # --- Global State Variables -------------------------------------------------
-DRY_RUN_MODE=false
-INTERACTIVE_MODE=true
-INSTALL_ROLE=""
-FORCE_MODE=false
+export DRY_RUN_MODE=false
+export INTERACTIVE_MODE=true
+export INSTALL_ROLE=""
+export FORCE_MODE=false
 
 # ==============================================================================
 # FUNCTIONS
