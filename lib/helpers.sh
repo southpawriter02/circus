@@ -103,8 +103,7 @@ log() {
       return 0
     fi
     local color_reset="\033[0m"
-    # Using direct format string in printf to avoid SC2059 shellcheck warning
-    # about dynamic format strings which could be security risks
+    # Using direct format string in printf to avoid SC2059 shellcheck warning about dynamic format strings
     if [ "$level_num" -ge "$LOG_LEVEL_ERROR" ]; then
       printf "${color_code}[%-8s]${color_reset} %s\n" "$level_name" "$message" >&2
     else

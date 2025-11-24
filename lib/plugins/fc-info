@@ -46,7 +46,7 @@ main() {
   else
     # Linux fallback
     if [ -f /etc/os-release ]; then
-      echo "  OS Version:   $(grep PRETTY_NAME /etc/os-release | cut -d'"' -f2)"
+      echo "  OS Version:   $(grep '^PRETTY_NAME=' /etc/os-release | cut -d'"' -f2)"
     else
       echo "  OS Version:   $(uname -s) $(uname -r)"
     fi
@@ -72,11 +72,11 @@ main() {
   else
     # Linux fallback
     if command -v lscpu >/dev/null 2>&1; then
-      echo "  CPU:          $(lscpu | grep "Model name" | cut -d':' -f2 | xargs)"
+      echo "  CPU:          $(lscpu | grep "^Model name:" | cut -d':' -f2 | xargs)"
     fi
     if [ -f /proc/meminfo ]; then
       local mem_kb
-      mem_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+      mem_kb=$(grep '^MemTotal:' /proc/meminfo | awk '{print $2}')
       local mem_gb=$((mem_kb / 1024 / 1024))
       echo "  Memory:       ${mem_gb} GB"
     fi

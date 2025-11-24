@@ -44,6 +44,7 @@ do_backup() {
   local brew_cmd=${BREW_CMD:-brew}
   local tar_cmd=${TAR_CMD:-tar}
   local mktemp_cmd=${MKTEMP_CMD:-mktemp}
+  local gpg_cmd=${GPG_CMD:-gpg}
 
   if [ "$GPG_RECIPIENT_ID" == "YOUR_GPG_KEY_ID_HERE" ]; then
     die "GPG_RECIPIENT_ID is not configured. Please edit the sync plugin to set it."
@@ -82,6 +83,7 @@ do_backup() {
 
 do_restore() {
   local brew_cmd=${BREW_CMD:-brew}
+  local gpg_cmd=${GPG_CMD:-gpg}
   local encrypted_archive_path="$BACKUP_DEST_DIR/$BACKUP_ARCHIVE_NAME"
 
   if [ ! -f "$encrypted_archive_path" ]; then
@@ -94,7 +96,7 @@ do_restore() {
 
   # The `set -e` option in helpers.sh will cause the script to exit if gpg fails.
   # The global error trap will provide a detailed error message.
-  gpg -d "$encrypted_archive_path" | tar -xzf - -C "$temp_restore_dir"
+  "$gpg_cmd" -d "$encrypted_archive_path" | tar -xzf - -C "$temp_restore_dir"
   msg_success "Decryption and extraction successful."
 
   msg_info "Restoring applications from inventory..."
