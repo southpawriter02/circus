@@ -28,7 +28,8 @@ symlink_aliases_from_dir() {
   alias_files=$(find "$source_dir" -name "*.aliases.sh" 2>/dev/null)
 
   for source_file in $alias_files; do
-    local target_file="$target_dir/$(basename "$source_file")"
+    local target_file
+    target_file="$target_dir/$(basename "$source_file")"
     if [ "$DRY_RUN_MODE" = true ]; then
       msg_info "[Dry Run] Would symlink '$source_file' to '$target_file'"
     else

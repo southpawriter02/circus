@@ -75,7 +75,8 @@ main() {
       echo "  CPU:          $(lscpu | grep "Model name" | cut -d':' -f2 | xargs)"
     fi
     if [ -f /proc/meminfo ]; then
-      local mem_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+      local mem_kb
+      mem_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
       local mem_gb=$((mem_kb / 1024 / 1024))
       echo "  Memory:       ${mem_gb} GB"
     fi

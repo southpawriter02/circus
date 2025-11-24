@@ -25,7 +25,8 @@ main() {
 
     # The `brew shellenv` command is the official way to get the necessary
     # environment variable exports to make Homebrew work.
-    local brew_shellenv_command="$(/opt/homebrew/bin/brew shellenv)"
+    local brew_shellenv_command
+    brew_shellenv_command="$(/opt/homebrew/bin/brew shellenv)"
 
     if [ "$DRY_RUN_MODE" = true ]; then
       msg_info "[Dry Run] Would configure the shell environment for Homebrew by running:"
