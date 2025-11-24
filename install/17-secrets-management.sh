@@ -47,10 +47,7 @@ configure_git_with_token() {
   #    We pipe the credentials to the `git credential-osxkeychain` helper.
   #    This avoids having the token appear in process lists or shell history.
   #    The username 'oauth2' is standard for GitHub token authentication.
-  printf "protocol=https
-host=github.com
-username=oauth2
-password=%s" "$github_token" | git credential-osxkeychain store
+  printf "protocol=https\nhost=github.com\nusername=oauth2\npassword=%s" "$github_token" | git credential-osxkeychain store
 
   msg_success "Successfully and securely stored GitHub token in the macOS Keychain."
   msg_info "Git will now use this token for authentication with github.com."
