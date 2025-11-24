@@ -39,7 +39,7 @@ main() {
 
   # --- Software Info ---
   msg_info "Software:"
-  
+
   # Detect platform and use appropriate commands
   if [[ "$(uname)" == "Darwin" ]]; then
     echo "  OS Version:   $($sw_vers_cmd -productName) $($sw_vers_cmd -productVersion) ($($sw_vers_cmd -buildVersion))"
@@ -51,19 +51,19 @@ main() {
       echo "  OS Version:   $(uname -s) $(uname -r)"
     fi
   fi
-  
+
   echo "  Hostname:     $($hostname_cmd)"
   echo "  Uptime:       $($uptime_cmd | awk -F, '{print $1}' | cut -d' ' -f 4-)"
 
   # --- Hardware Info ---
   echo ""
   msg_info "Hardware:"
-  
+
   if [[ "$(uname)" == "Darwin" ]]; then
     # macOS-specific hardware info
     echo "  Model:        $($sysctl_cmd -n hw.model)"
     echo "  CPU:          $($sysctl_cmd -n machdep.cpu.brand_string)"
-    
+
     # Get memory size in bytes and convert to GB
     local mem_bytes
     mem_bytes=$($sysctl_cmd -n hw.memsize)

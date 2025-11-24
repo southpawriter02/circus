@@ -44,7 +44,7 @@ do_backup() {
   local brew_cmd=${BREW_CMD:-brew}
   local tar_cmd=${TAR_CMD:-tar}
   local mktemp_cmd=${MKTEMP_CMD:-mktemp}
-  
+
   if [ "$GPG_RECIPIENT_ID" == "YOUR_GPG_KEY_ID_HERE" ]; then
     die "GPG_RECIPIENT_ID is not configured. Please edit the sync plugin to set it."
   fi
@@ -83,7 +83,7 @@ do_backup() {
 do_restore() {
   local brew_cmd=${BREW_CMD:-brew}
   local encrypted_archive_path="$BACKUP_DEST_DIR/$BACKUP_ARCHIVE_NAME"
-  
+
   if [ ! -f "$encrypted_archive_path" ]; then
     die "Encrypted backup archive not found at: $encrypted_archive_path"
   fi
@@ -91,7 +91,7 @@ do_restore() {
   local temp_restore_dir
   temp_restore_dir=$(mktemp -d)
   msg_info "Decrypting backup... You may be prompted for your GPG passphrase."
-  
+
   # The `set -e` option in helpers.sh will cause the script to exit if gpg fails.
   # The global error trap will provide a detailed error message.
   gpg -d "$encrypted_archive_path" | tar -xzf - -C "$temp_restore_dir"
