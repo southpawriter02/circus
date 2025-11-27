@@ -39,21 +39,48 @@ main() {
 
   # --- Software Info ---
   msg_info "Software:"
-  echo "  OS Version:   $($sw_vers_cmd -productName) $($sw_vers_cmd -productVersion) ($($sw_vers_cmd -buildVersion))"
+
+  # Detect platform and use appropriate commands
+  if [[ "$(uname)" == "Darwin" ]]; then
+    echo "  OS Version:   $($sw_vers_cmd -productName) $($sw_vers_cmd -productVersion) ($($sw_vers_cmd -buildVersion))"
+  else
+    # Linux fallback
+    if [ -f /etc/os-release ]; then
+      echo "  OS Version:   $(grep '^PRETTY_NAME=' /etc/os-release | cut -d'"' -f2)"
+    else
+      echo "  OS Version:   $(uname -s) $(uname -r)"
+    fi
+  fi
+
   echo "  Hostname:     $($hostname_cmd)"
   echo "  Uptime:       $($uptime_cmd | awk -F, '{print $1}' | cut -d' ' -f 4-)"
 
   # --- Hardware Info ---
   echo ""
   msg_info "Hardware:"
-  echo "  Model:        $($sysctl_cmd -n hw.model)"
-  echo "  CPU:          $($sysctl_cmd -n machdep.cpu.brand_string)"
-  
-  # Get memory size in bytes and convert to GB
-  local mem_bytes
-  mem_bytes=$($sysctl_cmd -n hw.memsize)
-  local mem_gb=$((mem_bytes / 1024 / 1024 / 1024))
-  echo "  Memory:       ${mem_gb} GB"
+
+  if [[ "$(uname)" == "Darwin" ]]; then
+    # macOS-specific hardware info
+    echo "  Model:        $($sysctl_cmd -n hw.model)"
+    echo "  CPU:          $($sysctl_cmd -n machdep.cpu.brand_string)"
+
+    # Get memory size in bytes and convert to GB
+    local mem_bytes
+    mem_bytes=$($sysctl_cmd -n hw.memsize)
+    local mem_gb=$((mem_bytes / 1024 / 1024 / 1024))
+    echo "  Memory:       ${mem_gb} GB"
+  else
+    # Linux fallback
+    if command -v lscpu >/dev/null 2>&1; then
+      echo "  CPU:          $(lscpu | grep "^Model name:" | cut -d':' -f2 | xargs)"
+    fi
+    if [ -f /proc/meminfo ]; then
+      local mem_kb
+      mem_kb=$(grep '^MemTotal:' /proc/meminfo | awk '{print $2}')
+      local mem_gb=$((mem_kb / 1024 / 1024))
+      echo "  Memory:       ${mem_gb} GB"
+    fi
+  fi
 
   echo ""
   msg_success "System information gathering complete."

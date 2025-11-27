@@ -22,7 +22,8 @@ symlink_with_backup() {
   local dest="$2"
 
   if [ -e "$dest" ] || [ -L "$dest" ]; then
-    local backup_path="${dest}.backup-$(date +%Y%m%d%H%M%S)"
+    local backup_path
+    backup_path="${dest}.backup-$(date +%Y%m%d%H%M%S)"
     msg_info "Backing up existing file at $dest to $backup_path"
     mv "$dest" "$backup_path"
   fi

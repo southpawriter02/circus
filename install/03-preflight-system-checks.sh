@@ -18,10 +18,10 @@ main() {
 
   # --- State Variable Initialization ------------------------------------------
   # Initialize global state variables. These will be updated by the checks below.
-  SYSTEM_HAS_INTERNET=false
-  SYSTEM_HAS_XCODE_CLI=false
-  SYSTEM_HAS_HOMEBREW=false
-  SYSTEM_HAS_GIT=false
+  export SYSTEM_HAS_INTERNET=false
+  export SYSTEM_HAS_XCODE_CLI=false
+  export SYSTEM_HAS_HOMEBREW=false
+  export SYSTEM_HAS_GIT=false
 
   # --- Check 1: macOS Operating System (Hard Fail) --------------------------
   msg_info "Checking operating system..."

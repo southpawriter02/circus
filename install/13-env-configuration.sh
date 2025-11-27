@@ -28,7 +28,8 @@ symlink_env_from_dir() {
   env_files=$(find "$source_dir" -name "*.env.sh" 2>/dev/null)
 
   for source_file in $env_files; do
-    local target_file="$target_dir/$(basename "$source_file")"
+    local target_file
+    target_file="$target_dir/$(basename "$source_file")"
     if [ "$DRY_RUN_MODE" = true ]; then
       msg_info "[Dry Run] Would symlink '$source_file' to '$target_file'"
     else

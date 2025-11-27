@@ -56,7 +56,7 @@ main() {
       if [ -z "$1" ]; then
         die "You must provide at least one DNS server IP address."
       fi
-      msg_info "Setting DNS servers to: $@"
+      msg_info "Setting DNS servers to: $*"
       sudo networksetup -setdnsservers "$service" "$@"
       msg_success "DNS servers have been updated."
       ;;
