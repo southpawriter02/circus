@@ -8,6 +8,16 @@
 # symlinking them into a dedicated directory for the shell to source. It supports
 # both base and role-specific environment files.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   Note: The current shell configuration (circus.plugin.zsh) sources environment
+#   files directly from the repository rather than from a symlinked location.
+#   
+#   RECOMMENDATION: Either:
+#   1. Add to INSTALL_STAGES and update circus.plugin.zsh to source from 
+#      ~/.config/shell/env/, OR
+#   2. Remove this script since circus.plugin.zsh already handles env loading.
+#
 # ==============================================================================
 
 #

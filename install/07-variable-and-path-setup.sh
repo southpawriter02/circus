@@ -8,6 +8,14 @@
 # session. Its primary responsibility is to ensure that any tools that were
 # just installed (like Homebrew) are immediately available on the PATH.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   It depends on SYSTEM_HAS_HOMEBREW from Stage 03 (preflight checks).
+#   
+#   RECOMMENDATION: Add "07-variable-and-path-setup.sh" to the INSTALL_STAGES
+#   array AFTER Homebrew installation to ensure newly installed tools are
+#   available for subsequent stages.
+#
 # ==============================================================================
 
 #

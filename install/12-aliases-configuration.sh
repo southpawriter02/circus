@@ -8,6 +8,17 @@
 # them into a dedicated directory for the shell to source. It supports both
 # base aliases and role-specific aliases.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   Note: There is also a 12-privacy-and-security.sh with the same "12-" prefix.
+#   The current shell configuration (circus.plugin.zsh) sources aliases directly
+#   from the repository rather than from a symlinked location.
+#   
+#   RECOMMENDATION: Either:
+#   1. Add to INSTALL_STAGES and update circus.plugin.zsh to source from 
+#      ~/.config/shell/aliases/, OR
+#   2. Remove this script since circus.plugin.zsh already handles alias loading.
+#
 # ==============================================================================
 
 #

@@ -8,6 +8,15 @@
 # applications. It intelligently uses the state variables set by the preflight
 # checks in Stage 3 to determine which core tools need to be installed.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   Note: It depends on state variables from Stage 03 (preflight checks) which
+#   is also not integrated.
+#   
+#   RECOMMENDATION: Add both "03-preflight-system-checks.sh" and 
+#   "04-tool-installation.sh" to the INSTALL_STAGES array to enable 
+#   conditional tool installation based on system state.
+#
 # ==============================================================================
 
 #

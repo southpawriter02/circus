@@ -7,6 +7,15 @@
 # This script will contain the logic for installing packages and applications
 # using Homebrew.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   Note: Stage 03 (03-homebrew-installation.sh) implements Homebrew package
+#   installation using `brew bundle` with Brewfile support.
+#   
+#   RECOMMENDATION: Either:
+#   1. Remove this placeholder (Stage 03 covers this functionality), OR
+#   2. Consolidate any unique functionality with Stage 03.
+#
 # ==============================================================================
 
 #
