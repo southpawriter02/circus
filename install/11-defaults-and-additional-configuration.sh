@@ -45,6 +45,20 @@ main() {
   local base_defaults_dir="$DOTFILES_ROOT/defaults"
   source_defaults_from_dir "$base_defaults_dir" "base"
 
+  # --- Apply Privacy Profile ---
+  # Privacy profiles are applied after base defaults but before role-specific
+  # defaults. This allows role-specific settings to override if needed.
+  if [ -n "$PRIVACY_PROFILE" ]; then
+    local profile_script="$DOTFILES_ROOT/defaults/profiles/${PRIVACY_PROFILE}.sh"
+    if [ -f "$profile_script" ]; then
+      msg_info "Applying privacy profile: $PRIVACY_PROFILE"
+      # shellcheck source=/dev/null
+      source "$profile_script"
+    else
+      msg_warning "Privacy profile script not found: $profile_script"
+    fi
+  fi
+
   # --- Apply Role-Specific Defaults ---
   if [ -n "$INSTALL_ROLE" ]; then
     local role_defaults_dir="$DOTFILES_ROOT/roles/$INSTALL_ROLE/defaults"

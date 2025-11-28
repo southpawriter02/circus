@@ -20,6 +20,22 @@ To use a role, simply pass the `--role <name>` flag to the main `install.sh` scr
 
 This command will run the standard installation and then apply the additional configurations defined in the `roles/developer/` directory.
 
+## Combining Roles with Privacy Profiles
+
+Roles can be combined with privacy profiles to customize both the purpose and security level of your machine:
+
+```bash
+# Developer machine with enhanced privacy
+./install.sh --role developer --privacy-profile privacy
+
+# Work machine with maximum security
+./install.sh --role work --privacy-profile lockdown
+```
+
+Privacy profiles are applied **after** base defaults but **before** role-specific defaults, allowing role-specific configurations to override if needed.
+
+For more information about privacy profiles, see [defaults/profiles/README.md](defaults/profiles/README.md).
+
 ## Existing Roles
 
 Here is a summary of the currently available roles:
