@@ -6,11 +6,34 @@ This directory contains scripts that configure macOS system and application pref
 
 The `defaults` command is a macOS utility that reads and writes application and system preferences stored in property list (plist) files. These scripts automate the configuration of a new Mac with sensible defaults for developers and power users.
 
+## Privacy & Security Profiles
+
+In addition to the base defaults, you can choose a privacy/security profile that applies additional settings based on your security requirements:
+
+| Profile | Description |
+|---------|-------------|
+| `standard` | Balanced security and convenience (default) |
+| `privacy` | Enhanced privacy - disables telemetry, limits tracking |
+| `lockdown` | Maximum security for high-risk environments |
+
+To apply a profile during installation:
+
+```bash
+./install.sh --privacy-profile privacy
+```
+
+See [profiles/README.md](profiles/README.md) for detailed documentation on each profile.
+
 ## Directory Structure
 
 ```
 defaults/
 ├── README.md                    # This file
+├── profiles/                    # Privacy and security profiles
+│   ├── README.md                # Profile documentation
+│   ├── standard.sh              # Standard profile (default)
+│   ├── privacy.sh               # Enhanced privacy profile
+│   └── lockdown.sh              # Maximum security profile
 ├── system/                      # System-level settings
 │   ├── auto_updates.sh          # Automated maintenance agent
 │   ├── core.sh                  # Core system settings (systemsetup)
