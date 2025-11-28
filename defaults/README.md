@@ -201,7 +201,3 @@ Several scripts modify security-related settings:
 - `ui_ux.sh` disables quarantine warnings (power-user setting)
 
 Review these settings and adjust according to your security requirements.
-
-### Legacy Scripts
-
-The root `defaults/` directory may contain legacy scripts that haven't been migrated to the new structure. These will be phased out in favor of the organized subdirectories.
