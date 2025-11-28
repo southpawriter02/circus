@@ -6,6 +6,15 @@
 #
 # This script will contain the logic for configuring macOS system defaults.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   Note: Stage 04 (04-macos-system-settings.sh) and Stage 11 
+#   (11-defaults-and-additional-configuration.sh) implement similar functionality.
+#   
+#   RECOMMENDATION: Either:
+#   1. Consolidate with existing Stage 04 or Stage 11 functionality, OR
+#   2. Remove this placeholder if not needed (existing stages cover this).
+#
 # ==============================================================================
 
 #

@@ -7,6 +7,15 @@
 # This script orchestrates the application of low-level system settings by
 # sourcing all shell scripts found in the top-level `system/` directory.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   Note: There is also a 10-git-configuration.sh which IS in the array.
+#   The "10-" prefix overlap could cause confusion.
+#   
+#   RECOMMENDATION: Rename to a different stage number (e.g., "XX-") to avoid
+#   confusion, OR consolidate with other system configuration stages 
+#   (Stage 04 for macOS settings, Stage 11 for defaults).
+#
 # ==============================================================================
 
 #

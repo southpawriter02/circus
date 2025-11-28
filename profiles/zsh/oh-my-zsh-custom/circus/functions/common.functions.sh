@@ -1,1 +1,75 @@
-#!/bin/sh\n\n# ==============================================================================\n#\n# FILE:         .shell_functions\n#\n# DESCRIPTION:  This file is dedicated to defining custom shell functions that\n#               are written in a POSIX-compliant way to ensure they work\n#               across different shells (e.g., Bash and Zsh).\n#\n# ==============================================================================\n\n#\n# Create a directory and change into it.\n#\n# @param $1 The name of the directory to create.\n#\nmkcd() {\n  mkdir -p \"$1\" && cd \"$1\"\n}\n\n#\n# Go up N directories.\n#\n# @param $1 The number of directories to go up (defaults to 1).\n#\nup() {\n  local count=${1:-1}\n  local path=\"\"\n  for i in $(seq 1 $count); do\n    path=\"$path../\"\n  done\n  cd \"$path\"\n}\n\n#\n# Universal archive extractor.\n# Handles .zip, .tar.gz, .tar.bz2, .tar.xz, etc.\n#\n# @param $1 The archive file to extract.\n#\nextract() {\n  if [ -z \"$1\" ]; then\n    echo \"Usage: extract <file>\"\n    return 1\n  fi\n\n  if [ -f \"$1\" ]; then\n    case \"$1\" in\n      *.tar.bz2) tar xjf \"$1\" ;; \n      *.tar.gz)  tar xzf \"$1\" ;; \n      *.tar.xz)  tar xf \"$1\"  ;; \n      *.bz2)     bunzip2 \"$1\" ;; \n      *.rar)     unrar x \"$1\" ;; \n      *.gz)      gunzip \"$1\"  ;; \n      *.tar)     tar xf \"$1\"  ;; \n      *.tbz2)    tar xjf \"$1\" ;; \n      *.tgz)     tar xzf \"$1\" ;; \n      *.zip)     unzip \"$1\"   ;; \n      *.Z)       uncompress \"$1\" ;; \n      *.7z)      7z x \"$1\"    ;; \n      *)         echo \"\\\`extract\\\`: \'$1\' - unknown archive format\" ;; \n    esac\n  else\n    echo \"\\\`extract\\\`: \'$1\' - file not found\"\n  fi\n}\n\n#\n# Display local and public IP addresses.\n#\nmyip() {\n  echo \"Local IP:  $(ipconfig getifaddr en0)\"\n  echo \"Public IP: $(curl -s https://ipinfo.io/ip)\"\n}\n
+#!/bin/sh
+
+# ==============================================================================
+#
+# FILE:         .shell_functions
+#
+# DESCRIPTION:  This file is dedicated to defining custom shell functions that
+#               are written in a POSIX-compliant way to ensure they work
+#               across different shells (e.g., Bash and Zsh).
+#
+# ==============================================================================
+
+#
+# Create a directory and change into it.
+#
+# @param $1 The name of the directory to create.
+#
+mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+
+#
+# Go up N directories.
+#
+# @param $1 The number of directories to go up (defaults to 1).
+#
+up() {
+  local count=${1:-1}
+  local path=""
+  for i in $(seq 1 $count); do
+    path="$path../"
+  done
+  cd "$path"
+}
+
+#
+# Universal archive extractor.
+# Handles .zip, .tar.gz, .tar.bz2, .tar.xz, etc.
+#
+# @param $1 The archive file to extract.
+#
+extract() {
+  if [ -z "$1" ]; then
+    echo "Usage: extract <file>"
+    return 1
+  fi
+
+  if [ -f "$1" ]; then
+    case "$1" in
+      *.tar.bz2) tar xjf "$1" ;; 
+      *.tar.gz)  tar xzf "$1" ;; 
+      *.tar.xz)  tar xf "$1"  ;; 
+      *.bz2)     bunzip2 "$1" ;; 
+      *.rar)     unrar x "$1" ;; 
+      *.gz)      gunzip "$1"  ;; 
+      *.tar)     tar xf "$1"  ;; 
+      *.tbz2)    tar xjf "$1" ;; 
+      *.tgz)     tar xzf "$1" ;; 
+      *.zip)     unzip "$1"   ;; 
+      *.Z)       uncompress "$1" ;; 
+      *.7z)      7z x "$1"    ;; 
+      *)         echo "\`extract\`: '$1' - unknown archive format" ;; 
+    esac
+  else
+    echo "\`extract\`: '$1' - file not found"
+  fi
+}
+
+#
+# Display local and public IP addresses.
+#
+myip() {
+  echo "Local IP:  $(ipconfig getifaddr en0)"
+  echo "Public IP: $(curl -s https://ipinfo.io/ip)"
+}

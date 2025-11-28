@@ -13,6 +13,13 @@
 #   6.2. Validating the integrity of the extracted files.
 #   6.3. Cleaning up any temporary files created during extraction.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   Note: The assets/archives/ directory does not exist in the repository.
+#   
+#   RECOMMENDATION: Only add to INSTALL_STAGES when assets/archives/ is created
+#   and populated with archives to extract. Currently can be safely ignored.
+#
 # Implementation Strategy:
 #
 # 1.  **Dedicated Archive Directory:** All archives to be extracted are placed

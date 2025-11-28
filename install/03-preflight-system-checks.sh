@@ -8,6 +8,14 @@
 # state for installation. It sets a series of global state variables that can
 # be used by subsequent stages to alter their behavior.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   The preflight check scripts in install/preflight/ are also not being used.
+#   
+#   RECOMMENDATION: Add "03-preflight-system-checks.sh" to the INSTALL_STAGES
+#   array in install.sh BEFORE "03-homebrew-installation.sh" to enable
+#   system validation before installation begins.
+#
 # ==============================================================================
 
 #

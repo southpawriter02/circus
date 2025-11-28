@@ -9,6 +9,13 @@
 # By the time this stage runs, we are guaranteed to have Git installed and
 # to be running from within a Git repository.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   It provides repository management functionality (git pull, submodule update).
+#   
+#   RECOMMENDATION: Add "05-repository-management.sh" to the INSTALL_STAGES
+#   array BEFORE tool installation to ensure the repository is up-to-date.
+#
 # ==============================================================================
 
 #

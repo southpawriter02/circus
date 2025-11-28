@@ -7,6 +7,15 @@
 # This script will contain the logic for backing up existing dotfiles before
 # the new ones are symlinked into place.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   
+#   RECOMMENDATION: Either:
+#   1. Integrate this functionality by adding it to the INSTALL_STAGES array in
+#      install.sh before Stage 09 (dotfiles deployment), OR
+#   2. Remove this placeholder if backup functionality is not needed, OR
+#   3. Keep for future implementation.
+#
 # ==============================================================================
 
 #

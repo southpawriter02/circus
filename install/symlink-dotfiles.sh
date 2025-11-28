@@ -7,6 +7,16 @@
 # This script will contain the logic for symlinking the dotfiles from the
 # repository to the user's home directory.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   Note: Stage 09 (09-dotfiles-deployment.sh) implements similar symlinking
+#   functionality for core shell configuration.
+#   
+#   RECOMMENDATION: Either:
+#   1. Consolidate with Stage 09's symlink functionality, OR
+#   2. Implement and integrate as a separate stage for general dotfile deployment, OR
+#   3. Remove this placeholder if not needed.
+#
 # ==============================================================================
 
 #

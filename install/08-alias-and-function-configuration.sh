@@ -8,6 +8,15 @@
 # directory. This provides a modular way to add aliases, functions, or
 # installer-specific environment variables to the current installation session.
 #
+# UNUSED CODE NOTICE:
+#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
+#   Note: The only file in lib/installer_source/ is examples.sh which contains
+#   commented-out example code and no active functionality.
+#   
+#   RECOMMENDATION: Only add to INSTALL_STAGES when lib/installer_source/
+#   contains actual aliases/functions needed during installation. Currently
+#   can be safely ignored.
+#
 # ==============================================================================
 
 #
