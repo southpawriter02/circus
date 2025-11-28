@@ -16,7 +16,7 @@
 #   - Screen saver password required immediately
 #   - Automatic security updates enabled
 #   - Location services enabled for convenience
-#   - Quarantine warnings disabled (power-user setting)
+#   Note: Quarantine warnings are configured in the base defaults (ui_ux.sh)
 #
 # REFERENCES:
 #   - Apple Security Guide: https://support.apple.com/guide/security/welcome/web
