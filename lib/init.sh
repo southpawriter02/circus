@@ -31,5 +31,8 @@ export INSTALL_DIR="$DOTFILES_ROOT/install"
 #    the foundational `set -e` and `trap` commands.
 source "$DOTFILES_ROOT/lib/helpers.sh"
 
-# 2. Source the configuration library, which provides role-specific settings.
+# 2. Source the enhanced UI library for terminal interface components.
+source "$DOTFILES_ROOT/lib/ui.sh"
+
+# 3. Source the configuration library, which provides role-specific settings.
 source "$DOTFILES_ROOT/lib/config.sh"
