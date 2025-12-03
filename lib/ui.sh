@@ -1053,6 +1053,111 @@ ui_cursor_up() {
   printf "\033[%dA" "$n"
 }
 
+# ------------------------------------------------------------------------------
+# SECTION: STAGE HEADER FOR INSTALLER
+# ------------------------------------------------------------------------------
+
+#
+# Print a styled stage header with progress information
+#
+# @param $1 Stage number (current)
+# @param $2 Total stages
+# @param $3 Stage title
+# @param $4 Stage description (optional)
+#
+ui_stage_header() {
+  local stage_num="${1:-1}"
+  local total_stages="${2:-1}"
+  local title="${3:-}"
+  local description="${4:-}"
+  local width="${UI_TERM_WIDTH:-80}"
+  [[ $width -gt 80 ]] && width=80
+
+  echo ""
+
+  # Progress indicator line
+  local progress_pct=$(( stage_num * 100 / total_stages ))
+  local progress_width=$(( width - 30 ))
+  local filled=$(( stage_num * progress_width / total_stages ))
+  local empty=$(( progress_width - filled ))
+
+  printf "${UI_MUTED}Stage %d of %d ${UI_RESET}" "$stage_num" "$total_stages"
+  printf "${UI_MUTED}[${UI_RESET}"
+  if [[ $filled -gt 0 ]]; then
+    printf "${UI_SUCCESS}"
+    printf '%*s' "$filled" '' | tr ' ' "$UI_PROGRESS_FULL"
+  fi
+  if [[ $empty -gt 0 ]]; then
+    printf "${UI_MUTED}"
+    printf '%*s' "$empty" '' | tr ' ' "$UI_PROGRESS_EMPTY"
+  fi
+  printf "${UI_MUTED}]${UI_RESET} ${UI_BOLD}%d%%${UI_RESET}\n" "$progress_pct"
+
+  # Stage title box
+  printf "${UI_PRIMARY}${UI_BOX_TL}"
+  printf '%*s' "$(( width - 2 ))" '' | tr ' ' "$UI_BOX_H"
+  printf "${UI_BOX_TR}${UI_RESET}\n"
+
+  printf "${UI_PRIMARY}${UI_BOX_V}${UI_RESET}"
+  printf "  ${UI_ACCENT}${UI_ICON_ACTIVE}${UI_RESET} ${UI_BOLD}%-*s${UI_RESET}" "$(( width - 7 ))" "$title"
+  printf "${UI_PRIMARY}${UI_BOX_V}${UI_RESET}\n"
+
+  if [[ -n "$description" ]]; then
+    printf "${UI_PRIMARY}${UI_BOX_V}${UI_RESET}"
+    printf "    ${UI_MUTED}%-*s${UI_RESET}" "$(( width - 7 ))" "$description"
+    printf "${UI_PRIMARY}${UI_BOX_V}${UI_RESET}\n"
+  fi
+
+  printf "${UI_PRIMARY}${UI_BOX_BL}"
+  printf '%*s' "$(( width - 2 ))" '' | tr ' ' "$UI_BOX_H"
+  printf "${UI_BOX_BR}${UI_RESET}\n"
+  echo ""
+}
+
+#
+# Print a compact stage completion message
+#
+# @param $1 Stage title
+# @param $2 Status: "success", "skipped", "failed"
+# @param $3 Duration in seconds (optional)
+#
+ui_stage_complete_msg() {
+  local title="${1:-}"
+  local status="${2:-success}"
+  local duration="${3:-}"
+
+  local icon color status_text
+  case "$status" in
+    success)
+      icon="$UI_ICON_SUCCESS"
+      color="$UI_SUCCESS"
+      status_text="Complete"
+      ;;
+    skipped)
+      icon="$UI_ICON_WARNING"
+      color="$UI_WARNING"
+      status_text="Skipped"
+      ;;
+    failed)
+      icon="$UI_ICON_ERROR"
+      color="$UI_ERROR"
+      status_text="Failed"
+      ;;
+    *)
+      icon="$UI_ICON_INFO"
+      color="$UI_INFO"
+      status_text="Done"
+      ;;
+  esac
+
+  printf "${color}${icon}${UI_RESET} ${UI_BOLD}%s${UI_RESET} ${color}%s${UI_RESET}" "$title" "$status_text"
+
+  if [[ -n "$duration" ]]; then
+    printf " ${UI_MUTED}(${duration}s)${UI_RESET}"
+  fi
+  printf "\n"
+}
+
 # Export all functions
 export -f ui_print_banner ui_print_banner_mini
 export -f ui_box_top ui_box_line ui_box_bottom ui_box_separator ui_box
@@ -1064,3 +1169,4 @@ export -f ui_select ui_multiselect ui_confirm ui_input
 export -f ui_header ui_step ui_list_item ui_keyval ui_notice
 export -f ui_cleanup ui_cursor_hide ui_cursor_show ui_clear_line ui_cursor_up
 export -f ui_color_256
+export -f ui_stage_header ui_stage_complete_msg
