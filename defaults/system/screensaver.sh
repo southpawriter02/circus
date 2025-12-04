@@ -49,30 +49,45 @@ msg_info "Configuring Screensaver settings..."
 # Screen Lock Security Settings
 # ==============================================================================
 
-# --- Require Password Immediately ---
+# --- Require Password After Sleep or Screen Saver ---
 # Key:          askForPassword
 # Description:  Controls whether a password is required to exit the screensaver
-#               or wake the display. This is a critical security setting that
-#               prevents unauthorized access to an unattended Mac.
-# Default:      0 (false - no password required)
-# Possible:     0 = No password required
-#               1 = Password required
+#               or wake the display from sleep. This is a critical security
+#               setting that prevents unauthorized access to an unattended Mac.
+#               When enabled, the login password (or Touch ID/Apple Watch) is
+#               required to unlock.
+# Default:      0 (disabled - no password required to wake)
+# Options:      0 = Disabled (no authentication required to unlock)
+#               1 = Enabled (password/Touch ID required to unlock)
 # Set to:       1 (require password for security)
-# Reference:    System Preferences > Security & Privacy > General
+# UI Location:  System Settings > Lock Screen > Require password after screen
+#               saver begins or display is turned off
+# Source:       https://support.apple.com/guide/mac-help/require-a-password-after-waking-your-mac-mchlp2270/mac
+# Security:     Essential for protecting data on shared or portable Macs.
+#               Combine with a short password delay (see below) for maximum security.
 run_defaults "com.apple.screensaver" "askForPassword" "-int" "1"
 
-# --- Password Delay ---
+# --- Password Delay (Grace Period) ---
 # Key:          askForPasswordDelay
 # Description:  Sets the grace period (in seconds) after the screensaver begins
-#               before a password is required. A value of 0 means the password
-#               is required immediately when the screensaver activates.
-# Default:      5 (seconds)
-# Possible:     Any non-negative integer (seconds)
-#               Common values: 0, 5, 60, 300
+#               or display sleeps before a password is required. During this
+#               window, the Mac can be woken without authentication. A value
+#               of 0 means authentication is required immediately.
+# Default:      5 (5 seconds grace period)
+# Options:      Integer value in seconds:
+#               0   = Immediately (no grace period, maximum security)
+#               5   = 5 seconds (Apple's default)
+#               60  = 1 minute
+#               300 = 5 minutes
+#               Any non-negative integer is accepted
 # Set to:       0 (no grace period - maximum security)
-# Reference:    System Preferences > Security & Privacy > General
-# Security:     A delay of 0 is recommended for environments where quick
-#               unattended access could be a concern.
+# UI Location:  System Settings > Lock Screen > Require password after screen
+#               saver begins or display is turned off (dropdown menu)
+# Source:       https://support.apple.com/guide/mac-help/require-a-password-after-waking-your-mac-mchlp2270/mac
+# Security:     A delay of 0 is strongly recommended for:
+#               - Laptops used in public spaces
+#               - Shared work environments
+#               - Any Mac with sensitive data
 run_defaults "com.apple.screensaver" "askForPasswordDelay" "-int" "0"
 
 
@@ -80,18 +95,28 @@ run_defaults "com.apple.screensaver" "askForPasswordDelay" "-int" "0"
 # Screensaver Activation Settings
 # ==============================================================================
 
-# --- Idle Time Before Start ---
+# --- Idle Time Before Screen Saver Starts ---
 # Key:          idleTime
 # Description:  Sets the idle time (in seconds) before the screensaver starts.
-#               The screensaver activates after no keyboard or mouse activity
-#               for this duration.
+#               The screensaver activates after no keyboard, mouse, or trackpad
+#               activity for this duration. Video playback and presentations
+#               typically prevent the screensaver from activating.
 # Default:      1200 (20 minutes)
-# Possible:     Any positive integer (seconds), or 0 to disable
-#               Common values: 120 (2 min), 300 (5 min), 600 (10 min), 1200 (20 min)
+# Options:      Integer value in seconds:
+#               0    = Never start screen saver (disabled)
+#               60   = 1 minute
+#               120  = 2 minutes
+#               300  = 5 minutes
+#               600  = 10 minutes
+#               1200 = 20 minutes (Apple's default)
+#               Any positive integer is accepted
 # Set to:       600 (10 minutes - balanced between security and convenience)
-# Reference:    System Preferences > Desktop & Screen Saver > Screen Saver
-# Note:         Consider coordinating this with display sleep settings in
-#               Energy Saver preferences for optimal power management.
+# UI Location:  System Settings > Screen Saver > Start after (slider)
+# Source:       https://support.apple.com/guide/mac-help/use-a-screen-saver-mchl4b68853d/mac
+# See also:     https://support.apple.com/guide/mac-help/change-screen-saver-settings-mchlp1227/mac
+# Note:         Coordinate this with display sleep settings in System Settings >
+#               Energy Saver (or Battery on laptops) for optimal power management.
+#               The display sleep time should typically be >= screensaver time.
 run_defaults "com.apple.screensaver" "idleTime" "-int" "600"
 
 

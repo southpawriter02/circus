@@ -59,13 +59,17 @@ msg_info "Configuring Trackpad and Mouse settings..."
 #               com.apple.AppleMultitouchTrackpad (built-in)
 # Description:  Enables the "Tap to click" feature, allowing a light tap
 #               on the trackpad surface to register as a click without
-#               physically pressing down.
+#               physically pressing down. This provides a quieter and
+#               gentler interaction with the trackpad.
 # Default:      0 (disabled - must press to click)
-# Possible:     0 = Disabled (press to click)
-#               1 = Enabled (tap to click)
-# Set to:       1 (tap to click enabled)
-# Reference:    System Preferences > Trackpad > Point & Click > Tap to click
-# Note:         Both domains must be set to affect all trackpads
+# Options:      0 = Disabled (physical press required to click)
+#               1 = Enabled (light tap registers as click)
+# Set to:       1 (tap to click enabled for faster interaction)
+# UI Location:  System Settings > Trackpad > Point & Click > Tap to click
+# Source:       https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac
+# See also:     https://support.apple.com/en-us/102482 (Multi-Touch gestures)
+# Note:         Both domains must be set to affect all trackpads (built-in
+#               and external Magic Trackpad)
 run_defaults "com.apple.driver.AppleBluetoothMultitouch.trackpad" "Clicking" "-int" "1"
 run_defaults "com.apple.AppleMultitouchTrackpad" "Clicking" "-int" "1"
 
@@ -74,15 +78,17 @@ run_defaults "com.apple.AppleMultitouchTrackpad" "Clicking" "-int" "1"
 # Domain:       NSGlobalDomain
 # Description:  Controls how fast the cursor moves relative to finger
 #               movement on the trackpad. Higher values mean faster cursor
-#               movement for less finger travel.
-# Default:      1.0
-# Possible:     Float value; range approximately 0.0 to 3.0
-#               0.0 = Slowest
-#               1.0 = Default
-#               2.0 = Fast
-#               3.0 = Very fast
+#               movement for less finger travel. This is a multiplier that
+#               affects cursor acceleration.
+# Default:      1.0 (medium speed, centered on slider)
+# Options:      Float value; range approximately 0.0 to 3.0
+#               0.0 = Slowest (minimal cursor movement)
+#               1.0 = Default (balanced speed)
+#               2.0 = Fast (recommended for large displays)
+#               3.0 = Very fast (maximum acceleration)
 # Set to:       2.0 (moderately fast for efficient navigation)
-# Reference:    System Preferences > Trackpad > Point & Click > Tracking speed
+# UI Location:  System Settings > Trackpad > Point & Click > Tracking speed
+# Source:       https://support.apple.com/guide/mac-help/change-your-mouse-or-trackpads-response-speed-mchlp1138/mac
 run_defaults "NSGlobalDomain" "com.apple.trackpad.scaling" "-float" "2.0"
 
 
@@ -95,15 +101,19 @@ run_defaults "NSGlobalDomain" "com.apple.trackpad.scaling" "-float" "2.0"
 # Domain:       NSGlobalDomain
 # Description:  Controls how fast the cursor moves relative to physical
 #               mouse movement. Higher values mean faster cursor movement.
-# Default:      1.0
-# Possible:     Float value; range approximately 0.0 to 3.0
-#               0.0 = Slowest (linear, no acceleration)
-#               1.0 = Default
-#               2.0 = Fast
-#               3.0 = Very fast
+#               This setting applies pointer acceleration which makes small
+#               movements precise while large movements cover more distance.
+# Default:      1.0 (medium speed, centered on slider)
+# Options:      Float value; range approximately 0.0 to 3.0
+#               0.0 = Slowest (linear movement, no acceleration)
+#               1.0 = Default (balanced acceleration)
+#               2.0 = Fast (less physical movement needed)
+#               3.0 = Very fast (maximum acceleration)
 # Set to:       2.0 (moderately fast for efficient navigation)
-# Reference:    System Preferences > Mouse > Tracking speed
+# UI Location:  System Settings > Mouse > Tracking speed
+# Source:       https://support.apple.com/guide/mac-help/change-your-mouse-or-trackpads-response-speed-mchlp1138/mac
 # Note:         Some gaming mice have their own software that overrides this
+#               setting. Third-party mice may require their vendor's drivers.
 run_defaults "NSGlobalDomain" "com.apple.mouse.scaling" "-float" "2.0"
 
 
@@ -115,19 +125,22 @@ run_defaults "NSGlobalDomain" "com.apple.mouse.scaling" "-float" "2.0"
 # Key:          com.apple.swipescrolldirection
 # Domain:       NSGlobalDomain
 # Description:  Controls the scroll direction for trackpads and mice.
-#               - "Natural" scrolling: Content moves in the direction of
-#                 your finger swipe (like on iOS). Scrolling up moves
-#                 content up (revealing content below).
-#               - Traditional scrolling: The scrollbar moves in the
-#                 direction of your gesture. Scrolling up moves the
-#                 scrollbar up (revealing content above).
-# Default:      true (natural scrolling enabled)
-# Possible:     true = Natural scrolling (iOS-like)
-#               false = Traditional scrolling (classic)
-# Set to:       false (traditional scrolling)
-# Reference:    System Preferences > Trackpad > Scroll & Zoom > Scroll direction: Natural
-# Note:         This is highly personal preference; many long-time Mac
-#               users prefer traditional scrolling
+#               - "Natural" scrolling (true): Content moves in the direction
+#                 of your finger swipe, like touching paper or an iOS device.
+#                 Swipe up = content moves up (you see content below).
+#               - Traditional scrolling (false): The viewport moves in the
+#                 direction of your gesture, like dragging a scrollbar.
+#                 Swipe up = viewport moves up (you see content above).
+# Default:      true (natural scrolling enabled since macOS Lion 10.7)
+# Options:      true  = Natural scrolling (iOS-style, content follows finger)
+#               false = Traditional scrolling (classic Mac/Windows behavior)
+# Set to:       false (traditional scrolling for users accustomed to classic behavior)
+# UI Location:  System Settings > Trackpad > Scroll & Zoom > Natural scrolling
+#               System Settings > Mouse > Natural scrolling
+# Source:       https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac
+# Note:         This is highly personal preference. Users who switch between
+#               Mac and Windows may prefer traditional scrolling for consistency.
+#               This setting affects both trackpad and mouse scrolling globally.
 run_defaults "NSGlobalDomain" "com.apple.swipescrolldirection" "-bool" "false"
 
 
