@@ -55,15 +55,22 @@ msg_info "Configuring global UI and UX settings..."
 
 # --- Always Show Scrollbars ---
 # Key:          AppleShowScrollBars
+# Domain:       NSGlobalDomain
 # Description:  Controls when scrollbars are visible in windows and views.
 #               "Always" ensures you can always see your scroll position
-#               without needing to interact with the content first.
-# Default:      "WhenScrolling" (scrollbars appear only when scrolling)
-# Possible:     "WhenScrolling" = Show only when scrolling
-#               "Automatic"     = Show based on input device (trackpad vs mouse)
-#               "Always"        = Always visible
-# Set to:       "Always" (always know where you are in a document)
-# Reference:    System Preferences > General > Show scroll bars
+#               without needing to interact with the content first. This
+#               is especially useful when working with long documents or
+#               when using a mouse instead of a trackpad.
+# Default:      Automatic (behavior depends on input device)
+# Options:      WhenScrolling = Show only when actively scrolling
+#               Automatic     = Show based on input device (trackpad vs mouse)
+#               Always        = Always visible in scrollable areas
+# Set to:       Always (constant awareness of document position)
+# UI Location:  System Settings > Appearance > Show scroll bars
+# Source:       https://support.apple.com/guide/mac-help/change-appearance-settings-mchlp1225/mac
+# Note:         With trackpads, Apple defaults to hiding scrollbars since
+#               two-finger scrolling is intuitive. "Always" is better for
+#               mouse users or those who prefer visual scroll indicators.
 run_defaults "AppleShowScrollBars" "-string" "Always"
 
 # ==============================================================================
@@ -71,27 +78,41 @@ run_defaults "AppleShowScrollBars" "-string" "Always"
 # ==============================================================================
 
 # --- Expand Save Panel by Default ---
-# Key:          NSNavPanelExpandedStateForSaveMode, NSNavPanelExpandedStateForSaveMode2
+# Key:          NSNavPanelExpandedStateForSaveMode
+#               NSNavPanelExpandedStateForSaveMode2
+# Domain:       NSGlobalDomain
 # Description:  Controls whether the Save dialog box is expanded by default,
 #               showing the full file system navigator instead of a condensed
-#               view with just the filename field.
-# Default:      false (condensed view)
-# Possible:     true, false
+#               view with just the filename field. The expanded view allows
+#               you to navigate folders, create new folders, and see the
+#               complete save location.
+# Default:      false (condensed view with minimal options)
+# Options:      true  = Show expanded view with full file browser
+#               false = Show condensed view with just filename
 # Set to:       true (full navigator for easier file management)
-# Reference:    File > Save (⌘S) in any application
-# Note:         Two keys are used for compatibility across different macOS versions
+# UI Location:  File > Save (⌘S) dialog - click disclosure arrow to expand
+# Source:       https://support.apple.com/guide/mac-help/save-documents-mchlp1088/mac
+# Note:         Two keys are used for compatibility across different macOS
+#               versions. Both should be set to ensure the setting works.
 run_defaults "NSNavPanelExpandedStateForSaveMode" "-bool" "true"
 run_defaults "NSNavPanelExpandedStateForSaveMode2" "-bool" "true"
 
 # --- Expand Print Panel by Default ---
-# Key:          PMPrintingExpandedStateForPrint, PMPrintingExpandedStateForPrint2
+# Key:          PMPrintingExpandedStateForPrint
+#               PMPrintingExpandedStateForPrint2
+# Domain:       NSGlobalDomain
 # Description:  Controls whether the Print dialog box is expanded by default,
-#               showing all print options instead of a simplified view.
-# Default:      false (condensed view)
-# Possible:     true, false
+#               showing all print options instead of a simplified view. The
+#               expanded view provides access to paper size, orientation,
+#               scaling, and application-specific print options.
+# Default:      false (condensed view with basic options only)
+# Options:      true  = Show expanded view with all print options
+#               false = Show condensed view with basic options
 # Set to:       true (full options for precise print control)
-# Reference:    File > Print (⌘P) in any application
-# Note:         Two keys are used for compatibility across different macOS versions
+# UI Location:  File > Print (⌘P) dialog - click "Show Details"
+# Source:       https://support.apple.com/guide/mac-help/print-documents-mchlp1037/mac
+# Note:         Two keys are used for compatibility across different macOS
+#               versions. Both should be set to ensure the setting works.
 run_defaults "PMPrintingExpandedStateForPrint" "-bool" "true"
 run_defaults "PMPrintingExpandedStateForPrint2" "-bool" "true"
 
@@ -104,19 +125,21 @@ run_defaults "PMPrintingExpandedStateForPrint2" "-bool" "true"
 # Domain:       com.apple.LaunchServices
 # Description:  Controls whether macOS shows the "Are you sure you want to
 #               open this application?" dialog for applications downloaded
-#               from the internet. When enabled (true), the warning is shown.
-# Default:      true (quarantine enabled - warning is shown)
-# Possible:     true (show warning), false (suppress warning)
-# Set to:       false (disable quarantine warning)
-#
-# ⚠️  SECURITY WARNING:
-#     This is a power-user setting that reduces security. Only disable if:
-#     1. You carefully verify the source of all downloaded applications
-#     2. You use antivirus/anti-malware software
-#     3. You understand the risks of running unverified code
-#
-# Reference:    System Preferences > Security & Privacy > General
-# Note:         This does NOT affect Gatekeeper or code signing requirements
+#               from the internet. This is part of macOS's malware protection
+#               system that flags downloaded files with a quarantine attribute.
+# Default:      true (quarantine enabled - warning shown for downloads)
+# Options:      true  = Show quarantine warning for downloaded apps
+#               false = Suppress quarantine warning (apps open directly)
+# Set to:       false (disable warning for power users)
+# UI Location:  System Settings > Privacy & Security > Security
+# Source:       https://support.apple.com/guide/mac-help/open-an-app-from-an-unidentified-developer-mh40616/mac
+# See also:     https://support.apple.com/guide/mac-help/protect-your-mac-from-malware-mh40596/mac
+# Security:     ⚠️ SECURITY WARNING - This is a power-user setting that
+#               reduces security. Only disable if:
+#               1. You carefully verify the source of all downloaded apps
+#               2. You use antivirus/anti-malware software
+#               3. You understand the risks of running unverified code
+#               This does NOT affect Gatekeeper or code signing requirements.
 if [ "$DRY_RUN_MODE" = true ]; then
   msg_info "[Dry Run] Would set com.apple.LaunchServices preference: 'LSQuarantine' to 'false'"
 else
