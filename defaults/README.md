@@ -186,20 +186,20 @@ The following scripts have been updated with enhanced inline documentation inclu
 | Script | Status | Last Updated |
 |--------|--------|--------------|
 | `input/trackpad_mouse.sh` | ✅ Complete | 2025-12-04 |
+| `input/keyboard.sh` | ✅ Complete | 2025-12-04 |
 | `system/screensaver.sh` | ✅ Complete | 2025-12-04 |
+| `system/firewall.sh` | ✅ Complete | 2025-12-04 |
+| `system/software_update.sh` | ✅ Complete | 2025-12-04 |
 | `interface/activity_monitor.sh` | ✅ Complete | 2025-12-04 |
-| `input/keyboard.sh` | ⚠️ Partial | Has format, needs source URLs |
-| `interface/finder.sh` | ⚠️ Partial | Has format, needs source URLs |
-| `interface/mission_control.sh` | ⚠️ Partial | Has format, needs source URLs |
-| `interface/ui_ux.sh` | ⚠️ Partial | Has format, needs source URLs |
+| `interface/finder.sh` | ✅ Complete | 2025-12-04 |
+| `interface/mission_control.sh` | ✅ Complete | 2025-12-04 |
+| `interface/ui_ux.sh` | ✅ Complete | 2025-12-04 |
+| `applications/safari.sh` | ✅ Complete | 2025-12-04 |
+| `applications/textedit.sh` | ✅ Complete | 2025-12-04 |
 | `interface/dock.sh` | ⚠️ Partial | Uses dockutil, different format |
-| `system/firewall.sh` | ⚠️ Partial | Has format, needs source URLs |
-| `system/software_update.sh` | 📋 Pending | Needs documentation update |
 | `system/time_machine.sh` | 📋 Pending | Needs documentation update |
 | `system/core.sh` | 📋 Pending | Needs documentation update |
 | `system/auto_updates.sh` | 📋 Pending | Needs documentation update |
-| `applications/safari.sh` | ⚠️ Partial | Has format, needs source URLs |
-| `applications/textedit.sh` | ⚠️ Partial | Has format, needs source URLs |
 | `applications/alfred.sh` | 📋 Pending | Needs documentation update |
 | `applications/docker.sh` | 📋 Pending | Needs documentation update |
 | `applications/iterm2.sh` | 📋 Pending | Needs documentation update |

@@ -59,34 +59,42 @@ msg_info "Configuring Keyboard settings..."
 
 # --- Key Repeat Rate ---
 # Key:          KeyRepeat
+# Domain:       NSGlobalDomain
 # Description:  Controls the speed at which a character repeats when a key
-#               is held down. Lower values mean faster repeating.
-# Default:      6 (corresponds to approximately 90ms between repeats)
-# Possible:     Integer value; lower is faster
-#               1 = ~15ms (extremely fast)
-#               2 = ~30ms (very fast)
-#               6 = ~90ms (default)
-#               10+ = slow
-# Set to:       1 (fastest possible without hacking system values)
-# Reference:    System Preferences > Keyboard > Key Repeat slider
-# Use case:     Fast key repeat is essential for vim users and when
-#               holding arrow keys for navigation
+#               is held down. This setting determines the interval between
+#               repeated keystrokes. Lower values mean faster repeating,
+#               which is essential for efficient text navigation and editing.
+# Default:      6 (approximately 90ms between repeats)
+# Options:      Integer value; lower is faster:
+#               1  = ~15ms (extremely fast, ~67 chars/sec)
+#               2  = ~30ms (very fast, ~33 chars/sec)
+#               6  = ~90ms (Apple's default, ~11 chars/sec)
+#               10 = ~150ms (slow)
+# Set to:       1 (fastest for vim users and power typists)
+# UI Location:  System Settings > Keyboard > Key repeat rate (slider)
+# Source:       https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac
+# Note:         A restart may be required for changes to take effect. This
+#               setting is essential for vim users who hold j/k for navigation.
 run_defaults "KeyRepeat" "-int" "1"
 
 # --- Delay Until Repeat ---
 # Key:          InitialKeyRepeat
+# Domain:       NSGlobalDomain
 # Description:  Controls the delay (in frames, ~15ms each) before key repeat
-#               begins when a key is held down.
+#               begins when a key is held down. This is the "warm-up" period
+#               before characters start repeating. Shorter delays make the
+#               keyboard feel more responsive for navigation tasks.
 # Default:      25 (approximately 375ms)
-# Possible:     Integer value; lower is shorter delay
-#               10 = ~150ms (very short)
+# Options:      Integer value; lower is shorter delay:
+#               10 = ~150ms (very short, immediate response)
 #               15 = ~225ms (short)
-#               25 = ~375ms (default)
-#               35+ = long
+#               25 = ~375ms (Apple's default)
+#               35 = ~525ms (long)
 # Set to:       10 (very short delay for responsive key repeat)
-# Reference:    System Preferences > Keyboard > Delay Until Repeat slider
-# Use case:     Shorter delay means faster response when navigating
-#               or deleting text by holding keys
+# UI Location:  System Settings > Keyboard > Delay until repeat (slider)
+# Source:       https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac
+# Note:         Shorter delay is useful when deleting text by holding
+#               backspace or navigating with arrow keys.
 run_defaults "InitialKeyRepeat" "-int" "10"
 
 
@@ -96,19 +104,22 @@ run_defaults "InitialKeyRepeat" "-int" "10"
 
 # --- Full Keyboard Access ---
 # Key:          AppleKeyboardUIMode
+# Domain:       NSGlobalDomain
 # Description:  Controls which UI elements can be accessed via the Tab key.
 #               When set to full access, you can Tab through all controls
-#               in dialogs (buttons, dropdowns, etc.), not just text fields.
+#               in dialogs (buttons, dropdowns, checkboxes, etc.), not just
+#               text fields. This enables a keyboard-driven workflow without
+#               needing to reach for the mouse.
 # Default:      0 or 1 (varies by macOS version; text fields only)
-# Possible:     0 = Text boxes and lists only
+# Options:      0 = Text boxes and lists only (limited navigation)
 #               2 = All controls (full keyboard access)
 #               3 = All controls (same as 2, alternate value)
 # Set to:       2 (full keyboard access for power users)
-# Reference:    System Preferences > Keyboard > Shortcuts > Use keyboard navigation
-# Use case:     Essential for keyboard-driven workflows; allows navigating
-#               and activating buttons in dialogs without using the mouse
-# Tip:          In dialogs, use Tab to move between controls and Space
-#               to activate buttons
+# UI Location:  System Settings > Keyboard > Keyboard navigation (toggle)
+# Source:       https://support.apple.com/guide/mac-help/use-your-keyboard-like-a-mouse-mh27469/mac
+# See also:     https://support.apple.com/guide/mac-help/use-keyboard-shortcuts-mchlp2262/mac
+# Note:         In dialogs, use Tab to move between controls and Space to
+#               activate buttons. Press Escape to cancel or Enter to confirm.
 run_defaults "AppleKeyboardUIMode" "-int" "2"
 
 

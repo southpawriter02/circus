@@ -66,38 +66,56 @@ run_sudo_defaults() {
 
 # --- Enable Firewall ---
 # Key:          globalstate
-# Description:  Controls the overall state of the application firewall.
-#               When enabled, macOS monitors incoming connections and can
-#               block unauthorized applications from receiving connections.
-# Default:      0 (Off - firewall is disabled)
-# Possible:     0 = Off (disabled)
-#               1 = On (enabled for specific services)
+# Domain:       /Library/Preferences/com.apple.alf
+# Description:  Controls the overall state of the macOS Application Level
+#               Firewall (ALF). When enabled, macOS monitors incoming network
+#               connections and can block unauthorized applications from
+#               receiving connections. The firewall operates at the application
+#               level, meaning it controls which apps can accept connections.
+# Default:      0 (Off - firewall is disabled on most Macs)
+# Options:      0 = Off (firewall disabled, all incoming connections allowed)
+#               1 = On (firewall enabled, per-app control)
 #               2 = On (block all incoming connections except essential services)
-# Set to:       1 (enabled with per-app control)
-# Reference:    System Preferences > Security & Privacy > Firewall
+# Set to:       1 (enabled with per-app control for balanced security)
+# UI Location:  System Settings > Network > Firewall
+# Source:       https://support.apple.com/en-us/102445
+# See also:     https://support.apple.com/guide/mac-help/block-connections-to-your-mac-with-a-firewall-mh34041/mac
+# Security:     The firewall is essential for Macs used on public networks
+#               (coffee shops, airports) to prevent unauthorized access.
 run_sudo_defaults "/Library/Preferences/com.apple.alf" "globalstate" "-int" "1"
 
 # --- Enable Stealth Mode ---
 # Key:          stealthenabled
+# Domain:       /Library/Preferences/com.apple.alf
 # Description:  When enabled, the Mac does not respond to network probing
-#               requests such as ICMP ping, port scans, or service discovery.
-#               This makes the Mac harder to detect on a network.
-# Default:      0 (Off - Mac responds to network probes)
-# Possible:     0 = Off (responds to probes)
-#               1 = On (ignores probes silently)
-# Set to:       1 (enabled for enhanced security)
-# Reference:    System Preferences > Security & Privacy > Firewall > Firewall Options
+#               requests such as ICMP ping, port scans, or service discovery
+#               protocols (like Bonjour). This makes the Mac harder to detect
+#               and fingerprint on a network, reducing its attack surface.
+# Default:      0 (Off - Mac responds to network probes normally)
+# Options:      0 = Off (Mac responds to ping and network probes)
+#               1 = On (Mac ignores probes silently, appears offline)
+# Set to:       1 (enabled for enhanced security on untrusted networks)
+# UI Location:  System Settings > Network > Firewall > Options > Enable stealth mode
+# Source:       https://support.apple.com/guide/mac-help/use-stealth-mode-to-keep-your-mac-more-secure-mh11463/mac
+# Security:     Stealth mode provides defense-in-depth by making your Mac
+#               invisible to casual network scans. However, this may prevent
+#               legitimate services (like network discovery) from working.
 run_sudo_defaults "/Library/Preferences/com.apple.alf" "stealthenabled" "-int" "1"
 
 # --- Enable Logging ---
 # Key:          loggingenabled
-# Description:  Enables logging of firewall activity. Logs can be viewed using
-#               Console.app or by examining /var/log/appfirewall.log
-# Default:      0 (Off - no logging)
-# Possible:     0 = Off
-#               1 = On
-# Set to:       1 (enabled for security auditing and debugging)
-# Reference:    Use `log show --predicate 'subsystem == "com.apple.alf"'` to view logs
+# Domain:       /Library/Preferences/com.apple.alf
+# Description:  Enables logging of firewall activity. When enabled, the firewall
+#               records blocked connections and security events to the system log.
+#               Logs can be viewed using Console.app or the log command.
+# Default:      0 (Off - no firewall logging)
+# Options:      0 = Off (firewall events not logged)
+#               1 = On (firewall events logged to system log)
+# Set to:       1 (enabled for security auditing and troubleshooting)
+# UI Location:  No direct UI toggle - accessible via command line only
+# Source:       https://support.apple.com/en-us/102445
+# Note:         View logs with: log show --predicate 'subsystem == "com.apple.alf"'
+#               or check /var/log/appfirewall.log on older macOS versions.
 run_sudo_defaults "/Library/Preferences/com.apple.alf" "loggingenabled" "-int" "1"
 
 
