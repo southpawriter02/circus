@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Mock for zsh command (shell version check)
+# Set MOCK_ZSH_VERSION to control the version output
+# Default: 5.9
+if [[ "$1" == "--version" ]]; then
+  echo "zsh ${MOCK_ZSH_VERSION:-5.9} (x86_64-apple-darwin21.0)"
+else
+  # Execute as shell
+  exec /bin/bash "$@"
+fi

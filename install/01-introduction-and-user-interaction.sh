@@ -133,7 +133,7 @@ display_role_preview() {
       if [[ "$line" =~ ^(brew|cask)\ \"([^\"]+)\" ]]; then
         local pkg_name="${BASH_REMATCH[2]}"
         ui_box_line "    ${UI_ICON_ARROW} $pkg_name" 60 "single"
-        ((count++))
+        count=$((count + 1))
         [[ $count -ge 5 ]] && break
       fi
     done < "$brewfile"

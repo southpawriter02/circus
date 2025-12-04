@@ -20,15 +20,35 @@ export INTERACTIVE_MODE=true
 export INSTALL_ROLE=""
 export FORCE_MODE=false
 
+# --- Valid Roles -------------------------------------------------------------
+# These are the supported installation roles. Each role has a corresponding
+# directory under roles/ with role-specific configurations.
+VALID_ROLES=("developer" "personal" "work")
+
 # ==============================================================================
 # FUNCTIONS
 # ==============================================================================
+
+#
+# Validate that a role name is one of the supported roles.
+# @param $1 The role name to validate
+# @return 0 if valid, 1 if invalid
+#
+validate_role() {
+  local role="$1"
+  for valid_role in "${VALID_ROLES[@]}"; do
+    if [[ "$role" == "$valid_role" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
 
 usage() {
   msg_info "Usage: ./install.sh [options]"
   echo ""
   msg_info "Options:"
-  echo "  --role <name>      Specify the role to install (e.g., developer)."
+  echo "  --role <name>      Specify the role to install. Valid roles: ${VALID_ROLES[*]}"
   echo "  --dry-run          Run the installer without making any changes."
   echo "  --force            Force re-running of already completed stages."
   echo "  --non-interactive  Run the installer without prompting for confirmation."
@@ -43,20 +63,38 @@ main() {
   # --- Argument Parsing -------------------------------------------------------
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --role) INSTALL_ROLE="$2"; shift 2 ;;
+      --role)
+        if [[ -z "$2" ]] || [[ "$2" == --* ]]; then
+          die "Error: --role requires a role name. Valid roles: ${VALID_ROLES[*]}"
+        fi
+        if ! validate_role "$2"; then
+          die "Error: Invalid role '$2'. Valid roles: ${VALID_ROLES[*]}"
+        fi
+        INSTALL_ROLE="$2"
+        shift 2
+        ;;
       --dry-run) DRY_RUN_MODE=true; shift ;;
-      --force) FORCE_MODE=true; shift ;; 
-      --non-interactive) INTERACTIVE_MODE=false; shift ;; 
-      --log-file) export LOG_FILE_PATH="$2"; shift 2 ;;
+      --force) FORCE_MODE=true; shift ;;
+      --non-interactive) INTERACTIVE_MODE=false; shift ;;
+      --log-file)
+        if [[ -z "$2" ]] || [[ "$2" == --* ]]; then
+          die "Error: --log-file requires a file path."
+        fi
+        export LOG_FILE_PATH="$2"
+        shift 2
+        ;;
       --log-level)
+        if [[ -z "$2" ]] || [[ "$2" == --* ]]; then
+          die "Error: --log-level requires a level name (DEBUG, INFO, WARN, ERROR, CRITICAL)."
+        fi
         level_name=$(echo "$2" | tr '[:lower:]' '[:upper:]')
         case "$level_name" in
-          DEBUG) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_DEBUG ;; 
-          INFO) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_INFO ;; 
-          WARN) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_WARN ;; 
-          ERROR) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_ERROR ;; 
-          CRITICAL) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL ;; 
-          *) die "Invalid log level: $2. Use DEBUG, INFO, WARN, or ERROR." ;;
+          DEBUG) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_DEBUG ;;
+          INFO) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_INFO ;;
+          WARN) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_WARN ;;
+          ERROR) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_ERROR ;;
+          CRITICAL) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL ;;
+          *) die "Error: Invalid log level '$2'. Use DEBUG, INFO, WARN, ERROR, or CRITICAL." ;;
         esac
         shift 2
         ;;
@@ -112,7 +150,7 @@ main() {
   # --- Execute Installation Stages --------------------------------------------
   local stage_num=0
   for stage_def in "${INSTALL_STAGES[@]}"; do
-    ((stage_num++))
+    stage_num=$((stage_num + 1))
 
     # Parse stage definition
     IFS='|' read -r stage_file stage_title stage_desc <<< "$stage_def"

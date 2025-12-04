@@ -66,10 +66,10 @@ main() {
     if [ -e "$source_path" ]; then
       msg_info "  -> Backing up '$item'..."
       rsync -a "$source_path" "$backup_dir/"
-      ((items_backed_up++))
+      items_backed_up=$((items_backed_up + 1))
     else
       msg_warning "  -> Skipping '$item' (does not exist)."
-      ((items_skipped++))
+      items_skipped=$((items_skipped + 1))
     fi
   done
 

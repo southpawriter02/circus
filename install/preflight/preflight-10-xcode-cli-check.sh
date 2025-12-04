@@ -16,11 +16,14 @@
 main() {
   msg_info "Checking for Xcode Command Line Tools..."
 
+  # Allow command injection for testing
+  local xcode_select_cmd="${XCODE_SELECT_CMD:-xcode-select}"
+
   # The `xcode-select -p` command prints the path to the active developer
   # directory. If this command returns a non-zero exit code, it means the
   # tools are not installed.
   # We redirect the output to /dev/null to keep the output clean.
-  if xcode-select -p >/dev/null 2>&1; then
+  if $xcode_select_cmd -p >/dev/null 2>&1; then
     msg_success "Xcode Command Line Tools are installed."
     return 0
   else

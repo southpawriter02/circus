@@ -589,7 +589,7 @@ ui_stages_print() {
         complete)
           icon="$UI_ICON_SUCCESS"
           color="$UI_SUCCESS"
-          ((completed++))
+          completed=$((completed + 1))
           ;;
         active)
           icon="$UI_ICON_ACTIVE"
@@ -602,7 +602,7 @@ ui_stages_print() {
         skipped)
           icon="$UI_ICON_WARNING"
           color="$UI_WARNING"
-          ((completed++))
+          completed=$((completed + 1))
           ;;
         *)
           icon="$UI_ICON_PENDING"

@@ -66,7 +66,7 @@ run_preflight_check() {
   if [[ ! -f "$script_path" ]]; then
     CHECK_RESULTS+=("skipped")
     printf "  ${UI_WARNING}${UI_ICON_WARNING}${UI_RESET} ${UI_MUTED}%-40s${UI_RESET} ${UI_WARNING}Skipped (not found)${UI_RESET}\n" "$display_name"
-    ((CHECKS_WARNED++))
+    CHECKS_WARNED=$((CHECKS_WARNED + 1))
     return 0
   fi
 
@@ -102,17 +102,17 @@ run_preflight_check() {
   if [[ "$check_result" -eq 0 ]]; then
     CHECK_RESULTS+=("passed")
     printf "  ${UI_SUCCESS}${UI_ICON_SUCCESS}${UI_RESET} %-40s ${UI_SUCCESS}Passed${UI_RESET}\n" "$display_name"
-    ((CHECKS_PASSED++))
+    CHECKS_PASSED=$((CHECKS_PASSED + 1))
   else
     if [[ "$is_critical" == "yes" ]]; then
       CHECK_RESULTS+=("failed")
       printf "  ${UI_ERROR}${UI_ICON_ERROR}${UI_RESET} %-40s ${UI_ERROR}Failed (Critical)${UI_RESET}\n" "$display_name"
-      ((CHECKS_FAILED++))
-      ((CRITICAL_FAILURES++))
+      CHECKS_FAILED=$((CHECKS_FAILED + 1))
+      CRITICAL_FAILURES=$((CRITICAL_FAILURES + 1))
     else
       CHECK_RESULTS+=("warned")
       printf "  ${UI_WARNING}${UI_ICON_WARNING}${UI_RESET} %-40s ${UI_WARNING}Warning${UI_RESET}\n" "$display_name"
-      ((CHECKS_WARNED++))
+      CHECKS_WARNED=$((CHECKS_WARNED + 1))
     fi
   fi
 

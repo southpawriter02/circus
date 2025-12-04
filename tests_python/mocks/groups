@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Mock for groups command
+# Set MOCK_GROUPS_OUTPUT to control the output
+# Default: "staff admin" (user has admin rights)
+echo "${MOCK_GROUPS_OUTPUT:-staff admin}"

@@ -8,13 +8,18 @@
 
 import subprocess
 import os
+import sys
+
+import pytest
 
 # Get the absolute path to the project root, so we can reliably run the
 # `fc` command from anywhere.
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 FC_COMMAND = os.path.join(PROJECT_ROOT, 'bin', 'fc')
 
-import pytest
+# Skip tests on non-macOS systems that expect macOS-specific output
+IS_MACOS = sys.platform == 'darwin'
+REQUIRES_MACOS = pytest.mark.skipif(not IS_MACOS, reason="Requires macOS")
 
 # ==============================================================================
 # Tests for the Dispatcher Logic
@@ -62,6 +67,7 @@ def test_dispatcher_fails_for_unknown_command():
 # This is a robust way to test shell scripts that have external dependencies.
 # ==============================================================================
 
+@REQUIRES_MACOS
 def test_info_plugin_runs_successfully():
     """
     Tests the `info` plugin's success case.
@@ -224,9 +230,11 @@ def test_sync_plugin_fails_when_rsync_is_missing():
     assert result.returncode != 0
     assert "This command requires 'rsync'." in result.stderr
 
+@REQUIRES_MACOS
 def test_sync_plugin_runs_successfully():
     """
     Tests that the `sync` plugin runs successfully when all dependencies are present.
+    Note: This test requires macOS because the fc-sync plugin uses macOS-specific commands.
     """
     home_dir = os.path.expanduser("~")
     zshrc_path = os.path.join(home_dir, '.zshrc')
