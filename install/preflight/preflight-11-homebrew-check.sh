@@ -16,10 +16,13 @@
 main() {
   msg_info "Checking for Homebrew..."
 
+  # Allow command injection for testing
+  local brew_cmd="${BREW_CMD:-brew}"
+
   # The `command -v` command checks if a command is available in the system's
   # PATH. We use it to check for the `brew` command.
   # The output is redirected to /dev/null to keep the output clean.
-  if command -v "brew" >/dev/null 2>&1; then
+  if command -v "$brew_cmd" >/dev/null 2>&1; then
     msg_success "Homebrew is installed."
     return 0
   else

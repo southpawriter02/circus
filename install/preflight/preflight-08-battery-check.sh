@@ -25,12 +25,16 @@ main() {
 
   msg_info "Checking battery level and AC power..."
 
+  # Allow command injection for testing
+  local uname_cmd="${UNAME_CMD:-uname}"
+  local pmset_cmd="${PMSET_CMD:-pmset}"
+
   # This check is specific to macOS and uses the `pmset` command.
-  if [[ "$(uname)" == "Darwin" ]]; then
+  if [[ "$($uname_cmd)" == "Darwin" ]]; then
 
     # Get battery status from `pmset`.
     local battery_info
-    battery_info=$(pmset -g batt)
+    battery_info=$($pmset_cmd -g batt)
 
     # Check if the device is on AC power.
     if echo "$battery_info" | grep -q "AC Power"; then

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Mock for id command
+# Set MOCK_ID_UID to control the -u output (default: 1000, non-root)
+if [[ "$1" == "-u" ]]; then
+  echo "${MOCK_ID_UID:-1000}"
+else
+  echo "uid=${MOCK_ID_UID:-1000}(user) gid=1000(user)"
+fi

@@ -16,8 +16,11 @@
 main() {
   msg_info "Checking for root user..."
 
+  # Allow command injection for testing
+  local id_cmd="${ID_CMD:-id}"
+
   # The `id -u` command returns the user ID. The root user always has a UID of 0.
-  if [ "$(id -u)" -eq "0" ]; then
+  if [ "$($id_cmd -u)" -eq "0" ]; then
     msg_error "Running as the root user is not supported. Please run as a regular user."
     return 1
   else

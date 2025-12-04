@@ -31,11 +31,14 @@ main() {
   # A flag to track if any dependencies are missing.
   local missing_dependencies=false
 
+  # Allow overriding the command check function for testing
+  local command_check="${COMMAND_CHECK_CMD:-command -v}"
+
   # Iterate through the list of dependencies.
   for dep in "${DEPENDENCIES[@]}"; do
     # The `command -v` command checks if a command is available.
     # If it is, it will exit with a status of 0.
-    if command -v "$dep" >/dev/null 2>&1; then
+    if $command_check "$dep" >/dev/null 2>&1; then
       msg_success "$dep is installed."
     else
       msg_error "$dep is not installed. Please install it and try again."
