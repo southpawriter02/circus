@@ -150,7 +150,7 @@ main() {
   # --- Execute Installation Stages --------------------------------------------
   local stage_num=0
   for stage_def in "${INSTALL_STAGES[@]}"; do
-    ((stage_num++))
+    stage_num=$((stage_num + 1))
 
     # Parse stage definition
     IFS='|' read -r stage_file stage_title stage_desc <<< "$stage_def"

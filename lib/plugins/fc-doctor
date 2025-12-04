@@ -55,7 +55,7 @@ check_critical_tools() {
       msg_success "  [✓] Found '$tool'"
     else
       msg_error "  [✗] '$tool' is missing."
-      ((missing_tools++))
+      missing_tools=$((missing_tools + 1))
     fi
   done
 

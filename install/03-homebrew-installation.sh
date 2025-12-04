@@ -16,7 +16,8 @@
 count_packages_in_brewfile() {
   local brewfile="$1"
   if [[ -f "$brewfile" ]]; then
-    grep -c "^brew\|^cask\|^mas\|^tap" "$brewfile" 2>/dev/null || echo "0"
+    # Use tr to strip any newlines from grep output (can occur in some environments)
+    grep -c "^brew\|^cask\|^mas\|^tap" "$brewfile" 2>/dev/null | tr -d '\n' || echo "0"
   else
     echo "0"
   fi
@@ -48,10 +49,11 @@ display_brewfile_summary() {
   total_packages=$(count_packages_in_brewfile "$brewfile_path")
 
   local brew_count cask_count tap_count mas_count
-  brew_count=$(grep -c "^brew " "$brewfile_path" 2>/dev/null || echo "0")
-  cask_count=$(grep -c "^cask " "$brewfile_path" 2>/dev/null || echo "0")
-  tap_count=$(grep -c "^tap " "$brewfile_path" 2>/dev/null || echo "0")
-  mas_count=$(grep -c "^mas " "$brewfile_path" 2>/dev/null || echo "0")
+  # Use tr to strip any newlines from grep output (can occur in some environments)
+  brew_count=$(grep -c "^brew " "$brewfile_path" 2>/dev/null | tr -d '\n' || echo "0")
+  cask_count=$(grep -c "^cask " "$brewfile_path" 2>/dev/null | tr -d '\n' || echo "0")
+  tap_count=$(grep -c "^tap " "$brewfile_path" 2>/dev/null | tr -d '\n' || echo "0")
+  mas_count=$(grep -c "^mas " "$brewfile_path" 2>/dev/null | tr -d '\n' || echo "0")
 
   echo ""
   ui_box_top "$brewfile_type Brewfile" 60 "single"
@@ -97,7 +99,7 @@ run_brew_bundle() {
     local i=0
     while [[ $i -le $total_packages ]]; do
       ui_progress_bar "$i" "$total_packages" 40 "Simulating"
-      ((i++))
+      i=$((i + 1))
       sleep 0.05
     done
     ui_progress_bar_done
@@ -133,9 +135,9 @@ run_brew_bundle() {
 
       # Show summary of what happened
       local already_installed
-      already_installed=$(echo "$bundle_output" | grep -c "Using" || echo "0")
+      already_installed=$(echo "$bundle_output" | grep -c "Using" | tr -d '\n' || echo "0")
       local newly_installed
-      newly_installed=$(echo "$bundle_output" | grep -c "Installing\|Downloading" || echo "0")
+      newly_installed=$(echo "$bundle_output" | grep -c "Installing\|Downloading" | tr -d '\n' || echo "0")
 
       if [[ $already_installed -gt 0 ]] || [[ $newly_installed -gt 0 ]]; then
         printf "${UI_MUTED}  ${UI_ICON_ARROW} Already installed: $already_installed${UI_RESET}\n"
