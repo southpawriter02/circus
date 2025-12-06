@@ -1,0 +1,371 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-encrypt
+#
+# DESCRIPTION:  Quick file/folder encryption using GPG or OpenSSL.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc encrypt <action> [path] [options]"
+  echo ""
+  msg_info "Encrypt and decrypt files using GPG (or OpenSSL as fallback)."
+  echo ""
+  msg_info "Actions:"
+  echo "  file <path>       - Encrypt a file with password"
+  echo "  decrypt <path>    - Decrypt an encrypted file"
+  echo "  folder <path>     - Encrypt a folder as archive"
+  echo "  text              - Encrypt text from stdin"
+  echo ""
+  msg_info "Options:"
+  echo "  --delete          - Delete original after encryption"
+  echo "  --keep            - Keep original (default)"
+  echo "  --output <path>   - Specify output file path"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Check if GPG is available
+has_gpg() {
+  command -v gpg &>/dev/null
+}
+
+# Check if OpenSSL is available (fallback)
+has_openssl() {
+  command -v openssl &>/dev/null
+}
+
+# Get the encryption tool to use
+get_encrypt_tool() {
+  if has_gpg; then
+    echo "gpg"
+  elif has_openssl; then
+    echo "openssl"
+  else
+    echo "none"
+  fi
+}
+
+# --- Action Functions -------------------------------------------------------
+
+# Encrypt a file
+action_file() {
+  local input_path="$1"
+  local delete_original=false
+  local output_path=""
+  
+  # Parse options
+  shift || true
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --delete)
+        delete_original=true
+        shift
+        ;;
+      --output)
+        output_path="$2"
+        shift 2
+        ;;
+      --keep)
+        delete_original=false
+        shift
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+  
+  if [[ -z "$input_path" ]]; then
+    die "Please provide a file to encrypt."
+  fi
+  
+  if [[ ! -f "$input_path" ]]; then
+    die "File not found: $input_path"
+  fi
+  
+  local tool
+  tool=$(get_encrypt_tool)
+  
+  if [[ "$tool" == "none" ]]; then
+    die "No encryption tool available. Please install GPG: brew install gnupg"
+  fi
+  
+  # Default output path
+  if [[ -z "$output_path" ]]; then
+    if [[ "$tool" == "gpg" ]]; then
+      output_path="${input_path}.gpg"
+    else
+      output_path="${input_path}.enc"
+    fi
+  fi
+  
+  msg_info "Encrypting $input_path..."
+  echo ""
+  
+  if [[ "$tool" == "gpg" ]]; then
+    # GPG symmetric encryption with AES-256
+    if gpg --symmetric --cipher-algo AES256 --output "$output_path" "$input_path"; then
+      msg_success "Created: $output_path"
+    else
+      die "Encryption failed."
+    fi
+  else
+    # OpenSSL fallback
+    msg_info "Using OpenSSL (GPG not available)"
+    if openssl enc -aes-256-cbc -salt -pbkdf2 -in "$input_path" -out "$output_path"; then
+      msg_success "Created: $output_path"
+    else
+      die "Encryption failed."
+    fi
+  fi
+  
+  echo ""
+  
+  if $delete_original; then
+    rm -f "$input_path"
+    msg_success "Original file deleted."
+  else
+    msg_info "Original file preserved: $input_path"
+  fi
+}
+
+# Decrypt a file
+action_decrypt() {
+  local input_path="$1"
+  local output_path=""
+  
+  # Parse options
+  shift || true
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --output)
+        output_path="$2"
+        shift 2
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+  
+  if [[ -z "$input_path" ]]; then
+    die "Please provide a file to decrypt."
+  fi
+  
+  if [[ ! -f "$input_path" ]]; then
+    die "File not found: $input_path"
+  fi
+  
+  # Detect tool based on file extension
+  local tool="gpg"
+  if [[ "$input_path" == *.enc ]]; then
+    tool="openssl"
+  fi
+  
+  # Default output path: strip encryption extension
+  if [[ -z "$output_path" ]]; then
+    output_path="${input_path%.gpg}"
+    output_path="${output_path%.enc}"
+    output_path="${output_path%.asc}"
+    
+    # If output would overwrite input, add .decrypted
+    if [[ "$output_path" == "$input_path" ]]; then
+      output_path="${input_path}.decrypted"
+    fi
+  fi
+  
+  msg_info "Decrypting $input_path..."
+  echo ""
+  
+  if [[ "$tool" == "gpg" ]] && has_gpg; then
+    if gpg --decrypt --output "$output_path" "$input_path" 2>/dev/null; then
+      msg_success "Created: $output_path"
+    else
+      die "Decryption failed. Wrong password or corrupted file."
+    fi
+  elif has_openssl; then
+    if openssl enc -d -aes-256-cbc -pbkdf2 -in "$input_path" -out "$output_path"; then
+      msg_success "Created: $output_path"
+    else
+      die "Decryption failed. Wrong password or corrupted file."
+    fi
+  else
+    die "No decryption tool available."
+  fi
+}
+
+# Encrypt a folder
+action_folder() {
+  local input_path="$1"
+  local delete_original=false
+  local output_path=""
+  
+  # Parse options
+  shift || true
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --delete)
+        delete_original=true
+        shift
+        ;;
+      --output)
+        output_path="$2"
+        shift 2
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+  
+  if [[ -z "$input_path" ]]; then
+    die "Please provide a folder to encrypt."
+  fi
+  
+  # Remove trailing slash
+  input_path="${input_path%/}"
+  
+  if [[ ! -d "$input_path" ]]; then
+    die "Folder not found: $input_path"
+  fi
+  
+  local tool
+  tool=$(get_encrypt_tool)
+  
+  if [[ "$tool" == "none" ]]; then
+    die "No encryption tool available. Please install GPG: brew install gnupg"
+  fi
+  
+  local folder_name
+  folder_name=$(basename "$input_path")
+  
+  # Default output path
+  if [[ -z "$output_path" ]]; then
+    if [[ "$tool" == "gpg" ]]; then
+      output_path="${folder_name}.tar.gz.gpg"
+    else
+      output_path="${folder_name}.tar.gz.enc"
+    fi
+  fi
+  
+  msg_info "Creating encrypted archive of $input_path..."
+  echo ""
+  
+  local parent_dir
+  parent_dir=$(dirname "$input_path")
+  
+  if [[ "$tool" == "gpg" ]]; then
+    # Create tar.gz and encrypt in one pipeline
+    if tar -czf - -C "$parent_dir" "$folder_name" | gpg --symmetric --cipher-algo AES256 --output "$output_path"; then
+      local size
+      size=$(du -h "$output_path" | cut -f1)
+      msg_success "Created: $output_path ($size)"
+    else
+      die "Encryption failed."
+    fi
+  else
+    # OpenSSL fallback
+    if tar -czf - -C "$parent_dir" "$folder_name" | openssl enc -aes-256-cbc -salt -pbkdf2 -out "$output_path"; then
+      local size
+      size=$(du -h "$output_path" | cut -f1)
+      msg_success "Created: $output_path ($size)"
+    else
+      die "Encryption failed."
+    fi
+  fi
+  
+  echo ""
+  
+  if $delete_original; then
+    rm -rf "$input_path"
+    msg_success "Original folder deleted."
+  else
+    msg_info "Original folder preserved: $input_path"
+  fi
+}
+
+# Encrypt text from stdin
+action_text() {
+  local tool
+  tool=$(get_encrypt_tool)
+  
+  if [[ "$tool" == "none" ]]; then
+    die "No encryption tool available. Please install GPG: brew install gnupg"
+  fi
+  
+  local text=""
+  
+  if [[ -t 0 ]]; then
+    # Interactive mode
+    msg_info "Enter text to encrypt (Ctrl+D when done):"
+    text=$(cat)
+  else
+    # Piped input
+    text=$(cat)
+  fi
+  
+  if [[ -z "$text" ]]; then
+    die "No text provided."
+  fi
+  
+  echo ""
+  msg_info "Encrypting text..."
+  echo ""
+  
+  local encrypted
+  
+  if [[ "$tool" == "gpg" ]]; then
+    encrypted=$(echo "$text" | gpg --symmetric --cipher-algo AES256 --armor 2>/dev/null)
+  else
+    encrypted=$(echo "$text" | openssl enc -aes-256-cbc -salt -pbkdf2 -base64)
+  fi
+  
+  if [[ -z "$encrypted" ]]; then
+    die "Encryption failed."
+  fi
+  
+  echo "$encrypted"
+  echo ""
+  
+  echo -n "$encrypted" | pbcopy
+  msg_success "Encrypted text copied to clipboard."
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    file)
+      action_file "$@"
+      ;;
+    decrypt)
+      action_decrypt "$@"
+      ;;
+    folder)
+      action_folder "$@"
+      ;;
+    text)
+      action_text
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc fc-encrypt --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

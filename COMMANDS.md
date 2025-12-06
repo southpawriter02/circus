@@ -248,6 +248,48 @@ fc keychain wifi "Coffee Shop"
 fc keychain add
 ```
 
+---
+
+## `fc encrypt`
+
+Encrypt and decrypt files using GPG (with OpenSSL fallback).
+
+**Usage:**
+
+```bash
+fc encrypt <action> [path] [options]
+```
+
+**Actions:**
+*   `file <path>`: Encrypt a file with password.
+*   `decrypt <path>`: Decrypt an encrypted file.
+*   `folder <path>`: Encrypt a folder as a tar.gz archive.
+*   `text`: Encrypt text from stdin (copies to clipboard).
+
+**Options:**
+*   `--delete`: Delete original after encryption.
+*   `--output <path>`: Specify output file path.
+
+**Examples:**
+
+```bash
+# Encrypt a file
+fc encrypt file secrets.txt
+
+# Decrypt a file
+fc encrypt decrypt secrets.txt.gpg
+
+# Encrypt a folder
+fc encrypt folder ~/Documents/private/
+
+# Encrypt and delete original
+fc encrypt file passwords.json --delete
+
+# Encrypt text from pipe
+echo "API_KEY=secret" | fc encrypt text
+```
+
+
 
 
 
