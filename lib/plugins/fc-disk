@@ -1,0 +1,471 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-disk
+#
+# DESCRIPTION:  Analyze disk usage, identify space hogs, and provide cleanup
+#               utilities for macOS.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc disk <action> [options]"
+  echo ""
+  msg_info "Analyze disk usage and manage storage."
+  echo ""
+  msg_info "Actions:"
+  echo "  status          - Show disk usage summary for all mounted volumes"
+  echo "  usage [path]    - Analyze disk usage for a directory (default: home)"
+  echo "  large [path]    - Find the largest files in a directory"
+  echo "  cleanup         - Interactive cleanup of common space wasters"
+  echo "  health          - Display disk health status"
+  echo ""
+  msg_info "Options:"
+  echo "  --count N       - Number of items to show (for 'large' action)"
+  echo "  --all           - Show all items (for 'usage' action)"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Convert bytes to human-readable format
+bytes_to_human() {
+  local bytes=$1
+  if [[ $bytes -ge 1073741824 ]]; then
+    echo "$(echo "scale=1; $bytes / 1073741824" | bc) GB"
+  elif [[ $bytes -ge 1048576 ]]; then
+    echo "$(echo "scale=1; $bytes / 1048576" | bc) MB"
+  elif [[ $bytes -ge 1024 ]]; then
+    echo "$(echo "scale=1; $bytes / 1024" | bc) KB"
+  else
+    echo "${bytes} B"
+  fi
+}
+
+# Get directory size in bytes
+get_dir_size_bytes() {
+  local path="$1"
+  if [[ -d "$path" ]]; then
+    du -sk "$path" 2>/dev/null | awk '{print $1 * 1024}'
+  else
+    echo "0"
+  fi
+}
+
+# Get directory size in human-readable format
+get_dir_size() {
+  local path="$1"
+  if [[ -d "$path" ]]; then
+    du -sh "$path" 2>/dev/null | awk '{print $1}'
+  else
+    echo "0"
+  fi
+}
+
+# --- Action Functions -------------------------------------------------------
+
+# Show disk usage summary for all mounted volumes
+action_status() {
+  msg_info "Disk Usage Summary"
+  echo ""
+  
+  printf "%-30s %10s %10s %10s %8s\n" "Volume" "Size" "Used" "Free" "Use%"
+  printf "%-30s %10s %10s %10s %8s\n" "------" "----" "----" "----" "----"
+  
+  # Parse df output, skip header
+  df -h | tail -n +2 | while read -r filesystem size used avail capacity iused ifree iusedpct mountpoint; do
+    # Skip if mountpoint is empty or if it's a special filesystem
+    if [[ -z "$mountpoint" ]] || [[ "$filesystem" == "devfs" ]] || [[ "$filesystem" == "map"* ]]; then
+      continue
+    fi
+    
+    # Get the capacity percentage as a number
+    local pct="${capacity%\%}"
+    
+    # Color coding for high usage
+    local color=""
+    local reset=""
+    if [[ $pct -ge 90 ]]; then
+      color="\033[0;31m"  # Red
+      reset="\033[0m"
+    elif [[ $pct -ge 80 ]]; then
+      color="\033[0;33m"  # Yellow
+      reset="\033[0m"
+    fi
+    
+    # Truncate long mount points
+    local display_mount="$mountpoint"
+    if [[ ${#mountpoint} -gt 28 ]]; then
+      display_mount="...${mountpoint: -25}"
+    fi
+    
+    printf "${color}%-30s %10s %10s %10s %8s${reset}\n" "$display_mount" "$size" "$used" "$avail" "$capacity"
+  done
+  
+  echo ""
+}
+
+# Analyze disk usage for a specific directory
+action_usage() {
+  local target_path="${1:-$HOME}"
+  local show_all=false
+  
+  # Parse options
+  shift || true
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --all)
+        show_all=true
+        shift
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+  
+  # Expand path
+  target_path=$(cd "$target_path" 2>/dev/null && pwd) || die "Path not found: $target_path"
+  
+  msg_info "Analyzing $target_path..."
+  echo ""
+  
+  # Get subdirectory sizes and sort
+  local count=0
+  local max_items=10
+  if $show_all; then
+    max_items=9999
+  fi
+  
+  # Use du to get sizes of immediate subdirectories
+  du -sh "$target_path"/* 2>/dev/null | sort -hr | while read -r size name; do
+    count=$((count + 1))
+    if [[ $count -le $max_items ]]; then
+      local basename=$(basename "$name")
+      if [[ -d "$name" ]]; then
+        printf "  %8s  %s/\n" "$size" "$basename"
+      else
+        printf "  %8s  %s\n" "$size" "$basename"
+      fi
+    fi
+  done
+  
+  echo "  --------"
+  local total=$(du -sh "$target_path" 2>/dev/null | awk '{print $1}')
+  printf "  %8s  Total\n" "$total"
+  echo ""
+}
+
+# Find the largest files in a directory
+action_large() {
+  local target_path="${1:-$HOME}"
+  local count=10
+  
+  # Parse options
+  shift || true
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --count)
+        count="$2"
+        shift 2
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+  
+  # Expand path
+  target_path=$(cd "$target_path" 2>/dev/null && pwd) || die "Path not found: $target_path"
+  
+  msg_info "Finding $count largest files in $target_path..."
+  echo ""
+  
+  # Find files and sort by size
+  find "$target_path" -type f -exec du -h {} + 2>/dev/null | sort -hr | head -n "$count" | while read -r size filepath; do
+    # Show relative path if under target
+    local display_path="${filepath#$target_path/}"
+    printf "  %8s  %s\n" "$size" "$display_path"
+  done
+  
+  echo ""
+}
+
+# Interactive cleanup wizard
+action_cleanup() {
+  msg_info "🧹 Disk Cleanup Wizard"
+  echo ""
+  msg_info "Scanning for cleanable items..."
+  echo ""
+  
+  # Define cleanup locations
+  declare -a cleanup_names
+  declare -a cleanup_paths
+  declare -a cleanup_sizes
+  declare -a cleanup_bytes
+  local idx=0
+  
+  # User Caches
+  if [[ -d "$HOME/Library/Caches" ]]; then
+    local size=$(get_dir_size "$HOME/Library/Caches")
+    local bytes=$(get_dir_size_bytes "$HOME/Library/Caches")
+    if [[ $bytes -gt 0 ]]; then
+      idx=$((idx + 1))
+      cleanup_names[$idx]="User Caches"
+      cleanup_paths[$idx]="$HOME/Library/Caches"
+      cleanup_sizes[$idx]="$size"
+      cleanup_bytes[$idx]="$bytes"
+    fi
+  fi
+  
+  # Homebrew Cache
+  if command -v brew &>/dev/null; then
+    local brew_cache=$(brew --cache 2>/dev/null)
+    if [[ -d "$brew_cache" ]]; then
+      local size=$(get_dir_size "$brew_cache")
+      local bytes=$(get_dir_size_bytes "$brew_cache")
+      if [[ $bytes -gt 0 ]]; then
+        idx=$((idx + 1))
+        cleanup_names[$idx]="Homebrew Cache"
+        cleanup_paths[$idx]="$brew_cache"
+        cleanup_sizes[$idx]="$size"
+        cleanup_bytes[$idx]="$bytes"
+      fi
+    fi
+  fi
+  
+  # Xcode DerivedData
+  if [[ -d "$HOME/Library/Developer/Xcode/DerivedData" ]]; then
+    local size=$(get_dir_size "$HOME/Library/Developer/Xcode/DerivedData")
+    local bytes=$(get_dir_size_bytes "$HOME/Library/Developer/Xcode/DerivedData")
+    if [[ $bytes -gt 0 ]]; then
+      idx=$((idx + 1))
+      cleanup_names[$idx]="Xcode DerivedData"
+      cleanup_paths[$idx]="$HOME/Library/Developer/Xcode/DerivedData"
+      cleanup_sizes[$idx]="$size"
+      cleanup_bytes[$idx]="$bytes"
+    fi
+  fi
+  
+  # npm Cache
+  if [[ -d "$HOME/.npm/_cacache" ]]; then
+    local size=$(get_dir_size "$HOME/.npm/_cacache")
+    local bytes=$(get_dir_size_bytes "$HOME/.npm/_cacache")
+    if [[ $bytes -gt 0 ]]; then
+      idx=$((idx + 1))
+      cleanup_names[$idx]="npm Cache"
+      cleanup_paths[$idx]="$HOME/.npm/_cacache"
+      cleanup_sizes[$idx]="$size"
+      cleanup_bytes[$idx]="$bytes"
+    fi
+  fi
+  
+  # pip Cache
+  if [[ -d "$HOME/Library/Caches/pip" ]]; then
+    local size=$(get_dir_size "$HOME/Library/Caches/pip")
+    local bytes=$(get_dir_size_bytes "$HOME/Library/Caches/pip")
+    if [[ $bytes -gt 0 ]]; then
+      idx=$((idx + 1))
+      cleanup_names[$idx]="pip Cache"
+      cleanup_paths[$idx]="$HOME/Library/Caches/pip"
+      cleanup_sizes[$idx]="$size"
+      cleanup_bytes[$idx]="$bytes"
+    fi
+  fi
+  
+  # User Logs
+  if [[ -d "$HOME/Library/Logs" ]]; then
+    local size=$(get_dir_size "$HOME/Library/Logs")
+    local bytes=$(get_dir_size_bytes "$HOME/Library/Logs")
+    if [[ $bytes -gt 0 ]]; then
+      idx=$((idx + 1))
+      cleanup_names[$idx]="User Logs"
+      cleanup_paths[$idx]="$HOME/Library/Logs"
+      cleanup_sizes[$idx]="$size"
+      cleanup_bytes[$idx]="$bytes"
+    fi
+  fi
+  
+  # Trash
+  if [[ -d "$HOME/.Trash" ]]; then
+    local size=$(get_dir_size "$HOME/.Trash")
+    local bytes=$(get_dir_size_bytes "$HOME/.Trash")
+    if [[ $bytes -gt 0 ]]; then
+      idx=$((idx + 1))
+      cleanup_names[$idx]="Trash"
+      cleanup_paths[$idx]="$HOME/.Trash"
+      cleanup_sizes[$idx]="$size"
+      cleanup_bytes[$idx]="$bytes"
+    fi
+  fi
+  
+  # iOS Device Support
+  if [[ -d "$HOME/Library/Developer/Xcode/iOS DeviceSupport" ]]; then
+    local size=$(get_dir_size "$HOME/Library/Developer/Xcode/iOS DeviceSupport")
+    local bytes=$(get_dir_size_bytes "$HOME/Library/Developer/Xcode/iOS DeviceSupport")
+    if [[ $bytes -gt 0 ]]; then
+      idx=$((idx + 1))
+      cleanup_names[$idx]="iOS Device Support"
+      cleanup_paths[$idx]="$HOME/Library/Developer/Xcode/iOS DeviceSupport"
+      cleanup_sizes[$idx]="$size"
+      cleanup_bytes[$idx]="$bytes"
+    fi
+  fi
+  
+  if [[ $idx -eq 0 ]]; then
+    msg_success "No significant cleanable items found!"
+    return 0
+  fi
+  
+  # Display found items
+  for i in $(seq 1 $idx); do
+    printf "  [%d] %-25s %10s\n" "$i" "${cleanup_names[$i]}" "${cleanup_sizes[$i]}"
+  done
+  
+  echo ""
+  msg_info "Enter items to clean (e.g., '1,3,4' or 'all'), or 'q' to quit:"
+  read -r selection
+  
+  if [[ "$selection" == "q" ]] || [[ -z "$selection" ]]; then
+    msg_info "Cleanup cancelled."
+    return 0
+  fi
+  
+  # Parse selection
+  declare -a to_clean
+  if [[ "$selection" == "all" ]]; then
+    for i in $(seq 1 $idx); do
+      to_clean+=($i)
+    done
+  else
+    IFS=',' read -ra to_clean <<< "$selection"
+  fi
+  
+  # Confirm
+  echo ""
+  msg_warning "The following items will be deleted:"
+  for i in "${to_clean[@]}"; do
+    i=$(echo "$i" | tr -d ' ')
+    if [[ $i -ge 1 ]] && [[ $i -le $idx ]]; then
+      echo "  - ${cleanup_names[$i]} (${cleanup_sizes[$i]})"
+    fi
+  done
+  echo ""
+  msg_info "Are you sure? (y/N):"
+  read -r confirm
+  
+  if [[ "$confirm" != "y" ]] && [[ "$confirm" != "Y" ]]; then
+    msg_info "Cleanup cancelled."
+    return 0
+  fi
+  
+  # Perform cleanup
+  local total_freed=0
+  for i in "${to_clean[@]}"; do
+    i=$(echo "$i" | tr -d ' ')
+    if [[ $i -ge 1 ]] && [[ $i -le $idx ]]; then
+      local path="${cleanup_paths[$i]}"
+      local name="${cleanup_names[$i]}"
+      local bytes="${cleanup_bytes[$i]}"
+      
+      msg_info "Cleaning $name..."
+      
+      if [[ "$name" == "Trash" ]]; then
+        # Use osascript to empty trash properly
+        osascript -e 'tell app "Finder" to empty trash' 2>/dev/null || rm -rf "$path"/* 2>/dev/null
+      else
+        rm -rf "$path"/* 2>/dev/null
+      fi
+      
+      total_freed=$((total_freed + bytes))
+      msg_success "Cleaned $name"
+    fi
+  done
+  
+  echo ""
+  msg_success "Cleanup complete! Freed approximately $(bytes_to_human $total_freed)"
+}
+
+# Display disk health status
+action_health() {
+  msg_info "Disk Health Status"
+  echo ""
+  
+  # Get primary disk info
+  local disk_info=$(diskutil info disk0 2>/dev/null)
+  
+  if [[ -z "$disk_info" ]]; then
+    msg_warning "Could not retrieve disk information."
+    return 1
+  fi
+  
+  # Extract key information
+  local disk_name=$(echo "$disk_info" | grep "Device / Media Name:" | sed 's/.*: *//')
+  local disk_size=$(echo "$disk_info" | grep "Disk Size:" | sed 's/.*: *//' | cut -d'(' -f1)
+  local smart_status=$(echo "$disk_info" | grep "SMART Status:" | sed 's/.*: *//')
+  
+  echo "  Disk:         disk0"
+  echo "  Name:         ${disk_name:-Unknown}"
+  echo "  Size:         ${disk_size:-Unknown}"
+  echo ""
+  
+  if [[ -n "$smart_status" ]]; then
+    if [[ "$smart_status" == "Verified" ]]; then
+      msg_success "S.M.A.R.T. Status: $smart_status ✓"
+    elif [[ "$smart_status" == "Not Supported" ]]; then
+      msg_warning "S.M.A.R.T. Status: Not Supported (common on Apple Silicon)"
+    else
+      msg_warning "S.M.A.R.T. Status: $smart_status"
+    fi
+  else
+    msg_info "S.M.A.R.T. Status: Not available"
+  fi
+  
+  # Try smartctl if available for more details
+  if command -v smartctl &>/dev/null; then
+    echo ""
+    msg_info "Extended health info (via smartctl):"
+    sudo smartctl -H /dev/disk0 2>/dev/null | grep -E "(Health|Temperature|Percentage)" || true
+  fi
+  
+  echo ""
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    status)
+      action_status "$@"
+      ;;
+    usage)
+      action_usage "$@"
+      ;;
+    large)
+      action_large "$@"
+      ;;
+    cleanup)
+      action_cleanup "$@"
+      ;;
+    health)
+      action_health "$@"
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc fc-disk --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"
