@@ -1,0 +1,198 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-clipboard
+#
+# DESCRIPTION:  Clipboard utilities for macOS—view, clear, copy, and transform
+#               clipboard contents. Useful for scripting, debugging clipboard
+#               issues, removing rich text formatting, and quick text operations.
+#
+# USAGE:        fc clipboard <action> [text]
+#
+# ACTIONS:
+#   show        Display current clipboard contents
+#               - Truncates output if > 1000 characters
+#               - Shows character and line count
+#
+#   clear       Clear the clipboard completely
+#               - Useful after copying sensitive data like passwords
+#
+#   copy        Copy text to clipboard
+#               - Can accept text as argument: fc clipboard copy "text"
+#               - Can accept piped input: echo "text" | fc clipboard copy
+#
+#   plain       Convert clipboard to plain text
+#               - Removes rich text formatting (bold, italic, colors, fonts)
+#               - Useful when pasting into plain text editors
+#
+#   count       Show character, word, and line count
+#               - Quick way to check clipboard statistics
+#
+# EXAMPLES:
+#   fc clipboard show                      # View clipboard contents
+#   fc clipboard copy "Hello World"        # Copy text
+#   echo "piped text" | fc clipboard copy  # Copy from pipe
+#   fc clipboard plain                     # Remove formatting
+#   fc clipboard clear                     # Clear (for security)
+#   fc clipboard count                     # Get word count
+#
+# TIPS:
+#   - Use 'fc clipboard plain' before pasting into code editors
+#   - Clear clipboard after copying passwords (fc clipboard clear)
+#   - Combine with other commands: cat file.txt | fc clipboard copy
+#
+# DEPENDENCIES:
+#   Required: pbcopy, pbpaste (built-in to macOS)
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+# Source the common initialization script for logging and error handling
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc clipboard <action> [text]"
+  echo ""
+  msg_info "Clipboard utilities for macOS."
+  echo ""
+  msg_info "Actions:"
+  echo "  show          - Show current clipboard contents"
+  echo "  clear         - Clear the clipboard"
+  echo "  copy <text>   - Copy text to clipboard (or pipe input)"
+  echo "  plain         - Convert clipboard to plain text (remove formatting)"
+  echo "  count         - Count characters/words/lines in clipboard"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc clipboard show                   # View contents"
+  echo "  fc clipboard copy \"Hello World\"    # Copy text"
+  echo "  echo \"text\" | fc clipboard copy    # Copy from pipe"
+  echo "  fc clipboard clear                  # Clear after sensitive copy"
+  echo ""
+  exit 0
+}
+
+
+# --- Action Functions -------------------------------------------------------
+
+# Show clipboard contents
+action_show() {
+  local content
+  content=$(pbpaste 2>/dev/null)
+  
+  if [[ -z "$content" ]]; then
+    msg_warning "Clipboard is empty."
+    return 0
+  fi
+  
+  local char_count=${#content}
+  local line_count=$(echo "$content" | wc -l | tr -d ' ')
+  
+  msg_info "Clipboard Contents:"
+  echo "---"
+  
+  # Truncate very long content
+  if [[ $char_count -gt 1000 ]]; then
+    echo "${content:0:1000}"
+    echo "... (truncated, showing first 1000 of $char_count characters)"
+  else
+    echo "$content"
+  fi
+  
+  echo "---"
+  echo ""
+  echo "Size: $char_count characters, $line_count lines"
+}
+
+# Clear clipboard
+action_clear() {
+  pbcopy < /dev/null
+  msg_success "Clipboard cleared"
+}
+
+# Copy text to clipboard
+action_copy() {
+  local text="$*"
+  
+  if [[ -z "$text" ]]; then
+    # Read from stdin if no arguments
+    if [[ -t 0 ]]; then
+      die "No text provided. Usage: fc clipboard copy <text> OR pipe input."
+    else
+      text=$(cat)
+    fi
+  fi
+  
+  echo -n "$text" | pbcopy
+  local char_count=${#text}
+  msg_success "Copied $char_count characters to clipboard"
+}
+
+# Convert clipboard to plain text
+action_plain() {
+  local content
+  content=$(pbpaste 2>/dev/null)
+  
+  if [[ -z "$content" ]]; then
+    msg_warning "Clipboard is empty."
+    return 0
+  fi
+  
+  # Re-copy as plain text
+  echo -n "$content" | pbcopy
+  msg_success "Rich text formatting removed (clipboard is now plain text)"
+}
+
+# Count clipboard contents
+action_count() {
+  local content
+  content=$(pbpaste 2>/dev/null)
+  
+  if [[ -z "$content" ]]; then
+    msg_warning "Clipboard is empty."
+    return 0
+  fi
+  
+  local char_count=${#content}
+  local word_count=$(echo "$content" | wc -w | tr -d ' ')
+  local line_count=$(echo "$content" | wc -l | tr -d ' ')
+  
+  msg_info "Clipboard Statistics:"
+  echo "  Characters:  $char_count"
+  echo "  Words:       $word_count"
+  echo "  Lines:       $line_count"
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    show)
+      action_show
+      ;;
+    clear)
+      action_clear
+      ;;
+    copy)
+      action_copy "$@"
+      ;;
+    plain)
+      action_plain
+      ;;
+    count)
+      action_count
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc fc-clipboard --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

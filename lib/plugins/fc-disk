@@ -5,11 +5,66 @@
 # FILE:         fc-disk
 #
 # DESCRIPTION:  Analyze disk usage, identify space hogs, and provide cleanup
-#               utilities for macOS.
+#               utilities for macOS. Provides a quick overview of storage
+#               consumption, helps find large files, and offers an interactive
+#               wizard to clean common cache and temporary file locations.
+#
+# USAGE:        fc disk <action> [path] [options]
+#
+# ACTIONS:
+#   status      Show disk usage summary for all mounted volumes
+#               - Displays: Volume, Size, Used, Free, Use%
+#               - Color-coded: Red (>90%), Yellow (>80%)
+#
+#   usage       Analyze disk usage for a directory (default: $HOME)
+#               - Shows top 10 items by size (use --all for complete list)
+#               - Options: --all (show all items)
+#
+#   large       Find the largest files in a directory
+#               - Options: --count N (default: 10)
+#               - Useful for finding forgotten large files
+#
+#   cleanup     Interactive cleanup wizard
+#               - Scans: User Caches, Homebrew, Xcode, npm, pip, Logs, Trash
+#               - Requires confirmation before deleting
+#               - Shows estimated space savings
+#
+#   health      Display disk health using S.M.A.R.T. data
+#               - Works with diskutil (built-in)
+#               - Enhanced output with smartctl if installed (brew install smartmontools)
+#
+# OPTIONS:
+#   --count N   Number of items to show (for 'large' action, default: 10)
+#   --all       Show all items instead of top 10 (for 'usage' action)
+#
+# EXAMPLES:
+#   fc disk status                     # Quick overview of all volumes
+#   fc disk usage                      # What's using space in home directory
+#   fc disk usage ~/Downloads          # Analyze Downloads folder
+#   fc disk usage ~/Documents --all    # Show all items, not just top 10
+#   fc disk large ~/Downloads --count 20  # Find 20 largest files
+#   fc disk cleanup                    # Interactive cleanup wizard
+#   fc disk health                     # Check disk S.M.A.R.T. status
+#
+# RECOMMENDATIONS:
+#   - Run 'fc disk cleanup' monthly to free up cache space
+#   - Use 'fc disk large' to find forgotten downloads or log files
+#   - Check 'fc disk health' periodically for early warning of drive issues
+#   - Xcode DerivedData and iOS DeviceSupport often grow very large
+#
+# DEPENDENCIES:
+#   Required: df, du, find, diskutil (all built-in to macOS)
+#   Optional: smartctl (brew install smartmontools) for detailed health info
+#
+# NOTES:
+#   - Cleanup wizard only removes cache contents, not the cache folder itself
+#   - Trash emptying uses Finder AppleScript for proper handling
+#   - Some operations may take time on large directories
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
+# Source the common initialization script for logging and error handling
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
@@ -29,8 +84,15 @@ usage() {
   echo "  --count N       - Number of items to show (for 'large' action)"
   echo "  --all           - Show all items (for 'usage' action)"
   echo ""
+  msg_info "Examples:"
+  echo "  fc disk status                    # Overview of all volumes"
+  echo "  fc disk usage ~/Downloads         # Analyze Downloads"
+  echo "  fc disk large --count 20          # Top 20 largest files"
+  echo "  fc disk cleanup                   # Clean caches interactively"
+  echo ""
   exit 0
 }
+
 
 # --- Helper Functions -------------------------------------------------------
 
