@@ -165,4 +165,42 @@ fc clipboard clear
 fc clipboard count
 ```
 
+---
+
+## `fc privacy`
+
+View and manage macOS privacy permissions (Camera, Microphone, Screen Recording, etc.)
+
+**Usage:**
+
+```bash
+fc privacy <action> [category]
+```
+
+**Actions:**
+*   `list`: List all privacy permission categories.
+*   `status`: Show overview of granted permissions.
+*   `camera`, `microphone`, `screen`, `accessibility`, `disk`: View apps with that permission.
+*   `open [category]`: Open System Settings for a category.
+*   `reset <category>`: Reset permissions for a category.
+
+**Note:** Reading the TCC database requires Full Disk Access. If unavailable, the command will open System Settings as a fallback.
+
+**Examples:**
+
+```bash
+# List all categories
+fc privacy list
+
+# See which apps have camera access
+fc privacy camera
+
+# Open Screen Recording settings
+fc privacy open screen
+
+# Reset microphone permissions
+fc privacy reset microphone
+```
+
+
 
