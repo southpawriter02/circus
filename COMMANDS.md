@@ -327,6 +327,46 @@ fc lock timeout 600
 fc lock timeout 0
 ```
 
+---
+
+## `fc audit`
+
+Run security audits to check system protection settings.
+
+**Usage:**
+
+```bash
+fc audit <action>
+```
+
+**Actions:**
+*   `run`: Run full security audit (8 checks with scoring).
+*   `quick`: Quick check of critical settings.
+*   `sip`: Check System Integrity Protection.
+*   `filevault`: Check FileVault encryption status.
+*   `gatekeeper`: Check Gatekeeper status.
+*   `firewall`: Check firewall status.
+
+**Checks Include:**
+- SIP, FileVault, Gatekeeper, Firewall
+- Password after sleep, Auto login
+- Stealth mode, Remote login (SSH)
+
+**Examples:**
+
+```bash
+# Full security audit
+fc audit run
+
+# Quick check (4 critical items)
+fc audit quick
+
+# Check specific features
+fc audit sip
+fc audit filevault
+```
+
+
 
 
 

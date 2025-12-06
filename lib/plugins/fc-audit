@@ -1,0 +1,464 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-audit
+#
+# DESCRIPTION:  Run a security audit to check system protection settings.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc audit <action>"
+  echo ""
+  msg_info "Run security audits to check system protection settings."
+  echo ""
+  msg_info "Actions:"
+  echo "  run             - Run full security audit"
+  echo "  quick           - Quick check of critical settings"
+  echo "  sip             - Check System Integrity Protection"
+  echo "  filevault       - Check FileVault encryption status"
+  echo "  gatekeeper      - Check Gatekeeper status"
+  echo "  firewall        - Check firewall status"
+  echo ""
+  exit 0
+}
+
+# --- Check Functions --------------------------------------------------------
+
+# Check SIP status, returns 0 if enabled
+check_sip() {
+  local status
+  status=$(csrutil status 2>/dev/null)
+  if echo "$status" | grep -q "enabled"; then
+    echo "enabled"
+    return 0
+  else
+    echo "disabled"
+    return 1
+  fi
+}
+
+# Check FileVault status
+check_filevault() {
+  local status
+  status=$(fdesetup status 2>/dev/null)
+  if echo "$status" | grep -qi "FileVault is On"; then
+    echo "enabled"
+    return 0
+  elif echo "$status" | grep -qi "in progress"; then
+    echo "encrypting"
+    return 0
+  else
+    echo "disabled"
+    return 1
+  fi
+}
+
+# Check Gatekeeper status
+check_gatekeeper() {
+  local status
+  status=$(spctl --status 2>/dev/null)
+  if echo "$status" | grep -q "assessments enabled"; then
+    echo "enabled"
+    return 0
+  else
+    echo "disabled"
+    return 1
+  fi
+}
+
+# Check firewall status
+check_firewall() {
+  local status
+  status=$(/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null)
+  if echo "$status" | grep -qi "enabled"; then
+    echo "enabled"
+    return 0
+  else
+    echo "disabled"
+    return 1
+  fi
+}
+
+# Check stealth mode
+check_stealth() {
+  local status
+  status=$(/usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode 2>/dev/null)
+  if echo "$status" | grep -qi "enabled"; then
+    echo "enabled"
+    return 0
+  else
+    echo "disabled"
+    return 1
+  fi
+}
+
+# Check auto login
+check_auto_login() {
+  local status
+  status=$(defaults read /Library/Preferences/com.apple.loginwindow autoLoginUser 2>/dev/null)
+  if [[ -n "$status" ]]; then
+    echo "enabled"
+    return 1  # Auto login enabled is BAD
+  else
+    echo "disabled"
+    return 0
+  fi
+}
+
+# Check remote login (SSH)
+check_remote_login() {
+  local status
+  status=$(systemsetup -getremotelogin 2>/dev/null)
+  if echo "$status" | grep -qi "on"; then
+    echo "enabled"
+    return 1  # Enabled means potential risk
+  else
+    echo "disabled"
+    return 0
+  fi
+}
+
+# Check password after sleep
+check_password_sleep() {
+  local status
+  status=$(defaults read com.apple.screensaver askForPassword 2>/dev/null)
+  if [[ "$status" == "1" ]]; then
+    echo "required"
+    return 0
+  else
+    echo "not required"
+    return 1
+  fi
+}
+
+# --- Action Functions -------------------------------------------------------
+
+# Print check result
+print_check() {
+  local name="$1"
+  local status="$2"
+  local good="$3"  # expected good state
+  
+  local icon
+  local padding="%-40s"
+  
+  if [[ "$status" == "$good" ]] || [[ "$status" == "enabled" && "$good" == "on" ]]; then
+    icon="✓"
+    printf "  $icon $padding %s\n" "$name" "$status"
+  else
+    icon="⚠"
+    printf "  $icon $padding %s\n" "$name" "$status"
+  fi
+}
+
+# Full security audit
+action_run() {
+  msg_info "🔒 macOS Security Audit"
+  echo ""
+  
+  local passed=0
+  local total=0
+  
+  # System Protection
+  echo "System Protection:"
+  
+  total=$((total + 1))
+  local sip_status
+  sip_status=$(check_sip)
+  if [[ "$sip_status" == "enabled" ]]; then
+    passed=$((passed + 1))
+    echo "  ✓ System Integrity Protection (SIP)     Enabled"
+  else
+    echo "  ⚠ System Integrity Protection (SIP)     Disabled"
+  fi
+  
+  total=$((total + 1))
+  local fv_status
+  fv_status=$(check_filevault)
+  if [[ "$fv_status" == "enabled" ]]; then
+    passed=$((passed + 1))
+    echo "  ✓ FileVault Disk Encryption             Enabled"
+  elif [[ "$fv_status" == "encrypting" ]]; then
+    passed=$((passed + 1))
+    echo "  ⚠ FileVault Disk Encryption             In Progress"
+  else
+    echo "  ⚠ FileVault Disk Encryption             Disabled"
+  fi
+  
+  total=$((total + 1))
+  local gk_status
+  gk_status=$(check_gatekeeper)
+  if [[ "$gk_status" == "enabled" ]]; then
+    passed=$((passed + 1))
+    echo "  ✓ Gatekeeper                            Enabled"
+  else
+    echo "  ⚠ Gatekeeper                            Disabled"
+  fi
+  
+  total=$((total + 1))
+  local fw_status
+  fw_status=$(check_firewall)
+  if [[ "$fw_status" == "enabled" ]]; then
+    passed=$((passed + 1))
+    echo "  ✓ Application Firewall                  Enabled"
+  else
+    echo "  ⚠ Application Firewall                  Disabled"
+  fi
+  
+  echo ""
+  echo "Authentication:"
+  
+  total=$((total + 1))
+  local pw_status
+  pw_status=$(check_password_sleep)
+  if [[ "$pw_status" == "required" ]]; then
+    passed=$((passed + 1))
+    echo "  ✓ Password Required After Sleep         Yes"
+  else
+    echo "  ⚠ Password Required After Sleep         No"
+  fi
+  
+  total=$((total + 1))
+  local auto_status
+  auto_status=$(check_auto_login)
+  if [[ "$auto_status" == "disabled" ]]; then
+    passed=$((passed + 1))
+    echo "  ✓ Automatic Login                       Disabled"
+  else
+    echo "  ⚠ Automatic Login                       Enabled (risky)"
+  fi
+  
+  echo ""
+  echo "Network:"
+  
+  total=$((total + 1))
+  local stealth_status
+  stealth_status=$(check_stealth)
+  if [[ "$stealth_status" == "enabled" ]]; then
+    passed=$((passed + 1))
+    echo "  ✓ Firewall Stealth Mode                 Enabled"
+  else
+    echo "  ⚠ Firewall Stealth Mode                 Disabled"
+  fi
+  
+  total=$((total + 1))
+  local ssh_status
+  ssh_status=$(check_remote_login)
+  if [[ "$ssh_status" == "disabled" ]]; then
+    passed=$((passed + 1))
+    echo "  ✓ Remote Login (SSH)                    Disabled"
+  else
+    echo "  ⚠ Remote Login (SSH)                    Enabled"
+  fi
+  
+  echo ""
+  echo "──────────────────────────────────────────"
+  
+  local failed=$((total - passed))
+  
+  if [[ $passed -eq $total ]]; then
+    msg_success "Score: $passed/$total checks passed - Excellent!"
+  elif [[ $failed -le 2 ]]; then
+    msg_info "Score: $passed/$total checks passed"
+    msg_warning "$failed item(s) need attention"
+  else
+    msg_warning "Score: $passed/$total checks passed"
+    msg_warning "$failed items need attention"
+  fi
+}
+
+# Quick check
+action_quick() {
+  msg_info "Quick Security Check"
+  echo ""
+  
+  local all_good=true
+  
+  local sip_status
+  sip_status=$(check_sip)
+  if [[ "$sip_status" == "enabled" ]]; then
+    echo "  SIP:        ✓ Enabled"
+  else
+    echo "  SIP:        ✗ Disabled"
+    all_good=false
+  fi
+  
+  local fv_status
+  fv_status=$(check_filevault)
+  if [[ "$fv_status" == "enabled" ]] || [[ "$fv_status" == "encrypting" ]]; then
+    echo "  FileVault:  ✓ Enabled"
+  else
+    echo "  FileVault:  ✗ Disabled"
+    all_good=false
+  fi
+  
+  local gk_status
+  gk_status=$(check_gatekeeper)
+  if [[ "$gk_status" == "enabled" ]]; then
+    echo "  Gatekeeper: ✓ Enabled"
+  else
+    echo "  Gatekeeper: ✗ Disabled"
+    all_good=false
+  fi
+  
+  local fw_status
+  fw_status=$(check_firewall)
+  if [[ "$fw_status" == "enabled" ]]; then
+    echo "  Firewall:   ✓ Enabled"
+  else
+    echo "  Firewall:   ✗ Disabled"
+    all_good=false
+  fi
+  
+  echo ""
+  
+  if $all_good; then
+    msg_success "All critical protections active ✓"
+  else
+    msg_warning "Some critical protections are disabled!"
+  fi
+}
+
+# Check SIP details
+action_sip() {
+  local status
+  status=$(csrutil status 2>/dev/null)
+  
+  if echo "$status" | grep -q "enabled"; then
+    msg_success "System Integrity Protection: Enabled ✓"
+  else
+    msg_warning "System Integrity Protection: Disabled ✗"
+  fi
+  
+  echo ""
+  echo "SIP protects:"
+  echo "  • /System"
+  echo "  • /usr (except /usr/local)"
+  echo "  • /bin, /sbin"
+  echo "  • Preinstalled apps"
+  echo "  • Kernel extensions"
+  echo ""
+  msg_info "To modify SIP, boot into Recovery Mode (Cmd+R at startup)."
+}
+
+# Check FileVault details
+action_filevault() {
+  local status
+  status=$(fdesetup status 2>/dev/null)
+  
+  if echo "$status" | grep -qi "FileVault is On"; then
+    msg_success "FileVault Status: Enabled ✓"
+    echo ""
+    echo "  Encryption:   Fully Encrypted"
+    
+    # List enabled users
+    local users
+    users=$(fdesetup list 2>/dev/null | wc -l | tr -d ' ')
+    echo "  Users:        $users enabled user(s)"
+    
+  elif echo "$status" | grep -qi "in progress"; then
+    msg_warning "FileVault Status: Encryption In Progress"
+    echo ""
+    echo "$status"
+  else
+    msg_warning "FileVault Status: Disabled ✗"
+    echo ""
+    msg_info "Enable FileVault in System Settings > Privacy & Security > FileVault"
+  fi
+}
+
+# Check Gatekeeper details
+action_gatekeeper() {
+  local status
+  status=$(spctl --status 2>/dev/null)
+  
+  if echo "$status" | grep -q "assessments enabled"; then
+    msg_success "Gatekeeper: Enabled ✓"
+    echo ""
+    echo "Gatekeeper blocks:"
+    echo "  • Unsigned applications"
+    echo "  • Apps not from identified developers"
+    echo "  • Malware-infected software"
+  else
+    msg_warning "Gatekeeper: Disabled ✗"
+    echo ""
+    msg_info "Enable with: sudo spctl --master-enable"
+  fi
+}
+
+# Check firewall details
+action_firewall() {
+  local global_status
+  global_status=$(/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null)
+  
+  if echo "$global_status" | grep -qi "enabled"; then
+    msg_success "Application Firewall: Enabled ✓"
+  else
+    msg_warning "Application Firewall: Disabled ✗"
+  fi
+  
+  echo ""
+  
+  local stealth_status
+  stealth_status=$(/usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode 2>/dev/null)
+  
+  if echo "$stealth_status" | grep -qi "enabled"; then
+    echo "  Stealth Mode:     Enabled ✓"
+  else
+    echo "  Stealth Mode:     Disabled"
+  fi
+  
+  local block_status
+  block_status=$(/usr/libexec/ApplicationFirewall/socketfilterfw --getblockall 2>/dev/null)
+  
+  if echo "$block_status" | grep -qi "enabled"; then
+    echo "  Block All:        Enabled"
+  else
+    echo "  Block All:        Disabled"
+  fi
+  
+  echo ""
+  msg_info "Manage in System Settings > Network > Firewall"
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    run)
+      action_run
+      ;;
+    quick)
+      action_quick
+      ;;
+    sip)
+      action_sip
+      ;;
+    filevault)
+      action_filevault
+      ;;
+    gatekeeper)
+      action_gatekeeper
+      ;;
+    firewall)
+      action_firewall
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc fc-audit --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"
