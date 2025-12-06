@@ -127,3 +127,42 @@ fc disk cleanup
 fc disk health
 ```
 
+---
+
+## `fc clipboard`
+
+Clipboard utilities for viewing, copying, and transforming clipboard contents.
+
+**Usage:**
+
+```bash
+fc clipboard <subcommand> [text]
+```
+
+**Subcommands:**
+*   `show`: Show current clipboard contents.
+*   `clear`: Clear the clipboard.
+*   `copy <text>`: Copy text to clipboard.
+*   `plain`: Convert clipboard to plain text (remove rich formatting).
+*   `count`: Count characters, words, and lines in clipboard.
+
+**Examples:**
+
+```bash
+# View what's on clipboard
+fc clipboard show
+
+# Copy text to clipboard
+fc clipboard copy "Hello World"
+
+# Pipe output to clipboard
+echo "piped text" | fc clipboard copy
+
+# Clear clipboard (for security)
+fc clipboard clear
+
+# Get word count
+fc clipboard count
+```
+
+
