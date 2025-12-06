@@ -84,3 +84,46 @@ fc sync restore
 ```
 
 The result is a new machine that is a near-perfect mirror of your old environment.
+
+---
+
+## `fc disk`
+
+Analyze disk usage, find space hogs, and clean up common cache locations.
+
+**Usage:**
+
+```bash
+fc disk <subcommand> [options]
+```
+
+**Subcommands:**
+*   `status`: Show disk usage summary for all mounted volumes.
+*   `usage [path]`: Analyze disk usage for a directory (defaults to home).
+*   `large [path]`: Find the largest files in a directory.
+*   `cleanup`: Interactive cleanup wizard for caches, logs, and trash.
+*   `health`: Display S.M.A.R.T. disk health status.
+
+**Options:**
+*   `--count N`: Number of items to show (for `large` action).
+*   `--all`: Show all items (for `usage` action).
+
+**Examples:**
+
+```bash
+# Check disk space across volumes
+fc disk status
+
+# Analyze what's using space in Documents
+fc disk usage ~/Documents
+
+# Find 20 largest files in Downloads
+fc disk large ~/Downloads --count 20
+
+# Clean up caches and free space
+fc disk cleanup
+
+# Check disk health
+fc disk health
+```
+
