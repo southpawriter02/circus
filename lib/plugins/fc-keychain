@@ -1,0 +1,456 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-keychain
+#
+# DESCRIPTION:  Interact with macOS Keychain—list, search, add, and retrieve
+#               passwords and secrets. Provides quick access to stored
+#               credentials including WiFi passwords.
+#
+# USAGE:        fc keychain <action> [options]
+#
+# ACTIONS:
+#   list        List all keychain items (no passwords shown)
+#               - Shows first 30 items by default
+#               - Displays Kind (Generic/Internet), Service, and Account
+#
+#   search      Search for keychain items by name or account
+#               - Case-insensitive search
+#               - Searches service name and account fields
+#
+#   get         Retrieve a password and copy to clipboard
+#               - Triggers macOS Keychain authorization dialog
+#               - Options: --show (display instead of copy), --account
+#
+#   wifi        Get WiFi network password
+#               - Auto-detects current network if SSID not provided
+#               - Copies password to clipboard
+#
+#   add         Add a new keychain entry (interactive)
+#               - Prompts for service, account, password, kind
+#               - Supports both Generic and Internet password types
+#
+#   delete      Delete a keychain entry
+#               - Requires confirmation before deletion
+#               - Shows entry details before deleting
+#
+# OPTIONS:
+#   --show      Show password in terminal instead of copying (for 'get')
+#   --account   Specify account name for more precise lookup
+#
+# EXAMPLES:
+#   fc keychain list                    # List all items
+#   fc keychain search github           # Find GitHub entries
+#   fc keychain get api-token           # Get and copy password
+#   fc keychain get api-token --show    # Display password
+#   fc keychain wifi                    # Get current WiFi password
+#   fc keychain wifi "Coffee Shop"      # Get specific network
+#   fc keychain add                     # Add new entry
+#   fc keychain delete old-api-key      # Delete entry
+#
+# SECURITY NOTES:
+#   - Password retrieval triggers macOS Keychain access prompt
+#   - "Always Allow" grants permanent terminal access to that item
+#   - Use --show cautiously (password visible in terminal)
+#   - Clear clipboard after pasting sensitive passwords
+#   - The 'security' command can only access your login keychain
+#
+# RECOMMENDATIONS:
+#   - Use 'fc keychain wifi' to share WiFi passwords with guests
+#   - Prefer copying to clipboard over --show for sensitive data
+#   - Clear screen/clipboard after viewing passwords
+#
+# DEPENDENCIES:
+#   Required: security (built-in to macOS)
+#   Required: pbcopy (built-in to macOS)
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+# Source the common initialization script for logging and error handling
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc keychain <action> [options]"
+  echo ""
+  msg_info "Interact with macOS Keychain for password management."
+  echo ""
+  msg_info "Actions:"
+  echo "  list              - List keychain items (no passwords shown)"
+  echo "  search <query>    - Search for keychain items"
+  echo "  get <name>        - Get a password (copies to clipboard)"
+  echo "  wifi [ssid]       - Get WiFi network password"
+  echo "  add               - Add a new keychain entry"
+  echo "  delete <name>     - Delete a keychain entry"
+  echo ""
+  msg_info "Options:"
+  echo "  --show            - Show password instead of copying (for 'get')"
+  echo "  --account <acct>  - Specify account name (for 'get', 'delete')"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc keychain wifi                  # Current WiFi password"
+  echo "  fc keychain search github         # Find GitHub entries"
+  echo "  fc keychain get api-key --show    # Display password"
+  echo ""
+  exit 0
+}
+
+
+# --- Action Functions -------------------------------------------------------
+
+# List keychain items (no passwords)
+action_list() {
+  msg_info "Keychain Items"
+  echo ""
+  
+  printf "  %-12s %-30s %s\n" "Kind" "Name/Service" "Account"
+  printf "  %-12s %-30s %s\n" "----" "------------" "-------"
+  
+  local count=0
+  local kind="" service="" account=""
+  
+  # Parse security dump-keychain output line by line
+  while IFS= read -r line; do
+    case "$line" in
+      *'class: "genp"'*)
+        kind="Generic"
+        ;;
+      *'class: "inet"'*)
+        kind="Internet"
+        ;;
+      *'"svce"'*)
+        # Extract service name between quotes after =
+        service=$(echo "$line" | sed -n 's/.*"svce".*=.*"\([^"]*\)".*/\1/p')
+        if [[ -z "$service" ]]; then
+          service=$(echo "$line" | sed -n 's/.*"svce".*=.*<[^>]*>\(.*\)/\1/p')
+        fi
+        ;;
+      *'"acct"'*)
+        # Extract account between quotes after =
+        account=$(echo "$line" | sed -n 's/.*"acct".*=.*"\([^"]*\)".*/\1/p')
+        if [[ -z "$account" ]]; then
+          account=$(echo "$line" | sed -n 's/.*"acct".*=.*<[^>]*>\(.*\)/\1/p')
+        fi
+        ;;
+      "")
+        # Empty line = end of entry
+        if [[ -n "$kind" ]] && [[ -n "$service" ]]; then
+          # Truncate long names
+          [[ ${#service} -gt 28 ]] && service="${service:0:25}..."
+          [[ ${#account} -gt 25 ]] && account="${account:0:22}..."
+          
+          printf "  %-12s %-30s %s\n" "$kind" "$service" "$account"
+          count=$((count + 1))
+          
+          [[ $count -ge 30 ]] && break
+        fi
+        kind="" service="" account=""
+        ;;
+    esac
+  done < <(security dump-keychain 2>/dev/null)
+  
+  echo ""
+  msg_info "Showing first 30 items."
+  msg_info "Use 'fc keychain search <query>' to find specific items."
+}
+
+# Search for keychain items
+action_search() {
+  local query="$1"
+  
+  if [[ -z "$query" ]]; then
+    die "Please provide a search query."
+  fi
+  
+  msg_info "Searching for '$query'..."
+  echo ""
+  
+  printf "  %-12s %-30s %s\n" "Kind" "Name/Service" "Account"
+  printf "  %-12s %-30s %s\n" "----" "------------" "-------"
+  
+  local found=0
+  local kind="" service="" account=""
+  local query_lower
+  query_lower=$(echo "$query" | tr '[:upper:]' '[:lower:]')
+  
+  # Parse security dump-keychain output line by line
+  while IFS= read -r line; do
+    case "$line" in
+      *'class: "genp"'*)
+        kind="Generic"
+        ;;
+      *'class: "inet"'*)
+        kind="Internet"
+        ;;
+      *'"svce"'*)
+        service=$(echo "$line" | sed -n 's/.*"svce".*=.*"\([^"]*\)".*/\1/p')
+        if [[ -z "$service" ]]; then
+          service=$(echo "$line" | sed -n 's/.*"svce".*=.*<[^>]*>\(.*\)/\1/p')
+        fi
+        ;;
+      *'"acct"'*)
+        account=$(echo "$line" | sed -n 's/.*"acct".*=.*"\([^"]*\)".*/\1/p')
+        if [[ -z "$account" ]]; then
+          account=$(echo "$line" | sed -n 's/.*"acct".*=.*<[^>]*>\(.*\)/\1/p')
+        fi
+        ;;
+      "")
+        # Empty line = end of entry, check if matches query
+        if [[ -n "$kind" ]] && [[ -n "$service" ]]; then
+          local service_lower account_lower
+          service_lower=$(echo "$service" | tr '[:upper:]' '[:lower:]')
+          account_lower=$(echo "$account" | tr '[:upper:]' '[:lower:]')
+          
+          if [[ "$service_lower" == *"$query_lower"* ]] || [[ "$account_lower" == *"$query_lower"* ]]; then
+            # Truncate long names
+            [[ ${#service} -gt 28 ]] && service="${service:0:25}..."
+            [[ ${#account} -gt 25 ]] && account="${account:0:22}..."
+            
+            printf "  %-12s %-30s %s\n" "$kind" "$service" "$account"
+            found=$((found + 1))
+          fi
+        fi
+        kind="" service="" account=""
+        ;;
+    esac
+  done < <(security dump-keychain 2>/dev/null)
+  
+  if [[ $found -eq 0 ]]; then
+    echo "  No items found matching '$query'"
+  fi
+  
+  echo ""
+}
+
+# Get a password from keychain
+action_get() {
+  local name="$1"
+  local show_password=false
+  local account=""
+  
+  # Parse options
+  shift || true
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --show)
+        show_password=true
+        shift
+        ;;
+      --account)
+        account="$2"
+        shift 2
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+  
+  if [[ -z "$name" ]]; then
+    die "Please provide the name/service of the keychain item."
+  fi
+  
+  msg_info "🔐 Retrieving password for: $name"
+  if [[ -n "$account" ]]; then
+    echo "   Account: $account"
+  fi
+  echo ""
+  msg_info "You may be prompted to allow Keychain access..."
+  echo ""
+  
+  local password
+  local cmd_args=(-s "$name" -w)
+  
+  if [[ -n "$account" ]]; then
+    cmd_args=(-s "$name" -a "$account" -w)
+  fi
+  
+  # Try generic password first, then internet password
+  password=$(security find-generic-password "${cmd_args[@]}" 2>/dev/null) || \
+  password=$(security find-internet-password "${cmd_args[@]}" 2>/dev/null)
+  
+  if [[ -z "$password" ]]; then
+    die "Could not find or access keychain item '$name'."
+  fi
+  
+  if $show_password; then
+    msg_warning "Password (visible):"
+    echo "  $password"
+    echo ""
+    msg_warning "Password displayed in terminal. Clear your screen when done."
+  else
+    echo -n "$password" | pbcopy
+    msg_success "Password copied to clipboard."
+    msg_info "Clipboard will contain sensitive data until overwritten."
+  fi
+}
+
+# Get WiFi password
+action_wifi() {
+  local ssid="$1"
+  
+  # If no SSID provided, try to get current network
+  if [[ -z "$ssid" ]]; then
+    ssid=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I 2>/dev/null | awk '/ SSID/ {print $2}')
+    if [[ -z "$ssid" ]]; then
+      die "Could not detect current WiFi network. Please provide SSID."
+    fi
+    msg_info "Current network detected: $ssid"
+  fi
+  
+  msg_info "🔐 Retrieving WiFi password for: $ssid"
+  echo ""
+  msg_info "You may be prompted to allow Keychain access..."
+  echo ""
+  
+  local password
+  password=$(security find-generic-password -D "AirPort network password" -a "$ssid" -w 2>/dev/null)
+  
+  if [[ -z "$password" ]]; then
+    # Try alternate method
+    password=$(security find-generic-password -l "$ssid" -w 2>/dev/null)
+  fi
+  
+  if [[ -z "$password" ]]; then
+    die "Could not find or access WiFi password for '$ssid'."
+  fi
+  
+  echo -n "$password" | pbcopy
+  msg_success "WiFi password copied to clipboard."
+  echo ""
+  echo "  Network: $ssid"
+  echo "  Password: (on clipboard)"
+}
+
+# Add a new keychain entry
+action_add() {
+  msg_info "Add Keychain Entry"
+  echo ""
+  
+  # Prompt for details
+  echo -n "  Service/Name: "
+  read -r service
+  
+  if [[ -z "$service" ]]; then
+    die "Service name is required."
+  fi
+  
+  echo -n "  Account: "
+  read -r account
+  
+  if [[ -z "$account" ]]; then
+    die "Account name is required."
+  fi
+  
+  echo -n "  Password: "
+  read -rs password
+  echo ""
+  
+  if [[ -z "$password" ]]; then
+    die "Password is required."
+  fi
+  
+  echo ""
+  echo "  Kind:"
+  echo "    [1] Generic Password"
+  echo "    [2] Internet Password"
+  echo -n "  Select (1/2): "
+  read -r kind_choice
+  
+  echo ""
+  
+  case "$kind_choice" in
+    2)
+      security add-internet-password -s "$service" -a "$account" -w "$password" 2>/dev/null
+      ;;
+    *)
+      security add-generic-password -s "$service" -a "$account" -w "$password" 2>/dev/null
+      ;;
+  esac
+  
+  if [[ $? -eq 0 ]]; then
+    msg_success "Entry added to login keychain."
+  else
+    die "Failed to add keychain entry. It may already exist."
+  fi
+}
+
+# Delete a keychain entry
+action_delete() {
+  local name="$1"
+  local account="$2"
+  
+  if [[ -z "$name" ]]; then
+    die "Please provide the name/service of the keychain item to delete."
+  fi
+  
+  msg_info "Searching for keychain entry: $name"
+  
+  # Find the entry first
+  local entry_info
+  entry_info=$(security find-generic-password -s "$name" 2>/dev/null) || \
+  entry_info=$(security find-internet-password -s "$name" 2>/dev/null)
+  
+  if [[ -z "$entry_info" ]]; then
+    die "Could not find keychain entry '$name'."
+  fi
+  
+  echo ""
+  echo "Found entry:"
+  echo "$entry_info" | grep -E '(svce|acct|class)' | head -5
+  echo ""
+  
+  msg_warning "Are you sure you want to delete this entry? (y/N):"
+  read -r confirm
+  
+  if [[ "$confirm" != "y" ]] && [[ "$confirm" != "Y" ]]; then
+    msg_info "Deletion cancelled."
+    return 0
+  fi
+  
+  # Try to delete
+  if security delete-generic-password -s "$name" 2>/dev/null || \
+     security delete-internet-password -s "$name" 2>/dev/null; then
+    msg_success "Entry deleted from keychain."
+  else
+    die "Failed to delete keychain entry."
+  fi
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    list)
+      action_list
+      ;;
+    search)
+      action_search "$@"
+      ;;
+    get)
+      action_get "$@"
+      ;;
+    wifi)
+      action_wifi "$@"
+      ;;
+    add)
+      action_add
+      ;;
+    delete)
+      action_delete "$@"
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc fc-keychain --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

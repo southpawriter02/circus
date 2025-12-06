@@ -1,0 +1,398 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-privacy
+#
+# DESCRIPTION:  View and manage macOS privacy permissions (Camera, Microphone,
+#               Screen Recording, Accessibility, Full Disk Access, etc.)
+#               Uses the TCC (Transparency, Consent, and Control) framework.
+#
+# USAGE:        fc privacy <action> [category]
+#
+# ACTIONS:
+#   list        List all privacy permission categories
+#   status      Show overview of granted permissions per category
+#   camera      Show apps with Camera permission
+#   microphone  Show apps with Microphone permission
+#   screen      Show apps with Screen Recording permission
+#   accessibility  Show apps with Accessibility permission
+#   disk        Show apps with Full Disk Access
+#   open        Open System Settings for a category
+#   reset       Reset permissions for a category (prompts for confirmation)
+#
+# CATEGORIES:
+#   camera, microphone, screen, accessibility, disk,
+#   contacts, calendar, location, photos
+#
+# EXAMPLES:
+#   fc privacy list                # List all categories
+#   fc privacy camera              # See apps with camera access
+#   fc privacy open screen         # Open Screen Recording settings
+#   fc privacy reset microphone    # Reset all microphone permissions
+#
+# HOW IT WORKS:
+#   macOS stores privacy permissions in the TCC database:
+#   - User DB: ~/Library/Application Support/com.apple.TCC/TCC.db
+#   - System DB: /Library/Application Support/com.apple.TCC/TCC.db
+#
+#   Reading the database requires Full Disk Access permission. If unavailable,
+#   the command will gracefully open System Settings as a fallback.
+#
+# LIMITATIONS:
+#   - Direct TCC database modification is blocked by System Integrity Protection
+#   - On modern macOS, tccutil reset only works for some categories
+#   - Some changes require opening System Settings for manual adjustment
+#
+# RECOMMENDATIONS:
+#   - Review privacy permissions periodically with 'fc privacy status'
+#   - Use 'fc privacy reset' only when you want ALL apps to re-request permission
+#   - Grant Full Disk Access to Terminal.app for full TCC database access
+#
+# DEPENDENCIES:
+#   Required: tccutil, open (built-in to macOS)
+#   Optional: sqlite3 (for database queries, built-in)
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+# Source the common initialization script for logging and error handling
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+
+# --- Helper Functions for Category Lookups ----------------------------------
+# Using functions instead of associative arrays for Bash 3 compatibility
+
+get_tcc_service() {
+  case "$1" in
+    camera) echo "kTCCServiceCamera" ;;
+    microphone) echo "kTCCServiceMicrophone" ;;
+    screen) echo "kTCCServiceScreenCapture" ;;
+    accessibility) echo "kTCCServiceAccessibility" ;;
+    disk) echo "kTCCServiceSystemPolicyAllFiles" ;;
+    contacts) echo "kTCCServiceAddressBook" ;;
+    calendar) echo "kTCCServiceCalendar" ;;
+    reminders) echo "kTCCServiceReminders" ;;
+    photos) echo "kTCCServicePhotos" ;;
+    location) echo "kTCCServiceLocation" ;;
+    *) echo "" ;;
+  esac
+}
+
+get_settings_url() {
+  case "$1" in
+    camera) echo "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera" ;;
+    microphone) echo "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone" ;;
+    screen) echo "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture" ;;
+    accessibility) echo "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility" ;;
+    disk) echo "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles" ;;
+    contacts) echo "x-apple.systempreferences:com.apple.preference.security?Privacy_Contacts" ;;
+    calendar) echo "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars" ;;
+    location) echo "x-apple.systempreferences:com.apple.preference.security?Privacy_LocationServices" ;;
+    photos) echo "x-apple.systempreferences:com.apple.preference.security?Privacy_Photos" ;;
+    *) echo "" ;;
+  esac
+}
+
+get_category_name() {
+  case "$1" in
+    camera) echo "Camera" ;;
+    microphone) echo "Microphone" ;;
+    screen) echo "Screen Recording" ;;
+    accessibility) echo "Accessibility" ;;
+    disk) echo "Full Disk Access" ;;
+    contacts) echo "Contacts" ;;
+    calendar) echo "Calendar" ;;
+    reminders) echo "Reminders" ;;
+    photos) echo "Photos" ;;
+    location) echo "Location Services" ;;
+    *) echo "" ;;
+  esac
+}
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc privacy <action> [category]"
+  echo ""
+  msg_info "View and manage macOS privacy permissions."
+  echo ""
+  msg_info "Actions:"
+  echo "  list              - List all privacy permission categories"
+  echo "  status            - Show overview of granted permissions"
+  echo "  camera            - Show apps with Camera permission"
+  echo "  microphone        - Show apps with Microphone permission"
+  echo "  screen            - Show apps with Screen Recording permission"
+  echo "  accessibility     - Show apps with Accessibility permission"
+  echo "  disk              - Show apps with Full Disk Access"
+  echo "  open [category]   - Open System Settings for a category"
+  echo "  reset <category>  - Reset permissions for a category"
+  echo ""
+  msg_info "Categories:"
+  echo "  camera, microphone, screen, accessibility, disk,"
+  echo "  contacts, calendar, location, photos"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Get the user TCC database path
+get_user_tcc_db() {
+  echo "$HOME/Library/Application Support/com.apple.TCC/TCC.db"
+}
+
+# Check if we can read the TCC database
+can_read_tcc_db() {
+  local db_path="$1"
+  if [[ -f "$db_path" ]] && sqlite3 "$db_path" "SELECT 1 FROM access LIMIT 1;" &>/dev/null; then
+    return 0
+  fi
+  return 1
+}
+
+# Query TCC database for apps with a specific permission
+query_tcc_for_service() {
+  local service="$1"
+  local db_path
+  db_path=$(get_user_tcc_db)
+  
+  if ! can_read_tcc_db "$db_path"; then
+    return 1
+  fi
+  
+  # Query: client = app bundle ID, auth_value: 0=denied, 1=unknown, 2=allowed
+  sqlite3 -separator '|' "$db_path" \
+    "SELECT client, auth_value FROM access WHERE service = '$service' ORDER BY client;" 2>/dev/null
+}
+
+# Get app name from bundle ID
+get_app_name_from_bundle() {
+  local bundle_id="$1"
+  
+  # Try to find the app using mdfind
+  local app_path
+  app_path=$(mdfind "kMDItemCFBundleIdentifier == '$bundle_id'" 2>/dev/null | head -n 1)
+  
+  if [[ -n "$app_path" ]]; then
+    # Extract app name from path
+    basename "$app_path" .app
+  else
+    # Fall back to bundle ID
+    echo "$bundle_id"
+  fi
+}
+
+# --- Action Functions -------------------------------------------------------
+
+# List all privacy categories
+action_list() {
+  msg_info "Privacy Permission Categories"
+  echo ""
+  
+  printf "  %-20s %s\n" "Category" "System Settings Section"
+  printf "  %-20s %s\n" "--------" "----------------------"
+  
+  for key in camera microphone screen accessibility disk contacts calendar location photos; do
+    local name
+    name=$(get_category_name "$key")
+    printf "  %-20s %s\n" "$key" "$name"
+  done
+  
+  echo ""
+  msg_info "Use 'fc privacy <category>' to see apps with that permission."
+  msg_info "Use 'fc privacy open <category>' to open System Settings."
+}
+
+# Show status overview
+action_status() {
+  msg_info "Privacy Permissions Overview"
+  echo ""
+  
+  local db_path
+  db_path=$(get_user_tcc_db)
+  
+  if ! can_read_tcc_db "$db_path"; then
+    msg_warning "Cannot read TCC database. Full Disk Access may be required."
+    msg_info "Opening Privacy & Security settings..."
+    open "x-apple.systempreferences:com.apple.preference.security?Privacy"
+    return 1
+  fi
+  
+  printf "  %-20s %s\n" "Category" "Apps Granted"
+  printf "  %-20s %s\n" "--------" "------------"
+  
+  for key in camera microphone screen accessibility disk; do
+    local service
+    service=$(get_tcc_service "$key")
+    local name
+    name=$(get_category_name "$key")
+    local count
+    count=$(sqlite3 "$db_path" "SELECT COUNT(*) FROM access WHERE service = '$service' AND auth_value = 2;" 2>/dev/null || echo "?")
+    printf "  %-20s %s\n" "$name" "$count apps"
+  done
+  
+  echo ""
+}
+
+# Show apps with a specific permission
+action_show_category() {
+  local category="$1"
+  local service
+  service=$(get_tcc_service "$category")
+  local name
+  name=$(get_category_name "$category")
+  
+  if [[ -z "$service" ]]; then
+    die "Unknown category '$category'. Run 'fc privacy list' for available categories."
+  fi
+  
+  msg_info "Apps with $name Permission"
+  echo ""
+  
+  local db_path
+  db_path=$(get_user_tcc_db)
+  
+  if ! can_read_tcc_db "$db_path"; then
+    msg_warning "Cannot read TCC database directly."
+    msg_info "This usually requires Full Disk Access permission."
+    echo ""
+    local url
+    url=$(get_settings_url "$category")
+    msg_info "Opening System Settings → $name..."
+    open "$url"
+    return 0
+  fi
+  
+  printf "  %-35s %s\n" "Application" "Status"
+  printf "  %-35s %s\n" "-----------" "------"
+  
+  local found=false
+  while IFS='|' read -r bundle_id auth_value; do
+    [[ -z "$bundle_id" ]] && continue
+    found=true
+    
+    local app_name
+    app_name=$(get_app_name_from_bundle "$bundle_id")
+    
+    # Truncate long names
+    if [[ ${#app_name} -gt 33 ]]; then
+      app_name="${app_name:0:30}..."
+    fi
+    
+    local status
+    case "$auth_value" in
+      2) status="Allowed ✓" ;;
+      0) status="Denied ✗" ;;
+      *) status="Unknown" ;;
+    esac
+    
+    printf "  %-35s %s\n" "$app_name" "$status"
+  done < <(query_tcc_for_service "$service")
+  
+  if ! $found; then
+    echo "  No apps found with $name permission."
+  fi
+  
+  echo ""
+}
+
+# Open System Settings for a category
+action_open() {
+  local category="$1"
+  
+  if [[ -z "$category" ]]; then
+    msg_info "Opening Privacy & Security settings..."
+    open "x-apple.systempreferences:com.apple.preference.security?Privacy"
+    return 0
+  fi
+  
+  local url
+  url=$(get_settings_url "$category")
+  local name
+  name=$(get_category_name "$category")
+  
+  if [[ -z "$url" ]]; then
+    die "Unknown category '$category'. Run 'fc privacy list' for available categories."
+  fi
+  
+  msg_info "Opening System Settings → $name..."
+  open "$url"
+  msg_success "System Settings opened"
+}
+
+# Reset permissions for a category
+action_reset() {
+  local category="$1"
+  
+  if [[ -z "$category" ]]; then
+    die "Please specify a category to reset. Run 'fc privacy list' for options."
+  fi
+  
+  local service
+  service=$(get_tcc_service "$category")
+  local name
+  name=$(get_category_name "$category")
+  
+  if [[ -z "$service" ]]; then
+    die "Unknown category '$category'. Run 'fc privacy list' for available categories."
+  fi
+  
+  msg_warning "Resetting $name permissions will:"
+  echo "  - Revoke access for all apps"
+  echo "  - Apps will need to request permission again"
+  echo ""
+  
+  msg_info "Are you sure? (y/N):"
+  read -r confirm
+  
+  if [[ "$confirm" != "y" ]] && [[ "$confirm" != "Y" ]]; then
+    msg_info "Reset cancelled."
+    return 0
+  fi
+  
+  msg_info "Attempting to reset $name permissions..."
+  
+  # Try tccutil reset (works on older macOS / some categories)
+  if tccutil reset "$service" 2>/dev/null; then
+    msg_success "$name permissions have been reset."
+  else
+    msg_warning "tccutil reset not supported for this category on your macOS version."
+    local url
+    url=$(get_settings_url "$category")
+    msg_info "Opening System Settings for manual adjustment..."
+    open "$url"
+  fi
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    list)
+      action_list
+      ;;
+    status)
+      action_status
+      ;;
+    camera|microphone|screen|accessibility|disk|contacts|calendar|location|photos|reminders)
+      action_show_category "$action"
+      ;;
+    open)
+      action_open "$1"
+      ;;
+    reset)
+      action_reset "$1"
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc fc-privacy --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"
