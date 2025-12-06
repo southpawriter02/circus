@@ -202,5 +202,52 @@ fc privacy open screen
 fc privacy reset microphone
 ```
 
+---
+
+## `fc keychain`
+
+Interact with macOS Keychain—list, search, add, and retrieve passwords and secrets.
+
+**Usage:**
+
+```bash
+fc keychain <action> [options]
+```
+
+**Actions:**
+*   `list`: List keychain items (no passwords shown).
+*   `search <query>`: Search for keychain items.
+*   `get <name>`: Get a password (copies to clipboard).
+*   `wifi [ssid]`: Get WiFi network password.
+*   `add`: Add a new keychain entry (interactive).
+*   `delete <name>`: Delete a keychain entry.
+
+**Options:**
+*   `--show`: Show password instead of copying to clipboard.
+*   `--account <acct>`: Specify account name for lookup.
+
+**Examples:**
+
+```bash
+# List all keychain items
+fc keychain list
+
+# Search for GitHub-related entries
+fc keychain search github
+
+# Get a password (will prompt for Keychain access)
+fc keychain get api-token
+
+# Get current WiFi password
+fc keychain wifi
+
+# Get specific WiFi password
+fc keychain wifi "Coffee Shop"
+
+# Add new password
+fc keychain add
+```
+
+
 
 
