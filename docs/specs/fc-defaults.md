@@ -76,6 +76,18 @@
 | `safari.full-url` | Show full URLs | No | Yes |
 | `safari.autofill` | Form autofill | Yes | Optional |
 
+### Terminal
+
+| Tweak | Description | Default | Recommended |
+|-------|-------------|---------|-------------|
+| `terminal.secure-keyboard` | Secure keyboard entry (anti-keylogging) | No | Yes |
+| `terminal.focus-follows-mouse` | Auto-focus window under cursor | No | No |
+| `terminal.new-window-dir` | Working directory for new windows | Home | Home |
+| `terminal.new-tab-dir` | Working directory for new tabs | Home | Same |
+| `terminal.resize-speed` | Window resize animation speed | Normal | Fast |
+| `terminal.show-marks` | Show command line marks | Yes | Yes |
+| `terminal.shell-exit` | Close window on shell exit | Clean | Clean |
+
 ---
 
 ## Detailed Behaviors
