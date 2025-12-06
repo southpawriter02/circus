@@ -10,6 +10,7 @@ This repository contains my personal dotfiles and a comprehensive, automated ins
 *   **Automated Quality Assurance:** Uses a `pre-commit` hook to automatically run `shellcheck`, format code, and run the `bats` test suite before every commit.
 *   **Deep System Configuration:** Automates the configuration of the Finder, Dock, keyboard, and other system-level preferences.
 *   **Automated Security Hardening:** Automatically configures the macOS firewall, screen saver security, and other security settings for a safer default environment.
+*   **Privacy & Security Profiles:** Choose from `standard`, `privacy`, or `lockdown` profiles to configure varying levels of privacy and security based on your needs.
 *   **Secure Secrets Management:** Integrates with 1Password to securely fetch and deploy API tokens into the macOS Keychain.
 *   **Encrypted Backup & Restore System:** A powerful `fc sync` command to create an end-to-end encrypted backup of your applications and data.
 *   **Comprehensive Testing:** A full test suite using `bats-core` to ensure the reliability and security of the entire codebase.
@@ -32,6 +33,12 @@ Setting up a new machine is a simple, guided process.
 
     # Or, install the developer role
     ./install.sh --role developer
+
+    # Install with enhanced privacy settings
+    ./install.sh --privacy-profile privacy
+
+    # Combine role and privacy profile
+    ./install.sh --role developer --privacy-profile lockdown
     ```
 
 ## Contributing
@@ -44,6 +51,7 @@ This project is extensively documented. Please see the following guides for more
 
 -   **[Architecture Guide](docs/ARCHITECTURE.md):** A deep dive into the design philosophy and technical architecture of the installer, shell, and CLI.
 -   **[Roles Guide](ROLES.md):** An explanation of the role-based installation system and how to create new roles.
+-   **[Privacy Profiles Guide](defaults/profiles/README.md):** Documentation on privacy and security profiles (standard, privacy, lockdown).
 -   **[Commands Guide](COMMANDS.md):** A detailed user manual for the custom `fc` command-line interface.
 -   **[Creating Plugins Guide](docs/CREATING_PLUGINS.md):** A guide for developers who want to create their own plugins for the `fc` command.
 

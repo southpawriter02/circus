@@ -19,6 +19,7 @@ export DRY_RUN_MODE=false
 export INTERACTIVE_MODE=true
 export INSTALL_ROLE=""
 export FORCE_MODE=false
+export PRIVACY_PROFILE=""
 
 # --- Valid Roles -------------------------------------------------------------
 # These are the supported installation roles. Each role has a corresponding
@@ -48,6 +49,20 @@ usage() {
   msg_info "Usage: ./install.sh [options]"
   echo ""
   msg_info "Options:"
+  echo "  --role <name>            Specify the role to install (e.g., developer)."
+  echo "  --privacy-profile <lvl>  Set privacy/security level (standard, privacy, lockdown)."
+  echo "  --dry-run                Run the installer without making any changes."
+  echo "  --force                  Force re-running of already completed stages."
+  echo "  --non-interactive        Run the installer without prompting for confirmation."
+  echo "  --log-file <path>        Redirect all log output to the specified file."
+  echo "  --log-level <lvl>        Set the console log level (DEBUG, INFO, WARN, ERROR)."
+  echo "  --silent                 Alias for --log-level CRITICAL. Overrides --log-level."
+  echo "  --help                   Display this help message."
+  echo ""
+  msg_info "Privacy Profiles:"
+  echo "  standard   - Balanced security and convenience (default)"
+  echo "  privacy    - Enhanced privacy, disables telemetry and tracking"
+  echo "  lockdown   - Maximum security for high-risk environments"
   echo "  --role <name>      Specify the role to install. Valid roles: ${VALID_ROLES[*]}"
   echo "  --dry-run          Run the installer without making any changes."
   echo "  --force            Force re-running of already completed stages."
@@ -63,6 +78,18 @@ main() {
   # --- Argument Parsing -------------------------------------------------------
   while [[ $# -gt 0 ]]; do
     case "$1" in
+      --role) INSTALL_ROLE="$2"; shift 2 ;;
+      --privacy-profile)
+        local profile_name
+        profile_name=$(echo "$2" | tr '[:upper:]' '[:lower:]')
+        case "$profile_name" in
+          standard|privacy|lockdown)
+            PRIVACY_PROFILE="$profile_name"
+            ;;
+          *)
+            die "Invalid privacy profile: $2. Use standard, privacy, or lockdown."
+            ;;
+        esac
       --role)
         if [[ -z "$2" ]] || [[ "$2" == --* ]]; then
           die "Error: --role requires a role name. Valid roles: ${VALID_ROLES[*]}"
@@ -193,6 +220,11 @@ main() {
   if [ -n "$INSTALL_ROLE" ]; then
     msg_info "  -> Recording installed role: $INSTALL_ROLE"
     echo "$INSTALL_ROLE" > "$state_dir/role"
+  fi
+
+  if [ -n "$PRIVACY_PROFILE" ]; then
+    msg_info "  -> Recording privacy profile: $PRIVACY_PROFILE"
+    echo "$PRIVACY_PROFILE" > "$state_dir/privacy_profile"
   fi
 
   msg_success "Dotfiles Flying Circus setup complete!"
