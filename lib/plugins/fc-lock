@@ -1,0 +1,233 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-lock
+#
+# DESCRIPTION:  Control screen lock, sleep settings, and display timeout.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc lock <action> [value]"
+  echo ""
+  msg_info "Control screen lock and display sleep settings."
+  echo ""
+  msg_info "Actions:"
+  echo "  now               - Lock the screen immediately"
+  echo "  status            - Show current lock settings"
+  echo "  require <on/off>  - Require password after sleep"
+  echo "  timeout <seconds> - Set display sleep timeout"
+  echo "  screensaver       - Start screen saver now"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc lock now              # Lock immediately"
+  echo "  fc lock timeout 600      # Sleep after 10 minutes"
+  echo "  fc lock timeout 0        # Never sleep display"
+  echo ""
+  exit 0
+}
+
+# --- Action Functions -------------------------------------------------------
+
+# Lock screen immediately
+action_now() {
+  msg_info "Locking screen..."
+  
+  # Method 1: Use pmset to put display to sleep (triggers lock if enabled)
+  if pmset displaysleepnow 2>/dev/null; then
+    return 0
+  fi
+  
+  # Method 2: Use Control+Command+Q keyboard shortcut via osascript
+  osascript -e 'tell application "System Events" to keystroke "q" using {control down, command down}' 2>/dev/null
+  
+  # The screen is locking, we won't see the success message
+}
+
+# Start screen saver
+action_screensaver() {
+  msg_info "Starting screen saver..."
+  
+  # Open ScreenSaverEngine
+  open -a ScreenSaverEngine 2>/dev/null || \
+    /System/Library/CoreServices/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine &
+    
+  msg_success "Screen saver started"
+}
+
+# Show current lock settings
+action_status() {
+  msg_info "Screen Lock Settings"
+  echo ""
+  
+  # Display sleep timeout (AC power)
+  local display_sleep_ac
+  display_sleep_ac=$(pmset -g custom 2>/dev/null | grep -A 20 "AC Power" | grep "displaysleep" | awk '{print $2}')
+  
+  # Display sleep timeout (battery)
+  local display_sleep_bat
+  display_sleep_bat=$(pmset -g custom 2>/dev/null | grep -A 20 "Battery Power" | grep "displaysleep" | awk '{print $2}')
+  
+  # Password requirement
+  local ask_for_password
+  ask_for_password=$(defaults read com.apple.screensaver askForPassword 2>/dev/null || echo "unknown")
+  
+  # Password delay
+  local password_delay
+  password_delay=$(defaults read com.apple.screensaver askForPasswordDelay 2>/dev/null || echo "0")
+  
+  # Screen saver idle time
+  local screensaver_idle
+  screensaver_idle=$(defaults read com.apple.screensaver idleTime 2>/dev/null || echo "unknown")
+  
+  # Format output
+  echo "  Password Required:    $([ "$ask_for_password" = "1" ] && echo "Yes ✓" || echo "No ✗")"
+  
+  if [[ "$password_delay" == "0" ]]; then
+    echo "  Password Delay:       Immediately"
+  else
+    echo "  Password Delay:       $password_delay seconds"
+  fi
+  
+  if [[ -n "$display_sleep_ac" ]]; then
+    if [[ "$display_sleep_ac" == "0" ]]; then
+      echo "  Display Sleep (AC):   Never"
+    else
+      echo "  Display Sleep (AC):   $display_sleep_ac minutes"
+    fi
+  fi
+  
+  if [[ -n "$display_sleep_bat" ]]; then
+    if [[ "$display_sleep_bat" == "0" ]]; then
+      echo "  Display Sleep (Bat):  Never"
+    else
+      echo "  Display Sleep (Bat):  $display_sleep_bat minutes"
+    fi
+  fi
+  
+  if [[ "$screensaver_idle" != "unknown" ]] && [[ "$screensaver_idle" != "0" ]]; then
+    echo "  Screen Saver:         $((screensaver_idle / 60)) minutes"
+  fi
+  
+  echo ""
+}
+
+# Configure password requirement
+action_require() {
+  local setting="$1"
+  
+  if [[ -z "$setting" ]]; then
+    # Show current setting
+    local current
+    current=$(defaults read com.apple.screensaver askForPassword 2>/dev/null || echo "0")
+    if [[ "$current" == "1" ]]; then
+      msg_info "Password is currently required after sleep."
+    else
+      msg_info "Password is NOT required after sleep."
+    fi
+    return 0
+  fi
+  
+  case "$setting" in
+    on|yes|1|true)
+      msg_info "Requiring password after sleep..."
+      defaults write com.apple.screensaver askForPassword -int 1
+      defaults write com.apple.screensaver askForPasswordDelay -int 0
+      msg_success "Password will be required immediately after sleep."
+      ;;
+    off|no|0|false)
+      msg_warning "Disabling password requirement after sleep..."
+      msg_warning "This is a security risk. Are you sure? (y/N):"
+      read -r confirm
+      if [[ "$confirm" == "y" ]] || [[ "$confirm" == "Y" ]]; then
+        defaults write com.apple.screensaver askForPassword -int 0
+        msg_success "Password will NOT be required after sleep."
+      else
+        msg_info "Cancelled."
+      fi
+      ;;
+    *)
+      die "Invalid setting. Use 'on' or 'off'."
+      ;;
+  esac
+}
+
+# Set display sleep timeout
+action_timeout() {
+  local seconds="$1"
+  
+  if [[ -z "$seconds" ]]; then
+    die "Please provide timeout in seconds (0 = never)."
+  fi
+  
+  # Validate it's a number
+  if ! [[ "$seconds" =~ ^[0-9]+$ ]]; then
+    die "Timeout must be a number (in seconds)."
+  fi
+  
+  # Convert seconds to minutes for pmset
+  local minutes=$((seconds / 60))
+  
+  # pmset uses minutes, round up if there's a remainder
+  if [[ $((seconds % 60)) -gt 0 ]]; then
+    minutes=$((minutes + 1))
+  fi
+  
+  if [[ "$seconds" == "0" ]]; then
+    msg_info "Setting display to never sleep..."
+    minutes=0
+  else
+    msg_info "Setting display sleep to $minutes minutes ($seconds seconds)..."
+  fi
+  
+  # Set for both AC and battery power
+  # Note: This may require sudo
+  if sudo pmset -a displaysleep "$minutes" 2>/dev/null; then
+    if [[ "$seconds" == "0" ]]; then
+      msg_success "Display will never sleep."
+    else
+      msg_success "Display will sleep after $minutes minute(s)."
+    fi
+  else
+    msg_warning "Could not set system-wide timeout (may need sudo)."
+    msg_info "You can try: sudo pmset -a displaysleep $minutes"
+  fi
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    now)
+      action_now
+      ;;
+    status)
+      action_status
+      ;;
+    require)
+      action_require "$1"
+      ;;
+    timeout)
+      action_timeout "$1"
+      ;;
+    screensaver|saver)
+      action_screensaver
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc fc-lock --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

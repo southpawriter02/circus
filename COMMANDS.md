@@ -289,6 +289,45 @@ fc encrypt file passwords.json --delete
 echo "API_KEY=secret" | fc encrypt text
 ```
 
+---
+
+## `fc lock`
+
+Control screen lock, display sleep, and password requirements.
+
+**Usage:**
+
+```bash
+fc lock <action> [value]
+```
+
+**Actions:**
+*   `now`: Lock the screen immediately.
+*   `status`: Show current lock settings.
+*   `require <on/off>`: Require password after sleep.
+*   `timeout <seconds>`: Set display sleep timeout (0 = never).
+*   `screensaver`: Start screen saver now.
+
+**Examples:**
+
+```bash
+# Lock screen immediately
+fc lock now
+
+# Check current settings
+fc lock status
+
+# Require password after sleep
+fc lock require on
+
+# Set display to sleep after 10 minutes
+fc lock timeout 600
+
+# Never sleep display
+fc lock timeout 0
+```
+
+
 
 
 
