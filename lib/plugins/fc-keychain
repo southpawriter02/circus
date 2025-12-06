@@ -5,11 +5,70 @@
 # FILE:         fc-keychain
 #
 # DESCRIPTION:  Interact with macOS Keychain—list, search, add, and retrieve
-#               passwords and secrets.
+#               passwords and secrets. Provides quick access to stored
+#               credentials including WiFi passwords.
+#
+# USAGE:        fc keychain <action> [options]
+#
+# ACTIONS:
+#   list        List all keychain items (no passwords shown)
+#               - Shows first 30 items by default
+#               - Displays Kind (Generic/Internet), Service, and Account
+#
+#   search      Search for keychain items by name or account
+#               - Case-insensitive search
+#               - Searches service name and account fields
+#
+#   get         Retrieve a password and copy to clipboard
+#               - Triggers macOS Keychain authorization dialog
+#               - Options: --show (display instead of copy), --account
+#
+#   wifi        Get WiFi network password
+#               - Auto-detects current network if SSID not provided
+#               - Copies password to clipboard
+#
+#   add         Add a new keychain entry (interactive)
+#               - Prompts for service, account, password, kind
+#               - Supports both Generic and Internet password types
+#
+#   delete      Delete a keychain entry
+#               - Requires confirmation before deletion
+#               - Shows entry details before deleting
+#
+# OPTIONS:
+#   --show      Show password in terminal instead of copying (for 'get')
+#   --account   Specify account name for more precise lookup
+#
+# EXAMPLES:
+#   fc keychain list                    # List all items
+#   fc keychain search github           # Find GitHub entries
+#   fc keychain get api-token           # Get and copy password
+#   fc keychain get api-token --show    # Display password
+#   fc keychain wifi                    # Get current WiFi password
+#   fc keychain wifi "Coffee Shop"      # Get specific network
+#   fc keychain add                     # Add new entry
+#   fc keychain delete old-api-key      # Delete entry
+#
+# SECURITY NOTES:
+#   - Password retrieval triggers macOS Keychain access prompt
+#   - "Always Allow" grants permanent terminal access to that item
+#   - Use --show cautiously (password visible in terminal)
+#   - Clear clipboard after pasting sensitive passwords
+#   - The 'security' command can only access your login keychain
+#
+# RECOMMENDATIONS:
+#   - Use 'fc keychain wifi' to share WiFi passwords with guests
+#   - Prefer copying to clipboard over --show for sensitive data
+#   - Clear screen/clipboard after viewing passwords
+#
+# DEPENDENCIES:
+#   Required: security (built-in to macOS)
+#   Required: pbcopy (built-in to macOS)
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
+# Source the common initialization script for logging and error handling
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
@@ -30,8 +89,14 @@ usage() {
   echo "  --show            - Show password instead of copying (for 'get')"
   echo "  --account <acct>  - Specify account name (for 'get', 'delete')"
   echo ""
+  msg_info "Examples:"
+  echo "  fc keychain wifi                  # Current WiFi password"
+  echo "  fc keychain search github         # Find GitHub entries"
+  echo "  fc keychain get api-key --show    # Display password"
+  echo ""
   exit 0
 }
+
 
 # --- Action Functions -------------------------------------------------------
 

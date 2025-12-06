@@ -5,10 +5,61 @@
 # FILE:         fc-lock
 #
 # DESCRIPTION:  Control screen lock, sleep settings, and display timeout.
+#               Provides quick commands for screen security management.
+#
+# USAGE:        fc lock <action> [value]
+#
+# ACTIONS:
+#   now         Lock the screen immediately
+#               - Uses pmset displaysleepnow or keyboard shortcut
+#               - Requires password if 'require on' is set
+#
+#   status      Show current lock and sleep settings
+#               - Password requirement, delay, display sleep times
+#               - Shows settings for both AC and battery power
+#
+#   require     Configure password requirement after sleep
+#               - 'on': Require password immediately after sleep
+#               - 'off': No password required (warning: security risk)
+#
+#   timeout     Set display sleep timeout in seconds
+#               - 0 = never sleep (useful for presentations)
+#               - May require sudo for system-wide changes
+#
+#   screensaver Start the screen saver immediately
+#               - Alias: 'saver'
+#
+# EXAMPLES:
+#   fc lock now                 # Lock screen immediately
+#   fc lock status              # View current settings
+#   fc lock require on          # Require password after sleep
+#   fc lock timeout 600         # Sleep after 10 minutes
+#   fc lock timeout 0           # Never sleep display
+#   fc lock screensaver         # Start screen saver
+#
+# HOW IT WORKS:
+#   - Password settings: Modifies com.apple.screensaver defaults
+#   - Timeout settings: Uses pmset (Power Management Settings)
+#   - Screen lock: Uses pmset displaysleepnow or AppleScript
+#
+# SECURITY RECOMMENDATIONS:
+#   - Always enable 'fc lock require on' for security
+#   - Use 'fc lock now' when stepping away from your Mac
+#   - Consider a short timeout (5-10 min) for automatic locking
+#   - 'fc lock timeout 0' is useful for presentations only
+#
+# DEPENDENCIES:
+#   Required: pmset, defaults, osascript (built-in to macOS)
+#
+# NOTES:
+#   - timeout changes may require sudo
+#   - Password delay of 0 = immediately after sleep/screensaver
+#   - Settings apply to both AC and battery power
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
+# Source the common initialization script for logging and error handling
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
@@ -31,6 +82,7 @@ usage() {
   echo ""
   exit 0
 }
+
 
 # --- Action Functions -------------------------------------------------------
 

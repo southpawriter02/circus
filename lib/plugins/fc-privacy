@@ -6,11 +6,59 @@
 #
 # DESCRIPTION:  View and manage macOS privacy permissions (Camera, Microphone,
 #               Screen Recording, Accessibility, Full Disk Access, etc.)
+#               Uses the TCC (Transparency, Consent, and Control) framework.
+#
+# USAGE:        fc privacy <action> [category]
+#
+# ACTIONS:
+#   list        List all privacy permission categories
+#   status      Show overview of granted permissions per category
+#   camera      Show apps with Camera permission
+#   microphone  Show apps with Microphone permission
+#   screen      Show apps with Screen Recording permission
+#   accessibility  Show apps with Accessibility permission
+#   disk        Show apps with Full Disk Access
+#   open        Open System Settings for a category
+#   reset       Reset permissions for a category (prompts for confirmation)
+#
+# CATEGORIES:
+#   camera, microphone, screen, accessibility, disk,
+#   contacts, calendar, location, photos
+#
+# EXAMPLES:
+#   fc privacy list                # List all categories
+#   fc privacy camera              # See apps with camera access
+#   fc privacy open screen         # Open Screen Recording settings
+#   fc privacy reset microphone    # Reset all microphone permissions
+#
+# HOW IT WORKS:
+#   macOS stores privacy permissions in the TCC database:
+#   - User DB: ~/Library/Application Support/com.apple.TCC/TCC.db
+#   - System DB: /Library/Application Support/com.apple.TCC/TCC.db
+#
+#   Reading the database requires Full Disk Access permission. If unavailable,
+#   the command will gracefully open System Settings as a fallback.
+#
+# LIMITATIONS:
+#   - Direct TCC database modification is blocked by System Integrity Protection
+#   - On modern macOS, tccutil reset only works for some categories
+#   - Some changes require opening System Settings for manual adjustment
+#
+# RECOMMENDATIONS:
+#   - Review privacy permissions periodically with 'fc privacy status'
+#   - Use 'fc privacy reset' only when you want ALL apps to re-request permission
+#   - Grant Full Disk Access to Terminal.app for full TCC database access
+#
+# DEPENDENCIES:
+#   Required: tccutil, open (built-in to macOS)
+#   Optional: sqlite3 (for database queries, built-in)
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
+# Source the common initialization script for logging and error handling
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
 
 # --- Helper Functions for Category Lookups ----------------------------------
 # Using functions instead of associative arrays for Bash 3 compatibility

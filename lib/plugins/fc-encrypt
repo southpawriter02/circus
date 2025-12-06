@@ -5,10 +5,68 @@
 # FILE:         fc-encrypt
 #
 # DESCRIPTION:  Quick file/folder encryption using GPG or OpenSSL.
+#               Provides password-based symmetric encryption for sensitive
+#               files, folders, and text.
+#
+# USAGE:        fc encrypt <action> [path] [options]
+#
+# ACTIONS:
+#   file        Encrypt a file with password (AES-256)
+#               - Creates .gpg or .enc file alongside original
+#               - Options: --delete (remove original), --output
+#
+#   decrypt     Decrypt an encrypted file
+#               - Auto-detects GPG vs OpenSSL based on extension
+#               - Strips .gpg/.enc/.asc extension for output filename
+#
+#   folder      Encrypt a folder as compressed archive
+#               - Creates tar.gz of folder, then encrypts
+#               - Output: foldername.tar.gz.gpg
+#
+#   text        Encrypt text from stdin or interactively
+#               - Outputs armored (ASCII) encrypted text
+#               - Automatically copies to clipboard
+#
+# OPTIONS:
+#   --delete    Delete original file/folder after encryption
+#   --keep      Keep original (default behavior)
+#   --output    Specify custom output file path
+#
+# EXAMPLES:
+#   fc encrypt file secrets.txt            # Encrypt a file
+#   fc encrypt file passwords.json --delete # Encrypt and remove original
+#   fc encrypt decrypt secrets.txt.gpg     # Decrypt
+#   fc encrypt folder ~/Documents/private  # Encrypt entire folder
+#   echo "API_KEY=xxx" | fc encrypt text   # Encrypt text from pipe
+#   fc encrypt text                        # Interactive text encryption
+#
+# ENCRYPTION DETAILS:
+#   GPG (preferred):
+#     - Uses AES-256 cipher (very secure)
+#     - Output: .gpg (binary) or .asc (armored/ASCII)
+#     - Install: brew install gnupg
+#
+#   OpenSSL (fallback):
+#     - Uses AES-256-CBC with PBKDF2
+#     - Output: .enc (binary)
+#     - Built into macOS
+#
+# RECOMMENDATIONS:
+#   - Use --delete only after verifying encrypted file can be decrypted
+#   - For sensitive files, use 'fc encrypt folder' to encrypt entire directories
+#   - Remember your password! There is no recovery mechanism
+#   - For sharing encrypted files, ensure recipient has GPG or OpenSSL
+#
+# DEPENDENCIES:
+#   Required: tar (built-in to macOS)
+#   Required: pbcopy (built-in to macOS)
+#   Optional: gpg (brew install gnupg) - preferred
+#   Fallback: openssl (built-in to macOS)
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
+# Source the common initialization script for logging and error handling
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
@@ -28,8 +86,14 @@ usage() {
   echo "  --keep            - Keep original (default)"
   echo "  --output <path>   - Specify output file path"
   echo ""
+  msg_info "Examples:"
+  echo "  fc encrypt file secrets.txt          # Encrypt file"
+  echo "  fc encrypt decrypt secrets.txt.gpg   # Decrypt"
+  echo "  fc encrypt folder ~/private --delete # Encrypt and remove"
+  echo ""
   exit 0
 }
+
 
 # --- Helper Functions -------------------------------------------------------
 

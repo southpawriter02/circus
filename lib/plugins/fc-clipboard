@@ -4,11 +4,51 @@
 #
 # FILE:         fc-clipboard
 #
-# DESCRIPTION:  Clipboard utilities for macOS—view, clear, copy, and transform.
+# DESCRIPTION:  Clipboard utilities for macOS—view, clear, copy, and transform
+#               clipboard contents. Useful for scripting, debugging clipboard
+#               issues, removing rich text formatting, and quick text operations.
+#
+# USAGE:        fc clipboard <action> [text]
+#
+# ACTIONS:
+#   show        Display current clipboard contents
+#               - Truncates output if > 1000 characters
+#               - Shows character and line count
+#
+#   clear       Clear the clipboard completely
+#               - Useful after copying sensitive data like passwords
+#
+#   copy        Copy text to clipboard
+#               - Can accept text as argument: fc clipboard copy "text"
+#               - Can accept piped input: echo "text" | fc clipboard copy
+#
+#   plain       Convert clipboard to plain text
+#               - Removes rich text formatting (bold, italic, colors, fonts)
+#               - Useful when pasting into plain text editors
+#
+#   count       Show character, word, and line count
+#               - Quick way to check clipboard statistics
+#
+# EXAMPLES:
+#   fc clipboard show                      # View clipboard contents
+#   fc clipboard copy "Hello World"        # Copy text
+#   echo "piped text" | fc clipboard copy  # Copy from pipe
+#   fc clipboard plain                     # Remove formatting
+#   fc clipboard clear                     # Clear (for security)
+#   fc clipboard count                     # Get word count
+#
+# TIPS:
+#   - Use 'fc clipboard plain' before pasting into code editors
+#   - Clear clipboard after copying passwords (fc clipboard clear)
+#   - Combine with other commands: cat file.txt | fc clipboard copy
+#
+# DEPENDENCIES:
+#   Required: pbcopy, pbpaste (built-in to macOS)
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
+# Source the common initialization script for logging and error handling
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
@@ -20,12 +60,19 @@ usage() {
   msg_info "Actions:"
   echo "  show          - Show current clipboard contents"
   echo "  clear         - Clear the clipboard"
-  echo "  copy <text>   - Copy text to clipboard"
+  echo "  copy <text>   - Copy text to clipboard (or pipe input)"
   echo "  plain         - Convert clipboard to plain text (remove formatting)"
   echo "  count         - Count characters/words/lines in clipboard"
   echo ""
+  msg_info "Examples:"
+  echo "  fc clipboard show                   # View contents"
+  echo "  fc clipboard copy \"Hello World\"    # Copy text"
+  echo "  echo \"text\" | fc clipboard copy    # Copy from pipe"
+  echo "  fc clipboard clear                  # Clear after sensitive copy"
+  echo ""
   exit 0
 }
+
 
 # --- Action Functions -------------------------------------------------------
 

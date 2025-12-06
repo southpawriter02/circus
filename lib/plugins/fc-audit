@@ -5,10 +5,86 @@
 # FILE:         fc-audit
 #
 # DESCRIPTION:  Run a security audit to check system protection settings.
+#               Verifies critical macOS security features are enabled and
+#               provides a security posture score.
+#
+# USAGE:        fc audit <action>
+#
+# ACTIONS:
+#   run         Run full security audit (8 checks)
+#               - System Protection: SIP, FileVault, Gatekeeper, Firewall
+#               - Authentication: Password after sleep, Auto login
+#               - Network: Stealth mode, Remote login (SSH)
+#               - Provides pass/fail score
+#
+#   quick       Quick check of 4 critical settings
+#               - SIP, FileVault, Gatekeeper, Firewall only
+#               - Fast way to verify essential protections
+#
+#   sip         Check System Integrity Protection details
+#               - Shows what SIP protects
+#               - Instructions for modification (requires Recovery Mode)
+#
+#   filevault   Check FileVault disk encryption status
+#               - Shows encryption state and enabled users
+#               - Link to enable if disabled
+#
+#   gatekeeper  Check Gatekeeper status
+#               - Explains what Gatekeeper protects against
+#               - Command to re-enable if disabled
+#
+#   firewall    Check Application Firewall details
+#               - Global state, stealth mode, block all mode
+#               - Link to System Settings for management
+#
+# EXAMPLES:
+#   fc audit run            # Full audit with scoring
+#   fc audit quick          # Fast 4-check summary
+#   fc audit sip            # SIP details
+#   fc audit filevault      # Encryption status
+#
+# SECURITY CHECKS EXPLAINED:
+#
+#   SIP (System Integrity Protection):
+#     Protects system files from modification, even by root.
+#     Should always be enabled unless developing kexts.
+#
+#   FileVault:
+#     Full-disk encryption protecting data if Mac is stolen.
+#     Strongly recommended for all portable Macs.
+#
+#   Gatekeeper:
+#     Blocks unsigned and unnotarized apps from running.
+#     Prevents most malware installations.
+#
+#   Application Firewall:
+#     Controls incoming network connections per-app.
+#     Stealth mode hides Mac from network scans.
+#
+#   Password After Sleep:
+#     Requires password to unlock after sleep/screensaver.
+#     Essential for physical security.
+#
+#   Automatic Login:
+#     Should be disabled; bypasses login authentication.
+#
+#   Remote Login (SSH):
+#     Allows remote terminal access. Enable only if needed.
+#
+# RECOMMENDATIONS:
+#   - Run 'fc audit run' periodically (monthly)
+#   - All items should show ✓ for maximum security
+#   - FileVault and Password After Sleep are critical for laptops
+#   - Disable Remote Login unless actively using SSH
+#
+# DEPENDENCIES:
+#   Required: csrutil, fdesetup, spctl, systemsetup (built-in to macOS)
+#   Required: defaults, socketfilterfw (built-in to macOS)
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
+# Source the common initialization script for logging and error handling
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
@@ -25,8 +101,13 @@ usage() {
   echo "  gatekeeper      - Check Gatekeeper status"
   echo "  firewall        - Check firewall status"
   echo ""
+  msg_info "Examples:"
+  echo "  fc audit run          # Full audit with score"
+  echo "  fc audit quick        # Fast 4-check summary"
+  echo ""
   exit 0
 }
+
 
 # --- Check Functions --------------------------------------------------------
 
