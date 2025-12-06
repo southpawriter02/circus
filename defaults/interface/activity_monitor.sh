@@ -71,36 +71,85 @@ msg_info "Configuring Activity Monitor settings..."
 # --- Show All Processes ---
 # Key:          ShowCategory
 # Description:  Controls which processes are displayed in the main window.
-#               "All Processes" shows every running process, including
-#               system daemons and other users' processes (if permitted).
-# Default:      100 (My Processes - only current user's processes)
-# Possible:     See VIEW CATEGORIES above
-# Set to:       102 (All Processes - complete system visibility)
-# Reference:    View > All Processes (⌘1 through ⌘5)
+#               "All Processes" shows every running process on the system,
+#               including system daemons, kernel tasks, and processes owned
+#               by other users (where permissions allow).
+# Default:      100 (My Processes - only processes owned by current user)
+# Options:      100 = My Processes (current user only)
+#               101 = My Processes, Hierarchically (tree view of user processes)
+#               102 = All Processes (every process on the system)
+#               103 = All Processes, Hierarchically (tree view of all)
+#               104 = Selected Processes (custom selection)
+#               105 = System Processes (macOS system processes only)
+#               106 = Other User Processes (processes not owned by you or root)
+#               107 = Active Processes (currently using CPU)
+#               108 = Inactive Processes (sleeping/idle)
+#               109 = GPU Processes (using graphics hardware)
+#               110 = Windowed Processes (apps with visible windows)
+# Set to:       102 (All Processes - complete system visibility for debugging)
+# UI Location:  View menu > All Processes (or ⌃⌘1 through ⌃⌘0)
+# Source:       https://support.apple.com/guide/activity-monitor/view-information-about-processes-actmntr1001/mac
 run_defaults "com.apple.ActivityMonitor" "ShowCategory" "-int" "102"
 
 # --- Sort by CPU Usage ---
-# Key:          SortColumn, SortDirection
-# Description:  Sets the default column to sort by and the sort direction.
-#               Sorting by CPU usage shows which processes are using the
-#               most processing power.
-# Default:      'CPUUsage' descending
-# Possible:     Column names: CPUUsage, ProcessName, PID, User, Memory, etc.
-#               Direction: 0 = descending, 1 = ascending
-# Set to:       CPUUsage, descending (highest CPU at top)
-# Tip:          Click column headers to change sorting in the app
+# Key:          SortColumn
+# Description:  Sets the default column to sort by when Activity Monitor opens.
+#               Sorting by CPU usage immediately highlights processes consuming
+#               the most processing power, useful for identifying runaway apps.
+# Default:      "CPUUsage" (sorted by CPU percentage)
+# Options:      Common column identifiers:
+#               "CPUUsage"    = CPU percentage (most common for troubleshooting)
+#               "CPUTime"     = Total CPU time consumed
+#               "ProcessName" = Alphabetical by process name
+#               "PID"         = Process ID (numeric order)
+#               "User"        = Owner username
+#               "%Mem"        = Memory percentage
+#               "Threads"     = Number of threads
+#               "Ports"       = Open ports
+# Set to:       "CPUUsage" (quickly identify CPU-hungry processes)
+# UI Location:  Click any column header in Activity Monitor to sort
+# Source:       https://support.apple.com/guide/activity-monitor/view-cpu-activity-actmntr43452/mac
 run_defaults "com.apple.ActivityMonitor" "SortColumn" "-string" "CPUUsage"
+
+# Key:          SortDirection
+# Description:  Controls the sort order (ascending or descending) for the
+#               selected sort column. Descending puts highest values at top.
+# Default:      0 (descending - highest values first)
+# Options:      0 = Descending (highest to lowest, Z to A)
+#               1 = Ascending (lowest to highest, A to Z)
+# Set to:       0 (descending - shows highest CPU usage at top)
+# UI Location:  Click column header to toggle, or click sort indicator arrow
+# Source:       https://support.apple.com/guide/activity-monitor/view-cpu-activity-actmntr43452/mac
 run_defaults "com.apple.ActivityMonitor" "SortDirection" "-int" "0"
 
-# --- Set Default Tab ---
-# Key:          SelectedTab, OpenMainWindow
-# Description:  Controls which tab is active when Activity Monitor launches
-#               and whether the main window opens automatically.
-# Default:      0 (CPU tab), true (window opens)
-# Possible:     See TABS above
-# Set to:       0 (CPU - most commonly used view)
-# Reference:    Tabs at the top of the Activity Monitor window
+# --- Open Main Window on Launch ---
+# Key:          OpenMainWindow
+# Description:  Controls whether the main Activity Monitor window opens
+#               automatically when the app launches. When disabled, only
+#               the Dock icon or menu bar displays are shown.
+# Default:      true (main window opens on launch)
+# Options:      true  = Open main window automatically
+#               false = Start minimized (Dock/menu bar only)
+# Set to:       true (always show the main window)
+# UI Location:  Window > Activity Monitor (if closed)
+# Source:       https://support.apple.com/guide/activity-monitor/welcome/mac
 run_defaults "com.apple.ActivityMonitor" "OpenMainWindow" "-bool" "true"
+
+# --- Default Tab Selection ---
+# Key:          SelectedTab
+# Description:  Controls which tab is active when Activity Monitor launches.
+#               Each tab shows different system resource information with
+#               specialized columns and graphs.
+# Default:      0 (CPU tab)
+# Options:      0 = CPU (processor usage, processes, threads)
+#               1 = Memory (RAM usage, memory pressure, swap)
+#               2 = Energy (power consumption, battery impact)
+#               3 = Disk (read/write activity, I/O operations)
+#               4 = Network (data sent/received, packets, connections)
+# Set to:       0 (CPU tab - most commonly used for troubleshooting)
+# UI Location:  Tab bar at the top of the Activity Monitor window
+# Source:       https://support.apple.com/guide/activity-monitor/view-cpu-activity-actmntr43452/mac
+# See also:     https://support.apple.com/guide/activity-monitor/welcome/mac
 run_defaults "com.apple.ActivityMonitor" "SelectedTab" "-int" "0"
 
 # ==============================================================================

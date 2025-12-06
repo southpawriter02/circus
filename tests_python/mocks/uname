@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Mock for uname command
+# Set MOCK_UNAME_OUTPUT to control the output (default: Linux)
+echo "${MOCK_UNAME_OUTPUT:-Linux}"

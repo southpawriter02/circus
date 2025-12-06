@@ -12,7 +12,7 @@
 #
 # @description
 #   A helper function to clone a Git repository if the destination directory
-#   does not already exist.
+#   does not already exist. Supports dry-run mode.
 #
 # @param $1 The URL of the Git repository to clone.
 # @param $2 The destination directory for the clone.
@@ -25,6 +25,11 @@ clone_plugin() {
 
   if [ -d "$dest_dir" ]; then
     msg_info "Plugin '$plugin_name' is already installed. Skipping."
+    return 0
+  fi
+
+  if [ "$DRY_RUN_MODE" = true ]; then
+    msg_info "[Dry Run] Would install plugin: $plugin_name from $repo_url"
     return 0
   fi
 
@@ -42,18 +47,26 @@ main() {
   # --- Install Oh My Zsh Core ---
   local oh_my_zsh_dir="$HOME/.oh-my-zsh"
   if [ ! -d "$oh_my_zsh_dir" ]; then
-    msg_info "Installing Oh My Zsh from official repository..."
-    if ! git clone --depth=1 "https://github.com/ohmyzsh/ohmyzsh.git" "$oh_my_zsh_dir"; then
-      msg_error "Failed to clone the Oh My Zsh repository. Aborting stage."
-      return 1
+    if [ "$DRY_RUN_MODE" = true ]; then
+      msg_info "[Dry Run] Would install Oh My Zsh from official repository to $oh_my_zsh_dir"
+    else
+      msg_info "Installing Oh My Zsh from official repository..."
+      if ! git clone --depth=1 "https://github.com/ohmyzsh/ohmyzsh.git" "$oh_my_zsh_dir"; then
+        msg_error "Failed to clone the Oh My Zsh repository. Aborting stage."
+        return 1
+      fi
     fi
   else
-      msg_info "Oh My Zsh is already installed. Skipping core installation."
+    msg_info "Oh My Zsh is already installed. Skipping core installation."
   fi
 
   # --- Install Community Plugins ---
   local custom_plugins_dir="$oh_my_zsh_dir/custom/plugins"
-  mkdir -p "$custom_plugins_dir"
+  if [ "$DRY_RUN_MODE" = true ]; then
+    msg_info "[Dry Run] Would create plugins directory: $custom_plugins_dir"
+  else
+    mkdir -p "$custom_plugins_dir"
+  fi
 
   # 1. zsh-syntax-highlighting
   clone_plugin "https://github.com/zsh-users/zsh-syntax-highlighting.git" "$custom_plugins_dir/zsh-syntax-highlighting"

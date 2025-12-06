@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Mock for networksetup command (macOS network configuration)
+# Set MOCK_NETWORKSETUP_OUTPUT to control the output
+# Default: Connected to WiFi
+if [[ "$1" == "-getairportnetwork" ]]; then
+  if [[ -n "$MOCK_NETWORKSETUP_OUTPUT" ]]; then
+    echo "$MOCK_NETWORKSETUP_OUTPUT"
+  else
+    # Default: connected to a WiFi network
+    echo "Current Wi-Fi Network: TestNetwork"
+  fi
+else
+  exit 1
+fi

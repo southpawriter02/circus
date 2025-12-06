@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Mock for pmset command (macOS battery/power status)
+# Set MOCK_PMSET_OUTPUT to control the output
+# Default: AC Power connected
+if [[ "$1" == "-g" && "$2" == "batt" ]]; then
+  if [[ -n "$MOCK_PMSET_OUTPUT" ]]; then
+    echo "$MOCK_PMSET_OUTPUT"
+  else
+    # Default: AC Power connected
+    echo "Now drawing from 'AC Power'"
+    echo " -InternalBattery-0 (id=1234567)	100%; charged; 0:00 remaining present: true"
+  fi
+else
+  exit 1
+fi

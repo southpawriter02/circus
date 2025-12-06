@@ -114,7 +114,9 @@ Settings for third-party and system applications.
 
 ## Documentation Format
 
-Each script follows a consistent documentation format:
+Each script follows a consistent documentation format with two levels: a **header block** for script-level information and **inline documentation** for each setting.
+
+### Header Block Format
 
 ```bash
 #!/usr/bin/env bash
@@ -143,14 +145,109 @@ Each script follows a consistent documentation format:
 # ==============================================================================
 ```
 
-Each individual setting is documented with:
+### Inline Setting Documentation (Enhanced Format)
 
-- **Key**: The preference key being set
-- **Description**: What the setting does
-- **Default**: The macOS default value
-- **Possible**: All possible values with explanations
-- **Set to**: The value this script sets and why
-- **Reference**: Where to find this setting in System Preferences (if applicable)
+Each individual setting should be documented with the following fields:
+
+```bash
+# --- Setting Name ---
+# Key:          preference_key_name
+# Description:  What this setting does. Include context about why a user
+#               might want to change it and how it affects system behavior.
+# Default:      value (description of Apple's default)
+# Options:      value1 = Description of what this value does
+#               value2 = Description of what this value does
+#               value3 = Description of what this value does
+# Set to:       value (rationale for why we chose this value)
+# UI Location:  System Settings > Category > Subcategory > Setting name
+# Source:       https://support.apple.com/... (official Apple documentation URL)
+# See also:     https://... (optional additional references)
+# Note:         Optional additional context, warnings, or tips
+```
+
+#### Field Descriptions
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `Key` | Yes | The exact preference key name used in the `defaults write` command |
+| `Description` | Yes | Clear explanation of what the setting controls and its impact |
+| `Default` | Yes | Apple's default value with a brief description |
+| `Options` | Yes | All valid values with explanations (use `=` to separate value from description) |
+| `Set to` | Yes | The value this script configures, with rationale |
+| `UI Location` | Yes | Path in System Settings/Preferences to find this setting |
+| `Source` | Yes | URL to official Apple documentation for this setting |
+| `See also` | No | Additional reference URLs (other Apple docs, man pages, etc.) |
+| `Note` | No | Warnings, tips, or additional context |
+| `Security` | No | Security implications (for security-related settings) |
+
+#### Example: Complete Setting Documentation
+
+```bash
+# --- Require Password After Sleep or Screen Saver ---
+# Key:          askForPassword
+# Description:  Controls whether a password is required to exit the screensaver
+#               or wake the display from sleep. This is a critical security
+#               setting that prevents unauthorized access to an unattended Mac.
+#               When enabled, the login password (or Touch ID/Apple Watch) is
+#               required to unlock.
+# Default:      0 (disabled - no password required to wake)
+# Options:      0 = Disabled (no authentication required to unlock)
+#               1 = Enabled (password/Touch ID required to unlock)
+# Set to:       1 (require password for security)
+# UI Location:  System Settings > Lock Screen > Require password after screen
+#               saver begins or display is turned off
+# Source:       https://support.apple.com/guide/mac-help/require-a-password-after-waking-your-mac-mchlp2270/mac
+# Security:     Essential for protecting data on shared or portable Macs.
+#               Combine with a short password delay for maximum security.
+run_defaults "com.apple.screensaver" "askForPassword" "-int" "1"
+```
+
+### Documentation Progress
+
+The following scripts have been updated with enhanced inline documentation including source citations:
+
+| Script | Status | Last Updated |
+|--------|--------|--------------|
+| `input/trackpad_mouse.sh` | ✅ Complete | 2025-12-04 |
+| `input/keyboard.sh` | ✅ Complete | 2025-12-04 |
+| `system/screensaver.sh` | ✅ Complete | 2025-12-04 |
+| `system/firewall.sh` | ✅ Complete | 2025-12-04 |
+| `system/software_update.sh` | ✅ Complete | 2025-12-04 |
+| `interface/activity_monitor.sh` | ✅ Complete | 2025-12-04 |
+| `interface/finder.sh` | ✅ Complete | 2025-12-04 |
+| `interface/mission_control.sh` | ✅ Complete | 2025-12-04 |
+| `interface/ui_ux.sh` | ✅ Complete | 2025-12-04 |
+| `applications/safari.sh` | ✅ Complete | 2025-12-04 |
+| `applications/textedit.sh` | ✅ Complete | 2025-12-04 |
+| `interface/dock.sh` | ⚠️ Partial | Uses dockutil, different format |
+| `system/time_machine.sh` | 📋 Pending | Needs documentation update |
+| `system/core.sh` | 📋 Pending | Needs documentation update |
+| `system/auto_updates.sh` | 📋 Pending | Needs documentation update |
+| `applications/alfred.sh` | 📋 Pending | Needs documentation update |
+| `applications/docker.sh` | 📋 Pending | Needs documentation update |
+| `applications/iterm2.sh` | 📋 Pending | Needs documentation update |
+| `applications/mariadb.sh` | 📋 Pending | Needs documentation update |
+| `applications/nvm.sh` | 📋 Pending | Needs documentation update |
+| `applications/vscode.sh` | 📋 Pending | Needs documentation update |
+
+**Legend:**
+- ✅ Complete: Full enhanced documentation with source citations
+- ⚠️ Partial: Has documentation structure but missing source URLs
+- 📋 Pending: Needs documentation update
+
+### Finding Apple Documentation Sources
+
+When adding source citations, use these Apple Support resources:
+
+1. **Mac Help Guides**: `https://support.apple.com/guide/mac-help/`
+2. **Activity Monitor Guide**: `https://support.apple.com/guide/activity-monitor/`
+3. **Safari Guide**: `https://support.apple.com/guide/safari/`
+4. **General Support Articles**: `https://support.apple.com/en-us/HT...`
+
+Search tips:
+- Use `site:support.apple.com` in Google for targeted searches
+- Look for guides specific to the app domain (e.g., `/guide/activity-monitor/`)
+- Prefer permanent guide URLs over knowledge base articles when possible
 
 ## Usage
 

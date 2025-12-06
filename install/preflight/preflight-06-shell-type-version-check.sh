@@ -36,11 +36,14 @@ main() {
 
   msg_success "Current shell is $current_shell."
 
+  # Allow command injection for testing
+  local shell_version_cmd="${SHELL_VERSION_CMD:-$current_shell}"
+
   # Get the shell version. The command to get the version can vary between shells.
   # For zsh, `zsh --version` is a common way to get it.
   # We use awk to extract the version number from the output.
   local shell_version
-  shell_version=$($current_shell --version | awk '{print $2}')
+  shell_version=$($shell_version_cmd --version | awk '{print $2}')
 
   # We use `sort -V` to perform a version number comparison. This handles
   # complex version numbers correctly (e.g., 5.0.8 vs 5.1).

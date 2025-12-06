@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Mock for xcode-select command
+# Set MOCK_XCODE_SELECT_INSTALLED to "false" to simulate not installed
+# Default: installed
+if [[ "$1" == "-p" ]]; then
+  if [[ "${MOCK_XCODE_SELECT_INSTALLED:-true}" == "false" ]]; then
+    exit 1
+  else
+    echo "/Library/Developer/CommandLineTools"
+    exit 0
+  fi
+elif [[ "$1" == "--install" ]]; then
+  echo "xcode-select: note: install requested"
+  exit 0
+else
+  exit 1
+fi

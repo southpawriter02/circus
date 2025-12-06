@@ -18,9 +18,12 @@
 main() {
   msg_info "Checking for macOS..."
 
+  # Allow command injection for testing
+  local uname_cmd="${UNAME_CMD:-uname}"
+
   # The `uname` command returns the name of the operating system kernel.
   # On macOS, this command returns "Darwin".
-  if [[ "$(uname)" == "Darwin" ]]; then
+  if [[ "$($uname_cmd)" == "Darwin" ]]; then
     msg_success "Operating system is macOS."
     # Exit with a status of 0 to indicate success.
     return 0

@@ -2,14 +2,18 @@
 if [[ "$1" == "services" ]]; then
   echo "redis    started"
 elif [[ "$1" == "bundle" && "$2" == "dump" ]]; then
-  # Find the file path after --file
-  for i in "${!@}"; do
-    if [[ ${@:$i:1} == "--file" ]]; then
-      file_path=${@:$i+1:1}
+  # Find the file path from --file= or --file argument
+  file_path=""
+  for arg in "$@"; do
+    if [[ "$arg" == --file=* ]]; then
+      file_path="${arg#--file=}"
       break
     fi
   done
-  echo "# This is a dummy Brewfile" > "$file_path"
+  if [[ -n "$file_path" ]]; then
+    echo "# This is a dummy Brewfile" > "$file_path"
+  fi
+  exit 0
 else
   exit 1
 fi
