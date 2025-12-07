@@ -2,11 +2,40 @@
 
 # ==============================================================================
 #
-# FILE:         template
+# FILE:         fc-template
 #
 # DESCRIPTION:  This is a template for creating new plugins for the `fc`
 #               CLI. To create a new command, copy this file, rename it to
-#               your command's name (e.g., `my-command`), and fill in the logic.
+#               your command's name (e.g., `fc-mycommand`), and fill in the
+#               logic. Use this structure as the "gold standard" for all plugins.
+#
+# REQUIRES:
+#   - macOS 10.x or later (update as needed)
+#   - List any system requirements here
+#
+# DEPENDENCIES:
+#   - List any external tools here (e.g., Homebrew packages)
+#   - Note if admin privileges (sudo) are needed
+#
+# REFERENCES:
+#   - Link to relevant documentation
+#   - Link to man pages or Apple docs
+#   - https://example.com/docs
+#
+# ACTIONS:
+#   on      - Turn the feature on
+#   off     - Turn the feature off
+#   status  - Show current status
+#
+# EXAMPLES:
+#   fc mycommand on        # Enable the feature
+#   fc mycommand off       # Disable the feature
+#   fc mycommand status    # Check current state
+#
+# NOTES:
+#   - Important information for users
+#   - Caveats or limitations
+#   - Related commands or alternatives
 #
 # ==============================================================================
 
@@ -14,21 +43,38 @@
 # Source the centralized initialization script to set up the environment.
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
+# --- Configuration ----------------------------------------------------------
+# Define constants and configurable values here
+# readonly CONFIG_FILE="$HOME/.config/mycommand"
+# readonly DEFAULT_VALUE="something"
+
 # --- Help and Usage ---------------------------------------------------------
 
 # Display a help message for this specific subcommand.
 usage() {
-  msg_info "Usage: fc template <action>"
+  msg_info "Usage: fc mycommand <action>"
   echo ""
-  msg_info "A template for creating new commands."
+  msg_info "Description of what this command does."
   echo ""
   msg_info "Actions:"
   echo "  on      - Turn the feature on."
   echo "  off     - Turn the feature off."
   echo "  status  - Show the current status."
   echo ""
+  msg_info "Examples:"
+  echo "  fc mycommand on       # Enable the feature"
+  echo "  fc mycommand status   # Check current state"
+  echo ""
   exit 0
 }
+
+# --- Helper Functions -------------------------------------------------------
+
+# Helper function example
+# get_current_status() {
+#   # Implementation here
+#   echo "status"
+# }
 
 # --- Main Logic -------------------------------------------------------------
 
@@ -44,24 +90,40 @@ main() {
 
   # Use a case statement to handle the different actions.
   case "$ACTION" in
+
+    # --- Action: on ---------------------------------------------------------
+    # Turn the feature on
+    # Explain the implementation details here
     on)
       msg_info "Turning the feature on..."
       # TODO: Add the logic to turn the feature on.
+      # Example: defaults write com.example.app enabled -bool true
       msg_success "Feature is now on."
       ;;
+
+    # --- Action: off --------------------------------------------------------
+    # Turn the feature off
+    # Explain the implementation details here
     off)
       msg_info "Turning the feature off..."
       # TODO: Add the logic to turn the feature off.
+      # Example: defaults write com.example.app enabled -bool false
       msg_success "Feature is now off."
       ;;
+
+    # --- Action: status -----------------------------------------------------
+    # Check and display the current status
+    # Explain what status information is shown
     status)
       msg_info "Checking the status..."
       # TODO: Add the logic to check the status.
+      # Example: defaults read com.example.app enabled
       msg_success "Status is OK."
       ;;
+
     *)
       # Handle any unknown actions using the standardized `die` function.
-      die "Unknown action '$ACTION'. Run 'fc template --help' for available actions."
+      die "Unknown action '$ACTION'. Run 'fc mycommand --help' for available actions."
       ;;
   esac
 }
@@ -70,3 +132,4 @@ main() {
 # Execute the main function with all provided arguments.
 #
 main "$@"
+
