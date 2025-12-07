@@ -2,11 +2,51 @@
 
 # ==============================================================================
 #
-# FILE:         caffeine
+# FILE:         fc-caffeine
 #
 # DESCRIPTION:  A wrapper around the built-in `caffeinate` command to prevent
 #               the system from sleeping. This is useful for long-running
-#               tasks or presentations.
+#               tasks, presentations, downloads, or any situation where you
+#               need your Mac to stay awake.
+#
+# REQUIRES:
+#   - macOS 10.8 or later (caffeinate command introduced)
+#   - No administrator privileges required
+#
+# DEPENDENCIES:
+#   - caffeinate (built-in macOS utility)
+#   - No external dependencies
+#
+# REFERENCES:
+#   - Apple Documentation: caffeinate
+#     https://ss64.com/mac/caffeinate.html
+#   - man caffeinate
+#   - pmset (related power management tool)
+#
+# ACTIONS:
+#   on          - Prevent sleep indefinitely (runs in background)
+#   off         - Allow system to sleep normally again
+#   for [min]   - Prevent sleep for a specific number of minutes
+#   status      - Check if caffeine is currently active
+#
+# EXAMPLES:
+#   fc caffeine on          # Prevent sleep until 'off' is called
+#   fc caffeine off         # Allow sleep again
+#   fc caffeine for 60      # Prevent sleep for 1 hour
+#   fc caffeine status      # Check if caffeine is active
+#
+# NOTES:
+#   - The 'on' action runs caffeinate in the background and stores the PID
+#   - The 'off' action kills the background process
+#   - The 'for' action runs in the foreground by default
+#   - State is tracked via a PID file in ~/.circus/caffeinate.pid
+#   - If your terminal crashes, run 'fc caffeine off' to clean up
+#
+# CAFFEINATE FLAGS USED:
+#   -d    Prevent display from sleeping
+#   -i    Prevent system from idle sleeping
+#   -s    Prevent system from sleeping when on AC power (optional)
+#   -t    Timeout in seconds (for timed operation)
 #
 # ==============================================================================
 
@@ -32,6 +72,12 @@ usage() {
   echo "  for [min] - Prevent sleep for a specific number of minutes."
   echo "  status    - Check if caffeine is currently active."
   echo ""
+  msg_info "Examples:"
+  echo "  fc caffeine on         # Keep awake until 'off' is called"
+  echo "  fc caffeine off        # Allow sleep again"
+  echo "  fc caffeine for 30     # Keep awake for 30 minutes"
+  echo "  fc caffeine status     # Check if active"
+  echo ""
   exit 0
 }
 
@@ -44,6 +90,15 @@ main() {
   ACTION="$1"
 
   case "$ACTION" in
+
+    # --- Action: on ---------------------------------------------------------
+    # Prevent sleep indefinitely by running caffeinate in the background
+    # Uses: caffeinate -dis &
+    # Flags:
+    #   -d: Prevent display sleep (keep screen on)
+    #   -i: Prevent system idle sleep
+    #   -s: Prevent sleep when on AC power
+    # The PID is saved to a file so we can kill it later with 'off'
     on)
       if [ -f "$PID_FILE" ]; then
         msg_warning "Caffeine is already active. Run 'fc caffeine off' to disable it."
@@ -52,12 +107,17 @@ main() {
       msg_info "Preventing sleep indefinitely. Run 'fc caffeine off' to restore normal behavior."
       # Ensure the state directory exists.
       mkdir -p "$STATE_DIR"
+      # Start caffeinate in the background
       # -d: Prevent display sleep, -i: Prevent system idle sleep, -s: Prevent disk idle sleep
       caffeinate -dis & 
       # Save the PID of the background process to our file.
       echo $! > "$PID_FILE"
       msg_success "Caffeine is now ON."
       ;;
+
+    # --- Action: off --------------------------------------------------------
+    # Allow system to sleep by killing the background caffeinate process
+    # Reads the PID from the saved file and sends SIGTERM
     off)
       if [ ! -f "$PID_FILE" ]; then
         msg_warning "Caffeine is not currently active."
@@ -65,10 +125,15 @@ main() {
       fi
       msg_info "Allowing the system to sleep normally again..."
       # Read the PID from the file and kill the process.
-      kill "$(cat "$PID_FILE")"
+      kill "$(cat "$PID_FILE")" 2>/dev/null || true
       rm "$PID_FILE"
       msg_success "Caffeine is now OFF."
       ;;
+
+    # --- Action: for --------------------------------------------------------
+    # Prevent sleep for a specific duration in minutes
+    # Uses: caffeinate -dit <seconds>
+    # The -t flag specifies a timeout after which caffeinate exits automatically
     for)
       if [ -z "$2" ]; then
         die "Please provide a duration in minutes."
@@ -76,17 +141,31 @@ main() {
       local minutes="$2"
       local seconds=$((minutes * 60))
       msg_info "Preventing sleep for $minutes minutes..."
-      # -t: Specifies the timeout in seconds.
+      # -d: display, -i: idle, -t: timeout in seconds
       caffeinate -dit "$seconds"
-      msg_success "Caffeine will remain active for $minutes minutes."
+      msg_success "Caffeine session completed after $minutes minutes."
       ;;
+
+    # --- Action: status -----------------------------------------------------
+    # Check if caffeine is currently active by looking for the PID file
+    # Also verifies that the stored PID is still running
     status)
       if [ -f "$PID_FILE" ]; then
-        msg_success "Caffeine is ON (preventing sleep indefinitely). PID: $(cat "$PID_FILE")"
+        local pid
+        pid=$(cat "$PID_FILE")
+        # Verify the process is actually still running
+        if kill -0 "$pid" 2>/dev/null; then
+          msg_success "Caffeine is ON (preventing sleep indefinitely). PID: $pid"
+        else
+          # PID file exists but process is gone - clean up
+          rm "$PID_FILE"
+          msg_warning "Caffeine is OFF. (Stale PID file cleaned up)"
+        fi
       else
         msg_warning "Caffeine is OFF."
       fi
       ;;
+
     *)
       die "Unknown action '$ACTION'. Run 'fc caffeine --help' for available actions."
       ;;

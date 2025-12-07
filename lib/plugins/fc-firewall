@@ -2,15 +2,62 @@
 
 # ==============================================================================
 #
-# FILE:         firewall
+# FILE:         fc-firewall
 #
-# DESCRIPTION:  This command manages the macOS application firewall.
+# DESCRIPTION:  Manage the macOS application firewall from the command line.
+#               Provides simple on/off control and status checking for the
+#               built-in firewall. Useful for security management and
+#               troubleshooting network connectivity issues.
+#
+# REQUIRES:
+#   - macOS 10.5.1 or later (Application Firewall introduced)
+#   - Administrator privileges (sudo) for all operations
+#
+# DEPENDENCIES:
+#   - socketfilterfw (built-in macOS firewall utility)
+#   - sudo (for modifying firewall settings)
+#
+# REFERENCES:
+#   - Apple Support: Firewall for Mac
+#     https://support.apple.com/guide/mac-help/block-connections-to-mac-antivirus-mh34843/mac
+#   - socketfilterfw man page (run: man socketfilterfw)
+#   - macOS Security Guide
+#     https://support.apple.com/guide/security/firewall-sec56440d274/web
+#
+# ACTIONS:
+#   on      - Turn the application firewall on
+#   off     - Turn the application firewall off
+#   status  - Show current firewall state
+#
+# EXAMPLES:
+#   fc firewall on        # Enable firewall
+#   fc firewall off       # Disable firewall
+#   fc firewall status    # Check if firewall is enabled
+#
+# NOTES:
+#   - The macOS firewall is an APPLICATION-level firewall, not a packet filter
+#   - It controls incoming connections to applications
+#   - It does NOT filter outgoing connections
+#   - All operations require sudo/administrator privileges
+#   - The firewall can also be configured in System Settings > Network > Firewall
+#
+# ADDITIONAL OPTIONS (socketfilterfw):
+#   --setblockall on/off       - Block all incoming connections
+#   --setstealthmode on/off    - Enable stealth mode (don't respond to pings)
+#   --setallowsigned on/off    - Auto-allow signed apps
+#   --add /path/to/app         - Add app to allowed list
+#   --remove /path/to/app      - Remove app from allowed list
+#   --listapps                 - List apps in the firewall settings
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
 # Source the centralized initialization script to set up the environment.
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ----------------------------------------------------------
+# Path to the macOS application firewall utility
+readonly FIREWALL_CMD="/usr/libexec/ApplicationFirewall/socketfilterfw"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
@@ -24,6 +71,12 @@ usage() {
   echo "  off     - Turn the firewall off."
   echo "  status  - Show the current firewall status."
   echo ""
+  msg_info "Examples:"
+  echo "  fc firewall on       # Enable firewall"
+  echo "  fc firewall status   # Check current state"
+  echo ""
+  msg_info "Note: All actions require sudo privileges."
+  echo ""
   exit 0
 }
 
@@ -36,20 +89,36 @@ main() {
   ACTION="$1"
 
   case "$ACTION" in
+
+    # --- Action: on ---------------------------------------------------------
+    # Enable the macOS application firewall
+    # Uses: socketfilterfw --setglobalstate on
+    # Note: Requires sudo. Only affects incoming connections.
     on)
       msg_info "Turning the firewall on..."
-      sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+      sudo "$FIREWALL_CMD" --setglobalstate on
       msg_success "Firewall is now on."
       ;;
+
+    # --- Action: off --------------------------------------------------------
+    # Disable the macOS application firewall
+    # Uses: socketfilterfw --setglobalstate off
+    # Warning: This allows all incoming connections to applications
     off)
       msg_info "Turning the firewall off..."
-      sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
+      sudo "$FIREWALL_CMD" --setglobalstate off
       msg_success "Firewall is now off."
       ;;
+
+    # --- Action: status -----------------------------------------------------
+    # Check the current state of the application firewall
+    # Uses: socketfilterfw --getglobalstate
+    # Output: "Firewall is enabled. (State = 1)" or "Firewall is disabled. (State = 0)"
     status)
       msg_info "Checking firewall status..."
-      sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+      sudo "$FIREWALL_CMD" --getglobalstate
       ;;
+
     *)
       die "Unknown action '$ACTION'. Run 'fc firewall --help' for available actions."
       ;;

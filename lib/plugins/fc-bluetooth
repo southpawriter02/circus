@@ -2,9 +2,45 @@
 
 # ==============================================================================
 #
-# FILE:         bluetooth
+# FILE:         fc-bluetooth
 #
-# DESCRIPTION:  This command manages the system's Bluetooth adapter.
+# DESCRIPTION:  Manage the system's Bluetooth adapter from the command line.
+#               Provides simple on/off control and status checking using the
+#               blueutil utility. Useful for scripts, automation, and quick
+#               Bluetooth troubleshooting.
+#
+# REQUIRES:
+#   - macOS 10.10 or later
+#   - blueutil installed (brew install blueutil)
+#   - Bluetooth hardware (built-in or compatible adapter)
+#
+# DEPENDENCIES:
+#   - blueutil (Homebrew package)
+#   - No administrator privileges required
+#
+# REFERENCES:
+#   - blueutil GitHub repository
+#     https://github.com/toy/blueutil
+#   - Homebrew formula
+#     https://formulae.brew.sh/formula/blueutil
+#   - Apple Bluetooth documentation
+#     https://developer.apple.com/documentation/iobluetooth
+#
+# ACTIONS:
+#   on      - Turn Bluetooth adapter on
+#   off     - Turn Bluetooth adapter off (disconnects all devices)
+#   status  - Show current Bluetooth power state
+#
+# EXAMPLES:
+#   fc bluetooth on        # Enable Bluetooth
+#   fc bluetooth off       # Disable Bluetooth
+#   fc bluetooth status    # Check if Bluetooth is on or off
+#
+# NOTES:
+#   - Turning Bluetooth off disconnects all paired devices
+#   - Some Macs require Bluetooth for features like Handoff and AirDrop
+#   - The blueutil tool can also manage device pairing (see blueutil --help)
+#   - For testing, you can override the command: BLUEUTIL_CMD=/path/to/blueutil
 #
 # ==============================================================================
 
@@ -23,35 +59,62 @@ usage() {
   echo "  off     - Turn Bluetooth off."
   echo "  status  - Show the current Bluetooth status."
   echo ""
+  msg_info "Examples:"
+  echo "  fc bluetooth on       # Enable Bluetooth"
+  echo "  fc bluetooth status   # Check current state"
+  echo ""
+  msg_info "Dependencies:"
+  echo "  Requires 'blueutil' (install with: brew install blueutil)"
+  echo ""
   exit 0
 }
 
 # --- Main Logic -------------------------------------------------------------
 main() {
+  # Allow overriding the blueutil command for testing purposes
+  # Example: BLUEUTIL_CMD=/custom/path/blueutil fc bluetooth on
   local blueutil_cmd=${BLUEUTIL_CMD:-blueutil}
 
   if [ -z "$1" ] || [ "$1" == "--help" ]; then
     usage
   fi
 
-  # Dependency Check: Ensure blueutil is installed before proceeding.
+  # --- Dependency Check -----------------------------------------------------
+  # blueutil is a third-party tool that provides command-line control over
+  # Bluetooth. It's the most reliable way to toggle Bluetooth on macOS.
+  # Without blueutil, we cannot proceed.
   if ! command -v "$blueutil_cmd" >/dev/null 2>&1; then
-    die "The 'blueutil' command is required but not found. Please run the main installer."
+    die "The 'blueutil' command is required but not found. Install it with: brew install blueutil"
   fi
 
   ACTION="$1"
 
   case "$ACTION" in
+
+    # --- Action: on ---------------------------------------------------------
+    # Turn on the Bluetooth adapter
+    # Uses: blueutil --power 1
+    # Note: This only powers on the adapter; it doesn't reconnect devices
     on)
       msg_info "Turning Bluetooth on..."
       "$blueutil_cmd" --power 1
       msg_success "Bluetooth is now on."
       ;;
+
+    # --- Action: off --------------------------------------------------------
+    # Turn off the Bluetooth adapter
+    # Uses: blueutil --power 0
+    # Warning: This disconnects all connected Bluetooth devices
     off)
       msg_info "Turning Bluetooth off..."
       "$blueutil_cmd" --power 0
       msg_success "Bluetooth is now off."
       ;;
+
+    # --- Action: status -----------------------------------------------------
+    # Check the current power state of the Bluetooth adapter
+    # Uses: blueutil --power
+    # Returns: 1 (on) or 0 (off)
     status)
       msg_info "Checking Bluetooth status..."
       local power_state
@@ -62,6 +125,7 @@ main() {
         msg_warning "Bluetooth is currently off."
       fi
       ;;
+
     *)
       die "Unknown action '$ACTION'. Run 'fc bluetooth --help' for available actions."
       ;;
