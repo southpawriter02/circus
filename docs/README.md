@@ -2,6 +2,8 @@
 
 Welcome to the Dotfiles Flying Circus documentation. This guide helps you navigate the project documentation.
 
+> **Note:** Core documentation (README, COMMANDS, ARCHITECTURE, TESTING) lives at the repository root. This `docs/` folder contains supplementary guides, feature proposals, and specs.
+
 ## Quick Start
 
 | Document | Description |
@@ -29,7 +31,8 @@ Welcome to the Dotfiles Flying Circus documentation. This guide helps you naviga
 | [Creating Plugins](CREATING_PLUGINS.md) | How to create `fc` command plugins |
 | [macOS Commands Reference](MACOS_COMMANDS.md) | Terminal commands used in this project |
 | [Customization Guide](CUSTOMIZATION.md) | Adapting the project for your needs |
-| [Testing](../TESTING.md) | Running and writing tests |
+| [Testing Quick Start](../TESTING.md) | Running and setting up tests |
+| [Writing Tests](WRITING_TESTS.md) | Tutorial: How to write Bats tests |
 
 ---
 
