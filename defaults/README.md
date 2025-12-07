@@ -57,6 +57,7 @@ defaults/
     ├── mariadb.sh               # MariaDB database
     ├── nvm.sh                   # Node Version Manager
     ├── safari.sh                # Safari browser
+    ├── terminal.sh              # macOS Terminal.app
     ├── textedit.sh              # TextEdit editor
     └── vscode.sh                # Visual Studio Code
 ```
@@ -109,6 +110,7 @@ Settings for third-party and system applications.
 | `mariadb.sh` | MariaDB service startup and security instructions |
 | `nvm.sh` | Node Version Manager setup and LTS installation |
 | `safari.sh` | Safari developer tools, privacy, and security |
+| `terminal.sh` | macOS Terminal.app security and behavior settings |
 | `textedit.sh` | TextEdit plain text mode and font settings |
 | `vscode.sh` | VS Code extensions and settings symlink |
 
@@ -218,6 +220,7 @@ The following scripts have been updated with enhanced inline documentation inclu
 | `interface/mission_control.sh` | ✅ Complete | 2025-12-04 |
 | `interface/ui_ux.sh` | ✅ Complete | 2025-12-04 |
 | `applications/safari.sh` | ✅ Complete | 2025-12-04 |
+| `applications/terminal.sh` | ✅ Complete | 2025-12-06 |
 | `applications/textedit.sh` | ✅ Complete | 2025-12-04 |
 | `interface/dock.sh` | ⚠️ Partial | Uses dockutil, different format |
 | `system/time_machine.sh` | 📋 Pending | Needs documentation update |
