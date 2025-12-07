@@ -1,67 +1,307 @@
-# Dotfiles Flying Circus
+<div align="center">
 
-This repository contains my personal dotfiles and a comprehensive, automated installer for setting up a new macOS device. It is built upon the **Oh My Zsh** framework to provide a powerful, extensible, and community-maintained shell experience.
+# 🎪 Dotfiles Flying Circus
 
-## Features
+### *Your Mac, Automated.*
 
-*   **Framework-Based Shell:** Built on Oh My Zsh and features a custom `circus` plugin that cleanly encapsulates all custom aliases, functions, and environment variables.
-*   **Extensible CLI Platform:** Includes a custom `fc` command built on a clean plugin architecture. Adding new commands is as simple as creating a new executable file.
-*   **Role-Based Installation:** Use roles (`developer`, `personal`, `work`) to install different sets of applications and configurations for different machines.
-*   **Automated Quality Assurance:** Uses a `pre-commit` hook to automatically run `shellcheck`, format code, and run the `bats` test suite before every commit.
-*   **Deep System Configuration:** Automates the configuration of the Finder, Dock, keyboard, and other system-level preferences.
-*   **Automated Security Hardening:** Automatically configures the macOS firewall, screen saver security, and other security settings for a safer default environment.
-*   **Privacy & Security Profiles:** Choose from `standard`, `privacy`, or `lockdown` profiles to configure varying levels of privacy and security based on your needs.
-*   **Secure Secrets Management:** Integrates with 1Password to securely fetch and deploy API tokens into the macOS Keychain.
-*   **Encrypted Backup & Restore System:** A powerful `fc sync` command to create an end-to-end encrypted backup of your applications and data.
-*   **Comprehensive Testing:** A full test suite using `bats-core` to ensure the reliability and security of the entire codebase.
+**Transform a fresh Mac into a fully configured powerhouse with one command.**
 
-## Getting Started
+[![macOS](https://img.shields.io/badge/macOS-Sonoma%20%7C%20Ventura-blue?logo=apple&logoColor=white)](https://www.apple.com/macos)
+[![Shell](https://img.shields.io/badge/Shell-Zsh%20%2B%20Oh%20My%20Zsh-4EAA25?logo=gnu-bash&logoColor=white)](https://ohmyz.sh/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Setting up a new machine is a simple, guided process.
+---
 
-1.  **Clone the Repository:**
-    ```sh
-    git clone https://github.com/southpawriter02/circus.git
-    cd circus
-    ```
+[**Features**](#-features) •
+[**Quick Start**](#-quick-start) •
+[**Commands**](#-the-fc-command) •
+[**Documentation**](#-documentation) •
+[**Contributing**](#-contributing)
 
-2.  **Run the Installer:**
-    The installer is interactive and will prompt for confirmation before taking any action. To install a specific role, use the `--role` flag.
-    ```sh
-    # Run the default installation
-    ./install.sh
+</div>
 
-    # Or, install the developer role
-    ./install.sh --role developer
+---
 
-    # Install with enhanced privacy settings
-    ./install.sh --privacy-profile privacy
+## 🚀 What Is This?
 
-    # Combine role and privacy profile
-    ./install.sh --role developer --privacy-profile lockdown
-    ```
+The **Dotfiles Flying Circus** is a comprehensive macOS automation framework that:
 
-## Contributing
+- 🔧 **Configures everything** — Dock, Finder, keyboard, security, and 50+ system preferences
+- 🔐 **Hardens your Mac** — Firewall, FileVault, privacy permissions, and security audits
+- 📦 **Installs your tools** — Homebrew packages, casks, and App Store apps
+- 🎯 **Role-based setup** — Different configs for `developer`, `personal`, or `work` machines
+- 💾 **Encrypted backups** — Sync your entire setup with GPG encryption
 
-Contributions are welcome! This project uses a `pre-commit` framework to enforce code quality and run tests. Please see the **[Contributing Guide](CONTRIBUTING.md)** for instructions on how to set up the development environment.
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│   $ ./install.sh --role developer --privacy-profile lockdown            │
+│                                                                         │
+│   ✓ Homebrew installed                                                  │
+│   ✓ 47 packages installed                                               │
+│   ✓ System preferences configured                                       │
+│   ✓ Security hardening complete                                         │
+│   ✓ Shell environment ready                                             │
+│                                                                         │
+│   🎉 Your Mac is ready!                                                 │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
 
-## Documentation
+---
 
-This project is extensively documented. Please see the following guides for more information:
+## ✨ Features
 
--   **[Architecture Guide](docs/ARCHITECTURE.md):** A deep dive into the design philosophy and technical architecture of the installer, shell, and CLI.
--   **[Roles Guide](ROLES.md):** An explanation of the role-based installation system and how to create new roles.
--   **[Privacy Profiles Guide](defaults/profiles/README.md):** Documentation on privacy and security profiles (standard, privacy, lockdown).
--   **[Commands Guide](COMMANDS.md):** A detailed user manual for the custom `fc` command-line interface.
--   **[Creating Plugins Guide](docs/CREATING_PLUGINS.md):** A guide for developers who want to create their own plugins for the `fc` command.
+<table>
+<tr>
+<td width="50%">
 
-## Inspiration and Resources
+### 🛠️ System Configuration
+- Dock: position, size, auto-hide, app behavior
+- Finder: show hidden files, path bar, extensions
+- Keyboard: key repeat, modifier keys, shortcuts
+- Trackpad: gestures, click behavior, scrolling
+- Screenshots: location, format, shadows
 
-This repository stands on the shoulders of giants. It draws inspiration from many excellent dotfiles projects and uses powerful built-in macOS tools.
+</td>
+<td width="50%">
 
-### Inspired by
+### 🔐 Security & Privacy
+- Firewall configuration with stealth mode
+- FileVault encryption management
+- Privacy permission auditing
+- Gatekeeper settings
+- Screen lock & password policies
 
--   [Oh My Zsh](https://ohmyz.sh/): The framework that now powers our shell environment.
--   [pre-commit](https://pre-commit.com/): The framework used to manage our automated Git hooks.
--   [Mathias Bynens' dotfiles](https://github.com/mathiasbynens/dotfiles): One of the most popular and comprehensive dotfiles repositories, serving as a canonical source for macOS `defaults` commands.
--   [Zach Holman's dotfiles](https://github.com/holman/dotfiles): A project that popularized a topic-based, modular approach to dotfiles management.
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 📦 Package Management
+- Homebrew formulae & casks
+- Mac App Store apps (via `mas`)
+- Role-specific Brewfiles
+- Automatic dependency updates
+
+</td>
+<td width="50%">
+
+### 🐚 Shell Environment
+- Oh My Zsh framework
+- Custom `circus` plugin
+- Role-based aliases & functions
+- GPG & SSH key management
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 💾 Backup & Sync
+- GPG-encrypted machine backups
+- One-command restoration
+- Brewfile export/import
+- Dotfile timestamped snapshots
+
+</td>
+<td width="50%">
+
+### 🎯 Role-Based Setup
+- **Developer**: Full dev tools, languages, IDEs
+- **Personal**: Productivity apps, media tools
+- **Work**: Corporate tools, VPN configs
+- Custom roles supported
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🏃 Quick Start
+
+### One-Line Install
+
+```bash
+git clone https://github.com/southpawriter02/circus.git && cd circus && ./install.sh
+```
+
+### With Options
+
+```bash
+# Developer setup with enhanced privacy
+./install.sh --role developer --privacy-profile privacy
+
+# Personal machine with maximum security
+./install.sh --role personal --privacy-profile lockdown
+
+# Work machine with standard settings
+./install.sh --role work
+```
+
+---
+
+## 🎮 The `fc` Command
+
+The heart of the project is the `fc` (Flying Circus) command-line utility — **22 commands** to control every aspect of your Mac:
+
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│  fc <command> [action]                                                   │
+├──────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  NETWORK          SECURITY          SYSTEM           PRODUCTIVITY       │
+│  ───────          ────────          ──────           ────────────        │
+│  wifi             audit             disk             caffeine            │
+│  bluetooth        firewall          info             clipboard           │
+│  dns              lock              doctor           backup              │
+│  airdrop          encrypt           update           sync                │
+│                   keychain                                               │
+│                   privacy                                                │
+│                                                                          │
+│  DEVELOPMENT                                                             │
+│  ───────────                                                             │
+│  gpg-setup        ssh-keygen        redis                                │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+### Command Highlights
+
+```bash
+# 🔒 Run a security audit
+fc audit run
+# Output: Checks SIP, FileVault, Gatekeeper, Firewall... gives you a score!
+
+# 📊 Analyze disk usage
+fc disk usage ~/Downloads
+fc disk cleanup  # Interactive cleanup wizard
+
+# 🔑 Generate SSH key (auto-adds to keychain, copies to clipboard)
+fc ssh-keygen
+
+# ☕ Keep Mac awake
+fc caffeine on           # Indefinitely
+fc caffeine for 60       # For 60 minutes
+
+# 🌐 Switch DNS servers
+fc dns set 1.1.1.1 1.0.0.1  # Cloudflare
+fc dns set 8.8.8.8 8.8.4.4  # Google
+
+# 💾 Encrypted backup for machine migration
+fc sync backup   # Creates ~/circus_backup.tar.gz.gpg
+fc sync restore  # Restores everything on new machine
+```
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TB
+    subgraph "Installation"
+        A[install.sh] --> B[Role Selection]
+        B --> C[Homebrew Setup]
+        C --> D[System Defaults]
+        D --> E[Security Hardening]
+        E --> F[Shell Configuration]
+    end
+    
+    subgraph "Daily Usage"
+        G[fc command] --> H[22 Plugins]
+        H --> I[System Control]
+        H --> J[Security Management]
+        H --> K[Backup & Sync]
+    end
+    
+    subgraph "Shell"
+        L[Oh My Zsh] --> M[circus plugin]
+        M --> N[Role-based config]
+    end
+```
+
+---
+
+## 📚 Documentation
+
+| Guide | Description |
+|-------|-------------|
+| [📖 Commands Reference](COMMANDS.md) | Complete `fc` command documentation |
+| [🏛️ Architecture](ARCHITECTURE.md) | System design and philosophy |
+| [👥 Roles Guide](ROLES.md) | Role-based installation explained |
+| [🔐 Privacy Profiles](defaults/profiles/README.md) | Security profile options |
+| [🔌 Creating Plugins](docs/CREATING_PLUGINS.md) | Extend `fc` with your own commands |
+| [🍎 macOS Commands](docs/MACOS_COMMANDS.md) | Terminal commands reference |
+| [🎨 Customization](docs/CUSTOMIZATION.md) | Make it your own |
+| [📋 All Documentation](docs/README.md) | Full documentation index |
+
+---
+
+## 🔒 Privacy Profiles
+
+Choose your security level:
+
+| Profile | Firewall | FileVault | Analytics | Siri | Location |
+|---------|----------|-----------|-----------|------|----------|
+| **Standard** | ✅ On | ✅ Enabled | ⚡ Limited | ✅ On | ⚡ Apps |
+| **Privacy** | ✅ Stealth | ✅ Enabled | ❌ Off | ❌ Off | ⚡ System Only |
+| **Lockdown** | ✅ Block All | ✅ Required | ❌ Off | ❌ Off | ❌ Off |
+
+---
+
+## 🔄 Machine Migration
+
+Moving to a new Mac? It's a two-step process:
+
+```bash
+# On your OLD Mac
+fc sync backup
+# Copy ~/circus_backup.tar.gz.gpg to new machine
+
+# On your NEW Mac
+./install.sh --role developer
+fc sync restore
+# 🎉 You're back in business!
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! This project uses automated quality checks:
+
+```bash
+# Set up development environment
+bin/setup-dev
+
+# Pre-commit hooks run automatically:
+# ✓ shellcheck - Lint shell scripts
+# ✓ shfmt - Format shell scripts  
+# ✓ bats - Run test suite
+```
+
+See the [Contributing Guide](CONTRIBUTING.md) for details.
+
+---
+
+## 🙏 Inspiration
+
+Standing on the shoulders of giants:
+
+- [Oh My Zsh](https://ohmyz.sh/) — Shell framework
+- [Mathias Bynens' dotfiles](https://github.com/mathiasbynens/dotfiles) — macOS defaults
+- [Zach Holman's dotfiles](https://github.com/holman/dotfiles) — Modular approach
+- [pre-commit](https://pre-commit.com/) — Git hooks framework
+
+---
+
+<div align="center">
+
+**🎪 The Dotfiles Flying Circus**
+
+*Because setting up a Mac should be fun, not work.*
+
+Made with ☕ and 🎲 by [@southpawriter02](https://github.com/southpawriter02)
+
+</div>
