@@ -22,18 +22,43 @@ readonly PLUGIN_DIR="$DOTFILES_ROOT/lib/plugins"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
-  msg_info "Usage: fc [global options] <command> [command options]"
+  ui_print_banner_mini
   echo ""
-  msg_info "Global Options:"
-  echo "  --log-file <path>  Redirect all log output to the specified file."
-  echo "  --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR)."
+
+  echo "Usage: fc [global options] <command> [command options]"
   echo ""
-  msg_info "A modular, plugin-based command-line utility for system management."
+
+  ui_header "Global Options"
+  ui_list_item "--log-file <path>" 2 "Redirect all log output to the specified file."
+  ui_list_item "--log-level <lvl>" 2 "Set the console log level (DEBUG, INFO, WARN, ERROR)."
+
+  ui_header "Available Commands"
+
+  # Group commands for better readability (simple logic: all are in 'System' for now unless we parse them)
+  # For now, we'll list them in a clean 2-column format
+
+  local commands=()
+  while IFS= read -r cmd; do
+    commands+=("$cmd")
+  done < <(find "$PLUGIN_DIR" -maxdepth 1 -type f -executable -exec basename {} \; | sort)
+
+  # Calculate mid point
+  local total=${#commands[@]}
+  local half=$(( (total + 1) / 2 ))
+
+  for ((i=0; i<half; i++)); do
+    local left="${commands[$i]}"
+    local right=""
+    if [[ $((i + half)) -lt $total ]]; then
+      right="${commands[$((i + half))]}"
+    fi
+
+    # Print formatted columns
+    printf "  %-30s %-30s\n" "$left" "$right"
+  done
+
   echo ""
-  msg_info "Available commands:"
-  find "$PLUGIN_DIR" -maxdepth 1 -type f -executable -exec basename {} \; | sort
-  echo ""
-  msg_info "Run 'fc <command> --help' for more information on a specific command."
+  ui_notice "info" "Run 'fc <command> --help' for details on a specific command."
   exit 0
 }
 

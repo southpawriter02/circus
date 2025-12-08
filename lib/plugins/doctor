@@ -11,22 +11,25 @@
 
 # --- Initialization ---------------------------------------------------------
 # Source the centralized initialization script to set up the environment.
-source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../../lib/init.sh"
 
 # --- Usage Information ---
 usage() {
-  msg_info "Usage: fc doctor"
+  ui_header "System Doctor"
+  echo "Runs a series of diagnostic checks on your system."
   echo ""
-  msg_info "Runs a series of diagnostic checks on your system."
+  echo "Usage: fc doctor"
   exit 0
 }
 
 # --- Check Functions ---
 
 check_brew() {
-  msg_info "Checking Homebrew status..."
+  ui_spinner_start "Checking Homebrew status..."
+
   if ! command -v brew >/dev/null 2>&1; then
-    die "Homebrew is not installed. Please run the main installer."
+    ui_spinner_stop "error" "Homebrew is not installed."
+    return 1
   fi
 
   # We temporarily disable `set -e` because `brew doctor` can return a non-zero
@@ -38,31 +41,33 @@ check_brew() {
   set -e
 
   if [ $brew_status -eq 0 ]; then
-    msg_success "Homebrew is healthy."
+    ui_spinner_stop "success" "Homebrew is healthy."
   else
-    msg_warning "Homebrew has some issues. Please review the output below:"
-    echo "$brew_output"
+    ui_spinner_stop "warning" "Homebrew has issues."
+    ui_notice "warning" "Brew Doctor Output:\n$brew_output"
   fi
 }
 
 check_critical_tools() {
-  msg_info "Checking for critical tools..."
+  ui_header "Checking Critical Tools"
   local missing_tools=0
   local tools_to_check=("git" "zsh" "op" "shellcheck" "gpg")
 
   for tool in "${tools_to_check[@]}"; do
     if command -v "$tool" >/dev/null 2>&1; then
-      msg_success "  [✓] Found '$tool'"
+      ui_list_item "$tool" 2 "${UI_SUCCESS}${UI_ICON_SUCCESS}${UI_RESET}"
     else
-      msg_error "  [✗] '$tool' is missing."
+      ui_list_item "$tool (Missing)" 2 "${UI_ERROR}${UI_ICON_ERROR}${UI_RESET}"
       ((missing_tools++))
     fi
   done
 
   if [ $missing_tools -gt 0 ]; then
-    msg_warning "$missing_tools critical tool(s) are missing. Consider running the installer."
+    echo ""
+    ui_notice "warning" "$missing_tools critical tool(s) are missing. Consider running the installer."
   else
-    msg_success "All critical tools are installed."
+    echo ""
+    ui_list_item "All critical tools installed" 0 "${UI_SUCCESS}${UI_ICON_STAR}${UI_RESET}"
   fi
 }
 
@@ -72,16 +77,13 @@ main() {
     usage
   fi
 
-  msg_info "Starting system health check..."
-  echo ""
+  ui_header "System Health Check"
 
   check_brew
-  echo ""
 
   check_critical_tools
-  echo ""
 
-  msg_success "System health check complete."
+  echo ""
 }
 
 main "$@"

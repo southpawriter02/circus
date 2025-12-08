@@ -25,17 +25,20 @@ export FORCE_MODE=false
 # ==============================================================================
 
 usage() {
-  msg_info "Usage: ./install.sh [options]"
+  ui_print_banner_mini
   echo ""
-  msg_info "Options:"
-  echo "  --role <name>      Specify the role to install (e.g., developer)."
-  echo "  --dry-run          Run the installer without making any changes."
-  echo "  --force            Force re-running of already completed stages."
-  echo "  --non-interactive  Run the installer without prompting for confirmation."
-  echo "  --log-file <path>  Redirect all log output to the specified file."
-  echo "  --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR)."
-  echo "  --silent           Alias for --log-level CRITICAL. Overrides --log-level."
-  echo "  --help             Display this help message."
+  echo "Usage: ./install.sh [options]"
+  echo ""
+
+  ui_header "Options"
+  ui_list_item "--role <name>" 2 "Specify the role to install (e.g., developer)."
+  ui_list_item "--dry-run" 2 "Run the installer without making any changes."
+  ui_list_item "--force" 2 "Force re-running of already completed stages."
+  ui_list_item "--non-interactive" 2 "Run the installer without prompting for confirmation."
+  ui_list_item "--log-file <path>" 2 "Redirect all log output to the specified file."
+  ui_list_item "--log-level <lvl>" 2 "Set the console log level (DEBUG, INFO, WARN, ERROR)."
+  ui_list_item "--silent" 2 "Alias for --log-level CRITICAL. Overrides --log-level."
+  ui_list_item "--help" 2 "Display this help message."
   exit 0
 }
 
@@ -70,13 +73,20 @@ main() {
   done
 
   # --- Installation Stages ----------------------------------------------------
+  ui_print_banner
+
   msg_info "Starting Dotfiles Flying Circus setup..."
   if [ -n "$LOG_FILE_PATH" ]; then
     mkdir -p "$(dirname "$LOG_FILE_PATH")"
     touch "$LOG_FILE_PATH"
     msg_info "Logging to file: $LOG_FILE_PATH"
   fi
-  prompt_for_confirmation "Ready to begin the installation."
+
+  if [ "$INTERACTIVE_MODE" = true ]; then
+    if ! ui_confirm "Ready to begin the installation?" "Y"; then
+      die "Installation aborted by user."
+    fi
+  fi
 
   local INSTALL_STAGES=(
     "01-introduction-and-user-interaction.sh"
@@ -93,16 +103,47 @@ main() {
     "15-finalization-and-reporting.sh"
   )
 
+  # --- Initialize Progress Tracker --------------------------------------------
+  local stage_names=()
+  for stage in "${INSTALL_STAGES[@]}"; do
+    # Cleanup stage name for display: remove number and .sh, replace - with space
+    local name="${stage#[0-9][0-9]-}"
+    name="${name%.sh}"
+    name="${name//-/ }"
+    # Capitalize first letter of each word
+    name="$(echo "$name" | sed -e "s/\b\(.\)/\u\1/g")"
+    stage_names+=("$name")
+  done
+
+  ui_stages_init "${stage_names[@]}"
+  ui_stages_print
+
   # --- Execute Installation Stages --------------------------------------------
+  local i=0
   for stage in "${INSTALL_STAGES[@]}"; do
     local stage_path="$DOTFILES_ROOT/install/$stage"
+
+    ui_stage_start
+    ui_stages_print
+
     if [ -f "$stage_path" ]; then
-      msg_info "Executing stage: $stage"
+      ui_header "Executing Stage: ${stage_names[$i]}"
+
+      # Run stage in subshell to isolate environment if needed, or source directly
+      # Sourcing is preferred to share variables like INSTALL_ROLE
       source "$stage_path"
+
+      ui_stage_complete
     else
+      ui_stage_fail
       die "Critical installation stage not found: $stage_path"
     fi
+
+    ((i++))
   done
+
+  # Print final progress
+  ui_stages_print
 
   # --- Finalization & State Management ----------------------------------------
   # After a successful installation, record the repository root and the
@@ -117,7 +158,8 @@ main() {
     echo "$INSTALL_ROLE" > "$state_dir/role"
   fi
 
-  msg_success "Dotfiles Flying Circus setup complete!"
+  echo ""
+  ui_notice "success" "Dotfiles Flying Circus setup complete!"
 }
 
 # ==============================================================================

@@ -265,11 +265,14 @@ ui_box_top() {
   local padding_right=$(( width - title_len - 4 - padding ))
 
   printf "${UI_PRIMARY}${tl}"
-  printf '%*s' "$padding" '' | tr ' ' "$h"
+  local pad_str
+  printf -v pad_str '%*s' "$padding" ''
+  printf "%s" "${pad_str// /$h}"
   if [[ -n "$title" ]]; then
     printf "${UI_RESET}${UI_BOLD} %s ${UI_RESET}${UI_PRIMARY}" "$title"
   fi
-  printf '%*s' "$padding_right" '' | tr ' ' "$h"
+  printf -v pad_str '%*s' "$padding_right" ''
+  printf "%s" "${pad_str// /$h}"
   printf "${tr}${UI_RESET}\n"
 }
 
@@ -320,7 +323,9 @@ ui_box_bottom() {
   fi
 
   printf "${UI_PRIMARY}${bl}"
-  printf '%*s' "$(( width - 2 ))" '' | tr ' ' "$h"
+  local pad_str
+  printf -v pad_str '%*s' "$(( width - 2 ))" ''
+  printf "%s" "${pad_str// /$h}"
   printf "${br}${UI_RESET}\n"
 }
 
@@ -338,7 +343,9 @@ ui_box_separator() {
   fi
 
   printf "${UI_PRIMARY}${tl}"
-  printf '%*s' "$(( width - 2 ))" '' | tr ' ' "$h"
+  local pad_str
+  printf -v pad_str '%*s' "$(( width - 2 ))" ''
+  printf "%s" "${pad_str// /$h}"
   printf "${tr}${UI_RESET}\n"
 }
 
@@ -393,13 +400,17 @@ ui_progress_bar() {
   # Filled portion with gradient effect
   if [[ $filled -gt 0 ]]; then
     printf "${UI_SUCCESS}"
-    printf '%*s' "$filled" '' | tr ' ' "$UI_PROGRESS_FULL"
+    local fill_str
+    printf -v fill_str '%*s' "$filled" ''
+    printf "%s" "${fill_str// /$UI_PROGRESS_FULL}"
   fi
 
   # Empty portion
   if [[ $empty -gt 0 ]]; then
     printf "${UI_MUTED}"
-    printf '%*s' "$empty" '' | tr ' ' "$UI_PROGRESS_EMPTY"
+    local empty_str
+    printf -v empty_str '%*s' "$empty" ''
+    printf "%s" "${empty_str// /$UI_PROGRESS_EMPTY}"
   fi
 
   printf "${UI_MUTED}]${UI_RESET} "
@@ -571,7 +582,11 @@ ui_stages_print() {
   echo ""
   printf "${UI_BOLD}${UI_PRIMARY}INSTALLATION PROGRESS${UI_RESET}\n"
   printf "${UI_MUTED}"
-  printf '%*s' "$width" '' | tr ' ' "$UI_BOX_H_S"
+  local border_str
+  printf -v border_str '%*s' "$width" ''
+  printf "%s" "${border_str// /$UI_BOX_H_S}"
+  printf -v border_str '%*s' "$width" ''
+  printf "%s" "${border_str// /$UI_BOX_H_S}"
   printf "${UI_RESET}\n"
 
   # Calculate how many stages per row (aim for 3 per row)
@@ -658,8 +673,10 @@ ui_table() {
 
   # Print top border
   printf "${UI_PRIMARY}${UI_BOX_TL_S}"
+  local fill_str
   for i in "${!widths[@]}"; do
-    printf '%*s' "${widths[$i]}" '' | tr ' ' "$UI_BOX_H_S"
+    printf -v fill_str '%*s' "${widths[$i]}" ''
+    printf "%s" "${fill_str// /$UI_BOX_H_S}"
     printf "${UI_BOX_H_S}${UI_BOX_H_S}"
     if [[ $i -lt $(( ${#widths[@]} - 1 )) ]]; then
       printf "${UI_BOX_T_DOWN}"
@@ -678,7 +695,8 @@ ui_table() {
   # Print header separator
   printf "${UI_PRIMARY}${UI_BOX_T_RIGHT}"
   for i in "${!widths[@]}"; do
-    printf '%*s' "${widths[$i]}" '' | tr ' ' "$UI_BOX_H_S"
+    printf -v fill_str '%*s' "${widths[$i]}" ''
+    printf "%s" "${fill_str// /$UI_BOX_H_S}"
     printf "${UI_BOX_H_S}${UI_BOX_H_S}"
     if [[ $i -lt $(( ${#widths[@]} - 1 )) ]]; then
       printf "${UI_BOX_CROSS}"
@@ -715,7 +733,8 @@ ui_table() {
   # Print bottom border
   printf "${UI_PRIMARY}${UI_BOX_BL_S}"
   for i in "${!widths[@]}"; do
-    printf '%*s' "${widths[$i]}" '' | tr ' ' "$UI_BOX_H_S"
+    printf -v fill_str '%*s' "${widths[$i]}" ''
+    printf "%s" "${fill_str// /$UI_BOX_H_S}"
     printf "${UI_BOX_H_S}${UI_BOX_H_S}"
     if [[ $i -lt $(( ${#widths[@]} - 1 )) ]]; then
       printf "${UI_BOX_T_UP}"
@@ -933,11 +952,13 @@ ui_header() {
 
   echo ""
   printf "${UI_PRIMARY}${UI_BOLD}"
-  printf '%*s' "$width" '' | tr ' ' "$UI_BOX_H"
+  local fill_str
+  printf -v fill_str '%*s' "$width" ''
+  printf "%s" "${fill_str// /$UI_BOX_H}"
   printf "${UI_RESET}\n"
   printf "${UI_PRIMARY}${UI_BOLD}  %s${UI_RESET}\n" "$text"
   printf "${UI_PRIMARY}${UI_BOLD}"
-  printf '%*s' "$width" '' | tr ' ' "$UI_BOX_H"
+  printf "%s" "${fill_str// /$UI_BOX_H}"
   printf "${UI_RESET}\n"
   echo ""
 }
@@ -996,14 +1017,17 @@ ui_notice() {
 
   echo ""
   printf "${color}${UI_BOX_TL_S}${UI_BOX_H_S}${UI_BOX_H_S} %s %s ${UI_BOX_H_S}" "$icon" "$label"
-  printf '%*s' $(( width - 10 - ${#label} )) '' | tr ' ' "$UI_BOX_H_S"
+  local fill_str
+  printf -v fill_str '%*s' $(( width - 10 - ${#label} )) ''
+  printf "%s" "${fill_str// /$UI_BOX_H_S}"
   printf "${UI_BOX_TR_S}${UI_RESET}\n"
 
   printf "${color}${UI_BOX_V_S}${UI_RESET} %-*s ${color}${UI_BOX_V_S}${UI_RESET}\n" \
     $(( width - 4 )) "$message"
 
   printf "${color}${UI_BOX_BL_S}"
-  printf '%*s' $(( width - 2 )) '' | tr ' ' "$UI_BOX_H_S"
+  printf -v fill_str '%*s' $(( width - 2 )) ''
+  printf "%s" "${fill_str// /$UI_BOX_H_S}"
   printf "${UI_BOX_BR_S}${UI_RESET}\n"
   echo ""
 }

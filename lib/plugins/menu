@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         lib/plugins/menu
+#
+# DESCRIPTION:  Interactive menu for the Dotfiles Flying Circus CLI.
+#               Uses gum if available, otherwise falls back to a simple list.
+#
+# ==============================================================================
+
+# Source the centralized initialization script.
+source "$(dirname "${BASH_SOURCE[0]}")/../../lib/init.sh"
+
+main() {
+  ui_print_banner_mini
+
+  # Get list of available plugins (excluding this one)
+  local plugins=()
+  for f in "$DOTFILES_ROOT"/lib/plugins/*; do
+    local name
+    name=$(basename "$f")
+    if [[ "$name" != "menu" && -x "$f" ]]; then
+      plugins+=("$name")
+    fi
+  done
+
+  # Sort plugins
+  IFS=$'\n' plugins=($(sort <<<"${plugins[*]}"))
+  unset IFS
+
+  # Display selection menu
+  local choice
+  choice=$(ui_select "Select a command to run:" "${plugins[@]}")
+
+  if [[ -n "$choice" ]]; then
+    ui_header "Running: fc $choice"
+    exec "$DOTFILES_ROOT/bin/fc" "$choice"
+  fi
+}
+
+main "$@"
