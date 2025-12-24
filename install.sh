@@ -78,7 +78,6 @@ main() {
   # --- Argument Parsing -------------------------------------------------------
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --role) INSTALL_ROLE="$2"; shift 2 ;;
       --privacy-profile)
         local profile_name
         profile_name=$(echo "$2" | tr '[:upper:]' '[:lower:]')
@@ -90,6 +89,8 @@ main() {
             die "Invalid privacy profile: $2. Use standard, privacy, or lockdown."
             ;;
         esac
+        shift 2
+        ;;
       --role)
         if [[ -z "$2" ]] || [[ "$2" == --* ]]; then
           die "Error: --role requires a role name. Valid roles: ${VALID_ROLES[*]}"

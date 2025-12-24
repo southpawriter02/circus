@@ -128,6 +128,12 @@ if [[ "$UI_SUPPORTS_UNICODE" == "true" ]]; then
   UI_BOX_T_RIGHT="├"
   UI_BOX_T_LEFT="┤"
 
+  # Rounded box (for a softer look)
+  UI_BOX_TL_R="╭"
+  UI_BOX_TR_R="╮"
+  UI_BOX_BL_R="╰"
+  UI_BOX_BR_R="╯"
+
   # Status icons
   UI_ICON_SUCCESS="✓"
   UI_ICON_ERROR="✗"
@@ -135,9 +141,10 @@ if [[ "$UI_SUPPORTS_UNICODE" == "true" ]]; then
   UI_ICON_INFO="ℹ"
   UI_ICON_PENDING="○"
   UI_ICON_ACTIVE="●"
-  UI_ICON_ARROW="→"
-  UI_ICON_BULLET="•"
+  UI_ICON_ARROW="➜"
+  UI_ICON_BULLET="●"
   UI_ICON_STAR="★"
+  UI_ICON_HEART="♥"
 
   # Progress bar characters
   UI_PROGRESS_FULL="█"
@@ -168,6 +175,11 @@ else
   UI_BOX_T_RIGHT="+"
   UI_BOX_T_LEFT="+"
 
+  UI_BOX_TL_R="+"
+  UI_BOX_TR_R="+"
+  UI_BOX_BL_R="+"
+  UI_BOX_BR_R="+"
+
   UI_ICON_SUCCESS="[OK]"
   UI_ICON_ERROR="[X]"
   UI_ICON_WARNING="[!]"
@@ -187,6 +199,23 @@ else
 fi
 
 # ------------------------------------------------------------------------------
+# SECTION: UTILITY FUNCTIONS
+# ------------------------------------------------------------------------------
+
+#
+# Repeat a character N times
+# @param $1 Character to repeat
+# @param $2 Count
+#
+ui_repeat() {
+  local char="$1"
+  local count="$2"
+  local result=""
+  for ((i=0; i<count; i++)); do result+="$char"; done
+  echo -n "$result"
+}
+
+# ------------------------------------------------------------------------------
 # SECTION: ASCII ART BANNER
 # ------------------------------------------------------------------------------
 
@@ -196,7 +225,9 @@ ui_print_banner() {
 
   echo ""
   if [[ $width -ge 70 ]]; then
-    # Full ASCII art banner
+    # Full ASCII art banner with gradient-like coloring
+
+    # Primary color top
     printf "${UI_PRIMARY}${UI_BOLD}"
     cat << 'EOF'
     ____        __  _____ __              ________
@@ -205,7 +236,7 @@ ui_print_banner() {
  / /_/ / /_/ / /_/ __/ / /  __(__  )   / /___/ / /  / /_/ / /_/ (__  )
 /_____/\____/\__/_/ /_/_/\___/____/    \____/_/_/   \___\_\__,_/____/
 EOF
-    printf "${UI_RESET}"
+    # Transition
     printf "${UI_SECONDARY}${UI_BOLD}"
     cat << 'EOF'
                           _____ _       _
@@ -249,27 +280,28 @@ ui_print_banner_mini() {
 ui_box_top() {
   local title="${1:-}"
   local width="${2:-$UI_TERM_WIDTH}"
-  local style="${3:-double}"
+  local style="${3:-rounded}"
 
   [[ $width -gt 80 ]] && width=80
 
   local tl tr h
-  if [[ "$style" == "single" ]]; then
-    tl="$UI_BOX_TL_S"; tr="$UI_BOX_TR_S"; h="$UI_BOX_H_S"
-  else
-    tl="$UI_BOX_TL"; tr="$UI_BOX_TR"; h="$UI_BOX_H"
-  fi
+  case "$style" in
+    single)  tl="$UI_BOX_TL_S"; tr="$UI_BOX_TR_S"; h="$UI_BOX_H_S" ;;
+    double)  tl="$UI_BOX_TL";   tr="$UI_BOX_TR";   h="$UI_BOX_H"   ;;
+    rounded) tl="$UI_BOX_TL_R"; tr="$UI_BOX_TR_R"; h="$UI_BOX_H_S" ;;
+    *)       tl="$UI_BOX_TL_R"; tr="$UI_BOX_TR_R"; h="$UI_BOX_H_S" ;;
+  esac
 
   local title_len=${#title}
   local padding=$(( (width - title_len - 4) / 2 ))
   local padding_right=$(( width - title_len - 4 - padding ))
 
   printf "${UI_PRIMARY}${tl}"
-  printf '%*s' "$padding" '' | tr ' ' "$h"
+  ui_repeat "$h" "$padding"
   if [[ -n "$title" ]]; then
     printf "${UI_RESET}${UI_BOLD} %s ${UI_RESET}${UI_PRIMARY}" "$title"
   fi
-  printf '%*s' "$padding_right" '' | tr ' ' "$h"
+  ui_repeat "$h" "$padding_right"
   printf "${tr}${UI_RESET}\n"
 }
 
@@ -308,19 +340,20 @@ ui_box_line() {
 
 ui_box_bottom() {
   local width="${1:-$UI_TERM_WIDTH}"
-  local style="${2:-double}"
+  local style="${2:-rounded}"
 
   [[ $width -gt 80 ]] && width=80
 
   local bl br h
-  if [[ "$style" == "single" ]]; then
-    bl="$UI_BOX_BL_S"; br="$UI_BOX_BR_S"; h="$UI_BOX_H_S"
-  else
-    bl="$UI_BOX_BL"; br="$UI_BOX_BR"; h="$UI_BOX_H"
-  fi
+  case "$style" in
+    single)  bl="$UI_BOX_BL_S"; br="$UI_BOX_BR_S"; h="$UI_BOX_H_S" ;;
+    double)  bl="$UI_BOX_BL";   br="$UI_BOX_BR";   h="$UI_BOX_H"   ;;
+    rounded) bl="$UI_BOX_BL_R"; br="$UI_BOX_BR_R"; h="$UI_BOX_H_S" ;;
+    *)       bl="$UI_BOX_BL_R"; br="$UI_BOX_BR_R"; h="$UI_BOX_H_S" ;;
+  esac
 
   printf "${UI_PRIMARY}${bl}"
-  printf '%*s' "$(( width - 2 ))" '' | tr ' ' "$h"
+  ui_repeat "$h" "$(( width - 2 ))"
   printf "${br}${UI_RESET}\n"
 }
 
@@ -331,14 +364,14 @@ ui_box_separator() {
   [[ $width -gt 80 ]] && width=80
 
   local tl tr h
-  if [[ "$style" == "single" ]]; then
+  if [[ "$style" == "single" ]] || [[ "$style" == "rounded" ]]; then
     tl="$UI_BOX_T_RIGHT"; tr="$UI_BOX_T_LEFT"; h="$UI_BOX_H_S"
   else
     tl="├"; tr="┤"; h="$UI_BOX_H"
   fi
 
   printf "${UI_PRIMARY}${tl}"
-  printf '%*s' "$(( width - 2 ))" '' | tr ' ' "$h"
+  ui_repeat "$h" "$(( width - 2 ))"
   printf "${tr}${UI_RESET}\n"
 }
 
@@ -348,7 +381,7 @@ ui_box_separator() {
 ui_box() {
   local title="${1:-}"
   local width="${2:-$UI_TERM_WIDTH}"
-  local style="${3:-double}"
+  local style="${3:-rounded}"
 
   ui_box_top "$title" "$width" "$style"
 
@@ -393,13 +426,13 @@ ui_progress_bar() {
   # Filled portion with gradient effect
   if [[ $filled -gt 0 ]]; then
     printf "${UI_SUCCESS}"
-    printf '%*s' "$filled" '' | tr ' ' "$UI_PROGRESS_FULL"
+    ui_repeat "$UI_PROGRESS_FULL" "$filled"
   fi
 
   # Empty portion
   if [[ $empty -gt 0 ]]; then
     printf "${UI_MUTED}"
-    printf '%*s' "$empty" '' | tr ' ' "$UI_PROGRESS_EMPTY"
+    ui_repeat "$UI_PROGRESS_EMPTY" "$empty"
   fi
 
   printf "${UI_MUTED}]${UI_RESET} "
@@ -571,7 +604,8 @@ ui_stages_print() {
   echo ""
   printf "${UI_BOLD}${UI_PRIMARY}INSTALLATION PROGRESS${UI_RESET}\n"
   printf "${UI_MUTED}"
-  printf '%*s' "$width" '' | tr ' ' "$UI_BOX_H_S"
+  ui_repeat "$UI_BOX_H_S" "$width"
+  ui_repeat "$UI_BOX_H_S" "$width"
   printf "${UI_RESET}\n"
 
   # Calculate how many stages per row (aim for 3 per row)
@@ -657,15 +691,15 @@ ui_table() {
   done
 
   # Print top border
-  printf "${UI_PRIMARY}${UI_BOX_TL_S}"
+  printf "${UI_PRIMARY}${UI_BOX_TL_R}"
   for i in "${!widths[@]}"; do
-    printf '%*s' "${widths[$i]}" '' | tr ' ' "$UI_BOX_H_S"
+    ui_repeat "$UI_BOX_H_S" "${widths[$i]}"
     printf "${UI_BOX_H_S}${UI_BOX_H_S}"
     if [[ $i -lt $(( ${#widths[@]} - 1 )) ]]; then
       printf "${UI_BOX_T_DOWN}"
     fi
   done
-  printf "${UI_BOX_TR_S}${UI_RESET}\n"
+  printf "${UI_BOX_TR_R}${UI_RESET}\n"
 
   # Print header row
   IFS=',' read -ra cols <<< "$headers"
@@ -678,7 +712,7 @@ ui_table() {
   # Print header separator
   printf "${UI_PRIMARY}${UI_BOX_T_RIGHT}"
   for i in "${!widths[@]}"; do
-    printf '%*s' "${widths[$i]}" '' | tr ' ' "$UI_BOX_H_S"
+    ui_repeat "$UI_BOX_H_S" "${widths[$i]}"
     printf "${UI_BOX_H_S}${UI_BOX_H_S}"
     if [[ $i -lt $(( ${#widths[@]} - 1 )) ]]; then
       printf "${UI_BOX_CROSS}"
@@ -713,15 +747,15 @@ ui_table() {
   done
 
   # Print bottom border
-  printf "${UI_PRIMARY}${UI_BOX_BL_S}"
+  printf "${UI_PRIMARY}${UI_BOX_BL_R}"
   for i in "${!widths[@]}"; do
-    printf '%*s' "${widths[$i]}" '' | tr ' ' "$UI_BOX_H_S"
+    ui_repeat "$UI_BOX_H_S" "${widths[$i]}"
     printf "${UI_BOX_H_S}${UI_BOX_H_S}"
     if [[ $i -lt $(( ${#widths[@]} - 1 )) ]]; then
       printf "${UI_BOX_T_UP}"
     fi
   done
-  printf "${UI_BOX_BR_S}${UI_RESET}\n"
+  printf "${UI_BOX_BR_R}${UI_RESET}\n"
 }
 
 # ------------------------------------------------------------------------------
@@ -933,11 +967,11 @@ ui_header() {
 
   echo ""
   printf "${UI_PRIMARY}${UI_BOLD}"
-  printf '%*s' "$width" '' | tr ' ' "$UI_BOX_H"
+  ui_repeat "$UI_BOX_H" "$width"
   printf "${UI_RESET}\n"
   printf "${UI_PRIMARY}${UI_BOLD}  %s${UI_RESET}\n" "$text"
   printf "${UI_PRIMARY}${UI_BOLD}"
-  printf '%*s' "$width" '' | tr ' ' "$UI_BOX_H"
+  ui_repeat "$UI_BOX_H" "$width"
   printf "${UI_RESET}\n"
   echo ""
 }
@@ -995,16 +1029,16 @@ ui_notice() {
   esac
 
   echo ""
-  printf "${color}${UI_BOX_TL_S}${UI_BOX_H_S}${UI_BOX_H_S} %s %s ${UI_BOX_H_S}" "$icon" "$label"
-  printf '%*s' $(( width - 10 - ${#label} )) '' | tr ' ' "$UI_BOX_H_S"
-  printf "${UI_BOX_TR_S}${UI_RESET}\n"
+  printf "${color}${UI_BOX_TL_R}${UI_BOX_H_S}${UI_BOX_H_S} %s %s ${UI_BOX_H_S}" "$icon" "$label"
+  ui_repeat "$UI_BOX_H_S" "$(( width - 10 - ${#label} ))"
+  printf "${UI_BOX_TR_R}${UI_RESET}\n"
 
   printf "${color}${UI_BOX_V_S}${UI_RESET} %-*s ${color}${UI_BOX_V_S}${UI_RESET}\n" \
     $(( width - 4 )) "$message"
 
-  printf "${color}${UI_BOX_BL_S}"
-  printf '%*s' $(( width - 2 )) '' | tr ' ' "$UI_BOX_H_S"
-  printf "${UI_BOX_BR_S}${UI_RESET}\n"
+  printf "${color}${UI_BOX_BL_R}"
+  ui_repeat "$UI_BOX_H_S" "$(( width - 2 ))"
+  printf "${UI_BOX_BR_R}${UI_RESET}\n"
   echo ""
 }
 
@@ -1085,32 +1119,32 @@ ui_stage_header() {
   printf "${UI_MUTED}[${UI_RESET}"
   if [[ $filled -gt 0 ]]; then
     printf "${UI_SUCCESS}"
-    printf '%*s' "$filled" '' | tr ' ' "$UI_PROGRESS_FULL"
+    ui_repeat "$UI_PROGRESS_FULL" "$filled"
   fi
   if [[ $empty -gt 0 ]]; then
     printf "${UI_MUTED}"
-    printf '%*s' "$empty" '' | tr ' ' "$UI_PROGRESS_EMPTY"
+    ui_repeat "$UI_PROGRESS_EMPTY" "$empty"
   fi
   printf "${UI_MUTED}]${UI_RESET} ${UI_BOLD}%d%%${UI_RESET}\n" "$progress_pct"
 
   # Stage title box
-  printf "${UI_PRIMARY}${UI_BOX_TL}"
-  printf '%*s' "$(( width - 2 ))" '' | tr ' ' "$UI_BOX_H"
-  printf "${UI_BOX_TR}${UI_RESET}\n"
+  printf "${UI_PRIMARY}${UI_BOX_TL_R}"
+  ui_repeat "$UI_BOX_H_S" "$(( width - 2 ))"
+  printf "${UI_BOX_TR_R}${UI_RESET}\n"
 
   printf "${UI_PRIMARY}${UI_BOX_V}${UI_RESET}"
   printf "  ${UI_ACCENT}${UI_ICON_ACTIVE}${UI_RESET} ${UI_BOLD}%-*s${UI_RESET}" "$(( width - 7 ))" "$title"
   printf "${UI_PRIMARY}${UI_BOX_V}${UI_RESET}\n"
 
   if [[ -n "$description" ]]; then
-    printf "${UI_PRIMARY}${UI_BOX_V}${UI_RESET}"
+    printf "${UI_PRIMARY}${UI_BOX_V_S}${UI_RESET}"
     printf "    ${UI_MUTED}%-*s${UI_RESET}" "$(( width - 7 ))" "$description"
-    printf "${UI_PRIMARY}${UI_BOX_V}${UI_RESET}\n"
+    printf "${UI_PRIMARY}${UI_BOX_V_S}${UI_RESET}\n"
   fi
 
-  printf "${UI_PRIMARY}${UI_BOX_BL}"
-  printf '%*s' "$(( width - 2 ))" '' | tr ' ' "$UI_BOX_H"
-  printf "${UI_BOX_BR}${UI_RESET}\n"
+  printf "${UI_PRIMARY}${UI_BOX_BL_R}"
+  ui_repeat "$UI_BOX_H_S" "$(( width - 2 ))"
+  printf "${UI_BOX_BR_R}${UI_RESET}\n"
   echo ""
 }
 
