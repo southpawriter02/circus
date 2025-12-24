@@ -80,12 +80,12 @@ log() {
 
   # --- Determine Level Name and Color ---
   case "$level_num" in
-    "$LOG_LEVEL_DEBUG")   level_name="DEBUG";   color_code="\033[0;35m" ;; # Purple
-    "$LOG_LEVEL_INFO")    level_name="INFO";    color_code="\033[1;34m" ;; # Blue
-    "$LOG_LEVEL_SUCCESS") level_name="SUCCESS"; color_code="\033[1;32m" ;; # Green
-    "$LOG_LEVEL_WARN")    level_name="WARN";    color_code="\033[1;33m" ;; # Yellow
-    "$LOG_LEVEL_ERROR")   level_name="ERROR";   color_code="\033[1;31m" ;; # Red
-    "$LOG_LEVEL_CRITICAL")level_name="CRITICAL";color_code="\033[1;41m" ;; # White on Red
+    "$LOG_LEVEL_DEBUG")   level_name="DEBUG";   color_code="${UI_MUTED}" ;;
+    "$LOG_LEVEL_INFO")    level_name="INFO";    color_code="${UI_INFO}" ;;
+    "$LOG_LEVEL_SUCCESS") level_name="SUCCESS"; color_code="${UI_SUCCESS}" ;;
+    "$LOG_LEVEL_WARN")    level_name="WARN";    color_code="${UI_WARNING}" ;;
+    "$LOG_LEVEL_ERROR")   level_name="ERROR";   color_code="${UI_ERROR}" ;;
+    "$LOG_LEVEL_CRITICAL")level_name="CRITICAL";color_code="${UI_BG_RED}${UI_WHITE}" ;;
     *) level_name="UNKNOWN"; color_code="" ;;
   esac
 
@@ -102,7 +102,13 @@ log() {
     if [ "${PARANOID_MODE:-false}" = true ]; then
       return 0
     fi
-    local color_reset="\033[0m"
+    local color_reset="${UI_RESET}"
+
+    # Use UI variables if available, otherwise fallback is handled by ui.sh loaded before or after.
+    # But note: helpers.sh is often loaded BEFORE ui.sh in init.sh.
+    # However, init.sh sources helpers, then ui.sh.
+    # So when log() is CALLED, ui.sh should be loaded.
+
     # Using direct format string in printf to avoid SC2059 shellcheck warning about dynamic format strings
     if [ "$level_num" -ge "$LOG_LEVEL_ERROR" ]; then
       printf "${color_code}[%-8s]${color_reset} %s\n" "$level_name" "$message" >&2
