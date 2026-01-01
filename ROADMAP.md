@@ -19,7 +19,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
     *   **Installation and Updates:**
         *   `18-dependency-management`: Create a clear and reliable way to manage third-party dependencies (e.g., Homebrew packages).
         *   ~~`16-refactor-installer`~~: **DONE** - Stage-based installer with 15 modular stages, 21 preflight checks, role system, privacy profiles, dry-run mode. Comprehensive bats tests for stages and preflight checks. Documentation in `ARCHITECTURE.md`.
-        *   `42-self-update-mechanism`: Provide a simple `fc update` command for users to get the latest version.
+        *   ~~`42-self-update-mechanism`~~: **DONE** - Enhanced `fc update` with `--check`, `--version`, `--dry-run`, `--skip-migrations` flags, migration system in `migrations/`, version tracking via `.version` file, `CHANGELOG.md`, and `docs/UPDATING.md`.
     *   **Configuration:**
         *   `09-externalize-fc-sync-configuration`: Refactor configuration handling to be more modular, starting with the `sync` command.
 

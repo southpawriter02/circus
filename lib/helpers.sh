@@ -195,3 +195,116 @@ prompt_for_confirmation() {
 }
 
 export -f prompt_for_confirmation
+
+# ------------------------------------------------------------------------------
+# SECTION: VERSION COMPARISON FUNCTIONS
+# ------------------------------------------------------------------------------
+
+#
+# @description
+#   Compares two semantic version strings (e.g., "1.2.3").
+#   Returns 0 if v1 == v2, 1 if v1 > v2, 2 if v1 < v2.
+#
+# @param $1 First version string
+# @param $2 Second version string
+# @return 0 if equal, 1 if first > second, 2 if first < second
+#
+# @example
+#   version_compare "1.2.0" "1.1.0"  # returns 1 (first is greater)
+#   version_compare "1.0.0" "1.0.0"  # returns 0 (equal)
+#   version_compare "1.0.0" "2.0.0"  # returns 2 (first is less)
+#
+version_compare() {
+  local v1="$1"
+  local v2="$2"
+
+  # If they're equal, return 0
+  if [ "$v1" = "$v2" ]; then
+    return 0
+  fi
+
+  # Split versions into arrays
+  local IFS='.'
+  local -a v1_parts=($v1)
+  local -a v2_parts=($v2)
+
+  # Compare each part
+  local max_parts=${#v1_parts[@]}
+  [ ${#v2_parts[@]} -gt $max_parts ] && max_parts=${#v2_parts[@]}
+
+  for ((i = 0; i < max_parts; i++)); do
+    local part1=${v1_parts[i]:-0}
+    local part2=${v2_parts[i]:-0}
+
+    if [ "$part1" -gt "$part2" ]; then
+      return 1  # v1 > v2
+    elif [ "$part1" -lt "$part2" ]; then
+      return 2  # v1 < v2
+    fi
+  done
+
+  return 0  # Equal
+}
+
+#
+# @description
+#   Checks if a migration version range applies to an upgrade path.
+#   Returns 0 (true) if the migration should run, 1 (false) otherwise.
+#
+# @param $1 Migration "from" version (e.g., "1.0.0")
+# @param $2 Migration "to" version (e.g., "1.1.0")
+# @param $3 Old installed version (before update)
+# @param $4 New installed version (after update)
+# @return 0 if migration should run, 1 otherwise
+#
+# @example
+#   # Upgrading from 1.0.0 to 1.2.0
+#   version_in_range "1.0.0" "1.1.0" "1.0.0" "1.2.0"  # returns 0 (should run)
+#   version_in_range "1.1.0" "1.2.0" "1.0.0" "1.2.0"  # returns 0 (should run)
+#   version_in_range "1.2.0" "1.3.0" "1.0.0" "1.2.0"  # returns 1 (should NOT run)
+#
+version_in_range() {
+  local migration_from="$1"
+  local migration_to="$2"
+  local old_version="$3"
+  local new_version="$4"
+
+  # Migration should run if:
+  # 1. migration_from >= old_version (migration starts at or after where we were)
+  # 2. migration_to <= new_version (migration ends at or before where we're going)
+
+  # Check: migration_from >= old_version
+  version_compare "$migration_from" "$old_version"
+  local from_cmp=$?
+  if [ $from_cmp -eq 2 ]; then
+    # migration_from < old_version, skip this migration
+    return 1
+  fi
+
+  # Check: migration_to <= new_version
+  version_compare "$migration_to" "$new_version"
+  local to_cmp=$?
+  if [ $to_cmp -eq 1 ]; then
+    # migration_to > new_version, skip this migration
+    return 1
+  fi
+
+  return 0
+}
+
+#
+# @description
+#   Reads the current version from the .version file.
+#
+# @return The version string, or "0.0.0" if not found.
+#
+get_current_version() {
+  local version_file="${DOTFILES_ROOT:-.}/.version"
+  if [ -f "$version_file" ]; then
+    cat "$version_file" | tr -d '[:space:]'
+  else
+    echo "0.0.0"
+  fi
+}
+
+export -f version_compare version_in_range get_current_version
