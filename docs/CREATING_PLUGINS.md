@@ -47,8 +47,71 @@ Note that while the script is named `fc-my-new-command`, you invoke it with `fc 
 *   **Provide a `usage` function:** Every plugin should have a `usage` function that explains what it does and what arguments it accepts. The template provides a good example.
 *   **Handle the `--help` flag:** Your plugin should check for a `--help` flag and call your `usage` function if it's present.
 *   **Use `set -e`:** For safety, it's recommended to use `set -e` at the top of your script. This will cause the script to exit immediately if any command fails.
-*   **Source Helpers (Optional):** If you need access to the logging functions (`msg_info`, etc.), you can source the main helper library. Note that the path is relative to the plugin's location.
+*   **Source Helpers (Optional):** If you need access to the logging functions (`msg_info`, etc.), you can source the main initialization script. Note that the path is relative to the plugin's location.
 
     ```bash
-    source "$(dirname "${BASH_SOURCE[0]}")/../helpers.sh"
+    source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
     ```
+
+## Using the Logging System
+
+The helper library provides several logging functions for consistent output. Here are practical examples:
+
+### Log Levels and When to Use Them
+
+```bash
+# Debug: Detailed diagnostic information (hidden by default)
+msg_debug "Checking if config file exists at $CONFIG_PATH"
+
+# Info: Normal operational messages
+msg_info "Starting backup process..."
+
+# Success: Confirm successful completion of an operation
+msg_success "Backup completed successfully."
+
+# Warning: Something unexpected but not fatal
+msg_warning "Config file not found, using defaults."
+
+# Error: Operation failed but script can continue
+msg_error "Failed to backup ~/.zshrc - file not found."
+
+# Critical: Fatal error, script will likely exit
+msg_critical "Cannot proceed without required dependency."
+```
+
+### Example: A Well-Logged Plugin Function
+
+```bash
+backup_file() {
+  local source="$1"
+  local dest="$2"
+
+  msg_debug "Attempting to backup: $source -> $dest"
+
+  if [ ! -f "$source" ]; then
+    msg_warning "Source file does not exist: $source"
+    return 1
+  fi
+
+  if cp "$source" "$dest"; then
+    msg_success "Backed up $source"
+  else
+    msg_error "Failed to backup $source"
+    return 1
+  fi
+}
+```
+
+### Tip: Debug Mode for Development
+
+While developing your plugin, run with `--log-level DEBUG` to see all messages:
+
+```bash
+fc --log-level DEBUG my-plugin action
+```
+
+You can also use `--silent` to suppress all output except critical errors:
+
+```bash
+fc --silent my-plugin action
+```

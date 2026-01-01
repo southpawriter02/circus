@@ -39,6 +39,53 @@ CONSOLE_LOG_LEVEL=${CONSOLE_LOG_LEVEL:-$LOG_LEVEL_INFO}
 # The global path to the log file. If this is set, all messages will be written to it.
 LOG_FILE_PATH="${LOG_FILE_PATH:-}"
 
+# Maximum log file size in bytes (default 10MB)
+LOG_MAX_SIZE=${LOG_MAX_SIZE:-10485760}
+
+# Number of rotated logs to keep (default 3)
+LOG_ROTATE_COUNT=${LOG_ROTATE_COUNT:-3}
+
+# ------------------------------------------------------------------------------
+# SECTION: LOG ROTATION
+# ------------------------------------------------------------------------------
+
+#
+# @description
+#   Rotates the log file if it exceeds LOG_MAX_SIZE. Called automatically
+#   by log() when LOG_FILE_PATH is set.
+#
+# @param $1 The path to the log file.
+#
+rotate_log_if_needed() {
+  local log_file="$1"
+
+  # Skip if file doesn't exist or rotation is disabled
+  [ -f "$log_file" ] || return 0
+  [ "$LOG_MAX_SIZE" -gt 0 ] || return 0
+
+  # Get file size (macOS uses -f%z, Linux uses -c%s)
+  local file_size
+  if [[ "$(uname)" == "Darwin" ]]; then
+    file_size=$(stat -f%z "$log_file" 2>/dev/null || echo 0)
+  else
+    file_size=$(stat -c%s "$log_file" 2>/dev/null || echo 0)
+  fi
+
+  # Rotate if file exceeds max size
+  if [ "$file_size" -ge "$LOG_MAX_SIZE" ]; then
+    # Shift existing rotated logs
+    local i=$LOG_ROTATE_COUNT
+    while [ $i -gt 1 ]; do
+      local prev=$((i - 1))
+      [ -f "${log_file}.${prev}" ] && mv "${log_file}.${prev}" "${log_file}.${i}"
+      i=$prev
+    done
+
+    # Rotate current log to .1
+    mv "$log_file" "${log_file}.1"
+  fi
+}
+
 # ------------------------------------------------------------------------------
 # SECTION: ERROR HANDLING
 # ------------------------------------------------------------------------------
@@ -91,6 +138,9 @@ log() {
 
   # --- Log to File (if configured) ---
   if [ -n "$LOG_FILE_PATH" ]; then
+    # Check if rotation is needed before writing
+    rotate_log_if_needed "$LOG_FILE_PATH"
+
     # Format with a timestamp for the log file.
     local timestamp
     timestamp=$(date "+%Y-%m-%d %H:%M:%S")

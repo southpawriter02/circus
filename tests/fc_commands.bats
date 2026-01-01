@@ -156,3 +156,50 @@ setup() {
   # Unset the variable to not affect other tests
   unset GPG_RECIPIENT_ID
 }
+
+# ------------------------------------------------------------------------------
+# Tests for Global Logging Options
+# ------------------------------------------------------------------------------
+
+@test "Global Options: --log-file should create log file with messages" {
+  local test_log="/tmp/fc_test_$$.log"
+
+  run "$FC_COMMAND" --log-file "$test_log" --help
+  assert_success
+
+  # Log file should exist and contain messages
+  assert [ -f "$test_log" ]
+  run cat "$test_log"
+  assert_output --partial "[INFO]"
+
+  rm -f "$test_log"
+}
+
+@test "Global Options: invalid --log-level should fail with helpful message" {
+  run "$FC_COMMAND" --log-level INVALID fc-info
+  assert_failure
+  assert_output --partial "Invalid log level"
+  assert_output --partial "CRITICAL"
+}
+
+@test "Global Options: --silent should suppress info messages" {
+  # Test that --silent suppresses console output by checking help output
+  # (which normally prints INFO messages)
+  run "$FC_COMMAND" --silent --help
+  assert_success
+  # INFO messages should be suppressed - the output should be empty or minimal
+  refute_output --partial "[INFO"
+}
+
+@test "Global Options: --help should show --silent option" {
+  run "$FC_COMMAND" --help
+  assert_success
+  assert_output --partial "--silent"
+  assert_output --partial "Suppress all output except critical errors"
+}
+
+@test "Global Options: --help should show CRITICAL in --log-level description" {
+  run "$FC_COMMAND" --help
+  assert_success
+  assert_output --partial "DEBUG, INFO, WARN, ERROR, CRITICAL"
+}

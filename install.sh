@@ -55,7 +55,7 @@ usage() {
   echo "  --force                  Force re-running of already completed stages."
   echo "  --non-interactive        Run the installer without prompting for confirmation."
   echo "  --log-file <path>        Redirect all log output to the specified file."
-  echo "  --log-level <lvl>        Set the console log level (DEBUG, INFO, WARN, ERROR)."
+  echo "  --log-level <lvl>        Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL)."
   echo "  --silent                 Alias for --log-level CRITICAL. Overrides --log-level."
   echo "  --help                   Display this help message."
   echo ""
@@ -63,14 +63,6 @@ usage() {
   echo "  standard   - Balanced security and convenience (default)"
   echo "  privacy    - Enhanced privacy, disables telemetry and tracking"
   echo "  lockdown   - Maximum security for high-risk environments"
-  echo "  --role <name>      Specify the role to install. Valid roles: ${VALID_ROLES[*]}"
-  echo "  --dry-run          Run the installer without making any changes."
-  echo "  --force            Force re-running of already completed stages."
-  echo "  --non-interactive  Run the installer without prompting for confirmation."
-  echo "  --log-file <path>  Redirect all log output to the specified file."
-  echo "  --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR)."
-  echo "  --silent           Alias for --log-level CRITICAL. Overrides --log-level."
-  echo "  --help             Display this help message."
   exit 0
 }
 

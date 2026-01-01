@@ -145,3 +145,159 @@ teardown() {
   assert_output --partial "[INFO] File test"
   assert_output --partial "[WARN] File warning"
 }
+
+@test "CONSOLE_LOG_LEVEL=SUCCESS should filter DEBUG and INFO" {
+  export CONSOLE_LOG_LEVEL=$LOG_LEVEL_SUCCESS
+
+  run msg_debug "This is a debug message."
+  assert_success
+  assert_output ""
+
+  run msg_info "This is an info message."
+  assert_success
+  assert_output ""
+
+  run msg_success "This is a success message."
+  assert_success
+  assert_output --partial "[SUCCESS ]"
+}
+
+@test "CONSOLE_LOG_LEVEL=CRITICAL should filter everything except CRITICAL" {
+  export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL
+
+  run msg_info "This is an info message."
+  assert_success
+  assert_output ""
+
+  run msg_warning "This is a warning message."
+  assert_success
+  assert_output ""
+
+  # CRITICAL goes to stderr, capture separately
+  local stderr_file
+  stderr_file=$(mktemp)
+  run bash -c "export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL; source '$PROJECT_ROOT/lib/helpers.sh'; msg_critical 'Critical message' 2>'$stderr_file'"
+  assert_success
+  assert_output ""
+
+  run cat "$stderr_file"
+  assert_output --partial "[CRITICAL]"
+  rm "$stderr_file"
+}
+
+@test "LOG_FILE_PATH should write messages with correct timestamp format" {
+  export LOG_FILE_PATH="/tmp/test.log"
+  export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL
+
+  run bash -c ". '$PROJECT_ROOT/lib/helpers.sh'; msg_info 'Timestamp test'"
+
+  assert_success
+  assert [ -f "$LOG_FILE_PATH" ]
+
+  # Verify timestamp format: [YYYY-MM-DD HH:MM:SS]
+  run grep -E '^\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\]' "$LOG_FILE_PATH"
+  assert_success
+  assert_output --partial "[INFO] Timestamp test"
+}
+
+@test "LOG_FILE_PATH should append to existing log file" {
+  export LOG_FILE_PATH="/tmp/test.log"
+  export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL
+
+  # Write first message
+  run bash -c ". '$PROJECT_ROOT/lib/helpers.sh'; msg_info 'First message'"
+  assert_success
+
+  # Write second message
+  run bash -c ". '$PROJECT_ROOT/lib/helpers.sh'; msg_info 'Second message'"
+  assert_success
+
+  # Both messages should be in the log
+  run cat "$LOG_FILE_PATH"
+  assert_output --partial "First message"
+  assert_output --partial "Second message"
+}
+
+# --- Test Cases for Log Rotation ----------------------------------------------
+
+@test "Log rotation should rotate when file exceeds max size" {
+  export LOG_FILE_PATH="/tmp/test_rotation.log"
+  export LOG_MAX_SIZE=100  # Very small for testing (100 bytes)
+  export LOG_ROTATE_COUNT=2
+  export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL
+
+  # Create a log file that exceeds the limit
+  head -c 150 /dev/zero | tr '\0' 'x' > "$LOG_FILE_PATH"
+
+  # Write a new message - should trigger rotation
+  run bash -c ". '$PROJECT_ROOT/lib/helpers.sh'; msg_info 'After rotation'"
+  assert_success
+
+  # Original file should be rotated to .1
+  assert [ -f "${LOG_FILE_PATH}.1" ]
+
+  # New log file should exist with the new message
+  assert [ -f "$LOG_FILE_PATH" ]
+  run cat "$LOG_FILE_PATH"
+  assert_output --partial "After rotation"
+
+  # Clean up
+  rm -f "$LOG_FILE_PATH" "${LOG_FILE_PATH}.1" "${LOG_FILE_PATH}.2"
+}
+
+@test "Log rotation should shift existing rotated files" {
+  export LOG_FILE_PATH="/tmp/test_rotation.log"
+  export LOG_MAX_SIZE=50
+  export LOG_ROTATE_COUNT=3
+  export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL
+
+  # Create initial .1 file
+  echo "original .1 content" > "${LOG_FILE_PATH}.1"
+
+  # Create a log file that exceeds the limit
+  head -c 100 /dev/zero | tr '\0' 'x' > "$LOG_FILE_PATH"
+
+  # Write a new message - should trigger rotation
+  run bash -c ". '$PROJECT_ROOT/lib/helpers.sh'; msg_info 'New message'"
+  assert_success
+
+  # .1 should have been shifted to .2
+  assert [ -f "${LOG_FILE_PATH}.2" ]
+  run cat "${LOG_FILE_PATH}.2"
+  assert_output "original .1 content"
+
+  # Current log should now be .1
+  assert [ -f "${LOG_FILE_PATH}.1" ]
+
+  # New log file should have the new message
+  run cat "$LOG_FILE_PATH"
+  assert_output --partial "New message"
+
+  # Clean up
+  rm -f "$LOG_FILE_PATH" "${LOG_FILE_PATH}.1" "${LOG_FILE_PATH}.2" "${LOG_FILE_PATH}.3"
+}
+
+@test "Log rotation should not rotate when file is under max size" {
+  export LOG_FILE_PATH="/tmp/test_rotation.log"
+  export LOG_MAX_SIZE=10000  # Large enough that we won't exceed it
+  export LOG_ROTATE_COUNT=2
+  export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL
+
+  # Create a small log file
+  echo "small content" > "$LOG_FILE_PATH"
+
+  # Write a new message - should NOT trigger rotation
+  run bash -c ". '$PROJECT_ROOT/lib/helpers.sh'; msg_info 'Additional message'"
+  assert_success
+
+  # No rotation should have occurred
+  assert [ ! -f "${LOG_FILE_PATH}.1" ]
+
+  # Both messages should be in the same file
+  run cat "$LOG_FILE_PATH"
+  assert_output --partial "small content"
+  assert_output --partial "Additional message"
+
+  # Clean up
+  rm -f "$LOG_FILE_PATH"
+}

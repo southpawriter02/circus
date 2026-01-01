@@ -10,11 +10,11 @@ This roadmap organizes the proposed features from the `docs/features/` directory
 
 *   **Key Features:**
     *   **Architecture:**
-        *   `06-plugin-system-for-fc-command`: The highest priority. Refactor the core to be a simple plugin dispatcher. This will simplify all future command development.
+        *   ~~`06-plugin-system-for-fc-command`~~: **DONE** - Plugin-based dispatcher implemented in `bin/fc` with 22 plugins in `lib/plugins/`. Documentation in `docs/CREATING_PLUGINS.md` and `ARCHITECTURE.md`.
         *   `19-adopt-a-shell-framework`: Standardize shell scripting practices (e.g., using a framework like `bash-it` or `oh-my-zsh` helpers) to ensure consistency.
     *   **Developer Experience & Stability:**
-        *   `13-better-error-handling`: Implement a consistent error handling and reporting mechanism.
-        *   `15-improve-logging`: Add a structured logging system to aid in debugging.
+        *   ~~`13-better-error-handling`~~: **DONE** - Error handler with `die()` function and ERR trap implemented in `lib/helpers.sh`.
+        *   ~~`15-improve-logging`~~: **DONE** - 6 log levels (DEBUG, INFO, SUCCESS, WARN, ERROR, CRITICAL), file logging with `--log-file`, console filtering with `--log-level`, `--silent` flag, and automatic log rotation. Documentation in `docs/TROUBLESHOOTING.md`.
         *   `14-add-a-pre-commit-hook`: Enforce code quality standards automatically.
     *   **Installation and Updates:**
         *   `18-dependency-management`: Create a clear and reliable way to manage third-party dependencies (e.g., Homebrew packages).

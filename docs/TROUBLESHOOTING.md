@@ -16,6 +16,30 @@ To enable file logging, use the `--log-file` flag when you run the installer. It
 
 This will create a `circus_install.log` file in your home directory. You can now inspect this file to see the full, unabridged output of the installation process, which may contain error messages or warnings that were not printed to the console.
 
+### Important: Log File Contains Everything
+
+When file logging is enabled with `--log-file`, the log file captures **all** messages at every log level, regardless of the `--log-level` setting. The `--log-level` flag only controls what appears on the console.
+
+This means even if you run with `--log-level ERROR`, your log file will still contain DEBUG, INFO, SUCCESS, and WARN messages. This is intentional - it ensures you have complete diagnostic information when troubleshooting.
+
+### Log Rotation
+
+To prevent log files from growing indefinitely, the logging system supports automatic rotation. When a log file exceeds the maximum size (default: 10MB), it is rotated:
+
+- `logfile.log` becomes `logfile.log.1`
+- `logfile.log.1` becomes `logfile.log.2`
+- And so on, up to the configured limit (default: 3 rotated files)
+
+You can configure rotation behavior with environment variables:
+
+```bash
+# Set max file size to 5MB
+export LOG_MAX_SIZE=5242880
+
+# Keep up to 5 rotated files
+export LOG_ROTATE_COUNT=5
+```
+
 ### Understanding Log Levels
 
 The logging system uses several levels of severity:

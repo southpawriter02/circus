@@ -26,12 +26,14 @@ usage() {
   echo ""
   msg_info "Global Options:"
   echo "  --log-file <path>  Redirect all log output to the specified file."
-  echo "  --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR)."
+  echo "  --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL)."
+  echo "  --silent           Suppress all output except critical errors."
   echo ""
   msg_info "A modular, plugin-based command-line utility for system management."
   echo ""
   msg_info "Available commands:"
-  find "$PLUGIN_DIR" -maxdepth 1 -type f -executable -exec basename {} \; | sort
+  # Use -perm for macOS compatibility (-executable is a GNU extension)
+  find "$PLUGIN_DIR" -maxdepth 1 -type f -perm +111 -exec basename {} \; | sort
   echo ""
   msg_info "Run 'fc <command> --help' for more information on a specific command."
   exit 0
@@ -56,9 +58,13 @@ while [[ $# -gt 0 ]]; do
         WARN) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_WARN ;; 
         ERROR) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_ERROR ;; 
         CRITICAL) export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL ;; 
-        *) die "Invalid log level: $2. Use DEBUG, INFO, WARN, or ERROR." ;;
+        *) die "Invalid log level: $2. Use DEBUG, INFO, WARN, ERROR, or CRITICAL." ;;
       esac
       shift 2
+      ;;
+    --silent)
+      export CONSOLE_LOG_LEVEL=$LOG_LEVEL_CRITICAL
+      shift
       ;;
     --help)
       usage
