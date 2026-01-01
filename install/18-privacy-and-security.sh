@@ -2,19 +2,10 @@
 
 # ==============================================================================
 #
-# Stage 12: Privacy and Security
+# Stage 18: Privacy and Security
 #
 # This script orchestrates the application of security and privacy settings by
 # sourcing all shell scripts found in the top-level `security/` directory.
-#
-# UNUSED CODE NOTICE:
-#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
-#   Note: There is also a 12-aliases-configuration.sh with the same "12-" prefix.
-#   The security/ directory contains firewall_and_gatekeeper.sh.
-#   
-#   RECOMMENDATION: Add to INSTALL_STAGES if security settings should be
-#   configured during installation. Consider renaming to avoid "12-" prefix
-#   collision with 12-aliases-configuration.sh.
 #
 # ==============================================================================
 
@@ -22,7 +13,7 @@
 # The main logic for the privacy and security stage.
 #
 main() {
-  msg_info "Stage 12: Privacy and Security"
+  msg_info "Stage 18: Privacy and Security"
 
   local security_dir="$DOTFILES_ROOT/security"
 

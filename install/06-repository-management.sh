@@ -2,19 +2,12 @@
 
 # ==============================================================================
 #
-# Stage 5: Repository Management (Orchestrator)
+# Stage 6: Repository Management (Orchestrator)
 #
 # This script orchestrates the management of the dotfiles repository by
 # sourcing a series of modular scripts from the `management/` subdirectory.
 # By the time this stage runs, we are guaranteed to have Git installed and
 # to be running from within a Git repository.
-#
-# UNUSED CODE NOTICE:
-#   This script is NOT currently referenced in install.sh's INSTALL_STAGES array.
-#   It provides repository management functionality (git pull, submodule update).
-#   
-#   RECOMMENDATION: Add "05-repository-management.sh" to the INSTALL_STAGES
-#   array BEFORE tool installation to ensure the repository is up-to-date.
 #
 # ==============================================================================
 
@@ -22,7 +15,7 @@
 # The main logic for the repository management stage.
 #
 main() {
-  msg_info "Stage 5: Repository Management"
+  msg_info "Stage 6: Repository Management"
 
   # --- Configuration ----------------------------------------------------------
   local MANAGEMENT_SCRIPTS_DIR="$INSTALL_DIR/management"

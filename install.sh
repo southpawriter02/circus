@@ -145,13 +145,15 @@ main() {
     "03-homebrew-installation.sh|Homebrew & Packages|Installing Homebrew and bundled packages"
     "04-macos-system-settings.sh|macOS Settings|Applying system preferences and defaults"
     "05-oh-my-zsh-installation.sh|Oh My Zsh|Installing shell framework and plugins"
+    "06-repository-management.sh|Repository Sync|Updating repository and submodules"
     "09-dotfiles-deployment.sh|Dotfiles Deployment|Deploying configuration files"
     "10-git-configuration.sh|Git Configuration|Setting up Git preferences"
     "11-defaults-and-additional-configuration.sh|Additional Config|Applying additional settings"
-    "16-jetbrains-configuration.sh|JetBrains IDEs|Configuring development environments"
-    "17-secrets-management.sh|Secrets Management|Setting up secure credentials"
     "14-cleanup.sh|Cleanup|Removing temporary files"
     "15-finalization-and-reporting.sh|Finalization|Generating installation report"
+    "16-jetbrains-configuration.sh|JetBrains IDEs|Configuring development environments"
+    "17-secrets-management.sh|Secrets Management|Setting up secure credentials"
+    "18-privacy-and-security.sh|Privacy & Security|Applying security settings"
   )
 
   local TOTAL_STAGES=${#INSTALL_STAGES[@]}

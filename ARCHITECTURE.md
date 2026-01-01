@@ -39,12 +39,120 @@ The main entry point for all functionality is the `bin/fc` script. This script i
 
 All subcommands for `fc` are implemented as **plugins**. A plugin is simply an executable script located in the `lib/plugins/` directory. This makes the system highly extensible.
 
+## Installer Architecture
+
+The main installer (`install.sh`) uses a stage-based architecture for modular, maintainable installation logic.
+
+### Stage-Based Design
+
+The installer executes a sequence of independent stage scripts from the `install/` directory. Each stage is responsible for a specific aspect of the installation and can be tested in isolation.
+
+```
+install.sh (orchestrator)
+    ├── 00-preflight-checks.sh      → System readiness verification
+    ├── 01-introduction.sh          → Welcome and user preferences
+    ├── 02-logging-setup.sh         → Log file configuration
+    ├── 03-homebrew-installation.sh → Homebrew and packages
+    ├── 04-macos-system-settings.sh → System preferences
+    ├── 05-oh-my-zsh-installation.sh→ Shell framework
+    ├── 06-repository-management.sh → Git sync and submodules
+    ├── 09-dotfiles-deployment.sh   → Symlink configuration files
+    ├── 10-git-configuration.sh     → Git preferences
+    ├── 11-defaults-and-additional.sh → Additional settings
+    ├── 14-cleanup.sh               → Temporary file removal
+    ├── 15-finalization.sh          → Installation report
+    ├── 16-jetbrains-configuration.sh → IDE setup
+    ├── 17-secrets-management.sh    → Credential setup
+    └── 18-privacy-and-security.sh  → Security settings
+```
+
+### Stage Execution Flow
+
+1. **Argument Parsing:** Command-line flags (`--role`, `--dry-run`, `--log-level`, etc.) are parsed.
+2. **Stage Iteration:** The `INSTALL_STAGES` array defines the execution order.
+3. **Per-Stage Execution:**
+   - Display stage header with progress indicator
+   - Source the stage script
+   - Record timing and completion status
+4. **State Recording:** After success, installation state is saved to `~/.circus/`.
+
+### Preflight Checks System
+
+Stage 00 runs 21 modular preflight checks from `install/preflight/`:
+
+| Check | Purpose | Critical |
+|-------|---------|----------|
+| preflight-01-macos-check.sh | Verify running on macOS | Yes |
+| preflight-02-root-check.sh | Not running as root | Yes |
+| preflight-03-admin-rights-check.sh | Admin privileges available | Yes |
+| preflight-04-file-permissions-check.sh | Installer permissions | No |
+| preflight-05-unset-vars-check.sh | Environment sanity | No |
+| preflight-06-shell-type-version-check.sh | Bash/Zsh version | No |
+| preflight-07-locale-encoding-check.sh | UTF-8 encoding | No |
+| preflight-08-battery-check.sh | Adequate power | No |
+| preflight-09-wifi-check.sh | Network connectivity | No |
+| preflight-10-xcode-cli-check.sh | Xcode CLI tools installed | Yes |
+| preflight-11-homebrew-check.sh | Homebrew status | No |
+| preflight-12-dependency-check.sh | Required dependencies | No |
+| preflight-13-install-integrity-check.sh | Repository integrity | Yes |
+| preflight-14-update-check.sh | Update availability | No |
+| preflight-15-existing-install-check.sh | Previous installation | No |
+| preflight-16-backed-up-dotfiles-check.sh | Backup status | No |
+| preflight-17-existing-dotfiles-check.sh | Conflict detection | No |
+| preflight-18-icloud-check.sh | iCloud sync status | No |
+| preflight-19-terminal-type-check.sh | Terminal compatibility | No |
+| preflight-20-conflicting-processes-check.sh | Process conflicts | No |
+| preflight-21-install-sanity-check.sh | Final sanity check | Yes |
+
+Critical checks must pass; non-critical checks produce warnings but don't block installation.
+
+### Role System
+
+Roles define machine-specific configurations:
+
+- **developer:** Full development environment with all tools
+- **personal:** Personal machine with consumer apps
+- **work:** Work environment with corporate tools
+
+Role selection is stored in `~/.circus/role` and used by the shell configuration to load role-specific aliases and environment variables.
+
+### State Management
+
+Installation state is persisted in `~/.circus/`:
+
+| File | Purpose |
+|------|---------|
+| `~/.circus/root` | Path to dotfiles repository |
+| `~/.circus/role` | Installed role (developer/personal/work) |
+| `~/.circus/privacy_profile` | Privacy level (standard/privacy/lockdown) |
+
+### Dry-Run Mode
+
+When `--dry-run` is passed, stages can check `$DRY_RUN_MODE` to skip destructive operations:
+
+```bash
+if [ "$DRY_RUN_MODE" = true ]; then
+  msg_info "[DRY-RUN] Would install packages..."
+else
+  brew bundle install
+fi
+```
+
+### Adding New Stages
+
+1. Create a new script in `install/` with appropriate numbering
+2. Add an entry to the `INSTALL_STAGES` array in `install.sh`
+3. Implement a `main()` function that respects `DRY_RUN_MODE`
+4. Add tests to `tests/installer_stages.bats`
+
 ## Testing
 
 The project uses `bats-core` for testing. Tests are located in the `tests/` directory.
 
 *   **`tests/shell_config.bats`:** Tests the interactive shell environment, including the `circus` plugin, aliases, functions, and role loading.
 *   **`tests/fc_commands.bats`:** Tests the `fc` command and its plugins.
+*   **`tests/installer_stages.bats`:** Tests all 15 installer stages in dry-run mode.
+*   **`tests/preflight_checks.bats`:** Tests all 21 preflight check scripts.
 
 ## Centralized Script Initialization
 

@@ -18,7 +18,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
         *   `14-add-a-pre-commit-hook`: Enforce code quality standards automatically.
     *   **Installation and Updates:**
         *   `18-dependency-management`: Create a clear and reliable way to manage third-party dependencies (e.g., Homebrew packages).
-        *   `16-refactor-installer`: Rework the main installer to be more robust and to handle the new plugin architecture.
+        *   ~~`16-refactor-installer`~~: **DONE** - Stage-based installer with 15 modular stages, 21 preflight checks, role system, privacy profiles, dry-run mode. Comprehensive bats tests for stages and preflight checks. Documentation in `ARCHITECTURE.md`.
         *   `42-self-update-mechanism`: Provide a simple `fc update` command for users to get the latest version.
     *   **Configuration:**
         *   `09-externalize-fc-sync-configuration`: Refactor configuration handling to be more modular, starting with the `sync` command.
