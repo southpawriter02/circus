@@ -338,6 +338,23 @@ SSH Keys in /Users/you/.ssh:
 
 This is a powerful command for managing the full lifecycle of your machine's state. It allows you to create a complete, end-to-end encrypted backup of your applications and data and then restore that state to a new machine.
 
+**Usage:**
+
+```bash
+fc sync <subcommand> [options]
+```
+
+**Subcommands:**
+*   `setup`: Create configuration file from template.
+*   `backup`: Back up and encrypt critical data.
+*   `restore`: Decrypt and restore data from backup.
+*   `push`: Upload local backup to remote storage.
+*   `pull`: Download backup from remote storage.
+*   `list-remote`: List available backups on remote storage.
+
+**Options:**
+*   `--no-confirm`: Skip confirmation prompts (for automation).
+
 ### The Migration Workflow
 
 Here is the recommended workflow for using `fc sync` to migrate to a new machine:
@@ -350,11 +367,19 @@ Run the `backup` command. This will create an encrypted `circus_backup.tar.gz.gp
 fc sync backup
 ```
 
-Once complete, copy this encrypted archive to an external drive or cloud storage service.
+Optionally, push to remote storage:
+
+```bash
+fc sync push
+```
 
 **2. On Your NEW Machine:**
 
-First, run the main `./install.sh` script to lay down the foundational scaffolding for your chosen role. Then, copy your encrypted backup archive to your new machine's home folder.
+First, run the main `./install.sh` script to lay down the foundational scaffolding for your chosen role. Then, either copy your encrypted backup archive manually or pull from remote storage:
+
+```bash
+fc sync pull
+```
 
 Finally, run the `restore` command. This will prompt for your GPG passphrase, decrypt the archive, and then restore your applications and data.
 
@@ -363,6 +388,49 @@ fc sync restore
 ```
 
 The result is a new machine that is a near-perfect mirror of your old environment.
+
+### Remote Storage
+
+`fc sync` supports uploading backups to cloud storage providers using [rclone](https://rclone.org/). This enables off-site backup protection against local data loss.
+
+**Setup:**
+
+1. Install rclone: `brew install rclone`
+2. Configure a remote: `rclone config`
+3. Edit sync.conf: `$EDITOR ~/.config/circus/sync.conf`
+4. Set `RCLONE_REMOTE` to your remote name (e.g., "gdrive", "s3-backup")
+
+**Configuration Variables:**
+
+```bash
+# Remote name as configured in rclone (run: rclone listremotes)
+RCLONE_REMOTE="gdrive"
+
+# Path within the remote for backups
+RCLONE_REMOTE_PATH="circus-backups"
+```
+
+**Examples:**
+
+```bash
+# Upload backup to remote
+fc sync push
+
+# Download backup from remote
+fc sync pull
+
+# List backups on remote
+fc sync list-remote
+```
+
+**Supported Providers:**
+
+rclone supports 40+ backends including:
+- Amazon S3, Google Drive, Dropbox
+- Backblaze B2, Microsoft OneDrive
+- SFTP, WebDAV, and many more
+
+See [rclone.org](https://rclone.org/) for the full list.
 
 ---
 

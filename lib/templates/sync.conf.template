@@ -36,3 +36,17 @@ BACKUP_TARGETS=(
   "$HOME/.gnupg"
   "$HOME/Documents"
 )
+
+# ------------------------------------------------------------------------------
+# Remote Storage Settings (Optional)
+# ------------------------------------------------------------------------------
+
+# rclone remote name (as configured in ~/.config/rclone/rclone.conf)
+# Example: "gdrive", "s3-backup", "dropbox", "b2-archive"
+# Leave empty to disable remote sync
+# Configure rclone with: rclone config
+# RCLONE_REMOTE=""
+
+# Remote path within the configured remote
+# Example: "backups/circus" or "my-bucket/dotfiles-backup"
+# RCLONE_REMOTE_PATH="circus-backups"

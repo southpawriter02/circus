@@ -212,3 +212,133 @@ EOF
     skip "gpg not installed, cannot test rsync dependency check"
   fi
 }
+
+# ==============================================================================
+# Remote Storage Tests
+# ==============================================================================
+
+@test "fc fc-sync --help shows remote subcommands" {
+  run "$FC_COMMAND" fc-sync --help
+  assert_success
+  assert_output --partial "push"
+  assert_output --partial "pull"
+  assert_output --partial "list-remote"
+}
+
+@test "fc fc-sync --help mentions rclone" {
+  run "$FC_COMMAND" fc-sync --help
+  assert_success
+  assert_output --partial "rclone"
+}
+
+@test "sync.conf.template contains remote storage variables" {
+  run cat "$PROJECT_ROOT/lib/templates/sync.conf.template"
+  assert_success
+  assert_output --partial "RCLONE_REMOTE"
+  assert_output --partial "RCLONE_REMOTE_PATH"
+}
+
+@test "fc fc-sync push requires rclone" {
+  export RCLONE_CMD="nonexistent-rclone-command"
+  run "$FC_COMMAND" fc-sync push
+  assert_failure
+  assert_output --partial "rclone is not installed"
+}
+
+@test "fc fc-sync pull requires rclone" {
+  export RCLONE_CMD="nonexistent-rclone-command"
+  run "$FC_COMMAND" fc-sync pull
+  assert_failure
+  assert_output --partial "rclone is not installed"
+}
+
+@test "fc fc-sync list-remote requires rclone" {
+  export RCLONE_CMD="nonexistent-rclone-command"
+  run "$FC_COMMAND" fc-sync list-remote
+  assert_failure
+  assert_output --partial "rclone is not installed"
+}
+
+@test "fc fc-sync push fails without RCLONE_REMOTE configured" {
+  # Create config without RCLONE_REMOTE
+  mkdir -p "$(dirname "$SYNC_CONFIG_FILE")"
+  cat > "$SYNC_CONFIG_FILE" << 'EOF'
+GPG_RECIPIENT_ID="test-key"
+BACKUP_TARGETS=("$HOME/.ssh")
+RCLONE_REMOTE=""
+EOF
+  chmod 600 "$SYNC_CONFIG_FILE"
+
+  # Mock rclone to be available
+  export PATH="$BATS_MOCK_BINDIR:$PATH"
+  mkdir -p "$BATS_MOCK_BINDIR"
+  cat > "$BATS_MOCK_BINDIR/rclone" << 'MOCK'
+#!/bin/bash
+echo "mock-remote:"
+exit 0
+MOCK
+  chmod +x "$BATS_MOCK_BINDIR/rclone"
+
+  run "$FC_COMMAND" fc-sync push
+  assert_failure
+  assert_output --partial "RCLONE_REMOTE is not configured"
+}
+
+@test "fc fc-sync push fails when local backup doesn't exist" {
+  mkdir -p "$(dirname "$SYNC_CONFIG_FILE")"
+  cat > "$SYNC_CONFIG_FILE" << 'EOF'
+GPG_RECIPIENT_ID="test-key"
+BACKUP_TARGETS=("$HOME/.ssh")
+RCLONE_REMOTE="myremote"
+RCLONE_REMOTE_PATH="backups"
+EOF
+  chmod 600 "$SYNC_CONFIG_FILE"
+
+  # Mock rclone
+  export PATH="$BATS_MOCK_BINDIR:$PATH"
+  mkdir -p "$BATS_MOCK_BINDIR"
+  cat > "$BATS_MOCK_BINDIR/rclone" << 'MOCK'
+#!/bin/bash
+if [[ "$1" == "listremotes" ]]; then
+  echo "myremote:"
+fi
+exit 0
+MOCK
+  chmod +x "$BATS_MOCK_BINDIR/rclone"
+
+  # Ensure no backup exists
+  rm -f "$HOME/circus_backup.tar.gz.gpg"
+
+  run "$FC_COMMAND" fc-sync --no-confirm push
+  assert_failure
+  assert_output --partial "Local backup not found"
+}
+
+@test "fc fc-sync push fails with invalid remote name" {
+  mkdir -p "$(dirname "$SYNC_CONFIG_FILE")"
+  cat > "$SYNC_CONFIG_FILE" << 'EOF'
+GPG_RECIPIENT_ID="test-key"
+BACKUP_TARGETS=("$HOME/.ssh")
+RCLONE_REMOTE="nonexistent-remote"
+RCLONE_REMOTE_PATH="backups"
+EOF
+  chmod 600 "$SYNC_CONFIG_FILE"
+
+  # Mock rclone with different remotes
+  export PATH="$BATS_MOCK_BINDIR:$PATH"
+  mkdir -p "$BATS_MOCK_BINDIR"
+  cat > "$BATS_MOCK_BINDIR/rclone" << 'MOCK'
+#!/bin/bash
+if [[ "$1" == "listremotes" ]]; then
+  echo "gdrive:"
+  echo "s3-backup:"
+fi
+exit 0
+MOCK
+  chmod +x "$BATS_MOCK_BINDIR/rclone"
+
+  run "$FC_COMMAND" fc-sync push
+  assert_failure
+  assert_output --partial "rclone remote 'nonexistent-remote' not found"
+  assert_output --partial "Available remotes"
+}

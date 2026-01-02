@@ -25,6 +25,10 @@ BACKUP_ARCHIVE_NAME="${BACKUP_ARCHIVE_NAME:-circus_backup.tar.gz.gpg}"
 GPG_RECIPIENT_ID=""
 BACKUP_TARGETS=()
 
+# Remote storage defaults
+RCLONE_REMOTE=""
+RCLONE_REMOTE_PATH="circus-backups"
+
 # Load user configuration if it exists
 if [ -f "$SYNC_CONFIG_FILE" ]; then
   # Security check: warn if file is world-writable (check "other" bits)
@@ -54,6 +58,32 @@ validate_config() {
   fi
 }
 
+# Validate remote storage configuration
+validate_remote_config() {
+  local rclone_cmd=${RCLONE_CMD:-rclone}
+
+  if [ -z "$RCLONE_REMOTE" ]; then
+    msg_error "RCLONE_REMOTE is not configured."
+    echo ""
+    msg_info "To configure remote storage:"
+    msg_info "  1. Configure rclone: rclone config"
+    msg_info "  2. Edit: \$EDITOR $SYNC_CONFIG_FILE"
+    msg_info "  3. Set RCLONE_REMOTE to your remote name"
+    die "Remote storage not configured."
+  fi
+
+  # Verify rclone remote exists
+  if ! "$rclone_cmd" listremotes 2>/dev/null | grep -q "^${RCLONE_REMOTE}:$"; then
+    msg_error "rclone remote '$RCLONE_REMOTE' not found."
+    echo ""
+    msg_info "Available remotes:"
+    "$rclone_cmd" listremotes 2>/dev/null || echo "  (none configured)"
+    echo ""
+    msg_info "Configure a new remote with: rclone config"
+    die "Invalid rclone remote: $RCLONE_REMOTE"
+  fi
+}
+
 # --- Usage Information ---
 usage() {
   msg_info "Usage: fc fc-sync [options] <subcommand>"
@@ -61,14 +91,18 @@ usage() {
   msg_info "Manages the encrypted backup and restoration of system state."
   echo ""
   msg_info "Subcommands:"
-  echo "  setup     - Create configuration file from template."
-  echo "  backup    - Backs up and encrypts critical data."
-  echo "  restore   - Decrypts and restores data from an encrypted backup."
+  echo "  setup       - Create configuration file from template."
+  echo "  backup      - Backs up and encrypts critical data."
+  echo "  restore     - Decrypts and restores data from an encrypted backup."
+  echo "  push        - Upload local backup to configured remote storage."
+  echo "  pull        - Download backup from remote storage."
+  echo "  list-remote - List available backups on remote storage."
   echo ""
   msg_info "Options:"
   echo "  --no-confirm  - Skip confirmation prompts (for automated/scheduled use)."
   echo ""
   msg_info "Configuration: $SYNC_CONFIG_FILE"
+  msg_info "Remote storage requires rclone: https://rclone.org/"
   exit 0
 }
 
@@ -189,6 +223,73 @@ do_restore() {
   msg_success "System restoration complete."
 }
 
+# --- Remote Storage Commands ---
+
+do_push() {
+  local rclone_cmd=${RCLONE_CMD:-rclone}
+
+  validate_remote_config
+
+  local local_archive_path="$BACKUP_DEST_DIR/$BACKUP_ARCHIVE_NAME"
+
+  if [ ! -f "$local_archive_path" ]; then
+    die "Local backup not found at: $local_archive_path. Run 'fc sync backup' first."
+  fi
+
+  local remote_dest="$RCLONE_REMOTE:$RCLONE_REMOTE_PATH/"
+
+  msg_info "Uploading backup to remote storage..."
+  msg_info "  Source: $local_archive_path"
+  msg_info "  Destination: $remote_dest"
+
+  if "$rclone_cmd" copy "$local_archive_path" "$remote_dest" --progress; then
+    msg_success "Backup uploaded successfully to $remote_dest"
+  else
+    die "Failed to upload backup to remote storage."
+  fi
+}
+
+do_pull() {
+  local rclone_cmd=${RCLONE_CMD:-rclone}
+
+  validate_remote_config
+
+  local local_dest_dir="$BACKUP_DEST_DIR"
+  local remote_src="$RCLONE_REMOTE:$RCLONE_REMOTE_PATH/$BACKUP_ARCHIVE_NAME"
+
+  msg_info "Downloading backup from remote storage..."
+  msg_info "  Source: $remote_src"
+  msg_info "  Destination: $local_dest_dir/"
+
+  if "$rclone_cmd" copy "$remote_src" "$local_dest_dir/" --progress; then
+    local local_archive_path="$local_dest_dir/$BACKUP_ARCHIVE_NAME"
+    if [ -f "$local_archive_path" ]; then
+      msg_success "Backup downloaded to: $local_archive_path"
+    else
+      die "Download appeared to succeed but file not found at: $local_archive_path"
+    fi
+  else
+    die "Failed to download backup from remote storage."
+  fi
+}
+
+do_list_remote() {
+  local rclone_cmd=${RCLONE_CMD:-rclone}
+
+  validate_remote_config
+
+  local remote_path="$RCLONE_REMOTE:$RCLONE_REMOTE_PATH/"
+
+  msg_info "Listing backups at: $remote_path"
+  echo ""
+
+  if ! "$rclone_cmd" ls "$remote_path" 2>/dev/null; then
+    msg_warning "No backups found or unable to list remote path."
+    msg_info "Ensure the remote path exists and rclone is configured correctly."
+    return 1
+  fi
+}
+
 # --- Dependency Checks ---
 check_dependencies() {
   local gpg_cmd=${GPG_CMD:-gpg}
@@ -200,6 +301,18 @@ check_dependencies() {
 
   if ! command -v "$rsync_cmd" >/dev/null 2>&1; then
     die "This command requires 'rsync'. Please install it first."
+  fi
+}
+
+check_remote_dependencies() {
+  local rclone_cmd=${RCLONE_CMD:-rclone}
+
+  if ! command -v "$rclone_cmd" >/dev/null 2>&1; then
+    msg_error "rclone is not installed."
+    echo ""
+    msg_info "Install rclone with: brew install rclone"
+    msg_info "Then configure a remote with: rclone config"
+    die "rclone required for remote storage operations."
   fi
 }
 
@@ -246,6 +359,24 @@ main() {
         prompt_for_confirmation "Ready to restore from an encrypted backup. This may overwrite existing files."
       fi
       do_restore
+      ;;
+    push)
+      check_remote_dependencies
+      if [ "$no_confirm" = false ]; then
+        prompt_for_confirmation "Ready to upload backup to remote storage."
+      fi
+      do_push
+      ;;
+    pull)
+      check_remote_dependencies
+      if [ "$no_confirm" = false ]; then
+        prompt_for_confirmation "Ready to download backup from remote storage."
+      fi
+      do_pull
+      ;;
+    list-remote)
+      check_remote_dependencies
+      do_list_remote
       ;;
     *)
       die "Unknown subcommand: $subcommand. Run 'fc sync --help' for available subcommands."

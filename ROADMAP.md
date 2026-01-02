@@ -53,7 +53,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
 
 *   **Key Features:**
     *   **Advanced Backups:**
-        *   `01-remote-backup-storage`: The top priority for this phase. Add support for backing up to S3 or other cloud providers.
+        *   ~~`01-remote-backup-storage`~~: **DONE** - Extended `fc sync` with `push`, `pull`, and `list-remote` subcommands for remote backup storage using rclone. Supports 40+ cloud providers (S3, Google Drive, Dropbox, Backblaze B2, etc.). Configuration via `RCLONE_REMOTE` and `RCLONE_REMOTE_PATH` in sync.conf. Documentation in `COMMANDS.md`.
         *   `10-multiple-backup-backends`: Allow users to configure and use multiple backup destinations.
     *   **Automation:**
         *   `27-automated-new-machine-setup`: A meta-command that runs a series of other commands to fully provision a new machine.
