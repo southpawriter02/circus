@@ -13,7 +13,7 @@ main() {
   msg_info "Stage 10: Git Configuration"
 
   # --- Configuration ---
-  local git_profile_dir="$DOTFILES_ROOT/profiles/git"
+  local git_profile_dir="$DOTFILES_ROOT/profiles/base/git"
   declare -A files_to_symlink
   files_to_symlink["$git_profile_dir/.gitconfig"]="$HOME/.gitconfig"
   files_to_symlink["$git_profile_dir/.gitignore_global"]="$HOME/.gitignore_global"

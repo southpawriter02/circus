@@ -50,7 +50,7 @@ main() {
   msg_info "Deploying core shell configuration..."
 
   # 1. Deploy the main .zshrc file.
-  symlink_with_backup "$DOTFILES_ROOT/profiles/zsh/zshrc.symlink" "$HOME/.zshrc"
+  symlink_with_backup "$DOTFILES_ROOT/profiles/base/zsh/zshrc.symlink" "$HOME/.zshrc"
 
   # 2. Deploy the custom Oh My Zsh plugin.
   #    This requires the ~/.oh-my-zsh/custom/plugins directory to exist.
@@ -60,7 +60,7 @@ main() {
   else
     mkdir -p "$custom_plugin_dir"
   fi
-  symlink_with_backup "$DOTFILES_ROOT/profiles/zsh/oh-my-zsh-custom/circus" "$custom_plugin_dir/circus"
+  symlink_with_backup "$DOTFILES_ROOT/profiles/base/zsh/oh-my-zsh-custom/circus" "$custom_plugin_dir/circus"
 
   # --- Make CLI Plugins Executable ---
   msg_info "Making fc command plugins executable..."

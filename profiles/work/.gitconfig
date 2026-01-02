@@ -1,0 +1,11 @@
+# Work profile git configuration
+# This overrides settings from base/.gitconfig when the work profile is active
+
+[user]
+    name = Your Name
+    email = your.name@company.com
+
+[commit]
+    gpgsign = true
+
+# Add work-specific settings below

@@ -1,0 +1,8 @@
+# Personal profile git configuration
+# This overrides settings from base/.gitconfig when the personal profile is active
+
+[user]
+    name = Your Name
+    email = personal@example.com
+
+# Add personal-specific settings below

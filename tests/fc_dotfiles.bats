@@ -146,14 +146,18 @@ teardown() {
   assert [ -d "$PROJECT_ROOT/profiles" ]
 }
 
-@test "profiles/bash directory exists" {
-  assert [ -d "$PROJECT_ROOT/profiles/bash" ]
+@test "profiles/base directory exists" {
+  assert [ -d "$PROJECT_ROOT/profiles/base" ]
 }
 
-@test "profiles/git directory exists" {
-  assert [ -d "$PROJECT_ROOT/profiles/git" ]
+@test "profiles/base/bash directory exists" {
+  assert [ -d "$PROJECT_ROOT/profiles/base/bash" ]
 }
 
-@test "profiles/zsh directory exists" {
-  assert [ -d "$PROJECT_ROOT/profiles/zsh" ]
+@test "profiles/base/git directory exists" {
+  assert [ -d "$PROJECT_ROOT/profiles/base/git" ]
+}
+
+@test "profiles/base/zsh directory exists" {
+  assert [ -d "$PROJECT_ROOT/profiles/base/zsh" ]
 }

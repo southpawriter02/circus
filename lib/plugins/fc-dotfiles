@@ -15,9 +15,9 @@ source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Configuration -----------------------------------------------------------
 
-readonly PROFILES_DIR="$DOTFILES_ROOT/profiles"
+readonly PROFILES_DIR="$DOTFILES_ROOT/profiles/base"
 
-# Known subdirectories in profiles/
+# Known subdirectories in profiles/base/
 readonly KNOWN_SUBDIRS=("bash" "git" "jetbrains" "sh" "zsh")
 
 # --- Usage Information -------------------------------------------------------

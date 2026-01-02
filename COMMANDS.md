@@ -362,10 +362,74 @@ fc fc-dotfiles edit .gitconfig
 When you run `fc fc-dotfiles add`, the command will:
 
 1. Prompt you to select a target subdirectory (bash, git, zsh, etc.)
-2. Move the file to `profiles/<subdir>/`
+2. Move the file to `profiles/base/<subdir>/`
 3. Create a symlink from the original location to the new location
 
 This keeps your dotfiles organized and tracked in the repository while maintaining their expected location in your home directory.
+
+---
+
+## `fc profile`
+
+Manage dotfile profiles for switching between different configurations (e.g., work vs personal). Profiles allow you to maintain environment-specific overrides while sharing a common base configuration.
+
+**Usage:**
+
+```bash
+fc fc-profile <subcommand>
+```
+
+**Subcommands:**
+*   `list`: List all available profiles and show which one is active.
+*   `current`: Display the currently active profile and its overrides.
+*   `switch <profile>`: Switch to a different profile.
+
+**Examples:**
+
+```bash
+# List available profiles
+fc fc-profile list
+
+# See current profile
+fc fc-profile current
+
+# Switch to work profile
+fc fc-profile switch work
+
+# Switch to personal profile
+fc fc-profile switch personal
+```
+
+### How Profiles Work
+
+Profiles use a layering system:
+
+1. **Base Configuration** (`profiles/base/`): Common dotfiles shared across all environments
+2. **Profile Overrides** (`profiles/<name>/`): Environment-specific files that replace base files
+
+When you switch profiles:
+1. All dotfiles from `profiles/base/` are symlinked to your home directory
+2. Files from the selected profile override the base symlinks
+3. The current profile is saved to `~/.config/circus/current_profile`
+
+### Creating a New Profile
+
+```bash
+# Create a new profile directory
+mkdir -p profiles/myprofile
+
+# Add override files (e.g., a different .gitconfig)
+cat > profiles/myprofile/.gitconfig << 'EOF'
+[user]
+    name = Your Name
+    email = specific@email.com
+EOF
+
+# Switch to your new profile
+fc fc-profile switch myprofile
+```
+
+See `docs/PROFILES.md` for detailed documentation on the profile system.
 
 ---
 

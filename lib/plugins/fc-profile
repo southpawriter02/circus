@@ -1,0 +1,276 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-profile
+#
+# DESCRIPTION:  Manage dotfile profiles for the Dotfiles Flying Circus.
+#               Provides commands to list, view current, and switch between
+#               different dotfile profiles (e.g., work vs personal).
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration -----------------------------------------------------------
+
+readonly PROFILES_DIR="$DOTFILES_ROOT/profiles"
+readonly BASE_PROFILE_DIR="$PROFILES_DIR/base"
+readonly PROFILE_STATE_FILE="$HOME/.config/circus/current_profile"
+
+# --- Usage Information -------------------------------------------------------
+
+usage() {
+  msg_info "Usage: fc fc-profile <subcommand>"
+  echo ""
+  msg_info "Manage dotfile profiles for environment-specific configurations."
+  echo ""
+  msg_info "Subcommands:"
+  echo "  list              - List available profiles"
+  echo "  current           - Show the current active profile"
+  echo "  switch <profile>  - Switch to a different profile"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc fc-profile list"
+  echo "  fc fc-profile current"
+  echo "  fc fc-profile switch work"
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+#
+# @description Get list of available profiles (directories in profiles/ except base)
+#
+get_available_profiles() {
+  local profiles=()
+  for dir in "$PROFILES_DIR"/*/; do
+    [ -d "$dir" ] || continue
+    local name
+    name=$(basename "$dir")
+    # Skip 'base' - it's not a switchable profile
+    [ "$name" = "base" ] && continue
+    profiles+=("$name")
+  done
+  printf '%s\n' "${profiles[@]}"
+}
+
+#
+# @description Get the current active profile from state file
+#
+get_current_profile() {
+  if [ -f "$PROFILE_STATE_FILE" ]; then
+    cat "$PROFILE_STATE_FILE"
+  else
+    echo "none"
+  fi
+}
+
+#
+# @description Set the current profile in state file
+#
+set_current_profile() {
+  local profile="$1"
+  mkdir -p "$(dirname "$PROFILE_STATE_FILE")"
+  echo "$profile" > "$PROFILE_STATE_FILE"
+}
+
+#
+# @description Create a symlink with backup of existing file
+#
+symlink_with_backup() {
+  local source="$1"
+  local dest="$2"
+
+  # If destination exists and is not a symlink, back it up
+  if [ -e "$dest" ] && [ ! -L "$dest" ]; then
+    local backup_path="${dest}.backup-$(date +%Y%m%d%H%M%S)"
+    msg_info "  Backing up existing file to $(basename "$backup_path")"
+    mv "$dest" "$backup_path"
+  fi
+
+  # Remove existing symlink if present
+  [ -L "$dest" ] && rm "$dest"
+
+  # Create symlink
+  ln -s "$source" "$dest"
+}
+
+# --- Command Logic -----------------------------------------------------------
+
+do_list() {
+  msg_info "Available profiles:"
+  echo ""
+
+  local profiles
+  profiles=$(get_available_profiles)
+
+  if [ -z "$profiles" ]; then
+    echo "  (no profiles found)"
+    echo ""
+    msg_info "Create a profile by adding a directory to profiles/"
+    msg_info "Example: mkdir -p $PROFILES_DIR/work"
+    return 0
+  fi
+
+  local current
+  current=$(get_current_profile)
+
+  while IFS= read -r profile; do
+    if [ "$profile" = "$current" ]; then
+      echo "  * $profile (active)"
+    else
+      echo "    $profile"
+    fi
+  done <<< "$profiles"
+
+  echo ""
+  msg_info "Use 'fc fc-profile switch <name>' to switch profiles."
+}
+
+do_current() {
+  local current
+  current=$(get_current_profile)
+
+  if [ "$current" = "none" ]; then
+    msg_info "No profile is currently active."
+    msg_info "Only base dotfiles are in use."
+    msg_info ""
+    msg_info "Use 'fc fc-profile list' to see available profiles."
+  else
+    msg_info "Current profile: $current"
+
+    # Show what files this profile provides
+    local profile_dir="$PROFILES_DIR/$current"
+    if [ -d "$profile_dir" ]; then
+      local files
+      files=$(find "$profile_dir" -type f -name ".*" -o -type f ! -name ".*" 2>/dev/null | head -10)
+      if [ -n "$files" ]; then
+        echo ""
+        msg_info "Profile overrides:"
+        while IFS= read -r file; do
+          echo "  - $(basename "$file")"
+        done <<< "$files"
+      fi
+    fi
+  fi
+}
+
+do_switch() {
+  local target_profile="$1"
+
+  if [ -z "$target_profile" ]; then
+    die "Usage: fc fc-profile switch <profile>\n\nRun 'fc fc-profile list' to see available profiles."
+  fi
+
+  local profile_dir="$PROFILES_DIR/$target_profile"
+
+  # Validate profile exists
+  if [ ! -d "$profile_dir" ]; then
+    die "Profile not found: $target_profile\n\nRun 'fc fc-profile list' to see available profiles."
+  fi
+
+  local current
+  current=$(get_current_profile)
+
+  if [ "$current" = "$target_profile" ]; then
+    msg_info "Profile '$target_profile' is already active."
+    return 0
+  fi
+
+  msg_info "Switching to profile: $target_profile"
+  echo ""
+
+  # Step 1: Apply base profile dotfiles
+  msg_info "Applying base profile..."
+
+  for subdir in "$BASE_PROFILE_DIR"/*/; do
+    [ -d "$subdir" ] || continue
+    local subdir_name
+    subdir_name=$(basename "$subdir")
+
+    # Skip oh-my-zsh-custom (handled separately)
+    [[ "$subdir_name" == "oh-my-zsh-custom" ]] && continue
+
+    for file in "$subdir"/.*; do
+      [ -f "$file" ] || continue
+      local filename
+      filename=$(basename "$file")
+
+      # Skip . and ..
+      [[ "$filename" == "." || "$filename" == ".." ]] && continue
+
+      local home_path="$HOME/$filename"
+      echo "  [base] $filename"
+      symlink_with_backup "$file" "$home_path"
+    done
+  done
+
+  # Handle zsh/zshrc.symlink specially
+  local zshrc_source="$BASE_PROFILE_DIR/zsh/zshrc.symlink"
+  if [ -f "$zshrc_source" ]; then
+    echo "  [base] .zshrc"
+    symlink_with_backup "$zshrc_source" "$HOME/.zshrc"
+  fi
+
+  echo ""
+
+  # Step 2: Apply profile-specific overrides
+  msg_info "Applying $target_profile profile overrides..."
+
+  local has_overrides=false
+  for file in "$profile_dir"/.*  "$profile_dir"/*; do
+    [ -f "$file" ] || continue
+    local filename
+    filename=$(basename "$file")
+
+    # Skip . and ..
+    [[ "$filename" == "." || "$filename" == ".." ]] && continue
+
+    has_overrides=true
+    local home_path="$HOME/$filename"
+    echo "  [override] $filename"
+    symlink_with_backup "$file" "$home_path"
+  done
+
+  if [ "$has_overrides" = false ]; then
+    echo "  (no overrides in this profile)"
+  fi
+
+  echo ""
+
+  # Save state
+  set_current_profile "$target_profile"
+
+  msg_success "Profile switched to: $target_profile"
+  msg_info "Restart your shell or run 'source ~/.zshrc' to apply changes."
+}
+
+# --- Main Dispatcher ---------------------------------------------------------
+
+main() {
+  if [ -z "$1" ] || [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  local subcommand="$1"
+  shift
+
+  case "$subcommand" in
+    list)
+      do_list
+      ;;
+    current)
+      do_current
+      ;;
+    switch)
+      do_switch "$@"
+      ;;
+    *)
+      die "Unknown subcommand: $subcommand. Run 'fc fc-profile --help' for usage."
+      ;;
+  esac
+}
+
+main "$@"

@@ -13,7 +13,7 @@ main() {
   msg_info "Stage 16: JetBrains IDE Configuration"
 
   # --- Configuration ---
-  local jetbrains_profile_dir="$DOTFILES_ROOT/profiles/jetbrains"
+  local jetbrains_profile_dir="$DOTFILES_ROOT/profiles/base/jetbrains"
   declare -A files_to_symlink
   files_to_symlink["$jetbrains_profile_dir/.ideavimrc"]="$HOME/.ideavimrc"
   files_to_symlink["$jetbrains_profile_dir/ide-scripting.js"]="$HOME/.config/JetBrains/ide-scripting.js"
