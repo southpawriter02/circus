@@ -14,6 +14,70 @@ To see a list of all available commands, simply run `fc` with no arguments.
 
 ---
 
+## `fc bootstrap`
+
+Orchestrate the complete setup of a new machine. Runs a series of phases to install dependencies, deploy dotfiles, configure the system, and install applications.
+
+**Usage:**
+
+```bash
+fc fc-bootstrap [subcommand] [options]
+```
+
+**Subcommands:**
+*   *(none)*: Run interactive bootstrap wizard.
+*   `status`: Show bootstrap status and completed phases.
+*   `resume`: Resume a previously interrupted bootstrap.
+*   `reset`: Clear bootstrap state to start fresh.
+
+**Options:**
+*   `--role <role>`: Set installation role (developer, personal, work).
+*   `--dry-run`: Show what would be done without executing.
+*   `--skip <phase>`: Skip a specific phase (can be repeated).
+*   `--only <phase>`: Run only a specific phase.
+*   `--no-restore`: Skip restore phase even if backup exists.
+*   `--force`: Re-run phases even if already completed.
+*   `--gum`: Use Gum-based TUI (if available).
+
+**Phases:**
+| Phase | Description |
+|-------|-------------|
+| `preflight` | Check system requirements (macOS version, disk space, internet) |
+| `homebrew` | Install/update Homebrew and core dependencies |
+| `restore` | Optionally restore from `fc sync` backup |
+| `dotfiles` | Deploy dotfiles and shell configuration |
+| `apps` | Install applications via `fc apps` and Brewfiles |
+| `configure` | Configure git identity, SSH keys, and macOS defaults |
+| `health` | Run health checks and generate a bootstrap report |
+
+**Examples:**
+
+```bash
+# Interactive bootstrap wizard
+fc fc-bootstrap
+
+# Check what's been configured
+fc fc-bootstrap status
+
+# Preview without making changes
+fc fc-bootstrap --dry-run
+
+# Resume after interruption
+fc fc-bootstrap resume
+
+# Run only the configure phase
+fc fc-bootstrap --only configure --force
+
+# Unattended setup (with bootstrap.conf configured)
+AUTO_CONFIRM=true fc fc-bootstrap
+```
+
+**Configuration:**
+
+For customized or unattended setup, create `~/.config/circus/bootstrap.conf`. See `docs/BOOTSTRAP.md` for full documentation.
+
+---
+
 ## `fc info`
 
 Displays a detailed report of your system's hardware, software, and network configuration.
@@ -331,6 +395,91 @@ SSH Keys in /Users/you/.ssh:
   work                 ED25519    user@company.com
   github               RSA        old-key@example.com
 ```
+
+---
+
+## `fc secrets`
+
+Unified secrets management command that integrates with multiple secrets managers (1Password CLI, macOS Keychain, HashiCorp Vault) to fetch secrets and sync them to environment variables or files.
+
+**Usage:**
+
+```bash
+fc fc-secrets <subcommand> [options]
+```
+
+**Subcommands:**
+*   `setup`: Create configuration file and check prerequisites.
+*   `sync`: Sync all secrets from config to their destinations.
+*   `get <uri>`: Fetch a single secret and print to stdout.
+*   `list`: List configured secrets and their destinations.
+*   `status`: Show backend authentication status.
+*   `verify`: Verify all secrets are accessible (dry-run).
+
+**Backends:**
+
+| Backend | URI Prefix | Requirements |
+|---------|------------|--------------|
+| 1Password | `op://` | `op` CLI installed, signed in |
+| macOS Keychain | `keychain://` | Built-in on macOS |
+| HashiCorp Vault | `vault://` | `vault` CLI installed, authenticated |
+
+**URI Formats:**
+
+```bash
+# 1Password
+op://vault/item/field
+op://Personal/github.com/token
+
+# macOS Keychain
+keychain://service/account
+keychain://api-service/production
+
+# HashiCorp Vault
+vault://path/to/secret#field
+vault://secret/data/myapp#api_key
+```
+
+**Configuration:**
+
+Secrets are configured in `~/.config/circus/secrets.conf`:
+
+```bash
+# Format: "<uri>" "<destination>" [permissions]
+
+# Environment variables (written to ~/.zshenv.local)
+"op://Personal/github/token"           "env:GITHUB_TOKEN"
+"keychain://api-service/key"           "env:API_KEY"
+"vault://secret/data/app#api_key"      "env:APP_API_KEY"
+
+# Files with optional permissions
+"op://Work/certs/tls"                  "~/.config/app/tls.crt" "644"
+"vault://secret/data/db#password"      "~/.config/db/password" "600"
+```
+
+**Examples:**
+
+```bash
+# Initial setup
+fc fc-secrets setup
+
+# Sync all configured secrets
+fc fc-secrets sync
+
+# Get a single secret (for scripting)
+API_KEY=$(fc fc-secrets get op://Work/api/key)
+
+# Check backend status
+fc fc-secrets status
+
+# Verify all secrets are accessible
+fc fc-secrets verify
+
+# List configured secrets
+fc fc-secrets list
+```
+
+**Full Documentation:** See `docs/SECRETS.md` for complete backend setup and configuration details.
 
 ---
 

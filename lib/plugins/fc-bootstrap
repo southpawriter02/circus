@@ -1,0 +1,495 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-bootstrap
+#
+# DESCRIPTION:  Meta-command that orchestrates the complete setup of a new
+#               machine. Runs a series of phases to install dependencies,
+#               deploy dotfiles, configure the system, and install applications.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ---
+readonly BOOTSTRAP_CONFIG_FILE="$HOME/.config/circus/bootstrap.conf"
+readonly BOOTSTRAP_CONFIG_TEMPLATE="$DOTFILES_ROOT/lib/templates/bootstrap.conf.template"
+readonly BOOTSTRAP_STATE_DIR="$HOME/.circus/bootstrap"
+readonly BOOTSTRAP_PHASES_DIR="$DOTFILES_ROOT/lib/bootstrap_phases"
+readonly BOOTSTRAP_LOG_FILE="$HOME/.circus/logs/bootstrap.log"
+
+# --- Default Settings ---
+BOOTSTRAP_ROLE=""
+BOOTSTRAP_PRIVACY_PROFILE="standard"
+BOOTSTRAP_DRY_RUN=false
+BOOTSTRAP_FORCE=false
+AUTO_CONFIRM=false
+AUTO_RESTORE=false
+USE_GUM=false
+SUBCOMMAND=""
+ONLY_PHASE=""
+
+# Git configuration (for configure phase)
+GIT_USER_NAME=""
+GIT_USER_EMAIL=""
+AUTO_GENERATE_SSH_KEY=true
+SSH_KEY_EMAIL=""
+
+# --- Phase Skip Flags ---
+SKIP_PHASE_PREFLIGHT=false
+SKIP_PHASE_HOMEBREW=false
+SKIP_PHASE_RESTORE=false
+SKIP_PHASE_DOTFILES=false
+SKIP_PHASE_APPS=false
+SKIP_PHASE_CONFIGURE=false
+SKIP_PHASE_HEALTH=false
+
+# --- Phase Definitions ---
+# Format: id:name:description
+declare -a BOOTSTRAP_PHASES=(
+  "preflight:Preflight Checks:Verifying system requirements"
+  "homebrew:Homebrew Setup:Installing package manager and dependencies"
+  "restore:Backup Restore:Restoring from previous backup"
+  "dotfiles:Dotfiles Deployment:Setting up configuration files"
+  "apps:Application Installation:Installing applications"
+  "configure:System Configuration:Configuring git, SSH, and system settings"
+  "health:Health Check:Running final health checks"
+)
+
+# --- Usage Information ---
+usage() {
+  msg_info "Usage: fc bootstrap [subcommand] [options]"
+  echo ""
+  msg_info "Orchestrates the complete setup of a new machine."
+  echo ""
+  msg_info "Subcommands:"
+  echo "  (none)       Run interactive bootstrap wizard"
+  echo "  status       Show bootstrap status and completed phases"
+  echo "  resume       Resume a previously interrupted bootstrap"
+  echo "  reset        Clear bootstrap state to start fresh"
+  echo ""
+  msg_info "Options:"
+  echo "  --role <role>       Set role (developer, personal, work)"
+  echo "  --dry-run           Show what would be done without executing"
+  echo "  --skip <phase>      Skip a specific phase (can be repeated)"
+  echo "  --only <phase>      Run only a specific phase"
+  echo "  --no-restore        Skip restore phase even if backup exists"
+  echo "  --force             Re-run phases even if already completed"
+  echo "  --gum               Use Gum-based TUI (if available)"
+  echo "  --help              Show this help message"
+  echo ""
+  msg_info "Phases:"
+  echo "  preflight    - Check system requirements, detect existing setup"
+  echo "  homebrew     - Install/update Homebrew and core dependencies"
+  echo "  restore      - Restore from fc sync backup (optional)"
+  echo "  dotfiles     - Deploy dotfiles and shell configuration"
+  echo "  apps         - Install applications via fc-apps"
+  echo "  configure    - Configure git, SSH, and system settings"
+  echo "  health       - Run health checks and generate report"
+  echo ""
+  msg_info "Configuration: $BOOTSTRAP_CONFIG_FILE"
+  msg_info "State directory: $BOOTSTRAP_STATE_DIR"
+  echo ""
+  msg_info "For unattended setup, configure bootstrap.conf and set AUTO_CONFIRM=true"
+  exit 0
+}
+
+# --- Argument Parsing ---
+parse_arguments() {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --help|-h)
+        usage
+        ;;
+      --role)
+        BOOTSTRAP_ROLE="$2"
+        shift 2
+        ;;
+      --dry-run)
+        BOOTSTRAP_DRY_RUN=true
+        shift
+        ;;
+      --skip)
+        local skip_var="SKIP_PHASE_$(echo "$2" | tr '[:lower:]' '[:upper:]')"
+        eval "$skip_var=true"
+        shift 2
+        ;;
+      --only)
+        ONLY_PHASE="$2"
+        shift 2
+        ;;
+      --no-restore)
+        SKIP_PHASE_RESTORE=true
+        shift
+        ;;
+      --force)
+        BOOTSTRAP_FORCE=true
+        shift
+        ;;
+      --gum)
+        USE_GUM=true
+        shift
+        ;;
+      status|resume|reset)
+        SUBCOMMAND="$1"
+        shift
+        ;;
+      *)
+        die "Unknown option: $1. Run 'fc bootstrap --help' for usage."
+        ;;
+    esac
+  done
+}
+
+# --- State Management ---
+phase_completed() {
+  [ -f "$BOOTSTRAP_STATE_DIR/$1.done" ]
+}
+
+mark_phase_completed() {
+  mkdir -p "$BOOTSTRAP_STATE_DIR"
+  date "+%Y-%m-%d %H:%M:%S" > "$BOOTSTRAP_STATE_DIR/$1.done"
+}
+
+get_phase_completion_time() {
+  local phase="$1"
+  if [ -f "$BOOTSTRAP_STATE_DIR/$phase.done" ]; then
+    cat "$BOOTSTRAP_STATE_DIR/$phase.done"
+  fi
+}
+
+clear_bootstrap_state() {
+  if [ -d "$BOOTSTRAP_STATE_DIR" ]; then
+    rm -rf "$BOOTSTRAP_STATE_DIR"
+    msg_success "Bootstrap state cleared."
+  else
+    msg_info "No bootstrap state to clear."
+  fi
+}
+
+# --- Backup Detection ---
+backup_exists() {
+  # Check for local backup file (GPG backend default location)
+  local backup_path="${BACKUP_DEST_DIR:-$HOME}/${BACKUP_ARCHIVE_NAME:-circus_backup.tar.gz.gpg}"
+  [ -f "$backup_path" ]
+}
+
+# --- Interactive Wizards ---
+wizard_shell() {
+  echo ""
+  ui_box_top "Bootstrap Configuration"
+  echo ""
+
+  # Role selection
+  if [ -z "$BOOTSTRAP_ROLE" ]; then
+    msg_info "Select installation role:"
+    echo ""
+    echo "  1) developer - Full development environment"
+    echo "  2) personal  - Personal productivity setup"
+    echo "  3) work      - Work/corporate environment"
+    echo ""
+    read -rp "Choice [1-3, default: 1]: " role_choice
+    case "$role_choice" in
+      2) BOOTSTRAP_ROLE="personal" ;;
+      3) BOOTSTRAP_ROLE="work" ;;
+      *) BOOTSTRAP_ROLE="developer" ;;
+    esac
+    echo ""
+  fi
+
+  # Check for backup and offer restore
+  if [ "$SKIP_PHASE_RESTORE" = false ] && backup_exists; then
+    msg_info "Backup detected. Would you like to restore from it?"
+    read -rp "Restore from backup? [y/N]: " restore_choice
+    if [[ "$restore_choice" =~ ^[Yy]$ ]]; then
+      AUTO_RESTORE=true
+    fi
+    echo ""
+  fi
+
+  # Privacy profile
+  msg_info "Select privacy profile:"
+  echo ""
+  echo "  1) standard - Default macOS settings"
+  echo "  2) privacy  - Enhanced privacy settings"
+  echo "  3) lockdown - Maximum security settings"
+  echo ""
+  read -rp "Choice [1-3, default: 1]: " privacy_choice
+  case "$privacy_choice" in
+    2) BOOTSTRAP_PRIVACY_PROFILE="privacy" ;;
+    3) BOOTSTRAP_PRIVACY_PROFILE="lockdown" ;;
+    *) BOOTSTRAP_PRIVACY_PROFILE="standard" ;;
+  esac
+  echo ""
+
+  ui_box_bottom
+}
+
+wizard_gum() {
+  echo ""
+  ui_box_top "Bootstrap Configuration"
+  echo ""
+
+  # Role selection
+  if [ -z "$BOOTSTRAP_ROLE" ]; then
+    BOOTSTRAP_ROLE=$(gum choose --header "Select installation role:" \
+      --item.foreground 250 \
+      "developer" "personal" "work")
+    echo ""
+  fi
+
+  # Check for backup and offer restore
+  if [ "$SKIP_PHASE_RESTORE" = false ] && backup_exists; then
+    if gum confirm "Backup detected. Restore from it?"; then
+      AUTO_RESTORE=true
+    fi
+    echo ""
+  fi
+
+  # Privacy profile
+  BOOTSTRAP_PRIVACY_PROFILE=$(gum choose --header "Select privacy profile:" \
+    --item.foreground 250 \
+    "standard" "privacy" "lockdown")
+  echo ""
+
+  ui_box_bottom
+}
+
+select_wizard_mode() {
+  if [ "$USE_GUM" = true ] && command -v gum >/dev/null 2>&1; then
+    wizard_gum
+  else
+    wizard_shell
+  fi
+}
+
+confirm_settings() {
+  echo ""
+  msg_info "Bootstrap will run with the following settings:"
+  echo ""
+  ui_keyval "Role" "$BOOTSTRAP_ROLE"
+  ui_keyval "Privacy Profile" "$BOOTSTRAP_PRIVACY_PROFILE"
+  ui_keyval "Restore from Backup" "$([ "$AUTO_RESTORE" = true ] && echo "Yes" || echo "No")"
+  ui_keyval "Dry Run" "$([ "$BOOTSTRAP_DRY_RUN" = true ] && echo "Yes" || echo "No")"
+  echo ""
+
+  if [ "$AUTO_CONFIRM" = false ]; then
+    read -rp "Continue with these settings? [Y/n]: " confirm
+    if [[ "$confirm" =~ ^[Nn]$ ]]; then
+      msg_info "Bootstrap cancelled."
+      exit 0
+    fi
+  fi
+}
+
+# --- Phase Execution ---
+run_phase() {
+  local phase_id="$1"
+  local phase_name="$2"
+  local phase_desc="$3"
+
+  # Check if we're running only a specific phase
+  if [ -n "$ONLY_PHASE" ] && [ "$ONLY_PHASE" != "$phase_id" ]; then
+    return 0
+  fi
+
+  # Check if phase should be skipped
+  local skip_var="SKIP_PHASE_$(echo "$phase_id" | tr '[:lower:]' '[:upper:]')"
+  if [ "${!skip_var}" = true ]; then
+    msg_info "Skipping phase: $phase_name"
+    return 0
+  fi
+
+  # Check if already completed (unless force mode)
+  if [ "$BOOTSTRAP_FORCE" = false ] && phase_completed "$phase_id"; then
+    local completed_time
+    completed_time=$(get_phase_completion_time "$phase_id")
+    msg_info "Phase already completed: $phase_name ($completed_time)"
+    return 0
+  fi
+
+  # Run the phase
+  echo ""
+  msg_info "Starting phase: $phase_name"
+  msg_info "$phase_desc"
+  echo ""
+
+  local phase_script="$BOOTSTRAP_PHASES_DIR/${phase_id}.sh"
+  if [ -f "$phase_script" ]; then
+    if [ "$BOOTSTRAP_DRY_RUN" = true ]; then
+      msg_info "[DRY-RUN] Would run: $phase_script"
+    else
+      # Export variables for phase scripts
+      export BOOTSTRAP_ROLE
+      export BOOTSTRAP_PRIVACY_PROFILE
+      export BOOTSTRAP_DRY_RUN
+      export AUTO_RESTORE
+      export GIT_USER_NAME
+      export GIT_USER_EMAIL
+      export AUTO_GENERATE_SSH_KEY
+      export SSH_KEY_EMAIL
+
+      # Source and run the phase script
+      # shellcheck source=/dev/null
+      source "$phase_script"
+
+      # Mark phase as completed
+      mark_phase_completed "$phase_id"
+    fi
+  else
+    msg_warning "Phase script not found: $phase_script"
+  fi
+
+  msg_success "Completed phase: $phase_name"
+}
+
+# --- Status Display ---
+show_status() {
+  echo ""
+  ui_box_top "Bootstrap Status"
+  echo ""
+
+  for phase_def in "${BOOTSTRAP_PHASES[@]}"; do
+    IFS=':' read -r id name _ <<< "$phase_def"
+
+    if phase_completed "$id"; then
+      local completed_time
+      completed_time=$(get_phase_completion_time "$id")
+      printf "  ${UI_SUCCESS}%s${UI_RESET} %-20s %s\n" "✓" "$name" "$completed_time"
+    else
+      printf "  ${UI_MUTED}%s${UI_RESET} %-20s %s\n" "○" "$name" "Not completed"
+    fi
+  done
+
+  echo ""
+  ui_box_bottom
+
+  # Show configuration status
+  echo ""
+  msg_info "Configuration:"
+  if [ -f "$BOOTSTRAP_CONFIG_FILE" ]; then
+    ui_keyval "Config file" "$BOOTSTRAP_CONFIG_FILE (exists)"
+  else
+    ui_keyval "Config file" "Not configured"
+  fi
+
+  if backup_exists; then
+    ui_keyval "Backup" "Available for restore"
+  else
+    ui_keyval "Backup" "None found"
+  fi
+}
+
+# --- Resume Bootstrap ---
+resume_bootstrap() {
+  msg_info "Resuming bootstrap..."
+  echo ""
+
+  # Find the first incomplete phase
+  for phase_def in "${BOOTSTRAP_PHASES[@]}"; do
+    IFS=':' read -r id name desc <<< "$phase_def"
+    if ! phase_completed "$id"; then
+      msg_info "Resuming from phase: $name"
+      break
+    fi
+  done
+
+  run_bootstrap
+}
+
+# --- Print Completion Report ---
+print_completion_report() {
+  echo ""
+  ui_box_top "Bootstrap Complete"
+  echo ""
+
+  # Count completed phases
+  local completed=0
+  local total=${#BOOTSTRAP_PHASES[@]}
+
+  for phase_def in "${BOOTSTRAP_PHASES[@]}"; do
+    IFS=':' read -r id _ _ <<< "$phase_def"
+    if phase_completed "$id"; then
+      ((completed++))
+    fi
+  done
+
+  msg_success "Completed $completed of $total phases"
+  echo ""
+
+  msg_info "Next steps:"
+  echo "  1. Open a new terminal to load shell configuration"
+  echo "  2. Run 'fc healthcheck' to verify system health"
+  echo "  3. Run 'fc audit quick' to check security settings"
+  echo ""
+
+  if [ "$AUTO_RESTORE" = true ]; then
+    msg_info "Your backup has been restored. Your applications and settings"
+    msg_info "should be configured as they were on your previous machine."
+  fi
+
+  echo ""
+  ui_box_bottom
+}
+
+# --- Main Bootstrap ---
+run_bootstrap() {
+  # Load config if it exists
+  if [ -f "$BOOTSTRAP_CONFIG_FILE" ]; then
+    msg_info "Loading configuration from $BOOTSTRAP_CONFIG_FILE"
+    # shellcheck source=/dev/null
+    source "$BOOTSTRAP_CONFIG_FILE"
+  fi
+
+  # Run wizard if not unattended mode
+  if [ "$AUTO_CONFIRM" = false ]; then
+    select_wizard_mode
+    confirm_settings
+  fi
+
+  # Create log directory
+  mkdir -p "$(dirname "$BOOTSTRAP_LOG_FILE")"
+
+  # Run each phase
+  local phase_count=0
+  local total_phases=${#BOOTSTRAP_PHASES[@]}
+
+  for phase_def in "${BOOTSTRAP_PHASES[@]}"; do
+    IFS=':' read -r id name desc <<< "$phase_def"
+    ((phase_count++))
+
+    echo ""
+    echo "═══════════════════════════════════════════════════════════════════"
+    echo " Phase $phase_count of $total_phases: $name"
+    echo "═══════════════════════════════════════════════════════════════════"
+
+    run_phase "$id" "$name" "$desc"
+  done
+
+  # Print completion report
+  print_completion_report
+}
+
+# --- Main ---
+main() {
+  parse_arguments "$@"
+
+  case "$SUBCOMMAND" in
+    status)
+      show_status
+      ;;
+    resume)
+      resume_bootstrap
+      ;;
+    reset)
+      clear_bootstrap_state
+      ;;
+    *)
+      run_bootstrap
+      ;;
+  esac
+}
+
+main "$@"

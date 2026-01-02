@@ -56,10 +56,10 @@ This roadmap organizes the proposed features from the `docs/features/` directory
         *   ~~`01-remote-backup-storage`~~: **DONE** - Extended `fc sync` with `push`, `pull`, and `list-remote` subcommands for remote backup storage using rclone. Supports 40+ cloud providers (S3, Google Drive, Dropbox, Backblaze B2, etc.). Configuration via `RCLONE_REMOTE` and `RCLONE_REMOTE_PATH` in sync.conf. Documentation in `COMMANDS.md`.
         *   ~~`10-multiple-backup-backends`~~: **DONE** - Refactored `fc sync` with dispatcher pattern supporting multiple backup backends. Three backends available: GPG (default, tar+gpg), Restic (deduplication, native S3/SFTP), and Borg (deduplication, compression, native SSH). Configuration via `BACKUP_BACKEND` in sync.conf. Backend files in `lib/backup_backends/`. Documentation in `docs/BACKUP_BACKENDS.md`.
     *   **Automation:**
-        *   `27-automated-new-machine-setup`: A meta-command that runs a series of other commands to fully provision a new machine.
+        *   ~~`27-automated-new-machine-setup`~~: **DONE** - `fc fc-bootstrap` command that orchestrates complete machine setup through 7 phases: preflight checks, Homebrew setup, backup restore, dotfiles deployment, app installation, system configuration, and health checks. Supports interactive wizard (shell prompts or Gum-based TUI), dry-run mode, phase skipping/selection, and unattended mode via config file. State tracking for resumable bootstraps. Documentation in `docs/BOOTSTRAP.md` and `COMMANDS.md`.
     *   **Integrations:**
-        *   `20-secrets-management-integration`: Integrate with a secrets manager like HashiCorp Vault or macOS Keychain.
-        *   `26-1password-cli-integration`: A specific, high-value integration for 1Password users.
+        *   ~~`20-secrets-management-integration`~~: **DONE** - `fc fc-secrets` command with unified secrets management for 1Password CLI, macOS Keychain, and HashiCorp Vault. URI-based secret references (`op://`, `keychain://`, `vault://`), environment variable sync to `~/.zshenv.local`, file destination support with permissions. 6 subcommands: setup, sync, get, list, status, verify. Backend plugins in `lib/secrets_backends/`. Documentation in `docs/SECRETS.md` and `COMMANDS.md`.
+        *   ~~`26-1password-cli-integration`~~: **DONE** - Included as the `op://` backend in `fc fc-secrets`. Supports `op://vault/item/field` URI format, automatic authentication prompts, and full `op read` integration. See `lib/secrets_backends/op.sh`.
         *   `31-vscode-settings-sync`: A dedicated command for syncing VS Code settings.
         *   `39-alfred-workflow-integration`: Provide Alfred workflows for common `fc` commands.
     *   **Power-User Features:**

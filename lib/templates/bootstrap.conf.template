@@ -1,0 +1,101 @@
+# ==============================================================================
+# fc bootstrap Configuration
+# ==============================================================================
+# Copy this file to ~/.config/circus/bootstrap.conf and customize it.
+#
+# For unattended setup, configure all required settings and set AUTO_CONFIRM=true,
+# then run: fc bootstrap
+#
+# SECURITY WARNING: This file is sourced as a shell script.
+# Only include variable definitions - never run arbitrary code.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Role Selection
+# ------------------------------------------------------------------------------
+
+# Installation role determines which packages and configurations to install.
+# Available roles depend on your dotfiles repository structure.
+# Common roles: developer, personal, work
+# BOOTSTRAP_ROLE="developer"
+
+# Privacy profile controls security and privacy settings.
+# Options: standard, privacy, lockdown
+# BOOTSTRAP_PRIVACY_PROFILE="standard"
+
+# ------------------------------------------------------------------------------
+# Phase Control
+# ------------------------------------------------------------------------------
+
+# Skip specific phases by setting to true.
+# Useful for partial bootstraps or re-running specific phases.
+
+# Preflight: System checks (macOS version, disk space, internet)
+# SKIP_PHASE_PREFLIGHT=false
+
+# Homebrew: Install/update Homebrew and core dependencies
+# SKIP_PHASE_HOMEBREW=false
+
+# Restore: Restore from fc sync backup
+# SKIP_PHASE_RESTORE=false
+
+# Dotfiles: Deploy configuration files
+# SKIP_PHASE_DOTFILES=false
+
+# Apps: Install applications via fc-apps
+# SKIP_PHASE_APPS=false
+
+# Configure: Git, SSH, and system configuration
+# SKIP_PHASE_CONFIGURE=false
+
+# Health: Run health checks and generate report
+# SKIP_PHASE_HEALTH=false
+
+# ------------------------------------------------------------------------------
+# Restore Settings
+# ------------------------------------------------------------------------------
+
+# Automatically restore from backup if one is found.
+# If false, you'll be prompted during the interactive wizard.
+# AUTO_RESTORE=false
+
+# Remote backup location for fc sync pull.
+# Leave empty to only check for local backups.
+# Example: "gdrive" (matches RCLONE_REMOTE in sync.conf)
+# RESTORE_REMOTE=""
+
+# ------------------------------------------------------------------------------
+# Git Configuration (for Configure phase)
+# ------------------------------------------------------------------------------
+
+# Pre-configure git user info to skip prompts.
+# Leave empty to prompt during bootstrap.
+# GIT_USER_NAME=""
+# GIT_USER_EMAIL=""
+
+# ------------------------------------------------------------------------------
+# SSH Configuration (for Configure phase)
+# ------------------------------------------------------------------------------
+
+# Automatically generate SSH key if none exists.
+# AUTO_GENERATE_SSH_KEY=true
+
+# Email for SSH key comment (uses GIT_USER_EMAIL if not set)
+# SSH_KEY_EMAIL=""
+
+# ------------------------------------------------------------------------------
+# Unattended Mode
+# ------------------------------------------------------------------------------
+
+# Skip all confirmation prompts for fully automated setup.
+# WARNING: Ensure all settings above are correctly configured before enabling.
+# AUTO_CONFIRM=false
+
+# ------------------------------------------------------------------------------
+# UI Preferences
+# ------------------------------------------------------------------------------
+
+# Use Gum-based TUI for richer interactive experience.
+# Requires gum to be installed (will be installed in Homebrew phase if enabled).
+# Falls back to shell prompts if gum is not available.
+# USE_GUM=false
