@@ -36,7 +36,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
     *   **Backup and Restore:**
         *   ~~`02-scheduled-backups`~~: **DONE** - `fc fc-schedule` command with `install`, `uninstall`, `status`, and `run` subcommands. Uses macOS launchd for reliable scheduling. Supports daily/weekly frequencies. Added `--no-confirm` flag to `fc-sync` for automated execution. Documentation in `COMMANDS.md`.
     *   **System & Application Management:**
-        *   `21-automated-application-installation`: A robust command to install applications from a `Brewfile`.
+        *   ~~`21-automated-application-installation`~~: **DONE** - `fc fc-apps` command with `setup`, `list`, `install`, and `add` subcommands. Brewfile-compatible config at `~/.config/circus/apps.conf`. Supports Homebrew formulae, casks, and Mac App Store apps. Added `mas` to base Brewfile. Documentation in `COMMANDS.md`.
         *   `22-system-update-command`: A single command to update `brew`, `mas`, and the OS.
         *   `41-system-maintenance-command`: A general-purpose command for common maintenance tasks.
         *   `04-application-cleaner`: A utility to remove unused applications and files.

@@ -139,6 +139,68 @@ The `fc schedule` command uses macOS's launchd to run `fc sync backup` automatic
 
 ---
 
+## `fc apps`
+
+Manage application installations via Homebrew and Mac App Store. Define your apps in a configuration file and install them with a single command.
+
+**Usage:**
+
+```bash
+fc fc-apps <subcommand> [options]
+```
+
+**Subcommands:**
+*   `setup`: Create configuration file from template.
+*   `list`: Show configured apps and their installation status.
+*   `install`: Install all apps from configuration.
+*   `add --brew <name>`: Add and install a Homebrew formula.
+*   `add --cask <name>`: Add and install a Homebrew cask.
+*   `add --mas <name> <id>`: Add and install a Mac App Store app.
+
+**Options:**
+*   `--no-confirm`: Skip confirmation prompts.
+
+**Examples:**
+
+```bash
+# Create configuration file
+fc fc-apps setup
+
+# Add apps to configuration and install them
+fc fc-apps add --cask visual-studio-code
+fc fc-apps add --cask slack
+fc fc-apps add --brew ripgrep
+fc fc-apps add --mas "Xcode" 497799835
+
+# Check what's configured and installed
+fc fc-apps list
+
+# Install all configured apps
+fc fc-apps install
+```
+
+### Configuration File
+
+The configuration file (`~/.config/circus/apps.conf`) uses Brewfile syntax:
+
+```bash
+# Homebrew formulae (CLI tools)
+brew "ripgrep"
+brew "fzf"
+
+# Homebrew casks (GUI applications)
+cask "visual-studio-code"
+cask "slack"
+
+# Mac App Store apps (requires mas-cli)
+mas "Xcode", id: 497799835
+mas "1Password 7", id: 1333542190
+```
+
+To find Mac App Store app IDs, use: `mas search <name>`
+
+---
+
 ## `fc disk`
 
 Analyze disk usage, find space hogs, and clean up common cache locations.

@@ -1,0 +1,445 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-apps
+#
+# DESCRIPTION:  Manage application installations via Homebrew and Mac App Store.
+#               Uses a Brewfile-compatible configuration for user apps.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration -----------------------------------------------------------
+
+readonly APPS_CONFIG_FILE="$HOME/.config/circus/apps.conf"
+readonly APPS_CONFIG_TEMPLATE="$DOTFILES_ROOT/lib/templates/apps.conf.template"
+
+# --- Usage Information -------------------------------------------------------
+
+usage() {
+  msg_info "Usage: fc fc-apps <subcommand> [options]"
+  echo ""
+  msg_info "Manage application installations via Homebrew and Mac App Store."
+  echo ""
+  msg_info "Subcommands:"
+  echo "  setup                      - Create configuration file from template"
+  echo "  list                       - Show configured apps and their status"
+  echo "  install                    - Install all apps from configuration"
+  echo "  add --brew <name>          - Add and install a Homebrew formula"
+  echo "  add --cask <name>          - Add and install a Homebrew cask"
+  echo "  add --mas <name> <id>      - Add and install a Mac App Store app"
+  echo ""
+  msg_info "Options:"
+  echo "  --no-confirm               - Skip confirmation prompts"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc fc-apps setup"
+  echo "  fc fc-apps add --cask visual-studio-code"
+  echo "  fc fc-apps add --mas \"Xcode\" 497799835"
+  echo "  fc fc-apps install"
+  echo "  fc fc-apps list"
+  echo ""
+  msg_info "Configuration: $APPS_CONFIG_FILE"
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+#
+# @description Check if Homebrew is installed
+#
+check_brew() {
+  local brew_cmd=${BREW_CMD:-brew}
+  if ! command -v "$brew_cmd" >/dev/null 2>&1; then
+    die "Homebrew is not installed. Please install it first: https://brew.sh"
+  fi
+}
+
+#
+# @description Check if mas-cli is installed
+#
+check_mas() {
+  local mas_cmd=${MAS_CMD:-mas}
+  if ! command -v "$mas_cmd" >/dev/null 2>&1; then
+    msg_warning "mas-cli is not installed. Mac App Store apps will be skipped."
+    msg_info "Install with: brew install mas"
+    return 1
+  fi
+  return 0
+}
+
+#
+# @description Check if configuration file exists
+#
+has_config() {
+  [ -f "$APPS_CONFIG_FILE" ]
+}
+
+#
+# @description Count apps in configuration by type
+#
+count_apps_by_type() {
+  local app_type="$1"
+  if has_config; then
+    grep -c "^${app_type} " "$APPS_CONFIG_FILE" 2>/dev/null | tr -d '\n' || echo "0"
+  else
+    echo "0"
+  fi
+}
+
+#
+# @description Check if a brew formula is installed
+#
+is_brew_installed() {
+  local name="$1"
+  local brew_cmd=${BREW_CMD:-brew}
+  "$brew_cmd" list --formula "$name" >/dev/null 2>&1
+}
+
+#
+# @description Check if a cask is installed
+#
+is_cask_installed() {
+  local name="$1"
+  local brew_cmd=${BREW_CMD:-brew}
+  "$brew_cmd" list --cask "$name" >/dev/null 2>&1
+}
+
+#
+# @description Check if a mas app is installed
+#
+is_mas_installed() {
+  local app_id="$1"
+  local mas_cmd=${MAS_CMD:-mas}
+  "$mas_cmd" list 2>/dev/null | grep -q "^${app_id} "
+}
+
+# --- Command Logic -----------------------------------------------------------
+
+do_setup() {
+  local config_dir="$HOME/.config/circus"
+
+  if has_config; then
+    msg_info "Configuration file already exists: $APPS_CONFIG_FILE"
+    echo ""
+    msg_info "Edit it with: \$EDITOR $APPS_CONFIG_FILE"
+    return 0
+  fi
+
+  if [ ! -f "$APPS_CONFIG_TEMPLATE" ]; then
+    die "Configuration template not found: $APPS_CONFIG_TEMPLATE"
+  fi
+
+  msg_info "Creating configuration directory..."
+  mkdir -p "$config_dir"
+
+  msg_info "Copying configuration template..."
+  cp "$APPS_CONFIG_TEMPLATE" "$APPS_CONFIG_FILE"
+
+  msg_success "Configuration file created: $APPS_CONFIG_FILE"
+  echo ""
+  msg_info "Next steps:"
+  msg_info "  1. Edit the config: \$EDITOR $APPS_CONFIG_FILE"
+  msg_info "  2. Uncomment or add applications you want"
+  msg_info "  3. Run: fc fc-apps install"
+  echo ""
+  msg_info "To find Mac App Store IDs: mas search <name>"
+}
+
+do_list() {
+  if ! has_config; then
+    msg_info "No configuration file found."
+    msg_info "Run 'fc fc-apps setup' to create one."
+    return 0
+  fi
+
+  local brew_count cask_count mas_count
+  brew_count=$(count_apps_by_type "brew")
+  cask_count=$(count_apps_by_type "cask")
+  mas_count=$(count_apps_by_type "mas")
+
+  local total=$((brew_count + cask_count + mas_count))
+
+  if [ "$total" -eq 0 ]; then
+    msg_info "No applications configured in $APPS_CONFIG_FILE"
+    msg_info "Edit the file to add applications."
+    return 0
+  fi
+
+  echo ""
+  msg_info "Configured Applications"
+  echo "========================"
+  echo ""
+
+  # List formulae
+  if [ "$brew_count" -gt 0 ]; then
+    echo "  Homebrew Formulae ($brew_count):"
+    grep "^brew " "$APPS_CONFIG_FILE" | sed -E 's/^brew "([^"]+)".*/    \1/' | while read -r line; do
+      local name
+      name=$(echo "$line" | tr -d ' ')
+      if is_brew_installed "$name"; then
+        echo "    [installed] $name"
+      else
+        echo "    [missing]   $name"
+      fi
+    done
+    echo ""
+  fi
+
+  # List casks
+  if [ "$cask_count" -gt 0 ]; then
+    echo "  Homebrew Casks ($cask_count):"
+    grep "^cask " "$APPS_CONFIG_FILE" | sed -E 's/^cask "([^"]+)".*/\1/' | while read -r name; do
+      if is_cask_installed "$name"; then
+        echo "    [installed] $name"
+      else
+        echo "    [missing]   $name"
+      fi
+    done
+    echo ""
+  fi
+
+  # List Mac App Store apps
+  if [ "$mas_count" -gt 0 ]; then
+    echo "  Mac App Store ($mas_count):"
+    if check_mas 2>/dev/null; then
+      grep "^mas " "$APPS_CONFIG_FILE" | sed -E 's/^mas "([^"]+)", id: ([0-9]+).*/\1|\2/' | while IFS='|' read -r name app_id; do
+        if is_mas_installed "$app_id"; then
+          echo "    [installed] $name"
+        else
+          echo "    [missing]   $name"
+        fi
+      done
+    else
+      grep "^mas " "$APPS_CONFIG_FILE" | sed -E 's/^mas "([^"]+)".*/\1/' | while read -r name; do
+        echo "    [unknown]   $name (mas not installed)"
+      done
+    fi
+    echo ""
+  fi
+
+  echo "  Total: $total applications"
+  echo ""
+}
+
+do_install() {
+  local no_confirm="$1"
+  local brew_cmd=${BREW_CMD:-brew}
+
+  check_brew
+
+  if ! has_config; then
+    msg_error "No configuration file found."
+    echo ""
+    msg_info "Run 'fc fc-apps setup' to create one."
+    die "Configuration required."
+  fi
+
+  local brew_count cask_count mas_count
+  brew_count=$(count_apps_by_type "brew")
+  cask_count=$(count_apps_by_type "cask")
+  mas_count=$(count_apps_by_type "mas")
+
+  local total=$((brew_count + cask_count + mas_count))
+
+  if [ "$total" -eq 0 ]; then
+    msg_info "No applications configured in $APPS_CONFIG_FILE"
+    msg_info "Edit the file to add applications."
+    return 0
+  fi
+
+  msg_info "Installing applications from $APPS_CONFIG_FILE"
+  echo ""
+  echo "  Formulae: $brew_count"
+  echo "  Casks:    $cask_count"
+  echo "  MAS:      $mas_count"
+  echo "  Total:    $total"
+  echo ""
+
+  if [ "$no_confirm" != "true" ]; then
+    prompt_for_confirmation "Ready to install $total application(s)."
+  fi
+
+  msg_info "Running brew bundle..."
+  if "$brew_cmd" bundle install --file="$APPS_CONFIG_FILE" --no-lock; then
+    msg_success "Application installation complete!"
+  else
+    msg_warning "Some applications may have failed to install."
+    msg_info "Run 'fc fc-apps list' to check status."
+  fi
+}
+
+do_add() {
+  local app_type=""
+  local app_name=""
+  local mas_id=""
+
+  # Parse arguments
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --brew)
+        app_type="brew"
+        shift
+        if [[ $# -gt 0 && "$1" != --* ]]; then
+          app_name="$1"
+          shift
+        fi
+        ;;
+      --cask)
+        app_type="cask"
+        shift
+        if [[ $# -gt 0 && "$1" != --* ]]; then
+          app_name="$1"
+          shift
+        fi
+        ;;
+      --mas)
+        app_type="mas"
+        shift
+        if [[ $# -gt 0 && "$1" != --* ]]; then
+          app_name="$1"
+          shift
+        fi
+        if [[ $# -gt 0 && "$1" != --* ]]; then
+          mas_id="$1"
+          shift
+        fi
+        ;;
+      *)
+        die "Unknown option: $1. Use --brew, --cask, or --mas."
+        ;;
+    esac
+  done
+
+  # Validate inputs
+  if [ -z "$app_type" ]; then
+    die "Application type required. Use --brew, --cask, or --mas."
+  fi
+
+  if [ -z "$app_name" ]; then
+    die "Application name required."
+  fi
+
+  if [ "$app_type" = "mas" ] && [ -z "$mas_id" ]; then
+    die "Mac App Store ID required for --mas.\n\nUsage: fc fc-apps add --mas \"App Name\" 123456\n\nFind IDs with: mas search <name>"
+  fi
+
+  check_brew
+
+  # Ensure config file exists
+  if ! has_config; then
+    msg_info "Creating configuration file..."
+    do_setup
+  fi
+
+  local brew_cmd=${BREW_CMD:-brew}
+
+  # Build the line to add
+  local config_line=""
+  case "$app_type" in
+    brew)
+      config_line="brew \"$app_name\""
+      ;;
+    cask)
+      config_line="cask \"$app_name\""
+      ;;
+    mas)
+      config_line="mas \"$app_name\", id: $mas_id"
+      ;;
+  esac
+
+  # Check if already in config
+  if grep -q "^$config_line" "$APPS_CONFIG_FILE" 2>/dev/null; then
+    msg_info "$app_name is already in configuration."
+  else
+    msg_info "Adding to configuration: $config_line"
+    echo "$config_line" >> "$APPS_CONFIG_FILE"
+  fi
+
+  # Install the app
+  msg_info "Installing $app_name..."
+
+  case "$app_type" in
+    brew)
+      if "$brew_cmd" install "$app_name"; then
+        msg_success "Installed: $app_name"
+      else
+        msg_error "Failed to install: $app_name"
+        return 1
+      fi
+      ;;
+    cask)
+      if "$brew_cmd" install --cask "$app_name"; then
+        msg_success "Installed: $app_name"
+      else
+        msg_error "Failed to install: $app_name"
+        return 1
+      fi
+      ;;
+    mas)
+      if check_mas; then
+        local mas_cmd=${MAS_CMD:-mas}
+        if "$mas_cmd" install "$mas_id"; then
+          msg_success "Installed: $app_name"
+        else
+          msg_error "Failed to install: $app_name"
+          return 1
+        fi
+      else
+        msg_error "Cannot install Mac App Store apps without mas-cli."
+        return 1
+      fi
+      ;;
+  esac
+}
+
+# --- Main Dispatcher ---------------------------------------------------------
+
+main() {
+  # Parse global flags
+  local no_confirm=false
+  while [[ "${1:-}" == --* ]]; do
+    case "$1" in
+      --no-confirm)
+        no_confirm=true
+        shift
+        ;;
+      --help)
+        usage
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  if [ -z "${1:-}" ]; then
+    usage
+  fi
+
+  local subcommand="$1"
+  shift
+
+  case "$subcommand" in
+    setup)
+      do_setup
+      ;;
+    list)
+      do_list
+      ;;
+    install)
+      do_install "$no_confirm"
+      ;;
+    add)
+      do_add "$@"
+      ;;
+    *)
+      die "Unknown subcommand: $subcommand. Run 'fc fc-apps --help' for usage."
+      ;;
+  esac
+}
+
+main "$@"

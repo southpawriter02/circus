@@ -28,6 +28,9 @@ brew "bash"
 # Static analysis for shell scripts
 brew "shellcheck"
 
+# Mac App Store CLI (for fc-apps command)
+brew "mas"
+
 # --- Casks (GUI Applications) -----------------------------------------------
 
 # GPG Suite for signing commits

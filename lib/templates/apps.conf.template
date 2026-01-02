@@ -1,0 +1,45 @@
+# ==============================================================================
+#
+# FILE:         apps.conf
+#
+# DESCRIPTION:  User application configuration for fc-apps.
+#               This file uses Brewfile syntax and is processed by `brew bundle`.
+#
+# USAGE:        fc fc-apps install
+#
+# ==============================================================================
+
+# --- Format ---
+#
+#   brew "package-name"         - Homebrew formula (CLI tool)
+#   cask "app-name"             - Homebrew cask (GUI application)
+#   mas "App Name", id: 123456  - Mac App Store application
+#
+# To find Mac App Store IDs, run: mas search <name>
+
+# --- Formulae (CLI Tools) ---
+# Uncomment or add your preferred CLI tools here.
+
+# brew "ripgrep"      # Fast recursive search
+# brew "fzf"          # Fuzzy finder
+# brew "jq"           # JSON processor
+# brew "htop"         # Interactive process viewer
+# brew "tree"         # Directory tree viewer
+
+# --- Casks (GUI Applications) ---
+# Uncomment or add your preferred GUI applications here.
+
+# cask "visual-studio-code"  # Code editor
+# cask "slack"               # Team communication
+# cask "spotify"             # Music streaming
+# cask "rectangle"           # Window management
+# cask "iterm2"              # Terminal emulator
+
+# --- Mac App Store Applications ---
+# Uncomment or add your preferred App Store applications here.
+# Find IDs with: mas search <name>
+
+# mas "Xcode", id: 497799835
+# mas "1Password 7", id: 1333542190
+# mas "Bear", id: 1091189122
+# mas "Magnet", id: 441258766
