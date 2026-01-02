@@ -1,0 +1,327 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-schedule
+#
+# DESCRIPTION:  Manage scheduled automatic backups using macOS launchd.
+#               Provides commands to install, uninstall, and check status
+#               of the backup scheduling agent.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration -----------------------------------------------------------
+
+readonly PLIST_TEMPLATE="$DOTFILES_ROOT/etc/launchd/com.southpawriter02.circus.backup.plist.template"
+readonly PLIST_NAME="com.southpawriter02.circus.backup.plist"
+readonly PLIST_DEST="$HOME/Library/LaunchAgents/$PLIST_NAME"
+readonly SCHEDULE_LABEL="com.southpawriter02.circus.backup"
+readonly LOG_DIR="$HOME/.circus/logs"
+readonly LOG_FILE="$LOG_DIR/backup.log"
+readonly SYNC_CONFIG_FILE="$HOME/.config/circus/sync.conf"
+
+# Frequency options (in seconds)
+readonly DAILY_INTERVAL=86400
+readonly WEEKLY_INTERVAL=604800
+
+# --- Usage Information -------------------------------------------------------
+
+usage() {
+  msg_info "Usage: fc fc-schedule <subcommand> [options]"
+  echo ""
+  msg_info "Manage scheduled automatic backups using macOS launchd."
+  echo ""
+  msg_info "Subcommands:"
+  echo "  install    - Install and enable scheduled backups"
+  echo "  uninstall  - Disable and remove scheduled backups"
+  echo "  status     - Show backup schedule status and last run"
+  echo "  run        - Manually trigger a backup now"
+  echo ""
+  msg_info "Options for install:"
+  echo "  --frequency <daily|weekly>  - Backup frequency (default: daily)"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc fc-schedule install                     # Daily backups"
+  echo "  fc fc-schedule install --frequency weekly  # Weekly backups"
+  echo "  fc fc-schedule status                      # Check status"
+  echo "  fc fc-schedule uninstall                   # Remove schedule"
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+#
+# @description Check if the schedule is currently installed
+#
+is_installed() {
+  [ -f "$PLIST_DEST" ]
+}
+
+#
+# @description Check if the schedule is currently loaded/running
+#
+is_loaded() {
+  launchctl list 2>/dev/null | grep -q "$SCHEDULE_LABEL"
+}
+
+#
+# @description Validate that fc-sync is properly configured
+#
+validate_sync_config() {
+  if [ ! -f "$SYNC_CONFIG_FILE" ]; then
+    msg_error "fc-sync is not configured."
+    echo ""
+    msg_info "Before scheduling backups, you need to set up fc-sync:"
+    msg_info "  1. Run: fc fc-sync setup"
+    msg_info "  2. Edit: \$EDITOR $SYNC_CONFIG_FILE"
+    msg_info "  3. Set your GPG_RECIPIENT_ID"
+    die "Please configure fc-sync first."
+  fi
+
+  # Check if GPG_RECIPIENT_ID is set in the config
+  if ! grep -q "^GPG_RECIPIENT_ID=" "$SYNC_CONFIG_FILE" 2>/dev/null; then
+    die "GPG_RECIPIENT_ID not found in $SYNC_CONFIG_FILE. Please configure fc-sync first."
+  fi
+
+  local gpg_id
+  gpg_id=$(grep "^GPG_RECIPIENT_ID=" "$SYNC_CONFIG_FILE" 2>/dev/null | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+  if [ -z "$gpg_id" ]; then
+    die "GPG_RECIPIENT_ID is empty in $SYNC_CONFIG_FILE. Please set a valid GPG key ID."
+  fi
+}
+
+#
+# @description Get the frequency from the installed plist
+#
+get_installed_frequency() {
+  if [ ! -f "$PLIST_DEST" ]; then
+    echo "unknown"
+    return
+  fi
+
+  local interval
+  interval=$(grep -A1 "StartInterval" "$PLIST_DEST" 2>/dev/null | grep integer | sed 's/.*<integer>\(.*\)<\/integer>.*/\1/')
+
+  case "$interval" in
+    "$DAILY_INTERVAL") echo "daily" ;;
+    "$WEEKLY_INTERVAL") echo "weekly" ;;
+    *) echo "custom (${interval}s)" ;;
+  esac
+}
+
+#
+# @description Get the last backup time from the log file
+#
+get_last_backup_time() {
+  if [ ! -f "$LOG_FILE" ]; then
+    echo "never"
+    return
+  fi
+
+  # Look for the most recent success message in the log
+  local last_success
+  last_success=$(grep -E "Encrypted backup created|backup complete" "$LOG_FILE" 2>/dev/null | tail -1)
+
+  if [ -n "$last_success" ]; then
+    # Try to get the file modification time as a proxy for last run
+    stat -f "%Sm" -t "%Y-%m-%d %H:%M:%S" "$LOG_FILE" 2>/dev/null || echo "unknown"
+  else
+    echo "no successful backup found"
+  fi
+}
+
+# --- Command Logic -----------------------------------------------------------
+
+do_install() {
+  local frequency="daily"
+  local interval=$DAILY_INTERVAL
+
+  # Parse options
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --frequency)
+        shift
+        case "${1:-}" in
+          daily)
+            frequency="daily"
+            interval=$DAILY_INTERVAL
+            ;;
+          weekly)
+            frequency="weekly"
+            interval=$WEEKLY_INTERVAL
+            ;;
+          *)
+            die "Invalid frequency: ${1:-}. Use 'daily' or 'weekly'."
+            ;;
+        esac
+        shift
+        ;;
+      *)
+        die "Unknown option: $1"
+        ;;
+    esac
+  done
+
+  # Check if already installed
+  if is_installed; then
+    if is_loaded; then
+      msg_info "Scheduled backup is already installed and running."
+      msg_info "Current frequency: $(get_installed_frequency)"
+      echo ""
+      msg_info "To change settings, uninstall first: fc fc-schedule uninstall"
+      return 0
+    else
+      msg_warning "Plist file exists but is not loaded. Reinstalling..."
+      rm -f "$PLIST_DEST"
+    fi
+  fi
+
+  # Validate fc-sync configuration
+  validate_sync_config
+
+  # Check for plist template
+  if [ ! -f "$PLIST_TEMPLATE" ]; then
+    die "Plist template not found: $PLIST_TEMPLATE"
+  fi
+
+  msg_info "Installing scheduled backup ($frequency)..."
+
+  # Create log directory
+  if [ ! -d "$LOG_DIR" ]; then
+    msg_info "Creating log directory: $LOG_DIR"
+    mkdir -p "$LOG_DIR"
+  fi
+
+  # Create LaunchAgents directory if needed
+  local launch_agents_dir="$HOME/Library/LaunchAgents"
+  if [ ! -d "$launch_agents_dir" ]; then
+    msg_info "Creating LaunchAgents directory..."
+    mkdir -p "$launch_agents_dir"
+  fi
+
+  # Generate plist from template
+  msg_info "Generating launchd configuration..."
+  sed -e "s|__DOTFILES_ROOT__|$DOTFILES_ROOT|g" \
+      -e "s|__START_INTERVAL__|$interval|g" \
+      -e "s|__HOME__|$HOME|g" \
+      "$PLIST_TEMPLATE" > "$PLIST_DEST"
+
+  # Load the agent
+  msg_info "Loading launchd agent..."
+  if launchctl load "$PLIST_DEST" 2>/dev/null; then
+    msg_success "Scheduled backup installed successfully!"
+    echo ""
+    msg_info "Backup frequency: $frequency"
+    msg_info "Log file: $LOG_FILE"
+    echo ""
+    msg_info "Use 'fc fc-schedule status' to check the schedule."
+    msg_info "Use 'fc fc-schedule run' to trigger a backup now."
+  else
+    rm -f "$PLIST_DEST"
+    die "Failed to load launchd agent. Check system logs for details."
+  fi
+}
+
+do_uninstall() {
+  if ! is_installed; then
+    msg_info "Scheduled backup is not installed."
+    return 0
+  fi
+
+  msg_info "Uninstalling scheduled backup..."
+
+  # Unload the agent if loaded
+  if is_loaded; then
+    msg_info "Unloading launchd agent..."
+    if ! launchctl unload "$PLIST_DEST" 2>/dev/null; then
+      msg_warning "Failed to unload agent (it may already be unloaded)."
+    fi
+  fi
+
+  # Remove the plist file
+  msg_info "Removing plist file..."
+  rm -f "$PLIST_DEST"
+
+  msg_success "Scheduled backup uninstalled."
+  msg_info "Note: Log files are preserved at $LOG_DIR"
+}
+
+do_status() {
+  echo ""
+  msg_info "Scheduled Backup Status"
+  echo "========================"
+  echo ""
+
+  if is_installed; then
+    echo "  Installed:  Yes"
+    echo "  Plist:      $PLIST_DEST"
+
+    if is_loaded; then
+      echo "  Status:     Running"
+    else
+      echo "  Status:     Installed but not running"
+    fi
+
+    echo "  Frequency:  $(get_installed_frequency)"
+    echo "  Last run:   $(get_last_backup_time)"
+    echo "  Log file:   $LOG_FILE"
+
+    # Show if log file exists and has content
+    if [ -f "$LOG_FILE" ]; then
+      local log_lines
+      log_lines=$(wc -l < "$LOG_FILE" | tr -d ' ')
+      echo "  Log lines:  $log_lines"
+    fi
+  else
+    echo "  Installed:  No"
+    echo ""
+    msg_info "To install scheduled backups, run:"
+    echo "  fc fc-schedule install"
+  fi
+  echo ""
+}
+
+do_run() {
+  if ! is_installed; then
+    msg_warning "Scheduled backup is not installed, but running backup manually..."
+  else
+    msg_info "Triggering manual backup..."
+  fi
+
+  # Just run fc-sync backup directly
+  exec "$DOTFILES_ROOT/bin/fc" fc-sync backup
+}
+
+# --- Main Dispatcher ---------------------------------------------------------
+
+main() {
+  if [ -z "$1" ] || [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  local subcommand="$1"
+  shift
+
+  case "$subcommand" in
+    install)
+      do_install "$@"
+      ;;
+    uninstall)
+      do_uninstall
+      ;;
+    status)
+      do_status
+      ;;
+    run)
+      do_run
+      ;;
+    *)
+      die "Unknown subcommand: $subcommand. Run 'fc fc-schedule --help' for usage."
+      ;;
+  esac
+}
+
+main "$@"

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Scheduled Backup LaunchAgent Template
+
+  This template is used by `fc fc-schedule install` to create a launchd job
+  that runs automated backups on a schedule.
+
+  Placeholders (replaced at install time):
+    __DOTFILES_ROOT__  - Path to the circus dotfiles repository
+    __START_INTERVAL__ - Interval in seconds (86400=daily, 604800=weekly)
+    __HOME__           - User's home directory
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.southpawriter02.circus.backup</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>-c</string>
+        <string>source __HOME__/.zshrc 2>/dev/null; __DOTFILES_ROOT__/bin/fc fc-sync backup --no-confirm 2>&1</string>
+    </array>
+
+    <key>StartInterval</key>
+    <integer>__START_INTERVAL__</integer>
+
+    <key>StandardOutPath</key>
+    <string>__HOME__/.circus/logs/backup.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>__HOME__/.circus/logs/backup.log</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+</dict>
+</plist>

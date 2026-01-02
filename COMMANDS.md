@@ -87,6 +87,58 @@ The result is a new machine that is a near-perfect mirror of your old environmen
 
 ---
 
+## `fc schedule`
+
+Manage scheduled automatic backups using macOS's native launchd service. This provides a "set it and forget it" approach to keeping your backups current.
+
+**Usage:**
+
+```bash
+fc fc-schedule <subcommand> [options]
+```
+
+**Subcommands:**
+*   `install`: Install and enable scheduled backups.
+*   `uninstall`: Disable and remove scheduled backups.
+*   `status`: Show backup schedule status and last run time.
+*   `run`: Manually trigger a backup now.
+
+**Options for install:**
+*   `--frequency <daily|weekly>`: Backup frequency (default: daily).
+
+**Examples:**
+
+```bash
+# Install daily scheduled backups
+fc fc-schedule install
+
+# Install weekly backups instead
+fc fc-schedule install --frequency weekly
+
+# Check the schedule status
+fc fc-schedule status
+
+# Manually run a backup
+fc fc-schedule run
+
+# Remove scheduled backups
+fc fc-schedule uninstall
+```
+
+### How It Works
+
+The `fc schedule` command uses macOS's launchd to run `fc sync backup` automatically. When you install the schedule:
+
+1. A launchd agent is installed to `~/Library/LaunchAgents/`
+2. Backups run in the background at the specified frequency
+3. Output is logged to `~/.circus/logs/backup.log`
+
+**Prerequisites:**
+- You must configure `fc sync` first (run `fc fc-sync setup`)
+- GPG must be configured with your key ID
+
+---
+
 ## `fc disk`
 
 Analyze disk usage, find space hogs, and clean up common cache locations.

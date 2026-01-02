@@ -56,7 +56,7 @@ validate_config() {
 
 # --- Usage Information ---
 usage() {
-  msg_info "Usage: fc fc-sync <subcommand>"
+  msg_info "Usage: fc fc-sync [options] <subcommand>"
   echo ""
   msg_info "Manages the encrypted backup and restoration of system state."
   echo ""
@@ -64,6 +64,9 @@ usage() {
   echo "  setup     - Create configuration file from template."
   echo "  backup    - Backs up and encrypts critical data."
   echo "  restore   - Decrypts and restores data from an encrypted backup."
+  echo ""
+  msg_info "Options:"
+  echo "  --no-confirm  - Skip confirmation prompts (for automated/scheduled use)."
   echo ""
   msg_info "Configuration: $SYNC_CONFIG_FILE"
   exit 0
@@ -202,7 +205,24 @@ check_dependencies() {
 
 # --- Main Dispatcher ---
 main() {
-  if [ -z "$1" ] || [ "$1" == "--help" ]; then
+  # Parse global flags
+  local no_confirm=false
+  while [[ "${1:-}" == --* ]]; do
+    case "$1" in
+      --no-confirm)
+        no_confirm=true
+        shift
+        ;;
+      --help)
+        usage
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  if [ -z "${1:-}" ]; then
     usage
   fi
 
@@ -215,12 +235,16 @@ main() {
       ;;
     backup)
       check_dependencies
-      prompt_for_confirmation "Ready to begin the encrypted backup process."
+      if [ "$no_confirm" = false ]; then
+        prompt_for_confirmation "Ready to begin the encrypted backup process."
+      fi
       do_backup
       ;;
     restore)
       check_dependencies
-      prompt_for_confirmation "Ready to restore from an encrypted backup. This may overwrite existing files."
+      if [ "$no_confirm" = false ]; then
+        prompt_for_confirmation "Ready to restore from an encrypted backup. This may overwrite existing files."
+      fi
       do_restore
       ;;
     *)

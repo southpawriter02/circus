@@ -34,7 +34,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
         *   ~~`03-dotfile-management-command`~~: **DONE** - `fc fc-dotfiles` command with `add`, `list`, and `edit` subcommands. Interactive subdirectory selection, symlink management, and `$EDITOR` integration. Documentation in `COMMANDS.md`.
         *   ~~`30-dotfile-profiles`~~: **DONE** - Profile system with `profiles/base/` for shared dotfiles and named profiles (e.g., `work/`, `personal/`) for overrides. `fc fc-profile` command with `list`, `current`, and `switch` subcommands. Documentation in `docs/PROFILES.md` and `COMMANDS.md`.
     *   **Backup and Restore:**
-        *   `02-scheduled-backups`: Implement automated, scheduled backups using `launchd`.
+        *   ~~`02-scheduled-backups`~~: **DONE** - `fc fc-schedule` command with `install`, `uninstall`, `status`, and `run` subcommands. Uses macOS launchd for reliable scheduling. Supports daily/weekly frequencies. Added `--no-confirm` flag to `fc-sync` for automated execution. Documentation in `COMMANDS.md`.
     *   **System & Application Management:**
         *   `21-automated-application-installation`: A robust command to install applications from a `Brewfile`.
         *   `22-system-update-command`: A single command to update `brew`, `mas`, and the OS.
