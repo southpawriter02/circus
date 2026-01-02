@@ -174,6 +174,106 @@ fc firewall status
 
 ---
 
+## `fc ssh`
+
+Manage SSH keys for authentication with remote services. Generate new keys, add them to the ssh-agent, copy public keys to clipboard, and list available keys.
+
+**Usage:**
+
+```bash
+fc ssh <subcommand> [options]
+```
+
+**Subcommands:**
+*   `generate [name]`: Generate a new ed25519 SSH key.
+*   `add <name>`: Add an existing key to ssh-agent and Keychain.
+*   `copy [name]`: Copy public key to clipboard.
+*   `list`: List all SSH key pairs in ~/.ssh.
+
+### fc ssh generate
+
+Generate a new ed25519 SSH key pair with automatic agent registration.
+
+```bash
+fc ssh generate [key-name] [options]
+```
+
+**Options:**
+*   `--email <email>`: Email address for key comment (prompts if not provided).
+*   `--no-passphrase`: Generate key without passphrase (less secure).
+
+**Examples:**
+
+```bash
+# Generate default key (~/.ssh/id_ed25519)
+fc ssh generate
+
+# Generate named key for work
+fc ssh generate work --email user@company.com
+
+# Generate without passphrase (for automation)
+fc ssh generate deploy --no-passphrase
+```
+
+**What it does:**
+1. Creates ed25519 key pair (modern, secure algorithm)
+2. Prompts for passphrase (unless `--no-passphrase`)
+3. Adds key to ssh-agent with Keychain integration
+4. Copies public key to clipboard
+5. Displays the public key for easy copying
+
+### fc ssh add
+
+Add an existing SSH key to the ssh-agent and macOS Keychain.
+
+```bash
+fc ssh add <key-name>
+```
+
+**Examples:**
+
+```bash
+fc ssh add id_ed25519
+fc ssh add work
+```
+
+### fc ssh copy
+
+Copy a public key to the clipboard for pasting into GitHub, GitLab, etc.
+
+```bash
+fc ssh copy [key-name]
+```
+
+Defaults to `id_ed25519` if no key name is specified.
+
+**Examples:**
+
+```bash
+fc ssh copy              # Copy id_ed25519.pub
+fc ssh copy work         # Copy work.pub
+```
+
+### fc ssh list
+
+List all SSH key pairs in ~/.ssh with their type and comment.
+
+```bash
+fc ssh list
+```
+
+**Output:**
+
+```
+SSH Keys in /Users/you/.ssh:
+
+  id_ed25519           ED25519    user@example.com
+  work                 ED25519    user@company.com
+  github               RSA        old-key@example.com
+```
+
+---
+
 ## `fc sync`
 
 This is a powerful command for managing the full lifecycle of your machine's state. It allows you to create a complete, end-to-end encrypted backup of your applications and data and then restore that state to a new machine.

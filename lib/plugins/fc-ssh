@@ -1,0 +1,357 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-ssh
+#
+# DESCRIPTION:  Manage SSH keys from the command line. Provides subcommands for
+#               generating new keys, adding them to the ssh-agent, copying
+#               public keys to the clipboard, and listing available keys.
+#
+# REQUIRES:
+#   - macOS (uses Keychain integration)
+#   - ssh-keygen, ssh-add, pbcopy (all macOS built-in)
+#
+# SUBCOMMANDS:
+#   generate [name]  - Generate a new ed25519 SSH key
+#   add <name>       - Add an existing key to ssh-agent and Keychain
+#   copy [name]      - Copy public key to clipboard
+#   list             - List all SSH key pairs
+#
+# EXAMPLES:
+#   fc ssh generate              # Generate ~/.ssh/id_ed25519
+#   fc ssh generate work         # Generate ~/.ssh/work
+#   fc ssh add id_ed25519        # Add key to agent
+#   fc ssh copy                  # Copy default public key
+#   fc ssh list                  # List all keys
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ----------------------------------------------------------
+readonly SSH_DIR="$HOME/.ssh"
+readonly DEFAULT_KEY_NAME="id_ed25519"
+
+# --- Help and Usage ---------------------------------------------------------
+
+usage() {
+  msg_info "Usage: fc ssh <subcommand> [options]"
+  echo ""
+  msg_info "Manage SSH keys for authentication with remote services."
+  echo ""
+  msg_info "Subcommands:"
+  echo "  generate [name]   Generate a new ed25519 SSH key"
+  echo "  add <name>        Add an existing key to ssh-agent and Keychain"
+  echo "  copy [name]       Copy public key to clipboard"
+  echo "  list              List all SSH key pairs in ~/.ssh"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc ssh generate              # Generate ~/.ssh/id_ed25519"
+  echo "  fc ssh generate work         # Generate ~/.ssh/work"
+  echo "  fc ssh add id_ed25519        # Add key to ssh-agent"
+  echo "  fc ssh copy                  # Copy id_ed25519.pub to clipboard"
+  echo "  fc ssh list                  # List all keys"
+  echo ""
+  exit 0
+}
+
+usage_generate() {
+  msg_info "Usage: fc ssh generate [key-name] [options]"
+  echo ""
+  msg_info "Generate a new ed25519 SSH key pair."
+  echo ""
+  msg_info "Arguments:"
+  echo "  key-name          Name for the key (default: id_ed25519)"
+  echo ""
+  msg_info "Options:"
+  echo "  --email <email>   Email address for key comment"
+  echo "  --no-passphrase   Generate without passphrase (less secure)"
+  echo "  --help            Show this help message"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc ssh generate"
+  echo "  fc ssh generate work --email work@company.com"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Ensure ~/.ssh directory exists with proper permissions
+ensure_ssh_dir() {
+  if [ ! -d "$SSH_DIR" ]; then
+    msg_info "Creating $SSH_DIR directory..."
+    mkdir -p "$SSH_DIR"
+    chmod 700 "$SSH_DIR"
+  fi
+}
+
+# Start ssh-agent if not running
+ensure_ssh_agent() {
+  if ! pgrep -u "$USER" ssh-agent > /dev/null 2>&1; then
+    msg_info "Starting ssh-agent..."
+    eval "$(ssh-agent -s)" > /dev/null
+  fi
+}
+
+# Get key info using ssh-keygen
+get_key_info() {
+  local pub_key="$1"
+  # ssh-keygen -l -f outputs: bits hash comment (type)
+  # Example: 256 SHA256:xxx user@example.com (ED25519)
+  ssh-keygen -l -f "$pub_key" 2>/dev/null
+}
+
+# --- Subcommand: generate ---------------------------------------------------
+
+do_generate() {
+  local key_name="$DEFAULT_KEY_NAME"
+  local email=""
+  local no_passphrase=false
+
+  # Parse arguments
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --help)
+        usage_generate
+        ;;
+      --email)
+        email="$2"
+        shift 2
+        ;;
+      --no-passphrase)
+        no_passphrase=true
+        shift
+        ;;
+      -*)
+        die "Unknown option: $1. Use 'fc ssh generate --help' for usage."
+        ;;
+      *)
+        key_name="$1"
+        shift
+        ;;
+    esac
+  done
+
+  ensure_ssh_dir
+
+  local key_path="$SSH_DIR/$key_name"
+
+  # Prompt for email if not provided
+  if [ -z "$email" ]; then
+    msg_info "Please enter the email address to associate with your new SSH key:"
+    read -r -p "> " email
+    if [ -z "$email" ]; then
+      die "Email address cannot be empty."
+    fi
+  fi
+
+  # Check if key already exists
+  if [ -f "$key_path" ]; then
+    msg_warning "SSH key already exists at $key_path"
+    read -r -p "Do you want to overwrite it? (y/n) " -n 1
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      die "Aborted by user."
+    fi
+  fi
+
+  msg_info "Generating a new ed25519 SSH key at $key_path..."
+
+  # Generate the key
+  if [ "$no_passphrase" = true ]; then
+    ssh-keygen -t ed25519 -C "$email" -f "$key_path" -N ""
+  else
+    # Let ssh-keygen prompt for passphrase interactively
+    ssh-keygen -t ed25519 -C "$email" -f "$key_path"
+  fi
+
+  if [ $? -ne 0 ]; then
+    die "Failed to generate SSH key."
+  fi
+
+  # Ensure proper permissions
+  chmod 600 "$key_path"
+  chmod 644 "${key_path}.pub"
+
+  msg_success "SSH key generated successfully."
+
+  # Add to ssh-agent
+  ensure_ssh_agent
+
+  msg_info "Adding SSH key to ssh-agent and storing in Keychain..."
+  ssh-add --apple-use-keychain "$key_path"
+
+  # Copy public key to clipboard
+  msg_info "Copying public key to clipboard..."
+  pbcopy < "${key_path}.pub"
+
+  echo ""
+  msg_success "Success! Your new SSH key is ready."
+  msg_info "The public key has been copied to your clipboard."
+  msg_info "You can paste it into GitHub, GitLab, or any other service."
+  echo ""
+  msg_info "Public key:"
+  cat "${key_path}.pub"
+}
+
+# --- Subcommand: add --------------------------------------------------------
+
+do_add() {
+  if [ -z "$1" ] || [ "$1" = "--help" ]; then
+    msg_info "Usage: fc ssh add <key-name>"
+    echo ""
+    msg_info "Add an existing SSH key to the ssh-agent and macOS Keychain."
+    echo ""
+    msg_info "Examples:"
+    echo "  fc ssh add id_ed25519"
+    echo "  fc ssh add work"
+    echo ""
+    if [ -z "$1" ]; then
+      exit 1
+    fi
+    exit 0
+  fi
+
+  local key_name="$1"
+  local key_path="$SSH_DIR/$key_name"
+
+  # Validate key exists
+  if [ ! -f "$key_path" ]; then
+    die "SSH key not found: $key_path"
+  fi
+
+  ensure_ssh_agent
+
+  msg_info "Adding $key_name to ssh-agent and Keychain..."
+  ssh-add --apple-use-keychain "$key_path"
+
+  if [ $? -eq 0 ]; then
+    msg_success "SSH key added successfully."
+  else
+    die "Failed to add SSH key."
+  fi
+}
+
+# --- Subcommand: copy -------------------------------------------------------
+
+do_copy() {
+  local key_name="${1:-$DEFAULT_KEY_NAME}"
+
+  if [ "$key_name" = "--help" ]; then
+    msg_info "Usage: fc ssh copy [key-name]"
+    echo ""
+    msg_info "Copy the public key to the clipboard."
+    msg_info "Defaults to id_ed25519 if no key name is specified."
+    echo ""
+    msg_info "Examples:"
+    echo "  fc ssh copy              # Copy id_ed25519.pub"
+    echo "  fc ssh copy work         # Copy work.pub"
+    echo ""
+    exit 0
+  fi
+
+  local pub_key_path="$SSH_DIR/${key_name}.pub"
+
+  # Validate public key exists
+  if [ ! -f "$pub_key_path" ]; then
+    die "Public key not found: $pub_key_path"
+  fi
+
+  pbcopy < "$pub_key_path"
+  msg_success "Public key copied to clipboard: $key_name"
+  echo ""
+  msg_info "You can now paste it into GitHub, GitLab, or any other service."
+}
+
+# --- Subcommand: list -------------------------------------------------------
+
+do_list() {
+  if [ "$1" = "--help" ]; then
+    msg_info "Usage: fc ssh list"
+    echo ""
+    msg_info "List all SSH key pairs in ~/.ssh/"
+    echo ""
+    exit 0
+  fi
+
+  ensure_ssh_dir
+
+  echo ""
+  msg_info "SSH Keys in $SSH_DIR:"
+  echo ""
+
+  local found_keys=false
+
+  # Find all .pub files and display info
+  for pub_key in "$SSH_DIR"/*.pub; do
+    if [ -f "$pub_key" ]; then
+      found_keys=true
+      local key_name
+      key_name=$(basename "$pub_key" .pub)
+      local private_key="$SSH_DIR/$key_name"
+
+      # Get key info
+      local key_info
+      key_info=$(get_key_info "$pub_key")
+
+      if [ -n "$key_info" ]; then
+        # Parse key info: bits hash comment (type)
+        local key_type
+        key_type=$(echo "$key_info" | grep -oE '\([A-Z0-9]+\)' | tr -d '()')
+        local key_comment
+        key_comment=$(echo "$key_info" | awk '{print $3}')
+
+        printf "  %-20s %-10s %s\n" "$key_name" "$key_type" "$key_comment"
+      else
+        printf "  %-20s %s\n" "$key_name" "(unable to read key info)"
+      fi
+
+      # Check if private key exists
+      if [ ! -f "$private_key" ]; then
+        echo "    └─ Warning: Private key missing"
+      fi
+    fi
+  done
+
+  if [ "$found_keys" = false ]; then
+    msg_info "No SSH keys found."
+    echo ""
+    msg_info "Generate a new key with: fc ssh generate"
+  fi
+
+  echo ""
+}
+
+# --- Main Dispatcher --------------------------------------------------------
+
+main() {
+  if [ -z "$1" ] || [ "$1" = "--help" ]; then
+    usage
+  fi
+
+  local subcommand="$1"
+  shift
+
+  case "$subcommand" in
+    generate)
+      do_generate "$@"
+      ;;
+    add)
+      do_add "$@"
+      ;;
+    copy)
+      do_copy "$@"
+      ;;
+    list)
+      do_list "$@"
+      ;;
+    *)
+      die "Unknown subcommand: $subcommand. Run 'fc ssh --help' for usage."
+      ;;
+  esac
+}
+
+main "$@"
