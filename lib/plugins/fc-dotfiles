@@ -1,0 +1,233 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-dotfiles
+#
+# DESCRIPTION:  Manage dotfiles tracked by the Dotfiles Flying Circus.
+#               Provides commands to add, list, and edit dotfiles in the
+#               repository.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration -----------------------------------------------------------
+
+readonly PROFILES_DIR="$DOTFILES_ROOT/profiles"
+
+# Known subdirectories in profiles/
+readonly KNOWN_SUBDIRS=("bash" "git" "jetbrains" "sh" "zsh")
+
+# --- Usage Information -------------------------------------------------------
+
+usage() {
+  msg_info "Usage: fc fc-dotfiles <subcommand> [options]"
+  echo ""
+  msg_info "Manage dotfiles tracked by the Dotfiles Flying Circus."
+  echo ""
+  msg_info "Subcommands:"
+  echo "  add <file>     - Add a file to the dotfiles repository and symlink it"
+  echo "  list           - List all managed dotfiles and their symlink status"
+  echo "  edit <name>    - Edit a managed dotfile in \$EDITOR"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc fc-dotfiles add ~/.vimrc"
+  echo "  fc fc-dotfiles list"
+  echo "  fc fc-dotfiles edit .gitconfig"
+  exit 0
+}
+
+# --- Command Logic -----------------------------------------------------------
+
+do_list() {
+  msg_info "Managed dotfiles:"
+  echo ""
+
+  local found=false
+
+  for subdir in "$PROFILES_DIR"/*/; do
+    [ -d "$subdir" ] || continue
+
+    local subdir_name
+    subdir_name=$(basename "$subdir")
+
+    # Skip oh-my-zsh-custom directory (it's a plugin, not dotfiles)
+    [[ "$subdir_name" == "oh-my-zsh-custom" ]] && continue
+
+    for file in "$subdir"/.* "$subdir"/*; do
+      # Skip . and .. entries
+      [[ "$(basename "$file")" == "." ]] && continue
+      [[ "$(basename "$file")" == ".." ]] && continue
+
+      # Only process regular files
+      [ -f "$file" ] || continue
+
+      found=true
+
+      local filename
+      filename=$(basename "$file")
+      local home_path="$HOME/$filename"
+
+      # Determine status
+      if [ -L "$home_path" ]; then
+        local target
+        target=$(readlink "$home_path")
+        if [ "$target" = "$file" ]; then
+          echo "  [linked]     $subdir_name/$filename"
+        else
+          echo "  [different]  $subdir_name/$filename (symlink points elsewhere)"
+        fi
+      elif [ -e "$home_path" ]; then
+        echo "  [exists]     $subdir_name/$filename (file exists, not symlinked)"
+      else
+        echo "  [not linked] $subdir_name/$filename"
+      fi
+    done
+  done
+
+  if [ "$found" = false ]; then
+    msg_info "No dotfiles found in profiles/"
+  fi
+}
+
+do_edit() {
+  local search_name="$1"
+
+  if [ -z "$search_name" ]; then
+    die "Usage: fc fc-dotfiles edit <name>"
+  fi
+
+  local editor="${EDITOR:-vim}"
+
+  # Find matching files
+  local matches=()
+  while IFS= read -r -d '' file; do
+    matches+=("$file")
+  done < <(find "$PROFILES_DIR" -type f -name "*$search_name*" -print0 2>/dev/null)
+
+  if [ ${#matches[@]} -eq 0 ]; then
+    die "No dotfile found matching: $search_name"
+  elif [ ${#matches[@]} -eq 1 ]; then
+    msg_info "Opening ${matches[0]} in $editor..."
+    "$editor" "${matches[0]}"
+  else
+    msg_info "Multiple matches found. Select one:"
+    select file in "${matches[@]}"; do
+      if [ -n "$file" ]; then
+        "$editor" "$file"
+        break
+      fi
+    done
+  fi
+}
+
+do_add() {
+  local source_path="$1"
+
+  if [ -z "$source_path" ]; then
+    die "Usage: fc fc-dotfiles add <file>\n\nExample: fc fc-dotfiles add ~/.vimrc"
+  fi
+
+  # Expand ~ and $HOME
+  source_path="${source_path/#\~/$HOME}"
+  source_path="${source_path/#\$HOME/$HOME}"
+
+  # Convert to absolute path
+  if [[ "$source_path" != /* ]]; then
+    source_path="$(pwd)/$source_path"
+  fi
+
+  # Validate file exists
+  if [ ! -e "$source_path" ]; then
+    die "File not found: $source_path"
+  fi
+
+  # Check if it's already a symlink
+  if [ -L "$source_path" ]; then
+    local target
+    target=$(readlink "$source_path")
+    if [[ "$target" == "$PROFILES_DIR"* ]]; then
+      die "File is already managed by dotfiles: $source_path -> $target"
+    else
+      die "File is already a symlink: $source_path -> $target"
+    fi
+  fi
+
+  local filename
+  filename=$(basename "$source_path")
+
+  # Interactive subdirectory selection
+  msg_info "Select target subdirectory in profiles/:"
+  local options=("${KNOWN_SUBDIRS[@]}" "other (create new)")
+
+  select subdir in "${options[@]}"; do
+    if [ -n "$subdir" ]; then
+      if [ "$subdir" = "other (create new)" ]; then
+        read -rp "Enter new subdirectory name: " subdir
+        if [ -z "$subdir" ]; then
+          die "Subdirectory name cannot be empty"
+        fi
+      fi
+      break
+    fi
+  done
+
+  local dest_dir="$PROFILES_DIR/$subdir"
+  local dest_path="$dest_dir/$filename"
+
+  # Create subdirectory if needed
+  if [ ! -d "$dest_dir" ]; then
+    msg_info "Creating directory: $dest_dir"
+    mkdir -p "$dest_dir"
+  fi
+
+  # Check for existing file at destination
+  if [ -e "$dest_path" ]; then
+    read -rp "File already exists at $dest_path. Overwrite? [y/N] " confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+      die "Aborted."
+    fi
+    rm -f "$dest_path"
+  fi
+
+  # Move file (preserves permissions)
+  msg_info "Moving $source_path to $dest_path..."
+  mv "$source_path" "$dest_path"
+
+  # Create symlink
+  msg_info "Creating symlink..."
+  ln -s "$dest_path" "$source_path"
+
+  msg_success "Added $filename to profiles/$subdir/"
+  msg_info "Symlink created: $source_path -> $dest_path"
+}
+
+# --- Main Dispatcher ---------------------------------------------------------
+
+main() {
+  if [ -z "$1" ] || [ "$1" == "--help" ]; then
+    usage
+  fi
+
+  local subcommand="$1"
+  shift
+
+  case "$subcommand" in
+    list)
+      do_list
+      ;;
+    edit)
+      do_edit "$@"
+      ;;
+    add)
+      do_add "$@"
+      ;;
+    *)
+      die "Unknown subcommand: $subcommand. Run 'fc fc-dotfiles --help' for usage."
+      ;;
+  esac
+}
+
+main "$@"

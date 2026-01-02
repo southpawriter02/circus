@@ -329,6 +329,46 @@ fc lock timeout 0
 
 ---
 
+## `fc dotfiles`
+
+Manage dotfiles tracked by the Dotfiles Flying Circus. Add new files to the repository, list managed dotfiles and their status, or edit existing dotfiles.
+
+**Usage:**
+
+```bash
+fc fc-dotfiles <subcommand> [options]
+```
+
+**Subcommands:**
+*   `add <file>`: Add a file to the dotfiles repository and create a symlink in its place.
+*   `list`: List all managed dotfiles and their symlink status.
+*   `edit <name>`: Open a managed dotfile in `$EDITOR`.
+
+**Examples:**
+
+```bash
+# Add your vim config to the repository
+fc fc-dotfiles add ~/.vimrc
+
+# List all tracked dotfiles and their status
+fc fc-dotfiles list
+
+# Edit your git config
+fc fc-dotfiles edit .gitconfig
+```
+
+### Adding a Dotfile
+
+When you run `fc fc-dotfiles add`, the command will:
+
+1. Prompt you to select a target subdirectory (bash, git, zsh, etc.)
+2. Move the file to `profiles/<subdir>/`
+3. Create a symlink from the original location to the new location
+
+This keeps your dotfiles organized and tracked in the repository while maintaining their expected location in your home directory.
+
+---
+
 ## `fc audit`
 
 Run security audits to check system protection settings.

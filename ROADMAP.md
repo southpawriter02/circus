@@ -31,7 +31,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
 
 *   **Key Features:**
     *   **Dotfile Management:**
-        *   `03-dotfile-management-command`: The core command for managing dotfiles.
+        *   ~~`03-dotfile-management-command`~~: **DONE** - `fc fc-dotfiles` command with `add`, `list`, and `edit` subcommands. Interactive subdirectory selection, symlink management, and `$EDITOR` integration. Documentation in `COMMANDS.md`.
         *   `30-dotfile-profiles`: Add support for different dotfile profiles (e.g., "work" vs. "home").
     *   **Backup and Restore:**
         *   `02-scheduled-backups`: Implement automated, scheduled backups using `launchd`.
