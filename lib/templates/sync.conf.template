@@ -8,16 +8,31 @@
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# GPG Settings
+# Backend Selection
 # ------------------------------------------------------------------------------
 
-# Your GPG key ID for encryption (REQUIRED)
+# Backup backend: "gpg" (default), "restic", or "borg"
+#
+# gpg    - Uses tar + GPG encryption. Simple, portable, single-file archives.
+#          Remote storage via rclone (push/pull commands).
+#
+# restic - Deduplication, incremental backups, multiple snapshots.
+#          Native remote support (S3, SFTP, REST, etc.)
+#          Install: brew install restic
+#
+# borg   - Deduplication, compression, multiple archives.
+#          Native SSH remote support.
+#          Install: brew install borgbackup
+#
+# BACKUP_BACKEND="gpg"
+
+# ------------------------------------------------------------------------------
+# GPG Backend Settings (default)
+# ------------------------------------------------------------------------------
+
+# Your GPG key ID for encryption (REQUIRED for GPG backend)
 # Find your key ID with: gpg --list-keys --keyid-format LONG
 GPG_RECIPIENT_ID=""
-
-# ------------------------------------------------------------------------------
-# Backup Location
-# ------------------------------------------------------------------------------
 
 # Where to save the backup archive (default: $HOME)
 # BACKUP_DEST_DIR="$HOME"
@@ -26,7 +41,42 @@ GPG_RECIPIENT_ID=""
 # BACKUP_ARCHIVE_NAME="circus_backup.tar.gz.gpg"
 
 # ------------------------------------------------------------------------------
-# Backup Targets
+# Restic Backend Settings
+# ------------------------------------------------------------------------------
+
+# Repository location (REQUIRED for Restic backend)
+# Examples:
+#   Local:  "/path/to/backup/repo"
+#   S3:     "s3:s3.amazonaws.com/bucket-name"
+#   SFTP:   "sftp:user@host:/path/to/repo"
+#   REST:   "rest:https://user:pass@host/"
+# RESTIC_REPOSITORY=""
+
+# Password file for repository encryption (chmod 600)
+# Create with: echo 'your-password' > ~/.config/circus/restic-password
+# RESTIC_PASSWORD_FILE="$HOME/.config/circus/restic-password"
+
+# ------------------------------------------------------------------------------
+# Borg Backend Settings
+# ------------------------------------------------------------------------------
+
+# Repository location (REQUIRED for Borg backend)
+# Examples:
+#   Local:  "/path/to/backup/repo"
+#   SSH:    "ssh://user@host/path/to/repo"
+#   SSH:    "user@host:/path/to/repo"
+# BORG_REPOSITORY=""
+
+# Passphrase file for repository encryption (chmod 600)
+# Create with: echo 'your-passphrase' > ~/.config/circus/borg-passphrase
+# BORG_PASSPHRASE_FILE="$HOME/.config/circus/borg-passphrase"
+
+# Compression algorithm: none, lz4, zstd, zlib, lzma
+# zstd offers the best balance of speed and compression
+# BORG_COMPRESSION="zstd"
+
+# ------------------------------------------------------------------------------
+# Backup Targets (All Backends)
 # ------------------------------------------------------------------------------
 
 # Directories and files to back up
@@ -37,14 +87,22 @@ BACKUP_TARGETS=(
   "$HOME/Documents"
 )
 
+# Optional: Patterns to exclude from backup
+# BACKUP_EXCLUDES=(
+#   "*.tmp"
+#   ".DS_Store"
+#   "node_modules"
+# )
+
 # ------------------------------------------------------------------------------
-# Remote Storage Settings (Optional)
+# Remote Storage Settings (GPG Backend Only)
 # ------------------------------------------------------------------------------
 
 # rclone remote name (as configured in ~/.config/rclone/rclone.conf)
 # Example: "gdrive", "s3-backup", "dropbox", "b2-archive"
 # Leave empty to disable remote sync
 # Configure rclone with: rclone config
+# Note: Restic and Borg have native remote support; use their repository settings instead
 # RCLONE_REMOTE=""
 
 # Remote path within the configured remote

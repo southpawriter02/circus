@@ -348,12 +348,31 @@ fc sync <subcommand> [options]
 *   `setup`: Create configuration file from template.
 *   `backup`: Back up and encrypt critical data.
 *   `restore`: Decrypt and restore data from backup.
-*   `push`: Upload local backup to remote storage.
-*   `pull`: Download backup from remote storage.
-*   `list-remote`: List available backups on remote storage.
+*   `push`: Upload local backup to remote storage (GPG backend only).
+*   `pull`: Download backup from remote storage (GPG backend only).
+*   `list-remote`: List available backups on remote storage (GPG backend only).
 
 **Options:**
 *   `--no-confirm`: Skip confirmation prompts (for automation).
+
+### Backup Backends
+
+The sync command supports multiple backup backends, each with different strengths:
+
+| Backend | Description | Remote Support |
+|---------|-------------|----------------|
+| `gpg` (default) | tar + GPG encryption | Via rclone (push/pull) |
+| `restic` | Deduplication, incremental | Native (S3, SFTP, etc.) |
+| `borg` | Deduplication, compression | Native (SSH) |
+
+Set your preferred backend in `~/.config/circus/sync.conf`:
+
+```bash
+# Options: "gpg", "restic", "borg"
+BACKUP_BACKEND="gpg"
+```
+
+For detailed backend configuration, see [docs/BACKUP_BACKENDS.md](docs/BACKUP_BACKENDS.md).
 
 ### The Migration Workflow
 
@@ -389,9 +408,11 @@ fc sync restore
 
 The result is a new machine that is a near-perfect mirror of your old environment.
 
-### Remote Storage
+### Remote Storage (GPG Backend)
 
-`fc sync` supports uploading backups to cloud storage providers using [rclone](https://rclone.org/). This enables off-site backup protection against local data loss.
+The GPG backend uses [rclone](https://rclone.org/) to upload backups to cloud storage providers. This enables off-site backup protection against local data loss.
+
+**Note:** The Restic and Borg backends have native remote support. Configure their repository settings to point directly to remote storage instead of using the push/pull commands.
 
 **Setup:**
 

@@ -54,7 +54,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
 *   **Key Features:**
     *   **Advanced Backups:**
         *   ~~`01-remote-backup-storage`~~: **DONE** - Extended `fc sync` with `push`, `pull`, and `list-remote` subcommands for remote backup storage using rclone. Supports 40+ cloud providers (S3, Google Drive, Dropbox, Backblaze B2, etc.). Configuration via `RCLONE_REMOTE` and `RCLONE_REMOTE_PATH` in sync.conf. Documentation in `COMMANDS.md`.
-        *   `10-multiple-backup-backends`: Allow users to configure and use multiple backup destinations.
+        *   ~~`10-multiple-backup-backends`~~: **DONE** - Refactored `fc sync` with dispatcher pattern supporting multiple backup backends. Three backends available: GPG (default, tar+gpg), Restic (deduplication, native S3/SFTP), and Borg (deduplication, compression, native SSH). Configuration via `BACKUP_BACKEND` in sync.conf. Backend files in `lib/backup_backends/`. Documentation in `docs/BACKUP_BACKENDS.md`.
     *   **Automation:**
         *   `27-automated-new-machine-setup`: A meta-command that runs a series of other commands to fully provision a new machine.
     *   **Integrations:**

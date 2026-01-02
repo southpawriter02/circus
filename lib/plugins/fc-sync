@@ -6,7 +6,7 @@
 #
 # DESCRIPTION:  This script handles the encrypted backup and restoration of
 #               system state, including application settings, user data, and a
-#               list of installed packages.
+#               list of installed packages. Supports multiple backup backends.
 #
 # ==============================================================================
 
@@ -18,6 +18,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 readonly SYNC_CONFIG_FILE="$HOME/.config/circus/sync.conf"
 readonly SYNC_CONFIG_TEMPLATE="$DOTFILES_ROOT/lib/templates/sync.conf.template"
+readonly BACKUP_BACKENDS_DIR="$DOTFILES_ROOT/lib/backup_backends"
 
 # Default values (can be overridden by config file)
 BACKUP_DEST_DIR="${BACKUP_DEST_DIR:-$HOME}"
@@ -25,9 +26,21 @@ BACKUP_ARCHIVE_NAME="${BACKUP_ARCHIVE_NAME:-circus_backup.tar.gz.gpg}"
 GPG_RECIPIENT_ID=""
 BACKUP_TARGETS=()
 
-# Remote storage defaults
+# Backend selection (default: gpg)
+BACKUP_BACKEND="${BACKUP_BACKEND:-gpg}"
+
+# Remote storage defaults (for GPG backend with rclone)
 RCLONE_REMOTE=""
 RCLONE_REMOTE_PATH="circus-backups"
+
+# Restic backend defaults
+RESTIC_REPOSITORY=""
+RESTIC_PASSWORD_FILE="$HOME/.config/circus/restic-password"
+
+# Borg backend defaults
+BORG_REPOSITORY=""
+BORG_PASSPHRASE_FILE="$HOME/.config/circus/borg-passphrase"
+BORG_COMPRESSION="zstd"
 
 # Load user configuration if it exists
 if [ -f "$SYNC_CONFIG_FILE" ]; then
@@ -41,24 +54,29 @@ if [ -f "$SYNC_CONFIG_FILE" ]; then
   source "$SYNC_CONFIG_FILE"
 fi
 
-# Validate required configuration
-validate_config() {
-  if [ -z "$GPG_RECIPIENT_ID" ]; then
-    msg_error "GPG_RECIPIENT_ID is not configured."
+# --- Backend Loading ---
+
+# Load the selected backup backend
+load_backend() {
+  local backend_file="$BACKUP_BACKENDS_DIR/${BACKUP_BACKEND}.sh"
+
+  if [ ! -f "$backend_file" ]; then
+    msg_error "Unknown backup backend: $BACKUP_BACKEND"
     echo ""
-    msg_info "To configure fc-sync:"
-    msg_info "  1. Run setup:     fc fc-sync setup"
-    msg_info "  2. Edit config:   \$EDITOR $SYNC_CONFIG_FILE"
-    msg_info "  3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)"
-    die "Configuration required. See instructions above."
+    msg_info "Available backends:"
+    for f in "$BACKUP_BACKENDS_DIR"/*.sh; do
+      if [ -f "$f" ]; then
+        echo "  - $(basename "$f" .sh)"
+      fi
+    done
+    die "Invalid BACKUP_BACKEND in config. Edit $SYNC_CONFIG_FILE to fix."
   fi
 
-  if [ ${#BACKUP_TARGETS[@]} -eq 0 ]; then
-    die "BACKUP_TARGETS is empty. Configure at least one path in $SYNC_CONFIG_FILE"
-  fi
+  # shellcheck source=/dev/null
+  source "$backend_file"
 }
 
-# Validate remote storage configuration
+# --- Validate Remote Storage Configuration (for GPG backend) ---
 validate_remote_config() {
   local rclone_cmd=${RCLONE_CMD:-rclone}
 
@@ -94,15 +112,21 @@ usage() {
   echo "  setup       - Create configuration file from template."
   echo "  backup      - Backs up and encrypts critical data."
   echo "  restore     - Decrypts and restores data from an encrypted backup."
-  echo "  push        - Upload local backup to configured remote storage."
-  echo "  pull        - Download backup from remote storage."
-  echo "  list-remote - List available backups on remote storage."
+  echo "  push        - Upload local backup to configured remote storage (GPG backend only)."
+  echo "  pull        - Download backup from remote storage (GPG backend only)."
+  echo "  list-remote - List available backups on remote storage (GPG backend only)."
   echo ""
   msg_info "Options:"
   echo "  --no-confirm  - Skip confirmation prompts (for automated/scheduled use)."
   echo ""
+  msg_info "Backup Backends:"
+  echo "  gpg    - Default. Uses tar + GPG for encrypted archives. Remote via rclone."
+  echo "  restic - Deduplication, incremental backups, native remote support."
+  echo "  borg   - Deduplication, compression, native SSH remote support."
+  echo ""
   msg_info "Configuration: $SYNC_CONFIG_FILE"
-  msg_info "Remote storage requires rclone: https://rclone.org/"
+  msg_info "Set BACKUP_BACKEND to choose your backend (default: gpg)."
+  msg_info "Remote storage (GPG backend) requires rclone: https://rclone.org/"
   exit 0
 }
 
@@ -133,107 +157,53 @@ do_setup() {
   echo ""
   msg_info "Next steps:"
   msg_info "  1. Edit the config: \$EDITOR $SYNC_CONFIG_FILE"
-  msg_info "  2. Set GPG_RECIPIENT_ID to your GPG key ID"
-  msg_info "  3. Customize BACKUP_TARGETS as needed"
+  msg_info "  2. Choose your BACKUP_BACKEND (gpg, restic, or borg)"
+  msg_info "  3. Configure backend-specific settings"
+  msg_info "  4. Customize BACKUP_TARGETS as needed"
   echo ""
-  msg_info "Find your GPG key ID with: gpg --list-keys --keyid-format LONG"
+  msg_info "For GPG backend: Set GPG_RECIPIENT_ID (find with: gpg --list-keys --keyid-format LONG)"
+  msg_info "For Restic backend: Set RESTIC_REPOSITORY and create RESTIC_PASSWORD_FILE"
+  msg_info "For Borg backend: Set BORG_REPOSITORY and create BORG_PASSPHRASE_FILE"
 }
 
-do_backup() {
-  local brew_cmd=${BREW_CMD:-brew}
-  local tar_cmd=${TAR_CMD:-tar}
-  local mktemp_cmd=${MKTEMP_CMD:-mktemp}
-  local gpg_cmd=${GPG_CMD:-gpg}
+# --- Remote Storage Commands (GPG backend with rclone) ---
 
-  validate_config
+check_remote_dependencies() {
+  local rclone_cmd=${RCLONE_CMD:-rclone}
 
-  local temp_backup_dir
-  temp_backup_dir=$($mktemp_cmd -d)
-  msg_info "Created temporary backup directory: $temp_backup_dir"
-
-  msg_info "Creating application inventory..."
-  # Only run brew if it's available (it's optional for basic backup)
-  if command -v "$brew_cmd" >/dev/null 2>&1; then
-    "$brew_cmd" bundle dump --force --file="$temp_backup_dir/Brewfile.dump"
-  else
-    msg_warning "Homebrew not found, skipping application inventory."
+  if ! command -v "$rclone_cmd" >/dev/null 2>&1; then
+    msg_error "rclone is not installed."
+    echo ""
+    msg_info "Install rclone with: brew install rclone"
+    msg_info "Then configure a remote with: rclone config"
+    die "rclone required for remote storage operations."
   fi
-
-  msg_info "Backing up critical files..."
-  for target in "${BACKUP_TARGETS[@]}"; do
-    local expanded_target
-    eval expanded_target="$target"
-    if [ -e "$expanded_target" ]; then
-      rsync -a "$expanded_target" "$temp_backup_dir/"
-    fi
-  done
-
-  msg_info "Creating and encrypting backup archive..."
-  local final_archive_path="$BACKUP_DEST_DIR/$BACKUP_ARCHIVE_NAME"
-  "$tar_cmd" -czf - -C "$temp_backup_dir" . | "$gpg_cmd" -e -r "$GPG_RECIPIENT_ID" -o "$final_archive_path"
-
-  msg_info "Cleaning up temporary files..."
-  rm -rf "$temp_backup_dir"
-
-  msg_success "Encrypted backup created at: $final_archive_path"
 }
-
-do_restore() {
-  local brew_cmd=${BREW_CMD:-brew}
-  local gpg_cmd=${GPG_CMD:-gpg}
-
-  validate_config
-
-  local encrypted_archive_path="$BACKUP_DEST_DIR/$BACKUP_ARCHIVE_NAME"
-
-  if [ ! -f "$encrypted_archive_path" ]; then
-    die "Encrypted backup archive not found at: $encrypted_archive_path"
-  fi
-
-  local temp_restore_dir
-  temp_restore_dir=$(mktemp -d)
-  msg_info "Decrypting backup... You may be prompted for your GPG passphrase."
-
-  # The `set -e` option in helpers.sh will cause the script to exit if gpg fails.
-  # The global error trap will provide a detailed error message.
-  "$gpg_cmd" -d "$encrypted_archive_path" | tar -xzf - -C "$temp_restore_dir"
-  msg_success "Decryption and extraction successful."
-
-  msg_info "Restoring applications from inventory..."
-  # Only restore apps if brew is available
-  if command -v "$brew_cmd" >/dev/null 2>&1; then
-    "$brew_cmd" bundle install --file="$temp_restore_dir/Brewfile.dump"
-  else
-    msg_warning "Homebrew not found, skipping application restoration."
-  fi
-
-  msg_info "Restoring critical files..."
-  for target in "${BACKUP_TARGETS[@]}"; do
-    local backup_source="$temp_restore_dir/$(basename "$target")"
-    local restore_dest
-    eval restore_dest="$target"
-    if [ -e "$backup_source" ]; then
-      rsync -a "$backup_source" "$(dirname "$restore_dest")"
-    fi
-  done
-
-  msg_info "Cleaning up temporary files..."
-  rm -rf "$temp_restore_dir"
-
-  msg_success "System restoration complete."
-}
-
-# --- Remote Storage Commands ---
 
 do_push() {
+  # Check if backend handles remote natively
+  if backend_handles_remote; then
+    msg_info "Backend '$(backend_get_name)' has native remote support."
+    echo ""
+    msg_info "Configure your remote destination in the backend-specific settings:"
+    if [ "$BACKUP_BACKEND" = "restic" ]; then
+      msg_info "  Set RESTIC_REPOSITORY to a remote path (e.g., s3:bucket/path, sftp:host/path)"
+    elif [ "$BACKUP_BACKEND" = "borg" ]; then
+      msg_info "  Set BORG_REPOSITORY to a remote path (e.g., ssh://user@host/path)"
+    fi
+    msg_info "Then run 'fc fc-sync backup' to back up directly to remote."
+    return 0
+  fi
+
   local rclone_cmd=${RCLONE_CMD:-rclone}
 
   validate_remote_config
 
-  local local_archive_path="$BACKUP_DEST_DIR/$BACKUP_ARCHIVE_NAME"
+  local local_archive_path
+  local_archive_path=$(backend_get_archive_path)
 
   if [ ! -f "$local_archive_path" ]; then
-    die "Local backup not found at: $local_archive_path. Run 'fc sync backup' first."
+    die "Local backup not found at: $local_archive_path. Run 'fc fc-sync backup' first."
   fi
 
   local remote_dest="$RCLONE_REMOTE:$RCLONE_REMOTE_PATH/"
@@ -250,6 +220,15 @@ do_push() {
 }
 
 do_pull() {
+  # Check if backend handles remote natively
+  if backend_handles_remote; then
+    msg_info "Backend '$(backend_get_name)' has native remote support."
+    echo ""
+    msg_info "Configure your remote destination in the backend-specific settings,"
+    msg_info "then run 'fc fc-sync restore' to restore directly from remote."
+    return 0
+  fi
+
   local rclone_cmd=${RCLONE_CMD:-rclone}
 
   validate_remote_config
@@ -274,6 +253,18 @@ do_pull() {
 }
 
 do_list_remote() {
+  # Check if backend handles remote natively
+  if backend_handles_remote; then
+    msg_info "Backend '$(backend_get_name)' has native remote support."
+    echo ""
+    if [ "$BACKUP_BACKEND" = "restic" ]; then
+      msg_info "List snapshots with: restic -r \$RESTIC_REPOSITORY snapshots"
+    elif [ "$BACKUP_BACKEND" = "borg" ]; then
+      msg_info "List archives with: borg list \$BORG_REPOSITORY"
+    fi
+    return 0
+  fi
+
   local rclone_cmd=${RCLONE_CMD:-rclone}
 
   validate_remote_config
@@ -287,32 +278,6 @@ do_list_remote() {
     msg_warning "No backups found or unable to list remote path."
     msg_info "Ensure the remote path exists and rclone is configured correctly."
     return 1
-  fi
-}
-
-# --- Dependency Checks ---
-check_dependencies() {
-  local gpg_cmd=${GPG_CMD:-gpg}
-  local rsync_cmd=${RSYNC_CMD:-rsync}
-
-  if ! command -v "$gpg_cmd" >/dev/null 2>&1; then
-    die "GPG is not installed. Please run 'brew install gpg-suite'."
-  fi
-
-  if ! command -v "$rsync_cmd" >/dev/null 2>&1; then
-    die "This command requires 'rsync'. Please install it first."
-  fi
-}
-
-check_remote_dependencies() {
-  local rclone_cmd=${RCLONE_CMD:-rclone}
-
-  if ! command -v "$rclone_cmd" >/dev/null 2>&1; then
-    msg_error "rclone is not installed."
-    echo ""
-    msg_info "Install rclone with: brew install rclone"
-    msg_info "Then configure a remote with: rclone config"
-    die "rclone required for remote storage operations."
   fi
 }
 
@@ -342,23 +307,30 @@ main() {
   local subcommand="$1"
   shift
 
+  # Load the backend for all commands except setup and help
+  if [ "$subcommand" != "setup" ]; then
+    load_backend
+  fi
+
   case "$subcommand" in
     setup)
       do_setup
       ;;
     backup)
-      check_dependencies
+      backend_check_dependencies
+      backend_validate_config
       if [ "$no_confirm" = false ]; then
-        prompt_for_confirmation "Ready to begin the encrypted backup process."
+        prompt_for_confirmation "Ready to begin backup using $(backend_get_name) backend."
       fi
-      do_backup
+      backend_do_backup
       ;;
     restore)
-      check_dependencies
+      backend_check_dependencies
+      backend_validate_config
       if [ "$no_confirm" = false ]; then
-        prompt_for_confirmation "Ready to restore from an encrypted backup. This may overwrite existing files."
+        prompt_for_confirmation "Ready to restore from backup. This may overwrite existing files."
       fi
-      do_restore
+      backend_do_restore
       ;;
     push)
       check_remote_dependencies
@@ -379,7 +351,7 @@ main() {
       do_list_remote
       ;;
     *)
-      die "Unknown subcommand: $subcommand. Run 'fc sync --help' for available subcommands."
+      die "Unknown subcommand: $subcommand. Run 'fc fc-sync --help' for available subcommands."
       ;;
   esac
 }
