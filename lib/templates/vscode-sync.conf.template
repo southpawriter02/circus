@@ -1,0 +1,87 @@
+# ==============================================================================
+# fc-vscode-sync Configuration
+# ==============================================================================
+# Copy this file to ~/.config/circus/vscode-sync.conf and customize it.
+#
+# SECURITY WARNING: This file is sourced as a shell script.
+# Only include variable definitions - never run arbitrary code.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Backend Selection
+# ------------------------------------------------------------------------------
+
+# Storage backend: "gist" (default) or "repo"
+#
+# gist  - Uses a private GitHub Gist for storage
+#         Pro: Simple setup, no separate repo needed
+#         Con: Limited file size, less version control
+#
+# repo  - Uses a dedicated Git repository
+#         Pro: Full version control, unlimited size
+#         Con: Requires separate repo setup
+#
+VSCODE_SYNC_BACKEND="gist"
+
+# ------------------------------------------------------------------------------
+# Gist Backend Settings
+# ------------------------------------------------------------------------------
+
+# Gist ID (found after creating: gist.github.com/<username>/<GIST_ID>)
+# Leave empty on first run - will be created automatically
+VSCODE_GIST_ID=""
+
+# Gist description (for new gists)
+VSCODE_GIST_DESCRIPTION="VS Code Settings Sync (fc vscode-sync)"
+
+# ------------------------------------------------------------------------------
+# Repository Backend Settings
+# ------------------------------------------------------------------------------
+
+# Git repository URL (SSH or HTTPS)
+# Example: "git@github.com:username/vscode-settings.git"
+# VSCODE_REPO_URL=""
+
+# Branch to use (default: main)
+# VSCODE_REPO_BRANCH="main"
+
+# ------------------------------------------------------------------------------
+# Files to Sync
+# ------------------------------------------------------------------------------
+
+# Enable/disable syncing of each file type (true/false)
+SYNC_SETTINGS=true
+SYNC_KEYBINDINGS=true
+SYNC_SNIPPETS=true
+SYNC_EXTENSIONS=true
+
+# Optional files (disabled by default)
+SYNC_TASKS=false
+SYNC_LAUNCH=false
+
+# ------------------------------------------------------------------------------
+# VS Code Paths (macOS defaults - customize if needed)
+# ------------------------------------------------------------------------------
+
+# User settings directory
+# VSCODE_USER_DIR="$HOME/Library/Application Support/Code/User"
+
+# ------------------------------------------------------------------------------
+# Authentication
+# ------------------------------------------------------------------------------
+
+# Token retrieval priority:
+# 1. macOS Keychain (service and account below)
+# 2. gh CLI authentication (if installed)
+# 3. GITHUB_TOKEN environment variable
+#
+# To store token in Keychain:
+#   security add-generic-password -s "github.com" -a "vscode-sync" -w "YOUR_TOKEN"
+#
+# Required token scopes: gist (for gist backend) or repo (for repo backend)
+
+# Keychain service name (default: github.com)
+# VSCODE_KEYCHAIN_SERVICE="github.com"
+
+# Keychain account name (default: vscode-sync)
+# VSCODE_KEYCHAIN_ACCOUNT="vscode-sync"

@@ -1,0 +1,660 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-vscode-sync
+#
+# DESCRIPTION:  Sync VS Code settings, extensions, keybindings, and snippets
+#               to GitHub Gist or a Git repository. Enables consistent VS Code
+#               configuration across multiple machines.
+#
+# REQUIRES:
+#   - Visual Studio Code with 'code' CLI
+#   - GitHub authentication (gh CLI, Keychain, or GITHUB_TOKEN)
+#   - curl, jq (for Gist backend)
+#   - git (for repository backend)
+#
+# SUBCOMMANDS:
+#   setup   - Create configuration file and check prerequisites
+#   up      - Push local VS Code settings to remote
+#   down    - Pull remote settings and apply locally
+#   status  - Show differences between local and remote
+#
+# EXAMPLES:
+#   fc vscode-sync setup           # Initial setup
+#   fc vscode-sync up              # Push current settings
+#   fc vscode-sync down            # Pull and apply settings
+#   fc vscode-sync status          # Show differences
+#
+# ==============================================================================
+
+# --- Initialization -----------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ------------------------------------------------------------
+readonly VSCODE_CONFIG_FILE="$HOME/.config/circus/vscode-sync.conf"
+readonly VSCODE_CONFIG_TEMPLATE="$DOTFILES_ROOT/lib/templates/vscode-sync.conf.template"
+readonly VSCODE_BACKENDS_DIR="$DOTFILES_ROOT/lib/vscode_backends"
+readonly DEFAULT_VSCODE_USER_DIR="$HOME/Library/Application Support/Code/User"
+
+# Default configuration values
+VSCODE_SYNC_BACKEND="${VSCODE_SYNC_BACKEND:-gist}"
+VSCODE_USER_DIR="${VSCODE_USER_DIR:-$DEFAULT_VSCODE_USER_DIR}"
+VSCODE_GIST_ID="${VSCODE_GIST_ID:-}"
+VSCODE_GIST_DESCRIPTION="${VSCODE_GIST_DESCRIPTION:-VS Code Settings Sync (fc vscode-sync)}"
+VSCODE_REPO_URL="${VSCODE_REPO_URL:-}"
+VSCODE_REPO_BRANCH="${VSCODE_REPO_BRANCH:-main}"
+VSCODE_KEYCHAIN_SERVICE="${VSCODE_KEYCHAIN_SERVICE:-github.com}"
+VSCODE_KEYCHAIN_ACCOUNT="${VSCODE_KEYCHAIN_ACCOUNT:-vscode-sync}"
+
+# Sync flags
+SYNC_SETTINGS="${SYNC_SETTINGS:-true}"
+SYNC_KEYBINDINGS="${SYNC_KEYBINDINGS:-true}"
+SYNC_SNIPPETS="${SYNC_SNIPPETS:-true}"
+SYNC_EXTENSIONS="${SYNC_EXTENSIONS:-true}"
+SYNC_TASKS="${SYNC_TASKS:-false}"
+SYNC_LAUNCH="${SYNC_LAUNCH:-false}"
+
+# Load user configuration if exists
+if [ -f "$VSCODE_CONFIG_FILE" ]; then
+  # Check file permissions (warn if world-readable)
+  local_perms=$(stat -f '%Lp' "$VSCODE_CONFIG_FILE" 2>/dev/null || stat -c '%a' "$VSCODE_CONFIG_FILE" 2>/dev/null)
+  if [ -n "$local_perms" ]; then
+    other_perms=$((local_perms % 10))
+    if [ "$other_perms" -ge 4 ]; then
+      msg_warning "Config file is world-readable. Consider: chmod 600 $VSCODE_CONFIG_FILE"
+    fi
+  fi
+  source "$VSCODE_CONFIG_FILE"
+fi
+
+# --- Help and Usage -----------------------------------------------------------
+
+usage() {
+  msg_info "Usage: fc vscode-sync <subcommand> [options]"
+  echo ""
+  msg_info "Sync VS Code settings to GitHub Gist or a Git repository."
+  echo ""
+  msg_info "Subcommands:"
+  echo "  setup     Create configuration file and check prerequisites"
+  echo "  up        Push local VS Code settings to remote"
+  echo "  down      Pull remote settings and apply locally"
+  echo "  status    Show differences between local and remote"
+  echo ""
+  msg_info "Options:"
+  echo "  --help    Show this help message"
+  echo ""
+  msg_info "Configuration:"
+  echo "  Config file: $VSCODE_CONFIG_FILE"
+  echo "  Backend: $VSCODE_SYNC_BACKEND"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc vscode-sync setup           # Initial setup"
+  echo "  fc vscode-sync up              # Push current settings"
+  echo "  fc vscode-sync down            # Pull and apply settings"
+  echo "  fc vscode-sync status          # Show differences"
+  echo ""
+  exit 0
+}
+
+usage_setup() {
+  msg_info "Usage: fc vscode-sync setup [options]"
+  echo ""
+  msg_info "Create configuration file and check prerequisites."
+  echo ""
+  msg_info "Options:"
+  echo "  --help    Show this help message"
+  echo ""
+  exit 0
+}
+
+usage_up() {
+  msg_info "Usage: fc vscode-sync up [options]"
+  echo ""
+  msg_info "Push local VS Code settings to remote storage."
+  echo ""
+  msg_info "Options:"
+  echo "  --help    Show this help message"
+  echo ""
+  msg_info "Files synced (based on config):"
+  echo "  settings.json      SYNC_SETTINGS=$SYNC_SETTINGS"
+  echo "  keybindings.json   SYNC_KEYBINDINGS=$SYNC_KEYBINDINGS"
+  echo "  snippets/          SYNC_SNIPPETS=$SYNC_SNIPPETS"
+  echo "  extensions         SYNC_EXTENSIONS=$SYNC_EXTENSIONS"
+  echo "  tasks.json         SYNC_TASKS=$SYNC_TASKS"
+  echo "  launch.json        SYNC_LAUNCH=$SYNC_LAUNCH"
+  echo ""
+  exit 0
+}
+
+usage_down() {
+  msg_info "Usage: fc vscode-sync down [options]"
+  echo ""
+  msg_info "Pull remote settings and apply locally."
+  echo ""
+  msg_info "Options:"
+  echo "  --help    Show this help message"
+  echo ""
+  msg_info "Note: Existing files are backed up with .bak extension"
+  echo ""
+  exit 0
+}
+
+usage_status() {
+  msg_info "Usage: fc vscode-sync status [options]"
+  echo ""
+  msg_info "Show differences between local and remote settings."
+  echo ""
+  msg_info "Options:"
+  echo "  --help    Show this help message"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions ---------------------------------------------------------
+
+# Get GitHub token from various sources
+# Priority: Keychain -> gh CLI -> GITHUB_TOKEN env var
+get_github_token() {
+  local token=""
+
+  # 1. Try macOS Keychain
+  token=$(security find-generic-password -s "$VSCODE_KEYCHAIN_SERVICE" -a "$VSCODE_KEYCHAIN_ACCOUNT" -w 2>/dev/null)
+  if [ -n "$token" ]; then
+    echo "$token"
+    return 0
+  fi
+
+  # 2. Try gh CLI
+  if command -v gh >/dev/null 2>&1; then
+    token=$(gh auth token 2>/dev/null)
+    if [ -n "$token" ]; then
+      echo "$token"
+      return 0
+    fi
+  fi
+
+  # 3. Fall back to environment variable
+  if [ -n "${GITHUB_TOKEN:-}" ]; then
+    echo "$GITHUB_TOKEN"
+    return 0
+  fi
+
+  return 1
+}
+
+# Load the selected backend
+load_backend() {
+  local backend_file="$VSCODE_BACKENDS_DIR/${VSCODE_SYNC_BACKEND}.sh"
+
+  if [ ! -f "$backend_file" ]; then
+    msg_error "Unknown backend: $VSCODE_SYNC_BACKEND"
+    die "Available backends: gist, repo"
+  fi
+
+  source "$backend_file"
+
+  # Validate backend dependencies
+  if ! vscode_backend_check_dependencies; then
+    die "Backend dependencies not met"
+  fi
+}
+
+# Check if VS Code CLI is available
+check_code_cli() {
+  local code_cmd="${CODE_CMD:-code}"
+  if ! command -v "$code_cmd" >/dev/null 2>&1; then
+    msg_error "VS Code 'code' CLI not found."
+    msg_info "Install from VS Code: Command Palette > 'Shell Command: Install code command in PATH'"
+    return 1
+  fi
+  return 0
+}
+
+# Collect local VS Code files to a temp directory
+collect_local_files() {
+  local temp_dir="$1"
+  local code_cmd="${CODE_CMD:-code}"
+  local files_collected=0
+
+  # settings.json
+  if [ "$SYNC_SETTINGS" = true ]; then
+    local settings_file="$VSCODE_USER_DIR/settings.json"
+    if [ -f "$settings_file" ]; then
+      cp "$settings_file" "$temp_dir/settings.json"
+      ((files_collected++))
+    fi
+  fi
+
+  # keybindings.json
+  if [ "$SYNC_KEYBINDINGS" = true ]; then
+    local keybindings_file="$VSCODE_USER_DIR/keybindings.json"
+    if [ -f "$keybindings_file" ]; then
+      cp "$keybindings_file" "$temp_dir/keybindings.json"
+      ((files_collected++))
+    fi
+  fi
+
+  # tasks.json
+  if [ "$SYNC_TASKS" = true ]; then
+    local tasks_file="$VSCODE_USER_DIR/tasks.json"
+    if [ -f "$tasks_file" ]; then
+      cp "$tasks_file" "$temp_dir/tasks.json"
+      ((files_collected++))
+    fi
+  fi
+
+  # launch.json
+  if [ "$SYNC_LAUNCH" = true ]; then
+    local launch_file="$VSCODE_USER_DIR/launch.json"
+    if [ -f "$launch_file" ]; then
+      cp "$launch_file" "$temp_dir/launch.json"
+      ((files_collected++))
+    fi
+  fi
+
+  # snippets directory
+  if [ "$SYNC_SNIPPETS" = true ]; then
+    local snippets_dir="$VSCODE_USER_DIR/snippets"
+    if [ -d "$snippets_dir" ] && [ "$(ls -A "$snippets_dir" 2>/dev/null)" ]; then
+      cp -r "$snippets_dir" "$temp_dir/snippets"
+      ((files_collected++))
+    fi
+  fi
+
+  # extensions list
+  if [ "$SYNC_EXTENSIONS" = true ]; then
+    "$code_cmd" --list-extensions > "$temp_dir/extensions.txt" 2>/dev/null
+    if [ -s "$temp_dir/extensions.txt" ]; then
+      ((files_collected++))
+    else
+      rm -f "$temp_dir/extensions.txt"
+    fi
+  fi
+
+  echo "$files_collected"
+}
+
+# Apply files from temp directory to local VS Code
+apply_remote_files() {
+  local temp_dir="$1"
+  local code_cmd="${CODE_CMD:-code}"
+  local files_applied=0
+
+  # Ensure VS Code user directory exists
+  mkdir -p "$VSCODE_USER_DIR"
+
+  # settings.json
+  if [ "$SYNC_SETTINGS" = true ] && [ -f "$temp_dir/settings.json" ]; then
+    local target="$VSCODE_USER_DIR/settings.json"
+    if [ -f "$target" ]; then
+      cp "$target" "${target}.bak"
+      msg_info "Backed up existing settings.json"
+    fi
+    cp "$temp_dir/settings.json" "$target"
+    msg_success "Applied settings.json"
+    ((files_applied++))
+  fi
+
+  # keybindings.json
+  if [ "$SYNC_KEYBINDINGS" = true ] && [ -f "$temp_dir/keybindings.json" ]; then
+    local target="$VSCODE_USER_DIR/keybindings.json"
+    if [ -f "$target" ]; then
+      cp "$target" "${target}.bak"
+      msg_info "Backed up existing keybindings.json"
+    fi
+    cp "$temp_dir/keybindings.json" "$target"
+    msg_success "Applied keybindings.json"
+    ((files_applied++))
+  fi
+
+  # tasks.json
+  if [ "$SYNC_TASKS" = true ] && [ -f "$temp_dir/tasks.json" ]; then
+    local target="$VSCODE_USER_DIR/tasks.json"
+    if [ -f "$target" ]; then
+      cp "$target" "${target}.bak"
+    fi
+    cp "$temp_dir/tasks.json" "$target"
+    msg_success "Applied tasks.json"
+    ((files_applied++))
+  fi
+
+  # launch.json
+  if [ "$SYNC_LAUNCH" = true ] && [ -f "$temp_dir/launch.json" ]; then
+    local target="$VSCODE_USER_DIR/launch.json"
+    if [ -f "$target" ]; then
+      cp "$target" "${target}.bak"
+    fi
+    cp "$temp_dir/launch.json" "$target"
+    msg_success "Applied launch.json"
+    ((files_applied++))
+  fi
+
+  # snippets directory
+  if [ "$SYNC_SNIPPETS" = true ] && [ -d "$temp_dir/snippets" ]; then
+    local target="$VSCODE_USER_DIR/snippets"
+    if [ -d "$target" ]; then
+      mv "$target" "${target}.bak"
+      msg_info "Backed up existing snippets directory"
+    fi
+    cp -r "$temp_dir/snippets" "$target"
+    msg_success "Applied snippets"
+    ((files_applied++))
+  fi
+
+  # extensions
+  if [ "$SYNC_EXTENSIONS" = true ] && [ -f "$temp_dir/extensions.txt" ]; then
+    msg_info "Installing extensions..."
+    local ext_count=0
+    local ext_failed=0
+
+    while IFS= read -r extension; do
+      [ -z "$extension" ] && continue
+
+      if "$code_cmd" --install-extension "$extension" --force >/dev/null 2>&1; then
+        ((ext_count++))
+      else
+        msg_warning "Failed to install: $extension"
+        ((ext_failed++))
+      fi
+    done < "$temp_dir/extensions.txt"
+
+    if [ $ext_count -gt 0 ]; then
+      msg_success "Installed $ext_count extension(s)"
+    fi
+    if [ $ext_failed -gt 0 ]; then
+      msg_warning "$ext_failed extension(s) failed to install"
+    fi
+    ((files_applied++))
+  fi
+
+  echo "$files_applied"
+}
+
+# Compare local and remote files
+compare_files() {
+  local local_dir="$1"
+  local remote_dir="$2"
+
+  echo ""
+  msg_info "Comparing settings..."
+  echo ""
+
+  local has_diff=false
+
+  # Compare each file type
+  for file in settings.json keybindings.json tasks.json launch.json; do
+    local local_file="$local_dir/$file"
+    local remote_file="$remote_dir/$file"
+
+    if [ -f "$local_file" ] && [ -f "$remote_file" ]; then
+      if ! diff -q "$local_file" "$remote_file" >/dev/null 2>&1; then
+        echo "  $file: DIFFERS"
+        has_diff=true
+      else
+        echo "  $file: same"
+      fi
+    elif [ -f "$local_file" ]; then
+      echo "  $file: LOCAL ONLY"
+      has_diff=true
+    elif [ -f "$remote_file" ]; then
+      echo "  $file: REMOTE ONLY"
+      has_diff=true
+    fi
+  done
+
+  # Compare extensions
+  if [ -f "$local_dir/extensions.txt" ] && [ -f "$remote_dir/extensions.txt" ]; then
+    local local_only
+    local remote_only
+    local_only=$(comm -23 <(sort "$local_dir/extensions.txt") <(sort "$remote_dir/extensions.txt") | wc -l | tr -d ' ')
+    remote_only=$(comm -13 <(sort "$local_dir/extensions.txt") <(sort "$remote_dir/extensions.txt") | wc -l | tr -d ' ')
+
+    if [ "$local_only" -gt 0 ] || [ "$remote_only" -gt 0 ]; then
+      echo "  extensions: $local_only local-only, $remote_only remote-only"
+      has_diff=true
+    else
+      echo "  extensions: same"
+    fi
+  elif [ -f "$local_dir/extensions.txt" ]; then
+    echo "  extensions: LOCAL ONLY"
+    has_diff=true
+  elif [ -f "$remote_dir/extensions.txt" ]; then
+    echo "  extensions: REMOTE ONLY"
+    has_diff=true
+  fi
+
+  echo ""
+
+  if [ "$has_diff" = true ]; then
+    return 1
+  fi
+  return 0
+}
+
+# --- Subcommand: setup --------------------------------------------------------
+
+do_setup() {
+  if [ "${1:-}" = "--help" ]; then
+    usage_setup
+  fi
+
+  msg_info "Setting up fc vscode-sync..."
+  echo ""
+
+  # Check prerequisites
+  msg_info "Checking prerequisites..."
+
+  # VS Code CLI
+  if check_code_cli; then
+    msg_success "VS Code CLI: found"
+  else
+    msg_error "VS Code CLI: not found"
+  fi
+
+  # curl
+  if command -v curl >/dev/null 2>&1; then
+    msg_success "curl: found"
+  else
+    msg_warning "curl: not found (required for gist backend)"
+  fi
+
+  # jq
+  if command -v jq >/dev/null 2>&1; then
+    msg_success "jq: found"
+  else
+    msg_warning "jq: not found (required for gist backend)"
+  fi
+
+  # git
+  if command -v git >/dev/null 2>&1; then
+    msg_success "git: found"
+  else
+    msg_warning "git: not found (required for repo backend)"
+  fi
+
+  # GitHub authentication
+  if get_github_token >/dev/null 2>&1; then
+    msg_success "GitHub auth: found"
+  else
+    msg_warning "GitHub auth: not found"
+    msg_info "  Options: gh auth login, GITHUB_TOKEN env var, or macOS Keychain"
+  fi
+
+  echo ""
+
+  # Create config file
+  if [ -f "$VSCODE_CONFIG_FILE" ]; then
+    msg_info "Configuration file already exists: $VSCODE_CONFIG_FILE"
+  else
+    msg_info "Creating configuration file..."
+    mkdir -p "$(dirname "$VSCODE_CONFIG_FILE")"
+    cp "$VSCODE_CONFIG_TEMPLATE" "$VSCODE_CONFIG_FILE"
+    chmod 600 "$VSCODE_CONFIG_FILE"
+    msg_success "Configuration file created: $VSCODE_CONFIG_FILE"
+  fi
+
+  echo ""
+  msg_info "Next steps:"
+  echo "  1. Edit $VSCODE_CONFIG_FILE to configure backend and sync options"
+  echo "  2. Run 'fc vscode-sync up' to push your current settings"
+  echo "  3. On other machines, run 'fc vscode-sync down' to apply settings"
+  echo ""
+}
+
+# --- Subcommand: up -----------------------------------------------------------
+
+do_up() {
+  if [ "${1:-}" = "--help" ]; then
+    usage_up
+  fi
+
+  # Check prerequisites
+  check_code_cli || die "VS Code CLI is required"
+
+  # Validate auth for gist backend
+  if [ "$VSCODE_SYNC_BACKEND" = "gist" ]; then
+    get_github_token >/dev/null 2>&1 || die "GitHub authentication required. Run 'fc vscode-sync setup' for options."
+  fi
+
+  # Load and validate backend
+  load_backend
+  vscode_backend_validate_config
+
+  msg_info "Collecting local VS Code settings..."
+
+  # Create temp directory for files
+  local temp_dir
+  temp_dir=$(mktemp -d)
+  trap "rm -rf '$temp_dir'" EXIT
+
+  # Collect files
+  local files_count
+  files_count=$(collect_local_files "$temp_dir")
+
+  if [ "$files_count" -eq 0 ]; then
+    die "No files to sync. Check VS Code installation and config flags."
+  fi
+
+  msg_info "Collected $files_count file type(s)"
+  echo ""
+
+  # Push to backend
+  vscode_backend_push "$temp_dir"
+
+  echo ""
+  msg_success "Settings pushed to $(vscode_backend_get_name)"
+}
+
+# --- Subcommand: down ---------------------------------------------------------
+
+do_down() {
+  if [ "${1:-}" = "--help" ]; then
+    usage_down
+  fi
+
+  # Check prerequisites
+  check_code_cli || die "VS Code CLI is required"
+
+  # Validate auth for gist backend
+  if [ "$VSCODE_SYNC_BACKEND" = "gist" ]; then
+    get_github_token >/dev/null 2>&1 || die "GitHub authentication required. Run 'fc vscode-sync setup' for options."
+  fi
+
+  # Load and validate backend
+  load_backend
+  vscode_backend_validate_config
+
+  msg_info "Fetching remote VS Code settings..."
+
+  # Create temp directory for files
+  local temp_dir
+  temp_dir=$(mktemp -d)
+  trap "rm -rf '$temp_dir'" EXIT
+
+  # Pull from backend
+  vscode_backend_pull "$temp_dir"
+
+  echo ""
+
+  # Apply files
+  local files_count
+  files_count=$(apply_remote_files "$temp_dir")
+
+  echo ""
+  msg_success "Applied settings from $(vscode_backend_get_name)"
+  msg_info "Reload VS Code to apply all changes"
+}
+
+# --- Subcommand: status -------------------------------------------------------
+
+do_status() {
+  if [ "${1:-}" = "--help" ]; then
+    usage_status
+  fi
+
+  # Check prerequisites
+  check_code_cli || die "VS Code CLI is required"
+
+  # Validate auth for gist backend
+  if [ "$VSCODE_SYNC_BACKEND" = "gist" ]; then
+    get_github_token >/dev/null 2>&1 || die "GitHub authentication required. Run 'fc vscode-sync setup' for options."
+  fi
+
+  # Load and validate backend
+  load_backend
+  vscode_backend_validate_config
+
+  # Create temp directories
+  local local_dir remote_dir
+  local_dir=$(mktemp -d)
+  remote_dir=$(mktemp -d)
+  trap "rm -rf '$local_dir' '$remote_dir'" EXIT
+
+  # Collect local files
+  msg_info "Collecting local settings..."
+  collect_local_files "$local_dir" >/dev/null
+
+  # Fetch remote files
+  msg_info "Fetching remote settings..."
+  vscode_backend_get_status "$remote_dir"
+
+  # Compare
+  if compare_files "$local_dir" "$remote_dir"; then
+    msg_success "Local and remote settings are in sync"
+  else
+    msg_info "Run 'fc vscode-sync up' to push local changes"
+    msg_info "Run 'fc vscode-sync down' to pull remote changes"
+  fi
+}
+
+# --- Main Dispatcher ----------------------------------------------------------
+
+main() {
+  if [ -z "${1:-}" ] || [ "$1" = "--help" ]; then
+    usage
+  fi
+
+  local subcommand="$1"
+  shift
+
+  case "$subcommand" in
+    setup)
+      do_setup "$@"
+      ;;
+    up)
+      do_up "$@"
+      ;;
+    down)
+      do_down "$@"
+      ;;
+    status)
+      do_status "$@"
+      ;;
+    *)
+      die "Unknown subcommand: $subcommand. Run 'fc vscode-sync --help' for usage."
+      ;;
+  esac
+}
+
+main "$@"

@@ -604,6 +604,91 @@ See [rclone.org](https://rclone.org/) for the full list.
 
 ---
 
+## `fc vscode-sync`
+
+Sync VS Code settings, extensions, keybindings, and snippets to GitHub Gist or a Git repository. Enables consistent VS Code configuration across multiple machines.
+
+**Usage:**
+
+```bash
+fc vscode-sync <subcommand> [options]
+```
+
+**Subcommands:**
+*   `setup`: Create configuration file and check prerequisites.
+*   `up`: Push local VS Code settings to remote.
+*   `down`: Pull remote settings and apply locally.
+*   `status`: Show differences between local and remote.
+
+### Storage Backends
+
+| Backend | Description | Best For |
+|---------|-------------|----------|
+| `gist` (default) | Private GitHub Gist | Simple, quick setup |
+| `repo` | Dedicated Git repository | Full version control |
+
+### Configuration
+
+Edit `~/.config/circus/vscode-sync.conf`:
+
+```bash
+# Backend: "gist" or "repo"
+VSCODE_SYNC_BACKEND="gist"
+
+# Gist backend settings
+VSCODE_GIST_ID=""  # Auto-created on first push
+
+# Files to sync (true/false)
+SYNC_SETTINGS=true
+SYNC_KEYBINDINGS=true
+SYNC_SNIPPETS=true
+SYNC_EXTENSIONS=true
+SYNC_TASKS=false
+SYNC_LAUNCH=false
+```
+
+### Authentication
+
+Token retrieval priority:
+1. macOS Keychain (service: github.com, account: vscode-sync)
+2. `gh` CLI authentication (`gh auth login`)
+3. `GITHUB_TOKEN` environment variable
+
+To store token in Keychain:
+
+```bash
+security add-generic-password -s "github.com" -a "vscode-sync" -w "YOUR_TOKEN"
+```
+
+### What Gets Synced
+
+| File | Config Flag | Description |
+|------|-------------|-------------|
+| settings.json | SYNC_SETTINGS | Editor preferences |
+| keybindings.json | SYNC_KEYBINDINGS | Keyboard shortcuts |
+| snippets/ | SYNC_SNIPPETS | Code snippets |
+| extensions list | SYNC_EXTENSIONS | Installed extensions |
+| tasks.json | SYNC_TASKS | Build tasks (opt-in) |
+| launch.json | SYNC_LAUNCH | Debug configs (opt-in) |
+
+**Examples:**
+
+```bash
+# Initial setup
+fc vscode-sync setup
+
+# Push current settings to remote
+fc vscode-sync up
+
+# Pull and apply settings from remote (new machine)
+fc vscode-sync down
+
+# Check what's different between local and remote
+fc vscode-sync status
+```
+
+---
+
 ## `fc schedule`
 
 Manage scheduled automatic backups using macOS's native launchd service. This provides a "set it and forget it" approach to keeping your backups current.

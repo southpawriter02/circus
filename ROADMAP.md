@@ -60,7 +60,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
     *   **Integrations:**
         *   ~~`20-secrets-management-integration`~~: **DONE** - `fc fc-secrets` command with unified secrets management for 1Password CLI, macOS Keychain, and HashiCorp Vault. URI-based secret references (`op://`, `keychain://`, `vault://`), environment variable sync to `~/.zshenv.local`, file destination support with permissions. 6 subcommands: setup, sync, get, list, status, verify. Backend plugins in `lib/secrets_backends/`. Documentation in `docs/SECRETS.md` and `COMMANDS.md`.
         *   ~~`26-1password-cli-integration`~~: **DONE** - Included as the `op://` backend in `fc fc-secrets`. Supports `op://vault/item/field` URI format, automatic authentication prompts, and full `op read` integration. See `lib/secrets_backends/op.sh`.
-        *   `31-vscode-settings-sync`: A dedicated command for syncing VS Code settings.
+        *   ~~`31-vscode-settings-sync`~~: **DONE** - `fc vscode-sync` command with `setup`, `up`, `down`, and `status` subcommands. Two backends: GitHub Gist (default) and Git repository. Syncs settings.json, keybindings.json, snippets, extensions, and optionally tasks.json and launch.json. Configurable sync flags. Authentication via macOS Keychain, gh CLI, or GITHUB_TOKEN. Documentation in `COMMANDS.md`.
         *   `39-alfred-workflow-integration`: Provide Alfred workflows for common `fc` commands.
     *   **Power-User Features:**
         *   `45-vm-management`: Add commands to manage virtualization (e.g., `lima`, `colima`).
