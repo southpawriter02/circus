@@ -14,31 +14,93 @@
 # Source the centralized initialization script to set up the environment.
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
-# --- Configuration ---
+# --- Configuration Loading ---
 
-readonly BACKUP_DEST_DIR="$HOME"
-readonly BACKUP_ARCHIVE_NAME="circus_backup.tar.gz.gpg"
-GPG_RECIPIENT_ID="${GPG_RECIPIENT_ID:-"YOUR_GPG_KEY_ID_HERE"}"
+readonly SYNC_CONFIG_FILE="$HOME/.config/circus/sync.conf"
+readonly SYNC_CONFIG_TEMPLATE="$DOTFILES_ROOT/lib/templates/sync.conf.template"
 
-readonly BACKUP_TARGETS=(
-  "$HOME/.ssh"
-  "$HOME/.gnupg"
-  "$HOME/Documents"
-)
+# Default values (can be overridden by config file)
+BACKUP_DEST_DIR="${BACKUP_DEST_DIR:-$HOME}"
+BACKUP_ARCHIVE_NAME="${BACKUP_ARCHIVE_NAME:-circus_backup.tar.gz.gpg}"
+GPG_RECIPIENT_ID=""
+BACKUP_TARGETS=()
+
+# Load user configuration if it exists
+if [ -f "$SYNC_CONFIG_FILE" ]; then
+  # Security check: warn if file is world-writable (check "other" bits)
+  perms=$(stat -f '%Lp' "$SYNC_CONFIG_FILE" 2>/dev/null || echo "000")
+  other_perms=$((perms % 10))  # Get the last digit (other permissions)
+  if [ "$other_perms" -ge 2 ] 2>/dev/null; then
+    msg_warning "Config file $SYNC_CONFIG_FILE is world-writable. Consider: chmod 600 $SYNC_CONFIG_FILE"
+  fi
+  # shellcheck source=/dev/null
+  source "$SYNC_CONFIG_FILE"
+fi
+
+# Validate required configuration
+validate_config() {
+  if [ -z "$GPG_RECIPIENT_ID" ]; then
+    msg_error "GPG_RECIPIENT_ID is not configured."
+    echo ""
+    msg_info "To configure fc-sync:"
+    msg_info "  1. Run setup:     fc fc-sync setup"
+    msg_info "  2. Edit config:   \$EDITOR $SYNC_CONFIG_FILE"
+    msg_info "  3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)"
+    die "Configuration required. See instructions above."
+  fi
+
+  if [ ${#BACKUP_TARGETS[@]} -eq 0 ]; then
+    die "BACKUP_TARGETS is empty. Configure at least one path in $SYNC_CONFIG_FILE"
+  fi
+}
 
 # --- Usage Information ---
 usage() {
-  msg_info "Usage: fc sync <subcommand>"
+  msg_info "Usage: fc fc-sync <subcommand>"
   echo ""
   msg_info "Manages the encrypted backup and restoration of system state."
   echo ""
   msg_info "Subcommands:"
+  echo "  setup     - Create configuration file from template."
   echo "  backup    - Backs up and encrypts critical data."
   echo "  restore   - Decrypts and restores data from an encrypted backup."
+  echo ""
+  msg_info "Configuration: $SYNC_CONFIG_FILE"
   exit 0
 }
 
 # --- Command Logic ---
+
+do_setup() {
+  local config_dir="$HOME/.config/circus"
+
+  if [ -f "$SYNC_CONFIG_FILE" ]; then
+    msg_info "Configuration file already exists: $SYNC_CONFIG_FILE"
+    echo ""
+    msg_info "Edit it with: \$EDITOR $SYNC_CONFIG_FILE"
+    return 0
+  fi
+
+  if [ ! -f "$SYNC_CONFIG_TEMPLATE" ]; then
+    die "Configuration template not found: $SYNC_CONFIG_TEMPLATE"
+  fi
+
+  msg_info "Creating configuration directory..."
+  mkdir -p "$config_dir"
+
+  msg_info "Copying configuration template..."
+  cp "$SYNC_CONFIG_TEMPLATE" "$SYNC_CONFIG_FILE"
+  chmod 600 "$SYNC_CONFIG_FILE"
+
+  msg_success "Configuration file created: $SYNC_CONFIG_FILE"
+  echo ""
+  msg_info "Next steps:"
+  msg_info "  1. Edit the config: \$EDITOR $SYNC_CONFIG_FILE"
+  msg_info "  2. Set GPG_RECIPIENT_ID to your GPG key ID"
+  msg_info "  3. Customize BACKUP_TARGETS as needed"
+  echo ""
+  msg_info "Find your GPG key ID with: gpg --list-keys --keyid-format LONG"
+}
 
 do_backup() {
   local brew_cmd=${BREW_CMD:-brew}
@@ -46,9 +108,7 @@ do_backup() {
   local mktemp_cmd=${MKTEMP_CMD:-mktemp}
   local gpg_cmd=${GPG_CMD:-gpg}
 
-  if [ "$GPG_RECIPIENT_ID" == "YOUR_GPG_KEY_ID_HERE" ]; then
-    die "GPG_RECIPIENT_ID is not configured. Please edit the sync plugin to set it."
-  fi
+  validate_config
 
   local temp_backup_dir
   temp_backup_dir=$($mktemp_cmd -d)
@@ -84,6 +144,9 @@ do_backup() {
 do_restore() {
   local brew_cmd=${BREW_CMD:-brew}
   local gpg_cmd=${GPG_CMD:-gpg}
+
+  validate_config
+
   local encrypted_archive_path="$BACKUP_DEST_DIR/$BACKUP_ARCHIVE_NAME"
 
   if [ ! -f "$encrypted_archive_path" ]; then
@@ -123,14 +186,10 @@ do_restore() {
   msg_success "System restoration complete."
 }
 
-# --- Main Dispatcher ---
-main() {
+# --- Dependency Checks ---
+check_dependencies() {
   local gpg_cmd=${GPG_CMD:-gpg}
   local rsync_cmd=${RSYNC_CMD:-rsync}
-
-  if [ -z "$1" ] || [ "$1" == "--help" ]; then
-    usage
-  fi
 
   if ! command -v "$gpg_cmd" >/dev/null 2>&1; then
     die "GPG is not installed. Please run 'brew install gpg-suite'."
@@ -139,16 +198,28 @@ main() {
   if ! command -v "$rsync_cmd" >/dev/null 2>&1; then
     die "This command requires 'rsync'. Please install it first."
   fi
+}
+
+# --- Main Dispatcher ---
+main() {
+  if [ -z "$1" ] || [ "$1" == "--help" ]; then
+    usage
+  fi
 
   local subcommand="$1"
   shift
 
   case "$subcommand" in
+    setup)
+      do_setup
+      ;;
     backup)
+      check_dependencies
       prompt_for_confirmation "Ready to begin the encrypted backup process."
       do_backup
       ;;
     restore)
+      check_dependencies
       prompt_for_confirmation "Ready to restore from an encrypted backup. This may overwrite existing files."
       do_restore
       ;;

@@ -21,7 +21,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
         *   ~~`16-refactor-installer`~~: **DONE** - Stage-based installer with 15 modular stages, 21 preflight checks, role system, privacy profiles, dry-run mode. Comprehensive bats tests for stages and preflight checks. Documentation in `ARCHITECTURE.md`.
         *   ~~`42-self-update-mechanism`~~: **DONE** - Enhanced `fc update` with `--check`, `--version`, `--dry-run`, `--skip-migrations` flags, migration system in `migrations/`, version tracking via `.version` file, `CHANGELOG.md`, and `docs/UPDATING.md`.
     *   **Configuration:**
-        *   `09-externalize-fc-sync-configuration`: Refactor configuration handling to be more modular, starting with the `sync` command.
+        *   ~~`09-externalize-fc-sync-configuration`~~: **DONE** - External config file at `~/.config/circus/sync.conf`, template in `lib/templates/sync.conf.template`, `setup` subcommand for easy configuration, security checks for file permissions.
 
 ---
 

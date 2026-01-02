@@ -17,6 +17,7 @@
 
 | Subcommand | Description |
 |------------|-------------|
+| `setup` | Create configuration file from template |
 | `backup` | Create encrypted backup archive |
 | `restore` | Decrypt and restore from backup |
 
@@ -71,17 +72,46 @@ Restoring critical files...
 
 ## Configuration
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `GPG_RECIPIENT_ID` | Must be set | Your GPG key ID |
-| `BACKUP_DEST_DIR` | `$HOME` | Where to save backup |
-| `BACKUP_ARCHIVE_NAME` | `circus_backup.tar.gz.gpg` | Archive filename |
+Configuration is stored in `~/.config/circus/sync.conf`.
 
-### Setting GPG Key ID
+### Quick Setup
 
-Edit `lib/plugins/fc-sync` and set:
 ```bash
-GPG_RECIPIENT_ID="your-gpg-key-id-here"
+# Create config from template
+fc fc-sync setup
+
+# Edit configuration
+$EDITOR ~/.config/circus/sync.conf
+```
+
+### Configuration Options
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `GPG_RECIPIENT_ID` | Yes | - | Your GPG key ID for encryption |
+| `BACKUP_DEST_DIR` | No | `$HOME` | Where to save backup |
+| `BACKUP_ARCHIVE_NAME` | No | `circus_backup.tar.gz.gpg` | Archive filename |
+| `BACKUP_TARGETS` | Yes | - | Array of paths to back up |
+
+### Finding Your GPG Key ID
+
+```bash
+gpg --list-keys --keyid-format LONG
+```
+
+### Example Configuration
+
+```bash
+# ~/.config/circus/sync.conf
+
+GPG_RECIPIENT_ID="ABCD1234EFGH5678"
+
+BACKUP_TARGETS=(
+  "$HOME/.ssh"
+  "$HOME/.gnupg"
+  "$HOME/Documents"
+  "$HOME/.config"
+)
 ```
 
 ---
@@ -141,12 +171,13 @@ gpg -d backup.tar.gz.gpg | tar -xzf - -C /tmp/restore
 
 ### Customizing Backup Targets
 
-Edit `BACKUP_TARGETS` array in the plugin:
+Edit `BACKUP_TARGETS` array in your config file (`~/.config/circus/sync.conf`):
 ```bash
-readonly BACKUP_TARGETS=(
+BACKUP_TARGETS=(
   "$HOME/.ssh"
   "$HOME/.gnupg"
   "$HOME/Documents"
+  "$HOME/.config"
   # Add more paths here
 )
 ```

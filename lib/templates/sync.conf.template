@@ -1,0 +1,38 @@
+# ==============================================================================
+# fc-sync Configuration
+# ==============================================================================
+# Copy this file to ~/.config/circus/sync.conf and customize it.
+#
+# SECURITY WARNING: This file is sourced as a shell script.
+# Only include variable definitions - never run arbitrary code.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# GPG Settings
+# ------------------------------------------------------------------------------
+
+# Your GPG key ID for encryption (REQUIRED)
+# Find your key ID with: gpg --list-keys --keyid-format LONG
+GPG_RECIPIENT_ID=""
+
+# ------------------------------------------------------------------------------
+# Backup Location
+# ------------------------------------------------------------------------------
+
+# Where to save the backup archive (default: $HOME)
+# BACKUP_DEST_DIR="$HOME"
+
+# Backup archive filename (default: circus_backup.tar.gz.gpg)
+# BACKUP_ARCHIVE_NAME="circus_backup.tar.gz.gpg"
+
+# ------------------------------------------------------------------------------
+# Backup Targets
+# ------------------------------------------------------------------------------
+
+# Directories and files to back up
+# Add or remove paths as needed
+BACKUP_TARGETS=(
+  "$HOME/.ssh"
+  "$HOME/.gnupg"
+  "$HOME/Documents"
+)
