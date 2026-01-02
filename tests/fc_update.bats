@@ -176,3 +176,104 @@ teardown() {
   assert_output --partial "--skip-migrations"
   assert_output --partial "--version"
 }
+
+# ==============================================================================
+# System Update Feature Tests (Feature 22)
+# ==============================================================================
+
+@test "fc fc-update --help shows update target flags" {
+  run "$FC_COMMAND" fc-update --help
+  assert_success
+  assert_output --partial "--all"
+  assert_output --partial "--os"
+  assert_output --partial "--packages"
+  assert_output --partial "--self"
+}
+
+@test "fc fc-update --help shows Update Targets section" {
+  run "$FC_COMMAND" fc-update --help
+  assert_success
+  assert_output --partial "Update Targets"
+}
+
+@test "fc fc-update --help shows examples with new flags" {
+  run "$FC_COMMAND" fc-update --help
+  assert_success
+  assert_output --partial "fc update --packages"
+  assert_output --partial "fc update --os"
+  assert_output --partial "fc update --self"
+}
+
+@test "fc fc-update --os flag is recognized" {
+  # Use dry-run to avoid actually running updates
+  run "$FC_COMMAND" fc-update --os --dry-run
+  assert_success
+  assert_output --partial "macOS"
+  # Should NOT include packages or self
+  refute_output --partial "=== Updating Homebrew Packages ==="
+  refute_output --partial "=== Updating Dotfiles Repository ==="
+}
+
+@test "fc fc-update --packages flag is recognized" {
+  run "$FC_COMMAND" fc-update --packages --dry-run
+  assert_success
+  assert_output --partial "Homebrew"
+  # Should NOT include macOS or self
+  refute_output --partial "=== Checking for macOS Updates ==="
+  refute_output --partial "=== Updating Dotfiles Repository ==="
+}
+
+@test "fc fc-update --self flag is recognized" {
+  run "$FC_COMMAND" fc-update --self --dry-run
+  assert_success
+  assert_output --partial "Dotfiles Repository"
+  # Should NOT include packages or macOS
+  refute_output --partial "=== Updating Homebrew Packages ==="
+  refute_output --partial "=== Checking for macOS Updates ==="
+}
+
+@test "fc fc-update --all flag runs all update types" {
+  run "$FC_COMMAND" fc-update --all --dry-run
+  assert_success
+  assert_output --partial "Homebrew"
+  assert_output --partial "macOS"
+  assert_output --partial "Dotfiles"
+}
+
+@test "fc fc-update with no flags defaults to --all" {
+  run "$FC_COMMAND" fc-update --dry-run
+  assert_success
+  assert_output --partial "Homebrew"
+  assert_output --partial "macOS"
+  assert_output --partial "Dotfiles"
+}
+
+@test "fc fc-update --dry-run with --packages shows outdated check" {
+  run "$FC_COMMAND" fc-update --packages --dry-run
+  assert_success
+  assert_output --partial "[DRY-RUN]"
+  assert_output --partial "brew update"
+}
+
+@test "fc fc-update --dry-run with --os shows softwareupdate check" {
+  run "$FC_COMMAND" fc-update --os --dry-run
+  assert_success
+  assert_output --partial "[DRY-RUN]"
+  assert_output --partial "softwareupdate"
+}
+
+@test "fc fc-update --dry-run with --self shows git pull preview" {
+  run "$FC_COMMAND" fc-update --self --dry-run
+  assert_success
+  assert_output --partial "[DRY-RUN]"
+  assert_output --partial "git pull"
+}
+
+@test "fc fc-update multiple target flags can be combined" {
+  run "$FC_COMMAND" fc-update --packages --self --dry-run
+  assert_success
+  assert_output --partial "Homebrew"
+  assert_output --partial "Dotfiles"
+  # Should NOT include macOS since only --packages and --self were specified
+  refute_output --partial "=== Checking for macOS Updates ==="
+}

@@ -55,6 +55,125 @@ fc bluetooth <subcommand>
 
 ---
 
+## `fc wifi`
+
+Manage the system's Wi-Fi adapter from the command line. Provides simple on/off control and status checking for the primary Wi-Fi interface.
+
+**Usage:**
+
+```bash
+fc wifi <action>
+```
+
+**Actions:**
+*   `on`: Turn Wi-Fi adapter on.
+*   `off`: Turn Wi-Fi adapter off (disconnects from networks).
+*   `status`: Show the current Wi-Fi power state.
+
+**Examples:**
+
+```bash
+# Enable Wi-Fi
+fc wifi on
+
+# Disable Wi-Fi
+fc wifi off
+
+# Check if Wi-Fi is on or off
+fc wifi status
+```
+
+**Notes:**
+- Turning Wi-Fi off disconnects from all wireless networks
+- No administrator privileges required
+- Uses the built-in `networksetup` command
+
+---
+
+## `fc dns`
+
+Manage the DNS settings for the active network service. Allows viewing, setting, and clearing custom DNS servers.
+
+**Usage:**
+
+```bash
+fc dns <action> [dns_servers...]
+```
+
+**Actions:**
+*   `get` / `status`: Show the current DNS servers.
+*   `set <ip>...`: Set one or more custom DNS servers.
+*   `clear`: Clear custom DNS servers, reverting to DHCP-provided servers.
+
+**Examples:**
+
+```bash
+# View current DNS servers
+fc dns get
+
+# Use Google DNS
+fc dns set 8.8.8.8 8.8.4.4
+
+# Use Cloudflare DNS
+fc dns set 1.1.1.1 1.0.0.1
+
+# Revert to DHCP-provided DNS
+fc dns clear
+```
+
+**Popular DNS Providers:**
+| Provider | Primary | Secondary |
+|----------|---------|-----------|
+| Google | 8.8.8.8 | 8.8.4.4 |
+| Cloudflare | 1.1.1.1 | 1.0.0.1 |
+| OpenDNS | 208.67.222.222 | 208.67.220.220 |
+| Quad9 | 9.9.9.9 | 149.112.112.112 |
+
+**Notes:**
+- Setting or clearing DNS requires administrator (sudo) password
+- The active network service is automatically detected
+- Multiple DNS servers provide redundancy
+- To flush the DNS cache, use `fc fc-maintenance run dns-flush`
+
+---
+
+## `fc firewall`
+
+Manage the macOS application firewall from the command line. Controls incoming connections to applications on your Mac.
+
+**Usage:**
+
+```bash
+fc firewall <action>
+```
+
+**Actions:**
+*   `on`: Turn the application firewall on.
+*   `off`: Turn the application firewall off.
+*   `status`: Show the current firewall state.
+
+**Examples:**
+
+```bash
+# Enable the firewall
+fc firewall on
+
+# Disable the firewall
+fc firewall off
+
+# Check current state
+fc firewall status
+```
+
+**Notes:**
+- All actions require administrator (sudo) privileges
+- The macOS firewall is an application-level firewall, not a packet filter
+- It controls incoming connections to applications
+- It does NOT filter outgoing connections
+- Can also be configured in System Settings > Network > Firewall
+
+---
+
 ## `fc sync`
 
 This is a powerful command for managing the full lifecycle of your machine's state. It allows you to create a complete, end-to-end encrypted backup of your applications and data and then restore that state to a new machine.
@@ -584,9 +703,224 @@ fc audit sip
 fc audit filevault
 ```
 
+---
 
+## `fc update`
 
+Unified system update command. Updates macOS, Homebrew packages, Mac App Store apps, and the dotfiles repository.
 
+**Usage:**
 
+```bash
+fc update [options]
+```
 
+**Update Targets:**
+*   `--all`: Update everything (default behavior).
+*   `--os`: Update macOS only.
+*   `--packages`: Update Homebrew formulae, casks, and Mac App Store apps.
+*   `--self`: Update the dotfiles repository only.
+
+**Options:**
+*   `--check`: Check for dotfiles updates without applying them.
+*   `--dry-run`: Show what would be done without making changes.
+*   `--skip-migrations`: Skip running migration scripts (for --self).
+*   `--version`: Show the current installed version.
+*   `--help`: Show help message.
+
+**Examples:**
+
+```bash
+# Update everything (macOS, packages, and dotfiles)
+fc update
+
+# Update only Homebrew and Mac App Store packages
+fc update --packages
+
+# Update only macOS
+fc update --os
+
+# Update only the dotfiles repository
+fc update --self
+
+# Preview what would be updated
+fc update --dry-run
+
+# Check for dotfiles updates
+fc update --check
+
+# Combine targets
+fc update --packages --self
+```
+
+### How It Works
+
+The `fc update` command runs updates in the following order:
+
+1. **Packages** (`--packages`): Updates Homebrew (`brew update && brew upgrade`), Homebrew casks, and Mac App Store apps (if `mas` is installed).
+
+2. **macOS** (`--os`): Checks for system updates using `softwareupdate`. Prompts for confirmation before installing as updates may require a restart.
+
+3. **Dotfiles** (`--self`): Pulls the latest dotfiles from the remote repository, runs any applicable migrations, and updates role dependencies.
+
+The order ensures that package managers are up-to-date before system updates, and dotfiles are updated last to get any new configuration.
+
+---
+
+## `fc maintenance`
+
+Run routine system maintenance and cleanup tasks. This provides automated batch execution of common maintenance operations, complementing `fc disk cleanup` (interactive) with a "set it and forget it" approach.
+
+**Usage:**
+
+```bash
+fc fc-maintenance [subcommand] [options]
+```
+
+**Subcommands:**
+*   `(none)`: Run configured maintenance tasks.
+*   `setup`: Create configuration file from template.
+*   `list`: List all available maintenance tasks.
+*   `run <task>`: Run a specific maintenance task.
+
+**Options:**
+*   `--all`: Run all tasks (including disabled ones).
+*   `--include-trash`: Include trash emptying in this run.
+*   `--dry-run`: Show what would be done without executing.
+*   `--help`: Show help message.
+
+**Examples:**
+
+```bash
+# Run default maintenance tasks
+fc fc-maintenance
+
+# Preview what would be done
+fc fc-maintenance --dry-run
+
+# Run all tasks including disabled ones
+fc fc-maintenance --all
+
+# List available tasks
+fc fc-maintenance list
+
+# Run a specific task
+fc fc-maintenance run dns-flush
+
+# Include trash emptying
+fc fc-maintenance --include-trash
+```
+
+### Available Tasks
+
+| Task | Description | Default | Sudo |
+|------|-------------|---------|------|
+| `brew-cleanup` | Run `brew cleanup` to remove old versions | Yes | No |
+| `brew-cache` | Clear Homebrew download cache | Yes | No |
+| `npm-cache` | Clear npm cache | Yes | No |
+| `pip-cache` | Clear pip cache | Yes | No |
+| `xcode-derived` | Clear Xcode DerivedData | Yes | No |
+| `user-logs` | Clear old user log files | Yes | No |
+| `system-logs` | Clear system log files | No | Yes |
+| `dns-flush` | Flush DNS cache | No | Yes |
+| `spotlight-rebuild` | Rebuild Spotlight index | No | Yes |
+| `disk-verify` | Verify disk health | No | No |
+| `trash` | Empty the Trash | No | No |
+
+### Configuration
+
+The configuration file (`~/.config/circus/maintenance.conf`) allows you to customize which tasks run by default:
+
+```bash
+# Enable/disable specific tasks
+TASK_BREW_CLEANUP=true
+TASK_NPM_CACHE=true
+TASK_TRASH=false
+
+# Configure retention periods
+LOG_RETENTION_DAYS=7
+BREW_PRUNE_DAYS=30
+```
+
+Run `fc fc-maintenance setup` to create the configuration file from the template.
+
+---
+
+## `fc clean`
+
+Find and remove orphaned Homebrew packages—packages that are installed but not defined in any Brewfile. This helps keep your system in sync with your Brewfile definitions.
+
+**Usage:**
+
+```bash
+fc fc-clean <subcommand> [options]
+```
+
+**Subcommands:**
+*   `brew`: Find orphaned Homebrew formulae.
+*   `casks`: Find orphaned Homebrew casks.
+*   `list`: List all orphaned packages (for scripting).
+
+**Options:**
+*   `--remove`: Interactively select packages to remove.
+*   `--remove-all`: Remove all orphaned packages (with confirmation).
+*   `--skip-deps`: Exclude packages that are dependencies of others.
+
+**Examples:**
+
+```bash
+# Show orphaned formulae
+fc fc-clean brew
+
+# Interactively remove orphaned formulae
+fc fc-clean brew --remove
+
+# Show orphaned casks
+fc fc-clean casks
+
+# List all orphaned packages (for scripting)
+fc fc-clean list
+
+# List only orphaned formulae
+fc fc-clean list --formula
+
+# Exclude dependencies from results
+fc fc-clean brew --skip-deps
+```
+
+### How It Works
+
+The `fc clean` command compares installed Homebrew packages against packages defined in your Brewfiles:
+
+1. **Scans installed packages**: Gets the list of formulae/casks from `brew list`
+2. **Parses Brewfiles**: Reads expected packages from:
+   - `$DOTFILES_ROOT/Brewfile`
+   - `$DOTFILES_ROOT/roles/*/Brewfile`
+   - `$DOTFILES_ROOT/etc/Brewfile`
+   - `~/.config/circus/apps.conf`
+3. **Identifies orphans**: Finds packages that are installed but not defined anywhere
+
+Orphaned packages may be:
+- Experiments you tried and forgot about
+- Dependencies installed manually
+- Packages from a removed Brewfile
+
+### Adopting vs Removing
+
+When you find orphaned packages, you have two choices:
+
+**Adopt the package** (add to your Brewfile):
+```bash
+fc fc-apps add --brew <package-name>
+fc fc-apps add --cask <package-name>
+```
+
+**Remove the package**:
+```bash
+# Individual removal
+brew uninstall <package-name>
+
+# Interactive removal of multiple packages
+fc fc-clean brew --remove
+```
 

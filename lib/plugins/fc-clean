@@ -1,0 +1,514 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-clean
+#
+# DESCRIPTION:  Find and remove orphaned Homebrew packages - packages that are
+#               installed but not defined in any Brewfile. Helps keep your
+#               system in sync with your Brewfile definitions.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Global Flags -----------------------------------------------------------
+FLAG_REMOVE=false
+FLAG_REMOVE_ALL=false
+FLAG_SKIP_DEPS=false
+
+# --- Usage Information -------------------------------------------------------
+
+usage() {
+  msg_info "Usage: fc fc-clean <subcommand> [options]"
+  echo ""
+  msg_info "Find and remove orphaned Homebrew packages."
+  echo ""
+  msg_info "Subcommands:"
+  echo "  brew                Find orphaned Homebrew formulae"
+  echo "  casks               Find orphaned Homebrew casks"
+  echo "  list                List all orphaned packages (for scripting)"
+  echo ""
+  msg_info "Options:"
+  echo "  --remove            Interactively select packages to remove"
+  echo "  --remove-all        Remove all orphaned packages (with confirmation)"
+  echo "  --skip-deps         Exclude packages that are dependencies of others"
+  echo "  --help              Show this help message"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc fc-clean brew                # Show orphaned formulae"
+  echo "  fc fc-clean brew --remove       # Interactively remove orphaned formulae"
+  echo "  fc fc-clean casks               # Show orphaned casks"
+  echo "  fc fc-clean list                # List all orphaned packages"
+  echo "  fc fc-clean list --formula      # List only orphaned formulae"
+  echo ""
+  msg_info "Orphaned packages are those installed but not in any Brewfile:"
+  echo "  - $DOTFILES_ROOT/Brewfile"
+  echo "  - $DOTFILES_ROOT/roles/*/Brewfile"
+  echo "  - ~/.config/circus/apps.conf"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+#
+# @description Get all Brewfile paths to check
+#
+get_brewfile_paths() {
+  local paths=()
+
+  # Base Brewfile
+  if [ -f "$DOTFILES_ROOT/Brewfile" ]; then
+    paths+=("$DOTFILES_ROOT/Brewfile")
+  fi
+
+  # Role Brewfiles
+  for bf in "$DOTFILES_ROOT"/roles/*/Brewfile; do
+    if [ -f "$bf" ]; then
+      paths+=("$bf")
+    fi
+  done
+
+  # etc Brewfile
+  if [ -f "$DOTFILES_ROOT/etc/Brewfile" ]; then
+    paths+=("$DOTFILES_ROOT/etc/Brewfile")
+  fi
+
+  # User's apps config (Brewfile-compatible)
+  if [ -f "$HOME/.config/circus/apps.conf" ]; then
+    paths+=("$HOME/.config/circus/apps.conf")
+  fi
+
+  printf '%s\n' "${paths[@]}"
+}
+
+#
+# @description Extract formula names from Brewfiles
+#
+get_expected_formulae() {
+  local brewfiles
+  brewfiles=$(get_brewfile_paths)
+
+  while IFS= read -r bf; do
+    if [ -f "$bf" ]; then
+      # Match: brew "name" or brew "name", ...
+      grep -E '^brew "' "$bf" 2>/dev/null | sed -E 's/^brew "([^"]+)".*/\1/'
+    fi
+  done <<< "$brewfiles" | sort -u
+}
+
+#
+# @description Extract cask names from Brewfiles
+#
+get_expected_casks() {
+  local brewfiles
+  brewfiles=$(get_brewfile_paths)
+
+  while IFS= read -r bf; do
+    if [ -f "$bf" ]; then
+      # Match: cask "name" or cask "name", ...
+      grep -E '^cask "' "$bf" 2>/dev/null | sed -E 's/^cask "([^"]+)".*/\1/'
+    fi
+  done <<< "$brewfiles" | sort -u
+}
+
+#
+# @description Get installed formulae
+#
+get_installed_formulae() {
+  local brew_cmd=${BREW_CMD:-brew}
+  "$brew_cmd" list --formula 2>/dev/null | sort
+}
+
+#
+# @description Get installed casks
+#
+get_installed_casks() {
+  local brew_cmd=${BREW_CMD:-brew}
+  "$brew_cmd" list --cask 2>/dev/null | sort
+}
+
+#
+# @description Get formulae that are dependencies of other installed formulae
+#
+get_dependency_formulae() {
+  local brew_cmd=${BREW_CMD:-brew}
+  # Get all dependencies of installed packages
+  "$brew_cmd" deps --installed 2>/dev/null | sort -u
+}
+
+#
+# @description Find orphaned formulae
+#
+get_orphaned_formulae() {
+  local installed expected orphaned
+
+  installed=$(get_installed_formulae)
+  expected=$(get_expected_formulae)
+
+  # Find packages in installed but not in expected
+  orphaned=$(comm -23 <(echo "$installed") <(echo "$expected"))
+
+  # Optionally filter out dependencies
+  if [ "$FLAG_SKIP_DEPS" = true ]; then
+    local deps
+    deps=$(get_dependency_formulae)
+    orphaned=$(comm -23 <(echo "$orphaned") <(echo "$deps"))
+  fi
+
+  echo "$orphaned"
+}
+
+#
+# @description Find orphaned casks
+#
+get_orphaned_casks() {
+  local installed expected
+
+  installed=$(get_installed_casks)
+  expected=$(get_expected_casks)
+
+  # Find casks in installed but not in expected
+  comm -23 <(echo "$installed") <(echo "$expected")
+}
+
+#
+# @description Display orphaned packages with numbers
+#
+display_orphaned_list() {
+  local packages="$1"
+  local pkg_type="$2"
+  local count=0
+
+  if [ -z "$packages" ]; then
+    return 0
+  fi
+
+  while IFS= read -r pkg; do
+    if [ -n "$pkg" ]; then
+      ((count++))
+      printf "  %3d. %s\\n" "$count" "$pkg"
+    fi
+  done <<< "$packages"
+
+  echo "$count"
+}
+
+#
+# @description Remove selected packages
+#
+remove_packages() {
+  local packages="$1"
+  local pkg_type="$2"
+  local selection="$3"
+  local brew_cmd=${BREW_CMD:-brew}
+
+  # Convert packages to array
+  local pkg_array=()
+  while IFS= read -r pkg; do
+    if [ -n "$pkg" ]; then
+      pkg_array+=("$pkg")
+    fi
+  done <<< "$packages"
+
+  local total=${#pkg_array[@]}
+  local removed=0
+
+  if [ "$selection" = "all" ]; then
+    prompt_for_confirmation "This will remove all $total orphaned ${pkg_type}(s). Continue?"
+
+    for pkg in "${pkg_array[@]}"; do
+      msg_info "Removing $pkg..."
+      if [ "$pkg_type" = "cask" ]; then
+        "$brew_cmd" uninstall --cask "$pkg" 2>/dev/null && ((removed++))
+      else
+        "$brew_cmd" uninstall "$pkg" 2>/dev/null && ((removed++))
+      fi
+    done
+  else
+    # Parse selection (e.g., "1,3,5" or "1-5")
+    local indices=()
+    IFS=',' read -ra parts <<< "$selection"
+    for part in "${parts[@]}"; do
+      if [[ "$part" =~ ^[0-9]+-[0-9]+$ ]]; then
+        # Range (e.g., "1-5")
+        local start end
+        start=$(echo "$part" | cut -d'-' -f1)
+        end=$(echo "$part" | cut -d'-' -f2)
+        for ((i=start; i<=end; i++)); do
+          indices+=("$i")
+        done
+      elif [[ "$part" =~ ^[0-9]+$ ]]; then
+        indices+=("$part")
+      fi
+    done
+
+    for idx in "${indices[@]}"; do
+      if [ "$idx" -ge 1 ] && [ "$idx" -le "$total" ]; then
+        local pkg="${pkg_array[$((idx-1))]}"
+        msg_info "Removing $pkg..."
+        if [ "$pkg_type" = "cask" ]; then
+          "$brew_cmd" uninstall --cask "$pkg" 2>/dev/null && ((removed++))
+        else
+          "$brew_cmd" uninstall "$pkg" 2>/dev/null && ((removed++))
+        fi
+      fi
+    done
+  fi
+
+  echo ""
+  if [ "$removed" -gt 0 ]; then
+    msg_success "Removed $removed package(s)."
+  else
+    msg_info "No packages were removed."
+  fi
+}
+
+# --- Subcommand Handlers ----------------------------------------------------
+
+do_brew() {
+  local brew_cmd=${BREW_CMD:-brew}
+
+  if ! command -v "$brew_cmd" >/dev/null 2>&1; then
+    die "Homebrew is not installed."
+  fi
+
+  echo ""
+  msg_info "Scanning for orphaned Homebrew formulae..."
+  echo ""
+
+  local installed_count expected_count orphaned orphaned_count
+
+  installed_count=$(get_installed_formulae | wc -l | tr -d ' ')
+  expected_count=$(get_expected_formulae | wc -l | tr -d ' ')
+  orphaned=$(get_orphaned_formulae)
+  orphaned_count=$(echo "$orphaned" | grep -c . || echo 0)
+
+  echo "  Installed formulae: $installed_count"
+  echo "  Defined in Brewfiles: $expected_count"
+  echo "  Orphaned formulae: $orphaned_count"
+  echo ""
+
+  if [ "$orphaned_count" -eq 0 ]; then
+    msg_success "No orphaned formulae found. Your system is in sync with your Brewfiles."
+    return 0
+  fi
+
+  msg_info "The following formulae are installed but not in any Brewfile:"
+  echo ""
+  display_orphaned_list "$orphaned" "formula"
+  echo ""
+
+  msg_info "These packages may be:"
+  echo "  - Experiments you tried and forgot about"
+  echo "  - Dependencies installed manually"
+  echo "  - Packages from a removed Brewfile"
+  echo ""
+
+  if [ "$FLAG_REMOVE_ALL" = true ]; then
+    remove_packages "$orphaned" "formula" "all"
+  elif [ "$FLAG_REMOVE" = true ]; then
+    msg_info "Options:"
+    echo "  - Add to Brewfile: fc fc-apps add --brew <name>"
+    echo "  - Enter package numbers to remove (e.g., 1,3,5 or 1-5 or 'all')"
+    echo "  - Enter 'none' or press Ctrl+C to cancel"
+    echo ""
+
+    read -r -p "Select packages to remove: " selection
+
+    if [ "$selection" = "none" ] || [ -z "$selection" ]; then
+      msg_info "No packages removed."
+    else
+      remove_packages "$orphaned" "formula" "$selection"
+    fi
+  else
+    msg_info "Options:"
+    echo "  - Add to Brewfile: fc fc-apps add --brew <name>"
+    echo "  - Remove package: brew uninstall <name>"
+    echo "  - Remove interactively: fc fc-clean brew --remove"
+    echo "  - Remove all orphaned: fc fc-clean brew --remove-all"
+    echo ""
+    msg_info "No changes made. Use --remove to interactively remove packages."
+  fi
+}
+
+do_casks() {
+  local brew_cmd=${BREW_CMD:-brew}
+
+  if ! command -v "$brew_cmd" >/dev/null 2>&1; then
+    die "Homebrew is not installed."
+  fi
+
+  echo ""
+  msg_info "Scanning for orphaned Homebrew casks..."
+  echo ""
+
+  local installed_count expected_count orphaned orphaned_count
+
+  installed_count=$(get_installed_casks | wc -l | tr -d ' ')
+  expected_count=$(get_expected_casks | wc -l | tr -d ' ')
+  orphaned=$(get_orphaned_casks)
+  orphaned_count=$(echo "$orphaned" | grep -c . || echo 0)
+
+  echo "  Installed casks: $installed_count"
+  echo "  Defined in Brewfiles: $expected_count"
+  echo "  Orphaned casks: $orphaned_count"
+  echo ""
+
+  if [ "$orphaned_count" -eq 0 ]; then
+    msg_success "No orphaned casks found. Your system is in sync with your Brewfiles."
+    return 0
+  fi
+
+  msg_info "The following casks are installed but not in any Brewfile:"
+  echo ""
+  display_orphaned_list "$orphaned" "cask"
+  echo ""
+
+  msg_info "These applications may be:"
+  echo "  - Apps you tried and no longer use"
+  echo "  - Apps installed outside your Brewfile system"
+  echo "  - Apps from a removed Brewfile"
+  echo ""
+
+  if [ "$FLAG_REMOVE_ALL" = true ]; then
+    remove_packages "$orphaned" "cask" "all"
+  elif [ "$FLAG_REMOVE" = true ]; then
+    msg_info "Options:"
+    echo "  - Add to Brewfile: fc fc-apps add --cask <name>"
+    echo "  - Enter package numbers to remove (e.g., 1,3,5 or 1-5 or 'all')"
+    echo "  - Enter 'none' or press Ctrl+C to cancel"
+    echo ""
+
+    read -r -p "Select casks to remove: " selection
+
+    if [ "$selection" = "none" ] || [ -z "$selection" ]; then
+      msg_info "No casks removed."
+    else
+      remove_packages "$orphaned" "cask" "$selection"
+    fi
+  else
+    msg_info "Options:"
+    echo "  - Add to Brewfile: fc fc-apps add --cask <name>"
+    echo "  - Remove cask: brew uninstall --cask <name>"
+    echo "  - Remove interactively: fc fc-clean casks --remove"
+    echo "  - Remove all orphaned: fc fc-clean casks --remove-all"
+    echo ""
+    msg_info "No changes made. Use --remove to interactively remove casks."
+  fi
+}
+
+do_list() {
+  local list_type="${1:-all}"
+
+  case "$list_type" in
+    --formula|--formulae)
+      get_orphaned_formulae
+      ;;
+    --cask|--casks)
+      get_orphaned_casks
+      ;;
+    *)
+      # List both
+      local formulae casks
+      formulae=$(get_orphaned_formulae)
+      casks=$(get_orphaned_casks)
+
+      if [ -n "$formulae" ]; then
+        echo "# Orphaned formulae"
+        echo "$formulae"
+      fi
+
+      if [ -n "$casks" ]; then
+        if [ -n "$formulae" ]; then
+          echo ""
+        fi
+        echo "# Orphaned casks"
+        echo "$casks"
+      fi
+
+      if [ -z "$formulae" ] && [ -z "$casks" ]; then
+        echo "# No orphaned packages found"
+      fi
+      ;;
+  esac
+}
+
+# --- Main Dispatcher ---------------------------------------------------------
+
+main() {
+  # Parse global flags first
+  while [[ "${1:-}" == --* ]]; do
+    case "$1" in
+      --help)
+        usage
+        ;;
+      --remove)
+        FLAG_REMOVE=true
+        shift
+        ;;
+      --remove-all)
+        FLAG_REMOVE_ALL=true
+        shift
+        ;;
+      --skip-deps)
+        FLAG_SKIP_DEPS=true
+        shift
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  if [ -z "${1:-}" ]; then
+    usage
+  fi
+
+  local subcommand="$1"
+  shift
+
+  # Parse subcommand-specific flags
+  while [[ "${1:-}" == --* ]]; do
+    case "$1" in
+      --remove)
+        FLAG_REMOVE=true
+        shift
+        ;;
+      --remove-all)
+        FLAG_REMOVE_ALL=true
+        shift
+        ;;
+      --skip-deps)
+        FLAG_SKIP_DEPS=true
+        shift
+        ;;
+      --formula|--formulae|--cask|--casks)
+        # Pass through for list subcommand
+        break
+        ;;
+      *)
+        die "Unknown option: $1. Use --help for usage."
+        ;;
+    esac
+  done
+
+  case "$subcommand" in
+    brew)
+      do_brew
+      ;;
+    cask|casks)
+      do_casks
+      ;;
+    list)
+      do_list "$@"
+      ;;
+    *)
+      die "Unknown subcommand: $subcommand. Run 'fc fc-clean --help' for usage."
+      ;;
+  esac
+}
+
+main "$@"

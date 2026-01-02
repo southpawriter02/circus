@@ -1,0 +1,586 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-maintenance
+#
+# DESCRIPTION:  Run routine system maintenance and cleanup tasks.
+#               Provides batch execution of common maintenance operations
+#               with configurable task selection.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration -----------------------------------------------------------
+
+readonly MAINTENANCE_CONFIG_FILE="$HOME/.config/circus/maintenance.conf"
+readonly MAINTENANCE_CONFIG_TEMPLATE="$DOTFILES_ROOT/lib/templates/maintenance.conf.template"
+
+# Default configuration values
+TASK_BREW_CLEANUP=true
+TASK_BREW_CACHE=true
+TASK_NPM_CACHE=true
+TASK_PIP_CACHE=true
+TASK_XCODE_DERIVED=true
+TASK_USER_LOGS=true
+TASK_SYSTEM_LOGS=false
+TASK_DNS_FLUSH=false
+TASK_SPOTLIGHT_REBUILD=false
+TASK_DISK_VERIFY=false
+TASK_TRASH=false
+LOG_RETENTION_DAYS=7
+BREW_PRUNE_DAYS=30
+
+# Load user configuration if it exists
+if [ -f "$MAINTENANCE_CONFIG_FILE" ]; then
+  # shellcheck source=/dev/null
+  source "$MAINTENANCE_CONFIG_FILE"
+fi
+
+# --- Global Flags -----------------------------------------------------------
+FLAG_DRY_RUN=false
+FLAG_ALL=false
+FLAG_INCLUDE_TRASH=false
+
+# --- Available Tasks --------------------------------------------------------
+# Format: task_name:description:default_enabled:requires_sudo
+readonly AVAILABLE_TASKS=(
+  "brew-cleanup:Run brew cleanup to remove old versions:true:false"
+  "brew-cache:Clear Homebrew download cache:true:false"
+  "npm-cache:Clear npm cache:true:false"
+  "pip-cache:Clear pip cache:true:false"
+  "xcode-derived:Clear Xcode DerivedData:true:false"
+  "user-logs:Clear old user log files:true:false"
+  "system-logs:Clear system log files:false:true"
+  "dns-flush:Flush DNS cache:false:true"
+  "spotlight-rebuild:Rebuild Spotlight index:false:true"
+  "disk-verify:Verify disk health:false:false"
+  "trash:Empty the Trash:false:false"
+)
+
+# --- Usage Information -------------------------------------------------------
+
+usage() {
+  msg_info "Usage: fc fc-maintenance [subcommand] [options]"
+  echo ""
+  msg_info "Run routine system maintenance and cleanup tasks."
+  echo ""
+  msg_info "Subcommands:"
+  echo "  (none)              Run configured maintenance tasks"
+  echo "  setup               Create configuration file from template"
+  echo "  list                List all available maintenance tasks"
+  echo "  run <task>          Run a specific maintenance task"
+  echo ""
+  msg_info "Options:"
+  echo "  --all               Run all tasks (including disabled ones)"
+  echo "  --include-trash     Include trash emptying in this run"
+  echo "  --dry-run           Show what would be done without executing"
+  echo "  --help              Show this help message"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc fc-maintenance              # Run default maintenance tasks"
+  echo "  fc fc-maintenance --dry-run    # Preview what would be done"
+  echo "  fc fc-maintenance --all        # Run all tasks"
+  echo "  fc fc-maintenance list         # Show available tasks"
+  echo "  fc fc-maintenance run dns-flush"
+  echo ""
+  msg_info "Configuration: $MAINTENANCE_CONFIG_FILE"
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+#
+# @description Get size of a directory in human-readable format
+#
+get_dir_size() {
+  local dir="$1"
+  if [ -d "$dir" ]; then
+    du -sh "$dir" 2>/dev/null | cut -f1
+  else
+    echo "0B"
+  fi
+}
+
+#
+# @description Check if a task is enabled
+#
+is_task_enabled() {
+  local task_name="$1"
+  local var_name="TASK_$(echo "$task_name" | tr '[:lower:]-' '[:upper:]_')"
+  local value="${!var_name:-false}"
+  [ "$value" = "true" ]
+}
+
+#
+# @description Get task info by name
+#
+get_task_info() {
+  local task_name="$1"
+  local field="$2"  # description, default, sudo
+
+  for task in "${AVAILABLE_TASKS[@]}"; do
+    local name desc default sudo
+    IFS=':' read -r name desc default sudo <<< "$task"
+    if [ "$name" = "$task_name" ]; then
+      case "$field" in
+        description) echo "$desc" ;;
+        default) echo "$default" ;;
+        sudo) echo "$sudo" ;;
+      esac
+      return 0
+    fi
+  done
+  return 1
+}
+
+#
+# @description Check if task exists
+#
+task_exists() {
+  local task_name="$1"
+  for task in "${AVAILABLE_TASKS[@]}"; do
+    local name
+    IFS=':' read -r name _ _ _ <<< "$task"
+    if [ "$name" = "$task_name" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# --- Task Functions ---------------------------------------------------------
+
+task_brew_cleanup() {
+  local brew_cmd=${BREW_CMD:-brew}
+
+  if ! command -v "$brew_cmd" >/dev/null 2>&1; then
+    msg_info "Homebrew not installed, skipping brew-cleanup."
+    return 0
+  fi
+
+  msg_info "Running Homebrew cleanup (prune $BREW_PRUNE_DAYS days)..."
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would run: brew cleanup --prune=$BREW_PRUNE_DAYS"
+    return 0
+  fi
+
+  if "$brew_cmd" cleanup --prune="$BREW_PRUNE_DAYS"; then
+    msg_success "Homebrew cleanup complete."
+  else
+    msg_warning "Homebrew cleanup encountered issues."
+  fi
+}
+
+task_brew_cache() {
+  local brew_cmd=${BREW_CMD:-brew}
+
+  if ! command -v "$brew_cmd" >/dev/null 2>&1; then
+    msg_info "Homebrew not installed, skipping brew-cache."
+    return 0
+  fi
+
+  local cache_dir
+  cache_dir=$("$brew_cmd" --cache 2>/dev/null)
+
+  if [ -z "$cache_dir" ] || [ ! -d "$cache_dir" ]; then
+    msg_info "Homebrew cache not found, skipping."
+    return 0
+  fi
+
+  local size
+  size=$(get_dir_size "$cache_dir")
+  msg_info "Clearing Homebrew cache ($size)..."
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would clear: $cache_dir"
+    return 0
+  fi
+
+  rm -rf "${cache_dir:?}"/*
+  msg_success "Homebrew cache cleared."
+}
+
+task_npm_cache() {
+  if ! command -v npm >/dev/null 2>&1; then
+    msg_info "npm not installed, skipping npm-cache."
+    return 0
+  fi
+
+  local cache_dir="$HOME/.npm/_cacache"
+  if [ ! -d "$cache_dir" ]; then
+    msg_info "npm cache not found, skipping."
+    return 0
+  fi
+
+  local size
+  size=$(get_dir_size "$cache_dir")
+  msg_info "Clearing npm cache ($size)..."
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would run: npm cache clean --force"
+    return 0
+  fi
+
+  if npm cache clean --force 2>/dev/null; then
+    msg_success "npm cache cleared."
+  else
+    msg_warning "npm cache clean encountered issues."
+  fi
+}
+
+task_pip_cache() {
+  local cache_dir="$HOME/Library/Caches/pip"
+
+  if [ ! -d "$cache_dir" ]; then
+    msg_info "pip cache not found, skipping."
+    return 0
+  fi
+
+  local size
+  size=$(get_dir_size "$cache_dir")
+  msg_info "Clearing pip cache ($size)..."
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would clear: $cache_dir"
+    return 0
+  fi
+
+  rm -rf "${cache_dir:?}"/*
+  msg_success "pip cache cleared."
+}
+
+task_xcode_derived() {
+  local derived_dir="$HOME/Library/Developer/Xcode/DerivedData"
+
+  if [ ! -d "$derived_dir" ]; then
+    msg_info "Xcode DerivedData not found, skipping."
+    return 0
+  fi
+
+  local size
+  size=$(get_dir_size "$derived_dir")
+  msg_info "Clearing Xcode DerivedData ($size)..."
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would clear: $derived_dir"
+    return 0
+  fi
+
+  rm -rf "${derived_dir:?}"/*
+  msg_success "Xcode DerivedData cleared."
+}
+
+task_user_logs() {
+  local logs_dir="$HOME/Library/Logs"
+
+  if [ ! -d "$logs_dir" ]; then
+    msg_info "User logs directory not found, skipping."
+    return 0
+  fi
+
+  msg_info "Clearing user logs older than $LOG_RETENTION_DAYS days..."
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    local count
+    count=$(find "$logs_dir" -type f -mtime +"$LOG_RETENTION_DAYS" 2>/dev/null | wc -l | tr -d ' ')
+    msg_info "[DRY-RUN] Would remove $count files older than $LOG_RETENTION_DAYS days"
+    return 0
+  fi
+
+  find "$logs_dir" -type f -mtime +"$LOG_RETENTION_DAYS" -delete 2>/dev/null
+  msg_success "Old user logs cleared."
+}
+
+task_system_logs() {
+  msg_info "Clearing system logs (requires sudo)..."
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would run: sudo rm -rf /var/log/*.log /var/log/*.gz"
+    return 0
+  fi
+
+  if sudo rm -rf /var/log/*.log /var/log/*.gz 2>/dev/null; then
+    msg_success "System logs cleared."
+  else
+    msg_warning "Some system logs could not be cleared."
+  fi
+}
+
+task_dns_flush() {
+  msg_info "Flushing DNS cache (requires sudo)..."
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would run: sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
+    return 0
+  fi
+
+  if sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder 2>/dev/null; then
+    msg_success "DNS cache flushed."
+  else
+    msg_warning "DNS cache flush encountered issues."
+  fi
+}
+
+task_spotlight_rebuild() {
+  msg_info "Rebuilding Spotlight index (requires sudo, this may take a while)..."
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would run: sudo mdutil -E /"
+    return 0
+  fi
+
+  prompt_for_confirmation "This will rebuild the Spotlight index and may take a long time. Continue?"
+
+  if sudo mdutil -E / 2>/dev/null; then
+    msg_success "Spotlight index rebuild initiated."
+    msg_info "The index will rebuild in the background."
+  else
+    msg_warning "Spotlight rebuild encountered issues."
+  fi
+}
+
+task_disk_verify() {
+  msg_info "Verifying disk health..."
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would run: diskutil verifyVolume /"
+    return 0
+  fi
+
+  if diskutil verifyVolume / 2>/dev/null; then
+    msg_success "Disk verification complete."
+  else
+    msg_warning "Disk verification reported issues. Consider running Disk Utility."
+  fi
+}
+
+task_trash() {
+  local trash_dir="$HOME/.Trash"
+
+  if [ ! -d "$trash_dir" ] || [ -z "$(ls -A "$trash_dir" 2>/dev/null)" ]; then
+    msg_info "Trash is already empty."
+    return 0
+  fi
+
+  local size
+  size=$(get_dir_size "$trash_dir")
+  msg_info "Emptying Trash ($size)..."
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would empty trash containing $size of data"
+    return 0
+  fi
+
+  prompt_for_confirmation "This will permanently delete all items in Trash. Continue?"
+
+  # Use AppleScript for proper Trash handling
+  if osascript -e 'tell application "Finder" to empty trash' 2>/dev/null; then
+    msg_success "Trash emptied."
+  else
+    # Fallback to rm if AppleScript fails
+    rm -rf "${trash_dir:?}"/*
+    msg_success "Trash emptied."
+  fi
+}
+
+# --- Command Logic -----------------------------------------------------------
+
+do_setup() {
+  local config_dir
+  config_dir=$(dirname "$MAINTENANCE_CONFIG_FILE")
+
+  if [ -f "$MAINTENANCE_CONFIG_FILE" ]; then
+    msg_info "Configuration file already exists: $MAINTENANCE_CONFIG_FILE"
+    echo ""
+    msg_info "Edit it with: \$EDITOR $MAINTENANCE_CONFIG_FILE"
+    return 0
+  fi
+
+  if [ ! -f "$MAINTENANCE_CONFIG_TEMPLATE" ]; then
+    die "Configuration template not found: $MAINTENANCE_CONFIG_TEMPLATE"
+  fi
+
+  msg_info "Creating configuration directory..."
+  mkdir -p "$config_dir"
+
+  msg_info "Copying configuration template..."
+  cp "$MAINTENANCE_CONFIG_TEMPLATE" "$MAINTENANCE_CONFIG_FILE"
+
+  msg_success "Configuration file created: $MAINTENANCE_CONFIG_FILE"
+  echo ""
+  msg_info "Next steps:"
+  msg_info "  1. Edit the config: \$EDITOR $MAINTENANCE_CONFIG_FILE"
+  msg_info "  2. Enable/disable tasks as needed"
+  msg_info "  3. Run: fc fc-maintenance"
+}
+
+do_list() {
+  echo ""
+  msg_info "Available Maintenance Tasks"
+  echo "============================"
+  echo ""
+
+  for task in "${AVAILABLE_TASKS[@]}"; do
+    local name desc default sudo
+    IFS=':' read -r name desc default sudo <<< "$task"
+
+    local status="disabled"
+    if is_task_enabled "$name" || [ "$FLAG_ALL" = true ]; then
+      status="enabled"
+    fi
+
+    local sudo_note=""
+    if [ "$sudo" = "true" ]; then
+      sudo_note=" (requires sudo)"
+    fi
+
+    printf "  %-20s [%s] %s%s\\n" "$name" "$status" "$desc" "$sudo_note"
+  done
+
+  echo ""
+  msg_info "Configuration: $MAINTENANCE_CONFIG_FILE"
+
+  if [ ! -f "$MAINTENANCE_CONFIG_FILE" ]; then
+    msg_info "Run 'fc fc-maintenance setup' to create configuration file."
+  fi
+}
+
+do_run_task() {
+  local task_name="$1"
+
+  if [ -z "$task_name" ]; then
+    die "Task name required. Run 'fc fc-maintenance list' to see available tasks."
+  fi
+
+  if ! task_exists "$task_name"; then
+    die "Unknown task: $task_name. Run 'fc fc-maintenance list' to see available tasks."
+  fi
+
+  # Convert task name to function name
+  local func_name="task_$(echo "$task_name" | tr '-' '_')"
+
+  if ! declare -f "$func_name" >/dev/null 2>&1; then
+    die "Task function not found: $func_name"
+  fi
+
+  echo ""
+  msg_info "Running maintenance task: $task_name"
+  echo ""
+
+  "$func_name"
+
+  echo ""
+  msg_success "Task complete: $task_name"
+}
+
+do_maintenance() {
+  echo ""
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] System Maintenance Preview"
+  else
+    msg_info "System Maintenance"
+  fi
+  echo "=================="
+  echo ""
+
+  local tasks_run=0
+
+  # Run enabled tasks in order
+  for task in "${AVAILABLE_TASKS[@]}"; do
+    local name desc default sudo
+    IFS=':' read -r name desc default sudo <<< "$task"
+
+    # Special handling for trash task
+    if [ "$name" = "trash" ]; then
+      # Only run trash if explicitly requested via --include-trash or --all
+      if [ "$FLAG_INCLUDE_TRASH" != true ] && [ "$FLAG_ALL" != true ]; then
+        continue
+      fi
+    else
+      # For other tasks, check if enabled (or --all is set)
+      if [ "$FLAG_ALL" != true ] && ! is_task_enabled "$name"; then
+        continue
+      fi
+    fi
+
+    # Run the task
+    local func_name="task_$(echo "$name" | tr '-' '_')"
+
+    if declare -f "$func_name" >/dev/null 2>&1; then
+      "$func_name"
+      ((tasks_run++))
+      echo ""
+    fi
+  done
+
+  if [ "$tasks_run" -eq 0 ]; then
+    msg_info "No tasks to run. Check your configuration or use --all."
+    msg_info "Run 'fc fc-maintenance list' to see available tasks."
+    return 0
+  fi
+
+  echo ""
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_success "[DRY-RUN] Would have run $tasks_run maintenance task(s)."
+  else
+    msg_success "Maintenance complete! Ran $tasks_run task(s)."
+  fi
+}
+
+# --- Main Dispatcher ---------------------------------------------------------
+
+main() {
+  # Parse global flags first
+  while [[ "${1:-}" == --* ]]; do
+    case "$1" in
+      --help)
+        usage
+        ;;
+      --dry-run)
+        FLAG_DRY_RUN=true
+        shift
+        ;;
+      --all)
+        FLAG_ALL=true
+        shift
+        ;;
+      --include-trash)
+        FLAG_INCLUDE_TRASH=true
+        shift
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  # No subcommand means run maintenance
+  if [ -z "${1:-}" ]; then
+    do_maintenance
+    return
+  fi
+
+  local subcommand="$1"
+  shift
+
+  case "$subcommand" in
+    setup)
+      do_setup
+      ;;
+    list)
+      do_list
+      ;;
+    run)
+      do_run_task "$@"
+      ;;
+    *)
+      die "Unknown subcommand: $subcommand. Run 'fc fc-maintenance --help' for usage."
+      ;;
+  esac
+}
+
+main "$@"

@@ -1,0 +1,57 @@
+# ==============================================================================
+#
+# FILE:         maintenance.conf
+#
+# DESCRIPTION:  Configuration for fc-maintenance system maintenance command.
+#               Enable or disable maintenance tasks to customize your routine.
+#
+# USAGE:        fc fc-maintenance
+#
+# ==============================================================================
+
+# --- Safe Cleanup Tasks (enabled by default) ---------------------------------
+# These tasks clean up caches and temporary files that can be safely removed.
+
+# Run 'brew cleanup' to remove old versions and outdated downloads
+TASK_BREW_CLEANUP=true
+
+# Clear Homebrew's download cache
+TASK_BREW_CACHE=true
+
+# Clear npm cache (if npm is installed)
+TASK_NPM_CACHE=true
+
+# Clear pip cache (if pip is installed)
+TASK_PIP_CACHE=true
+
+# Clear Xcode DerivedData (if Xcode is installed)
+TASK_XCODE_DERIVED=true
+
+# Clear user log files older than LOG_RETENTION_DAYS
+TASK_USER_LOGS=true
+
+# --- Tasks Disabled by Default -----------------------------------------------
+# These tasks require sudo, are potentially destructive, or take longer to run.
+
+# Clear system log files (requires sudo)
+TASK_SYSTEM_LOGS=false
+
+# Flush DNS cache (requires sudo)
+TASK_DNS_FLUSH=false
+
+# Rebuild Spotlight index (requires sudo, takes time)
+TASK_SPOTLIGHT_REBUILD=false
+
+# Verify disk health (read-only but takes time)
+TASK_DISK_VERIFY=false
+
+# Empty the Trash (irreversible)
+TASK_TRASH=false
+
+# --- Configuration Options ---------------------------------------------------
+
+# Number of days to keep log files (older files are deleted)
+LOG_RETENTION_DAYS=7
+
+# Number of days for Homebrew prune (remove downloads older than this)
+BREW_PRUNE_DAYS=30

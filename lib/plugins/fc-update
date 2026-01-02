@@ -4,8 +4,8 @@
 #
 # FILE:         update
 #
-# DESCRIPTION:  This command provides a safe and robust way to update the
-#               Dotfiles Flying Circus to the latest version. It handles
+# DESCRIPTION:  Unified system update command. Updates macOS, Homebrew packages,
+#               Mac App Store apps, and the dotfiles repository. Handles
 #               dependency changes, runs migrations, and supports various flags.
 #
 # ==============================================================================
@@ -17,24 +17,36 @@ source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 FLAG_CHECK=false
 FLAG_DRY_RUN=false
 FLAG_SKIP_MIGRATIONS=false
+FLAG_UPDATE_OS=false
+FLAG_UPDATE_PACKAGES=false
+FLAG_UPDATE_SELF=false
+FLAG_UPDATE_ALL=true
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
   msg_info "Usage: fc update [options]"
   echo ""
-  msg_info "Safely updates the Dotfiles Flying Circus to the latest version."
+  msg_info "Updates macOS, Homebrew packages, and the dotfiles repository."
+  echo ""
+  msg_info "Update Targets:"
+  echo "  --all               Update everything (default)"
+  echo "  --os                Update macOS only"
+  echo "  --packages          Update Homebrew and Mac App Store only"
+  echo "  --self              Update dotfiles repository only"
   echo ""
   msg_info "Options:"
   echo "  --help              Show this help message"
   echo "  --version           Show the current installed version"
-  echo "  --check             Check for updates without applying them"
+  echo "  --check             Check for dotfiles updates without applying"
   echo "  --dry-run           Show what would be done without making changes"
-  echo "  --skip-migrations   Skip running migration scripts"
+  echo "  --skip-migrations   Skip running migration scripts (for --self)"
   echo ""
   msg_info "Examples:"
-  echo "  fc update           # Update to the latest version"
-  echo "  fc update --check   # Check if updates are available"
-  echo "  fc update --dry-run # Preview what the update would do"
+  echo "  fc update              # Update everything"
+  echo "  fc update --packages   # Update only Homebrew/MAS"
+  echo "  fc update --os         # Update only macOS"
+  echo "  fc update --self       # Update only dotfiles"
+  echo "  fc update --dry-run    # Preview all updates"
   echo ""
   exit 0
 }
@@ -194,47 +206,158 @@ handle_dependencies() {
   fi
 }
 
-# --- Main Logic -------------------------------------------------------------
-main() {
-  # Parse arguments
-  while [[ $# -gt 0 ]]; do
-    case "$1" in
-      --help)
-        usage
-        ;;
-      --version)
-        show_version
-        ;;
-      --check)
-        FLAG_CHECK=true
-        shift
-        ;;
-      --dry-run)
-        FLAG_DRY_RUN=true
-        shift
-        ;;
-      --skip-migrations)
-        FLAG_SKIP_MIGRATIONS=true
-        shift
-        ;;
-      *)
-        die "Unknown option: $1. Use --help for usage information."
-        ;;
-    esac
-  done
+# --- Update Homebrew Packages -----------------------------------------------
+update_packages() {
+  local brew_cmd=${BREW_CMD:-brew}
 
-  # Handle --check flag
-  if [ "$FLAG_CHECK" = true ]; then
-    check_for_updates
+  if ! command -v "$brew_cmd" >/dev/null 2>&1; then
+    msg_error "Homebrew is not installed. Skipping package updates."
+    return 1
   fi
+
+  echo ""
+  msg_info "=== Updating Homebrew Packages ==="
+  echo ""
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would run: brew update"
+    msg_info "[DRY-RUN] Checking for outdated packages..."
+    echo ""
+    "$brew_cmd" outdated 2>/dev/null || true
+    echo ""
+    msg_info "[DRY-RUN] Would run: brew upgrade"
+    msg_info "[DRY-RUN] Would run: brew upgrade --cask"
+    return 0
+  fi
+
+  # Update Homebrew itself
+  msg_info "Updating Homebrew..."
+  if ! "$brew_cmd" update; then
+    msg_warning "Homebrew update encountered issues."
+  fi
+
+  # Check for outdated packages
+  local outdated
+  outdated=$("$brew_cmd" outdated 2>/dev/null || true)
+
+  if [ -z "$outdated" ]; then
+    msg_success "All Homebrew formulae are up to date."
+  else
+    msg_info "Outdated formulae:"
+    echo "$outdated"
+    echo ""
+    msg_info "Upgrading formulae..."
+    if "$brew_cmd" upgrade; then
+      msg_success "Homebrew formulae updated."
+    else
+      msg_warning "Some formulae may have failed to upgrade."
+    fi
+  fi
+
+  # Update casks
+  echo ""
+  msg_info "Checking for cask updates..."
+  local outdated_casks
+  outdated_casks=$("$brew_cmd" outdated --cask 2>/dev/null || true)
+
+  if [ -z "$outdated_casks" ]; then
+    msg_success "All Homebrew casks are up to date."
+  else
+    msg_info "Outdated casks:"
+    echo "$outdated_casks"
+    echo ""
+    msg_info "Upgrading casks..."
+    if "$brew_cmd" upgrade --cask; then
+      msg_success "Homebrew casks updated."
+    else
+      msg_warning "Some casks may have failed to upgrade."
+    fi
+  fi
+
+  # Update Mac App Store apps if mas is available
+  local mas_cmd=${MAS_CMD:-mas}
+  if command -v "$mas_cmd" >/dev/null 2>&1; then
+    echo ""
+    msg_info "Checking for Mac App Store updates..."
+    local outdated_mas
+    outdated_mas=$("$mas_cmd" outdated 2>/dev/null || true)
+
+    if [ -z "$outdated_mas" ]; then
+      msg_success "All Mac App Store apps are up to date."
+    else
+      msg_info "Outdated apps:"
+      echo "$outdated_mas"
+      echo ""
+      msg_info "Upgrading Mac App Store apps..."
+      if "$mas_cmd" upgrade; then
+        msg_success "Mac App Store apps updated."
+      else
+        msg_warning "Some apps may have failed to upgrade."
+      fi
+    fi
+  else
+    msg_info "mas-cli not installed. Skipping Mac App Store updates."
+    msg_info "Install with: brew install mas"
+  fi
+
+  echo ""
+  msg_success "Package updates complete."
+}
+
+# --- Update macOS -----------------------------------------------------------
+update_macos() {
+  echo ""
+  msg_info "=== Checking for macOS Updates ==="
+  echo ""
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would run: softwareupdate -l"
+    echo ""
+    softwareupdate -l 2>&1 || true
+    echo ""
+    msg_info "[DRY-RUN] Would run: softwareupdate -ia (if updates available)"
+    return 0
+  fi
+
+  # List available updates
+  msg_info "Checking for available updates..."
+  local updates
+  updates=$(softwareupdate -l 2>&1)
+
+  if echo "$updates" | grep -q "No new software available"; then
+    msg_success "macOS is up to date."
+    return 0
+  fi
+
+  echo ""
+  echo "$updates"
+  echo ""
+
+  msg_warning "macOS updates are available."
+  msg_info "Note: Some updates may require a restart."
+  echo ""
+
+  prompt_for_confirmation "Would you like to install available macOS updates?"
+
+  msg_info "Installing macOS updates (this may take a while)..."
+  if sudo softwareupdate -ia --verbose; then
+    msg_success "macOS updates installed."
+    msg_info "You may need to restart your computer for changes to take effect."
+  else
+    msg_warning "Some updates may have failed to install."
+  fi
+}
+
+# --- Update Self (Dotfiles Repository) --------------------------------------
+update_self() {
+  echo ""
+  msg_info "=== Updating Dotfiles Repository ==="
+  echo ""
 
   # Validate dependencies
   if ! command -v git >/dev/null 2>&1; then
-    die "This command requires 'git'. Please install it first."
-  fi
-
-  if ! command -v brew >/dev/null 2>&1; then
-    die "This command requires 'brew'. Please install it first."
+    msg_error "Git is not installed. Skipping dotfiles update."
+    return 1
   fi
 
   cd "$DOTFILES_ROOT" || die "Could not navigate to the dotfiles directory: $DOTFILES_ROOT"
@@ -242,12 +365,6 @@ main() {
   # Record current version before update
   local old_version
   old_version=$(get_current_version)
-
-  if [ "$FLAG_DRY_RUN" = true ]; then
-    msg_info "[DRY-RUN] Starting update simulation..."
-  else
-    msg_info "Starting update..."
-  fi
 
   # --- Stash Local Changes (if any) ---
   msg_info "Checking for local changes..."
@@ -284,7 +401,7 @@ main() {
       if [ "$stashed" = true ]; then
         git stash pop
       fi
-      exit 1
+      return 1
     fi
     new_head=$(git rev-parse HEAD)
     msg_success "Code update successful!"
@@ -319,10 +436,10 @@ main() {
     fi
   fi
 
-  # --- Final Summary ---
+  # --- Summary ---
   echo ""
   if [ "$FLAG_DRY_RUN" = true ]; then
-    msg_success "[DRY-RUN] Update simulation complete."
+    msg_success "[DRY-RUN] Dotfiles update simulation complete."
     echo "  Would update from: v$old_version → v$new_version"
   else
     if [ "$old_version" != "$new_version" ]; then
@@ -331,6 +448,93 @@ main() {
     else
       msg_success "The Dotfiles Flying Circus is now up-to-date. (v$new_version)"
     fi
+  fi
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  # Parse arguments
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --help)
+        usage
+        ;;
+      --version)
+        show_version
+        ;;
+      --check)
+        FLAG_CHECK=true
+        shift
+        ;;
+      --dry-run)
+        FLAG_DRY_RUN=true
+        shift
+        ;;
+      --skip-migrations)
+        FLAG_SKIP_MIGRATIONS=true
+        shift
+        ;;
+      --all)
+        FLAG_UPDATE_ALL=true
+        shift
+        ;;
+      --os)
+        FLAG_UPDATE_OS=true
+        FLAG_UPDATE_ALL=false
+        shift
+        ;;
+      --packages)
+        FLAG_UPDATE_PACKAGES=true
+        FLAG_UPDATE_ALL=false
+        shift
+        ;;
+      --self)
+        FLAG_UPDATE_SELF=true
+        FLAG_UPDATE_ALL=false
+        shift
+        ;;
+      *)
+        die "Unknown option: $1. Use --help for usage information."
+        ;;
+    esac
+  done
+
+  # Handle --check flag (only applies to dotfiles repo)
+  if [ "$FLAG_CHECK" = true ]; then
+    check_for_updates
+  fi
+
+  # Display header
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Starting update simulation..."
+  else
+    msg_info "Starting system update..."
+  fi
+
+  # Execute requested updates in order: packages → OS → self
+  # Order rationale:
+  #   1. Packages first: ensures latest brew/mas before system updates
+  #   2. OS second: major system updates may require restart
+  #   3. Self last: always get latest dotfiles changes
+
+  if [ "$FLAG_UPDATE_ALL" = true ] || [ "$FLAG_UPDATE_PACKAGES" = true ]; then
+    update_packages
+  fi
+
+  if [ "$FLAG_UPDATE_ALL" = true ] || [ "$FLAG_UPDATE_OS" = true ]; then
+    update_macos
+  fi
+
+  if [ "$FLAG_UPDATE_ALL" = true ] || [ "$FLAG_UPDATE_SELF" = true ]; then
+    update_self
+  fi
+
+  # Final summary
+  echo ""
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_success "[DRY-RUN] Update simulation complete."
+  else
+    msg_success "System update complete!"
   fi
 }
 

@@ -37,11 +37,11 @@ This roadmap organizes the proposed features from the `docs/features/` directory
         *   ~~`02-scheduled-backups`~~: **DONE** - `fc fc-schedule` command with `install`, `uninstall`, `status`, and `run` subcommands. Uses macOS launchd for reliable scheduling. Supports daily/weekly frequencies. Added `--no-confirm` flag to `fc-sync` for automated execution. Documentation in `COMMANDS.md`.
     *   **System & Application Management:**
         *   ~~`21-automated-application-installation`~~: **DONE** - `fc fc-apps` command with `setup`, `list`, `install`, and `add` subcommands. Brewfile-compatible config at `~/.config/circus/apps.conf`. Supports Homebrew formulae, casks, and Mac App Store apps. Added `mas` to base Brewfile. Documentation in `COMMANDS.md`.
-        *   `22-system-update-command`: A single command to update `brew`, `mas`, and the OS.
-        *   `41-system-maintenance-command`: A general-purpose command for common maintenance tasks.
-        *   `04-application-cleaner`: A utility to remove unused applications and files.
+        *   ~~`22-system-update-command`~~: **DONE** - Extended `fc update` with `--os`, `--packages`, `--self`, `--all` flags. Updates Homebrew (formulae, casks), Mac App Store apps, macOS, and dotfiles repository. Dry-run mode for previewing. Documentation in `COMMANDS.md`.
+        *   ~~`41-system-maintenance-command`~~: **DONE** - `fc fc-maintenance` command with `setup`, `list`, and `run` subcommands. 11 maintenance tasks including brew cleanup, cache clearing, log rotation, DNS flush, and more. Configurable via `~/.config/circus/maintenance.conf`. Dry-run mode and safe defaults. Documentation in `COMMANDS.md`.
+        *   ~~`04-application-cleaner`~~: **DONE** - `fc fc-clean` command with `brew`, `casks`, and `list` subcommands. Detects orphaned Homebrew packages not defined in any Brewfile. Interactive removal with `--remove` flag, dependency filtering with `--skip-deps`. Documentation in `COMMANDS.md`.
     *   **Utilities:**
-        *   `12-more-fc-commands`: Implement the smaller, high-value utilities like `fc wifi` and `fc dns`.
+        *   ~~`12-more-fc-commands`~~: **DONE** - `fc wifi`, `fc dns`, and `fc firewall` commands for managing Wi-Fi adapter, DNS settings, and the application firewall. Simple on/off/status controls with proper sudo handling. Documentation in `COMMANDS.md`.
         *   `08-ssh-key-management`: A simple command to manage SSH keys.
         *   `05-system-health-check`: A quick way to check the system's status.
 
