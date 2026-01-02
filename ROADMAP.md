@@ -43,7 +43,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
     *   **Utilities:**
         *   ~~`12-more-fc-commands`~~: **DONE** - `fc wifi`, `fc dns`, and `fc firewall` commands for managing Wi-Fi adapter, DNS settings, and the application firewall. Simple on/off/status controls with proper sudo handling. Documentation in `COMMANDS.md`.
         *   ~~`08-ssh-key-management`~~: **DONE** - `fc ssh` command with `generate`, `add`, `copy`, and `list` subcommands. Ed25519 key generation, Keychain integration, clipboard support. Replaces the simpler `fc-ssh-keygen` wizard. Documentation in `COMMANDS.md`.
-        *   `05-system-health-check`: A quick way to check the system's status.
+        *   ~~`05-system-health-check`~~: **DONE** - `fc healthcheck` command with 4 checks: broken symlinks, missing Brewfile dependencies, SSH permissions, and git configuration. Run all checks or specific ones by name. Documentation in `COMMANDS.md`.
 
 ---
 

@@ -1,0 +1,393 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-healthcheck
+#
+# DESCRIPTION:  Run a series of checks for common system issues such as broken
+#               symlinks, missing dependencies, insecure configurations, and
+#               other potential problems. Provides quick operational health
+#               assessment to catch problems before they become bigger issues.
+#
+# USAGE:
+#   fc healthcheck              Run all checks
+#   fc healthcheck <check>      Run a specific check
+#   fc healthcheck --help       Show help
+#
+# CHECKS:
+#   symlinks    Check for broken symlinks in home directory
+#   deps        Check if Brewfile dependencies are installed
+#   ssh         Check SSH directory and key permissions
+#   git         Check git user configuration
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ----------------------------------------------------------
+
+# Check results tracking
+PASSED=0
+WARNINGS=0
+FAILED=0
+
+# --- Help and Usage ---------------------------------------------------------
+
+usage() {
+  msg_info "Usage: fc healthcheck [check-name]"
+  echo ""
+  msg_info "Run system health checks to identify common configuration issues."
+  echo ""
+  msg_info "Available Checks:"
+  echo "  symlinks    Check for broken symlinks in home directory"
+  echo "  deps        Check if Brewfile dependencies are installed"
+  echo "  ssh         Check SSH directory and key permissions"
+  echo "  git         Check git user name and email"
+  echo ""
+  msg_info "Options:"
+  echo "  --help      Show this help message"
+  echo "  --list      List available checks"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc healthcheck              # Run all checks"
+  echo "  fc healthcheck ssh          # Run only SSH check"
+  echo "  fc healthcheck git          # Run only git check"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Print check result with icon
+print_result() {
+  local status="$1"
+  local name="$2"
+  local message="$3"
+
+  case "$status" in
+    pass)
+      printf "  ${UI_SUCCESS}✓${UI_RESET} %-22s %s\n" "$name" "$message"
+      ((PASSED++))
+      ;;
+    warn)
+      printf "  ${UI_WARNING}⚠${UI_RESET} %-22s %s\n" "$name" "$message"
+      ((WARNINGS++))
+      ;;
+    fail)
+      printf "  ${UI_ERROR}✗${UI_RESET} %-22s %s\n" "$name" "$message"
+      ((FAILED++))
+      ;;
+  esac
+}
+
+# --- Check Functions --------------------------------------------------------
+
+#
+# @description Check for broken symlinks in home directory
+#
+check_symlinks() {
+  local broken_links
+  local count
+
+  # Find broken symlinks (max depth 3 to avoid deep traversal)
+  # Redirect stderr to hide permission denied errors
+  broken_links=$(find "$HOME" -maxdepth 3 -type l ! -exec test -e {} \; -print 2>/dev/null | head -20)
+
+  if [ -z "$broken_links" ]; then
+    print_result "pass" "Broken Symlinks" "No broken symlinks found"
+    return 0
+  else
+    count=$(echo "$broken_links" | wc -l | tr -d ' ')
+    print_result "warn" "Broken Symlinks" "Found $count broken symlink(s)"
+
+    # Show first few broken links
+    echo ""
+    echo "$broken_links" | head -5 | while read -r link; do
+      echo "      → $link"
+    done
+    if [ "$count" -gt 5 ]; then
+      echo "      ... and $((count - 5)) more"
+    fi
+    echo ""
+    return 1
+  fi
+}
+
+#
+# @description Check if Brewfile dependencies are installed
+#
+check_deps() {
+  local missing_formulae=()
+  local missing_casks=()
+  local brewfiles=()
+  local installed_formulae
+  local installed_casks
+
+  # Skip if brew is not installed
+  if ! command -v brew >/dev/null 2>&1; then
+    print_result "warn" "Dependencies" "Homebrew not installed"
+    return 1
+  fi
+
+  # Collect Brewfile paths
+  if [ -f "$DOTFILES_ROOT/Brewfile" ]; then
+    brewfiles+=("$DOTFILES_ROOT/Brewfile")
+  fi
+
+  for bf in "$DOTFILES_ROOT"/roles/*/Brewfile; do
+    if [ -f "$bf" ]; then
+      brewfiles+=("$bf")
+    fi
+  done
+
+  if [ -f "$HOME/.config/circus/apps.conf" ]; then
+    brewfiles+=("$HOME/.config/circus/apps.conf")
+  fi
+
+  if [ ${#brewfiles[@]} -eq 0 ]; then
+    print_result "pass" "Dependencies" "No Brewfiles found to check"
+    return 0
+  fi
+
+  # Get installed packages
+  installed_formulae=$(brew list --formula 2>/dev/null | sort)
+  installed_casks=$(brew list --cask 2>/dev/null | sort)
+
+  # Parse Brewfiles for expected packages
+  local expected_formulae=""
+  local expected_casks=""
+
+  for bf in "${brewfiles[@]}"; do
+    expected_formulae+=$(grep -E '^brew "' "$bf" 2>/dev/null | sed -E 's/^brew "([^"]+)".*/\1/' | sort -u)
+    expected_formulae+=$'\n'
+    expected_casks+=$(grep -E '^cask "' "$bf" 2>/dev/null | sed -E 's/^cask "([^"]+)".*/\1/' | sort -u)
+    expected_casks+=$'\n'
+  done
+
+  expected_formulae=$(echo "$expected_formulae" | sort -u | grep -v '^$')
+  expected_casks=$(echo "$expected_casks" | sort -u | grep -v '^$')
+
+  # Find missing formulae
+  while IFS= read -r pkg; do
+    if [ -n "$pkg" ] && ! echo "$installed_formulae" | grep -q "^${pkg}$"; then
+      missing_formulae+=("$pkg")
+    fi
+  done <<< "$expected_formulae"
+
+  # Find missing casks
+  while IFS= read -r pkg; do
+    if [ -n "$pkg" ] && ! echo "$installed_casks" | grep -q "^${pkg}$"; then
+      missing_casks+=("$pkg")
+    fi
+  done <<< "$expected_casks"
+
+  local total_missing=$((${#missing_formulae[@]} + ${#missing_casks[@]}))
+
+  if [ "$total_missing" -eq 0 ]; then
+    print_result "pass" "Dependencies" "All Brewfile packages installed"
+    return 0
+  else
+    print_result "warn" "Dependencies" "$total_missing package(s) not installed"
+    echo ""
+    if [ ${#missing_formulae[@]} -gt 0 ]; then
+      echo "      Missing formulae: ${missing_formulae[*]:0:5}"
+      if [ ${#missing_formulae[@]} -gt 5 ]; then
+        echo "      ... and $((${#missing_formulae[@]} - 5)) more"
+      fi
+    fi
+    if [ ${#missing_casks[@]} -gt 0 ]; then
+      echo "      Missing casks: ${missing_casks[*]:0:5}"
+      if [ ${#missing_casks[@]} -gt 5 ]; then
+        echo "      ... and $((${#missing_casks[@]} - 5)) more"
+      fi
+    fi
+    echo ""
+    return 1
+  fi
+}
+
+#
+# @description Check SSH directory and key permissions
+#
+check_ssh() {
+  local ssh_dir="$HOME/.ssh"
+  local issues=()
+
+  # Check if .ssh directory exists
+  if [ ! -d "$ssh_dir" ]; then
+    print_result "warn" "SSH Permissions" "~/.ssh directory does not exist"
+    return 1
+  fi
+
+  # Check .ssh directory permissions (should be 700)
+  local dir_perms
+  dir_perms=$(stat -f "%Lp" "$ssh_dir" 2>/dev/null)
+  if [ "$dir_perms" != "700" ]; then
+    issues+=("~/.ssh is $dir_perms (should be 700)")
+  fi
+
+  # Check private key permissions (should be 600)
+  for key in "$ssh_dir"/id_* "$ssh_dir"/*_key; do
+    if [ -f "$key" ] && [[ ! "$key" =~ \.pub$ ]]; then
+      local key_perms
+      key_perms=$(stat -f "%Lp" "$key" 2>/dev/null)
+      if [ "$key_perms" != "600" ]; then
+        issues+=("$(basename "$key") is $key_perms (should be 600)")
+      fi
+    fi
+  done
+
+  if [ ${#issues[@]} -eq 0 ]; then
+    print_result "pass" "SSH Permissions" "~/.ssh properly secured"
+    return 0
+  else
+    print_result "fail" "SSH Permissions" "${#issues[@]} permission issue(s) found"
+    echo ""
+    for issue in "${issues[@]}"; do
+      echo "      → $issue"
+    done
+    echo ""
+    return 1
+  fi
+}
+
+#
+# @description Check git user configuration
+#
+check_git() {
+  local issues=()
+
+  # Check if git is installed
+  if ! command -v git >/dev/null 2>&1; then
+    print_result "warn" "Git Configuration" "git is not installed"
+    return 1
+  fi
+
+  # Check user.name
+  local git_name
+  git_name=$(git config --global user.name 2>/dev/null)
+  if [ -z "$git_name" ]; then
+    issues+=("user.name not set")
+  fi
+
+  # Check user.email
+  local git_email
+  git_email=$(git config --global user.email 2>/dev/null)
+  if [ -z "$git_email" ]; then
+    issues+=("user.email not set")
+  fi
+
+  if [ ${#issues[@]} -eq 0 ]; then
+    print_result "pass" "Git Configuration" "User name and email configured"
+    return 0
+  else
+    print_result "warn" "Git Configuration" "${issues[*]}"
+    echo ""
+    echo "      Run: git config --global user.name \"Your Name\""
+    echo "      Run: git config --global user.email \"your@email.com\""
+    echo ""
+    return 1
+  fi
+}
+
+# --- Check Runners ----------------------------------------------------------
+
+#
+# @description Run all health checks
+#
+run_all_checks() {
+  echo ""
+  msg_info "System Health Check"
+  echo "═══════════════════════════════════════════════════"
+  echo ""
+
+  # Run checks, ignoring return codes (they indicate findings, not errors)
+  check_ssh || true
+  check_git || true
+  check_symlinks || true
+  check_deps || true
+
+  echo "───────────────────────────────────────────────────"
+  printf "Summary: "
+  local first=true
+  if [ "$PASSED" -gt 0 ]; then
+    printf "${UI_SUCCESS}%d passed${UI_RESET}" "$PASSED"
+    first=false
+  fi
+  if [ "$WARNINGS" -gt 0 ]; then
+    $first || printf ", "
+    printf "${UI_WARNING}%d warning(s)${UI_RESET}" "$WARNINGS"
+    first=false
+  fi
+  if [ "$FAILED" -gt 0 ]; then
+    $first || printf ", "
+    printf "${UI_ERROR}%d failed${UI_RESET}" "$FAILED"
+  fi
+  printf "\n\n"
+}
+
+#
+# @description Run a single named check
+#
+run_single_check() {
+  local check_name="$1"
+
+  case "$check_name" in
+    symlinks)
+      echo ""
+      check_symlinks || true
+      ;;
+    deps)
+      echo ""
+      check_deps || true
+      ;;
+    ssh)
+      echo ""
+      check_ssh || true
+      ;;
+    git)
+      echo ""
+      check_git || true
+      ;;
+    *)
+      die "Unknown check: $check_name. Use 'fc healthcheck --help' to see available checks."
+      ;;
+  esac
+  echo ""
+}
+
+#
+# @description List available checks
+#
+list_checks() {
+  msg_info "Available Health Checks:"
+  echo ""
+  echo "  symlinks    Check for broken symlinks in home directory"
+  echo "  deps        Check if Brewfile dependencies are installed"
+  echo "  ssh         Check SSH directory and key permissions"
+  echo "  git         Check git user name and email"
+  echo ""
+  exit 0
+}
+
+# --- Main Dispatcher --------------------------------------------------------
+
+main() {
+  case "${1:-}" in
+    --help)
+      usage
+      ;;
+    --list)
+      list_checks
+      ;;
+    "")
+      run_all_checks
+      ;;
+    *)
+      run_single_check "$1"
+      ;;
+  esac
+}
+
+main "$@"

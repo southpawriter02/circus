@@ -38,6 +38,66 @@ fc doctor
 
 ---
 
+## `fc healthcheck`
+
+Run system health checks to identify common configuration issues. Catches problems before they become bigger issues.
+
+**Usage:**
+
+```bash
+fc healthcheck [check-name]
+```
+
+**Options:**
+*   `--help`: Show help message.
+*   `--list`: List available checks.
+
+**Available Checks:**
+*   `symlinks`: Check for broken symlinks in home directory.
+*   `deps`: Check if Brewfile dependencies are installed.
+*   `ssh`: Check SSH directory and key permissions.
+*   `git`: Check git user name and email configuration.
+
+**Examples:**
+
+```bash
+# Run all health checks
+fc healthcheck
+
+# Run a specific check
+fc healthcheck ssh
+fc healthcheck git
+
+# List available checks
+fc healthcheck --list
+```
+
+**Output:**
+
+```
+System Health Check
+═══════════════════════════════════════════════════
+
+  ✓ SSH Permissions        ~/.ssh properly secured
+  ✓ Git Configuration      User name and email configured
+  ⚠ Broken Symlinks        Found 2 broken links
+  ✓ Dependencies           All Brewfile packages installed
+
+───────────────────────────────────────────────────
+Summary: 3 passed, 1 warning
+```
+
+### What Gets Checked
+
+| Check | What It Verifies |
+|-------|-----------------|
+| SSH | `~/.ssh` is 700, private keys are 600 |
+| Git | `user.name` and `user.email` are set globally |
+| Symlinks | No broken symlinks in home (max depth 3) |
+| Deps | All Brewfile packages are installed |
+
+---
+
 ## `fc bluetooth`
 
 Provides simple commands for managing your system's Bluetooth adapter.
