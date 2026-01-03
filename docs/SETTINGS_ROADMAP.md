@@ -203,15 +203,15 @@ The **settings layer** needs work:
 | Script | Status | Priority | Key Settings |
 |--------|--------|----------|--------------|
 | `applications/terminal.sh` | ✅ Complete | — | Already complete with docs |
-| `applications/mail.sh` ⭐ | 🆕 New | 🔴 High | Format, remote content, conversation view |
-| `applications/messages.sh` ⭐ | 🆕 New | 🔴 High | Read receipts, typing indicators |
-| `applications/jetbrains.sh` ⭐ | 🆕 New | 🔴 High | Theme, font, memory, tabs |
-| `applications/warp.sh` ⭐ | 🆕 New | 🔴 High | Theme, AI features, block mode |
-| `applications/dropbox.sh` ⭐ | 🆕 New | 🔴 High | Start on login, LAN sync |
-| `applications/notion.sh` ⭐ | 🆕 New | 🔴 High | Quick note, theme, zoom |
-| `applications/github_desktop.sh` ⭐ | 🆕 New | 🟡 Medium | Editor, shell, notifications |
-| `applications/setapp.sh` ⭐ | 🆕 New | 🟡 Medium | Start on login, updates |
-| `applications/protonmail.sh` ⭐ | 🆕 New | 🟡 Medium | Bridge ports, keychain |
+| `applications/mail.sh` ⭐ | ✅ Complete | — | Format, remote content, conversation view |
+| `applications/messages.sh` ⭐ | ✅ Complete | — | Read receipts, typing indicators |
+| `applications/jetbrains.sh` ⭐ | ✅ Complete | — | Theme, font, memory, tabs |
+| `applications/warp.sh` ⭐ | ✅ Complete | — | Theme, AI features, block mode |
+| `applications/dropbox.sh` ⭐ | ✅ Complete | — | Start on login, LAN sync |
+| `applications/notion.sh` ⭐ | ✅ Complete | — | Quick note, theme, zoom |
+| `applications/github_desktop.sh` ⭐ | ✅ Complete | — | Editor, shell, notifications |
+| `applications/setapp.sh` ⭐ | ✅ Complete | — | Start on login, updates |
+| `applications/protonmail.sh` ⭐ | ✅ Complete | — | Bridge ports, keychain |
 
 ### Apple Apps
 
@@ -219,56 +219,58 @@ The **settings layer** needs work:
 |--------|--------|----------|--------------|
 | `applications/safari.sh` | ✅ Complete | — | Already complete with docs |
 | `applications/textedit.sh` | ✅ Complete | — | Already complete with docs |
-| `applications/photos.sh` | 🆕 New | 🟡 Medium | iCloud, originals, memories |
-| `applications/calendar.sh` | 🆕 New | 🟢 Low | Week start, time zone |
-| `applications/contacts.sh` | 🆕 New | 🟢 Low | Sort order, display format |
-| `applications/reminders.sh` | 🆕 New | 🟢 Low | Default list, badge count |
-| `applications/notes.sh` | 🆕 New | 🟢 Low | Default account, sorting |
-| `applications/music.sh` | 🆕 New | 🟢 Low | Quality, crossfade, lossless |
-| `applications/podcasts.sh` | 🆕 New | 🟢 Low | Auto-download, limit |
-| `applications/books.sh` | 🆕 New | 🟢 Low | iCloud sync, night theme |
-| `applications/preview.sh` | 🆕 New | 🟢 Low | Sidebar, anti-aliasing |
-| `applications/keynote.sh` | 🆕 New | 🟢 Low | Auto-save, presenter |
-| `applications/numbers.sh` | 🆕 New | 🟢 Low | Default template |
-| `applications/pages.sh` | 🆕 New | 🟢 Low | Default template, author |
+| `applications/photos.sh` | ✅ Complete | — | iCloud, originals, memories |
+| `applications/calendar.sh` | ✅ Complete | — | Week start, time zone |
+| `applications/contacts.sh` | ✅ Complete | — | Sort order, display format |
+| `applications/reminders.sh` | ✅ Complete | — | Default list, badge count |
+| `applications/notes.sh` | ✅ Complete | — | Default account, sorting |
+| `applications/music.sh` | ✅ Complete | — | Quality, crossfade, lossless |
+| `applications/podcasts.sh` | ✅ Complete | — | Auto-download, limit |
+| `applications/books.sh` | ✅ Complete | — | iCloud sync, night theme |
+| `applications/preview.sh` | ✅ Complete | — | Sidebar, anti-aliasing |
+| `applications/keynote.sh` | ✅ Complete | — | Auto-save, presenter |
+| `applications/numbers.sh` | ✅ Complete | — | Default template |
+| `applications/pages.sh` | ✅ Complete | — | Default template, author |
 
 ### Developer Tools
 
 | Script | Status | Priority | Key Settings |
 |--------|--------|----------|--------------|
-| `applications/vscode.sh` | 📋 Needs docs | 🟡 Medium | Extensions, settings symlink |
-| `applications/iterm2.sh` | 📋 Needs docs | 🟡 Medium | Preferences sync folder |
-| `applications/docker.sh` | 📋 Needs docs | 🟡 Medium | Resource allocation |
-| `applications/alfred.sh` | 📋 Needs docs | 🟡 Medium | Preferences sync folder |
-| `applications/xcode.sh` | 🆕 New | 🟡 Medium | Derived data, build times |
-| `applications/disk_utility.sh` | 🆕 New | 🟢 Low | Show all devices, debug |
+| `applications/vscode.sh` | ✅ Complete | — | Extensions, settings symlink |
+| `applications/iterm2.sh` | ✅ Complete | — | Preferences sync folder |
+| `applications/docker.sh` | ✅ Complete | — | Resource allocation |
+| `applications/alfred.sh` | ✅ Complete | — | Preferences sync folder |
+| `applications/xcode.sh` | ✅ Complete | — | Derived data, build times |
+| `applications/disk_utility.sh` | ✅ Complete | — | Show all devices, debug |
 
 ### Third-Party Apps
 
 | Script | Status | Priority | Key Settings |
 |--------|--------|----------|--------------|
-| `applications/chrome.sh` | 🆕 New | 🟡 Medium | Sync, password manager, HW accel |
-| `applications/firefox.sh` | 🆕 New | 🟡 Medium | Tracking protection, DoH |
-| `applications/slack.sh` | 🆕 New | 🟡 Medium | Notifications, HW accel |
-| `applications/zoom_app.sh` | 🆕 New | 🟡 Medium | Video/audio defaults |
-| `applications/spotify.sh` | 🆕 New | 🟢 Low | Quality, crossfade |
-| `applications/1password.sh` | 🆕 New | 🟡 Medium | Lock behavior, biometric |
+| `applications/chrome.sh` | ✅ Complete | — | Sync, password manager, HW accel |
+| `applications/firefox.sh` | ✅ Complete | — | Tracking protection, DoH |
+| `applications/slack.sh` | ✅ Complete | — | Notifications, HW accel |
+| `applications/zoom_app.sh` | ✅ Complete | — | Video/audio defaults |
+| `applications/spotify.sh` | ✅ Complete | — | Quality, crossfade |
+| `applications/1password.sh` | ✅ Complete | — | Lock behavior, biometric |
 
-### Accessibility (New Category)
+### Accessibility
 
 | Script | Status | Priority | Key Settings |
 |--------|--------|----------|--------------|
-| `accessibility/display.sh` | 🆕 New | 🟢 Low | Reduce motion, transparency |
-| `accessibility/pointer.sh` | 🆕 New | 🟢 Low | Size, shake to locate |
-| `accessibility/zoom.sh` | 🆕 New | 🟢 Low | Scroll gesture zoom |
-| `accessibility/audio.sh` | 🆕 New | 🟢 Low | Flash screen, mono audio |
+| `accessibility/display.sh` | ✅ Complete | — | Reduce motion, transparency |
+| `accessibility/pointer.sh` | ✅ Complete | — | Size, shake to locate |
+| `accessibility/zoom.sh` | ✅ Complete | — | Scroll gesture zoom |
+| `accessibility/audio.sh` | ✅ Complete | — | Flash screen, mono audio |
 
 ### v1.3.0 Success Criteria
 
-- [ ] All user-requested apps have defaults scripts
-- [ ] All existing app scripts have complete documentation
-- [ ] Accessibility category exists for users who need it
+- [x] All user-requested apps have defaults scripts
+- [x] All existing app scripts have complete documentation
+- [x] Accessibility category exists for users who need it
 - [ ] Role-based app defaults work (work apps for work role, etc.)
+
+> **✅ v1.3.0 COMPLETE** — Released 2026-01-03
 
 ---
 
@@ -397,7 +399,7 @@ The **settings layer** needs work:
 | v1.0.0 | Infrastructure | — | ✅ | ✅ |
 | v1.1.0 | Shell & Env Vars | ~30 | ✅ | 🟡 Partial |
 | v1.2.0 | System Defaults | ~40 | ✅ | ✅ |
-| v1.3.0 | App Defaults | ~35 | ⬜ | ⬜ |
+| v1.3.0 | App Defaults | ~35 | ✅ | ✅ |
 | v1.4.0 | Role Settings | ~25 | ⬜ | ⬜ |
 | v1.5.0 | Docs & Polish | ~30 | ⬜ | ⬜ |
 | v2.0.0 | Major Features | TBD | ✅ | 🟡 Partial |

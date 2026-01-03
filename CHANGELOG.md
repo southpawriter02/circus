@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-01-03
+
+### Added
+
+- **v1.3.0: macOS Defaults (Applications)** - Major release with 24 new application defaults scripts:
+
+  **User-Requested Apps (5 new)**:
+  - `applications/dropbox.sh` - Menu bar, LAN sync, desktop icons
+  - `applications/notion.sh` - Documentation for account-based settings
+  - `applications/github_desktop.sh` - Usage tracking, config file documentation
+  - `applications/setapp.sh` - Auto-updates, launch at login, menu bar
+  - `applications/protonmail.sh` - Bridge ports, keychain documentation
+
+  **Apple Apps (10 new)**:
+  - `applications/calendar.sh` - Week start, work hours, time zone support
+  - `applications/contacts.sh` - Sort order, display format, vCard settings
+  - `applications/reminders.sh` - Sidebar visibility, in-app documentation
+  - `applications/music.sh` - Crossfade, lossless audio, Dolby Atmos
+  - `applications/podcasts.sh` - Skip times, episode limits, sync settings
+  - `applications/books.sh` - Night theme, sync settings, audiobook controls
+  - `applications/preview.sh` - Sidebar, PDF display, image anti-aliasing
+  - `applications/keynote.sh` - Presenter notes, guides, remote control
+  - `applications/numbers.sh` - Formula warnings, sheet deletion warnings
+  - `applications/pages.sh` - Word count, smart quotes, zoom level
+
+  **Developer Tools (2 new)**:
+  - `applications/xcode.sh` - Build times, line numbers, trim whitespace
+  - `applications/disk_utility.sh` - Show all devices, debug menu, APFS snapshots
+
+  **Third-Party Apps (6 new)**:
+  - `applications/chrome.sh` - Swipe navigation, print dialog, policy docs
+  - `applications/firefox.sh` - Swipe navigation, about:config documentation
+  - `applications/slack.sh` - Dock bounce, hardware acceleration, auto-launch
+  - `applications/zoom_app.sh` - Join muted/video off, HD video, dual monitors
+  - `applications/spotify.sh` - Documentation for in-app settings
+  - `applications/1password.sh` - Menu bar, security settings documentation
+
+  **Accessibility (1 new)**:
+  - `accessibility/audio.sh` - Flash screen, mono audio, audio balance
+
+### Notes
+
+- Total application defaults scripts: 39 (up from 15)
+- Total accessibility scripts: 4 (complete)
+- All scripts include comprehensive inline documentation with sources
+- Scripts follow consistent pattern with `run_defaults()` helper and DRY_RUN_MODE support
+
 ## [1.2.0] - 2026-01-02
 
 ### Added
