@@ -36,30 +36,50 @@ defaults/
 │   └── lockdown.sh              # Maximum security profile
 ├── system/                      # System-level settings
 │   ├── auto_updates.sh          # Automated maintenance agent
+│   ├── bluetooth.sh             # Bluetooth settings
 │   ├── core.sh                  # Core system settings (systemsetup)
+│   ├── energy.sh                # Power management (pmset)
 │   ├── firewall.sh              # Application firewall
+│   ├── gatekeeper.sh            # Gatekeeper and quarantine
+│   ├── login.sh                 # Login window settings
+│   ├── privacy.sh               # Privacy and analytics
 │   ├── screensaver.sh           # Screen saver and lock
 │   ├── software_update.sh       # Software Update & App Store
+│   ├── sound.sh                 # System sound settings
 │   └── time_machine.sh          # Time Machine backup
 ├── interface/                   # User interface settings
 │   ├── activity_monitor.sh      # Activity Monitor app
+│   ├── control_center.sh        # Control Center modules
+│   ├── desktop.sh               # Desktop icons and stacks
 │   ├── dock.sh                  # Dock configuration
 │   ├── finder.sh                # Finder preferences
+│   ├── menu_bar.sh              # Menu bar and clock
 │   ├── mission_control.sh       # Mission Control, Spaces, Hot Corners
+│   ├── notifications.sh         # Notification Center
 │   └── ui_ux.sh                 # Global UI/UX settings
 ├── input/                       # Input device settings
 │   ├── keyboard.sh              # Keyboard preferences
 │   └── trackpad_mouse.sh        # Trackpad and mouse
+├── accessibility/               # Accessibility settings
+│   ├── display.sh               # Display accessibility
+│   ├── pointer.sh               # Pointer/cursor settings
+│   └── zoom.sh                  # Zoom accessibility
 └── applications/                # Application-specific settings
     ├── alfred.sh                # Alfred launcher
     ├── docker.sh                # Docker Desktop
     ├── iterm2.sh                # iTerm2 terminal
+    ├── jetbrains.sh             # JetBrains IDEs (documentation)
+    ├── mail.sh                  # Apple Mail
     ├── mariadb.sh               # MariaDB database
+    ├── messages.sh              # Apple Messages (documentation)
+    ├── notes.sh                 # Apple Notes
     ├── nvm.sh                   # Node Version Manager
+    ├── photos.sh                # Apple Photos
     ├── safari.sh                # Safari browser
     ├── terminal.sh              # macOS Terminal.app
     ├── textedit.sh              # TextEdit editor
-    └── vscode.sh                # Visual Studio Code
+    ├── vscode.sh                # Visual Studio Code
+    └── warp.sh                  # Warp terminal (documentation)
 ```
 
 ## Categories
@@ -71,10 +91,16 @@ Core system-level settings that affect security, stability, and system behavior.
 | Script | Description |
 |--------|-------------|
 | `auto_updates.sh` | Installs a launchd agent for automated dotfiles and Homebrew updates |
+| `bluetooth.sh` | Bluetooth menu bar, audio quality, and discoverability |
 | `core.sh` | Network time, timezone, remote login, and restart-on-freeze settings |
+| `energy.sh` | Power management settings via pmset (battery/AC) |
 | `firewall.sh` | Configures the macOS Application Firewall with stealth mode |
+| `gatekeeper.sh` | Gatekeeper security and quarantine settings |
+| `login.sh` | Login window appearance and security settings |
+| `privacy.sh` | Privacy settings: analytics, personalized ads, Siri data |
 | `screensaver.sh` | Screen saver activation and password-on-wake settings |
 | `software_update.sh` | Automatic software and security update settings |
+| `sound.sh` | Alert sounds, UI sounds, and volume feedback |
 | `time_machine.sh` | Time Machine exclusions for developer directories |
 
 ### Interface (`defaults/interface/`)
@@ -84,10 +110,24 @@ User interface and window management settings.
 | Script | Description |
 |--------|-------------|
 | `activity_monitor.sh` | Activity Monitor default view and sorting |
+| `control_center.sh` | Control Center module visibility in menu bar |
+| `desktop.sh` | Desktop icons, stacks, and Stage Manager |
 | `dock.sh` | Dock apps, folders, and layout (requires `dockutil`) |
 | `finder.sh` | Finder views, hidden files, extensions, and navigation |
+| `menu_bar.sh` | Clock format, battery percentage, menu bar appearance |
 | `mission_control.sh` | Spaces behavior and Hot Corners configuration |
+| `notifications.sh` | Notification previews and widget settings |
 | `ui_ux.sh` | Scrollbars, dialog boxes, and quarantine settings |
+
+### Accessibility (`defaults/accessibility/`)
+
+Accessibility settings for display, pointer, and zoom.
+
+| Script | Description |
+|--------|-------------|
+| `display.sh` | Reduce motion, transparency, contrast, color filters |
+| `pointer.sh` | Cursor size, shake to locate, tracking speed |
+| `zoom.sh` | Screen zoom via keyboard and scroll gestures |
 
 ### Input (`defaults/input/`)
 
@@ -107,12 +147,18 @@ Settings for third-party and system applications.
 | `alfred.sh` | Alfred preferences sync folder |
 | `docker.sh` | Docker Desktop resource allocation |
 | `iterm2.sh` | iTerm2 preferences sync folder |
+| `jetbrains.sh` | JetBrains IDE configuration (documentation) |
+| `mail.sh` | Apple Mail privacy, viewing, and composition |
 | `mariadb.sh` | MariaDB service startup and security instructions |
+| `messages.sh` | Apple Messages settings (documentation) |
+| `notes.sh` | Apple Notes sorting and display options |
 | `nvm.sh` | Node Version Manager setup and LTS installation |
+| `photos.sh` | Apple Photos import and analysis settings |
 | `safari.sh` | Safari developer tools, privacy, and security |
 | `terminal.sh` | macOS Terminal.app security and behavior settings |
 | `textedit.sh` | TextEdit plain text mode and font settings |
 | `vscode.sh` | VS Code extensions and settings symlink |
+| `warp.sh` | Warp terminal configuration (documentation) |
 
 ## Documentation Format
 
@@ -215,13 +261,32 @@ The following scripts have been updated with enhanced inline documentation inclu
 | `system/screensaver.sh` | ✅ Complete | 2025-12-04 |
 | `system/firewall.sh` | ✅ Complete | 2025-12-04 |
 | `system/software_update.sh` | ✅ Complete | 2025-12-04 |
+| `system/privacy.sh` | ✅ Complete | 2026-01-02 |
+| `system/gatekeeper.sh` | ✅ Complete | 2026-01-02 |
+| `system/energy.sh` | ✅ Complete | 2026-01-02 |
+| `system/sound.sh` | ✅ Complete | 2026-01-02 |
+| `system/bluetooth.sh` | ✅ Complete | 2026-01-02 |
+| `system/login.sh` | ✅ Complete | 2026-01-02 |
 | `interface/activity_monitor.sh` | ✅ Complete | 2025-12-04 |
 | `interface/finder.sh` | ✅ Complete | 2025-12-04 |
 | `interface/mission_control.sh` | ✅ Complete | 2025-12-04 |
 | `interface/ui_ux.sh` | ✅ Complete | 2025-12-04 |
+| `interface/menu_bar.sh` | ✅ Complete | 2026-01-02 |
+| `interface/notifications.sh` | ✅ Complete | 2026-01-02 |
+| `interface/desktop.sh` | ✅ Complete | 2026-01-02 |
+| `interface/control_center.sh` | ✅ Complete | 2026-01-02 |
+| `accessibility/display.sh` | ✅ Complete | 2026-01-02 |
+| `accessibility/pointer.sh` | ✅ Complete | 2026-01-02 |
+| `accessibility/zoom.sh` | ✅ Complete | 2026-01-02 |
 | `applications/safari.sh` | ✅ Complete | 2025-12-04 |
 | `applications/terminal.sh` | ✅ Complete | 2025-12-06 |
 | `applications/textedit.sh` | ✅ Complete | 2025-12-04 |
+| `applications/mail.sh` | ✅ Complete | 2026-01-02 |
+| `applications/messages.sh` | ✅ Complete | 2026-01-02 |
+| `applications/notes.sh` | ✅ Complete | 2026-01-02 |
+| `applications/photos.sh` | ✅ Complete | 2026-01-02 |
+| `applications/warp.sh` | ✅ Complete | 2026-01-02 |
+| `applications/jetbrains.sh` | ✅ Complete | 2026-01-02 |
 | `interface/dock.sh` | ⚠️ Partial | Uses dockutil, different format |
 | `system/time_machine.sh` | 📋 Pending | Needs documentation update |
 | `system/core.sh` | 📋 Pending | Needs documentation update |

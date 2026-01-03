@@ -26,3 +26,27 @@ fi
 if [ -f "$HOME/.shell_paths" ]; then
   . "$HOME/.shell_paths"
 fi
+
+# ==============================================================================
+# Homebrew PATH
+#
+# Ensure Homebrew is in PATH for ALL shell invocations, including scripts.
+# This is critical for scripts that need to find Homebrew-installed binaries.
+# ==============================================================================
+
+if [[ -f "/opt/homebrew/bin/brew" ]]; then
+    # Apple Silicon (ARM) Macs
+    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+elif [[ -f "/usr/local/bin/brew" ]]; then
+    # Intel Macs
+    export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
+fi
+
+# ==============================================================================
+# Circus Directory
+#
+# The root directory of the dotfiles repository. Used by fc commands and
+# other scripts to locate configuration files.
+# ==============================================================================
+
+export CIRCUS_DIR="${CIRCUS_DIR:-$HOME/.dotfiles}"

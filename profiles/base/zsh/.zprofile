@@ -17,3 +17,28 @@
 if [ -f "$HOME/.profile" ]; then
   . "$HOME/.profile"
 fi
+
+# ==============================================================================
+# Homebrew Shell Environment
+#
+# Sets up Homebrew environment variables (HOMEBREW_PREFIX, HOMEBREW_CELLAR,
+# HOMEBREW_REPOSITORY) and updates PATH, MANPATH, INFOPATH.
+# This is the recommended way to initialize Homebrew in login shells.
+# ==============================================================================
+
+if [[ -f "/opt/homebrew/bin/brew" ]]; then
+    # Apple Silicon (ARM) Macs
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -f "/usr/local/bin/brew" ]]; then
+    # Intel Macs
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# ==============================================================================
+# Local Overrides
+#
+# Source machine-specific settings that shouldn't be tracked in git.
+# Create ~/.zprofile.local for custom PATH additions, proxy settings, etc.
+# ==============================================================================
+
+[[ -f "$HOME/.zprofile.local" ]] && source "$HOME/.zprofile.local"

@@ -6,7 +6,8 @@
 
 **Transform a fresh Mac into a fully configured powerhouse with one command.**
 
-[![macOS](https://img.shields.io/badge/macOS-Sonoma%20%7C%20Ventura-blue?logo=apple&logoColor=white)](https://www.apple.com/macos)
+[![Version](https://img.shields.io/badge/Version-1.0.0-blue)](CHANGELOG.md)
+[![macOS](https://img.shields.io/badge/macOS-Sequoia%20%7C%20Sonoma%20%7C%20Ventura-blue?logo=apple&logoColor=white)](https://www.apple.com/macos)
 [![Shell](https://img.shields.io/badge/Shell-Zsh%20%2B%20Oh%20My%20Zsh-4EAA25?logo=gnu-bash&logoColor=white)](https://ohmyz.sh/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -26,11 +27,12 @@
 
 The **Dotfiles Flying Circus** is a comprehensive macOS automation framework that:
 
-- 🔧 **Configures everything** — Dock, Finder, keyboard, security, and 50+ system preferences
+- 🔧 **Configures everything** — 45+ defaults scripts covering system, interface, accessibility, and apps
 - 🔐 **Hardens your Mac** — Firewall, FileVault, privacy permissions, and security audits
 - 📦 **Installs your tools** — Homebrew packages, casks, and App Store apps
 - 🎯 **Role-based setup** — Different configs for `developer`, `personal`, or `work` machines
-- 💾 **Encrypted backups** — Sync your entire setup with GPG encryption
+- 💾 **Encrypted backups** — Multiple backends: GPG, Restic, Borg with remote sync via rclone
+- 🔑 **Secrets management** — 1Password, macOS Keychain, and HashiCorp Vault integration
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -50,18 +52,49 @@ The **Dotfiles Flying Circus** is a comprehensive macOS automation framework tha
 
 ---
 
+## 🆕 What's New in v1.0
+
+<details>
+<summary><strong>Click to expand v1.0 highlights</strong></summary>
+
+### Shell Environment
+- **21 environment files** covering security, telemetry, languages (Python, Node, Go, Rust, Java), DevOps tools (Docker, K8s, AWS/GCP/Azure), and XDG directories
+- Enhanced shell profiles with proper Homebrew PATH, credential cleanup on logout
+- Centralized PATH management with `path_prepend()` and `path_append()` helpers
+
+### macOS Defaults (45+ scripts)
+- **System**: Privacy, Gatekeeper, energy management, sound, Bluetooth, login window
+- **Interface**: Menu bar, notifications, desktop, Control Center
+- **Applications**: Mail, Messages, Photos, Notes, Warp, JetBrains IDEs
+- **Accessibility**: Display, pointer, zoom settings
+
+### Role-Specific Settings
+- **Developer role**: 100+ git aliases, development env, debugging helpers, Xcode defaults
+- **Work role**: Corporate proxy/VPN settings, stricter security, work-specific aliases
+- **Personal role**: Media aliases, relaxed security, entertainment tools
+
+### Commands & Features
+- **30+ fc commands** including `bootstrap`, `secrets`, `vscode-sync`, `maintenance`, `healthcheck`
+- **Multiple backup backends**: GPG, Restic, Borg with remote sync via rclone
+- **Secrets management**: 1Password, macOS Keychain, HashiCorp Vault integration
+- **Bootstrap wizard**: Complete new machine setup with interactive or automated modes
+
+</details>
+
+---
+
 ## ✨ Features
 
 <table>
 <tr>
 <td width="50%">
 
-### 🛠️ System Configuration
-- Dock: position, size, auto-hide, app behavior
-- Finder: show hidden files, path bar, extensions
-- Keyboard: key repeat, modifier keys, shortcuts
-- Trackpad: gestures, click behavior, scrolling
-- Screenshots: location, format, shadows
+### 🛠️ System Configuration (45+ Scripts)
+- **System**: Privacy, energy, sound, Bluetooth, login
+- **Interface**: Dock, Finder, menu bar, Control Center
+- **Input**: Keyboard, trackpad, gestures
+- **Accessibility**: Display, pointer, zoom
+- **Apps**: Safari, Mail, Photos, Notes, and more
 
 </td>
 <td width="50%">
@@ -70,8 +103,9 @@ The **Dotfiles Flying Circus** is a comprehensive macOS automation framework tha
 - Firewall configuration with stealth mode
 - FileVault encryption management
 - Privacy permission auditing
-- Gatekeeper settings
+- Gatekeeper and quarantine settings
 - Screen lock & password policies
+- Telemetry and analytics blocking
 
 </td>
 </tr>
@@ -83,15 +117,17 @@ The **Dotfiles Flying Circus** is a comprehensive macOS automation framework tha
 - Mac App Store apps (via `mas`)
 - Role-specific Brewfiles
 - Automatic dependency updates
+- Orphaned package cleanup
 
 </td>
 <td width="50%">
 
-### 🐚 Shell Environment
-- Oh My Zsh framework
-- Custom `circus` plugin
-- Role-based aliases & functions
-- GPG & SSH key management
+### 🐚 Shell Environment (21 env files)
+- Oh My Zsh with custom `circus` plugin
+- Language configs: Python, Node, Go, Rust, Java
+- DevOps: Docker, Kubernetes, AWS/GCP/Azure
+- XDG directory compliance
+- 100+ role-based aliases
 
 </td>
 </tr>
@@ -99,19 +135,20 @@ The **Dotfiles Flying Circus** is a comprehensive macOS automation framework tha
 <td width="50%">
 
 ### 💾 Backup & Sync
-- GPG-encrypted machine backups
-- One-command restoration
-- Brewfile export/import
+- **3 backends**: GPG, Restic, Borg
+- Remote sync via rclone (40+ providers)
+- Scheduled automatic backups
+- VS Code settings sync
 - Dotfile timestamped snapshots
 
 </td>
 <td width="50%">
 
 ### 🎯 Role-Based Setup
-- **Developer**: Full dev tools, languages, IDEs
-- **Personal**: Productivity apps, media tools
-- **Work**: Corporate tools, VPN configs
-- Custom roles supported
+- **Developer**: Git aliases, debugging, Xcode
+- **Personal**: Media tools, relaxed security
+- **Work**: Corporate proxy/VPN, strict security
+- **Secrets**: 1Password, Keychain, Vault
 
 </td>
 </tr>
@@ -144,7 +181,7 @@ git clone https://github.com/southpawriter02/circus.git && cd circus && ./instal
 
 ## 🎮 The `fc` Command
 
-The heart of the project is the `fc` (Flying Circus) command-line utility — **22 commands** to control every aspect of your Mac:
+The heart of the project is the `fc` (Flying Circus) command-line utility — **30+ commands** to control every aspect of your Mac:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
@@ -155,14 +192,16 @@ The heart of the project is the `fc` (Flying Circus) command-line utility — **
 │  ───────          ────────          ──────           ────────────        │
 │  wifi             audit             disk             caffeine            │
 │  bluetooth        firewall          info             clipboard           │
-│  dns              lock              doctor           backup              │
-│  airdrop          encrypt           update           sync                │
-│                   keychain                                               │
-│                   privacy                                                │
+│  dns              lock              update           backup              │
+│  airdrop          encrypt           maintenance      sync                │
+│                   keychain          healthcheck      schedule            │
+│                   privacy                            vscode-sync         │
 │                                                                          │
-│  DEVELOPMENT                                                             │
-│  ───────────                                                             │
-│  gpg-setup        ssh-keygen        redis                                │
+│  DEVELOPMENT      MANAGEMENT        BOOTSTRAP                            │
+│  ───────────      ──────────        ─────────                            │
+│  gpg-setup        dotfiles          bootstrap                            │
+│  ssh              apps              secrets                              │
+│  redis            profile           clean                                │
 │                                                                          │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
@@ -179,7 +218,7 @@ fc disk usage ~/Downloads
 fc disk cleanup  # Interactive cleanup wizard
 
 # 🔑 Generate SSH key (auto-adds to keychain, copies to clipboard)
-fc ssh-keygen
+fc ssh generate
 
 # ☕ Keep Mac awake
 fc caffeine on           # Indefinitely
@@ -189,9 +228,18 @@ fc caffeine for 60       # For 60 minutes
 fc dns set 1.1.1.1 1.0.0.1  # Cloudflare
 fc dns set 8.8.8.8 8.8.4.4  # Google
 
-# 💾 Encrypted backup for machine migration
-fc sync backup   # Creates ~/circus_backup.tar.gz.gpg
-fc sync restore  # Restores everything on new machine
+# 💾 Encrypted backup with multiple backends
+fc sync backup              # GPG-encrypted backup (default)
+fc sync backup --backend restic  # Deduplicating backup
+fc sync push                # Push to remote (S3, Dropbox, etc.)
+
+# 🚀 Bootstrap a new machine
+fc bootstrap                # Interactive setup wizard
+fc bootstrap --phases all   # Full automated setup
+
+# 🔑 Secrets management
+fc secrets sync             # Sync secrets from 1Password/Keychain
+fc secrets get op://vault/item/password  # Get specific secret
 ```
 
 ---
@@ -207,17 +255,26 @@ graph TB
         D --> E[Security Hardening]
         E --> F[Shell Configuration]
     end
-    
+
     subgraph "Daily Usage"
-        G[fc command] --> H[22 Plugins]
+        G[fc command] --> H[30+ Plugins]
         H --> I[System Control]
         H --> J[Security Management]
         H --> K[Backup & Sync]
+        H --> L[Secrets Management]
     end
-    
-    subgraph "Shell"
-        L[Oh My Zsh] --> M[circus plugin]
-        M --> N[Role-based config]
+
+    subgraph "Shell Environment"
+        M[Oh My Zsh] --> N[circus plugin]
+        N --> O[21 env files]
+        N --> P[Role-based config]
+    end
+
+    subgraph "macOS Defaults"
+        Q[45+ scripts] --> R[System]
+        Q --> S[Interface]
+        Q --> T[Apps]
+        Q --> U[Accessibility]
     end
 ```
 
@@ -227,10 +284,14 @@ graph TB
 
 | Guide | Description |
 |-------|-------------|
-| [📖 Commands Reference](COMMANDS.md) | Complete `fc` command documentation |
+| [📖 Commands Reference](COMMANDS.md) | Complete `fc` command documentation (30+ commands) |
 | [🏛️ Architecture](ARCHITECTURE.md) | System design and philosophy |
 | [👥 Roles Guide](ROLES.md) | Role-based installation explained |
 | [🔐 Privacy Profiles](defaults/profiles/README.md) | Security profile options |
+| [🔧 macOS Defaults](defaults/README.md) | 45+ defaults scripts documented |
+| [💾 Backup Backends](docs/BACKUP_BACKENDS.md) | GPG, Restic, and Borg options |
+| [🔑 Secrets Management](docs/SECRETS.md) | 1Password, Keychain, Vault integration |
+| [🚀 Bootstrap Guide](docs/BOOTSTRAP.md) | New machine setup automation |
 | [🔌 Creating Plugins](docs/CREATING_PLUGINS.md) | Extend `fc` with your own commands |
 | [🍎 macOS Commands](docs/MACOS_COMMANDS.md) | Terminal commands reference |
 | [🎨 Customization](docs/CUSTOMIZATION.md) | Make it your own |
@@ -252,14 +313,18 @@ Choose your security level:
 
 ## 🔄 Machine Migration
 
-Moving to a new Mac? It's a two-step process:
+Moving to a new Mac? Use the bootstrap command for a complete setup:
 
 ```bash
 # On your OLD Mac
 fc sync backup
-# Copy ~/circus_backup.tar.gz.gpg to new machine
+fc sync push  # Push to cloud storage (optional)
 
-# On your NEW Mac
+# On your NEW Mac - Full automated setup
+git clone https://github.com/southpawriter02/circus.git && cd circus
+fc bootstrap  # Interactive wizard guides you through everything!
+
+# Or step-by-step:
 ./install.sh --role developer
 fc sync restore
 # 🎉 You're back in business!
