@@ -64,7 +64,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
         *   ~~`39-alfred-workflow-integration`~~: **DONE** - `fc alfred` command with `install`, `uninstall`, and `status` subcommands. Single "Flying Circus" workflow with 12 keyword triggers for quick-access commands (wifi, bluetooth, lock, caffeine, dns, airdrop, fcinfo, healthcheck, disk, sshkey, keychain, clip). Script filters return JSON for Alfred. Workflow source in `etc/alfred/workflows/Flying Circus/`. Documentation in `docs/ALFRED.md` and `COMMANDS.md`.
         *   ~~`40-raycast-script-commands`~~: **DONE** - `fc raycast` command with `install`, `uninstall`, and `status` subcommands. 27 individual script commands for quick-access to fc functionality. Matches Alfred workflow feature parity. Script commands source in `etc/raycast/scripts/`. Documentation in `docs/RAYCAST.md` and `COMMANDS.md`.
     *   **Power-User Features:**
-        *   `45-vm-management`: Add commands to manage virtualization (e.g., `lima`, `colima`).
+        *   ~~`45-vm-management`~~: **DONE** - `fc vm` command for managing Lima and Colima VMs. Provider abstraction in `lib/vm_backends/`. Subcommands: list, start, stop, status, shell, delete, create, ip, provider. Documentation in `docs/VIRTUAL_MACHINES.md`.
 
 ---
 

@@ -214,6 +214,80 @@ fc wifi status
 
 ---
 
+## `fc vm`
+
+Manage container virtual machines (Lima and Colima) from the command line. Provides a unified interface for starting, stopping, and managing development VMs.
+
+**Usage:**
+
+```bash
+fc vm <action> [name]
+```
+
+**Actions:**
+*   `list`: List all VMs with their status.
+*   `start [name]`: Start a VM (default VM if no name).
+*   `stop [name]`: Stop a VM gracefully.
+*   `status [name]`: Show detailed VM status.
+*   `shell [name]`: Open a shell inside the VM.
+*   `delete <name>`: Delete a VM (requires confirmation).
+*   `create <name>`: Create a new VM.
+*   `ip [name]`: Show the IP address of a VM.
+*   `provider [name]`: Show or set the active provider (lima/colima).
+
+**Providers:**
+
+| Provider | Description | Best For |
+|----------|-------------|----------|
+| Colima | Lightweight container runtime | Docker, Kubernetes development |
+| Lima | General-purpose Linux VMs | Custom Linux environments |
+
+**Examples:**
+
+```bash
+# List all VMs
+fc vm list
+
+# Start the default VM
+fc vm start
+
+# Start a named VM
+fc vm start myvm
+
+# Open shell in VM
+fc vm shell
+
+# Check status
+fc vm status
+
+# Show/change provider
+fc vm provider
+fc vm provider colima
+
+# Create a new VM
+fc vm create devbox
+```
+
+**Configuration:**
+
+Edit `~/.config/circus/vm.conf`:
+
+```bash
+# Provider: lima or colima
+VM_PROVIDER="colima"
+
+# Default VM name
+VM_DEFAULT_NAME="default"
+```
+
+**Prerequisites:**
+- Install Colima: `brew install colima docker`
+- Or install Lima: `brew install lima`
+
+**Full Documentation:** See `docs/VIRTUAL_MACHINES.md` for complete setup and usage guide.
+
+---
+
 ## `fc dns`
 
 Manage the DNS settings for the active network service. Allows viewing, setting, and clearing custom DNS servers.

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-01-02
+
+### Added
+
+- **VM Management**: New `fc vm` command for managing container VMs with:
+  - Support for Lima (`limactl`) and Colima providers
+  - Provider abstraction in `lib/vm_backends/` for extensibility
+  - Subcommands: `list`, `start`, `stop`, `status`, `shell`, `delete`, `create`, `ip`, `provider`
+  - Auto-detection of available provider (prefers Colima)
+  - Configuration via `~/.config/circus/vm.conf`
+
+### Documentation
+
+- New `docs/VIRTUAL_MACHINES.md` - Complete VM management guide
+- Updated `COMMANDS.md` with `fc vm` command documentation
+- Updated `ROADMAP.md` to mark feature #45 as complete
+
 ## [1.1.1] - 2026-01-02
 
 ### Added

@@ -1,0 +1,21 @@
+# VM Provider Configuration Template
+# Copy to ~/.config/circus/vm.conf and customize
+
+# ==============================================================================
+# VM PROVIDER
+#
+# Choose which VM provider to use:
+#   - colima : Docker/Kubernetes focused, uses lightweight VM
+#   - lima   : General purpose Linux VMs
+#
+# If not set, auto-detects based on what's installed (prefers Colima)
+# ==============================================================================
+VM_PROVIDER=""
+
+# ==============================================================================
+# DEFAULT VM NAME
+#
+# The VM/profile name to use when no name is specified
+# Most users can leave this as "default"
+# ==============================================================================
+VM_DEFAULT_NAME="default"
