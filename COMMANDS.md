@@ -1407,3 +1407,60 @@ brew uninstall <package-name>
 fc fc-clean brew --remove
 ```
 
+---
+
+## `fc alfred`
+
+Manage the Flying Circus Alfred workflow installation. The workflow provides quick access to common `fc` commands directly from Alfred's search bar.
+
+**Usage:**
+
+```bash
+fc alfred <action>
+```
+
+**Actions:**
+*   `install`: Install the workflow to Alfred.
+*   `uninstall`: Remove the workflow from Alfred.
+*   `status`: Check if the workflow is installed.
+
+**Examples:**
+
+```bash
+# Install the Alfred workflow
+fc alfred install
+
+# Check installation status
+fc alfred status
+
+# Remove the workflow
+fc alfred uninstall
+```
+
+### Available Alfred Keywords
+
+After installation, these keywords are available in Alfred:
+
+| Keyword | Command | Description |
+|---------|---------|-------------|
+| `fc` | (browse) | Browse all available commands |
+| `wifi` | `fc wifi` | Control Wi-Fi (on/off/status) |
+| `bluetooth` | `fc bluetooth` | Control Bluetooth (on/off/status) |
+| `lock` | `fc lock now` | Lock screen immediately |
+| `caffeine` | `fc caffeine` | Prevent sleep (on/off/for/status) |
+| `dns` | `fc dns` | Manage DNS servers |
+| `airdrop` | `fc airdrop` | Control AirDrop visibility |
+| `fcinfo` | `fc info` | Display system information |
+| `healthcheck` | `fc healthcheck` | Run system diagnostics |
+| `disk` | `fc disk` | Disk utilities |
+| `sshkey` | `fc ssh` | SSH key management |
+| `keychain` | `fc keychain` | Keychain access |
+| `clip` | `fc clipboard` | Clipboard utilities |
+
+### Requirements
+
+- **Alfred 4 or 5** with Powerpack (recommended)
+- Dotfiles Flying Circus installed
+
+See `docs/ALFRED.md` for full documentation.
+

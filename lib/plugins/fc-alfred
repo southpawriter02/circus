@@ -1,0 +1,275 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-alfred
+#
+# DESCRIPTION:  Manage the Flying Circus Alfred workflow installation.
+#               Provides commands to install, uninstall, and check the status
+#               of the Alfred workflow that provides quick access to fc commands.
+#
+# REQUIRES:
+#   - Alfred 4 or 5 installed
+#   - Alfred Powerpack (recommended for workflow features)
+#
+# ACTIONS:
+#   install   - Install the workflow to Alfred
+#   uninstall - Remove the workflow from Alfred
+#   status    - Check if the workflow is installed
+#
+# EXAMPLES:
+#   fc alfred install     # Install the Flying Circus workflow
+#   fc alfred uninstall   # Remove the workflow
+#   fc alfred status      # Check installation status
+#
+# NOTES:
+#   - The workflow provides quick access to common fc commands via Alfred
+#   - Keywords: wifi, bluetooth, lock, caffeine, dns, airdrop, fcinfo, etc.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ----------------------------------------------------------
+readonly WORKFLOW_NAME="Flying Circus"
+readonly WORKFLOW_BUNDLE_ID="com.flyingcircus.alfred"
+readonly WORKFLOW_SOURCE_DIR="$DOTFILES_ROOT/etc/alfred/workflows/Flying Circus"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc alfred <action>"
+  echo ""
+  msg_info "Manage the Flying Circus Alfred workflow."
+  echo ""
+  msg_info "Actions:"
+  echo "  install   - Install the workflow to Alfred"
+  echo "  uninstall - Remove the workflow from Alfred"
+  echo "  status    - Check if the workflow is installed"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc alfred install     # Install the workflow"
+  echo "  fc alfred status      # Check installation status"
+  echo ""
+  msg_info "Available Alfred Keywords (after installation):"
+  echo "  fc         - Browse all commands"
+  echo "  wifi       - Control Wi-Fi (on/off/status)"
+  echo "  bluetooth  - Control Bluetooth (on/off/status)"
+  echo "  lock       - Lock screen immediately"
+  echo "  caffeine   - Prevent sleep"
+  echo "  dns        - Manage DNS servers"
+  echo "  airdrop    - Control AirDrop visibility"
+  echo "  fcinfo     - Show system information"
+  echo "  healthcheck - Run system diagnostics"
+  echo "  disk       - Disk utilities"
+  echo "  sshkey     - SSH key management"
+  echo "  keychain   - Keychain access"
+  echo "  clip       - Clipboard utilities"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Find Alfred application
+find_alfred() {
+  local alfred_paths=(
+    "/Applications/Alfred 5.app"
+    "/Applications/Alfred 4.app"
+    "/Applications/Alfred.app"
+    "$HOME/Applications/Alfred 5.app"
+    "$HOME/Applications/Alfred 4.app"
+  )
+
+  for path in "${alfred_paths[@]}"; do
+    if [[ -d "$path" ]]; then
+      echo "$path"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+# Get Alfred's workflow directory
+get_workflow_dir() {
+  local alfred_prefs_domain="com.runningwithcrayons.Alfred-Preferences"
+  local sync_folder
+
+  # Check if Alfred uses a custom sync folder
+  sync_folder=$(defaults read "$alfred_prefs_domain" "syncfolder" 2>/dev/null || echo "")
+
+  if [[ -n "$sync_folder" ]] && [[ -d "$sync_folder/Alfred.alfredpreferences/workflows" ]]; then
+    echo "$sync_folder/Alfred.alfredpreferences/workflows"
+  elif [[ -d "$HOME/Library/Application Support/Alfred/Alfred.alfredpreferences/workflows" ]]; then
+    echo "$HOME/Library/Application Support/Alfred/Alfred.alfredpreferences/workflows"
+  else
+    return 1
+  fi
+}
+
+# Check if workflow is installed
+is_workflow_installed() {
+  local workflow_dir
+  workflow_dir=$(get_workflow_dir) || return 1
+
+  # Check for our bundle ID in any workflow
+  for plist in "$workflow_dir"/*/info.plist; do
+    if [[ -f "$plist" ]]; then
+      local bundle_id
+      bundle_id=$(/usr/libexec/PlistBuddy -c "Print :bundleid" "$plist" 2>/dev/null || echo "")
+      if [[ "$bundle_id" == "$WORKFLOW_BUNDLE_ID" ]]; then
+        # Return the directory containing the workflow
+        dirname "$plist"
+        return 0
+      fi
+    fi
+  done
+
+  return 1
+}
+
+# --- Action: install --------------------------------------------------------
+do_install() {
+  msg_info "Installing Flying Circus Alfred workflow..."
+
+  # Check if Alfred is installed
+  local alfred_path
+  alfred_path=$(find_alfred) || {
+    die "Alfred is not installed. Please install Alfred first: brew install --cask alfred"
+  }
+  msg_info "Alfred found at: $alfred_path"
+
+  # Check if workflow source exists
+  if [[ ! -d "$WORKFLOW_SOURCE_DIR" ]]; then
+    die "Workflow source not found at: $WORKFLOW_SOURCE_DIR"
+  fi
+
+  # Get workflow directory
+  local workflow_dir
+  workflow_dir=$(get_workflow_dir) || {
+    die "Could not find Alfred workflow directory. Please ensure Alfred has been run at least once."
+  }
+  msg_info "Using workflow directory: $workflow_dir"
+
+  # Check if already installed
+  local existing_workflow
+  existing_workflow=$(is_workflow_installed)
+  if [[ -n "$existing_workflow" ]]; then
+    msg_warning "Workflow already installed at: $existing_workflow"
+    msg_info "Updating existing installation..."
+    rm -rf "$existing_workflow"
+  fi
+
+  # Create destination directory
+  local dest_dir="$workflow_dir/$WORKFLOW_NAME"
+  mkdir -p "$dest_dir"
+
+  # Copy workflow files
+  msg_info "Copying workflow files..."
+  cp -R "$WORKFLOW_SOURCE_DIR"/* "$dest_dir/"
+
+  # Update DOTFILES_ROOT in wrapper script
+  local wrapper_script="$dest_dir/scripts/fc-wrapper.sh"
+  if [[ -f "$wrapper_script" ]]; then
+    sed -i '' "s|__DOTFILES_ROOT__|$DOTFILES_ROOT|g" "$wrapper_script"
+    chmod +x "$wrapper_script"
+  fi
+
+  # Make all scripts executable
+  chmod +x "$dest_dir/scripts/"*.sh 2>/dev/null || true
+
+  msg_success "Workflow installed successfully!"
+  echo ""
+  msg_info "Available Alfred keywords:"
+  echo "  fc, wifi, bluetooth, lock, caffeine, dns, airdrop"
+  echo "  fcinfo, healthcheck, disk, sshkey, keychain, clip"
+  echo ""
+  msg_info "Try typing 'wifi' in Alfred to get started!"
+}
+
+# --- Action: uninstall ------------------------------------------------------
+do_uninstall() {
+  msg_info "Uninstalling Flying Circus Alfred workflow..."
+
+  # Check if workflow is installed
+  local installed_path
+  installed_path=$(is_workflow_installed)
+  if [[ -z "$installed_path" ]]; then
+    msg_warning "Workflow is not installed."
+    return 0
+  fi
+
+  msg_info "Found workflow at: $installed_path"
+
+  # Remove the workflow
+  rm -rf "$installed_path"
+
+  msg_success "Workflow uninstalled successfully."
+}
+
+# --- Action: status ---------------------------------------------------------
+do_status() {
+  msg_info "Checking Flying Circus Alfred workflow status..."
+  echo ""
+
+  # Check if Alfred is installed
+  local alfred_path
+  alfred_path=$(find_alfred || true)
+  if [[ -n "$alfred_path" ]]; then
+    echo "  Alfred:    Installed ($alfred_path)"
+  else
+    echo "  Alfred:    Not installed"
+    echo "  Workflow:  Cannot check (Alfred not installed)"
+    echo ""
+    msg_info "Install Alfred first: brew install --cask alfred"
+    return 0  # Return success - status check completed
+  fi
+
+  # Check workflow installation
+  local installed_path
+  installed_path=$(is_workflow_installed)
+  if [[ -n "$installed_path" ]]; then
+    echo "  Workflow:  Installed"
+    echo "  Location:  $installed_path"
+
+    # Check version
+    local version
+    version=$(/usr/libexec/PlistBuddy -c "Print :version" "$installed_path/info.plist" 2>/dev/null || echo "unknown")
+    echo "  Version:   $version"
+
+    echo ""
+    msg_success "Flying Circus workflow is ready to use!"
+  else
+    echo "  Workflow:  Not installed"
+    echo ""
+    msg_info "Run 'fc alfred install' to install the workflow."
+  fi
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    install)
+      do_install "$@"
+      ;;
+    uninstall)
+      do_uninstall "$@"
+      ;;
+    status)
+      do_status "$@"
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc alfred --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

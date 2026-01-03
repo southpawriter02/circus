@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-01-02
+
+### Added
+
+- **Alfred Workflow Integration**: New `fc alfred` command with:
+  - `install` subcommand to install the Flying Circus workflow to Alfred
+  - `uninstall` subcommand to remove the workflow
+  - `status` subcommand to check installation status
+  - Single "Flying Circus" workflow with 12 keyword triggers
+  - Script filters returning JSON for dynamic Alfred results
+  - Workflow source files in `etc/alfred/workflows/Flying Circus/`
+
+- **Alfred Keywords**: Quick access to fc commands via Alfred:
+  - `wifi` - Control Wi-Fi (on/off/status)
+  - `bluetooth` - Control Bluetooth (on/off/status)
+  - `lock` - Lock screen immediately
+  - `caffeine` - Prevent sleep (on/off/for/status)
+  - `dns` - Manage DNS servers (Cloudflare, Google, Quad9, clear)
+  - `airdrop` - Control AirDrop visibility
+  - `fcinfo` - Display system information
+  - `healthcheck` - Run system diagnostics
+  - `disk` - Disk utilities (status/usage/large/cleanup)
+  - `sshkey` - SSH key management (list/copy/generate/add)
+  - `keychain` - Keychain access (list/wifi/search)
+  - `clip` - Clipboard utilities (show/clear/plain/count)
+  - `fc` - Browse all available commands
+
+### Documentation
+
+- Added `docs/ALFRED.md` - Complete Alfred workflow documentation
+- Updated `COMMANDS.md` with `fc alfred` command documentation
+- Updated `ROADMAP.md` to mark feature #39 as complete
+
 ## [1.0.0] - 2026-01-01
 
 ### Added
