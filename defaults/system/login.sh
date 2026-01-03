@@ -188,6 +188,24 @@ run_defaults "com.apple.screensaver" "askForPasswordDelay" "-int" "0"
 # Security:     Console access can be used to bypass some security measures
 run_defaults "com.apple.loginwindow" "DisableConsoleAccess" "-bool" "true"
 
+# ==============================================================================
+# External Accounts
+# ==============================================================================
+
+# --- Disable External Accounts ---
+# Key:          EnableExternalAccounts
+# Domain:       com.apple.loginwindow
+# Description:  Controls whether network/directory service accounts (like LDAP,
+#               Active Directory) can log in at the login window. Disabling this
+#               restricts login to local accounts only.
+# Default:      true (allow external accounts)
+# Options:      true = Allow network/directory accounts
+#               false = Only allow local accounts
+# Set to:       false (security - home users don't need external accounts)
+# UI Location:  System Settings > Users & Groups > Login Options
+# Security:     Prevents potential directory service attacks
+run_defaults "com.apple.loginwindow" "EnableExternalAccounts" "-bool" "false"
+
 msg_success "Login window settings configured."
 
 # ==============================================================================

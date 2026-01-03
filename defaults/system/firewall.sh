@@ -118,6 +118,34 @@ run_sudo_defaults "/Library/Preferences/com.apple.alf" "stealthenabled" "-int" "
 #               or check /var/log/appfirewall.log on older macOS versions.
 run_sudo_defaults "/Library/Preferences/com.apple.alf" "loggingenabled" "-int" "1"
 
+# --- Allow Signed Applications Automatically ---
+# Key:          allowsignedenabled
+# Domain:       /Library/Preferences/com.apple.alf
+# Description:  Automatically allow applications signed with a valid developer
+#               certificate to receive incoming connections without prompting.
+#               This reduces firewall prompts for legitimate signed software.
+# Default:      1 (enabled - signed apps allowed)
+# Options:      0 = Prompt for all apps (most secure but annoying)
+#               1 = Allow signed apps automatically (balanced)
+# Set to:       1 (allow signed apps for convenience)
+# UI Location:  System Settings > Network > Firewall > Options > Automatically allow built-in software
+# Source:       https://support.apple.com/en-us/102445
+run_sudo_defaults "/Library/Preferences/com.apple.alf" "allowsignedenabled" "-int" "1"
+
+# --- Allow Downloaded Signed Applications ---
+# Key:          allowdownloadsignedenabled
+# Domain:       /Library/Preferences/com.apple.alf
+# Description:  Automatically allow downloaded applications that are signed with
+#               a valid certificate to receive incoming connections. Combined with
+#               Gatekeeper, this ensures only trusted downloads get network access.
+# Default:      1 (enabled - signed downloads allowed)
+# Options:      0 = Don't automatically allow downloaded signed apps
+#               1 = Allow downloaded signed apps automatically
+# Set to:       1 (allow signed downloads for usability)
+# UI Location:  System Settings > Network > Firewall > Options > Automatically allow downloaded signed software
+# Source:       https://support.apple.com/en-us/102445
+run_sudo_defaults "/Library/Preferences/com.apple.alf" "allowdownloadsignedenabled" "-int" "1"
+
 
 # ==============================================================================
 # Apply Changes

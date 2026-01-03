@@ -83,6 +83,30 @@ run_defaults "com.apple.controlcenter" "Bluetooth" "-int" "2"
 # Warning:      Very high values may cause audio dropouts
 run_defaults "com.apple.BluetoothAudioAgent" "Apple Bitpool Min (editable)" "-int" "40"
 
+# --- Bluetooth Audio Quality (Maximum) ---
+# Key:          Apple Bitpool Max (editable)
+# Domain:       com.apple.BluetoothAudioAgent
+# Description:  Controls the maximum bitpool for A2DP Bluetooth audio.
+#               Higher values provide better audio quality but may reduce
+#               connection stability with some devices.
+# Default:      64
+# Options:      2 (lowest) to 64 (highest quality)
+# Set to:       53 (balance quality and stability)
+# Note:         This affects all Bluetooth audio devices
+# Warning:      Very high values may cause audio dropouts on some devices
+run_defaults "com.apple.BluetoothAudioAgent" "Apple Bitpool Max (editable)" "-int" "53"
+
+# --- Bluetooth Audio Initial Bitpool ---
+# Key:          Apple Initial Bitpool (editable)
+# Domain:       com.apple.BluetoothAudioAgent
+# Description:  Sets the initial bitpool value when establishing a Bluetooth
+#               audio connection. The connection negotiates up or down from here.
+# Default:      35
+# Options:      2-64
+# Set to:       40 (start with good quality)
+# Note:         Starting higher allows for better initial quality
+run_defaults "com.apple.BluetoothAudioAgent" "Apple Initial Bitpool (editable)" "-int" "40"
+
 # ==============================================================================
 # Device Behavior
 #

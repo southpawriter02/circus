@@ -164,6 +164,49 @@ run_defaults "us.zoom.xos" "ZMEnterFullScreenWhenShare" "-bool" "false"
 # Source:       https://support.zoom.us/hc/en-us/articles/201362163-Desktop-client-settings
 run_defaults "us.zoom.xos" "ZMEnableChatNotification" "-bool" "true"
 
+# ==============================================================================
+# Appearance Settings
+# ==============================================================================
+
+# --- Touch Up My Appearance ---
+# Key:          ZMEnableTouchUpAppearance
+# Domain:       us.zoom.xos
+# Description:  Applies a softening effect to smooth your skin appearance on
+#               camera. Can look artificial but helps with video lighting issues.
+# Default:      false
+# Options:      true  = Enable touch up effect
+#               false = Natural appearance
+# Set to:       false (natural look)
+# UI Location:  Zoom > Settings > Video > Touch up my appearance
+# Source:       https://support.zoom.us/hc/en-us/articles/201362163-Desktop-client-settings
+run_defaults "us.zoom.xos" "ZMEnableTouchUpAppearance" "-bool" "false"
+
+# --- Original Sound for Musicians ---
+# Key:          ZMEnableOriginalSound
+# Domain:       us.zoom.xos
+# Description:  Disables audio processing (noise suppression, echo cancellation)
+#               for better music quality. Useful for musicians and audio pros.
+# Default:      false
+# Options:      true  = Enable original sound (no processing)
+#               false = Standard audio processing
+# Set to:       false (standard processing for meetings)
+# UI Location:  Zoom > Settings > Audio > Music and Professional Audio
+# Source:       https://support.zoom.us/hc/en-us/articles/115003279466
+run_defaults "us.zoom.xos" "ZMEnableOriginalSound" "-bool" "false"
+
+# --- Always Show Meeting Controls ---
+# Key:          ZMAlwaysShowMeetingControls
+# Domain:       us.zoom.xos
+# Description:  Keeps the meeting control toolbar visible at all times instead
+#               of auto-hiding after a few seconds.
+# Default:      false (auto-hide)
+# Options:      true  = Always show controls
+#               false = Auto-hide controls
+# Set to:       true (easier access to controls)
+# UI Location:  Zoom > Settings > General > Always show meeting controls
+# Source:       https://support.zoom.us/hc/en-us/articles/201362163-Desktop-client-settings
+run_defaults "us.zoom.xos" "ZMAlwaysShowMeetingControls" "-bool" "true"
+
 msg_success "Zoom settings applied."
 echo ""
 msg_info "Additional Zoom settings in-app (Zoom > Settings):"

@@ -82,6 +82,20 @@ run_defaults "com.apple.AdLib" "allowApplePersonalizedAdvertising" "-bool" "fals
 # UI Location:  Related to Apple Advertising settings
 run_defaults "com.apple.AdLib" "forceLimitAdTracking" "-bool" "true"
 
+# --- Disable Advertising Identifier ---
+# Key:          allowIdentifierForAdvertising
+# Domain:       com.apple.AdLib
+# Description:  Controls whether apps can use your device's advertising identifier
+#               to deliver targeted advertising across apps. Disabling this prevents
+#               cross-app ad tracking while still allowing contextual ads.
+# Default:      true (identifier available)
+# Options:      true = Allow advertising identifier
+#               false = Disable advertising identifier
+# Set to:       false (disable for privacy)
+# UI Location:  System Settings > Privacy & Security > Apple Advertising > Personalized Ads
+# Source:       https://support.apple.com/en-us/HT205223
+run_defaults "com.apple.AdLib" "allowIdentifierForAdvertising" "-bool" "false"
+
 # ==============================================================================
 # Siri & Dictation
 # ==============================================================================
@@ -100,5 +114,37 @@ run_defaults "com.apple.AdLib" "forceLimitAdTracking" "-bool" "true"
 # UI Location:  System Settings > Privacy & Security > Analytics & Improvements > Improve Siri & Dictation
 # Source:       https://support.apple.com/en-us/HT210657
 run_defaults "com.apple.assistant.support" "Siri Data Sharing Opt-In Status" "-int" "2"
+
+# ==============================================================================
+# Analytics & Recommendations
+# ==============================================================================
+
+# --- Disable App Analytics Sharing ---
+# Key:          ShareAppAnalytics
+# Domain:       com.apple.assistant.support
+# Description:  Controls whether app crash data and usage analytics are shared
+#               with app developers to help them improve their applications.
+#               Disabling this prevents your app usage patterns from being shared.
+# Default:      true (analytics shared)
+# Options:      true = Share analytics with developers
+#               false = Don't share app analytics
+# Set to:       false (disable for privacy)
+# UI Location:  System Settings > Privacy & Security > Analytics & Improvements > Share with App Developers
+# Source:       https://support.apple.com/guide/mac-help/share-analytics-information-mh27990/mac
+run_defaults "com.apple.assistant.support" "ShareAppAnalytics" "-bool" "false"
+
+# --- Disable Personalized Recommendations ---
+# Key:          AllowPersonalizedRecommendations
+# Domain:       com.apple.assistant.support
+# Description:  Controls whether Apple can use your data to provide personalized
+#               recommendations across Apple apps like News, Music, and the App Store.
+#               Disabling this gives you more generic, non-personalized suggestions.
+# Default:      true (personalized recommendations enabled)
+# Options:      true = Enable personalized recommendations
+#               false = Disable personalized recommendations
+# Set to:       false (disable for privacy)
+# UI Location:  System Settings > Privacy & Security > Apple Advertising
+# Source:       https://support.apple.com/en-us/HT205223
+run_defaults "com.apple.assistant.support" "AllowPersonalizedRecommendations" "-bool" "false"
 
 msg_success "Privacy and analytics settings configured."

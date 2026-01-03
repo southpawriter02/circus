@@ -150,6 +150,32 @@ run_defaults "com.apple.Music" "addSongsToLibrary" "-bool" "true"
 # Source:       https://support.apple.com/guide/music/change-general-preferences-mus7a8b90c5/mac
 run_defaults "com.apple.Music" "showAppleMusic" "-bool" "true"
 
+# --- Automatic Downloads ---
+# Key:          automaticDownloadsEnabled
+# Domain:       com.apple.Music
+# Description:  Automatically downloads new music additions to your library.
+#               Useful for offline listening but uses storage space.
+# Default:      false
+# Options:      true  = Auto-download new library additions
+#               false = Manual downloads only
+# Set to:       false (save storage, download manually)
+# UI Location:  Music > Settings > General > Automatic Downloads
+# Source:       https://support.apple.com/guide/music/change-general-preferences-mus7a8b90c5/mac
+run_defaults "com.apple.Music" "automaticDownloadsEnabled" "-bool" "false"
+
+# --- Show Star Ratings ---
+# Key:          showStarRatings
+# Domain:       com.apple.Music
+# Description:  Displays the classic 5-star rating controls in the library view.
+#               Allows manual rating of songs for smart playlist creation.
+# Default:      false (hidden in modern Music app)
+# Options:      true  = Show star rating controls
+#               false = Hide star ratings
+# Set to:       true (classic rating system)
+# UI Location:  Music > Settings > General > Show Star Ratings
+# Source:       https://support.apple.com/guide/music/change-general-preferences-mus7a8b90c5/mac
+run_defaults "com.apple.Music" "showStarRatings" "-bool" "true"
+
 # ==============================================================================
 # Notification Settings
 # ==============================================================================

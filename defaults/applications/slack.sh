@@ -114,6 +114,39 @@ run_defaults "com.tinyspeck.slackmacgap" "SlackAutoLaunch" "-bool" "true"
 run_defaults "com.tinyspeck.slackmacgap" "SlackCloseToTray" "-bool" "true"
 
 # ==============================================================================
+# Text & Display Settings
+# ==============================================================================
+
+# --- Zoom Level ---
+# Key:          SlackZoomLevel
+# Domain:       com.tinyspeck.slackmacgap
+# Description:  Controls the UI zoom level for Slack. Useful for adjusting
+#               text size and interface scaling.
+# Default:      1.0 (100%)
+# Options:      0.8 = 80%
+#               0.9 = 90%
+#               1.0 = 100% (default)
+#               1.1 = 110%
+#               1.2 = 120%
+# Set to:       1.0 (standard scaling)
+# UI Location:  Slack > View > Zoom In/Out (Cmd+/Cmd-)
+# Source:       https://slack.com/help/articles/201374536-Manage-your-preferences
+run_defaults "com.tinyspeck.slackmacgap" "SlackZoomLevel" "-float" "1.0"
+
+# --- Spell Check ---
+# Key:          SlackSpellCheckEnabled
+# Domain:       com.tinyspeck.slackmacgap
+# Description:  Enables spell checking in message composition. Uses macOS
+#               system spell checker with red underlines for misspelled words.
+# Default:      true
+# Options:      true  = Enable spell check
+#               false = Disable spell check
+# Set to:       true (catch typos before sending)
+# UI Location:  Edit > Spelling and Grammar
+# Source:       https://slack.com/help/articles/201374536-Manage-your-preferences
+run_defaults "com.tinyspeck.slackmacgap" "SlackSpellCheckEnabled" "-bool" "true"
+
+# ==============================================================================
 # Slack Configuration Notes
 #
 # Most Slack settings are configured in-app or sync via your account:

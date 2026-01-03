@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-01-04
+
+### Added
+
+- **v1.3.1: Expanded Defaults Coverage** - 20 new settings to existing scripts:
+
+  **System Scripts (8 new)**:
+  - `system/firewall.sh` - Allow signed apps, allow downloaded signed apps
+  - `system/privacy.sh` - Advertising ID, app analytics, personalized recommendations
+  - `system/bluetooth.sh` - Max bitpool, initial bitpool for A2DP audio quality
+  - `system/login.sh` - External accounts control
+
+  **Application Scripts (12 new)**:
+  - `applications/zoom_app.sh` - Touch up appearance, original sound, always show controls
+  - `applications/calendar.sh` - Week numbers, default event alert time
+  - `applications/slack.sh` - Zoom level, spellcheck
+  - `applications/music.sh` - Automatic downloads, star ratings
+  - `applications/chrome.sh` - Confirm before quitting, external protocol dialog
+  - `applications/messages.sh` - Sound effects
+
 ## [1.3.0] - 2026-01-03
 
 ### Added

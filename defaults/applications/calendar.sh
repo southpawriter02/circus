@@ -219,5 +219,39 @@ run_defaults "com.apple.iCal" "DefaultAllDayEventAlert" "-int" "-39600"
 # Source:       https://support.apple.com/guide/calendar/change-alerts-preferences-icl1026/mac
 run_defaults "com.apple.iCal" "SharedCalendarNotificationsDisabled" "-bool" "false"
 
+# ==============================================================================
+# Display Settings
+# ==============================================================================
+
+# --- Show Week Numbers ---
+# Key:          "Show Week Numbers"
+# Domain:       com.apple.iCal
+# Description:  Displays ISO week numbers in the calendar views. Week numbers
+#               are useful for planning and referencing specific weeks.
+# Default:      false (week numbers hidden)
+# Options:      true  = Show week numbers
+#               false = Hide week numbers
+# Set to:       true (helpful for planning)
+# UI Location:  Calendar > Settings > Advanced > Show week numbers
+# Source:       https://support.apple.com/guide/calendar/change-advanced-preferences-icl1027/mac
+run_defaults "com.apple.iCal" "Show Week Numbers" "-bool" "true"
+
+# --- Default Event Alert Time ---
+# Key:          DefaultEventAlert
+# Domain:       com.apple.iCal
+# Description:  Sets the default reminder time before timed events (not all-day).
+#               Value is in seconds, negative means before the event.
+# Default:      -900 (-15 minutes)
+# Options:      0 = None
+#               -300 = 5 minutes before
+#               -600 = 10 minutes before
+#               -900 = 15 minutes before (recommended)
+#               -1800 = 30 minutes before
+#               -3600 = 1 hour before
+# Set to:       -900 (15 minutes before)
+# UI Location:  Calendar > Settings > Alerts > Events
+# Source:       https://support.apple.com/guide/calendar/change-alerts-preferences-icl1026/mac
+run_defaults "com.apple.iCal" "DefaultEventAlert" "-int" "-900"
+
 msg_success "Calendar settings applied."
 msg_info "Restart Calendar for all settings to take effect."

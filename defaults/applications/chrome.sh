@@ -88,6 +88,36 @@ run_defaults "com.google.Chrome" "DisablePrintPreview" "-bool" "true"
 run_defaults "com.google.Chrome" "PMPrintingExpandedStateForPrint2" "-bool" "true"
 
 # ==============================================================================
+# Behavior Settings
+# ==============================================================================
+
+# --- Confirm Before Quitting ---
+# Key:          confirmBeforeQuitting
+# Domain:       com.google.Chrome
+# Description:  Requires holding Cmd+Q to quit Chrome, preventing accidental
+#               closure. Shows a confirmation overlay when pressing Cmd+Q.
+# Default:      false (quit immediately)
+# Options:      true  = Require hold to quit
+#               false = Quit immediately on Cmd+Q
+# Set to:       true (prevent accidental quit)
+# UI Location:  Chrome > Warn Before Quitting (Cmd+Q)
+# Source:       https://support.google.com/chrome/answer/114836
+run_defaults "com.google.Chrome" "confirmBeforeQuitting" "-bool" "true"
+
+# --- External Protocol Dialog ---
+# Key:          ExternalProtocolDialogShowAlwaysOpenCheckbox
+# Domain:       com.google.Chrome
+# Description:  Shows the "Always open" checkbox in external protocol dialogs
+#               (e.g., opening Zoom, Slack, or other app links from browser).
+# Default:      false
+# Options:      true  = Show "Always open" checkbox
+#               false = Hide checkbox (ask every time)
+# Set to:       true (allow remembering choice)
+# UI Location:  Appears in external protocol confirmation dialogs
+# Source:       https://chromeenterprise.google/policies/
+run_defaults "com.google.Chrome" "ExternalProtocolDialogShowAlwaysOpenCheckbox" "-bool" "true"
+
+# ==============================================================================
 # Performance Settings
 # ==============================================================================
 

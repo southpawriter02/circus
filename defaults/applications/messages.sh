@@ -70,6 +70,19 @@ run_defaults "com.apple.MobileSMS" "SaveConversationsOnClose" "-bool" "true"
 # UI Location:  Messages > Settings > General > Message effects
 run_defaults "com.apple.MobileSMS" "EnableMessageEffects" "-bool" "true"
 
+# --- Play Sound Effects ---
+# Key:          PlaySoundEffects
+# Domain:       com.apple.MobileSMS
+# Description:  Plays sound effects for sent and received messages. Provides
+#               audio feedback when messages are sent successfully.
+# Default:      true
+# Options:      true  = Play sounds for messages
+#               false = Silent operation
+# Set to:       true (audio feedback)
+# UI Location:  Messages > Settings > General > Play sound effects
+# Source:       https://support.apple.com/guide/messages/change-messages-preferences-icht491d3b70/mac
+run_defaults "com.apple.MobileSMS" "PlaySoundEffects" "-bool" "true"
+
 # ==============================================================================
 # Audio & Video Settings
 # ==============================================================================
