@@ -31,19 +31,14 @@ These commands work identically on macOS and Linux:
 | `fc disk` | Disk utilities |
 | `fc info` | System information |
 | `fc doctor` | Diagnostic checks |
-
-### ⚠️ Platform-Specific Implementations
-
-These commands work on both platforms but use different underlying tools:
-
-| Command | macOS | Linux |
-|---------|-------|-------|
-| `fc clipboard` | pbcopy/pbpaste | xclip/xsel/wl-copy |
-| `fc wifi` | networksetup | nmcli |
-| `fc dns` | networksetup | resolvectl |
-| `fc firewall` | socketfilterfw | ufw/firewalld |
-| `fc apps` | Homebrew | apt/dnf/pacman |
-| `fc maintenance` | Homebrew cleanup | apt clean |
+| `fc wifi` | Wi-Fi control (v1.1.4) |
+| `fc dns` | DNS management (v1.1.4) |
+| `fc firewall` | Firewall control (v1.1.4) |
+| `fc lock` | Screen lock (v1.1.5) |
+| `fc caffeine` | Sleep prevention (v1.1.5) |
+| `fc clipboard` | Clipboard utils (v1.1.6) |
+| `fc apps` | Package management (v1.1.6) |
+| `fc maintenance` | System cleanup (v1.1.6) |
 
 ### ❌ macOS-Only Commands
 

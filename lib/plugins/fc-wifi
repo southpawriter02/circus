@@ -9,18 +9,13 @@
 #               primary Wi-Fi interface. Useful for scripts, automation, and
 #               quick network troubleshooting.
 #
+# CROSS-PLATFORM:
+#   - macOS: Uses networksetup (built-in)
+#   - Linux: Uses nmcli (NetworkManager)
+#
 # REQUIRES:
-#   - macOS 10.6 or later (networksetup command)
+#   - macOS 10.6+ or Linux with NetworkManager
 #   - Wi-Fi hardware (built-in or compatible adapter)
-#
-# DEPENDENCIES:
-#   - networksetup (built-in macOS utility)
-#   - No administrator privileges required for most operations
-#
-# REFERENCES:
-#   - Apple Documentation: networksetup
-#     https://ss64.com/mac/networksetup.html
-#   - man networksetup
 #
 # ACTIONS:
 #   on      - Turn Wi-Fi adapter on
@@ -32,15 +27,9 @@
 #   fc wifi off       # Disable Wi-Fi
 #   fc wifi status    # Check if Wi-Fi is on or off
 #
-# NOTES:
-#   - Turning Wi-Fi off disconnects from all wireless networks
-#   - Wi-Fi interface is typically en0 (older Macs) or en1 (newer Macs)
-#   - For connecting to specific networks, see networksetup -setairportnetwork
-#
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
-# Source the centralized initialization script to set up the environment.
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
@@ -58,15 +47,10 @@ usage() {
   echo "  fc wifi on       # Enable Wi-Fi"
   echo "  fc wifi status   # Check current state"
   echo ""
+  if is_linux; then
+    msg_info "Linux: Requires NetworkManager (nmcli)"
+  fi
   exit 0
-}
-
-# --- Helper Functions -------------------------------------------------------
-
-# Get the Wi-Fi hardware port name (e.g., en0, en1)
-# This function queries networksetup to find the device associated with Wi-Fi
-get_wifi_port() {
-  networksetup -listallhardwareports | grep -A 1 'Wi-Fi' | awk '/Device:/{print $2}'
 }
 
 # --- Main Logic -------------------------------------------------------------
@@ -75,49 +59,34 @@ main() {
     usage
   fi
 
-  # --- Find Wi-Fi Hardware Port ---------------------------------------------
-  # macOS assigns different device names depending on hardware:
-  #   - en0: Common on older Macs with built-in Wi-Fi
-  #   - en1: Common on newer Macs or when Ethernet is en0
-  # This dynamically detects the correct interface.
-  local wifi_port
-  wifi_port=$(get_wifi_port)
-
-  if [ -z "$wifi_port" ]; then
-    die "No active Wi-Fi hardware port found. Ensure Wi-Fi hardware is present."
-  fi
-
   ACTION="$1"
 
   case "$ACTION" in
 
     # --- Action: on ---------------------------------------------------------
-    # Turn on the Wi-Fi adapter
-    # Uses: networksetup -setairportpower <device> on
-    # Note: This only powers on the adapter; it doesn't connect to a network
     on)
       msg_info "Turning Wi-Fi on..."
-      networksetup -setairportpower "$wifi_port" on
+      os_wifi_on
       msg_success "Wi-Fi is now on."
       ;;
 
     # --- Action: off --------------------------------------------------------
-    # Turn off the Wi-Fi adapter
-    # Uses: networksetup -setairportpower <device> off
-    # Warning: This disconnects from any connected wireless network
     off)
       msg_info "Turning Wi-Fi off..."
-      networksetup -setairportpower "$wifi_port" off
+      os_wifi_off
       msg_success "Wi-Fi is now off."
       ;;
 
     # --- Action: status -----------------------------------------------------
-    # Check the current power state of the Wi-Fi adapter
-    # Uses: networksetup -getairportpower <device>
-    # Returns: "Wi-Fi Power (en0): On" or "Wi-Fi Power (en0): Off"
     status)
       msg_info "Checking Wi-Fi status..."
-      networksetup -getairportpower "$wifi_port"
+      local wifi_status
+      wifi_status=$(os_wifi_status)
+      if [[ "$wifi_status" == "on" ]] || [[ "$wifi_status" == "enabled" ]]; then
+        msg_success "Wi-Fi is currently on."
+      else
+        msg_warning "Wi-Fi is currently off."
+      fi
       ;;
 
     *)

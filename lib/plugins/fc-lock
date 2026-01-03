@@ -4,62 +4,29 @@
 #
 # FILE:         fc-lock
 #
-# DESCRIPTION:  Control screen lock, sleep settings, and display timeout.
+# DESCRIPTION:  Control screen lock and display sleep settings.
 #               Provides quick commands for screen security management.
+#
+# CROSS-PLATFORM:
+#   - macOS: Uses pmset, osascript, defaults
+#   - Linux: Uses loginctl, gnome-screensaver-command, xdg-screensaver
 #
 # USAGE:        fc lock <action> [value]
 #
 # ACTIONS:
 #   now         Lock the screen immediately
-#               - Uses pmset displaysleepnow or keyboard shortcut
-#               - Requires password if 'require on' is set
-#
-#   status      Show current lock and sleep settings
-#               - Password requirement, delay, display sleep times
-#               - Shows settings for both AC and battery power
-#
-#   require     Configure password requirement after sleep
-#               - 'on': Require password immediately after sleep
-#               - 'off': No password required (warning: security risk)
-#
-#   timeout     Set display sleep timeout in seconds
-#               - 0 = never sleep (useful for presentations)
-#               - May require sudo for system-wide changes
-#
-#   screensaver Start the screen saver immediately
-#               - Alias: 'saver'
+#   status      Show current lock settings (macOS only)
+#   require     Configure password requirement (macOS only)
+#   timeout     Set display sleep timeout (macOS only)
+#   screensaver Start the screen saver
 #
 # EXAMPLES:
 #   fc lock now                 # Lock screen immediately
-#   fc lock status              # View current settings
-#   fc lock require on          # Require password after sleep
-#   fc lock timeout 600         # Sleep after 10 minutes
-#   fc lock timeout 0           # Never sleep display
 #   fc lock screensaver         # Start screen saver
-#
-# HOW IT WORKS:
-#   - Password settings: Modifies com.apple.screensaver defaults
-#   - Timeout settings: Uses pmset (Power Management Settings)
-#   - Screen lock: Uses pmset displaysleepnow or AppleScript
-#
-# SECURITY RECOMMENDATIONS:
-#   - Always enable 'fc lock require on' for security
-#   - Use 'fc lock now' when stepping away from your Mac
-#   - Consider a short timeout (5-10 min) for automatic locking
-#   - 'fc lock timeout 0' is useful for presentations only
-#
-# DEPENDENCIES:
-#   Required: pmset, defaults, osascript (built-in to macOS)
-#
-# NOTES:
-#   - timeout changes may require sudo
-#   - Password delay of 0 = immediately after sleep/screensaver
-#   - Settings apply to both AC and battery power
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
-# Source the common initialization script for logging and error handling
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
@@ -70,15 +37,16 @@ usage() {
   echo ""
   msg_info "Actions:"
   echo "  now               - Lock the screen immediately"
-  echo "  status            - Show current lock settings"
-  echo "  require <on/off>  - Require password after sleep"
-  echo "  timeout <seconds> - Set display sleep timeout"
   echo "  screensaver       - Start screen saver now"
+  if is_macos; then
+    echo "  status            - Show current lock settings"
+    echo "  require <on/off>  - Require password after sleep"
+    echo "  timeout <seconds> - Set display sleep timeout"
+  fi
   echo ""
   msg_info "Examples:"
   echo "  fc lock now              # Lock immediately"
-  echo "  fc lock timeout 600      # Sleep after 10 minutes"
-  echo "  fc lock timeout 0        # Never sleep display"
+  echo "  fc lock screensaver      # Start screen saver"
   echo ""
   exit 0
 }
@@ -89,31 +57,36 @@ usage() {
 # Lock screen immediately
 action_now() {
   msg_info "Locking screen..."
-  
-  # Method 1: Use pmset to put display to sleep (triggers lock if enabled)
-  if pmset displaysleepnow 2>/dev/null; then
-    return 0
-  fi
-  
-  # Method 2: Use Control+Command+Q keyboard shortcut via osascript
-  osascript -e 'tell application "System Events" to keystroke "q" using {control down, command down}' 2>/dev/null
-  
-  # The screen is locking, we won't see the success message
+  os_lock_screen
 }
 
 # Start screen saver
 action_screensaver() {
   msg_info "Starting screen saver..."
   
-  # Open ScreenSaverEngine
-  open -a ScreenSaverEngine 2>/dev/null || \
-    /System/Library/CoreServices/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine &
-    
-  msg_success "Screen saver started"
+  if is_macos; then
+    open -a ScreenSaverEngine 2>/dev/null || \
+      /System/Library/CoreServices/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine &
+    msg_success "Screen saver started"
+  elif is_linux; then
+    if command -v xdg-screensaver &>/dev/null; then
+      xdg-screensaver activate
+      msg_success "Screen saver started"
+    elif command -v gnome-screensaver-command &>/dev/null; then
+      gnome-screensaver-command --activate
+      msg_success "Screen saver started"
+    else
+      msg_warning "No screen saver tool found"
+    fi
+  fi
 }
 
-# Show current lock settings
+# Show current lock settings (macOS only)
 action_status() {
+  if ! is_macos; then
+    die "fc lock status is only available on macOS"
+  fi
+  
   msg_info "Screen Lock Settings"
   echo ""
   
@@ -132,10 +105,6 @@ action_status() {
   # Password delay
   local password_delay
   password_delay=$(defaults read com.apple.screensaver askForPasswordDelay 2>/dev/null || echo "0")
-  
-  # Screen saver idle time
-  local screensaver_idle
-  screensaver_idle=$(defaults read com.apple.screensaver idleTime 2>/dev/null || echo "unknown")
   
   # Format output
   echo "  Password Required:    $([ "$ask_for_password" = "1" ] && echo "Yes ✓" || echo "No ✗")"
@@ -162,19 +131,18 @@ action_status() {
     fi
   fi
   
-  if [[ "$screensaver_idle" != "unknown" ]] && [[ "$screensaver_idle" != "0" ]]; then
-    echo "  Screen Saver:         $((screensaver_idle / 60)) minutes"
-  fi
-  
   echo ""
 }
 
-# Configure password requirement
+# Configure password requirement (macOS only)
 action_require() {
+  if ! is_macos; then
+    die "fc lock require is only available on macOS"
+  fi
+  
   local setting="$1"
   
   if [[ -z "$setting" ]]; then
-    # Show current setting
     local current
     current=$(defaults read com.apple.screensaver askForPassword 2>/dev/null || echo "0")
     if [[ "$current" == "1" ]]; then
@@ -209,23 +177,24 @@ action_require() {
   esac
 }
 
-# Set display sleep timeout
+# Set display sleep timeout (macOS only)
 action_timeout() {
+  if ! is_macos; then
+    die "fc lock timeout is only available on macOS"
+  fi
+  
   local seconds="$1"
   
   if [[ -z "$seconds" ]]; then
     die "Please provide timeout in seconds (0 = never)."
   fi
   
-  # Validate it's a number
   if ! [[ "$seconds" =~ ^[0-9]+$ ]]; then
     die "Timeout must be a number (in seconds)."
   fi
   
-  # Convert seconds to minutes for pmset
   local minutes=$((seconds / 60))
   
-  # pmset uses minutes, round up if there's a remainder
   if [[ $((seconds % 60)) -gt 0 ]]; then
     minutes=$((minutes + 1))
   fi
@@ -237,8 +206,6 @@ action_timeout() {
     msg_info "Setting display sleep to $minutes minutes ($seconds seconds)..."
   fi
   
-  # Set for both AC and battery power
-  # Note: This may require sudo
   if sudo pmset -a displaysleep "$minutes" 2>/dev/null; then
     if [[ "$seconds" == "0" ]]; then
       msg_success "Display will never sleep."
@@ -247,15 +214,11 @@ action_timeout() {
     fi
   else
     msg_warning "Could not set system-wide timeout (may need sudo)."
-    msg_info "You can try: sudo pmset -a displaysleep $minutes"
   fi
 }
 
 # --- Main Logic -------------------------------------------------------------
 main() {
-  # This plugin only works on macOS
-  require_macos "fc lock"
-  
   if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
     usage
   fi
@@ -280,7 +243,7 @@ main() {
       action_screensaver
       ;;
     *)
-      die "Unknown action '$action'. Run 'fc fc-lock --help' for available actions."
+      die "Unknown action '$action'. Run 'fc lock --help' for available actions."
       ;;
   esac
 }

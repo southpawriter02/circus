@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.6] - 2026-01-02
+
+### Changed
+
+- **Cross-Platform Phase 4: Package Management** - Final phase of Linux support:
+  - `fc clipboard` - Uses `os_clipboard_copy/paste` (xclip/xsel on Linux)
+  - `fc apps` - Uses apt/dnf/pacman on Linux, Homebrew on macOS
+  - `fc maintenance` - Platform-specific cache cleanup and system maintenance
+
+### Completed
+
+- **Feature #25: Cross-Platform Support** - All phases complete! Core circus functionality now works on Linux:
+  - Phases 1-3: Foundation, networking, desktop integration
+  - Phase 4: Package management and clipboard
+
+### Documentation
+
+- Updated `docs/CROSS_PLATFORM.md` with complete compatibility matrix
+
+## [1.1.5] - 2026-01-02
+
+### Changed
+
+- **Cross-Platform Phase 3: Desktop Integration** - Desktop plugins now work on Linux:
+  - `fc lock` - Uses `os_lock_screen` (loginctl/xdg-screensaver on Linux)
+  - `fc caffeine` - Uses systemd-inhibit or caffeine package on Linux
+  - macOS-specific subcommands (status, require, timeout) still available on macOS only
+
+### Documentation
+
+- Updated `docs/CROSS_PLATFORM.md` to reflect Phase 3 completion
+
+## [1.1.4] - 2026-01-02
+
+### Changed
+
+- **Cross-Platform Phase 2: Networking** - Refactored networking plugins to use OS abstraction:
+  - `fc wifi` - Now uses `os_wifi_on/off/status` (nmcli on Linux)
+  - `fc dns` - Now uses `os_set_dns/get_dns/clear_dns` (resolvectl on Linux)
+  - `fc firewall` - Now uses `os_firewall_on/off/status` (ufw/firewalld on Linux)
+
+### Documentation
+
+- Updated `docs/CROSS_PLATFORM.md` to reflect Phase 2 completion
+
 ## [1.1.3] - 2026-01-02
 
 ### Added

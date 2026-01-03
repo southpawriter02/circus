@@ -6,27 +6,16 @@
 #
 # DESCRIPTION:  Manage the system's DNS settings from the command line.
 #               Allows viewing, setting, and clearing custom DNS servers for
-#               the active network interface. Useful for switching between
-#               different DNS providers or troubleshooting network issues.
+#               the active network interface.
+#
+# CROSS-PLATFORM:
+#   - macOS: Uses networksetup (built-in)
+#   - Linux: Uses resolvectl (systemd-resolved) or /etc/resolv.conf
 #
 # REQUIRES:
-#   - macOS 10.6 or later (networksetup command)
-#   - Active network connection (Wi-Fi or Ethernet)
+#   - macOS 10.6+ or Linux
+#   - Active network connection
 #   - Administrator privileges for set/clear operations
-#
-# DEPENDENCIES:
-#   - networksetup (built-in macOS utility)
-#   - sudo (for modifying DNS settings)
-#
-# REFERENCES:
-#   - Apple Documentation: networksetup
-#     https://ss64.com/mac/networksetup.html
-#   - man networksetup
-#   - Popular DNS providers:
-#     - Google: 8.8.8.8, 8.8.4.4
-#     - Cloudflare: 1.1.1.1, 1.0.0.1
-#     - OpenDNS: 208.67.222.222, 208.67.220.220
-#     - Quad9: 9.9.9.9, 149.112.112.112
 #
 # ACTIONS:
 #   get/status  - Show current DNS servers
@@ -39,16 +28,15 @@
 #   fc dns set 1.1.1.1               # Use Cloudflare DNS
 #   fc dns clear                     # Revert to DHCP DNS
 #
-# NOTES:
-#   - DNS changes require administrator (sudo) password
-#   - "Empty" is a special value that clears custom DNS settings
-#   - The active network service is automatically detected
-#   - Multiple DNS servers provide redundancy
+# POPULAR DNS PROVIDERS:
+#   Google:     8.8.8.8, 8.8.4.4
+#   Cloudflare: 1.1.1.1, 1.0.0.1
+#   OpenDNS:    208.67.222.222, 208.67.220.220
+#   Quad9:      9.9.9.9, 149.112.112.112
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
-# Source the centralized initialization script to set up the environment.
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
@@ -60,8 +48,8 @@ usage() {
   echo ""
   msg_info "Actions:"
   echo "  get             - Show the current DNS servers."
-  echo "  set <ip>...     - Set one or more custom DNS servers (e.g., 8.8.8.8 1.1.1.1)."
-  echo "  clear           - Clear custom DNS servers, reverting to the default."
+  echo "  set <ip>...     - Set one or more custom DNS servers."
+  echo "  clear           - Clear custom DNS servers, reverting to default."
   echo "  status          - Alias for 'get'."
   echo ""
   msg_info "Examples:"
@@ -76,17 +64,32 @@ usage() {
   echo "  OpenDNS:    208.67.222.222, 208.67.220.220"
   echo "  Quad9:      9.9.9.9, 149.112.112.112"
   echo ""
+  if is_linux; then
+    msg_info "Linux: Uses resolvectl or /etc/resolv.conf"
+  fi
   exit 0
 }
 
 # --- Helper Functions -------------------------------------------------------
 
-# Get the name of the active network service (e.g., "Wi-Fi", "Ethernet")
-# This queries networksetup to find services, then identifies the connected one
+# Get the name of the active network service (macOS only)
 get_active_network_service() {
-  # List all network services and find one that's connected
-  # The '|| true' prevents set -e from exiting if grep finds no match
-  networksetup -listallnetworkservices | grep -i 'connected' | head -n 1 || true
+  if is_macos; then
+    # Find the active network service based on the default route
+    local active_device
+    active_device=$(route -n get default 2>/dev/null | grep 'interface' | awk '{print $2}')
+    
+    if [[ -n "$active_device" ]]; then
+      # Map device to network service name
+      networksetup -listallhardwareports | grep -B1 "Device: $active_device" | grep "Hardware Port:" | sed 's/Hardware Port: //'
+    else
+      # Fallback: try Wi-Fi first, then Ethernet
+      echo "Wi-Fi"
+    fi
+  else
+    # Linux: return empty (not used)
+    echo ""
+  fi
 }
 
 # --- Main Logic -------------------------------------------------------------
@@ -95,52 +98,42 @@ main() {
     usage
   fi
 
-  # --- Find Active Network Service ------------------------------------------
-  # macOS can have multiple network services (Wi-Fi, Ethernet, etc.)
-  # We identify the currently active/connected one to modify its DNS.
-  local service
-  service=$(get_active_network_service)
-
-  if [ -z "$service" ]; then
-    die "No active and connected network service found."
+  # --- Find Active Network Service (macOS) ----------------------------------
+  local service=""
+  if is_macos; then
+    service=$(get_active_network_service)
+    if [ -z "$service" ]; then
+      die "No active network service found."
+    fi
+    msg_info "Active network service: $service"
   fi
-  msg_info "Active network service: $service"
 
   ACTION="$1"
-  shift # Remove the action from the argument list
+  shift
 
   case "$ACTION" in
 
     # --- Action: get/status -------------------------------------------------
-    # Display the current DNS servers for the active network service
-    # Uses: networksetup -getdnsservers <service>
-    # Output: List of DNS IPs, or "There aren't any DNS Servers set" if using DHCP
     get|status)
       msg_info "Current DNS servers:"
-      networksetup -getdnsservers "$service"
+      os_get_dns "$service"
       ;;
 
     # --- Action: set --------------------------------------------------------
-    # Set custom DNS servers for the active network service
-    # Uses: networksetup -setdnsservers <service> <ip1> [ip2] [ip3]...
-    # Note: Requires sudo. Multiple servers provide fallback redundancy.
     set)
       if [ -z "$1" ]; then
         die "You must provide at least one DNS server IP address."
       fi
       msg_info "Setting DNS servers to: $*"
-      sudo networksetup -setdnsservers "$service" "$@"
+      os_set_dns "$service" "$@"
       msg_success "DNS servers have been updated."
       ;;
 
     # --- Action: clear ------------------------------------------------------
-    # Clear custom DNS servers, reverting to DHCP-provided servers
-    # Uses: networksetup -setdnsservers <service> "Empty"
-    # Note: "Empty" is a special keyword that clears the custom DNS list
     clear)
       msg_info "Clearing DNS servers..."
-      sudo networksetup -setdnsservers "$service" "Empty"
-      msg_success "DNS servers have been cleared. The system will now use the default (DHCP-provided) servers."
+      os_clear_dns "$service"
+      msg_success "DNS servers have been cleared. System will use DHCP-provided servers."
       ;;
 
     *)
