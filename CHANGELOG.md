@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.7] - 2026-01-02
+
+### Added
+
+- **Feature #23: Interactive FC Command** - New `-i/--interactive` flag for guided command discovery:
+  - `fc -i` launches fzf-powered interactive menu
+  - Browse all commands with descriptions
+  - Preview command help in side panel
+  - Select actions/subcommands interactively
+  - Fallback mode when fzf is not installed
+
+### New Files
+
+- `lib/interactive.sh` - Interactive mode helper functions
+
+### Changed
+
+- `bin/fc` - Added `-i/--interactive` flag, improved command parsing
+
 ## [1.1.6] - 2026-01-02
 
 ### Changed

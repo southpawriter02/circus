@@ -10,6 +10,12 @@
 #
 # USAGE:        fc [global options] <command> [command options]
 #
+# OPTIONS:
+#   -i, --interactive    Launch interactive mode (requires fzf)
+#   --log-file <path>    Redirect all log output to the specified file
+#   --log-level <level>  Set console log level (DEBUG, INFO, WARN, ERROR)
+#   --silent             Suppress all output except critical errors
+#
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
@@ -25,6 +31,7 @@ usage() {
   msg_info "Usage: fc [global options] <command> [command options]"
   echo ""
   msg_info "Global Options:"
+  echo "  -i, --interactive  Launch interactive mode (requires fzf)"
   echo "  --log-file <path>  Redirect all log output to the specified file."
   echo "  --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL)."
   echo "  --silent           Suppress all output except critical errors."
@@ -33,9 +40,10 @@ usage() {
   echo ""
   msg_info "Available commands:"
   # Use -perm for macOS compatibility (-executable is a GNU extension)
-  find "$PLUGIN_DIR" -maxdepth 1 -type f -perm +111 -exec basename {} \; | sort
+  find "$PLUGIN_DIR" -maxdepth 1 -type f -perm +111 -exec basename {} \; | sed 's/^fc-//' | sort
   echo ""
   msg_info "Run 'fc <command> --help' for more information on a specific command."
+  msg_info "Run 'fc -i' for interactive mode."
   exit 0
 }
 
@@ -44,6 +52,19 @@ usage() {
 # First, parse any global options before we look for the subcommand.
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    -i|--interactive)
+      # Source interactive module and run interactive mode
+      source "$DOTFILES_ROOT/lib/interactive.sh"
+      if has_fzf; then
+        run_interactive_mode "$PLUGIN_DIR"
+      else
+        msg_warning "fzf not found. Using simple interactive mode."
+        msg_info "Install fzf for a better experience: brew install fzf"
+        echo ""
+        run_simple_interactive "$PLUGIN_DIR"
+      fi
+      exit 0
+      ;;
     --log-file)
       export LOG_FILE_PATH="$2"
       mkdir -p "$(dirname "$LOG_FILE_PATH")"
@@ -83,7 +104,13 @@ fi
 
 # The first remaining argument is the subcommand.
 SUBCOMMAND="$1"
-PLUGIN_SCRIPT="$PLUGIN_DIR/$SUBCOMMAND"
+
+# Support both "fc wifi" and "fc fc-wifi" syntax
+if [[ ! "$SUBCOMMAND" == fc-* ]]; then
+  PLUGIN_SCRIPT="$PLUGIN_DIR/fc-$SUBCOMMAND"
+else
+  PLUGIN_SCRIPT="$PLUGIN_DIR/$SUBCOMMAND"
+fi
 
 # Check if the plugin script exists and is executable.
 if [ -x "$PLUGIN_SCRIPT" ]; then

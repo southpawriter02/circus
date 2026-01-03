@@ -77,7 +77,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
         *   `24-web-ui-dashboard`: A major undertaking to create a graphical interface for the tool.
         *   ~~`25-cross-platform-support`~~: **DONE** (v1.1.3-1.1.6) - Complete Linux support with OS abstraction layer. All core plugins work on Linux (Ubuntu, Fedora, Arch). See `docs/CROSS_PLATFORM.md`.
     *   **Enhanced Interactivity:**
-        *   `23-interactive-fc-command`: Add an interactive mode (e.g., using `fzf`) to guide users through commands.
+        *   ~~`23-interactive-fc-command`~~: **DONE** (v1.1.7) - `fc -i` launches fzf-powered interactive menu with command previews
         *   `11-interactive-role-creation`: A specific interactive helper for creating new roles.
     *   **Quality-of-Life Improvements:**
         *   `43-macos-notification-integration`: Use macOS notifications for long-running tasks.
