@@ -103,6 +103,53 @@ run_defaults "com.apple.systemsound" "com.apple.sound.beep.sound" "-int" "0"
 run_defaults "NSGlobalDomain" "com.apple.sound.beep.feedback" "-int" "0"
 
 # ==============================================================================
+# Accessibility Sound Settings
+# ==============================================================================
+
+# --- Flash Screen on Alert ---
+# Key:          flashScreen
+# Domain:       com.apple.universalaccess
+# Description:  Flashes the screen when an alert sound plays. This visual cue
+#               is useful for users who are deaf or hard of hearing, or in
+#               noisy environments where audio alerts might be missed.
+# Default:      false (no screen flash)
+# Options:      true  = Flash screen on alert sounds
+#               false = No screen flash
+# Set to:       false (disabled for most users)
+# UI Location:  System Settings > Accessibility > Audio > Flash the screen when an alert sound occurs
+# Source:       https://support.apple.com/guide/mac-help/change-accessibility-audio-settings-mchlc8899a11/mac
+run_defaults "com.apple.universalaccess" "flashScreen" "-bool" "false"
+
+# --- Stereo Audio Balance ---
+# Key:          com.apple.sound.beep.stereoPan
+# Domain:       NSGlobalDomain
+# Description:  Controls the left/right balance for stereo audio output.
+#               Centered (0.0) provides equal volume to both channels.
+#               Useful for users with hearing differences between ears.
+# Default:      0.0 (centered)
+# Options:      Float value from -1.0 to 1.0
+#               -1.0 = Full left
+#               0.0  = Centered (balanced)
+#               1.0  = Full right
+# Set to:       0.0 (balanced stereo output)
+# UI Location:  System Settings > Sound > Output > Balance slider
+# Source:       https://support.apple.com/guide/mac-help/adjust-the-sound-on-mac-mchlp2256/mac
+run_defaults "NSGlobalDomain" "com.apple.sound.beep.stereoPan" "-float" "0.0"
+
+# --- Interface Sound Effects Volume ---
+# Key:          com.apple.sound.uiaudio.enabled
+# Domain:       NSGlobalDomain
+# Description:  Controls whether UI sound effects play (clicks, trash sounds,
+#               screenshot sounds, etc.). Already configured above, but this
+#               documents the full behavior. Note: The key uses integer values.
+# Default:      1 (enabled)
+# Options:      0 = Disabled (silent interface)
+#               1 = Enabled (play UI sounds)
+# Set to:       1 (keep UI sounds for feedback)
+# UI Location:  System Settings > Sound > Play user interface sound effects
+# Note:         This complements the alert volume setting for complete audio control.
+
+# ==============================================================================
 # Audio Input/Output
 #
 # NOTE: Input and output device selection is typically done through:

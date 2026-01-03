@@ -103,6 +103,36 @@ run_defaults "com.apple.universalaccess" "increaseContrast" "-bool" "false"
 # UI Location:  System Settings > Accessibility > Display > Differentiate without color
 run_defaults "com.apple.universalaccess" "differentiateWithoutColor" "-bool" "false"
 
+# --- Show Window Title Icons ---
+# Key:          showWindowTitlebarIcons
+# Domain:       com.apple.universalaccess
+# Description:  Shows a proxy icon in window title bars that represents the
+#               current document or folder. Useful for dragging files or
+#               seeing the path at a glance. In recent macOS versions, this
+#               icon is hidden by default and appears on hover.
+# Default:      false (icon appears on hover)
+# Options:      true  = Always show title bar icons
+#               false = Show icons on hover only
+# Set to:       true (always visible for quick access)
+# UI Location:  System Settings > Accessibility > Display > Show window title icons
+# Source:       https://support.apple.com/guide/mac-help/change-display-preferences-mchlp1108/mac
+# Note:         Command-click the icon to see the full path.
+run_defaults "com.apple.universalaccess" "showWindowTitlebarIcons" "-bool" "true"
+
+# --- Show Toolbar Button Shapes ---
+# Key:          showToolbarButtonShapes
+# Domain:       com.apple.universalaccess
+# Description:  Adds visible button shapes/outlines around toolbar buttons,
+#               making them easier to identify as clickable elements. Useful
+#               for users who have difficulty distinguishing interactive elements.
+# Default:      false (no button shapes)
+# Options:      true  = Show button shapes
+#               false = No button shapes (modern flat design)
+# Set to:       false (modern appearance)
+# UI Location:  System Settings > Accessibility > Display > Show toolbar button shapes
+# Source:       https://support.apple.com/guide/mac-help/change-display-preferences-mchlp1108/mac
+run_defaults "com.apple.universalaccess" "showToolbarButtonShapes" "-bool" "false"
+
 # ==============================================================================
 # Display Options
 # ==============================================================================

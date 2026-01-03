@@ -145,5 +145,42 @@ else
   defaults write com.apple.TextEdit WinV -string "(900, 600)"
 fi
 
+# ==============================================================================
+# Link and Data Detection Settings
+# ==============================================================================
+
+# --- Smart Links (Data Detectors) ---
+# Key:          SmartLinks
+# Domain:       com.apple.TextEdit
+# Description:  Controls whether TextEdit automatically detects and makes
+#               URLs, email addresses, and other data clickable links. When
+#               enabled, typing "http://example.com" becomes a clickable link.
+# Default:      true (links are automatically detected)
+# Options:      true  = Auto-detect and linkify URLs, emails, etc.
+#               false = Treat all text as plain text
+# Set to:       true (clickable links are convenient)
+# UI Location:  Edit > Substitutions > Smart Links (toggle)
+# Source:       https://support.apple.com/guide/textedit/type-special-characters-txted0d7f6/mac
+# Note:         Works in both plain text and rich text mode. Links are
+#               visually distinct and can be Command-clicked to open.
+run_defaults "com.apple.TextEdit" "SmartLinks" "-bool" "true"
+
+# --- Data Detectors ---
+# Key:          DataDetectors
+# Domain:       com.apple.TextEdit
+# Description:  Controls whether TextEdit detects dates, addresses, phone
+#               numbers, and other data types, allowing you to quickly add
+#               them to Calendar, Contacts, or other apps. This is more
+#               extensive than SmartLinks.
+# Default:      true (data detection enabled)
+# Options:      true  = Detect and highlight dates, addresses, phone numbers
+#               false = Disable data detection
+# Set to:       true (useful for quickly acting on detected data)
+# UI Location:  Edit > Substitutions > Data Detectors (toggle)
+# Source:       https://support.apple.com/guide/textedit/type-special-characters-txted0d7f6/mac
+# Note:         Click on detected data to see action options (add to calendar,
+#               create contact, etc.). Works in both plain text and rich text.
+run_defaults "com.apple.TextEdit" "DataDetectors" "-bool" "true"
+
 
 msg_success "TextEdit settings applied."

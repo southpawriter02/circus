@@ -168,6 +168,37 @@ run_defaults "com.apple.universalaccess" "closeViewNearPoint" "-int" "20"
 # Note:         Useful for users who need occasional text magnification
 run_defaults "com.apple.universalaccess" "hoverTextEnabled" "-bool" "false"
 
+# --- Hover Text Font Size ---
+# Key:          hoverTextFontSize
+# Domain:       com.apple.universalaccess
+# Description:  Sets the font size for the hover text magnification feature.
+#               Larger values make the magnified text bigger when holding
+#               Command over text elements.
+# Default:      32
+# Options:      Integer value (points):
+#               16  = Small
+#               32  = Medium (default)
+#               64  = Large
+#               128 = Very large
+# Set to:       32 (comfortable reading size)
+# UI Location:  System Settings > Accessibility > Zoom > Hover Text > Text size
+# Source:       https://support.apple.com/guide/mac-help/change-zoom-preferences-mchl70c97e7f/mac
+# Note:         Only applies when hoverTextEnabled is true.
+run_defaults "com.apple.universalaccess" "hoverTextFontSize" "-int" "32"
+
+# --- Flash Screen on Zoom Toggle ---
+# Key:          closeViewFlashScreen
+# Domain:       com.apple.universalaccess
+# Description:  Briefly flashes the screen when zoom is toggled on or off,
+#               providing visual confirmation that the zoom state has changed.
+# Default:      false (no flash)
+# Options:      true  = Flash screen when toggling zoom
+#               false = No visual feedback on zoom toggle
+# Set to:       false (no flash - can be distracting)
+# UI Location:  System Settings > Accessibility > Zoom > Flash screen when zoom changes
+# Source:       https://support.apple.com/guide/mac-help/change-zoom-preferences-mchl70c97e7f/mac
+run_defaults "com.apple.universalaccess" "closeViewFlashScreen" "-bool" "false"
+
 # ==============================================================================
 # Pinch to Zoom (Trackpad)
 # ==============================================================================

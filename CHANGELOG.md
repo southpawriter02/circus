@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.2] - 2026-01-04
+
+### Added
+
+- **v1.3.2: Major Defaults Expansion** - 50 new settings across 15 scripts:
+
+  **Input Scripts (10 new)**:
+  - `input/trackpad_mouse.sh` - Three-finger drag, right-click, haptic feedback, drag lock, swipe gestures
+  - `input/keyboard.sh` - Press and hold, auto-correct, smart quotes, auto-capitalization
+
+  **Interface Scripts (14 new)**:
+  - `interface/finder.sh` - New window target, path, Quick Look text, spring-load, animations
+  - `interface/dock.sh` - Icon size, auto-hide, delay, position, recents, minimize effect
+  - `interface/mission_control.sh` - Group by app, separate spaces, switch on activate
+
+  **System Scripts (10 new)**:
+  - `system/sound.sh` - Flash screen, stereo balance, interface sounds
+  - `system/energy.sh` - Lid wake, reduce brightness on battery (pmset)
+  - `system/software_update.sh` - Config data install, check frequency
+  - `system/screensaver.sh` - Show clock, module documentation
+
+  **Accessibility Scripts (8 new)**:
+  - `accessibility/pointer.sh` - Slow keys, slow key delay, sticky keys, sticky key sound
+  - `accessibility/display.sh` - Window title icons, toolbar button shapes
+  - `accessibility/zoom.sh` - Hover text font size, flash screen on zoom
+
+  **Application Scripts (8 new)**:
+  - `applications/safari.sh` - Tab behavior, page zoom, downloads path
+  - `applications/terminal.sh` - UTF-8 encoding, unlimited scrollback, bold fonts
+  - `applications/textedit.sh` - Smart links, data detectors
+
 ## [1.3.1] - 2026-01-04
 
 ### Added

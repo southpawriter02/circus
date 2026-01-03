@@ -120,4 +120,43 @@ run_defaults "com.apple.screensaver" "askForPasswordDelay" "-int" "0"
 run_defaults "com.apple.screensaver" "idleTime" "-int" "600"
 
 
+# ==============================================================================
+# Screen Saver Display Settings
+# ==============================================================================
+
+# --- Show Clock on Screen Saver ---
+# Key:          showClock
+# Domain:       com.apple.screensaver
+# Description:  Displays a clock overlay on the screen saver, showing the
+#               current time while the screen saver is active. Useful for
+#               quickly checking the time without unlocking the Mac.
+# Default:      false (no clock shown)
+# Options:      true  = Show clock on screen saver
+#               false = Hide clock (screen saver only)
+# Set to:       true (convenient time display)
+# UI Location:  System Settings > Lock Screen > Show large clock
+# Source:       https://support.apple.com/guide/mac-help/change-lock-screen-settings-mchl8a3b1a59/mac
+run_defaults "com.apple.screensaver" "showClock" "-bool" "true"
+
+# --- Screen Saver Module Selection ---
+# Key:          moduleDict
+# Domain:       com.apple.screensaver
+# Description:  Specifies which screen saver module to use. This is a dictionary
+#               containing the module name and path. Common built-in options include
+#               Drift, Hello, Monterey (aerial), and others in /System/Library/Screen Savers/.
+# Default:      Varies (typically one of the built-in modules)
+# Options:      Dictionary with moduleName and path keys
+# Set to:       (Not setting via defaults - use System Settings UI)
+# UI Location:  System Settings > Screen Saver > (select a screen saver)
+# Source:       https://support.apple.com/guide/mac-help/use-a-screen-saver-mchl4b68853d/mac
+# Note:         The moduleDict is a complex type that's easier to set via the UI.
+#               Available screen savers can be found in:
+#               - /System/Library/Screen Savers/
+#               - ~/Library/Screen Savers/ (custom)
+#               - /Library/Screen Savers/ (system-wide custom)
+#
+# Example to see current setting:
+#   defaults read com.apple.screensaver moduleDict
+
+
 msg_success "Screensaver settings applied."

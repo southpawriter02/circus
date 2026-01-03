@@ -192,6 +192,43 @@ sudo pmset -a gpuswitch 2
 # Set to:       1 (keep connections for notifications)
 sudo pmset -a tcpkeepalive 1
 
+# ==============================================================================
+# Lid & Wake Behavior
+# ==============================================================================
+
+# --- Wake on Lid Open ---
+# Command:      pmset -a lidwake
+# Description:  Controls whether the Mac wakes from sleep when you open the lid.
+#               When enabled, opening a MacBook's lid immediately wakes it.
+# Default:      1 (enabled)
+# Options:      0 = Disabled (must press key to wake)
+#               1 = Enabled (wake when lid opens)
+# Set to:       1 (natural wake behavior)
+# UI Location:  Not directly in UI (terminal only)
+# Source:       man pmset
+sudo pmset -a lidwake 1
+
+# --- Reduce Brightness on Battery ---
+# Command:      pmset -b lessbright
+# Description:  Slightly reduce display brightness when switching to battery
+#               power. This automatic dimming helps extend battery life.
+# Default:      1 (enabled on most portable Macs)
+# Options:      0 = Disabled (same brightness on battery)
+#               1 = Enabled (dim slightly on battery)
+# Set to:       1 (save battery with reduced brightness)
+# UI Location:  System Settings > Battery > Low Power Mode (similar effect)
+# Note:         This is a subtle brightness reduction, not full dimming.
+sudo pmset -b lessbright 1
+
+# --- Prevent Idle Sleep When Display Off ---
+# Command:      pmset -a sleep
+# Description:  Note about preventing system sleep while display is off.
+#               The displaysleep setting (above) can differ from system sleep.
+#               Set system sleep to 0 to prevent sleep when display is off.
+# Note:         This is documented here for reference. The actual setting
+#               is configured in the System Sleep section above.
+#               For servers or media centers, set: sudo pmset -c sleep 0
+
 msg_success "Energy and power management settings configured."
 
 # ==============================================================================

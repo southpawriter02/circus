@@ -164,5 +164,56 @@ run_defaults "com.apple.Safari" "SuppressSearchSuggestions" "-bool" "true"
 #               use subdomains to mimic legitimate sites (e.g., bank.evil.com).
 run_defaults "com.apple.Safari" "ShowFullURLInSmartSearchField" "-bool" "true"
 
+# ==============================================================================
+# Tab & Window Settings
+# ==============================================================================
+
+# --- Open New Tabs in Background ---
+# Key:          OpenNewTabsInFront
+# Domain:       com.apple.Safari
+# Description:  Controls whether new tabs opened via Command-click open in
+#               the foreground (switching to them) or background (staying on
+#               current page). When set to false, new tabs open in the background.
+# Default:      false (new tabs open in background)
+# Options:      true  = Switch to new tab immediately
+#               false = Keep current tab active (new tab in background)
+# Set to:       false (open tabs in background for uninterrupted browsing)
+# UI Location:  Safari > Settings > Tabs > When a new tab or window opens, make it active
+# Source:       https://support.apple.com/guide/safari/tabs-sfri28032/mac
+# Note:         This affects Command-click behavior. Hold Shift to reverse.
+run_defaults "com.apple.Safari" "OpenNewTabsInFront" "-bool" "false"
+
+# --- Default Page Zoom ---
+# Key:          DefaultPageZoom
+# Domain:       com.apple.Safari
+# Description:  Sets the default zoom level for web pages. A value of 1.0 is
+#               100% (normal size). Increase for larger text and images.
+# Default:      1 (100% zoom)
+# Options:      Float value as a multiplier:
+#               0.85 = 85% (smaller)
+#               1.0  = 100% (normal)
+#               1.15 = 115% (slightly larger)
+#               1.25 = 125% (larger)
+#               1.5  = 150% (much larger)
+# Set to:       1 (default 100% zoom)
+# UI Location:  Safari > Settings > Websites > Page Zoom
+# Source:       https://support.apple.com/guide/safari/zoom-in-on-webpages-ibrw1068/mac
+# Note:         Per-site zoom settings are remembered separately.
+run_defaults "com.apple.Safari" "DefaultPageZoom" "-float" "1"
+
+# --- Downloads Folder Path ---
+# Key:          DownloadsPath
+# Domain:       com.apple.Safari
+# Description:  Specifies the folder where Safari saves downloaded files.
+#               By default, files are saved to ~/Downloads.
+# Default:      ~/Downloads (user's Downloads folder)
+# Options:      Any valid directory path
+# Set to:       ~/Downloads (standard location)
+# UI Location:  Safari > Settings > General > File download location
+# Source:       https://support.apple.com/guide/safari/general-ibrw1002/mac
+# Note:         Use "Ask for each download" in the UI for more control.
+#               The path should be an absolute path or ~ for home directory.
+run_defaults "com.apple.Safari" "DownloadsPath" "-string" "~/Downloads"
+
 
 msg_success "Safari settings applied."

@@ -192,6 +192,99 @@ run_defaults "com.apple.finder" "_FXSortFoldersFirst" "-bool" "true"
 run_defaults "com.apple.finder" "FXEnableExtensionChangeWarning" "-bool" "false"
 
 # ==============================================================================
+# Window & Navigation Behavior
+# ==============================================================================
+
+# --- New Finder Window Target ---
+# Key:          NewWindowTarget
+# Domain:       com.apple.finder
+# Description:  Controls what location opens when you create a new Finder window
+#               (Cmd+N) or click the Finder dock icon. Setting this to your home
+#               folder provides quick access to your personal files.
+# Default:      PfHm (Home folder)
+# Options:      PfCm = Computer (shows all volumes)
+#               PfVo = Volume (root of current volume)
+#               PfHm = Home folder (~/)
+#               PfDe = Desktop (~/Desktop)
+#               PfDo = Documents (~/Documents)
+#               PfLo = All My Files (spotlight-based view)
+#               PfAF = iCloud Drive
+# Set to:       PfHm (home folder for quick access)
+# UI Location:  Finder > Settings > General > New Finder windows show
+# Source:       https://support.apple.com/guide/mac-help/finder-settings-mchlp2899/mac
+run_defaults "com.apple.finder" "NewWindowTarget" "-string" "PfHm"
+
+# --- New Window Target Path ---
+# Key:          NewWindowTargetPath
+# Domain:       com.apple.finder
+# Description:  Specifies the exact path for new Finder windows. This works in
+#               conjunction with NewWindowTarget to define the starting location.
+#               Must be a file:// URL format.
+# Default:      file://${HOME}/ (user's home directory)
+# Set to:       file://${HOME}/ (matches NewWindowTarget setting)
+# UI Location:  Finder > Settings > General > New Finder windows show
+# Source:       https://support.apple.com/guide/mac-help/finder-settings-mchlp2899/mac
+# Note:         The path must use file:// URL scheme and be properly escaped.
+run_defaults "com.apple.finder" "NewWindowTargetPath" "-string" "file://${HOME}/"
+
+# --- Quick Look Text Selection ---
+# Key:          QLEnableTextSelection
+# Domain:       com.apple.finder
+# Description:  Enables selecting and copying text from Quick Look previews
+#               (spacebar preview). By default, Quick Look only displays text
+#               but doesn't allow selection. Enabling this lets you copy text
+#               without fully opening the document.
+# Default:      false (text selection disabled in Quick Look)
+# Options:      true  = Enable text selection in Quick Look
+#               false = View-only mode (no selection)
+# Set to:       true (copy text directly from previews)
+# UI Location:  Not available in UI (terminal only)
+# Source:       https://support.apple.com/guide/mac-help/view-and-edit-files-quick-look-mh14119/mac
+# Note:         Press spacebar to preview a file, then select text directly.
+run_defaults "com.apple.finder" "QLEnableTextSelection" "-bool" "true"
+
+# --- Spring-Loaded Folders Delay ---
+# Key:          com.apple.springing.delay
+# Domain:       NSGlobalDomain
+# Description:  Controls the delay before spring-loaded folders open when
+#               dragging a file over them. Spring loading automatically opens
+#               a folder when you hover over it during a drag operation.
+# Default:      0.5 (half second delay)
+# Options:      Float value in seconds:
+#               0.0 = Instant (no delay)
+#               0.3 = Short delay (recommended)
+#               0.5 = Default
+#               1.0 = Long delay
+# Set to:       0.3 (faster response for efficient file management)
+# UI Location:  System Settings > Accessibility > Pointer Control > Spring-loading delay
+# Source:       https://support.apple.com/guide/mac-help/accessibility-pointer-control-settings-mchl5bb87cce/mac
+if [ "$DRY_RUN_MODE" = true ]; then
+  msg_info "[Dry Run] Would set global preference: com.apple.springing.delay to 0.3"
+else
+  defaults write NSGlobalDomain com.apple.springing.delay -float 0.3
+fi
+
+# --- Disable Window Animations ---
+# Key:          NSAutomaticWindowAnimationsEnabled
+# Domain:       NSGlobalDomain
+# Description:  Controls whether windows animate when opening documents from
+#               Finder (the zoom effect from file icon to window). Disabling
+#               this makes Finder feel snappier by removing the animation delay.
+# Default:      true (animations enabled)
+# Options:      true  = Enable window opening animations
+#               false = Disable animations (instant window appearance)
+# Set to:       false (faster, no animation delay)
+# UI Location:  Not directly available in UI (terminal only)
+# Source:       https://support.apple.com/guide/mac-help/change-general-preferences-mchlp1225/mac
+# Note:         This affects all apps that use standard window opening behavior,
+#               not just Finder.
+if [ "$DRY_RUN_MODE" = true ]; then
+  msg_info "[Dry Run] Would set global preference: NSAutomaticWindowAnimationsEnabled to false"
+else
+  defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+fi
+
+# ==============================================================================
 # Apply Changes
 # ==============================================================================
 

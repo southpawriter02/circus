@@ -199,6 +199,59 @@ run_defaults "com.apple.Terminal" "ShowLineMarks" "-bool" "true"
 #               keep the window open so you can review output and exit codes.
 run_defaults "com.apple.Terminal" "ShellExitAction" "-int" "1"
 
+# ==============================================================================
+# Encoding & Display Settings
+# ==============================================================================
+
+# --- UTF-8 Text Encoding ---
+# Key:          StringEncodings
+# Domain:       com.apple.Terminal
+# Description:  Sets the text encoding for Terminal. UTF-8 is the universal
+#               standard for text encoding and supports all Unicode characters,
+#               including international text, emoji, and special symbols.
+# Default:      Varies (typically MacRoman or UTF-8)
+# Options:      Array of encoding values (4 = UTF-8)
+#               4 = UTF-8 (recommended)
+#               Other values for legacy encodings
+# Set to:       4 (UTF-8 for universal character support)
+# UI Location:  Terminal > Settings > Profiles > [Profile] > Advanced > Text encoding
+# Source:       https://support.apple.com/guide/terminal/change-terminal-profile-encoding-trmlenc/mac
+# Note:         UTF-8 is essential for modern development, supporting characters
+#               from all languages and symbol sets.
+run_defaults "com.apple.Terminal" "StringEncodings" "-array" "4"
+
+# --- Scrollback Lines Limit ---
+# Key:          ShouldLimitScrollback
+# Domain:       com.apple.Terminal
+# Description:  Controls whether Terminal limits the number of lines kept in
+#               the scrollback buffer. When disabled, Terminal keeps unlimited
+#               scrollback history (limited only by available memory).
+# Default:      true (limited scrollback)
+# Options:      true  = Limit scrollback to configured number of lines
+#               false = Unlimited scrollback (use available memory)
+# Set to:       false (unlimited scrollback for reviewing command history)
+# UI Location:  Terminal > Settings > Profiles > [Profile] > Window > Scrollback > Limit number of rows
+# Source:       https://support.apple.com/guide/terminal/change-terminal-window-settings-trml107/mac
+# Note:         Unlimited scrollback uses more memory but allows reviewing
+#               entire session history. Consider limiting if memory is constrained.
+run_defaults "com.apple.Terminal" "ShouldLimitScrollback" "-bool" "false"
+
+# --- Use Bold Fonts ---
+# Key:          UseBoldFonts
+# Domain:       com.apple.Terminal
+# Description:  Controls whether Terminal renders bold text using a bold font
+#               weight or using bright colors. When enabled, bold text is
+#               displayed with actual bold font faces for better readability.
+# Default:      true (use bold fonts)
+# Options:      true  = Use bold font weight for bold text
+#               false = Use bright colors instead of bold weight
+# Set to:       true (proper bold fonts for clear distinction)
+# UI Location:  Terminal > Settings > Profiles > [Profile] > Text > Font > Use bold fonts
+# Source:       https://support.apple.com/guide/terminal/change-profiles-text-preferences-trml145/mac
+# Note:         Bold text is commonly used in shell prompts, man pages, and
+#               syntax highlighting. Using actual bold fonts improves legibility.
+run_defaults "com.apple.Terminal" "UseBoldFonts" "-bool" "true"
+
 
 msg_success "Terminal.app settings applied."
 msg_info "You may need to restart Terminal.app for all settings to take effect."

@@ -182,6 +182,72 @@ run_defaults "NSGlobalDomain" "com.apple.swipescrolldirection" "-bool" "true"
 run_defaults "com.apple.universalaccess" "mouseKeysEnabled" "-bool" "false"
 
 # ==============================================================================
+# Keyboard Accessibility (Slow Keys & Sticky Keys)
+# ==============================================================================
+
+# --- Slow Keys ---
+# Key:          slowKey
+# Domain:       com.apple.universalaccess
+# Description:  Enables Slow Keys, which adds a delay between when a key is
+#               pressed and when it registers. This helps users who accidentally
+#               press keys or have difficulty pressing keys briefly.
+# Default:      false (disabled)
+# Options:      true  = Enable slow keys
+#               false = Disable slow keys (normal key response)
+# Set to:       false (disabled for typical users)
+# UI Location:  System Settings > Accessibility > Keyboard > Slow Keys
+# Source:       https://support.apple.com/guide/mac-help/change-accessibility-keyboard-settings-mchlc898a9b2/mac
+run_defaults "com.apple.universalaccess" "slowKey" "-bool" "false"
+
+# --- Slow Keys Delay ---
+# Key:          slowKeyDelay
+# Domain:       com.apple.universalaccess
+# Description:  Sets the delay (in seconds) a key must be held before it
+#               registers when Slow Keys is enabled. Longer delays prevent
+#               accidental key presses but require more deliberate key holds.
+# Default:      0.25 (quarter second)
+# Options:      Float value in seconds (0.0 to 2.0 typical range)
+#               0.1  = Very short delay
+#               0.25 = Default
+#               0.5  = Half second
+#               1.0  = Full second
+# Set to:       0.25 (standard delay if slow keys is enabled)
+# UI Location:  System Settings > Accessibility > Keyboard > Slow Keys > Delay slider
+# Source:       https://support.apple.com/guide/mac-help/change-accessibility-keyboard-settings-mchlc898a9b2/mac
+run_defaults "com.apple.universalaccess" "slowKeyDelay" "-float" "0.25"
+
+# --- Sticky Keys ---
+# Key:          stickyKey
+# Domain:       com.apple.universalaccess
+# Description:  Enables Sticky Keys, which allows modifier keys (Shift, Control,
+#               Option, Command) to be pressed one at a time rather than held
+#               simultaneously. Useful for users who have difficulty pressing
+#               multiple keys at once.
+# Default:      false (disabled)
+# Options:      true  = Enable sticky keys
+#               false = Disable sticky keys (normal modifier behavior)
+# Set to:       false (disabled for typical users)
+# UI Location:  System Settings > Accessibility > Keyboard > Sticky Keys
+# Source:       https://support.apple.com/guide/mac-help/change-accessibility-keyboard-settings-mchlc898a9b2/mac
+# Note:         When enabled, press a modifier key once to activate it for the
+#               next key press, or press it twice to lock it.
+run_defaults "com.apple.universalaccess" "stickyKey" "-bool" "false"
+
+# --- Sticky Keys Sound ---
+# Key:          stickyKeyBeep
+# Domain:       com.apple.universalaccess
+# Description:  Plays a sound when a modifier key is pressed, locked, or released
+#               while Sticky Keys is enabled. Provides audio feedback about the
+#               current state of modifier keys.
+# Default:      false (no sound)
+# Options:      true  = Play sound for sticky key events
+#               false = Silent sticky keys operation
+# Set to:       false (silent operation)
+# UI Location:  System Settings > Accessibility > Keyboard > Sticky Keys > Play a sound when a modifier key is set
+# Source:       https://support.apple.com/guide/mac-help/change-accessibility-keyboard-settings-mchlc898a9b2/mac
+run_defaults "com.apple.universalaccess" "stickyKeyBeepOnModifier" "-bool" "false"
+
+# ==============================================================================
 # Pointer Control - Alternate Control Methods
 #
 # These settings are configured in:

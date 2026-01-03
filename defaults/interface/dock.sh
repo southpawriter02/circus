@@ -29,8 +29,122 @@
 #
 # ==============================================================================
 
+# A helper function to run `defaults write` commands or print them in dry run mode.
+run_defaults() {
+  local domain="$1"
+  local key="$2"
+  local type="$3"
+  local value="$4"
+
+  if [ "$DRY_RUN_MODE" = true ]; then
+    msg_info "[Dry Run] Would set Dock preference: '$key' to '$value'"
+  else
+    defaults write "$domain" "$key" "$type" "$value"
+  fi
+}
+
+# ==============================================================================
+# Dock Preferences
+# ==============================================================================
+
+msg_info "Configuring Dock preferences..."
+
+# --- Dock Icon Size ---
+# Key:          tilesize
+# Domain:       com.apple.dock
+# Description:  Controls the size of icons in the Dock, measured in pixels.
+#               Smaller icons allow more apps in the Dock, while larger icons
+#               are easier to click and identify.
+# Default:      64 (pixels)
+# Options:      Integer value from 16 to 128 pixels
+#               16-32 = Very small (many icons fit)
+#               48    = Small (compact but usable)
+#               64    = Default (balanced)
+#               96-128 = Large (easy to see)
+# Set to:       48 (compact dock for more screen space)
+# UI Location:  System Settings > Desktop & Dock > Size slider
+# Source:       https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac
+run_defaults "com.apple.dock" "tilesize" "-int" "48"
+
+# --- Auto-Hide Dock ---
+# Key:          autohide
+# Domain:       com.apple.dock
+# Description:  Controls whether the Dock automatically hides when not in use.
+#               When enabled, the Dock slides off-screen and reappears when you
+#               move the cursor to the screen edge where the Dock is located.
+# Default:      false (Dock always visible)
+# Options:      true  = Auto-hide Dock (more screen space)
+#               false = Always show Dock
+# Set to:       false (keep Dock visible for quick access)
+# UI Location:  System Settings > Desktop & Dock > Automatically hide and show the Dock
+# Source:       https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac
+run_defaults "com.apple.dock" "autohide" "-bool" "false"
+
+# --- Auto-Hide Delay ---
+# Key:          autohide-delay
+# Domain:       com.apple.dock
+# Description:  Controls the delay before the Dock appears when you move the
+#               cursor to the screen edge (only applies when autohide is enabled).
+#               Setting to 0 makes the Dock appear instantly.
+# Default:      0.2 (seconds)
+# Options:      Float value in seconds:
+#               0.0 = Instant (no delay)
+#               0.2 = Default delay
+#               0.5+ = Longer delay
+# Set to:       0 (instant appearance when needed)
+# UI Location:  Not available in UI (terminal only)
+# Source:       https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac
+run_defaults "com.apple.dock" "autohide-delay" "-float" "0"
+
+# --- Dock Position ---
+# Key:          orientation
+# Domain:       com.apple.dock
+# Description:  Controls which edge of the screen the Dock appears on.
+#               The Dock can be placed at the bottom, left, or right edge.
+# Default:      bottom
+# Options:      bottom = Dock at bottom of screen (traditional)
+#               left   = Dock on left edge
+#               right  = Dock on right edge
+# Set to:       bottom (standard position)
+# UI Location:  System Settings > Desktop & Dock > Position on screen
+# Source:       https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac
+run_defaults "com.apple.dock" "orientation" "-string" "bottom"
+
+# --- Show Recent Applications ---
+# Key:          show-recents
+# Domain:       com.apple.dock
+# Description:  Controls whether the Dock shows recently used applications in
+#               a separate section on the right side of the Dock (before folders).
+#               Disabling this creates a cleaner, more predictable Dock.
+# Default:      true (show recent apps)
+# Options:      true  = Show recent applications section
+#               false = Hide recent applications (cleaner Dock)
+# Set to:       false (cleaner Dock without transient icons)
+# UI Location:  System Settings > Desktop & Dock > Show recent applications in Dock
+# Source:       https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac
+run_defaults "com.apple.dock" "show-recents" "-bool" "false"
+
+# --- Minimize Effect ---
+# Key:          mineffect
+# Domain:       com.apple.dock
+# Description:  Controls the animation style when minimizing windows to the Dock.
+#               The scale effect is faster and less visually distracting than
+#               the default genie effect.
+# Default:      genie (windows squeeze into Dock)
+# Options:      genie = Genie effect (default, playful)
+#               scale = Scale effect (faster, more professional)
+#               suck  = Suck effect (hidden option, requires defaults)
+# Set to:       scale (faster, less distracting)
+# UI Location:  System Settings > Desktop & Dock > Minimize windows using
+# Source:       https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac
+run_defaults "com.apple.dock" "mineffect" "-string" "scale"
+
+# ==============================================================================
+# Dock Items (via dockutil)
+# ==============================================================================
+
 main() {
-  msg_info "Configuring the Dock..."
+  msg_info "Configuring Dock items..."
 
   # --- Prerequisite Check ---
   # dockutil is required to manage Dock items. It's not included with macOS

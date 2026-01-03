@@ -152,5 +152,40 @@ run_defaults "com.apple.SoftwareUpdate" "AutomaticallyInstallMacOSUpdates" "-boo
 #               and protect against emerging threats. Never disable this.
 run_defaults "com.apple.SoftwareUpdate" "CriticalUpdateInstall" "-bool" "true"
 
+# --- Enable Automatic Installation of Configuration Data ---
+# Key:          ConfigDataInstall
+# Domain:       com.apple.SoftwareUpdate
+# Description:  Automatically installs system configuration data updates.
+#               These include certificate trust updates, font updates, voice
+#               updates for accessibility, and other system data that doesn't
+#               require a full software update. Similar to CriticalUpdateInstall
+#               but covers a broader category of background system data.
+# Default:      true (config data updates enabled)
+# Options:      true  = Install configuration data automatically
+#               false = Require manual installation
+# Set to:       true (keep system data current)
+# UI Location:  System Settings > General > Software Update >
+#               Automatic updates > Install Security Responses and system files
+# Source:       https://support.apple.com/en-us/102582
+# Note:         This works alongside CriticalUpdateInstall to keep your Mac's
+#               system data files current without requiring full updates.
+run_defaults "com.apple.SoftwareUpdate" "ConfigDataInstall" "-bool" "true"
+
+# --- Schedule Software Update Check Frequency ---
+# Key:          ScheduleFrequency
+# Domain:       com.apple.SoftwareUpdate
+# Description:  Controls how often macOS checks for software updates when
+#               AutomaticCheckEnabled is true. Value is in days between checks.
+# Default:      1 (check daily)
+# Options:      1 = Daily (recommended)
+#               7 = Weekly
+#               etc.
+# Set to:       1 (daily checks for prompt security updates)
+# UI Location:  Not directly in UI (automatic based on AutomaticCheckEnabled)
+# Source:       man softwareupdate
+# Note:         Daily checks ensure you're notified of security updates quickly.
+#               The actual check is lightweight and doesn't impact performance.
+run_defaults "com.apple.SoftwareUpdate" "ScheduleFrequency" "-int" "1"
+
 
 msg_success "Software Update and App Store settings applied."

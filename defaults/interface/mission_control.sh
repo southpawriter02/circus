@@ -103,6 +103,60 @@ run_defaults "com.apple.dock" "mru-spaces" "-bool" "false"
 #               as Dashboard was completely removed from the system.
 run_defaults "com.apple.dashboard" "mcx-disabled" "-bool" "true"
 
+# --- Group Windows by Application ---
+# Key:          expose-group-apps
+# Domain:       com.apple.dock
+# Description:  Controls whether Mission Control groups windows by application.
+#               When enabled, windows from the same app are stacked together
+#               rather than displayed as separate thumbnails, making it easier
+#               to find related windows.
+# Default:      false (windows displayed individually)
+# Options:      true  = Group windows by application
+#               false = Show all windows individually
+# Set to:       true (organized view of application windows)
+# UI Location:  System Settings > Desktop & Dock > Mission Control >
+#               Group windows by application
+# Source:       https://support.apple.com/en-us/102556
+run_defaults "com.apple.dock" "expose-group-apps" "-bool" "true"
+
+# --- Displays Have Separate Spaces ---
+# Key:          spans-displays
+# Domain:       com.apple.spaces
+# Description:  Controls whether each display has its own set of Spaces or if
+#               Spaces span all displays. When set to false (separate Spaces),
+#               each monitor has independent virtual desktops. When true,
+#               a single Space spans all monitors.
+# Default:      false (separate Spaces per display)
+# Options:      true  = Spaces span all displays (single Space per desktop)
+#               false = Each display has its own Spaces
+# Set to:       false (independent Spaces per display)
+# UI Location:  System Settings > Desktop & Dock > Mission Control >
+#               Displays have separate Spaces
+# Source:       https://support.apple.com/guide/mac-help/work-in-multiple-spaces-mh14112/mac
+# Note:         Requires logout/login to take effect. Setting to false allows
+#               different apps in full-screen on different monitors simultaneously.
+run_defaults "com.apple.spaces" "spans-displays" "-bool" "false"
+
+# --- Switch to Space on App Activate ---
+# Key:          AppleSpacesSwitchOnActivate
+# Domain:       NSGlobalDomain
+# Description:  Controls whether clicking an app in the Dock automatically
+#               switches to the Space where that app's window is located.
+#               When enabled, macOS will switch to the relevant Space to show
+#               the app's window.
+# Default:      true (switch to app's Space)
+# Options:      true  = Switch to Space containing the app
+#               false = Stay on current Space (bring app window to current Space)
+# Set to:       true (follow apps to their Spaces)
+# UI Location:  System Settings > Desktop & Dock > Mission Control >
+#               When switching to an application, switch to a Space with open windows
+# Source:       https://support.apple.com/guide/mac-help/work-in-multiple-spaces-mh14112/mac
+if [ "$DRY_RUN_MODE" = true ]; then
+  msg_info "[Dry Run] Would set global preference: AppleSpacesSwitchOnActivate to true"
+else
+  defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool true
+fi
+
 # ==============================================================================
 # Hot Corners Configuration
 # ==============================================================================

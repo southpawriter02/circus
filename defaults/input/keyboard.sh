@@ -123,4 +123,75 @@ run_defaults "InitialKeyRepeat" "-int" "10"
 run_defaults "AppleKeyboardUIMode" "-int" "2"
 
 
+# ==============================================================================
+# Text Input Behavior
+# ==============================================================================
+
+# --- Disable Press and Hold for Accent Characters ---
+# Key:          ApplePressAndHoldEnabled
+# Domain:       NSGlobalDomain
+# Description:  Controls whether holding down a key shows an accent character
+#               popup menu (like on iOS) or repeats the key. Disabling this
+#               allows key repeat when holding a key, which is essential for
+#               vim users and anyone who relies on key repeat for navigation.
+# Default:      true (show accent menu on key hold)
+# Options:      true  = Show accent popup menu (no key repeat)
+#               false = Enable key repeat (no accent menu)
+# Set to:       false (enable key repeat for vim/terminal users)
+# UI Location:  Not available in System Settings (terminal only)
+# Source:       https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac
+# Note:         After changing this setting, you may need to restart apps for
+#               the change to take effect. Essential for developers and vim users.
+run_defaults "ApplePressAndHoldEnabled" "-bool" "false"
+
+# --- Disable Auto-Correct ---
+# Key:          NSAutomaticSpellingCorrectionEnabled
+# Domain:       NSGlobalDomain
+# Description:  Controls whether macOS automatically corrects spelling as you
+#               type. While helpful for prose, this can interfere with coding,
+#               technical writing, or typing intentional non-words.
+# Default:      true (auto-correct enabled)
+# Options:      true  = Enable automatic spelling correction
+#               false = Disable automatic correction
+# Set to:       false (prevent unwanted corrections for developers)
+# UI Location:  System Settings > Keyboard > Text Input > Input Sources > Edit > Correct spelling automatically
+# Source:       https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac
+# Note:         This is a per-app setting in some applications. This sets the
+#               system-wide default preference.
+run_defaults "NSAutomaticSpellingCorrectionEnabled" "-bool" "false"
+
+# --- Disable Smart Quotes ---
+# Key:          NSAutomaticQuoteSubstitutionEnabled
+# Domain:       NSGlobalDomain
+# Description:  Controls whether macOS automatically converts straight quotes
+#               (" and ') to curly/typographic quotes (" " and ' '). This is
+#               problematic for coding since curly quotes are invalid syntax
+#               in most programming languages and break scripts.
+# Default:      true (convert to smart quotes)
+# Options:      true  = Enable smart quote substitution
+#               false = Keep straight quotes
+# Set to:       false (essential for coding and scripts)
+# UI Location:  System Settings > Keyboard > Text Input > Input Sources > Edit > Use smart quotes and dashes
+# Source:       https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac
+# Note:         Absolutely critical for developers. Smart quotes cause syntax
+#               errors and are one of the most common copy-paste bugs.
+run_defaults "NSAutomaticQuoteSubstitutionEnabled" "-bool" "false"
+
+# --- Disable Auto-Capitalization ---
+# Key:          NSAutomaticCapitalizationEnabled
+# Domain:       NSGlobalDomain
+# Description:  Controls whether macOS automatically capitalizes the first
+#               letter after a period or at the start of a sentence. This can
+#               interfere with coding, terminal commands, and technical writing.
+# Default:      true (auto-capitalize enabled)
+# Options:      true  = Enable automatic capitalization
+#               false = Disable automatic capitalization
+# Set to:       false (prevent unwanted capitalization)
+# UI Location:  System Settings > Keyboard > Text Input > Input Sources > Edit > Capitalize words automatically
+# Source:       https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac
+# Note:         Useful to disable for developers, terminal users, and anyone
+#               who types commands or code in text fields.
+run_defaults "NSAutomaticCapitalizationEnabled" "-bool" "false"
+
+
 msg_success "Keyboard settings applied. Note: A restart is required for these changes to take full effect."
