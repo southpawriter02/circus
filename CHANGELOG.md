@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-01-02
+
+### Added
+
+- **Raycast Script Commands Integration**: New `fc raycast` command with:
+  - `install` subcommand to install Flying Circus script commands to Raycast
+  - `uninstall` subcommand to remove the script commands
+  - `status` subcommand to check installation status
+  - 27 individual script commands for quick-access to fc functionality
+  - Script commands source files in `etc/raycast/scripts/`
+
+- **Raycast Commands**: Quick access to fc commands via Raycast:
+  - Wi-Fi On/Off/Status - Control Wi-Fi adapter
+  - Bluetooth On/Off/Status - Control Bluetooth
+  - Lock Screen - Lock screen immediately
+  - Caffeine On/Off/30min/1hr/Status - Prevent sleep
+  - DNS Status/Cloudflare/Google/Quad9/Clear - Manage DNS servers
+  - AirDrop Everyone/Contacts/Off/Status - Control AirDrop visibility
+  - System Info - Display system information (full output)
+  - System Healthcheck - Run diagnostics (full output)
+  - Disk Status/Usage - Disk utilities
+  - SSH List/Copy - SSH key management
+  - Clipboard Clear - Clear clipboard
+
+### Documentation
+
+- Added `docs/RAYCAST.md` - Complete Raycast integration documentation
+- Updated `COMMANDS.md` with `fc raycast` command documentation
+- Updated `ROADMAP.md` to mark feature #40 as complete
+
 ## [1.1.0] - 2026-01-02
 
 ### Added

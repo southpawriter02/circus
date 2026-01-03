@@ -1464,3 +1464,58 @@ After installation, these keywords are available in Alfred:
 
 See `docs/ALFRED.md` for full documentation.
 
+---
+
+## `fc raycast`
+
+Manage the Flying Circus Raycast script commands installation. Script commands provide quick access to common `fc` commands directly from Raycast's launcher.
+
+**Usage:**
+
+```bash
+fc raycast <action>
+```
+
+**Actions:**
+*   `install`: Install the script commands to Raycast.
+*   `uninstall`: Remove the script commands from Raycast.
+*   `status`: Check if the script commands are installed.
+
+**Examples:**
+
+```bash
+# Install the Raycast script commands
+fc raycast install
+
+# Check installation status
+fc raycast status
+
+# Remove the script commands
+fc raycast uninstall
+```
+
+### Available Raycast Commands
+
+After installation, these commands are available in Raycast:
+
+| Command | Description | Mode |
+|---------|-------------|------|
+| Wi-Fi On/Off/Status | Control Wi-Fi adapter | Silent/Compact |
+| Bluetooth On/Off/Status | Control Bluetooth | Silent/Compact |
+| Lock Screen | Lock screen immediately | Silent |
+| Caffeine On/Off/30min/1hr/Status | Prevent sleep | Silent/Compact |
+| DNS Status/Cloudflare/Google/Quad9/Clear | Manage DNS servers | Silent/Compact |
+| AirDrop Everyone/Contacts/Off/Status | Control AirDrop visibility | Silent/Compact |
+| System Info | Display system information | Full Output |
+| System Healthcheck | Run system diagnostics | Full Output |
+| Disk Status/Usage | Disk utilities | Compact/Full Output |
+| SSH: List Keys / Copy Public Key | SSH key management | Compact/Silent |
+| Clipboard: Clear | Clear clipboard | Silent |
+
+### Requirements
+
+- **Raycast** installed
+- Dotfiles Flying Circus installed
+
+See `docs/RAYCAST.md` for full documentation.
+

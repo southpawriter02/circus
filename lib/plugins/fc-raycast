@@ -1,0 +1,261 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-raycast
+#
+# DESCRIPTION:  Manage the Flying Circus Raycast script commands installation.
+#               Provides commands to install, uninstall, and check the status
+#               of the Raycast script commands that provide quick access to fc.
+#
+# REQUIRES:
+#   - Raycast installed
+#
+# ACTIONS:
+#   install   - Install the script commands to Raycast
+#   uninstall - Remove the script commands from Raycast
+#   status    - Check if the script commands are installed
+#
+# EXAMPLES:
+#   fc raycast install     # Install the Flying Circus script commands
+#   fc raycast uninstall   # Remove the script commands
+#   fc raycast status      # Check installation status
+#
+# NOTES:
+#   - Script commands are installed to ~/.raycast-script-commands/flying-circus/
+#   - Raycast auto-discovers scripts in this directory
+#   - Commands include: wifi, bluetooth, lock, caffeine, dns, airdrop, etc.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ----------------------------------------------------------
+readonly SCRIPTS_NAME="Flying Circus"
+readonly SCRIPTS_SOURCE_DIR="$DOTFILES_ROOT/etc/raycast/scripts"
+readonly SCRIPTS_INSTALL_DIR="$HOME/.raycast-script-commands/flying-circus"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc raycast <action>"
+  echo ""
+  msg_info "Manage the Flying Circus Raycast script commands."
+  echo ""
+  msg_info "Actions:"
+  echo "  install   - Install script commands to Raycast"
+  echo "  uninstall - Remove script commands from Raycast"
+  echo "  status    - Check if script commands are installed"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc raycast install     # Install script commands"
+  echo "  fc raycast status      # Check installation status"
+  echo ""
+  msg_info "Available Commands (after installation):"
+  echo "  Wi-Fi On/Off/Status     - Control Wi-Fi adapter"
+  echo "  Bluetooth On/Off/Status - Control Bluetooth"
+  echo "  Lock Screen             - Lock screen immediately"
+  echo "  Caffeine On/Off/30m/1h  - Prevent sleep"
+  echo "  DNS Cloudflare/Google   - Switch DNS servers"
+  echo "  AirDrop Everyone/Off    - Control AirDrop visibility"
+  echo "  System Info             - Show system information"
+  echo "  System Healthcheck      - Run diagnostics"
+  echo "  Disk Status/Usage       - Disk utilities"
+  echo "  SSH List/Copy           - SSH key management"
+  echo "  Clipboard Clear         - Clear clipboard"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Find Raycast application
+find_raycast() {
+  local raycast_paths=(
+    "/Applications/Raycast.app"
+    "$HOME/Applications/Raycast.app"
+  )
+
+  for path in "${raycast_paths[@]}"; do
+    if [[ -d "$path" ]]; then
+      echo "$path"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+# Check if script commands are installed
+is_scripts_installed() {
+  if [[ -d "$SCRIPTS_INSTALL_DIR" ]] && [[ -f "$SCRIPTS_INSTALL_DIR/fc-env.sh" ]]; then
+    echo "$SCRIPTS_INSTALL_DIR"
+    return 0
+  fi
+
+  return 1
+}
+
+# Count installed script commands
+count_scripts() {
+  local dir="$1"
+  if [[ -d "$dir" ]]; then
+    find "$dir" -name "*.sh" -type f | wc -l | tr -d ' '
+  else
+    echo "0"
+  fi
+}
+
+# --- Action: install --------------------------------------------------------
+do_install() {
+  msg_info "Installing Flying Circus Raycast script commands..."
+
+  # Check if Raycast is installed
+  local raycast_path
+  raycast_path=$(find_raycast) || {
+    die "Raycast is not installed. Please install Raycast first: brew install --cask raycast"
+  }
+  msg_info "Raycast found at: $raycast_path"
+
+  # Check if script source exists
+  if [[ ! -d "$SCRIPTS_SOURCE_DIR" ]]; then
+    die "Script source not found at: $SCRIPTS_SOURCE_DIR"
+  fi
+
+  # Check if already installed
+  local existing_install
+  existing_install=$(is_scripts_installed)
+  if [[ -n "$existing_install" ]]; then
+    msg_warning "Script commands already installed at: $existing_install"
+    msg_info "Updating existing installation..."
+    rm -rf "$existing_install"
+  fi
+
+  # Create installation directory
+  mkdir -p "$SCRIPTS_INSTALL_DIR"
+  msg_info "Installing to: $SCRIPTS_INSTALL_DIR"
+
+  # Copy script files
+  msg_info "Copying script commands..."
+  cp -R "$SCRIPTS_SOURCE_DIR"/* "$SCRIPTS_INSTALL_DIR/"
+
+  # Update DOTFILES_ROOT in fc-env.sh
+  local env_script="$SCRIPTS_INSTALL_DIR/fc-env.sh"
+  if [[ -f "$env_script" ]]; then
+    sed -i '' "s|__DOTFILES_ROOT__|$DOTFILES_ROOT|g" "$env_script"
+  fi
+
+  # Make all scripts executable
+  chmod +x "$SCRIPTS_INSTALL_DIR"/*.sh 2>/dev/null || true
+
+  # Count installed scripts
+  local script_count
+  script_count=$(count_scripts "$SCRIPTS_INSTALL_DIR")
+
+  msg_success "Script commands installed successfully!"
+  echo ""
+  msg_info "Installed $script_count script commands"
+  echo ""
+  msg_info "Available commands in Raycast:"
+  echo "  - Wi-Fi On/Off/Status"
+  echo "  - Bluetooth On/Off/Status"
+  echo "  - Lock Screen"
+  echo "  - Caffeine On/Off/30min/1hr/Status"
+  echo "  - DNS Status/Cloudflare/Google/Quad9/Clear"
+  echo "  - AirDrop Everyone/Contacts/Off/Status"
+  echo "  - System Info, Healthcheck"
+  echo "  - Disk Status/Usage"
+  echo "  - SSH List/Copy"
+  echo "  - Clipboard Clear"
+  echo ""
+  msg_info "Open Raycast and search for 'Wi-Fi' or 'Flying Circus' to get started!"
+}
+
+# --- Action: uninstall ------------------------------------------------------
+do_uninstall() {
+  msg_info "Uninstalling Flying Circus Raycast script commands..."
+
+  # Check if script commands are installed
+  local installed_path
+  installed_path=$(is_scripts_installed)
+  if [[ -z "$installed_path" ]]; then
+    msg_warning "Script commands are not installed."
+    return 0
+  fi
+
+  msg_info "Found script commands at: $installed_path"
+
+  # Remove the script commands
+  rm -rf "$installed_path"
+
+  # Remove parent directory if empty
+  rmdir "$HOME/.raycast-script-commands" 2>/dev/null || true
+
+  msg_success "Script commands uninstalled successfully."
+}
+
+# --- Action: status ---------------------------------------------------------
+do_status() {
+  msg_info "Checking Flying Circus Raycast script commands status..."
+  echo ""
+
+  # Check if Raycast is installed
+  local raycast_path
+  raycast_path=$(find_raycast || true)
+  if [[ -n "$raycast_path" ]]; then
+    echo "  Raycast:   Installed ($raycast_path)"
+  else
+    echo "  Raycast:   Not installed"
+    echo "  Scripts:   Cannot check (Raycast not installed)"
+    echo ""
+    msg_info "Install Raycast first: brew install --cask raycast"
+    return 0
+  fi
+
+  # Check script commands installation
+  local installed_path
+  installed_path=$(is_scripts_installed)
+  if [[ -n "$installed_path" ]]; then
+    echo "  Scripts:   Installed"
+    echo "  Location:  $installed_path"
+
+    # Count scripts
+    local script_count
+    script_count=$(count_scripts "$installed_path")
+    echo "  Commands:  $script_count script commands"
+
+    echo ""
+    msg_success "Flying Circus script commands are ready to use!"
+  else
+    echo "  Scripts:   Not installed"
+    echo ""
+    msg_info "Run 'fc raycast install' to install the script commands."
+  fi
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    install)
+      do_install "$@"
+      ;;
+    uninstall)
+      do_uninstall "$@"
+      ;;
+    status)
+      do_status "$@"
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc raycast --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"
