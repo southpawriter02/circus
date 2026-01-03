@@ -29,6 +29,9 @@ usage() {
 
 # --- Main Logic -------------------------------------------------------------
 main() {
+  # This plugin only works on macOS
+  require_macos "fc airdrop"
+  
   if [ -z "$1" ] || [ "$1" == "--help" ]; then
     usage
   fi

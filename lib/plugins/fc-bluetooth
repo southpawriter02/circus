@@ -71,6 +71,9 @@ usage() {
 
 # --- Main Logic -------------------------------------------------------------
 main() {
+  # This plugin only works on macOS
+  require_macos "fc bluetooth"
+  
   # Allow overriding the blueutil command for testing purposes
   # Example: BLUEUTIL_CMD=/custom/path/blueutil fc bluetooth on
   local blueutil_cmd=${BLUEUTIL_CMD:-blueutil}

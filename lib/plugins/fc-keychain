@@ -421,6 +421,9 @@ action_delete() {
 
 # --- Main Logic -------------------------------------------------------------
 main() {
+  # This plugin only works on macOS (uses macOS Keychain)
+  require_macos "fc keychain"
+  
   if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
     usage
   fi

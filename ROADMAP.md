@@ -75,7 +75,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
 *   **Key Features:**
     *   **Major New Interfaces:**
         *   `24-web-ui-dashboard`: A major undertaking to create a graphical interface for the tool.
-        *   `25-cross-platform-support`: A very significant effort to abstract away macOS-specific commands and add support for Linux.
+        *   ~~`25-cross-platform-support`~~: **Phase 1 DONE** - OS abstraction layer (`lib/os/`) with platform detection, distro detection, and Linux implementations. macOS-only plugins gracefully fail on Linux. Documentation in `docs/CROSS_PLATFORM.md`.
     *   **Enhanced Interactivity:**
         *   `23-interactive-fc-command`: Add an interactive mode (e.g., using `fzf`) to guide users through commands.
         *   `11-interactive-role-creation`: A specific interactive helper for creating new roles.

@@ -249,6 +249,9 @@ do_status() {
 
 # --- Main Logic -------------------------------------------------------------
 main() {
+  # This plugin only works on macOS (Alfred is macOS-only)
+  require_macos "fc alfred"
+  
   if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
     usage
   fi

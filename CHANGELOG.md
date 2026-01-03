@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-01-02
+
+### Added
+
+- **Cross-Platform Linux Support (Phase 1)**: OS abstraction layer for Linux compatibility:
+  - `lib/os/detect.sh` - Platform detection (macOS, Linux, WSL, distros)
+  - `lib/os/macos.sh` - macOS implementations (package, clipboard, networking, etc.)
+  - `lib/os/linux.sh` - Linux implementations (apt/dnf/pacman, xclip/xsel, nmcli, etc.)
+  - Boolean helpers: `is_macos`, `is_linux`, `is_wsl`, `is_debian_based`, etc.
+  - Guard functions: `require_macos`, `require_linux`
+
+- **Linux Distro Support**:
+  - Ubuntu/Debian (apt)
+  - Fedora/RHEL (dnf)
+  - Arch Linux (pacman)
+
+### Changed
+
+- `lib/init.sh` loads OS-specific modules automatically
+- Tier 3 plugins now gracefully exit on Linux with clear error messages:
+  - fc-bluetooth, fc-lock, fc-caffeine, fc-airdrop
+  - fc-keychain, fc-alfred, fc-raycast
+
+### Documentation
+
+- New `docs/CROSS_PLATFORM.md` - Platform compatibility matrix and prerequisites
+- Updated `ROADMAP.md` to mark feature #25 as in-progress (Phase 1 complete)
+
 ## [1.1.2] - 2026-01-02
 
 ### Added

@@ -36,3 +36,13 @@ source "$DOTFILES_ROOT/lib/ui.sh"
 
 # 3. Source the configuration library, which provides role-specific settings.
 source "$DOTFILES_ROOT/lib/config.sh"
+
+# 4. Source platform detection and OS-specific implementations.
+#    This enables cross-platform support for macOS and Linux.
+source "$DOTFILES_ROOT/lib/os/detect.sh"
+
+if is_macos; then
+    source "$DOTFILES_ROOT/lib/os/macos.sh"
+elif is_linux; then
+    source "$DOTFILES_ROOT/lib/os/linux.sh"
+fi
