@@ -52,7 +52,29 @@ The **Dotfiles Flying Circus** is a comprehensive macOS automation framework tha
 
 ---
 
-## 🆕 What's New in v1.0
+## 🆕 What's New in v1.1
+
+<details>
+<summary><strong>Click to expand v1.1 highlights</strong></summary>
+
+### Alfred Workflow Integration (NEW!)
+- **`fc alfred` command** to install/uninstall the Flying Circus workflow
+- **12 Alfred keywords** for quick access to common commands
+- Type `wifi`, `bluetooth`, `lock`, `caffeine`, `dns`, `airdrop` and more
+- Script filters with dynamic JSON results for Alfred
+
+### Available Alfred Keywords
+| Keyword | Description |
+|---------|-------------|
+| `fc` | Browse all commands |
+| `wifi` / `bluetooth` | Toggle network adapters |
+| `lock` | Lock screen instantly |
+| `caffeine` | Prevent sleep |
+| `dns` | Switch DNS (Cloudflare, Google, Quad9) |
+| `fcinfo` / `healthcheck` | System diagnostics |
+| `disk` / `sshkey` / `keychain` / `clip` | Utilities |
+
+</details>
 
 <details>
 <summary><strong>Click to expand v1.0 highlights</strong></summary>
@@ -292,6 +314,7 @@ graph TB
 | [💾 Backup Backends](docs/BACKUP_BACKENDS.md) | GPG, Restic, and Borg options |
 | [🔑 Secrets Management](docs/SECRETS.md) | 1Password, Keychain, Vault integration |
 | [🚀 Bootstrap Guide](docs/BOOTSTRAP.md) | New machine setup automation |
+| [🎩 Alfred Workflow](docs/ALFRED.md) | Alfred integration for quick access |
 | [🔌 Creating Plugins](docs/CREATING_PLUGINS.md) | Extend `fc` with your own commands |
 | [🍎 macOS Commands](docs/MACOS_COMMANDS.md) | Terminal commands reference |
 | [🎨 Customization](docs/CUSTOMIZATION.md) | Make it your own |
