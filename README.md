@@ -6,7 +6,7 @@
 
 **Transform a fresh Mac into a fully configured powerhouse with one command.**
 
-[![Version](https://img.shields.io/badge/Version-1.0.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.1.0-blue)](CHANGELOG.md)
 [![macOS](https://img.shields.io/badge/macOS-Sequoia%20%7C%20Sonoma%20%7C%20Ventura-blue?logo=apple&logoColor=white)](https://www.apple.com/macos)
 [![Shell](https://img.shields.io/badge/Shell-Zsh%20%2B%20Oh%20My%20Zsh-4EAA25?logo=gnu-bash&logoColor=white)](https://ohmyz.sh/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
