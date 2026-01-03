@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-01-02
+
+### Added
+
+- **v1.2.0: macOS Defaults (System)** - Major release with 11 new defaults scripts:
+
+  **System Scripts (8 new)**:
+  - `system/spotlight.sh` - Index categories, search suggestions
+  - `system/sharing.sh` - SSH, Screen Sharing, File Sharing
+  - `system/airdrop.sh` - Discoverability settings
+  - `system/network.sh` - Wake-on-LAN, Bonjour, mDNS
+  - `system/siri.sh` - Enable/disable, suggestions, voice feedback
+  - `system/focus_modes.sh` - Do Not Disturb, display sleep behavior
+  - `system/date_time.sh` - Clock format, 24-hour time, NTP
+  - `system/filevault.sh` - Disk encryption status and recommendations
+
+  **Interface Scripts (3 new)**:
+  - `interface/stage_manager.sh` - Enable, window grouping, strip visibility
+  - `interface/window_management.sh` - Double-click, minimize effect, tabs
+  - `interface/wallpaper.sh` - Wallpaper setting methods and documentation
+
+### Notes
+
+- Total defaults scripts now: 56
+- Privacy profile: 15+ privacy-enhancing settings
+- Lockdown profile: 25+ maximum security settings
+- All scripts include comprehensive inline documentation
+
 ## [1.1.8] - 2026-01-02
 
 ### Added
