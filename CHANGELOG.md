@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.8] - 2026-01-02
+
+### Added
+
+- **Feature #11: Interactive Role Creation** - New guided wizard for creating profiles:
+  - `fc profile create` launches interactive 4-step wizard
+  - Step 1: Profile name with validation
+  - Step 2: Optional description
+  - Step 3: Component selection (fzf multi-select: git, ssh, shell, editor)
+  - Step 4: Confirmation and preview
+  - Generates template files (.gitconfig, .ssh/config, .aliases, VSCode settings)
+
+- **Feature #43: macOS Notification Integration** - New notification helpers:
+  - `lib/notify.sh` module with `notify_success`, `notify_error`, `notify_info`
+  - Cross-platform: osascript (macOS) or notify-send (Linux)
+  - `run_with_notification` wrapper for long-running commands
+  - Auto-notification for operations taking 10+ seconds
+
+- **Feature #35: Enhanced fc info** - Completely redesigned system info display:
+  - Visual banner with version and ASCII art
+  - Circus status (version, profile, plugin count)
+  - System info (OS, CPU, memory, hostname)
+  - Health indicators with color-coded status (disk, battery, uptime)
+  - Tool status checks (Homebrew, Git, fzf, Node, Python)
+  - `--short` and `--json` output options
+
+### Changed
+
+- `fc-profile` usage updated to `fc profile` for consistency
+- `lib/init.sh` now sources notification helpers
+
 ## [1.1.7] - 2026-01-02
 
 ### Added

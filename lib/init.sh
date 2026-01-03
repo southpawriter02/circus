@@ -46,3 +46,6 @@ if is_macos; then
 elif is_linux; then
     source "$DOTFILES_ROOT/lib/os/linux.sh"
 fi
+
+# 5. Source notification helpers for long-running tasks.
+source "$DOTFILES_ROOT/lib/notify.sh"

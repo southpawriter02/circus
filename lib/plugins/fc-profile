@@ -22,7 +22,7 @@ readonly PROFILE_STATE_FILE="$HOME/.config/circus/current_profile"
 # --- Usage Information -------------------------------------------------------
 
 usage() {
-  msg_info "Usage: fc fc-profile <subcommand>"
+  msg_info "Usage: fc profile <subcommand>"
   echo ""
   msg_info "Manage dotfile profiles for environment-specific configurations."
   echo ""
@@ -30,11 +30,14 @@ usage() {
   echo "  list              - List available profiles"
   echo "  current           - Show the current active profile"
   echo "  switch <profile>  - Switch to a different profile"
+  echo "  create [name]     - Create a new profile (interactive wizard)"
   echo ""
   msg_info "Examples:"
-  echo "  fc fc-profile list"
-  echo "  fc fc-profile current"
-  echo "  fc fc-profile switch work"
+  echo "  fc profile list"
+  echo "  fc profile current"
+  echo "  fc profile switch work"
+  echo "  fc profile create        # Interactive wizard"
+  echo "  fc profile create client # Create 'client' profile"
   exit 0
 }
 
@@ -247,6 +250,206 @@ do_switch() {
   msg_info "Restart your shell or run 'source ~/.zshrc' to apply changes."
 }
 
+do_create() {
+  local profile_name="$1"
+  
+  echo ""
+  msg_info "╔════════════════════════════════════════╗"
+  msg_info "║   Interactive Profile Creation Wizard  ║"
+  msg_info "╚════════════════════════════════════════╝"
+  echo ""
+  
+  # Step 1: Get profile name
+  if [[ -z "$profile_name" ]]; then
+    msg_info "Step 1/4: Profile Name"
+    echo ""
+    echo "  What would you like to call this profile?"
+    echo "  Examples: work, personal, client, freelance"
+    echo ""
+    read -rp "  Profile name: " profile_name
+    
+    if [[ -z "$profile_name" ]]; then
+      die "Profile name is required."
+    fi
+  else
+    msg_info "Creating profile: $profile_name"
+  fi
+  
+  # Validate name
+  if [[ ! "$profile_name" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]]; then
+    die "Invalid profile name. Use letters, numbers, hyphens, and underscores only."
+  fi
+  
+  local profile_dir="$PROFILES_DIR/$profile_name"
+  
+  if [[ -d "$profile_dir" ]]; then
+    die "Profile '$profile_name' already exists at $profile_dir"
+  fi
+  
+  echo ""
+  
+  # Step 2: Profile description
+  msg_info "Step 2/4: Description"
+  echo ""
+  echo "  Briefly describe this profile (optional):"
+  read -rp "  Description: " profile_desc
+  
+  echo ""
+  
+  # Step 3: Select components to include
+  msg_info "Step 3/4: Components"
+  echo ""
+  echo "  Which configuration files would you like to customize?"
+  echo ""
+  
+  local include_git=false
+  local include_ssh=false
+  local include_shell=false
+  local include_editor=false
+  
+  # Use fzf if available for multi-select
+  if command -v fzf &>/dev/null; then
+    local components
+    components=$(printf '%s\n' \
+      "git       - Git configuration (.gitconfig)" \
+      "ssh       - SSH configuration (.ssh/config)" \
+      "shell     - Shell aliases and functions" \
+      "editor    - Editor settings (VSCode, JetBrains)" | \
+      fzf --multi --height=40% --layout=reverse --border=rounded \
+          --prompt="Select components (TAB to multi-select): " \
+          --header="Press TAB to select, Enter when done")
+    
+    [[ "$components" == *"git"* ]] && include_git=true
+    [[ "$components" == *"ssh"* ]] && include_ssh=true
+    [[ "$components" == *"shell"* ]] && include_shell=true
+    [[ "$components" == *"editor"* ]] && include_editor=true
+  else
+    # Fallback to manual selection
+    read -rp "  Include Git config? [y/N] " ans
+    [[ "$ans" =~ ^[Yy] ]] && include_git=true
+    
+    read -rp "  Include SSH config? [y/N] " ans
+    [[ "$ans" =~ ^[Yy] ]] && include_ssh=true
+    
+    read -rp "  Include shell customizations? [y/N] " ans
+    [[ "$ans" =~ ^[Yy] ]] && include_shell=true
+    
+    read -rp "  Include editor settings? [y/N] " ans
+    [[ "$ans" =~ ^[Yy] ]] && include_editor=true
+  fi
+  
+  echo ""
+  
+  # Step 4: Confirmation
+  msg_info "Step 4/4: Confirmation"
+  echo ""
+  echo "  Profile name:  $profile_name"
+  [[ -n "$profile_desc" ]] && echo "  Description:   $profile_desc"
+  echo "  Location:      $profile_dir"
+  echo ""
+  echo "  Components:"
+  [[ "$include_git" == true ]] && echo "    ✓ Git configuration"
+  [[ "$include_ssh" == true ]] && echo "    ✓ SSH configuration"
+  [[ "$include_shell" == true ]] && echo "    ✓ Shell customizations"
+  [[ "$include_editor" == true ]] && echo "    ✓ Editor settings"
+  [[ "$include_git" == false && "$include_ssh" == false && "$include_shell" == false && "$include_editor" == false ]] && \
+    echo "    (none selected - empty profile)"
+  echo ""
+  
+  read -rp "  Create this profile? [Y/n] " confirm
+  if [[ "$confirm" =~ ^[Nn] ]]; then
+    msg_info "Cancelled."
+    return 0
+  fi
+  
+  # Create the profile
+  echo ""
+  msg_info "Creating profile..."
+  
+  mkdir -p "$profile_dir"
+  
+  # Create README
+  cat > "$profile_dir/README.md" << EOF
+# Profile: $profile_name
+
+${profile_desc:-No description provided.}
+
+## Created
+
+$(date +%Y-%m-%d)
+
+## Usage
+
+\`\`\`bash
+fc profile switch $profile_name
+\`\`\`
+
+## Files
+
+Add your profile-specific dotfiles here. Files will override base profile.
+EOF
+  
+  # Create component templates
+  if [[ "$include_git" == true ]]; then
+    cat > "$profile_dir/.gitconfig" << 'EOF'
+# Profile-specific Git configuration
+# This overrides the base .gitconfig
+
+[user]
+    # name = Your Name
+    # email = your.email@example.com
+
+[core]
+    # Add profile-specific settings here
+EOF
+    echo "  Created .gitconfig"
+  fi
+  
+  if [[ "$include_ssh" == true ]]; then
+    mkdir -p "$profile_dir/.ssh"
+    cat > "$profile_dir/.ssh/config" << 'EOF'
+# Profile-specific SSH configuration
+
+# Example:
+# Host work-server
+#     HostName server.work.com
+#     User your-username
+#     IdentityFile ~/.ssh/work_key
+EOF
+    echo "  Created .ssh/config"
+  fi
+  
+  if [[ "$include_shell" == true ]]; then
+    cat > "$profile_dir/.aliases" << 'EOF'
+# Profile-specific shell aliases
+
+# Example:
+# alias proj="cd ~/Work/Projects"
+# alias vpn="networksetup -connectpppoeservice 'Work VPN'"
+EOF
+    echo "  Created .aliases"
+  fi
+  
+  if [[ "$include_editor" == true ]]; then
+    mkdir -p "$profile_dir/.config/Code/User"
+    cat > "$profile_dir/.config/Code/User/settings.json" << 'EOF'
+{
+  // Profile-specific VSCode settings
+  // These override base settings
+}
+EOF
+    echo "  Created VSCode settings"
+  fi
+  
+  echo ""
+  msg_success "Profile '$profile_name' created successfully!"
+  echo ""
+  msg_info "Next steps:"
+  echo "  1. Edit files in: $profile_dir"
+  echo "  2. Switch to profile: fc profile switch $profile_name"
+  echo ""
+}
+
 # --- Main Dispatcher ---------------------------------------------------------
 
 main() {
@@ -267,8 +470,11 @@ main() {
     switch)
       do_switch "$@"
       ;;
+    create)
+      do_create "$@"
+      ;;
     *)
-      die "Unknown subcommand: $subcommand. Run 'fc fc-profile --help' for usage."
+      die "Unknown subcommand: $subcommand. Run 'fc profile --help' for usage."
       ;;
   esac
 }

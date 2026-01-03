@@ -78,10 +78,10 @@ This roadmap organizes the proposed features from the `docs/features/` directory
         *   ~~`25-cross-platform-support`~~: **DONE** (v1.1.3-1.1.6) - Complete Linux support with OS abstraction layer. All core plugins work on Linux (Ubuntu, Fedora, Arch). See `docs/CROSS_PLATFORM.md`.
     *   **Enhanced Interactivity:**
         *   ~~`23-interactive-fc-command`~~: **DONE** (v1.1.7) - `fc -i` launches fzf-powered interactive menu with command previews
-        *   `11-interactive-role-creation`: A specific interactive helper for creating new roles.
+        *   ~~`11-interactive-role-creation`~~: **DONE** (v1.1.8) - `fc profile create` launches 4-step wizard with fzf component selection
     *   **Quality-of-Life Improvements:**
-        *   `43-macos-notification-integration`: Use macOS notifications for long-running tasks.
-        *   `35-enhanced-fc-info`: Improve the output of the `fc info` command.
+        *   ~~`43-macos-notification-integration`~~: **DONE** (v1.1.8) - `lib/notify.sh` with osascript/notify-send support
+        *   ~~`35-enhanced-fc-info`~~: **DONE** (v1.1.8) - Visual banner, health indicators, tool status, `--json` output
         *   And many of the other smaller utilities and enhancements (`theme-management`, `focus-mode`, etc.).
 
 ---

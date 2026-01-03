@@ -2,88 +2,230 @@
 
 # ==============================================================================
 #
-# FILE:         info
+# FILE:         fc-info
 #
-# DESCRIPTION:  This command displays a summary of the system's hardware and
-#               software configuration.
+# DESCRIPTION:  Display a comprehensive summary of system configuration,
+#               dotfiles status, and Circus health.
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
-# Source the centralized initialization script to set up the environment.
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
-  msg_info "Usage: fc info"
+  msg_info "Usage: fc info [options]"
   echo ""
-  msg_info "Displays a summary of the system's configuration."
+  msg_info "Display system configuration and Circus status."
+  echo ""
+  msg_info "Options:"
+  echo "  --short       Show condensed output"
+  echo "  --json        Output as JSON (for scripting)"
   echo ""
   exit 0
 }
 
+# --- Helper Functions -------------------------------------------------------
+
+# Color definitions for status indicators
+readonly STATUS_OK="✅"
+readonly STATUS_WARN="⚠️"
+readonly STATUS_ERROR="❌"
+readonly STATUS_INFO="ℹ️"
+
+# Print a section header
+print_header() {
+  local title="$1"
+  echo ""
+  echo "╭──────────────────────────────────────────────────────────────╮"
+  printf "│  %-60s │\n" "$title"
+  echo "╰──────────────────────────────────────────────────────────────╯"
+}
+
+# Print a key-value pair with optional status
+print_item() {
+  local key="$1"
+  local value="$2"
+  local status="${3:-}"
+  
+  if [[ -n "$status" ]]; then
+    printf "  %-20s %s %s\n" "$key:" "$status" "$value"
+  else
+    printf "  %-20s %s\n" "$key:" "$value"
+  fi
+}
+
+# Get disk usage percentage
+get_disk_usage() {
+  df -h / 2>/dev/null | awk 'NR==2 {print $5}'
+}
+
+# Get battery status (macOS)
+get_battery_status() {
+  if is_macos && command -v pmset &>/dev/null; then
+    pmset -g batt 2>/dev/null | grep -o '[0-9]*%' | head -1
+  else
+    echo "N/A"
+  fi
+}
+
+# Check if a command exists and is working
+check_tool() {
+  local tool="$1"
+  if command -v "$tool" &>/dev/null; then
+    echo "$STATUS_OK installed"
+  else
+    echo "$STATUS_WARN not found"
+  fi
+}
+
 # --- Main Logic -------------------------------------------------------------
 main() {
-  # Allow overriding commands for testing purposes.
-  local sw_vers_cmd=${SW_VERS_CMD:-sw_vers}
-  local sysctl_cmd=${SYSCTL_CMD:-sysctl}
-  local hostname_cmd=${HOSTNAME_CMD:-hostname}
-  local uptime_cmd=${UPTIME_CMD:-uptime}
+  local short_mode=false
+  local json_mode=false
+  
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --help) usage ;;
+      --short) short_mode=true; shift ;;
+      --json) json_mode=true; shift ;;
+      *) shift ;;
+    esac
+  done
+  
+  # Get current version
+  local version="unknown"
+  if [[ -f "$DOTFILES_ROOT/.version" ]]; then
+    version=$(cat "$DOTFILES_ROOT/.version")
+  fi
+  
+  # Get current profile
+  local profile="none"
+  if [[ -f "$HOME/.config/circus/current_profile" ]]; then
+    profile=$(cat "$HOME/.config/circus/current_profile")
+  fi
+  
+  if [[ "$json_mode" == true ]]; then
+    # JSON output for scripting
+    cat << EOF
+{
+  "version": "$version",
+  "profile": "$profile",
+  "os": "$(uname -s)",
+  "hostname": "$(hostname)",
+  "shell": "$SHELL"
+}
+EOF
+    return 0
+  fi
+  
+  # Banner
+  echo ""
+  echo "  ╔═══════════════════════════════════════════════════════════════╗"
+  echo "  ║                                                               ║"
+  echo "  ║   🎪  DOTFILES FLYING CIRCUS                                  ║"
+  printf "  ║       Version %-46s ║\n" "$version"
+  echo "  ║                                                               ║"
+  echo "  ╚═══════════════════════════════════════════════════════════════╝"
 
-  if [ "$1" == "--help" ]; then
-    usage
+  # === CIRCUS STATUS ===
+  print_header "🎯 Circus Status"
+  print_item "Version" "$version" "$STATUS_OK"
+  print_item "Profile" "$profile"
+  print_item "Root" "$DOTFILES_ROOT"
+  
+  # Count plugins
+  local plugin_count
+  plugin_count=$(find "$DOTFILES_ROOT/lib/plugins" -maxdepth 1 -type f -perm +111 2>/dev/null | wc -l | tr -d ' ')
+  print_item "Plugins" "$plugin_count available"
+
+  if [[ "$short_mode" == true ]]; then
+    echo ""
+    return 0
   fi
 
-  msg_info "Gathering system information..."
-  echo ""
-
-  # --- Software Info ---
-  msg_info "Software:"
-
-  # Detect platform and use appropriate commands
-  if [[ "$(uname)" == "Darwin" ]]; then
-    echo "  OS Version:   $($sw_vers_cmd -productName) $($sw_vers_cmd -productVersion) ($($sw_vers_cmd -buildVersion))"
-  else
-    # Linux fallback
-    if [ -f /etc/os-release ]; then
-      echo "  OS Version:   $(grep '^PRETTY_NAME=' /etc/os-release | cut -d'"' -f2)"
-    else
-      echo "  OS Version:   $(uname -s) $(uname -r)"
-    fi
-  fi
-
-  echo "  Hostname:     $($hostname_cmd)"
-  echo "  Uptime:       $($uptime_cmd | awk -F, '{print $1}' | cut -d' ' -f 4-)"
-
-  # --- Hardware Info ---
-  echo ""
-  msg_info "Hardware:"
-
-  if [[ "$(uname)" == "Darwin" ]]; then
-    # macOS-specific hardware info
-    echo "  Model:        $($sysctl_cmd -n hw.model)"
-    echo "  CPU:          $($sysctl_cmd -n machdep.cpu.brand_string)"
-
-    # Get memory size in bytes and convert to GB
+  # === SYSTEM INFO ===
+  print_header "🖥️  System Information"
+  
+  if is_macos; then
+    local sw_vers_cmd=${SW_VERS_CMD:-sw_vers}
+    local sysctl_cmd=${SYSCTL_CMD:-sysctl}
+    
+    print_item "OS" "$($sw_vers_cmd -productName 2>/dev/null) $($sw_vers_cmd -productVersion 2>/dev/null)"
+    print_item "Model" "$($sysctl_cmd -n hw.model 2>/dev/null)"
+    print_item "CPU" "$($sysctl_cmd -n machdep.cpu.brand_string 2>/dev/null | cut -c1-40)"
+    
     local mem_bytes
-    mem_bytes=$($sysctl_cmd -n hw.memsize)
+    mem_bytes=$($sysctl_cmd -n hw.memsize 2>/dev/null)
     local mem_gb=$((mem_bytes / 1024 / 1024 / 1024))
-    echo "  Memory:       ${mem_gb} GB"
+    print_item "Memory" "${mem_gb} GB"
   else
-    # Linux fallback
-    if command -v lscpu >/dev/null 2>&1; then
-      echo "  CPU:          $(lscpu | grep "^Model name:" | cut -d':' -f2 | xargs)"
+    if [[ -f /etc/os-release ]]; then
+      print_item "OS" "$(grep '^PRETTY_NAME=' /etc/os-release | cut -d'"' -f2)"
+    else
+      print_item "OS" "$(uname -s) $(uname -r)"
     fi
-    if [ -f /proc/meminfo ]; then
+    
+    if command -v lscpu &>/dev/null; then
+      print_item "CPU" "$(lscpu | grep '^Model name:' | cut -d':' -f2 | xargs | cut -c1-40)"
+    fi
+    
+    if [[ -f /proc/meminfo ]]; then
       local mem_kb
       mem_kb=$(grep '^MemTotal:' /proc/meminfo | awk '{print $2}')
       local mem_gb=$((mem_kb / 1024 / 1024))
-      echo "  Memory:       ${mem_gb} GB"
+      print_item "Memory" "${mem_gb} GB"
     fi
   fi
+  
+  print_item "Hostname" "$(hostname)"
+  print_item "Shell" "$SHELL"
 
+  # === HEALTH INDICATORS ===
+  print_header "📊 Health Indicators"
+  
+  # Disk usage
+  local disk_usage
+  disk_usage=$(get_disk_usage)
+  local disk_percent=${disk_usage%\%}
+  local disk_status="$STATUS_OK"
+  if [[ "$disk_percent" -gt 90 ]]; then
+    disk_status="$STATUS_ERROR"
+  elif [[ "$disk_percent" -gt 75 ]]; then
+    disk_status="$STATUS_WARN"
+  fi
+  print_item "Disk Usage" "$disk_usage" "$disk_status"
+  
+  # Battery (macOS)
+  if is_macos; then
+    local battery
+    battery=$(get_battery_status)
+    if [[ "$battery" != "N/A" ]]; then
+      local batt_percent=${battery%\%}
+      local batt_status="$STATUS_OK"
+      if [[ "$batt_percent" -lt 20 ]]; then
+        batt_status="$STATUS_WARN"
+      fi
+      print_item "Battery" "$battery" "$batt_status"
+    fi
+  fi
+  
+  # Uptime
+  local uptime_str
+  uptime_str=$(uptime | awk -F, '{print $1}' | cut -d' ' -f 4-)
+  print_item "Uptime" "$uptime_str"
+
+  # === TOOLS STATUS ===
+  print_header "🔧 Tool Status"
+  
+  print_item "Homebrew" "$(check_tool brew)"
+  print_item "Git" "$(check_tool git)"
+  print_item "fzf" "$(check_tool fzf)"
+  print_item "Node.js" "$(check_tool node)"
+  print_item "Python" "$(check_tool python3)"
+  
   echo ""
-  msg_success "System information gathering complete."
+  msg_success "System information complete!"
 }
 
 main "$@"
