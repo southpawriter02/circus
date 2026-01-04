@@ -287,21 +287,19 @@ The following scripts have been updated with enhanced inline documentation inclu
 | `applications/photos.sh` | ✅ Complete | 2026-01-02 |
 | `applications/warp.sh` | ✅ Complete | 2026-01-02 |
 | `applications/jetbrains.sh` | ✅ Complete | 2026-01-02 |
-| `interface/dock.sh` | ⚠️ Partial | Uses dockutil, different format |
-| `system/time_machine.sh` | 📋 Pending | Needs documentation update |
-| `system/core.sh` | 📋 Pending | Needs documentation update |
-| `system/auto_updates.sh` | 📋 Pending | Needs documentation update |
-| `applications/alfred.sh` | 📋 Pending | Needs documentation update |
-| `applications/docker.sh` | 📋 Pending | Needs documentation update |
-| `applications/iterm2.sh` | 📋 Pending | Needs documentation update |
-| `applications/mariadb.sh` | 📋 Pending | Needs documentation update |
-| `applications/nvm.sh` | 📋 Pending | Needs documentation update |
-| `applications/vscode.sh` | 📋 Pending | Needs documentation update |
+| `interface/dock.sh` | ✅ Complete | 2026-01-03 |
+| `system/time_machine.sh` | ✅ Complete | 2026-01-03 |
+| `system/core.sh` | ✅ Complete | 2026-01-03 |
+| `system/auto_updates.sh` | ✅ Complete | 2026-01-03 |
+| `applications/alfred.sh` | ✅ Complete | 2026-01-03 |
+| `applications/docker.sh` | ✅ Complete | 2026-01-03 |
+| `applications/iterm2.sh` | ✅ Complete | 2026-01-03 |
+| `applications/mariadb.sh` | ✅ Complete | 2026-01-03 |
+| `applications/nvm.sh` | ✅ Complete | 2026-01-03 |
+| `applications/vscode.sh` | ✅ Complete | 2026-01-03 |
 
 **Legend:**
 - ✅ Complete: Full enhanced documentation with source citations
-- ⚠️ Partial: Has documentation structure but missing source URLs
-- 📋 Pending: Needs documentation update
 
 ### Finding Apple Documentation Sources
 

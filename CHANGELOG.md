@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-01-03
+
+### Added
+
+- **v1.5.0: Documentation & Polish** - Complete documentation for all defaults scripts and new `fc defaults` command:
+
+  **New `fc defaults` Plugin**:
+  - Created `lib/plugins/fc-defaults` with full implementation (~550 lines)
+  - 42 curated macOS tweaks across 9 categories: Finder, Dock, Screenshots, System, Safari, Keyboard, Trackpad, Terminal, Text
+  - Subcommands: `list`, `status`, `apply`, `reset`, `all`
+  - `--dry-run` flag support for previewing changes
+  - Bash 3.2+ compatible (works with macOS default shell)
+  - Automatic service restarts (Finder, Dock, SystemUIServer) where needed
+  - Color-coded status output with check marks
+
+  **New Test Suite**:
+  - Created `tests/fc_defaults.bats` with 48 comprehensive tests
+  - Coverage: help, list, status, apply, reset, all subcommands
+  - Tests for error handling, type flags, dry-run mode
+  - Integration tests with fc dispatcher
+
+### Changed
+
+- **Documentation Progress to 100%**:
+  - Updated `defaults/README.md` - All 40 scripts now marked ✅ Complete
+  - Updated `docs/specs/fc-defaults.md` - Marked as implemented with flags documentation
+  - All 10 previously pending scripts now have complete inline documentation:
+    - `interface/dock.sh` - Source URLs for all 6 preferences
+    - `system/time_machine.sh` - Developer directory exclusions documented
+    - `system/core.sh` - systemsetup command documentation
+    - `system/auto_updates.sh` - launchd agent references
+    - `applications/alfred.sh` - Alfred preferences documentation
+    - `applications/docker.sh` - Docker Desktop settings
+    - `applications/iterm2.sh` - iTerm2 preferences
+    - `applications/mariadb.sh` - MariaDB configuration
+    - `applications/nvm.sh` - Node Version Manager setup
+    - `applications/vscode.sh` - VS Code extensions and settings
+
+### Notes
+
+- This release completes the v1.5.0 milestone from the SETTINGS_ROADMAP.md
+- All defaults scripts now include Apple Support source URLs
+- The `fc defaults` command provides quick access to common tweaks without editing scripts
+- Test suite ensures reliability of the new plugin
+
 ## [1.4.0] - 2026-01-03
 
 ### Added

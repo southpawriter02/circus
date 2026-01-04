@@ -2,7 +2,8 @@
 
 ## Overview
 
-**Command:** `fc defaults`  
+**Command:** `fc defaults`
+**Status:** ✅ Implemented (v1.5.0)
 **Purpose:** Apply curated macOS defaults tweaks—show hidden files, speed up animations, etc.
 
 ### Use Cases
@@ -24,6 +25,13 @@
 | `reset [name]` | Reset a tweak to macOS default |
 | `status` | Show current status of all tweaks |
 | `all` | Apply all recommended tweaks |
+
+## Flags
+
+| Flag | Description |
+|------|-------------|
+| `--dry-run` | Show what would be done without making changes |
+| `--help`, `-h` | Show usage information |
 
 ---
 

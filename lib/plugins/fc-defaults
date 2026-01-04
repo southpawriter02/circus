@@ -1,0 +1,549 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-defaults
+#
+# DESCRIPTION:  Apply curated macOS defaults tweaks - show hidden files, speed
+#               up animations, configure Dock behavior, and more.
+#               Provides an easy interface to common macOS customizations.
+#
+# CROSS-PLATFORM:
+#   - macOS only (uses `defaults` command)
+#
+# COMPATIBILITY:
+#   - Bash 3.2+ (macOS default)
+#
+# REFERENCES:
+#   - defaults man page: man defaults
+#   - Mathias Bynens' dotfiles: https://github.com/mathiasbynens/dotfiles
+#   - macOS Defaults: https://macos-defaults.com
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Platform Check ---------------------------------------------------------
+require_macos
+
+# --- Global Flags -----------------------------------------------------------
+FLAG_DRY_RUN=false
+
+# ==============================================================================
+# Tweak Definitions
+# ==============================================================================
+#
+# Format: NAME|DOMAIN|KEY|TYPE|RECOMMENDED|DEFAULT|DESCRIPTION|RESTART_CMD
+#
+# TYPE values: bool, int, float, string
+# RESTART_CMD: Command to run after applying (empty if none needed)
+#
+# Using newline-delimited string for Bash 3.2 compatibility
+
+TWEAKS_DATA="
+finder.hidden-files|com.apple.finder|AppleShowAllFiles|bool|true|false|Show hidden files in Finder|killall Finder
+finder.path-bar|com.apple.finder|ShowPathbar|bool|true|false|Show path bar at bottom of Finder windows|killall Finder
+finder.status-bar|com.apple.finder|ShowStatusBar|bool|true|false|Show status bar at bottom of Finder windows|killall Finder
+finder.extensions|NSGlobalDomain|AppleShowAllExtensions|bool|true|false|Always show file extensions|killall Finder
+finder.default-view|com.apple.finder|FXPreferredViewStyle|string|clmv|icnv|Default Finder view (clmv=column, Nlsv=list)|killall Finder
+finder.search-scope|com.apple.finder|FXDefaultSearchScope|string|SCcf|SCsp|Search current folder by default|killall Finder
+finder.spring-loading|NSGlobalDomain|com.apple.springing.enabled|bool|true|true|Enable spring loading for directories|
+finder.spring-delay|NSGlobalDomain|com.apple.springing.delay|float|0.3|0.5|Delay before spring loading activates (seconds)|
+dock.autohide|com.apple.dock|autohide|bool|false|false|Auto-hide the Dock when not in use|killall Dock
+dock.autohide-delay|com.apple.dock|autohide-delay|float|0|0.2|Delay before Dock shows when hidden (seconds)|killall Dock
+dock.autohide-time|com.apple.dock|autohide-time-modifier|float|0.3|0.5|Dock show/hide animation speed (seconds)|killall Dock
+dock.minimize-effect|com.apple.dock|mineffect|string|scale|genie|Window minimize animation (scale or genie)|killall Dock
+dock.icon-size|com.apple.dock|tilesize|int|48|64|Dock icon size in pixels (16-128)|killall Dock
+dock.magnification|com.apple.dock|magnification|bool|false|false|Enable Dock icon magnification on hover|killall Dock
+dock.show-recents|com.apple.dock|show-recents|bool|false|true|Show recent applications in Dock|killall Dock
+dock.mru-spaces|com.apple.dock|mru-spaces|bool|false|true|Automatically rearrange Spaces based on use|killall Dock
+dock.minimize-to-app|com.apple.dock|minimize-to-application|bool|true|false|Minimize windows into application icon|killall Dock
+screenshot.location|com.apple.screencapture|location|string|~/Pictures/Screenshots|~/Desktop|Screenshot save location|killall SystemUIServer
+screenshot.format|com.apple.screencapture|type|string|png|png|Screenshot format (png, jpg, gif, tiff, pdf)|killall SystemUIServer
+screenshot.shadow|com.apple.screencapture|disable-shadow|bool|true|false|Disable window shadow in screenshots|killall SystemUIServer
+screenshot.preview|com.apple.screencapture|show-thumbnail|bool|true|true|Show floating thumbnail after screenshot|killall SystemUIServer
+system.animations|NSGlobalDomain|NSAutomaticWindowAnimationsEnabled|bool|false|true|Disable window opening/closing animations|
+system.scrollbar-jump|NSGlobalDomain|AppleScrollerPagingBehavior|bool|true|false|Click scrollbar to jump to spot (vs page)|
+system.save-panel|NSGlobalDomain|NSNavPanelExpandedStateForSaveMode|bool|true|false|Expand save panel by default|
+system.print-panel|NSGlobalDomain|PMPrintingExpandedStateForPrint|bool|true|false|Expand print panel by default|
+system.quarantine|com.apple.LaunchServices|LSQuarantine|bool|false|true|Show quarantine dialog for downloaded apps|
+system.crash-reporter|com.apple.CrashReporter|DialogType|string|none|crashreport|Crash reporter dialog (none, basic, developer)|
+safari.develop-menu|com.apple.Safari|IncludeDevelopMenu|bool|true|false|Show Develop menu in Safari|
+safari.full-url|com.apple.Safari|ShowFullURLInSmartSearchField|bool|true|false|Show full website URL in address bar|
+safari.status-bar|com.apple.Safari|ShowStatusBar|bool|true|false|Show status bar at bottom of Safari|
+safari.tab-previews|com.apple.Safari|DebugSnapshotsUpdatePolicy|int|2|0|Tab thumbnail update policy|
+keyboard.key-repeat|NSGlobalDomain|KeyRepeat|int|2|6|Key repeat rate (lower = faster, 1-15)|
+keyboard.initial-repeat|NSGlobalDomain|InitialKeyRepeat|int|15|25|Delay before key repeat starts|
+keyboard.press-and-hold|NSGlobalDomain|ApplePressAndHoldEnabled|bool|false|true|Disable press-and-hold for accents|
+keyboard.fn-keys|NSGlobalDomain|com.apple.keyboard.fnState|bool|true|false|Use F1, F2, etc. as standard function keys|
+trackpad.tap-to-click|com.apple.AppleMultitouchTrackpad|Clicking|bool|true|false|Enable tap to click on trackpad|
+trackpad.natural-scroll|NSGlobalDomain|com.apple.swipescrolldirection|bool|true|true|Natural scroll direction|
+trackpad.three-finger-drag|com.apple.AppleMultitouchTrackpad|TrackpadThreeFingerDrag|bool|true|false|Enable three-finger drag|
+terminal.secure-keyboard|com.apple.Terminal|SecureKeyboardEntry|bool|true|false|Enable secure keyboard entry|
+terminal.utf8|com.apple.Terminal|StringEncodings|int|4|0|Use UTF-8 encoding by default|
+text.autocorrect|NSGlobalDomain|NSAutomaticSpellingCorrectionEnabled|bool|false|true|Disable auto-correct|
+text.smart-quotes|NSGlobalDomain|NSAutomaticQuoteSubstitutionEnabled|bool|false|true|Disable smart quotes|
+text.smart-dashes|NSGlobalDomain|NSAutomaticDashSubstitutionEnabled|bool|false|true|Disable smart dashes|
+"
+
+# ==============================================================================
+# Category Definitions
+# ==============================================================================
+
+CATEGORIES_DATA="
+finder|Finder|File browser settings
+dock|Dock|Dock appearance and behavior
+screenshot|Screenshots|Screenshot capture settings
+system|System|System-wide UI settings
+safari|Safari|Safari browser settings
+keyboard|Keyboard|Keyboard input settings
+trackpad|Trackpad|Trackpad input settings
+terminal|Terminal|Terminal.app settings
+text|Text Input|Text and typing settings
+"
+
+# ==============================================================================
+# Helper Functions
+# ==============================================================================
+
+# Get a tweak definition by name
+# Returns the full definition line or empty if not found
+get_tweak() {
+  local name="$1"
+  echo "$TWEAKS_DATA" | grep "^${name}|" | head -1
+}
+
+# Parse a tweak definition string into variables
+# Sets: TWEAK_NAME, TWEAK_DOMAIN, TWEAK_KEY, TWEAK_TYPE, TWEAK_RECOMMENDED, TWEAK_DEFAULT, TWEAK_DESC, TWEAK_RESTART
+parse_tweak() {
+  local tweak_line="$1"
+
+  if [ -z "$tweak_line" ]; then
+    return 1
+  fi
+
+  TWEAK_NAME=$(echo "$tweak_line" | cut -d'|' -f1)
+  TWEAK_DOMAIN=$(echo "$tweak_line" | cut -d'|' -f2)
+  TWEAK_KEY=$(echo "$tweak_line" | cut -d'|' -f3)
+  TWEAK_TYPE=$(echo "$tweak_line" | cut -d'|' -f4)
+  TWEAK_RECOMMENDED=$(echo "$tweak_line" | cut -d'|' -f5)
+  TWEAK_DEFAULT=$(echo "$tweak_line" | cut -d'|' -f6)
+  TWEAK_DESC=$(echo "$tweak_line" | cut -d'|' -f7)
+  TWEAK_RESTART=$(echo "$tweak_line" | cut -d'|' -f8)
+}
+
+# Get current value of a preference
+get_current_value() {
+  local domain="$1"
+  local key="$2"
+  local default_val="$3"
+
+  local value
+  value=$(defaults read "$domain" "$key" 2>/dev/null)
+
+  if [ $? -ne 0 ]; then
+    echo "$default_val"
+  else
+    echo "$value"
+  fi
+}
+
+# Format boolean for display
+format_bool() {
+  if [ "$1" = "1" ] || [ "$1" = "true" ]; then
+    echo "On"
+  else
+    echo "Off"
+  fi
+}
+
+# Get category prefix from tweak name
+get_category() {
+  echo "${1%%.*}"
+}
+
+# Get category info by prefix
+get_category_info() {
+  local cat="$1"
+  echo "$CATEGORIES_DATA" | grep "^${cat}|" | head -1
+}
+
+# Get all unique tweak names, sorted
+get_all_tweaks() {
+  echo "$TWEAKS_DATA" | grep -v '^$' | cut -d'|' -f1 | sort
+}
+
+# ==============================================================================
+# Subcommand: list
+# ==============================================================================
+
+cmd_list() {
+  echo ""
+  msg_info "Available macOS Defaults Tweaks"
+  echo ""
+
+  local current_cat=""
+  local tweaks
+  tweaks=$(get_all_tweaks)
+
+  while IFS= read -r tweak_name; do
+    [ -z "$tweak_name" ] && continue
+
+    local cat
+    cat=$(get_category "$tweak_name")
+
+    # Print category header if changed
+    if [ "$cat" != "$current_cat" ]; then
+      current_cat="$cat"
+      local cat_info
+      cat_info=$(get_category_info "$cat")
+      if [ -n "$cat_info" ]; then
+        local cat_title
+        cat_title=$(echo "$cat_info" | cut -d'|' -f2)
+        echo ""
+        echo "  ${cat_title}:"
+      fi
+    fi
+
+    local tweak_line
+    tweak_line=$(get_tweak "$tweak_name")
+    parse_tweak "$tweak_line"
+    printf "    %-28s %s\n" "$tweak_name" "$TWEAK_DESC"
+  done <<< "$tweaks"
+
+  echo ""
+  msg_info "Usage: fc defaults apply <tweak-name>"
+  msg_info "       fc defaults status    (show current settings)"
+  echo ""
+}
+
+# ==============================================================================
+# Subcommand: status
+# ==============================================================================
+
+cmd_status() {
+  echo ""
+  msg_info "Current Defaults Status"
+  echo ""
+  printf "  %-28s %-12s %-12s\n" "Tweak" "Current" "Recommended"
+  printf "  %-28s %-12s %-12s\n" "-----" "-------" "-----------"
+
+  local tweaks
+  tweaks=$(get_all_tweaks)
+
+  while IFS= read -r tweak_name; do
+    [ -z "$tweak_name" ] && continue
+
+    local tweak_line
+    tweak_line=$(get_tweak "$tweak_name")
+    parse_tweak "$tweak_line"
+
+    local current
+    current=$(get_current_value "$TWEAK_DOMAIN" "$TWEAK_KEY" "$TWEAK_DEFAULT")
+
+    local current_display="$current"
+    local recommended_display="$TWEAK_RECOMMENDED"
+
+    # Format booleans nicely
+    if [ "$TWEAK_TYPE" = "bool" ]; then
+      current_display=$(format_bool "$current")
+      recommended_display=$(format_bool "$TWEAK_RECOMMENDED")
+    fi
+
+    # Add indicator
+    local indicator=""
+    if [ "$current" = "$TWEAK_RECOMMENDED" ]; then
+      indicator="[32m✓[0m"
+    else
+      indicator="[33m○[0m"
+    fi
+
+    printf "  %s %-26s %-12s %-12s\n" "$indicator" "$tweak_name" "$current_display" "$recommended_display"
+  done <<< "$tweaks"
+
+  echo ""
+}
+
+# ==============================================================================
+# Subcommand: apply
+# ==============================================================================
+
+cmd_apply() {
+  local tweak_name="$1"
+
+  if [ -z "$tweak_name" ]; then
+    msg_error "Please specify a tweak to apply."
+    msg_info "Usage: fc defaults apply <tweak-name>"
+    msg_info "Run 'fc defaults list' to see available tweaks."
+    return 1
+  fi
+
+  local tweak_line
+  tweak_line=$(get_tweak "$tweak_name")
+
+  if [ -z "$tweak_line" ]; then
+    msg_error "Unknown tweak: $tweak_name"
+    msg_info "Run 'fc defaults list' to see available tweaks."
+    return 1
+  fi
+
+  parse_tweak "$tweak_line"
+
+  echo ""
+  msg_info "Applying: $TWEAK_DESC"
+
+  # Build the defaults command based on type
+  local type_flag
+  case "$TWEAK_TYPE" in
+    bool)   type_flag="-bool" ;;
+    int)    type_flag="-int" ;;
+    float)  type_flag="-float" ;;
+    string) type_flag="-string" ;;
+    *)      type_flag="-string" ;;
+  esac
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would run: defaults write $TWEAK_DOMAIN $TWEAK_KEY $type_flag $TWEAK_RECOMMENDED"
+    if [ -n "$TWEAK_RESTART" ]; then
+      msg_info "[DRY-RUN] Would run: $TWEAK_RESTART"
+    fi
+  else
+    echo "  Running: defaults write $TWEAK_DOMAIN $TWEAK_KEY $type_flag $TWEAK_RECOMMENDED"
+
+    if defaults write "$TWEAK_DOMAIN" "$TWEAK_KEY" "$type_flag" "$TWEAK_RECOMMENDED"; then
+      msg_success "Applied!"
+
+      if [ -n "$TWEAK_RESTART" ]; then
+        echo "  Restarting affected service..."
+        eval "$TWEAK_RESTART" 2>/dev/null
+      fi
+    else
+      msg_error "Failed to apply setting."
+      return 1
+    fi
+  fi
+
+  echo ""
+}
+
+# ==============================================================================
+# Subcommand: reset
+# ==============================================================================
+
+cmd_reset() {
+  local tweak_name="$1"
+
+  if [ -z "$tweak_name" ]; then
+    msg_error "Please specify a tweak to reset."
+    msg_info "Usage: fc defaults reset <tweak-name>"
+    return 1
+  fi
+
+  local tweak_line
+  tweak_line=$(get_tweak "$tweak_name")
+
+  if [ -z "$tweak_line" ]; then
+    msg_error "Unknown tweak: $tweak_name"
+    return 1
+  fi
+
+  parse_tweak "$tweak_line"
+
+  echo ""
+  msg_info "Resetting to macOS default: $TWEAK_DESC"
+
+  local type_flag
+  case "$TWEAK_TYPE" in
+    bool)   type_flag="-bool" ;;
+    int)    type_flag="-int" ;;
+    float)  type_flag="-float" ;;
+    string) type_flag="-string" ;;
+    *)      type_flag="-string" ;;
+  esac
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would run: defaults write $TWEAK_DOMAIN $TWEAK_KEY $type_flag $TWEAK_DEFAULT"
+    if [ -n "$TWEAK_RESTART" ]; then
+      msg_info "[DRY-RUN] Would run: $TWEAK_RESTART"
+    fi
+  else
+    echo "  Running: defaults write $TWEAK_DOMAIN $TWEAK_KEY $type_flag $TWEAK_DEFAULT"
+
+    if defaults write "$TWEAK_DOMAIN" "$TWEAK_KEY" "$type_flag" "$TWEAK_DEFAULT"; then
+      msg_success "Reset to default!"
+
+      if [ -n "$TWEAK_RESTART" ]; then
+        echo "  Restarting affected service..."
+        eval "$TWEAK_RESTART" 2>/dev/null
+      fi
+    else
+      msg_error "Failed to reset setting."
+      return 1
+    fi
+  fi
+
+  echo ""
+}
+
+# ==============================================================================
+# Subcommand: all
+# ==============================================================================
+
+cmd_all() {
+  echo ""
+  msg_info "Applying all recommended tweaks..."
+  echo ""
+
+  local count=0
+  local failed=0
+  local restart_cmds=""
+
+  local tweaks
+  tweaks=$(get_all_tweaks)
+
+  while IFS= read -r tweak_name; do
+    [ -z "$tweak_name" ] && continue
+
+    local tweak_line
+    tweak_line=$(get_tweak "$tweak_name")
+    parse_tweak "$tweak_line"
+
+    local type_flag
+    case "$TWEAK_TYPE" in
+      bool)   type_flag="-bool" ;;
+      int)    type_flag="-int" ;;
+      float)  type_flag="-float" ;;
+      string) type_flag="-string" ;;
+      *)      type_flag="-string" ;;
+    esac
+
+    if [ "$FLAG_DRY_RUN" = true ]; then
+      echo "  [DRY-RUN] $tweak_name"
+      count=$((count + 1))
+    else
+      if defaults write "$TWEAK_DOMAIN" "$TWEAK_KEY" "$type_flag" "$TWEAK_RECOMMENDED" 2>/dev/null; then
+        echo "  [32m✓[0m $tweak_name"
+        count=$((count + 1))
+
+        # Collect unique restart commands
+        if [ -n "$TWEAK_RESTART" ]; then
+          if ! echo "$restart_cmds" | grep -q "$TWEAK_RESTART"; then
+            restart_cmds="${restart_cmds}${TWEAK_RESTART}
+"
+          fi
+        fi
+      else
+        echo "  [31m✗[0m $tweak_name"
+        failed=$((failed + 1))
+      fi
+    fi
+  done <<< "$tweaks"
+
+  echo ""
+
+  # Run restart commands
+  if [ "$FLAG_DRY_RUN" = false ] && [ -n "$restart_cmds" ]; then
+    msg_info "Restarting affected services..."
+    while IFS= read -r cmd; do
+      [ -n "$cmd" ] && eval "$cmd" 2>/dev/null
+    done <<< "$restart_cmds"
+  fi
+
+  if [ "$FLAG_DRY_RUN" = true ]; then
+    msg_info "[DRY-RUN] Would apply $count tweaks."
+  else
+    msg_success "Applied $count tweaks."
+    if [ $failed -gt 0 ]; then
+      msg_warning "$failed tweaks failed to apply."
+    fi
+  fi
+
+  msg_info "Run 'fc defaults status' to verify."
+  echo ""
+}
+
+# ==============================================================================
+# Usage Information
+# ==============================================================================
+
+usage() {
+  msg_info "Usage: fc defaults <subcommand> [options]"
+  echo ""
+  msg_info "Apply curated macOS defaults tweaks."
+  echo ""
+  msg_info "Subcommands:"
+  echo "  list              List all available tweaks"
+  echo "  status            Show current status of all tweaks"
+  echo "  apply <name>      Apply a specific tweak"
+  echo "  reset <name>      Reset a tweak to macOS default"
+  echo "  all               Apply all recommended tweaks"
+  echo ""
+  msg_info "Options:"
+  echo "  --dry-run         Show what would be done without making changes"
+  echo "  --help, -h        Show this help message"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc defaults list"
+  echo "  fc defaults status"
+  echo "  fc defaults apply finder.hidden-files"
+  echo "  fc defaults reset dock.autohide"
+  echo "  fc defaults all --dry-run"
+  echo ""
+  exit 0
+}
+
+# ==============================================================================
+# Main Entry Point
+# ==============================================================================
+
+main() {
+  # Parse global flags
+  local args=()
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --dry-run)
+        FLAG_DRY_RUN=true
+        shift
+        ;;
+      --help|-h)
+        usage
+        ;;
+      *)
+        args+=("$1")
+        shift
+        ;;
+    esac
+  done
+
+  # Get subcommand
+  local subcommand="${args[0]:-}"
+
+  case "$subcommand" in
+    list)
+      cmd_list
+      ;;
+    status)
+      cmd_status
+      ;;
+    apply)
+      cmd_apply "${args[1]:-}"
+      ;;
+    reset)
+      cmd_reset "${args[1]:-}"
+      ;;
+    all)
+      cmd_all
+      ;;
+    "")
+      usage
+      ;;
+    *)
+      msg_error "Unknown subcommand: $subcommand"
+      msg_info "Run 'fc defaults --help' for usage information."
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
