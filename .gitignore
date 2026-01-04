@@ -93,3 +93,9 @@ secrets.sh
 *.pem
 *.key
 *.local
+
+# Circus
+# ------------------------------------------------------------------------------
+dotcircus-*.tar.gz
+dotcircus
+dotcircus-*/

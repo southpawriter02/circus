@@ -31,6 +31,20 @@
 #
 # ==============================================================================
 
+# A helper function to run `defaults write` commands or print them in dry run mode.
+run_defaults() {
+  local domain="$1"
+  local key="$2"
+  local type="$3"
+  local value="$4"
+
+  if [ "$DRY_RUN_MODE" = true ]; then
+    msg_info "[Dry Run] Would set Notification preference: '$key' to '$value'"
+  else
+    defaults write "$domain" "$key" "$type" "$value"
+  fi
+}
+
 msg_info "Configuring notification settings..."
 
 # ==============================================================================

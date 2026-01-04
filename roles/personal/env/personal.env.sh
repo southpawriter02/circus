@@ -61,6 +61,64 @@ export YTDLP_OUTPUT_DIR="${YTDLP_OUTPUT_DIR:-$HOME/Downloads/Videos}"
 # Preferred video format for yt-dlp
 export YTDLP_FORMAT="${YTDLP_FORMAT:-bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best}"
 
+# --- Media Applications -------------------------------------------------------
+
+# Spotify configuration directory
+export SPOTIFY_PATH="${SPOTIFY_PATH:-$HOME/Library/Application Support/Spotify}"
+
+# IINA player configuration
+export IINA_CONFIG="${IINA_CONFIG:-$HOME/Library/Application Support/com.colliderli.iina}"
+
+# mpv configuration (IINA uses mpv backend)
+export MPV_HOME="${MPV_HOME:-$HOME/.config/mpv}"
+
+# Plex Media Server (local server)
+export PLEX_MEDIA_SERVER="${PLEX_MEDIA_SERVER:-$HOME/Library/Application Support/Plex Media Server}"
+# Plex token (template - retrieve from keychain in practice)
+# export PLEX_TOKEN="${PLEX_TOKEN:-$(security find-generic-password -a "$USER" -s "plex-token" -w 2>/dev/null)}"
+
+# --- E-Books & Reading --------------------------------------------------------
+
+# Calibre e-book library
+export CALIBRE_LIBRARY="${CALIBRE_LIBRARY:-$HOME/Documents/Calibre Library}"
+
+# Calibre configuration
+export CALIBRE_CONFIG="${CALIBRE_CONFIG:-$HOME/Library/Preferences/calibre}"
+
+# Audiobooks directory
+export AUDIOBOOK_DIR="${AUDIOBOOK_DIR:-$HOME/Music/Audiobooks}"
+[[ -d "$AUDIOBOOK_DIR" ]] || mkdir -p "$AUDIOBOOK_DIR"
+
+# Comics and manga directory
+export COMICS_DIR="${COMICS_DIR:-$HOME/Documents/Comics}"
+
+# --- Screenshots & Captures ---------------------------------------------------
+
+# Screenshot save location
+export SCREENSHOT_DIR="${SCREENSHOT_DIR:-$HOME/Pictures/Screenshots}"
+[[ -d "$SCREENSHOT_DIR" ]] || mkdir -p "$SCREENSHOT_DIR"
+
+# Screen recordings directory
+export SCREEN_RECORDINGS_DIR="${SCREEN_RECORDINGS_DIR:-$HOME/Movies/Screen Recordings}"
+[[ -d "$SCREEN_RECORDINGS_DIR" ]] || mkdir -p "$SCREEN_RECORDINGS_DIR"
+
+# --- Wallpapers & Themes ------------------------------------------------------
+
+# Custom wallpaper directory
+export WALLPAPER_DIR="${WALLPAPER_DIR:-$HOME/Pictures/Wallpapers}"
+[[ -d "$WALLPAPER_DIR" ]] || mkdir -p "$WALLPAPER_DIR"
+
+# Dynamic wallpapers (macOS)
+export DYNAMIC_WALLPAPER_DIR="${DYNAMIC_WALLPAPER_DIR:-$HOME/Library/Application Support/com.apple.mobileAssetDesktop}"
+
+# --- Fonts & Typography -------------------------------------------------------
+
+# User fonts directory
+export USER_FONTS_DIR="${USER_FONTS_DIR:-$HOME/Library/Fonts}"
+
+# Font cache directory
+export FONTCONFIG_PATH="${FONTCONFIG_PATH:-$HOME/.config/fontconfig}"
+
 # --- Personal Git Configuration -----------------------------------------------
 
 # Personal GitHub username (for quick cloning)
@@ -77,6 +135,18 @@ export YTDLP_FORMAT="${YTDLP_FORMAT:-bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[
 
 # Auto-update is fine on personal machine
 unset HOMEBREW_NO_AUTO_UPDATE
+
+# Auto-update frequency (in seconds) - check daily (86400)
+export HOMEBREW_AUTO_UPDATE_SECS="${HOMEBREW_AUTO_UPDATE_SECS:-86400}"
+
+# Cask installation options
+export HOMEBREW_CASK_OPTS="${HOMEBREW_CASK_OPTS:---appdir=/Applications --fontdir=/Library/Fonts}"
+
+# Cleanup old versions after upgrade
+export HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS="${HOMEBREW_CLEANUP_PERIODIC_FULL_DAYS:-7}"
+
+# Show install times
+export HOMEBREW_DISPLAY_INSTALL_TIMES="${HOMEBREW_DISPLAY_INSTALL_TIMES:-1}"
 
 # --- Language/Locale ----------------------------------------------------------
 
@@ -113,3 +183,60 @@ fi
 # if command -v cowsay &>/dev/null; then
 #     echo "Welcome back!" | cowsay -f tux
 # fi
+
+# --- Helper Functions ---------------------------------------------------------
+
+# Open personal projects directory
+personal-projects() {
+    cd "$PERSONAL_PROJECTS" || return 1
+    echo "Personal projects directory: $PERSONAL_PROJECTS"
+    ls -la
+}
+
+# Show personal directories summary
+personal-dirs() {
+    echo "=== Personal Directories ==="
+    echo ""
+    echo "Projects:         $PERSONAL_PROJECTS"
+    echo "Downloads:        $DOWNLOADS_DIR"
+    echo "Screenshots:      $SCREENSHOT_DIR"
+    echo "Wallpapers:       $WALLPAPER_DIR"
+    echo ""
+    echo "Media:"
+    echo "  Music:          $MUSIC_DIR"
+    echo "  Movies:         $MOVIES_DIR"
+    echo "  Pictures:       $PICTURES_DIR"
+    echo "  Audiobooks:     $AUDIOBOOK_DIR"
+    echo ""
+    echo "E-Books:"
+    echo "  Calibre:        $CALIBRE_LIBRARY"
+    echo "  Comics:         $COMICS_DIR"
+    echo ""
+    echo "Cloud Storage:"
+    echo "  iCloud:         $ICLOUD_DRIVE"
+    echo "  Dropbox:        ${DROPBOX_DIR:-<not set>}"
+    echo "  Google Drive:   ${GOOGLE_DRIVE:-<not set>}"
+}
+
+# Quick screenshot with timestamp
+screenshot() {
+    local filename="${SCREENSHOT_DIR}/screenshot-$(date +%Y%m%d-%H%M%S).png"
+    screencapture -x "$filename"
+    echo "Screenshot saved: $filename"
+}
+
+# Screenshot with selection
+screenshot-select() {
+    local filename="${SCREENSHOT_DIR}/screenshot-$(date +%Y%m%d-%H%M%S).png"
+    screencapture -i "$filename"
+    echo "Screenshot saved: $filename"
+}
+
+# Open Calibre library
+calibre-open() {
+    if [[ -d "$CALIBRE_LIBRARY" ]]; then
+        open "$CALIBRE_LIBRARY"
+    else
+        echo "Calibre library not found at: $CALIBRE_LIBRARY"
+    fi
+}

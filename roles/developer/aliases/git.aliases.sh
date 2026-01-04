@@ -174,3 +174,170 @@ gissue() {
 galias() {
     alias | grep -E "^g[a-z]+=" | sed "s/=/ = /" | sort
 }
+
+# --- Work In Progress (WIP) Commits -----------------------------------------
+
+# Quick WIP commit (for temporary saves)
+gwip() {
+    git add -A
+    git commit -m "WIP: $(date '+%Y-%m-%d %H:%M')" --no-verify
+}
+
+# Undo last WIP commit (keeps changes staged)
+gunwip() {
+    if git log -1 --pretty=%s | grep -q "^WIP:"; then
+        git reset --soft HEAD~1
+    else
+        echo "Last commit is not a WIP commit"
+    fi
+}
+
+# --- Branch Cleanup ----------------------------------------------------------
+
+# Delete merged branches (excluding main/master/develop)
+gcleanup() {
+    local branches
+    branches=$(git branch --merged | grep -Ev '^\*|main|master|develop')
+    if [ -n "$branches" ]; then
+        echo "Branches to delete:"
+        echo "$branches"
+        echo ""
+        read -r "?Delete these branches? [y/N] " confirm
+        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            echo "$branches" | xargs git branch -d
+        fi
+    else
+        echo "No merged branches to clean up"
+    fi
+}
+
+# Delete remote-tracking branches that no longer exist on remote
+gpruneremote() {
+    git fetch --prune
+    git remote prune origin
+}
+
+# --- Fork Synchronization ----------------------------------------------------
+
+# Sync fork with upstream
+gsync() {
+    local upstream="${1:-upstream}"
+    local branch="${2:-main}"
+    echo "Syncing with $upstream/$branch..."
+    git fetch "$upstream"
+    git checkout "$branch"
+    git merge "$upstream/$branch"
+    git push origin "$branch"
+}
+
+# Add upstream remote
+gupstream() {
+    local url="$1"
+    if [ -z "$url" ]; then
+        echo "Usage: gupstream <upstream-repo-url>"
+        return 1
+    fi
+    git remote add upstream "$url"
+    git fetch upstream
+}
+
+# --- Pull Request Helpers ----------------------------------------------------
+
+# Create PR branch from issue (e.g., gpr 123 "fix login bug")
+gpr() {
+    local issue="$1"
+    local desc="${2:-fix}"
+    if [ -z "$issue" ]; then
+        echo "Usage: gpr <issue-number> [description]"
+        return 1
+    fi
+    local branch="fix/${issue}-$(echo "$desc" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')"
+    git checkout -b "$branch"
+    echo "Created branch: $branch"
+}
+
+# Fetch and checkout a PR by number
+gprco() {
+    local pr_number="$1"
+    if [ -z "$pr_number" ]; then
+        echo "Usage: gprco <pr-number>"
+        return 1
+    fi
+    git fetch origin "pull/${pr_number}/head:pr-${pr_number}"
+    git checkout "pr-${pr_number}"
+}
+
+# --- Commit Amendments -------------------------------------------------------
+
+# Amend commit with current changes (no message change)
+gamendnomsg() {
+    git add -A
+    git commit --amend --no-edit
+}
+
+# Fixup last commit (for interactive rebase)
+gfixup() {
+    git add -A
+    git commit --fixup HEAD
+}
+
+# Autosquash fixup commits
+gautosquash() {
+    local count="${1:-5}"
+    git rebase -i --autosquash "HEAD~$count"
+}
+
+# --- Undo Operations ---------------------------------------------------------
+
+# Undo last commit (keep changes)
+gundo() {
+    git reset --soft HEAD~1
+}
+
+# Undo last commit (discard changes)
+gundohard() {
+    git reset --hard HEAD~1
+}
+
+# Restore file from previous commit
+grestore() {
+    local file="$1"
+    local commit="${2:-HEAD}"
+    git checkout "$commit" -- "$file"
+}
+
+# --- Stash Helpers -----------------------------------------------------------
+
+# Stash with descriptive message
+gstashm() {
+    local message="$1"
+    if [ -z "$message" ]; then
+        git stash push -m "$(date '+%Y-%m-%d %H:%M')"
+    else
+        git stash push -m "$message"
+    fi
+}
+
+# --- Stats & Info ------------------------------------------------------------
+
+# Lines changed by author
+gstats() {
+    git shortlog -sn --all
+}
+
+# Show contributions in last N days
+gcontrib() {
+    local days="${1:-7}"
+    git log --since="${days} days ago" --oneline --no-merges | wc -l | tr -d ' '
+    echo " commits in last $days days"
+}
+
+# List files changed in last commit
+gchanged() {
+    git diff-tree --no-commit-id --name-only -r HEAD
+}
+
+# Show commit count per day
+gcommitsperday() {
+    git log --format='%ci' | cut -d' ' -f1 | uniq -c | sort -r | head -20
+}

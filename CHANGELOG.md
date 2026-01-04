@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-01-03
+
+### Added
+
+- **v1.4.0: Role-Specific Settings** - Major release with 12 new role-specific configuration files and 8 enhanced existing files:
+
+  **Developer Role - New Files (4)**:
+  - `roles/developer/env/docker.env.sh` - Docker/Compose environment (DOCKER_BUILDKIT, COMPOSE_DOCKER_CLI_BUILD, scan suggestions, BuildKit inline cache)
+  - `roles/developer/env/database.env.sh` - Database connections (PostgreSQL, MySQL, Redis, MongoDB, SQLite, Elasticsearch, helper functions)
+  - `roles/developer/env/testing.env.sh` - Testing frameworks (Jest, pytest, Mocha, Vitest, Playwright, Cypress, coverage settings)
+  - `roles/developer/defaults/simulator.sh` - iOS Simulator (screenshot location, status bar override 9:41, device bezels, hardware keyboard, audio routing)
+  - `roles/developer/aliases/kubernetes.aliases.sh` - kubectl aliases (25+ aliases: k, kgp, kgs, kgn, kctx, kns, plus helper functions)
+
+  **Developer Role - Enhanced Files (5)**:
+  - `roles/developer/env/development.env.sh` - Added pnpm, Bun, Deno runtimes; framework telemetry opt-outs (Turbo, Next.js, Gatsby, Storybook, Astro, Angular, Nuxt, Expo)
+  - `roles/developer/env/debugging.env.sh` - Added macOS/Darwin debugging (LLDB, Swift), memory debugging (MallocStackLogging, MallocScribble), Objective-C (NSZombieEnabled), dyld debugging
+  - `roles/developer/defaults/xcode.sh` - Added indent/tab width, page guide, source control, code completion, appearance, GPU frame capture, view debugging settings
+  - `roles/developer/aliases/git.aliases.sh` - Added WIP commits (gwip/gunwip), branch cleanup, fork sync, PR helpers, fixup commits, stats functions
+  - `roles/developer/aliases/docker.aliases.sh` - Added compose aliases, build/cleanup aliases, stats/info, volumes, exec shortcuts, registry commands
+
+  **Work Role - New Files (4)**:
+  - `roles/work/defaults/calendar.sh` - Work calendar (Monday week start, 30-min default meetings, work hours 9-17, alerts, week numbers, timezone support)
+  - `roles/work/defaults/slack.sh` - Work Slack (DND schedule hints, notification sounds, menu bar, downloads folder)
+  - `roles/work/defaults/zoom.sh` - Zoom meetings (mute on join, video off on join, HD video, virtual backgrounds, recording location)
+  - `roles/work/env/jira.env.sh` - Atlassian tools (Jira, Confluence, Bitbucket, OpsGenie configuration with secure keychain token retrieval)
+
+  **Work Role - Enhanced Files (2)**:
+  - `roles/work/env/corporate.env.sh` - Added HTTP client settings, SSL/TLS templates, identity/auth (LDAP, Okta, SSO), compliance/audit logging, monitoring (Sentry, OpenTelemetry)
+  - `roles/work/defaults/security.sh` - Added Bluetooth security, power/sleep security, terminal SecureKeyboardEntry, sharing services, system preferences protection, Gatekeeper checks
+
+  **Personal Role - New Files (3)**:
+  - `roles/personal/env/gaming.env.sh` - Gaming (Steam, Wine/CrossOver, Game Porting Toolkit, DXVK, MoltenVK, emulators: RetroArch, Dolphin, RPCS3, Ryujinx)
+  - `roles/personal/env/media.env.sh` - Media management (Plex/Jellyfin, FFmpeg/HandBrake, yt-dlp, media players: mpv, VLC, IINA, Calibre, photo tools)
+  - `roles/personal/defaults/relaxed_security.sh` - Relaxed security (5-sec password delay, 10-min screensaver, AirDrop enabled, Bluetooth sharing, Handoff/Continuity enabled)
+
+  **Personal Role - Enhanced Files (1)**:
+  - `roles/personal/env/personal.env.sh` - Added Homebrew settings, media applications (Spotify, IINA, Plex), e-books (Calibre, audiobooks), screenshots, wallpapers, helper functions
+
+### Fixed
+
+- `defaults/interface/notifications.sh` - Added missing `run_defaults()` helper function
+
+### Notes
+
+- Total new files: 12
+- Total enhanced files: 8
+- All files follow established codebase patterns with dry-run support
+- Role-specific defaults layer on top of base defaults (not replacing)
+- All scripts include comprehensive inline documentation
+- Tested with dry-run mode across all three roles (developer, work, personal)
+
 ## [1.3.2] - 2026-01-04
 
 ### Added
