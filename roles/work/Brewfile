@@ -6,10 +6,122 @@
 #
 # ==============================================================================
 
-# --- Casks (GUI Applications) -----------------------------------------------
+# --- Core Formulae ----------------------------------------------------------
+
+# -- Infrastructure & DevOps --
+
+# Infrastructure as code
+brew "terraform"
+
+# Configuration management
+brew "ansible"
+
+# Kubernetes CLI
+brew "kubernetes-cli"
+
+# Kubernetes package manager
+brew "helm"
+
+# AWS CLI
+brew "awscli"
+
+# -- Networking & Security --
+
+# SSH connection manager
+brew "openssh"
+
+# SSL/TLS toolkit
+brew "openssl"
+
+# Network scanner
+brew "nmap"
+
+# Certificate management
+brew "certbot"
+
+# -- Monitoring & Logs --
+
+# Log aggregation
+brew "logstash"
+
+# System monitoring
+brew "htop"
+
+# Network interface monitor
+brew "iftop"
+
+# -- Data & APIs --
+
+# HTTP testing tool
+brew "httpie"
+
+# API load testing
+brew "oha"
+
+# YAML/JSON/CSV processor
+brew "dasel"
+
+# -- Documentation --
+
+# Markdown preview
+brew "grip"
+
+# Terminal presentations
+brew "slides"
+
+# --- MAS Apps (Mac App Store) -----------------------------------------------
 
 # Team communication
-cask "slack"
+mas "Slack", id: 803453959
+
+# Apple word processor
+mas "Pages", id: 409201541
+
+# Apple device configuration
+mas "Apple Configurator", id: 1037126344
+
+# --- Casks (GUI Applications) -----------------------------------------------
+
+# -- Communication --
 
 # Video conferencing
 cask "zoom"
+
+# -- Productivity --
+
+# Note-taking and documentation
+cask "notion"
+
+# -- Development --
+
+# Container platform
+cask "docker"
+
+# GitHub desktop client
+cask "github"
+
+# Modern terminal with AI
+cask "warp"
+
+# -- Virtualization --
+
+# Virtual machines
+cask "parallels"
+
+# --- Fonts (Casks) ---------------------------------------------------------
+# Professional fonts for presentations and documents
+
+# IBM Plex - corporate font family
+cask "font-ibm-plex"
+
+# Maven Pro - professional headings
+cask "font-maven-pro"
+
+# Open Sans - readable body text
+cask "font-open-sans"
+
+# Roboto - clean UI font
+cask "font-roboto"
+
+# Lato - elegant presentations
+cask "font-lato"

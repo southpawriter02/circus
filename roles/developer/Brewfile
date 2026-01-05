@@ -8,8 +8,21 @@
 
 # --- Core Formulae ----------------------------------------------------------
 
+# -- Languages & Runtimes --
+
 # Node Version Manager
 brew "nvm"
+
+# Python version manager
+brew "pyenv"
+
+# Ruby version manager
+brew "rbenv"
+
+# Rust programming language
+brew "rust"
+
+# -- Databases --
 
 # PostgreSQL database
 brew "postgresql"
@@ -17,24 +30,201 @@ brew "postgresql"
 # MariaDB database (MySQL-compatible)
 brew "mariadb"
 
-# --- Developer Tools --------------------------------------------------------
+# Redis in-memory data store
+brew "redis"
+
+# SQLite database
+brew "sqlite"
+
+# -- Build Tools --
+
+# C compiler cache
+brew "ccache"
+
+# Package config helper
+brew "pkg-config"
+
+# GNU Make
+brew "make"
+
+# CMake build system
+brew "cmake"
+
+# -- Git Tools --
 
 # Git hooks manager for code quality
 brew "pre-commit"
 
+# Git repository analyzer
+brew "git-sizer"
+
+# Git history rewriter
+brew "git-filter-repo"
+
+# Git diff with syntax highlighting
+brew "git-delta"
+
+# Interactive git UI
+brew "gitui"
+
+# Git repository encryption
+brew "git-crypt"
+
+# -- Code Quality & Analysis --
+
 # Testing framework (helpers are included as git submodules)
 brew "bats-core"
 
+# Count lines of code
+brew "cloc"
+
+# Color diff output
+brew "colordiff"
+
+# Universal ctags
+brew "ctags"
+
+# -- Terminal Multiplexer --
+
+# Terminal multiplexer
+brew "tmux"
+
+# -- Debugging & Analysis --
+
+# GNU debugger
+brew "gdb"
+
+# Binary analysis tool
+brew "binwalk"
+
+# Binary utilities
+brew "binutils"
+
+# -- Container Tools --
+
+# Docker CLI
+brew "docker"
+
+# Docker Compose
+brew "docker-compose"
+
+# Docker image analyzer
+brew "dive"
+
+# -- HTTP & API Tools --
+
+# HTTP client with friendly output
+brew "httpie"
+
+# API testing tool
+brew "grpcurl"
+
+# -- Documentation --
+
+# Markdown renderer for terminal
+brew "glow"
+
+# Universal document converter
+brew "pandoc"
+
+# -- Directory Navigation --
+
+# Smarter cd command
+brew "zoxide"
+
+# Directory jumping
+brew "jump"
+
+# Auto-activate environments
+brew "direnv"
+
+# --- MAS Apps (Mac App Store) -----------------------------------------------
+
+# Apple's IDE
+mas "Xcode", id: 497799835
+
+# Database GUI for MySQL/PostgreSQL
+mas "Sequel Ace", id: 151803600
+
+# Apple device configuration
+mas "Apple Configurator", id: 1037126344
+
+# Shortcuts automation actions
+mas "Actions", id: 1586435171
+
 # --- Casks (GUI Applications) -----------------------------------------------
+
+# -- IDEs & Editors --
 
 # .NET/C# Development SDK
 cask "dotnet-sdk"
 
-# The .NET/C# IDE
+# JetBrains .NET IDE
 cask "rider"
 
-# The modern terminal
+# -- Terminals & CLI --
+
+# Modern terminal with AI
 cask "warp"
 
-# Containerization platform
+# -- Containers & Virtualization --
+
+# Container platform
 cask "docker"
+
+# Virtual machines
+cask "parallels"
+
+# -- Version Control --
+
+# GitHub desktop client
+cask "github"
+
+# -- Security & Reverse Engineering --
+
+# Reverse engineering tool
+cask "ghidra"
+
+# -- System Tools --
+
+# Apple configuration profile editor
+cask "imazing-profile-editor"
+
+# Launch daemon manager
+cask "launchcontrol"
+
+# File system monitor
+cask "fsmonitor"
+
+# --- Fonts (Casks) ---------------------------------------------------------
+# Programming fonts with nerd font variants for terminal icons
+
+# Fira Code with nerd font icons
+cask "font-fira-code-nerd-font"
+
+# Fira Mono (non-ligature variant)
+cask "font-fira-mono"
+
+# Fira Mono with nerd font icons
+cask "font-fira-mono-nerd-font"
+
+# JetBrains Mono with nerd font icons
+cask "font-jetbrains-mono-nerd-font"
+
+# Inconsolata Go with nerd font icons
+cask "font-inconsolata-go-nerd-font"
+
+# Hack monospace font
+cask "font-hack"
+
+# Hasklig - Haskell ligature font
+cask "font-hasklig"
+
+# Monoid - compact coding font
+cask "font-monoid"
+
+# Cascadia Code - Microsoft's coding font
+cask "font-cascadia-code"
+
+# Source Code Pro - Adobe's coding font
+cask "font-source-code-pro"

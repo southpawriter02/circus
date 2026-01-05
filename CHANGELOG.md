@@ -146,7 +146,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `defaults/interface/notifications.sh` - Added missing `run_defaults()` helper function
 
-## [1.3.2] - 2026-01-03
+### Notes
+
+- Total new files: 12
+- Total enhanced files: 8
+- All files follow established codebase patterns with dry-run support
+- Role-specific defaults layer on top of base defaults (not replacing)
+- All scripts include comprehensive inline documentation
+- Tested with dry-run mode across all three roles (developer, work, personal)
+
+## [1.3.3] - 2026-01-04
+
+### Added
+
+- **v1.3.3: Brewfile Expansion & Role Distribution** - Comprehensive Homebrew package management across all roles:
+
+  **Base Brewfile Additions**:
+  - **Casks (11 new)**: gpg-suite, little-snitch, keepassxc, knockknock, yubico-authenticator, google-chrome, raycast, carbon-copy-cloner, dropbox, etrecheckpro, prefs-editor
+  - **Formulae (20 new)**: findutils, zsh-completions, bash-completion@2, macos-trash, gh, mackup, bat, eza, fd, ripgrep, jq, fzf, wget, curl, zstd, p7zip
+  - **Fonts (4 new)**: font-fira-code, font-jetbrains-mono, font-sf-mono, font-inter
+  - **MAS Apps (1 new)**: Bitwarden
+
+  **Developer Brewfile** (`roles/developer/Brewfile`):
+  - **Formulae (35 new)**: pyenv, rbenv, rust, redis, sqlite, ccache, pkg-config, make, cmake, git-sizer, git-filter-repo, git-delta, gitui, git-crypt, cloc, colordiff, ctags, tmux, gdb, binwalk, binutils, docker, docker-compose, dive, httpie, grpcurl, glow, pandoc, zoxide, jump, direnv
+  - **Casks (10 new)**: dotnet-sdk, rider, warp, docker, parallels, github, ghidra, imazing-profile-editor, launchcontrol, fsmonitor
+  - **Fonts (10 new)**: font-fira-code-nerd-font, font-fira-mono, font-fira-mono-nerd-font, font-jetbrains-mono-nerd-font, font-inconsolata-go-nerd-font, font-hack, font-hasklig, font-monoid, font-cascadia-code, font-source-code-pro
+  - **MAS Apps (4 new)**: Xcode, Sequel Ace, Apple Configurator, Actions
+
+  **Personal Brewfile** (`roles/personal/Brewfile`):
+  - **Formulae (20 new)**: imagemagick, optipng, pngcrush, webp, chafa, catimg, ranger, lf, ncdu, duf, htop, lnav, pstree, pwgen, gnupg, pinentry-mac, lynis, clamav, mtr, iftop, nmap, rsync, rclone
+  - **Casks (12 new)**: spotify, vlc, discord, battle-net, brave-browser, cloudflare-warp, protonvpn, proton-drive, rectangle, notion, setapp
+  - **Fonts (9 new)**: font-roboto, font-roboto-mono, font-open-sans, font-lato, font-montserrat, font-ubuntu, font-cantarell, font-oxygen, font-oxygen-mono
+  - **MAS Apps (3 new)**: Cardhop, Hyperduck, Pages
+
+  **Work Brewfile** (`roles/work/Brewfile`):
+  - **Formulae (15 new)**: terraform, ansible, kubernetes-cli, helm, awscli, openssh, openssl, nmap, certbot, logstash, htop, iftop, httpie, oha, dasel, grip, slides
+  - **Casks (5 new)**: zoom, notion, docker, github, warp, parallels
+  - **Fonts (5 new)**: font-ibm-plex, font-maven-pro, font-open-sans, font-roboto, font-lato
+  - **MAS Apps (3 new)**: Slack, Pages, Apple Configurator
+
+### Changed
+
+- **Brewfile Organization**: Reorganized base Brewfile with categorized sections (Shell & Core Utilities, Version Control, Package Management, File & Text Processing, Networking, Compression, Security, Browsers, Productivity, Cloud & Sync, System Utilities, Fonts)
+- **Role-specific Distribution**: Moved role-specific apps from base Brewfile to appropriate role Brewfiles
+- **MAS over Casks**: Replaced cask versions with MAS versions where available (Slack, Cardhop) for better App Store integration
+- **Cask Arguments**: Added comprehensive cask_args for custom installation directories (fonts, plugins, input methods, etc.)
+
+### Notes
+
+- Source files merged from `alt/dotcircus-041425/dot/install/brew/` (Brewfile, casks.zsh, fonts.zsh, formulae.zsh, mas.zsh)
+- All 25 fonts from fonts.zsh distributed across role Brewfiles
+- Duplicates removed (apps available in both cask and MAS use MAS version)
+- Total additions: ~90 formulae, ~40 casks, ~28 fonts, ~11 MAS apps across all Brewfiles
+
+## [1.3.2] - 2026-01-04
 
 ### Added
 
