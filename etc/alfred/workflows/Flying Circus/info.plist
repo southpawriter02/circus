@@ -330,6 +330,34 @@
 				<string></string>
 			</dict>
 		</array>
+		<!-- applescript keyword -> script filter -->
+		<key>APPLESCRIPT-KEYWORD</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>APPLESCRIPT-FILTER</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoaliases</key>
+				<string></string>
+			</dict>
+		</array>
+		<!-- applescript filter -> run script -->
+		<key>APPLESCRIPT-FILTER</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>FC-RUN-SCRIPT</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoaliases</key>
+				<string></string>
+			</dict>
+		</array>
 		<!-- run script -> notification -->
 		<key>FC-RUN-SCRIPT</key>
 		<array>
@@ -1061,6 +1089,70 @@
 			<key>version</key>
 			<integer>3</integer>
 		</dict>
+		<!-- applescript keyword -->
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>keyword</key>
+				<string>applescript</string>
+				<key>subtext</key>
+				<string>Run AppleScript automations</string>
+				<key>text</key>
+				<string>AppleScript</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>APPLESCRIPT-KEYWORD</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<!-- applescript script filter -->
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<true/>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>applescript</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyaliases</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Loading...</string>
+				<key>script</key>
+				<string>./scripts/applescript.sh "{query}"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Select an action</string>
+				<key>title</key>
+				<string>AppleScript Automations</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>APPLESCRIPT-FILTER</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
 		<!-- Run Script action (shared by all) -->
 		<dict>
 			<key>config</key>
@@ -1127,6 +1219,7 @@ Keywords:
 - sshkey: SSH key management
 - keychain: Keychain access
 - clip: Clipboard utilities
+- applescript: AppleScript automations
 
 For more info: https://github.com/southpawriter02/circus</string>
 	<key>uidata</key>
@@ -1291,6 +1384,20 @@ For more info: https://github.com/southpawriter02/circus</string>
 			<integer>250</integer>
 			<key>ypos</key>
 			<integer>1250</integer>
+		</dict>
+		<key>APPLESCRIPT-KEYWORD</key>
+		<dict>
+			<key>xpos</key>
+			<integer>50</integer>
+			<key>ypos</key>
+			<integer>1350</integer>
+		</dict>
+		<key>APPLESCRIPT-FILTER</key>
+		<dict>
+			<key>xpos</key>
+			<integer>250</integer>
+			<key>ypos</key>
+			<integer>1350</integer>
 		</dict>
 		<key>FC-RUN-SCRIPT</key>
 		<dict>

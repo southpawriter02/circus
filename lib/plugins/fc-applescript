@@ -1,0 +1,501 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-applescript
+#
+# DESCRIPTION:  Run useful AppleScripts for common macOS automation tasks.
+#               Provides quick access to window management, Finder automation,
+#               clipboard operations, and system control scripts.
+#
+# CROSS-PLATFORM:
+#   - macOS only (uses osascript)
+#
+# REFERENCES:
+#   - osascript man page: man osascript
+#   - AppleScript Language Guide: https://developer.apple.com/library/archive/documentation/AppleScript/Conceptual/AppleScriptLangGuide/
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Platform Check ---------------------------------------------------------
+require_macos
+
+# ==============================================================================
+# AppleScript Definitions
+# ==============================================================================
+
+# Run an AppleScript and handle errors
+run_applescript() {
+  local script="$1"
+  local result
+
+  if result=$(osascript -e "$script" 2>&1); then
+    if [ -n "$result" ]; then
+      echo "$result"
+    fi
+    return 0
+  else
+    msg_error "AppleScript failed: $result"
+    return 1
+  fi
+}
+
+# ==============================================================================
+# Window Management
+# ==============================================================================
+
+cmd_window_left() {
+  msg_info "Moving window to left half..."
+  run_applescript '
+tell application "System Events"
+    set frontApp to name of first application process whose frontmost is true
+end tell
+tell application frontApp
+    set bounds of front window to {0, 25, 960, 1080}
+end tell'
+  msg_success "Window moved to left half"
+}
+
+cmd_window_right() {
+  msg_info "Moving window to right half..."
+  run_applescript '
+tell application "System Events"
+    set frontApp to name of first application process whose frontmost is true
+end tell
+tell application frontApp
+    set bounds of front window to {960, 25, 1920, 1080}
+end tell'
+  msg_success "Window moved to right half"
+}
+
+cmd_window_maximize() {
+  msg_info "Maximizing window..."
+  run_applescript '
+tell application "System Events"
+    set frontApp to name of first application process whose frontmost is true
+end tell
+tell application frontApp
+    set bounds of front window to {0, 25, 1920, 1080}
+end tell'
+  msg_success "Window maximized"
+}
+
+cmd_window_center() {
+  msg_info "Centering window..."
+  run_applescript '
+tell application "Finder"
+    set screenBounds to bounds of window of desktop
+    set screenWidth to item 3 of screenBounds
+    set screenHeight to item 4 of screenBounds
+end tell
+tell application "System Events"
+    set frontApp to name of first application process whose frontmost is true
+end tell
+tell application frontApp
+    set {x, y, w, h} to bounds of front window
+    set winWidth to w - x
+    set winHeight to h - y
+    set newX to (screenWidth - winWidth) / 2
+    set newY to (screenHeight - winHeight) / 2
+    set bounds of front window to {newX, newY, newX + winWidth, newY + winHeight}
+end tell'
+  msg_success "Window centered"
+}
+
+# ==============================================================================
+# Finder Automation
+# ==============================================================================
+
+cmd_finder_terminal() {
+  msg_info "Opening current Finder folder in Terminal..."
+  run_applescript '
+tell application "Finder"
+    set currentFolder to (folder of the front window as alias)
+    set folderPath to POSIX path of currentFolder
+end tell
+tell application "Terminal"
+    activate
+    do script "cd " & quoted form of folderPath
+end tell'
+  msg_success "Opened in Terminal"
+}
+
+cmd_finder_iterm() {
+  msg_info "Opening current Finder folder in iTerm..."
+  run_applescript '
+tell application "Finder"
+    set currentFolder to (folder of the front window as alias)
+    set folderPath to POSIX path of currentFolder
+end tell
+tell application "iTerm"
+    activate
+    tell current window
+        create tab with default profile
+        tell current session
+            write text "cd " & quoted form of folderPath
+        end tell
+    end tell
+end tell'
+  msg_success "Opened in iTerm"
+}
+
+cmd_finder_paths() {
+  msg_info "Copying selected file paths to clipboard..."
+  run_applescript '
+tell application "Finder"
+    set selectedFiles to selection as alias list
+    set pathList to ""
+    repeat with f in selectedFiles
+        set pathList to pathList & POSIX path of f & linefeed
+    end repeat
+    set the clipboard to text 1 thru -2 of pathList
+end tell
+return count of selectedFiles'
+  local count=$?
+  msg_success "Copied paths to clipboard"
+}
+
+cmd_finder_hidden() {
+  msg_info "Toggling hidden files visibility..."
+  run_applescript 'do shell script "current=$(defaults read com.apple.finder AppleShowAllFiles 2>/dev/null || echo false); if [ \"$current\" = \"YES\" ] || [ \"$current\" = \"true\" ] || [ \"$current\" = \"1\" ]; then defaults write com.apple.finder AppleShowAllFiles -bool false; echo hidden; else defaults write com.apple.finder AppleShowAllFiles -bool true; echo visible; fi; killall Finder"'
+}
+
+# ==============================================================================
+# Safari Automation
+# ==============================================================================
+
+cmd_safari_tabs() {
+  msg_info "Copying all Safari tab URLs to clipboard..."
+  run_applescript '
+tell application "Safari"
+    set urlList to ""
+    set tabCount to 0
+    repeat with t in tabs of front window
+        set urlList to urlList & URL of t & linefeed
+        set tabCount to tabCount + 1
+    end repeat
+    set the clipboard to text 1 thru -2 of urlList
+    return tabCount
+end tell'
+  msg_success "Tab URLs copied to clipboard"
+}
+
+cmd_safari_markdown() {
+  msg_info "Exporting Safari tabs as Markdown list..."
+  run_applescript '
+tell application "Safari"
+    set mdList to ""
+    set tabCount to 0
+    repeat with t in tabs of front window
+        set tabTitle to name of t
+        set tabURL to URL of t
+        set mdList to mdList & "- [" & tabTitle & "](" & tabURL & ")" & linefeed
+        set tabCount to tabCount + 1
+    end repeat
+    set the clipboard to mdList
+    return tabCount
+end tell'
+  msg_success "Markdown list copied to clipboard"
+}
+
+cmd_safari_duplicates() {
+  msg_info "Closing duplicate Safari tabs..."
+  run_applescript '
+tell application "Safari"
+    set seenURLs to {}
+    set tabsToClose to {}
+    set closedCount to 0
+    repeat with t in tabs of front window
+        set tabURL to URL of t
+        if tabURL is in seenURLs then
+            set end of tabsToClose to t
+            set closedCount to closedCount + 1
+        else
+            set end of seenURLs to tabURL
+        end if
+    end repeat
+    repeat with t in tabsToClose
+        close t
+    end repeat
+    return closedCount
+end tell'
+  msg_success "Duplicate tabs closed"
+}
+
+# ==============================================================================
+# Application Utilities
+# ==============================================================================
+
+cmd_app_frontmost() {
+  run_applescript 'tell application "System Events" to name of first application process whose frontmost is true'
+}
+
+cmd_app_quit_all() {
+  msg_info "Quitting all apps except Finder..."
+  run_applescript '
+tell application "System Events"
+    set appList to name of every application process whose background only is false
+end tell
+set quitCount to 0
+repeat with appName in appList
+    if appName is not "Finder" then
+        try
+            tell application appName to quit
+            set quitCount to quitCount + 1
+        end try
+    end if
+end repeat
+return quitCount'
+  msg_success "Apps closed"
+}
+
+cmd_app_hide_others() {
+  msg_info "Hiding all apps except current..."
+  run_applescript '
+tell application "System Events"
+    set frontApp to name of first application process whose frontmost is true
+    set appList to name of every application process whose visible is true
+end tell
+repeat with appName in appList
+    if appName is not frontApp then
+        tell application "System Events"
+            set visible of process appName to false
+        end tell
+    end if
+end repeat'
+  msg_success "Other apps hidden"
+}
+
+# ==============================================================================
+# Clipboard & Text
+# ==============================================================================
+
+cmd_clip_plain() {
+  msg_info "Converting clipboard to plain text..."
+  run_applescript 'set the clipboard to (the clipboard as text)'
+  msg_success "Clipboard converted to plain text"
+}
+
+cmd_clip_upper() {
+  msg_info "Converting clipboard to uppercase..."
+  run_applescript 'set clipText to the clipboard as text
+set the clipboard to do shell script "echo " & quoted form of clipText & " | tr \"[:lower:]\" \"[:upper:]\""'
+  msg_success "Clipboard converted to uppercase"
+}
+
+cmd_clip_lower() {
+  msg_info "Converting clipboard to lowercase..."
+  run_applescript 'set clipText to the clipboard as text
+set the clipboard to do shell script "echo " & quoted form of clipText & " | tr \"[:upper:]\" \"[:lower:]\""'
+  msg_success "Clipboard converted to lowercase"
+}
+
+cmd_clip_title() {
+  msg_info "Converting clipboard to title case..."
+  run_applescript 'set clipText to the clipboard as text
+set the clipboard to do shell script "echo " & quoted form of clipText & " | awk \"{for(i=1;i<=NF;i++) \\$i=toupper(substr(\\$i,1,1)) tolower(substr(\\$i,2))}1\""'
+  msg_success "Clipboard converted to title case"
+}
+
+# ==============================================================================
+# System Control
+# ==============================================================================
+
+cmd_volume_get() {
+  local vol
+  vol=$(run_applescript 'output volume of (get volume settings)')
+  echo "Volume: ${vol}%"
+}
+
+cmd_volume_set() {
+  local level="$1"
+  if [ -z "$level" ]; then
+    msg_error "Please specify volume level (0-100)"
+    return 1
+  fi
+  run_applescript "set volume output volume $level"
+  msg_success "Volume set to ${level}%"
+}
+
+cmd_volume_mute() {
+  msg_info "Toggling mute..."
+  run_applescript 'set volume output muted (not (output muted of (get volume settings)))'
+  local muted
+  muted=$(run_applescript 'output muted of (get volume settings)')
+  if [ "$muted" = "true" ]; then
+    msg_success "Audio muted"
+  else
+    msg_success "Audio unmuted"
+  fi
+}
+
+cmd_notify() {
+  local message="$1"
+  local title="${2:-Notification}"
+  if [ -z "$message" ]; then
+    msg_error "Please specify a message"
+    return 1
+  fi
+  run_applescript "display notification \"$message\" with title \"$title\" sound name \"Glass\""
+  msg_success "Notification sent"
+}
+
+# ==============================================================================
+# Usage Information
+# ==============================================================================
+
+usage() {
+  msg_info "Usage: fc applescript <category> <action> [args]"
+  echo ""
+  msg_info "Run useful AppleScripts for macOS automation."
+  echo ""
+  msg_info "Categories:"
+  echo ""
+  echo "  window      Window management"
+  echo "    left        Move window to left half of screen"
+  echo "    right       Move window to right half of screen"
+  echo "    maximize    Maximize window to fill screen"
+  echo "    center      Center window on screen"
+  echo ""
+  echo "  finder      Finder automation"
+  echo "    terminal    Open current folder in Terminal"
+  echo "    iterm       Open current folder in iTerm"
+  echo "    paths       Copy selected file paths to clipboard"
+  echo "    hidden      Toggle hidden files visibility"
+  echo ""
+  echo "  safari      Safari browser"
+  echo "    tabs        Copy all tab URLs to clipboard"
+  echo "    markdown    Export tabs as Markdown list"
+  echo "    duplicates  Close duplicate tabs"
+  echo ""
+  echo "  app         Application utilities"
+  echo "    frontmost   Show name of frontmost app"
+  echo "    quit-all    Quit all apps except Finder"
+  echo "    hide-others Hide all apps except current"
+  echo ""
+  echo "  clip        Clipboard transformations"
+  echo "    plain       Convert clipboard to plain text"
+  echo "    upper       Convert clipboard to UPPERCASE"
+  echo "    lower       Convert clipboard to lowercase"
+  echo "    title       Convert clipboard to Title Case"
+  echo ""
+  echo "  volume      Volume control"
+  echo "    get         Show current volume level"
+  echo "    set <0-100> Set volume to percentage"
+  echo "    mute        Toggle mute"
+  echo ""
+  echo "  notify <msg> [title]  Show a notification"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc applescript window left"
+  echo "  fc applescript finder terminal"
+  echo "  fc applescript safari tabs"
+  echo "  fc applescript clip upper"
+  echo "  fc applescript volume set 50"
+  echo "  fc applescript notify \"Task complete\" \"Build\""
+  echo ""
+  exit 0
+}
+
+# ==============================================================================
+# Main Entry Point
+# ==============================================================================
+
+main() {
+  local category="${1:-}"
+  local action="${2:-}"
+
+  case "$category" in
+    window)
+      case "$action" in
+        left)      cmd_window_left ;;
+        right)     cmd_window_right ;;
+        maximize)  cmd_window_maximize ;;
+        center)    cmd_window_center ;;
+        *)
+          msg_error "Unknown window action: $action"
+          msg_info "Available: left, right, maximize, center"
+          exit 1
+          ;;
+      esac
+      ;;
+    finder)
+      case "$action" in
+        terminal)  cmd_finder_terminal ;;
+        iterm)     cmd_finder_iterm ;;
+        paths)     cmd_finder_paths ;;
+        hidden)    cmd_finder_hidden ;;
+        *)
+          msg_error "Unknown finder action: $action"
+          msg_info "Available: terminal, iterm, paths, hidden"
+          exit 1
+          ;;
+      esac
+      ;;
+    safari)
+      case "$action" in
+        tabs)       cmd_safari_tabs ;;
+        markdown)   cmd_safari_markdown ;;
+        duplicates) cmd_safari_duplicates ;;
+        *)
+          msg_error "Unknown safari action: $action"
+          msg_info "Available: tabs, markdown, duplicates"
+          exit 1
+          ;;
+      esac
+      ;;
+    app)
+      case "$action" in
+        frontmost)    cmd_app_frontmost ;;
+        quit-all)     cmd_app_quit_all ;;
+        hide-others)  cmd_app_hide_others ;;
+        *)
+          msg_error "Unknown app action: $action"
+          msg_info "Available: frontmost, quit-all, hide-others"
+          exit 1
+          ;;
+      esac
+      ;;
+    clip)
+      case "$action" in
+        plain) cmd_clip_plain ;;
+        upper) cmd_clip_upper ;;
+        lower) cmd_clip_lower ;;
+        title) cmd_clip_title ;;
+        *)
+          msg_error "Unknown clip action: $action"
+          msg_info "Available: plain, upper, lower, title"
+          exit 1
+          ;;
+      esac
+      ;;
+    volume)
+      case "$action" in
+        get)  cmd_volume_get ;;
+        set)  cmd_volume_set "$3" ;;
+        mute) cmd_volume_mute ;;
+        *)
+          msg_error "Unknown volume action: $action"
+          msg_info "Available: get, set, mute"
+          exit 1
+          ;;
+      esac
+      ;;
+    notify)
+      cmd_notify "$action" "$3"
+      ;;
+    --help|-h|"")
+      usage
+      ;;
+    *)
+      msg_error "Unknown category: $category"
+      msg_info "Run 'fc applescript --help' for usage information."
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
