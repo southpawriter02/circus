@@ -7,63 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.5.0] - 2026-01-04
+## [1.5.2] - 2026-01-05
 
 ### Added
 
-- **v1.5.0: Documentation & Polish** - Complete documentation for all defaults scripts and new `fc defaults` command:
+- **v1.5.2: Brewfile Expansion & Role Distribution** - Comprehensive Homebrew package management across all roles:
 
-  **New `fc defaults` Plugin**:
-  - Created `lib/plugins/fc-defaults` with full implementation (~550 lines)
-  - 42 curated macOS tweaks across 9 categories: Finder, Dock, Screenshots, System, Safari, Keyboard, Trackpad, Terminal, Text
-  - Subcommands: `list`, `status`, `apply`, `reset`, `all`
-  - `--dry-run` flag support for previewing changes
-  - Bash 3.2+ compatible (works with macOS default shell)
-  - Automatic service restarts (Finder, Dock, SystemUIServer) where needed
-  - Color-coded status output with check marks
+  **Base Brewfile Additions**:
+  - **Casks (11 new)**: gpg-suite, little-snitch, keepassxc, knockknock, yubico-authenticator, google-chrome, raycast, carbon-copy-cloner, dropbox, etrecheckpro, prefs-editor
+  - **Formulae (20 new)**: findutils, zsh-completions, bash-completion@2, macos-trash, gh, mackup, bat, eza, fd, ripgrep, jq, fzf, wget, curl, zstd, p7zip
+  - **Fonts (4 new)**: font-fira-code, font-jetbrains-mono, font-sf-mono, font-inter
+  - **MAS Apps (1 new)**: Bitwarden
 
-  **New Test Suite**:
-  - Created `tests/fc_defaults.bats` with 48 comprehensive tests
-  - Coverage: help, list, status, apply, reset, all subcommands
-  - Tests for error handling, type flags, dry-run mode
-  - Integration tests with fc dispatcher
+  **Developer Brewfile** (`roles/developer/Brewfile`):
+  - **Formulae (35 new)**: pyenv, rbenv, rust, redis, sqlite, ccache, pkg-config, make, cmake, git-sizer, git-filter-repo, git-delta, gitui, git-crypt, cloc, colordiff, ctags, tmux, gdb, binwalk, binutils, docker, docker-compose, dive, httpie, grpcurl, glow, pandoc, zoxide, jump, direnv
+  - **Casks (10 new)**: dotnet-sdk, rider, warp, docker, parallels, github, ghidra, imazing-profile-editor, launchcontrol, fsmonitor
+  - **Fonts (10 new)**: font-fira-code-nerd-font, font-fira-mono, font-fira-mono-nerd-font, font-jetbrains-mono-nerd-font, font-inconsolata-go-nerd-font, font-hack, font-hasklig, font-monoid, font-cascadia-code, font-source-code-pro
+  - **MAS Apps (4 new)**: Xcode, Sequel Ace, Apple Configurator, Actions
+
+  **Personal Brewfile** (`roles/personal/Brewfile`):
+  - **Formulae (20 new)**: imagemagick, optipng, pngcrush, webp, chafa, catimg, ranger, lf, ncdu, duf, htop, lnav, pstree, pwgen, gnupg, pinentry-mac, lynis, clamav, mtr, iftop, nmap, rsync, rclone
+  - **Casks (12 new)**: spotify, vlc, discord, battle-net, brave-browser, cloudflare-warp, protonvpn, proton-drive, rectangle, notion, setapp
+  - **Fonts (9 new)**: font-roboto, font-roboto-mono, font-open-sans, font-lato, font-montserrat, font-ubuntu, font-cantarell, font-oxygen, font-oxygen-mono
+  - **MAS Apps (3 new)**: Cardhop, Hyperduck, Pages
+
+  **Work Brewfile** (`roles/work/Brewfile`):
+  - **Formulae (15 new)**: terraform, ansible, kubernetes-cli, helm, awscli, openssh, openssl, nmap, certbot, logstash, htop, iftop, httpie, oha, dasel, grip, slides
+  - **Casks (5 new)**: zoom, notion, docker, github, warp, parallels
+  - **Fonts (5 new)**: font-ibm-plex, font-maven-pro, font-open-sans, font-roboto, font-lato
+  - **MAS Apps (3 new)**: Slack, Pages, Apple Configurator
 
 ### Changed
 
-- **Documentation Progress to 100%**:
-  - Updated `defaults/README.md` - All 40 scripts now marked ✅ Complete
-  - Updated `docs/specs/fc-defaults.md` - Marked as implemented with flags documentation
-  - All 10 previously pending scripts now have complete inline documentation
+- **Brewfile Organization**: Reorganized base Brewfile with categorized sections (Shell & Core Utilities, Version Control, Package Management, File & Text Processing, Networking, Compression, Security, Browsers, Productivity, Cloud & Sync, System Utilities, Fonts)
+- **Role-specific Distribution**: Moved role-specific apps from base Brewfile to appropriate role Brewfiles
+- **MAS over Casks**: Replaced cask versions with MAS versions where available (Slack, Cardhop) for better App Store integration
+- **Cask Arguments**: Added comprehensive cask_args for custom installation directories (fonts, plugins, input methods, etc.)
 
-## [1.4.0] - 2026-01-03
+### Notes
 
-### Added
+- Source files merged from `alt/dotcircus-041425/dot/install/brew/` (Brewfile, casks.zsh, fonts.zsh, formulae.zsh, mas.zsh)
+- All 25 fonts from fonts.zsh distributed across role Brewfiles
+- Duplicates removed (apps available in both cask and MAS use MAS version)
+- Total additions: ~90 formulae, ~40 casks, ~28 fonts, ~11 MAS apps across all Brewfiles
 
-- **v1.4.0: Role-Specific Settings** - Major release with 12 new role-specific configuration files and 8 enhanced existing files:
-
-  **Developer Role - New Files (4)**:
-  - `roles/developer/env/docker.env.sh` - Docker/Compose environment
-  - `roles/developer/env/database.env.sh` - Database connections (PostgreSQL, MySQL, Redis, MongoDB)
-  - `roles/developer/env/testing.env.sh` - Testing frameworks (Jest, pytest, Mocha, Vitest)
-  - `roles/developer/defaults/simulator.sh` - iOS Simulator settings
-  - `roles/developer/aliases/kubernetes.aliases.sh` - kubectl aliases (25+ aliases)
-
-  **Work Role - New Files (4)**:
-  - `roles/work/defaults/calendar.sh` - Work calendar settings
-  - `roles/work/defaults/slack.sh` - Work Slack settings
-  - `roles/work/defaults/zoom.sh` - Zoom meetings settings
-  - `roles/work/env/jira.env.sh` - Atlassian tools configuration
-
-  **Personal Role - New Files (3)**:
-  - `roles/personal/env/gaming.env.sh` - Gaming environment (Steam, Wine, emulators)
-  - `roles/personal/env/media.env.sh` - Media management (Plex, FFmpeg, yt-dlp)
-  - `roles/personal/defaults/relaxed_security.sh` - Relaxed security settings
-
-## [1.3.4] - 2026-01-04
+## [1.5.1] - 2026-01-05
 
 ### Added
 
-- **AppleScript Reference Documentation** - Comprehensive practical AppleScript examples in `docs/APPLESCRIPTS.md`:
+- **v1.5.1: AppleScript Reference Documentation** - Comprehensive practical AppleScript examples in `docs/APPLESCRIPTS.md`:
 
   **31 Copy-Paste Ready Scripts across 6 categories:**
 
@@ -140,64 +132,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Preserved existing repository reference links
 - Scripts provided in both AppleScript and bash `osascript` formats where applicable
 
-## [1.3.3] - 2026-01-03
-
-### Fixed
-
-- `defaults/interface/notifications.sh` - Added missing `run_defaults()` helper function
-
-### Notes
-
-- Total new files: 12
-- Total enhanced files: 8
-- All files follow established codebase patterns with dry-run support
-- Role-specific defaults layer on top of base defaults (not replacing)
-- All scripts include comprehensive inline documentation
-- Tested with dry-run mode across all three roles (developer, work, personal)
-
-## [1.3.3] - 2026-01-04
+## [1.5.0] - 2026-01-04
 
 ### Added
 
-- **v1.3.3: Brewfile Expansion & Role Distribution** - Comprehensive Homebrew package management across all roles:
+- **v1.5.0: Documentation & Polish** - Complete documentation for all defaults scripts and new `fc defaults` command:
 
-  **Base Brewfile Additions**:
-  - **Casks (11 new)**: gpg-suite, little-snitch, keepassxc, knockknock, yubico-authenticator, google-chrome, raycast, carbon-copy-cloner, dropbox, etrecheckpro, prefs-editor
-  - **Formulae (20 new)**: findutils, zsh-completions, bash-completion@2, macos-trash, gh, mackup, bat, eza, fd, ripgrep, jq, fzf, wget, curl, zstd, p7zip
-  - **Fonts (4 new)**: font-fira-code, font-jetbrains-mono, font-sf-mono, font-inter
-  - **MAS Apps (1 new)**: Bitwarden
+  **New `fc defaults` Plugin**:
+  - Created `lib/plugins/fc-defaults` with full implementation (~550 lines)
+  - 42 curated macOS tweaks across 9 categories: Finder, Dock, Screenshots, System, Safari, Keyboard, Trackpad, Terminal, Text
+  - Subcommands: `list`, `status`, `apply`, `reset`, `all`
+  - `--dry-run` flag support for previewing changes
+  - Bash 3.2+ compatible (works with macOS default shell)
+  - Automatic service restarts (Finder, Dock, SystemUIServer) where needed
+  - Color-coded status output with check marks
 
-  **Developer Brewfile** (`roles/developer/Brewfile`):
-  - **Formulae (35 new)**: pyenv, rbenv, rust, redis, sqlite, ccache, pkg-config, make, cmake, git-sizer, git-filter-repo, git-delta, gitui, git-crypt, cloc, colordiff, ctags, tmux, gdb, binwalk, binutils, docker, docker-compose, dive, httpie, grpcurl, glow, pandoc, zoxide, jump, direnv
-  - **Casks (10 new)**: dotnet-sdk, rider, warp, docker, parallels, github, ghidra, imazing-profile-editor, launchcontrol, fsmonitor
-  - **Fonts (10 new)**: font-fira-code-nerd-font, font-fira-mono, font-fira-mono-nerd-font, font-jetbrains-mono-nerd-font, font-inconsolata-go-nerd-font, font-hack, font-hasklig, font-monoid, font-cascadia-code, font-source-code-pro
-  - **MAS Apps (4 new)**: Xcode, Sequel Ace, Apple Configurator, Actions
-
-  **Personal Brewfile** (`roles/personal/Brewfile`):
-  - **Formulae (20 new)**: imagemagick, optipng, pngcrush, webp, chafa, catimg, ranger, lf, ncdu, duf, htop, lnav, pstree, pwgen, gnupg, pinentry-mac, lynis, clamav, mtr, iftop, nmap, rsync, rclone
-  - **Casks (12 new)**: spotify, vlc, discord, battle-net, brave-browser, cloudflare-warp, protonvpn, proton-drive, rectangle, notion, setapp
-  - **Fonts (9 new)**: font-roboto, font-roboto-mono, font-open-sans, font-lato, font-montserrat, font-ubuntu, font-cantarell, font-oxygen, font-oxygen-mono
-  - **MAS Apps (3 new)**: Cardhop, Hyperduck, Pages
-
-  **Work Brewfile** (`roles/work/Brewfile`):
-  - **Formulae (15 new)**: terraform, ansible, kubernetes-cli, helm, awscli, openssh, openssl, nmap, certbot, logstash, htop, iftop, httpie, oha, dasel, grip, slides
-  - **Casks (5 new)**: zoom, notion, docker, github, warp, parallels
-  - **Fonts (5 new)**: font-ibm-plex, font-maven-pro, font-open-sans, font-roboto, font-lato
-  - **MAS Apps (3 new)**: Slack, Pages, Apple Configurator
+  **New Test Suite**:
+  - Created `tests/fc_defaults.bats` with 48 comprehensive tests
+  - Coverage: help, list, status, apply, reset, all subcommands
+  - Tests for error handling, type flags, dry-run mode
+  - Integration tests with fc dispatcher
 
 ### Changed
 
-- **Brewfile Organization**: Reorganized base Brewfile with categorized sections (Shell & Core Utilities, Version Control, Package Management, File & Text Processing, Networking, Compression, Security, Browsers, Productivity, Cloud & Sync, System Utilities, Fonts)
-- **Role-specific Distribution**: Moved role-specific apps from base Brewfile to appropriate role Brewfiles
-- **MAS over Casks**: Replaced cask versions with MAS versions where available (Slack, Cardhop) for better App Store integration
-- **Cask Arguments**: Added comprehensive cask_args for custom installation directories (fonts, plugins, input methods, etc.)
+- **Documentation Progress to 100%**:
+  - Updated `defaults/README.md` - All 40 scripts now marked ✅ Complete
+  - Updated `docs/specs/fc-defaults.md` - Marked as implemented with flags documentation
+  - All 10 previously pending scripts now have complete inline documentation
 
-### Notes
+## [1.4.0] - 2026-01-03
 
-- Source files merged from `alt/dotcircus-041425/dot/install/brew/` (Brewfile, casks.zsh, fonts.zsh, formulae.zsh, mas.zsh)
-- All 25 fonts from fonts.zsh distributed across role Brewfiles
-- Duplicates removed (apps available in both cask and MAS use MAS version)
-- Total additions: ~90 formulae, ~40 casks, ~28 fonts, ~11 MAS apps across all Brewfiles
+### Added
+
+- **v1.4.0: Role-Specific Settings** - Major release with 12 new role-specific configuration files and 8 enhanced existing files:
+
+  **Developer Role - New Files (4)**:
+  - `roles/developer/env/docker.env.sh` - Docker/Compose environment
+  - `roles/developer/env/database.env.sh` - Database connections (PostgreSQL, MySQL, Redis, MongoDB)
+  - `roles/developer/env/testing.env.sh` - Testing frameworks (Jest, pytest, Mocha, Vitest)
+  - `roles/developer/defaults/simulator.sh` - iOS Simulator settings
+  - `roles/developer/aliases/kubernetes.aliases.sh` - kubectl aliases (25+ aliases)
+
+  **Work Role - New Files (4)**:
+  - `roles/work/defaults/calendar.sh` - Work calendar settings
+  - `roles/work/defaults/slack.sh` - Work Slack settings
+  - `roles/work/defaults/zoom.sh` - Zoom meetings settings
+  - `roles/work/env/jira.env.sh` - Atlassian tools configuration
+
+  **Personal Role - New Files (3)**:
+  - `roles/personal/env/gaming.env.sh` - Gaming environment (Steam, Wine, emulators)
+  - `roles/personal/env/media.env.sh` - Media management (Plex, FFmpeg, yt-dlp)
+  - `roles/personal/defaults/relaxed_security.sh` - Relaxed security settings
 
 ## [1.3.2] - 2026-01-04
 
