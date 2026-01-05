@@ -6,7 +6,103 @@
 #
 # ==============================================================================
 
+# --- Core Formulae ----------------------------------------------------------
+
+# -- Media & Graphics --
+
+# Image manipulation
+brew "imagemagick"
+
+# Image optimizer (PNG)
+brew "optipng"
+
+# Image optimizer (PNG)
+brew "pngcrush"
+
+# WebP image support
+brew "webp"
+
+# Display images in terminal
+brew "chafa"
+
+# Cat images in terminal
+brew "catimg"
+
+# -- File Management --
+
+# File manager with vim bindings
+brew "ranger"
+
+# Terminal file manager
+brew "lf"
+
+# Disk usage analyzer
+brew "ncdu"
+
+# Disk usage utility
+brew "duf"
+
+# -- System Monitoring --
+
+# Better top
+brew "htop"
+
+# Log file navigator
+brew "lnav"
+
+# Process tree viewer
+brew "pstree"
+
+# -- Security & Privacy --
+
+# Password generator
+brew "pwgen"
+
+# GPG encryption
+brew "gnupg"
+
+# GPG pinentry for Mac
+brew "pinentry-mac"
+
+# Security auditing tool
+brew "lynis"
+
+# ClamAV antivirus
+brew "clamav"
+
+# -- Networking --
+
+# Network diagnostics
+brew "mtr"
+
+# Network bandwidth monitor
+brew "iftop"
+
+# Network mapper
+brew "nmap"
+
+# -- Backup & Sync --
+
+# Better rsync
+brew "rsync"
+
+# File synchronization
+brew "rclone"
+
+# --- MAS Apps (Mac App Store) -----------------------------------------------
+
+# Contact management
+mas "Cardhop", id: 1290358394
+
+# iOS file transfer via USB
+mas "Hyperduck", id: 2145267525
+
+# Apple word processor
+mas "Pages", id: 409201541
+
 # --- Casks (GUI Applications) -----------------------------------------------
+
+# -- Entertainment --
 
 # Music streaming
 cask "spotify"
@@ -14,5 +110,63 @@ cask "spotify"
 # Versatile media player
 cask "vlc"
 
+# Voice and text chat
+cask "discord"
+
+# Gaming platform
+cask "battle-net"
+
+# -- Privacy --
+
+# Privacy-focused browser
+cask "brave-browser"
+
+# Cloudflare DNS and VPN
+cask "cloudflare-warp"
+
+# Proton VPN client
+cask "protonvpn"
+
+# Proton cloud storage
+cask "proton-drive"
+
+# -- Productivity --
+
 # Window management utility
 cask "rectangle"
+
+# Note-taking and documentation
+cask "notion"
+
+# Subscription app service
+cask "setapp"
+
+# --- Fonts (Casks) ---------------------------------------------------------
+# UI and design fonts for personal projects
+
+# Roboto - Google's system font
+cask "font-roboto"
+
+# Roboto Mono - monospace variant
+cask "font-roboto-mono"
+
+# Open Sans - popular web font
+cask "font-open-sans"
+
+# Lato - elegant sans-serif
+cask "font-lato"
+
+# Montserrat - geometric sans-serif
+cask "font-montserrat"
+
+# Ubuntu - Linux system font
+cask "font-ubuntu"
+
+# Cantarell - GNOME system font
+cask "font-cantarell"
+
+# Oxygen - KDE system font
+cask "font-oxygen"
+
+# Oxygen Mono - KDE monospace
+cask "font-oxygen-mono"
