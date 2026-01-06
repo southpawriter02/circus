@@ -1,0 +1,61 @@
+# NewTabWorkingDirectoryBehavior
+
+Set working directory for new Terminal tabs.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Terminal` |
+| **Key** | `NewTabWorkingDirectoryBehavior` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `2` |
+
+## Description
+
+Determines which directory is used when opening a new tab in Terminal. Setting to "same as current" maintains context when working in projects.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `1` | **Home directory** (default) — New tabs start in ~/ |
+| `2` | **Same as current tab** — Inherits current directory |
+| `3` | **Custom directory** — Uses configured path |
+
+## Our Configuration
+
+**Set to**: `2` — New tabs open in the same directory as current tab.
+
+## Why Same Directory?
+
+- Maintains project context when opening additional tabs
+- No need to `cd` back to working directory
+- Efficient for multi-tab workflows
+- Natural behavior for developers
+
+## Code Examples
+
+```bash
+# Same directory as current tab (recommended for developers)
+defaults write com.apple.Terminal NewTabWorkingDirectoryBehavior -int 2
+
+# Home directory (Apple default)
+defaults write com.apple.Terminal NewTabWorkingDirectoryBehavior -int 1
+```
+
+## UI Location
+
+**Terminal** → **Settings** → **General** → **New tabs open with**
+
+## Related: New Windows
+
+```bash
+# New WINDOWS default directory (separate setting)
+defaults write com.apple.Terminal NewWindowWorkingDirectoryBehavior -int 1
+```
+
+## References
+
+- [Apple Support: Terminal startup settings](https://support.apple.com/guide/terminal/change-terminal-startup-settings-trml107/mac)

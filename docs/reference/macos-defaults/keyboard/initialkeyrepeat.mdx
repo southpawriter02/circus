@@ -1,0 +1,65 @@
+# InitialKeyRepeat
+
+Set the delay before key repeat begins.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `InitialKeyRepeat` |
+| **Type** | Integer |
+| **Default Value** | `25` |
+| **Our Setting** | `10` |
+
+## Description
+
+Controls the delay before a held key starts repeating. Lower values mean a shorter delay before repeat begins.
+
+## Values
+
+| Value | Delay | Experience |
+|-------|-------|------------|
+| `10` | ~150ms | **Very short** — Almost instant repeat |
+| `15` | ~225ms | **Short** — Quick response |
+| `25` | ~375ms | **Normal** (default) |
+| `35` | ~525ms | **Long** — Deliberate delay |
+
+Values are in approximately 15ms ticks.
+
+## Our Configuration
+
+**Set to**: `10` — Minimal delay before repeat, ideal for vim users.
+
+## Code Examples
+
+```bash
+# Set short initial delay (fast)
+defaults write NSGlobalDomain InitialKeyRepeat -int 10
+
+# Apple's default
+defaults write NSGlobalDomain InitialKeyRepeat -int 25
+
+# Log out or restart to apply
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Delay Until Repeat** (slider)
+
+Note: The slider's fastest position is approximately 15, while 10 is only achievable via terminal.
+
+## Related: Key Repeat Rate
+
+Use with `KeyRepeat` for complete fast keyboard:
+
+```bash
+# Complete fast keyboard setup
+defaults write NSGlobalDomain InitialKeyRepeat -int 10
+defaults write NSGlobalDomain KeyRepeat -int 1
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+```
+
+## References
+
+- [Apple Support: Change Keyboard settings](https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac)

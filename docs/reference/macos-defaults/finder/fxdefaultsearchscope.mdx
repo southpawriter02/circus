@@ -1,0 +1,56 @@
+# FXDefaultSearchScope
+
+Set default search scope in Finder.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `FXDefaultSearchScope` |
+| **Type** | String |
+| **Default Value** | `SCev` |
+| **Our Setting** | `SCcf` |
+
+## Description
+
+Determines where Finder searches when you type in the search field. Searching the current folder is more intuitive for project-based work.
+
+## Values
+
+| Value | Scope | Description |
+|-------|-------|-------------|
+| `SCev` | **This Mac** (default) | Search entire computer |
+| `SCcf` | **Current Folder** | Search only current directory |
+| `SCsp` | **Previous Scope** | Use last search scope |
+
+## Our Configuration
+
+**Set to**: `SCcf` — Search current folder for focused, project-based searching.
+
+## Code Examples
+
+```bash
+# Search current folder by default
+defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+
+# Search entire Mac (Apple default)
+defaults write com.apple.finder FXDefaultSearchScope -string "SCev"
+
+killall Finder
+```
+
+## UI Location
+
+**Finder** → **Settings** (⌘,) → **Advanced** → **When performing a search**
+
+## Why Current Folder?
+
+- Faster, more focused results
+- Avoids irrelevant matches from other projects
+- Makes sense for project-based workflows
+- Can still expand scope from search bar
+
+## References
+
+- [Apple Support: Narrow search results on Mac](https://support.apple.com/guide/mac-help/narrow-search-results-mchlp1067/mac)

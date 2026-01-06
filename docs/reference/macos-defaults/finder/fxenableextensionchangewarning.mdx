@@ -1,0 +1,52 @@
+# FXEnableExtensionChangeWarning
+
+Disable warning when changing file extensions.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `FXEnableExtensionChangeWarning` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Finder shows a warning dialog when you change a file's extension (e.g., renaming `.txt` to `.md`).
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show warning** (default) — Dialog asks to confirm extension change |
+| `false` | **No warning** — Extension changes applied silently |
+
+## Our Configuration
+
+**Set to**: `false` — Suppress warning for power users who understand extensions.
+
+## Code Examples
+
+```bash
+# Disable extension change warning
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+
+# Enable warning (Apple default)
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool true
+
+killall Finder
+```
+
+## UI Location
+
+No direct toggle. The warning dialog appears when renaming a file with a different extension.
+
+## Note
+
+Disabling this is recommended for developers who frequently rename files and understand the implications of changing extensions.
+
+## References
+
+- [Apple Support: Rename files, folders, and disks](https://support.apple.com/guide/mac-help/rename-files-folders-and-disks-mchlp1144/mac)

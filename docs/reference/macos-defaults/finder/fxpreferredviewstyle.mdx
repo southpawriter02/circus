@@ -1,0 +1,65 @@
+# FXPreferredViewStyle
+
+Set the default Finder view (icons, list, columns, gallery).
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `FXPreferredViewStyle` |
+| **Type** | String |
+| **Default Value** | `icnv` |
+| **Our Setting** | `clmv` |
+
+## Description
+
+Sets the default view style for new Finder windows. Column view is preferred by developers for navigating deep directory structures.
+
+## Values
+
+| Value | View | Description |
+|-------|------|-------------|
+| `icnv` | **Icon View** (default) | Grid of large icons |
+| `Nlsv` | **List View** | Detailed list with columns |
+| `clmv` | **Column View** | Hierarchical columns |
+| `glyv` | **Gallery View** | Large preview with thumbnails |
+
+## Our Configuration
+
+**Set to**: `clmv` (Column View) — Shows hierarchy, enables quick traversal.
+
+## Code Examples
+
+```bash
+# Set Column View as default
+defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
+
+# Set List View
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+
+# Set Icon View (Apple default)
+defaults write com.apple.finder FXPreferredViewStyle -string "icnv"
+
+killall Finder
+```
+
+## UI Location / Keyboard Shortcuts
+
+| View | Shortcut | Menu |
+|------|----------|------|
+| Icons | ⌘1 | View → as Icons |
+| List | ⌘2 | View → as List |
+| Columns | ⌘3 | View → as Columns |
+| Gallery | ⌘4 | View → as Gallery |
+
+## Why Column View?
+
+- See full folder hierarchy at once
+- Navigate deep structures quickly
+- Preview pane on the right
+- Keyboard navigation with arrow keys
+
+## References
+
+- [Apple Support: View and sort files in Finder](https://support.apple.com/guide/mac-help/view-and-sort-files-mchlp1083/mac)

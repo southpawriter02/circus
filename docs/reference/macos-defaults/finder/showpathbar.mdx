@@ -1,0 +1,56 @@
+# ShowPathbar
+
+Show the full file path at the bottom of Finder windows.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `ShowPathbar` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Displays a clickable path bar at the bottom of Finder windows showing the full hierarchy from root to current folder. Each component is clickable for quick navigation.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show path bar** — Full path visible at window bottom |
+| `false` | **Hide path bar** (default) — No path displayed |
+
+## Our Configuration
+
+**Set to**: `true` — Essential for navigation awareness.
+
+## Code Examples
+
+```bash
+# Show path bar
+defaults write com.apple.finder ShowPathbar -bool true
+
+# Hide path bar
+defaults write com.apple.finder ShowPathbar -bool false
+
+# Restart Finder
+killall Finder
+```
+
+## UI Location
+
+**View** menu → **Show Path Bar** (⌥⌘P)
+
+## Using the Path Bar
+
+- **Click** any folder to navigate there
+- **Double-click** to open in new window
+- **Command-click** for full disk path
+- **Right-click** for context menu
+
+## References
+
+- [Apple Support: See the path to a file](https://support.apple.com/guide/mac-help/see-the-path-to-a-file-mchlp1774/mac)

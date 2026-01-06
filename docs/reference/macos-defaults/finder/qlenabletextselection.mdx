@@ -1,0 +1,63 @@
+# QLEnableTextSelection
+
+Enable text selection in Quick Look previews.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `QLEnableTextSelection` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables selecting and copying text from Quick Look previews (spacebar preview). By default, Quick Look only displays text but doesn't allow selection.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Text selectable** — Can copy text from previews |
+| `false` | **View only** (default) — No text selection allowed |
+
+## Our Configuration
+
+**Set to**: `true` — Copy text directly from Quick Look without opening files.
+
+## Code Examples
+
+```bash
+# Enable text selection in Quick Look
+defaults write com.apple.finder QLEnableTextSelection -bool true
+
+# Disable (Apple default)
+defaults write com.apple.finder QLEnableTextSelection -bool false
+
+killall Finder
+```
+
+## UI Location
+
+Not available in UI — terminal only.
+
+## How to Use
+
+1. Select a file in Finder
+2. Press **Space** to open Quick Look
+3. Select text with mouse
+4. Press ⌘C to copy
+
+## Supported File Types
+
+Text selection works in:
+- Plain text files (.txt, .md, .json, etc.)
+- PDFs
+- RTF documents
+- Some code files
+
+## References
+
+- [Apple Support: View files with Quick Look](https://support.apple.com/guide/mac-help/view-and-edit-files-quick-look-mh14119/mac)

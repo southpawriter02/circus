@@ -1,0 +1,55 @@
+# show-recents
+
+Hide recent applications section in the Dock.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `show-recents` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Dock shows recently used applications in a separate section. Disabling creates a cleaner, more predictable Dock layout.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show recents** (default) — Recent apps appear on right side |
+| `false` | **Hide recents** — Cleaner Dock, no transient icons |
+
+## Our Configuration
+
+**Set to**: `false` — Clean, predictable Dock without transient icons.
+
+## Code Examples
+
+```bash
+# Hide recent applications
+defaults write com.apple.dock show-recents -bool false
+
+# Show recent applications (Apple default)
+defaults write com.apple.dock show-recents -bool true
+
+killall Dock
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Show recent applications in Dock**
+
+## Why Hide Recents?
+
+- Dock stays consistent across sessions
+- No unexpected icons appearing
+- Cleaner, less cluttered appearance
+- More predictable icon positions
+
+## References
+
+- [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)

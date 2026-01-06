@@ -1,0 +1,58 @@
+# orientation
+
+Set the Dock position (bottom, left, or right).
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `orientation` |
+| **Type** | String |
+| **Default Value** | `bottom` |
+| **Our Setting** | `bottom` |
+
+## Description
+
+Controls which edge of the screen the Dock appears on.
+
+## Values
+
+| Value | Position | Description |
+|-------|----------|-------------|
+| `bottom` | **Bottom** (default) | Traditional Mac layout |
+| `left` | **Left edge** | Vertical Dock on left |
+| `right` | **Right edge** | Vertical Dock on right |
+
+## Our Configuration
+
+**Set to**: `bottom` — Traditional, familiar position.
+
+## Code Examples
+
+```bash
+# Position at bottom (default)
+defaults write com.apple.dock orientation -string "bottom"
+
+# Position on left side
+defaults write com.apple.dock orientation -string "left"
+
+# Position on right side
+defaults write com.apple.dock orientation -string "right"
+
+killall Dock
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Position on screen**
+
+## Considerations
+
+- **Bottom**: Most natural for mouse movement, matches Windows taskbar
+- **Left**: Maximizes vertical space on widescreen displays
+- **Right**: Less common, keeps left side free for sidebars
+
+## References
+
+- [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)

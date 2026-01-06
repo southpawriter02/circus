@@ -1,0 +1,61 @@
+# AppleShowAllExtensions
+
+Show all file extensions in Finder.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `AppleShowAllExtensions` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Finder displays file extensions for all files. By default, macOS hides extensions for "known" file types. Showing all extensions is essential for developers and improves security.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show all extensions** — .txt, .jpg, .sh, etc. visible |
+| `false` | **Hide known extensions** (default) — Only shows "unusual" extensions |
+
+## Our Configuration
+
+**Set to**: `true` — Essential for developers and security.
+
+## Why Show Extensions?
+
+1. **Distinguish files**: `script` vs `script.sh` vs `script.py`
+2. **Security**: Spot malicious files like `document.pdf.exe`
+3. **Development**: Know exactly what file type you're working with
+4. **Clarity**: No guessing based on icons
+
+## Code Examples
+
+```bash
+# Show all file extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Hide known extensions (Apple default)
+defaults write NSGlobalDomain AppleShowAllExtensions -bool false
+
+killall Finder
+```
+
+## UI Location
+
+**Finder** → **Settings** (⌘,) → **Advanced** → **Show all filename extensions**
+
+## Security Note
+
+Showing extensions helps identify disguised malicious files:
+- `invoice.pdf` (icon looks like PDF but might be something else)
+- `invoice.pdf.app` (clearly an application, not a PDF)
+
+## References
+
+- [Apple Support: Show or hide filename extensions](https://support.apple.com/guide/mac-help/show-or-hide-filename-extensions-mchlp2304/mac)

@@ -1,0 +1,66 @@
+# expose-group-apps
+
+Group windows by application in Mission Control.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `expose-group-apps` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Mission Control groups windows by application. When enabled, windows from the same app are stacked together rather than displayed as separate thumbnails.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Group by app** — Same-app windows stacked together |
+| `false` | **Individual windows** (default) — All windows shown separately |
+
+## Our Configuration
+
+**Set to**: `true` — Organized view makes finding windows easier.
+
+## Visual Comparison
+
+**Grouped (`true`):**
+```
+[Safari (3)]  [VS Code (2)]  [Finder (4)]
+```
+
+**Not grouped (`false`):**
+```
+[Safari] [VS Code] [Finder] [Safari] [Finder] [VS Code] [Safari] [Finder] [Finder]
+```
+
+## Code Examples
+
+```bash
+# Group windows by application
+defaults write com.apple.dock expose-group-apps -bool true
+
+# Show all windows individually
+defaults write com.apple.dock expose-group-apps -bool false
+
+killall Dock
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Mission Control** → **Group windows by application**
+
+## Usage
+
+- Trigger Mission Control: **⌃↑** or trackpad gesture (swipe up with 3/4 fingers)
+- Click a grouped stack to expand it
+- Easier to find related windows
+
+## References
+
+- [Apple Support: Use Mission Control on Mac](https://support.apple.com/en-us/102556)

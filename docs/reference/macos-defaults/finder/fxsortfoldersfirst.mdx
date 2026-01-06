@@ -1,0 +1,70 @@
+# _FXSortFoldersFirst
+
+Keep folders at the top when sorting by name.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `_FXSortFoldersFirst` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+When sorting by name, keeps folders grouped at the top of the list, separate from files. Matches behavior of most file managers.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Folders first** — Folders at top, then files |
+| `false` | **Mixed** (default) — Folders and files sorted together |
+
+## Visual Comparison
+
+**With folders first (`true`):**
+```
+📁 Documents/
+📁 Projects/
+📁 src/
+📄 README.md
+📄 config.json
+📄 package.json
+```
+
+**Without (`false`, default):**
+```
+📄 config.json
+📁 Documents/
+📄 package.json
+📁 Projects/
+📄 README.md
+📁 src/
+```
+
+## Our Configuration
+
+**Set to**: `true` — Cleaner organization for directory navigation.
+
+## Code Examples
+
+```bash
+# Keep folders on top
+defaults write com.apple.finder _FXSortFoldersFirst -bool true
+
+# Mix folders with files (Apple default)
+defaults write com.apple.finder _FXSortFoldersFirst -bool false
+
+killall Finder
+```
+
+## UI Location
+
+**Finder** → **Settings** (⌘,) → **Advanced** → **Keep folders on top: In windows when sorting by name**
+
+## References
+
+- [Apple Support: Finder settings](https://support.apple.com/guide/mac-help/finder-settings-mchlp2899/mac)

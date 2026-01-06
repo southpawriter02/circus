@@ -1,0 +1,53 @@
+# ShowStatusBar
+
+Show item count and disk space in Finder windows.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `ShowStatusBar` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Displays a status bar at the bottom of Finder windows showing the number of items in the current folder and available disk space.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show status bar** — Item count and disk space visible |
+| `false` | **Hide status bar** (default) — No status information |
+
+## Our Configuration
+
+**Set to**: `true` — Useful for storage monitoring at a glance.
+
+## Code Examples
+
+```bash
+# Show status bar
+defaults write com.apple.finder ShowStatusBar -bool true
+
+# Hide status bar
+defaults write com.apple.finder ShowStatusBar -bool false
+
+killall Finder
+```
+
+## UI Location
+
+**View** menu → **Show Status Bar** (⌘/)
+
+## What It Shows
+
+- **Item count**: "42 items" (or selection count when items selected)
+- **Disk space**: "125.6 GB available"
+
+## References
+
+- [Apple Support: Change how folders look in Finder](https://support.apple.com/guide/mac-help/change-how-folders-look-in-the-finder-mchlp2899/mac)
