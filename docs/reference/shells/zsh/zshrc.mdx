@@ -1,0 +1,440 @@
+# .zshrc
+
+The `.zshrc` file is sourced for **interactive shells only**. This is where you configure everything related to your interactive shell experience: aliases, functions, prompt, completions, key bindings, and shell options.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `$ZDOTDIR/.zshrc` or `~/.zshrc` |
+| **When Sourced** | Interactive shells only |
+| **Shell Types** | Interactive (login and non-login) |
+| **Load Order** | After `.zprofile` (login) or `.zshenv` (non-login) |
+
+## When It's Sourced
+
+`.zshrc` is sourced in these scenarios:
+
+- ✅ Opening a new terminal window
+- ✅ Opening a new terminal tab
+- ✅ Starting an interactive shell (`zsh` or `zsh -i`)
+- ✅ Login shells that are also interactive
+- ✅ Running `exec zsh` to restart your shell
+
+`.zshrc` is **NOT** sourced when:
+
+- ❌ Running a script (`./script.zsh`)
+- ❌ Running a command with `zsh -c "command"`
+- ❌ Non-interactive subshells
+- ❌ Commands run via SSH (`ssh host 'command'`)
+
+## Load Order Position
+
+**For login shells:**
+```
+1. ~/.zshenv
+2. ~/.zprofile
+3. ~/.zshrc            ← YOU ARE HERE
+4. ~/.zlogin
+```
+
+**For non-login interactive shells:**
+```
+1. ~/.zshenv
+2. ~/.zshrc            ← YOU ARE HERE
+```
+
+## What to Put Here
+
+`.zshrc` is the workhorse of Zsh configuration. Most of your customization goes here.
+
+### ✅ Recommended Content
+
+**Aliases**
+```zsh
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ~='cd ~'
+
+# List files
+alias ls='ls --color=auto'
+alias ll='ls -lah'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Safety
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Git
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git log --oneline -10'
+```
+
+**Functions**
+```zsh
+# Create directory and cd into it
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# Extract any archive
+extract() {
+    case "$1" in
+        *.tar.bz2) tar xjf "$1" ;;
+        *.tar.gz)  tar xzf "$1" ;;
+        *.tar.xz)  tar xJf "$1" ;;
+        *.bz2)     bunzip2 "$1" ;;
+        *.gz)      gunzip "$1" ;;
+        *.tar)     tar xf "$1" ;;
+        *.zip)     unzip "$1" ;;
+        *.7z)      7z x "$1" ;;
+        *)         echo "Unknown archive format: $1" ;;
+    esac
+}
+
+# Quick find
+f() {
+    find . -name "*$1*"
+}
+```
+
+**Prompt Configuration**
+```zsh
+# Simple informative prompt
+PROMPT='%F{cyan}%n%f@%F{magenta}%m%f:%F{yellow}%~%f$ '
+
+# Or using prompt themes
+autoload -Uz promptinit
+promptinit
+prompt adam2
+```
+
+**History Settings**
+```zsh
+HISTSIZE=50000
+SAVEHIST=50000
+HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"
+
+# History options
+setopt EXTENDED_HISTORY       # Save timestamp
+setopt HIST_EXPIRE_DUPS_FIRST # Expire duplicates first
+setopt HIST_IGNORE_DUPS       # Don't record duplicates
+setopt HIST_IGNORE_SPACE      # Don't record commands starting with space
+setopt HIST_VERIFY            # Show command before executing from history
+setopt SHARE_HISTORY          # Share history between sessions
+```
+
+**Shell Options**
+```zsh
+# Directory navigation
+setopt AUTO_CD           # cd by typing directory name
+setopt AUTO_PUSHD        # Push directories to stack
+setopt PUSHD_IGNORE_DUPS # Don't push duplicates
+setopt PUSHD_SILENT      # Don't print stack after pushd/popd
+
+# Globbing
+setopt EXTENDED_GLOB     # Extended pattern matching
+setopt GLOB_DOTS         # Include dotfiles in glob
+
+# Correction
+setopt CORRECT           # Suggest corrections for commands
+setopt CORRECT_ALL       # Suggest corrections for arguments
+
+# Misc
+setopt INTERACTIVE_COMMENTS # Allow comments in interactive shell
+setopt NO_BEEP              # Disable beeping
+```
+
+**Key Bindings**
+```zsh
+# Use emacs key bindings (default)
+bindkey -e
+
+# Or use vi key bindings
+# bindkey -v
+
+# Custom bindings
+bindkey '^[[A' history-search-backward  # Up arrow
+bindkey '^[[B' history-search-forward   # Down arrow
+bindkey '^R' history-incremental-search-backward
+bindkey '^S' history-incremental-search-forward
+
+# Word navigation
+bindkey '^[[1;5C' forward-word   # Ctrl+Right
+bindkey '^[[1;5D' backward-word  # Ctrl+Left
+```
+
+**Completion System**
+```zsh
+# Initialize completion
+autoload -Uz compinit
+compinit
+
+# Completion options
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' # Case insensitive
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"   # Colored completions
+zstyle ':completion:*' group-name ''                       # Group completions
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+
+# Cache completions
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompcache"
+```
+
+**Plugin Loading**
+```zsh
+# Load plugins (if using a plugin manager like zinit, zplug, etc.)
+source "$ZDOTDIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "$ZDOTDIR/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+# Or using zinit
+# zinit light zsh-users/zsh-autosuggestions
+# zinit light zsh-users/zsh-syntax-highlighting
+```
+
+**Tool Initialization**
+```zsh
+# Initialize tools that need interactive shell features
+
+# fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# zoxide (smart cd)
+eval "$(zoxide init zsh)"
+
+# starship prompt
+eval "$(starship init zsh)"
+
+# direnv
+eval "$(direnv hook zsh)"
+
+# thefuck
+eval "$(thefuck --alias)"
+```
+
+## What to Avoid
+
+### ❌ Do Not Include
+
+**Environment Variables (Usually)**
+```zsh
+# These should typically go in .zshenv
+export PATH="..."    # Put in .zshenv
+export EDITOR="vim"  # Put in .zshenv
+```
+
+Exception: Interactive-only environment variables are fine:
+```zsh
+# OK - only matters for interactive display
+export LS_COLORS="..."
+export GREP_COLORS="..."
+```
+
+**Slow Initialization** (be careful)
+```zsh
+# CAREFUL - may slow down every new shell
+eval "$(brew shellenv)"    # Better in .zprofile
+nvm use default            # Consider lazy loading
+```
+
+**Things That Produce Unwanted Output**
+```zsh
+# May interfere with shell functions that capture output
+echo "Shell ready!"  # Usually OK, but be aware
+```
+
+## Example Configuration
+
+```zsh
+#!/bin/zsh
+# ~/.zshrc - Interactive shell configuration
+
+# =============================================================================
+# Early Return for Non-Interactive Shells
+# =============================================================================
+[[ -o interactive ]] || return
+
+# =============================================================================
+# History Configuration
+# =============================================================================
+HISTSIZE=100000
+SAVEHIST=100000
+HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"
+
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_VERIFY
+setopt SHARE_HISTORY
+
+# =============================================================================
+# Shell Options
+# =============================================================================
+setopt AUTO_CD
+setopt AUTO_PUSHD
+setopt PUSHD_IGNORE_DUPS
+setopt CORRECT
+setopt EXTENDED_GLOB
+setopt INTERACTIVE_COMMENTS
+setopt NO_BEEP
+
+# =============================================================================
+# Completion System
+# =============================================================================
+autoload -Uz compinit
+
+# Only regenerate completions once a day
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
+
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
+# =============================================================================
+# Key Bindings
+# =============================================================================
+bindkey -e  # Emacs mode
+
+bindkey '^[[A' history-search-backward
+bindkey '^[[B' history-search-forward
+bindkey '^R' history-incremental-search-backward
+
+# =============================================================================
+# Aliases
+# =============================================================================
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+
+# Listing
+alias ls='ls --color=auto'
+alias ll='ls -lah'
+alias la='ls -A'
+
+# Git shortcuts
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gd='git diff'
+
+# Safety
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Misc
+alias grep='grep --color=auto'
+alias df='df -h'
+alias du='du -h'
+
+# =============================================================================
+# Functions
+# =============================================================================
+# Create and enter directory
+mkcd() {
+    mkdir -p "$@" && cd "$_"
+}
+
+# =============================================================================
+# Prompt
+# =============================================================================
+# Simple prompt with git info
+autoload -Uz vcs_info
+precmd() { vcs_info }
+zstyle ':vcs_info:git:*' formats '%F{green}(%b)%f '
+
+setopt PROMPT_SUBST
+PROMPT='%F{cyan}%n%f:%F{yellow}%~%f ${vcs_info_msg_0_}$ '
+
+# =============================================================================
+# Plugins
+# =============================================================================
+# Load syntax highlighting (should be last)
+[[ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] && \
+    source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Load autosuggestions
+[[ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]] && \
+    source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# =============================================================================
+# Local Configuration
+# =============================================================================
+# Load machine-specific config if present
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+```
+
+## Performance Optimization
+
+### Lazy Loading
+
+For slow-to-initialize tools, use lazy loading:
+
+```zsh
+# Lazy load nvm
+nvm() {
+    unfunction nvm
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+    nvm "$@"
+}
+
+# Lazy load kubectl
+kubectl() {
+    unfunction kubectl
+    source <(command kubectl completion zsh)
+    kubectl "$@"
+}
+```
+
+### Profiling Startup Time
+
+```zsh
+# Add to top of .zshrc
+zmodload zsh/zprof
+
+# Add to bottom of .zshrc
+zprof
+
+# Or time the whole startup
+time zsh -i -c exit
+```
+
+## Applying Changes
+
+```zsh
+# Reload .zshrc (preserves current environment)
+source ~/.zshrc
+
+# Or restart shell completely
+exec zsh
+```
+
+## Related Files
+
+- [.zshenv](./zshenv.mdx) - Environment for all shells
+- [.zprofile](./zprofile.mdx) - Login shell setup (before `.zshrc`)
+- [.zlogin](./zlogin.mdx) - Post-setup login commands
+- [.zlogout](./zlogout.mdx) - Login shell cleanup
+
+## References
+
+- [Zsh User Guide](https://zsh.sourceforge.io/Guide/zshguide.html)
+- [Zsh Manual: Options](https://zsh.sourceforge.io/Doc/Release/Options.html)
+- [Zsh Manual: Completion](https://zsh.sourceforge.io/Doc/Release/Completion-System.html)
+- [Zsh Manual: Zle (Key Bindings)](https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html)

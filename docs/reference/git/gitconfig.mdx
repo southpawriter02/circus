@@ -1,0 +1,397 @@
+# .gitconfig
+
+The `.gitconfig` file is Git's primary configuration file. It stores your identity, preferences, aliases, and behavior settings for the Git version control system.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `~/.gitconfig` (user-level) |
+| **Scope** | All Git repositories for the current user |
+| **Format** | INI-style configuration |
+| **Precedence** | User config overrides system, repo overrides user |
+
+## Configuration Hierarchy
+
+Git reads configuration from multiple locations, in order of increasing precedence:
+
+```
+1. /etc/gitconfig           ← System-wide (all users)
+2. ~/.gitconfig             ← User-level (YOU ARE HERE)
+   or ~/.config/git/config
+3. .git/config              ← Repository-specific
+4. $GIT_DIR/config.worktree ← Worktree-specific
+5. Command line (-c)        ← Highest precedence
+```
+
+Later configurations override earlier ones for the same setting.
+
+## Core Sections
+
+### User Identity
+
+```ini
+[user]
+    name = Your Name
+    email = your.email@example.com
+    signingkey = ABCD1234       # GPG key for signing
+```
+
+**Important**: This is required for making commits. Git will refuse to commit without a configured name and email.
+
+### Editor Configuration
+
+```ini
+[core]
+    editor = vim                # Default editor for commit messages
+    # Or use VS Code:
+    # editor = code --wait
+    # Or use nano:
+    # editor = nano
+```
+
+### Default Branch Name
+
+```ini
+[init]
+    defaultBranch = main        # Use 'main' instead of 'master'
+```
+
+### Line Ending Handling
+
+```ini
+[core]
+    # On macOS/Linux: convert CRLF to LF on commit
+    autocrlf = input
+    
+    # On Windows: convert LF to CRLF on checkout, CRLF to LF on commit
+    # autocrlf = true
+    
+    # Warn about mixed line endings
+    safecrlf = warn
+```
+
+### Global Ignore File
+
+```ini
+[core]
+    excludesfile = ~/.gitignore_global
+```
+
+## Useful Aliases
+
+```ini
+[alias]
+    # Status shortcuts
+    s = status -s
+    st = status
+    
+    # Log shortcuts
+    lg = log --oneline --graph --decorate --all
+    ll = log --pretty=format:'%C(yellow)%h%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
+    last = log -1 HEAD
+    
+    # Branch shortcuts
+    br = branch
+    co = checkout
+    cb = checkout -b
+    
+    # Commit shortcuts
+    ci = commit
+    ca = commit --amend
+    cm = commit -m
+    
+    # Diff shortcuts
+    df = diff
+    dc = diff --cached
+    
+    # Undo shortcuts
+    unstage = reset HEAD --
+    undo = reset --soft HEAD~1
+    
+    # List all aliases
+    aliases = config --get-regexp ^alias\\.
+    
+    # Show contributors
+    contributors = shortlog -sn
+    
+    # Find branches containing commit
+    fb = "!f() { git branch -a --contains $1; }; f"
+    
+    # Interactive rebase with n commits
+    reb = "!f() { git rebase -i HEAD~$1; }; f"
+```
+
+## Push and Pull Behavior
+
+```ini
+[push]
+    default = simple            # Push current branch to upstream
+    autoSetupRemote = true      # Auto-create remote tracking branch
+    followTags = true           # Push tags with commits
+
+[pull]
+    rebase = true               # Rebase instead of merge on pull
+    # Or use:
+    # rebase = false            # Always merge
+    # ff = only                 # Only allow fast-forward merges
+
+[fetch]
+    prune = true                # Remove deleted remote branches
+    pruneTags = true            # Remove deleted remote tags
+```
+
+## Diff and Merge Tools
+
+```ini
+[diff]
+    tool = vimdiff              # Default diff tool
+    colorMoved = zebra          # Highlight moved lines
+
+[difftool]
+    prompt = false              # Don't prompt before each file
+
+[merge]
+    tool = vimdiff              # Default merge tool
+    conflictstyle = diff3       # Show base in conflicts
+
+[mergetool]
+    prompt = false              # Don't prompt before each file
+    keepBackup = false          # Don't keep .orig files
+```
+
+## Credential Storage
+
+### macOS Keychain
+
+```ini
+[credential]
+    helper = osxkeychain
+```
+
+### Git Credential Manager (Cross-Platform)
+
+```ini
+[credential]
+    helper = manager-core
+```
+
+### Cache Credentials Temporarily
+
+```ini
+[credential]
+    helper = cache --timeout=3600   # Cache for 1 hour
+```
+
+## Color Configuration
+
+```ini
+[color]
+    ui = auto                   # Enable colors when output is terminal
+
+[color "status"]
+    added = green
+    changed = yellow
+    untracked = red
+
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red
+    new = green
+```
+
+## GPG Signing
+
+```ini
+[user]
+    signingkey = ABCD1234EFGH5678
+
+[commit]
+    gpgsign = true              # Sign all commits
+
+[tag]
+    gpgsign = true              # Sign all tags
+
+[gpg]
+    program = gpg               # GPG binary location
+    # On macOS with GPG Suite:
+    # program = /usr/local/bin/gpg
+```
+
+## Include Directive
+
+Split configuration across multiple files:
+
+```ini
+[include]
+    path = ~/.gitconfig.local       # Always include
+
+[includeIf "gitdir:~/work/"]
+    path = ~/.gitconfig.work        # Include for work repos
+
+[includeIf "gitdir:~/personal/"]
+    path = ~/.gitconfig.personal    # Include for personal repos
+```
+
+This is useful for:
+- Keeping secrets out of version control
+- Different identities for work vs personal projects
+- Machine-specific settings
+
+## Example Configuration
+
+```ini
+# ~/.gitconfig
+
+[user]
+    name = Your Name
+    email = your.email@example.com
+
+[include]
+    # Machine/user-specific settings (name, email, signing key)
+    path = ~/.gitconfig.local
+
+[core]
+    editor = vim
+    excludesfile = ~/.gitignore_global
+    autocrlf = input
+    whitespace = fix
+    pager = less -FRX
+
+[init]
+    defaultBranch = main
+
+[push]
+    default = simple
+    autoSetupRemote = true
+
+[pull]
+    rebase = true
+
+[fetch]
+    prune = true
+
+[rebase]
+    autoStash = true
+
+[diff]
+    colorMoved = zebra
+
+[merge]
+    conflictstyle = diff3
+
+[alias]
+    s = status -s
+    lg = log --oneline --graph --decorate --all -20
+    co = checkout
+    cb = checkout -b
+    cm = commit -m
+    ca = commit --amend
+    unstage = reset HEAD --
+    aliases = config --get-regexp ^alias\\.
+
+[credential]
+    helper = osxkeychain
+
+[color]
+    ui = auto
+
+[help]
+    autocorrect = 10            # Auto-correct typos after 1 second
+```
+
+## Managing Configuration
+
+### View Configuration
+
+```bash
+# View all configuration (merged)
+git config --list
+
+# View configuration with source file
+git config --list --show-origin
+
+# View specific setting
+git config user.name
+
+# View user-level config only
+git config --global --list
+```
+
+### Set Configuration
+
+```bash
+# Set user-level config
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+
+# Set repo-level config
+git config user.email "work@company.com"
+
+# Unset a value
+git config --global --unset user.email
+```
+
+### Edit Configuration
+
+```bash
+# Open user config in editor
+git config --global --edit
+
+# Open repo config in editor
+git config --edit
+```
+
+## Common Patterns
+
+### Pattern: Separate Work and Personal
+
+```ini
+# ~/.gitconfig.work
+[user]
+    email = work@company.com
+    signingkey = WORK_KEY_ID
+
+# ~/.gitconfig.personal  
+[user]
+    email = personal@email.com
+    signingkey = PERSONAL_KEY_ID
+
+# ~/.gitconfig (main file)
+[includeIf "gitdir:~/work/"]
+    path = ~/.gitconfig.work
+
+[includeIf "gitdir:~/personal/"]
+    path = ~/.gitconfig.personal
+```
+
+### Pattern: Keep Secrets Out of Dotfiles Repo
+
+```ini
+# ~/.gitconfig (in dotfiles repo)
+[include]
+    path = ~/.gitconfig.local    # NOT in dotfiles repo
+
+# ~/.gitconfig.local (machine-specific, not tracked)
+[user]
+    name = Real Name
+    email = real@email.com
+    signingkey = REAL_KEY
+```
+
+## Related Files
+
+- [.gitignore_global](./gitignore_global.mdx) - Global ignore patterns
+- [.gitattributes](./gitattributes.mdx) - Path-specific attributes
+
+## References
+
+- [Git Configuration Documentation](https://git-scm.com/docs/git-config)
+- [Pro Git: Customizing Git](https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration)
+- [Git Aliases](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases)

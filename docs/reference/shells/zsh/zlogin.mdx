@@ -1,0 +1,315 @@
+# .zlogin
+
+The `.zlogin` file is sourced for **login shells only**, after `.zshrc`. This makes it ideal for commands that should run when the shell is fully configured, such as displaying welcome messages or starting services.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `$ZDOTDIR/.zlogin` or `~/.zlogin` |
+| **When Sourced** | Login shells only |
+| **Shell Types** | Login (interactive or non-interactive) |
+| **Load Order** | After `.zshrc` (last startup file) |
+
+## When It's Sourced
+
+`.zlogin` is sourced in these scenarios:
+
+- ✅ Opening a new terminal window (macOS)
+- ✅ Logging in via SSH
+- ✅ Starting a shell with `zsh --login` or `zsh -l`
+- ✅ Using `su -` to switch users
+- ✅ Console login (tty)
+
+`.zlogin` is **NOT** sourced when:
+
+- ❌ Opening a new tab (usually non-login)
+- ❌ Running a script
+- ❌ Starting a subshell without `-l`
+- ❌ Non-login shells of any kind
+
+## Load Order Position
+
+```
+1. ~/.zshenv
+2. ~/.zprofile
+3. ~/.zshrc
+4. ~/.zlogin            ← YOU ARE HERE (last to load)
+```
+
+At this point, the shell is **fully configured**. All environment variables, aliases, functions, and completions are available.
+
+## .zlogin vs .zprofile
+
+Both files are for login shells, but they differ:
+
+| Aspect | .zprofile | .zlogin |
+|--------|-----------|---------|
+| **When** | Before `.zshrc` | After `.zshrc` |
+| **Shell state** | Partially configured | Fully configured |
+| **Origin** | Ksh/Bash (`.profile`) | Csh (`.login`) |
+| **Best for** | Environment setup | User-facing output |
+
+**Key insight**: `.zlogin` runs when you can use all your shell customizations (aliases, functions, etc.).
+
+## What to Put Here
+
+### ✅ Recommended Content
+
+**Welcome Messages**
+```zsh
+# Display a greeting
+echo "Welcome back, $USER!"
+echo "Today is $(date '+%A, %B %d, %Y')"
+```
+
+**System Information**
+```zsh
+# Show system status
+echo ""
+echo "System Information:"
+echo "  Hostname: $(hostname)"
+echo "  Uptime:   $(uptime | sed 's/.*up //' | sed 's/,.*//')"
+echo "  Load:     $(uptime | awk -F'load average:' '{print $2}')"
+echo ""
+```
+
+**Session Information**
+```zsh
+# Display active sessions
+echo "Active sessions:"
+who | grep -v "^$USER " | head -5
+
+# Show last login
+last -1 "$USER" | head -1
+```
+
+**Starting X Window System** (Linux)
+```zsh
+# Start X if on tty1 and not already running
+if [[ -z "$DISPLAY" ]] && [[ "$XDG_VTNR" -eq 1 ]]; then
+    exec startx
+fi
+```
+
+**Task Reminders**
+```zsh
+# Show today's tasks
+if command -v task &>/dev/null; then
+    task list due:today 2>/dev/null
+fi
+
+# Show calendar appointments
+if command -v calcurse &>/dev/null; then
+    calcurse -a
+fi
+```
+
+**Fortune/MOTD**
+```zsh
+# Display a fortune
+if command -v fortune &>/dev/null; then
+    echo ""
+    fortune -s
+    echo ""
+fi
+```
+
+**SSH Key Loading**
+```zsh
+# Add SSH keys (with passphrase prompt)
+if [[ -z "$SSH_AUTH_SOCK" ]]; then
+    eval "$(ssh-agent -s)"
+fi
+
+# Add keys (will prompt for passphrase if needed)
+ssh-add -q ~/.ssh/id_ed25519 2>/dev/null
+```
+
+**Tmux/Screen Auto-Start**
+```zsh
+# Auto-start tmux for SSH sessions
+if [[ -n "$SSH_CLIENT" ]] && [[ -z "$TMUX" ]]; then
+    # Attach to existing or create new
+    tmux attach-session -t main 2>/dev/null || tmux new-session -s main
+fi
+```
+
+## What to Avoid
+
+### ❌ Do Not Include
+
+**Environment Variables**
+```zsh
+# BAD - should be in .zshenv or .zprofile
+export PATH="..."
+export EDITOR="vim"
+```
+
+**Shell Configuration**
+```zsh
+# BAD - should be in .zshrc
+alias ll='ls -la'
+setopt AUTO_CD
+bindkey '^R' history-search
+```
+
+**Long-Running Background Processes**
+```zsh
+# CAREFUL - may delay shell startup
+heavy-daemon &  # Consider starting via system service instead
+```
+
+**Things That Break Non-Interactive Login Shells**
+```zsh
+# CAREFUL - rsync/scp use non-interactive login shells
+# Guard any output:
+[[ -o interactive ]] && echo "Welcome!"
+```
+
+## Example Configuration
+
+```zsh
+#!/bin/zsh
+# ~/.zlogin - Post-setup login shell commands
+
+# =============================================================================
+# Only run for interactive shells
+# =============================================================================
+# This prevents breaking scp, rsync, and similar tools
+[[ -o interactive ]] || return
+
+# =============================================================================
+# Welcome Message
+# =============================================================================
+print -P "\n%F{cyan}Welcome back, %n!%f"
+print -P "%F{yellow}$(date '+%A, %B %d, %Y at %H:%M')%f\n"
+
+# =============================================================================
+# System Status
+# =============================================================================
+# Disk space warning
+local disk_usage=$(df -h / | awk 'NR==2 {gsub(/%/,"",$5); print $5}')
+if (( disk_usage > 90 )); then
+    print -P "%F{red}⚠ Warning: Disk usage is ${disk_usage}%%%f"
+fi
+
+# Memory status (macOS)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    local mem_pressure=$(memory_pressure 2>/dev/null | grep "System-wide memory free percentage" | awk '{print $5}')
+    if [[ -n "$mem_pressure" ]] && (( ${mem_pressure%\%} < 20 )); then
+        print -P "%F{yellow}⚠ Memory pressure: $mem_pressure free%f"
+    fi
+fi
+
+# =============================================================================
+# Quick Status
+# =============================================================================
+# Git repositories with uncommitted changes
+if command -v git &>/dev/null; then
+    local repos_with_changes=()
+    for repo in ~/Projects/*/.git(N); do
+        local repo_dir="${repo:h}"
+        if ! git -C "$repo_dir" diff --quiet 2>/dev/null || \
+           ! git -C "$repo_dir" diff --cached --quiet 2>/dev/null; then
+            repos_with_changes+=("${repo_dir:t}")
+        fi
+    done
+    if (( ${#repos_with_changes[@]} > 0 )); then
+        print -P "%F{magenta}Repos with uncommitted changes: ${(j:, :)repos_with_changes}%f"
+    fi
+fi
+
+# =============================================================================
+# Reminders
+# =============================================================================
+# Show today's calendar events (if using calcurse)
+if command -v calcurse &>/dev/null && [[ -f ~/.calcurse/apts ]]; then
+    local today_events=$(calcurse -a 2>/dev/null)
+    if [[ -n "$today_events" ]]; then
+        echo ""
+        print -P "%F{green}Today's events:%f"
+        echo "$today_events"
+    fi
+fi
+
+# =============================================================================
+# Fortune
+# =============================================================================
+if command -v fortune &>/dev/null; then
+    echo ""
+    fortune -s 2>/dev/null
+fi
+
+echo ""
+```
+
+## Guarding Interactive Output
+
+If your `.zlogin` produces output, protect against non-interactive login shells:
+
+```zsh
+# Method 1: Check interactive flag
+[[ -o interactive ]] || return
+
+# Method 2: Check for TTY
+[[ -t 1 ]] || return
+
+# Method 3: Check SSH command mode
+[[ -z "$SSH_ORIGINAL_COMMAND" ]] || return
+```
+
+**Why this matters**: Tools like `scp`, `rsync`, and `git` (over SSH) use non-interactive login shells. Any unexpected output can break these tools.
+
+## Applying Changes
+
+Changes require a **new login shell**:
+
+```zsh
+# Start a new login shell
+exec zsh --login
+
+# Or log out and log back in
+```
+
+## Common Patterns
+
+### Pattern: Conditional SSH Welcome
+
+```zsh
+if [[ -n "$SSH_CLIENT" ]]; then
+    # Remote session
+    echo "Connected from: ${SSH_CLIENT%% *}"
+    echo "Server: $(hostname -f)"
+else
+    # Local session
+    echo "Local session on $(hostname)"
+fi
+```
+
+### Pattern: Time-Based Greetings
+
+```zsh
+local hour=$(date +%H)
+local greeting
+if (( hour < 12 )); then
+    greeting="Good morning"
+elif (( hour < 18 )); then
+    greeting="Good afternoon"
+else
+    greeting="Good evening"
+fi
+echo "$greeting, $USER!"
+```
+
+## Related Files
+
+- [.zshenv](./zshenv.mdx) - Environment for all shells
+- [.zprofile](./zprofile.mdx) - Login shell setup (before `.zshrc`)
+- [.zshrc](./zshrc.mdx) - Interactive shell configuration
+- [.zlogout](./zlogout.mdx) - Login shell cleanup
+
+## References
+
+- [Zsh Manual: Startup Files](https://zsh.sourceforge.io/Doc/Release/Files.html#Startup_002fShutdown-Files)
+- [Unix StackExchange: Zsh Startup Files](https://unix.stackexchange.com/questions/71253/what-should-shouldnt-go-in-zshenv-zshrc-zlogin-zprofile-zlogout)

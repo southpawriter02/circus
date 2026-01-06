@@ -1,0 +1,450 @@
+# .inputrc
+
+The `.inputrc` file configures the GNU Readline library, which provides line-editing capabilities for Bash and many other command-line programs. This controls how you interact with the command line: key bindings, history search, completion behavior, and more.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `~/.inputrc` |
+| **Scope** | All programs using GNU Readline |
+| **Programs Affected** | Bash, Python REPL, MySQL, PostgreSQL, GDB, etc. |
+| **Format** | Key-value settings and key bindings |
+
+## When It's Read
+
+`.inputrc` is read by Readline when:
+
+- Starting a new Bash shell (if `INPUTRC` not set)
+- Starting programs like `python`, `mysql`, `psql`, `gdb`
+- Explicitly reloading with `bind -f ~/.inputrc`
+
+**Note**: Zsh does NOT use Readline; it has its own line editor (ZLE).
+
+## Basic Syntax
+
+```inputrc
+# Comments start with #
+
+# Settings: $set variable value
+$set bell-style none
+
+# Key bindings: "keysequence": function-name
+"\e[A": history-search-backward
+
+# Conditional: $if mode/term/application
+$if Bash
+    # Bash-specific settings
+$endif
+```
+
+## Essential Settings
+
+### Completion Behavior
+
+```inputrc
+# Case-insensitive completion
+set completion-ignore-case on
+
+# Treat hyphens and underscores as equivalent
+set completion-map-case on
+
+# Show all completions on first Tab (don't wait for second)
+set show-all-if-ambiguous on
+
+# Show all completions if line wasn't modified by first Tab
+set show-all-if-unmodified on
+
+# Append character to indicate file type (like ls -F)
+set visible-stats on
+
+# Color files by type in completion listings
+set colored-stats on
+
+# Color the common prefix in completions
+set colored-completion-prefix on
+
+# Only require single Tab for completion
+set completion-query-items 200
+```
+
+### Editing Mode
+
+```inputrc
+# Use vi mode (default is emacs)
+# set editing-mode vi
+
+# Show vi mode in prompt (insert/command)
+set show-mode-in-prompt on
+set vi-ins-mode-string \1\e[6 q\2
+set vi-cmd-mode-string \1\e[2 q\2
+```
+
+### History Behavior
+
+```inputrc
+# Enable history expansion with Space (!! becomes previous command)
+$if Bash
+    Space: magic-space
+$endif
+
+# Don't ring bell on completion
+set bell-style none
+```
+
+### Display Settings
+
+```inputrc
+# Don't use more-style paging for long completions
+set page-completions off
+
+# Set number of columns for completions
+set completion-display-width -1
+
+# Ask before displaying more than N completions
+set completion-query-items 100
+
+# Skip completed text when pasting
+set skip-completed-text on
+```
+
+## Key Bindings
+
+### Syntax
+
+```inputrc
+# Control characters
+"\C-x": function-name     # Ctrl+X
+"\C-x\C-r": function-name # Ctrl+X, then Ctrl+R
+
+# Meta (Alt) key
+"\e": function-name       # Escape
+"\M-x": function-name     # Alt+X (same as \ex on many terminals)
+
+# Special keys (escape sequences)
+"\e[A": function-name     # Up arrow
+"\e[B": function-name     # Down arrow
+"\e[C": function-name     # Right arrow
+"\e[D": function-name     # Left arrow
+"\e[H": function-name     # Home
+"\e[F": function-name     # End
+"\e[3~": function-name    # Delete
+
+# Literal strings (macros)
+"\C-xp": "cd ~/projects\n"  # Type literal text
+```
+
+### History Navigation
+
+```inputrc
+# Up/Down arrow: search history starting with current input
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+
+# Page Up/Down: navigate history
+"\e[5~": history-search-backward
+"\e[6~": history-search-forward
+
+# Ctrl+R: incremental reverse search (default)
+# "\C-r": reverse-search-history
+
+# Alt+P/N: non-incremental search
+"\ep": non-incremental-reverse-search-history
+"\en": non-incremental-forward-search-history
+```
+
+### Word Navigation
+
+```inputrc
+# Ctrl+Left/Right: move by word
+"\e[1;5D": backward-word
+"\e[1;5C": forward-word
+
+# Alt+Left/Right: alternative word movement
+"\e[1;3D": backward-word
+"\e[1;3C": forward-word
+
+# Alt+B/F: standard Emacs word movement
+"\eb": backward-word
+"\ef": forward-word
+```
+
+### Line Editing
+
+```inputrc
+# Ctrl+U: kill from cursor to beginning of line
+"\C-u": unix-line-discard
+
+# Ctrl+K: kill from cursor to end of line
+"\C-k": kill-line
+
+# Ctrl+W: delete previous word
+"\C-w": backward-kill-word
+
+# Alt+D: delete next word
+"\ed": kill-word
+
+# Ctrl+Y: yank (paste) killed text
+"\C-y": yank
+
+# Ctrl+_: undo
+"\C-_": undo
+```
+
+### Useful Shortcuts
+
+```inputrc
+# Ctrl+L: clear screen (keep current line)
+"\C-l": clear-screen
+
+# Alt+.: insert last argument of previous command
+"\e.": yank-last-arg
+
+# Alt+#: comment current line and execute
+"\e#": insert-comment
+
+# Ctrl+T: transpose characters
+"\C-t": transpose-chars
+
+# Alt+T: transpose words
+"\et": transpose-words
+
+# Alt+U/L/C: change word case
+"\eu": upcase-word
+"\el": downcase-word
+"\ec": capitalize-word
+```
+
+## Conditional Configuration
+
+### By Application
+
+```inputrc
+$if Bash
+    # Bash-specific settings
+    set enable-bracketed-paste on
+$endif
+
+$if Python
+    # Python REPL settings
+$endif
+
+$if Gdb
+    # GDB settings
+$endif
+```
+
+### By Terminal
+
+```inputrc
+$if term=xterm
+    # xterm-specific key sequences
+$endif
+
+$if term=screen
+    # GNU Screen/tmux key sequences
+$endif
+```
+
+### By Editing Mode
+
+```inputrc
+$if mode=emacs
+    # Emacs mode bindings
+$endif
+
+$if mode=vi
+    # Vi mode bindings
+$endif
+```
+
+## Example Configuration
+
+```inputrc
+# ==============================================================================
+# ~/.inputrc - GNU Readline Configuration
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Completion Settings
+# ------------------------------------------------------------------------------
+
+# Case-insensitive completion
+set completion-ignore-case on
+
+# Treat - and _ as equivalent in completion
+set completion-map-case on
+
+# Show all completions on first Tab
+set show-all-if-ambiguous on
+
+# Show completion list immediately, no second Tab needed
+set show-all-if-unmodified on
+
+# Show file type indicators in completion (like ls -F)
+set visible-stats on
+
+# Color completions by file type
+set colored-stats on
+
+# Color the common prefix differently
+set colored-completion-prefix on
+
+# Mark directories with a trailing slash
+set mark-directories on
+set mark-symlinked-directories on
+
+# ------------------------------------------------------------------------------
+# History Settings
+# ------------------------------------------------------------------------------
+
+# Up/Down arrows search history based on typed prefix
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+
+# Page Up/Down also search history
+"\e[5~": history-search-backward
+"\e[6~": history-search-forward
+
+# Alt+P / Alt+N: another way to search history
+"\ep": history-search-backward
+"\en": history-search-forward
+
+# ------------------------------------------------------------------------------
+# Navigation
+# ------------------------------------------------------------------------------
+
+# Ctrl+Left/Right: move by word
+"\e[1;5D": backward-word
+"\e[1;5C": forward-word
+
+# Alt+Left/Right: alternative word movement
+"\e[1;3D": backward-word
+"\e[1;3C": forward-word
+
+# Home/End keys
+"\e[H": beginning-of-line
+"\e[F": end-of-line
+"\e[1~": beginning-of-line
+"\e[4~": end-of-line
+
+# ------------------------------------------------------------------------------
+# Editing
+# ------------------------------------------------------------------------------
+
+# Enable bracketed paste (prevent command execution on paste)
+set enable-bracketed-paste on
+
+# Don't ring bell on completion
+set bell-style none
+
+# Skip completed text when pasting
+set skip-completed-text on
+
+# Bash-specific settings
+$if Bash
+    # Magic Space: expand history (!!) when pressing space
+    Space: magic-space
+$endif
+
+# ------------------------------------------------------------------------------
+# Display
+# ------------------------------------------------------------------------------
+
+# Don't paginate long completion lists
+set page-completions off
+
+# Only ask for confirmation with many completions (>100)
+set completion-query-items 100
+
+# Echo control characters as ^X
+set echo-control-characters on
+```
+
+## Common Readline Functions
+
+| Function | Description |
+|----------|-------------|
+| `beginning-of-line` | Move to start of line |
+| `end-of-line` | Move to end of line |
+| `forward-word` | Move forward one word |
+| `backward-word` | Move backward one word |
+| `kill-line` | Delete to end of line |
+| `unix-line-discard` | Delete to beginning of line |
+| `backward-kill-word` | Delete previous word |
+| `yank` | Paste killed text |
+| `undo` | Undo last edit |
+| `clear-screen` | Clear screen, keep current line |
+| `history-search-backward` | Search history backward |
+| `reverse-search-history` | Incremental reverse search |
+| `complete` | Complete word |
+| `menu-complete` | Cycle through completions |
+
+## Applying Changes
+
+### Reload in Current Shell
+
+```bash
+# Bash: re-read inputrc
+bind -f ~/.inputrc
+
+# Or reset readline variables
+bind -v  # Show current settings
+```
+
+### Changes take effect in new shells automatically.
+
+## Checking Current Bindings
+
+```bash
+# Show all key bindings
+bind -p
+
+# Show all variable settings
+bind -v
+
+# Show function bound to a key
+bind -q forward-word
+```
+
+## Troubleshooting
+
+### Key Sequences Not Working
+
+Different terminals send different escape sequences. Find what your terminal sends:
+
+```bash
+# Start cat, then press the key
+cat -v
+# Press Up arrow, you might see: ^[[A
+
+# Then use that sequence in inputrc:
+"\e[A": history-search-backward  # \e = ^[
+```
+
+### Inputrc Not Being Read
+
+Check if `INPUTRC` environment variable is set:
+
+```bash
+echo $INPUTRC
+# If set, it overrides ~/.inputrc
+```
+
+Verify syntax:
+
+```bash
+# Bash will report errors when sourcing
+bind -f ~/.inputrc
+```
+
+## Related Files
+
+- [.bashrc](./shells/bash/bashrc.mdx) - Bash configuration (sources after inputrc)
+- [.bash_profile](./shells/bash/bash_profile.mdx) - Login shell configuration
+
+## References
+
+- [GNU Readline Documentation](https://tiswww.cwru.edu/php/chet/readline/rltop.html)
+- [Bash Reference: Readline Init File](https://www.gnu.org/software/bash/manual/bash.html#Readline-Init-File)
+- [Readline Cheat Sheet](https://readline.kablamo.org/emacs.html)

@@ -1,0 +1,298 @@
+# .zlogout
+
+The `.zlogout` file is sourced when a **login shell exits**. It's used for cleanup tasks such as clearing the terminal, deleting temporary files, or logging session information.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `$ZDOTDIR/.zlogout` or `~/.zlogout` |
+| **When Sourced** | Login shell exit |
+| **Shell Types** | Login shells only |
+| **Load Order** | Last (on exit, not startup) |
+
+## When It's Sourced
+
+`.zlogout` is sourced in these scenarios:
+
+- ✅ Typing `exit` or `logout` in a login shell
+- ✅ Pressing `Ctrl+D` in a login shell
+- ✅ Closing a terminal window that was a login shell
+- ✅ Logging out of an SSH session
+- ✅ The shell receives a termination signal (in most cases)
+
+`.zlogout` is **NOT** sourced when:
+
+- ❌ Exiting a non-login shell
+- ❌ The shell crashes or is killed with `SIGKILL`
+- ❌ Closing a terminal tab (if it wasn't a login shell)
+- ❌ Running `exec` to replace the shell with another process
+
+## Load Order Position
+
+**On login shell exit:**
+```
+[Session ends]
+    ↓
+~/.zlogout            ← YOU ARE HERE
+    ↓
+/etc/zsh/zlogout
+```
+
+Note: User `.zlogout` is sourced **before** the system `/etc/zsh/zlogout`.
+
+## What to Put Here
+
+### ✅ Recommended Content
+
+**Clear the Terminal**
+```zsh
+# Clear screen and scrollback buffer on logout
+clear
+
+# Or more thorough clearing
+printf '\033[2J\033[3J\033[H'
+```
+
+**Reset Terminal State**
+```zsh
+# Reset terminal to sane defaults
+reset 2>/dev/null || stty sane
+```
+
+**Session Logging**
+```zsh
+# Log session end time
+echo "$(date '+%Y-%m-%d %H:%M:%S') - Session ended for $USER" >> ~/.session_log
+```
+
+**Cleanup Temporary Files**
+```zsh
+# Remove temporary files created during session
+[[ -d "$TMPDIR/$USER" ]] && rm -rf "$TMPDIR/$USER"/*
+
+# Clear shell history for privacy (optional)
+# rm -f ~/.zsh_history
+```
+
+**Stop Background Processes**
+```zsh
+# Stop ssh-agent if it was started for this session
+if [[ -n "$SSH_AGENT_PID" ]]; then
+    eval "$(ssh-agent -k)" 2>/dev/null
+fi
+```
+
+**Sync/Backup History**
+```zsh
+# Force history write
+fc -W
+
+# Backup history to cloud sync folder
+cp ~/.zsh_history ~/Sync/shell_history/zsh_history_$(date +%Y%m%d)
+```
+
+**Unmount Volumes** (if applicable)
+```zsh
+# Unmount any temporary mounts
+if mountpoint -q ~/mnt/temp 2>/dev/null; then
+    umount ~/mnt/temp
+fi
+```
+
+**Goodbye Message**
+```zsh
+# Display farewell
+echo "Goodbye, $USER!"
+echo "Session ended at $(date)"
+sleep 1  # Give time to read
+```
+
+## What to Avoid
+
+### ❌ Do Not Include
+
+**Long-Running Operations**
+```zsh
+# BAD - delays logout
+rsync -av ~/data /backup/  # May take too long
+```
+
+**Operations That May Fail**
+```zsh
+# CAREFUL - a failure here is annoying
+some-unreliable-command || exit 1  # Don't fail here
+```
+
+**Destructive Operations Without Confirmation**
+```zsh
+# DANGEROUS
+rm -rf ~/Downloads/*  # User may not want this every logout
+```
+
+## Example Configuration
+
+```zsh
+#!/bin/zsh
+# ~/.zlogout - Login shell cleanup
+
+# =============================================================================
+# Guard: Only run for interactive sessions
+# =============================================================================
+[[ -o interactive ]] || return
+
+# =============================================================================
+# Session Logging
+# =============================================================================
+{
+    echo "=== Session End ==="
+    echo "User: $USER"
+    echo "Time: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "Duration: $SECONDS seconds"
+    echo ""
+} >> "${XDG_STATE_HOME:-$HOME/.local/state}/zsh/sessions.log" 2>/dev/null
+
+# =============================================================================
+# History Sync
+# =============================================================================
+# Ensure history is written
+fc -W 2>/dev/null
+
+# =============================================================================
+# SSH Agent Cleanup
+# =============================================================================
+# Kill ssh-agent if we started it
+if [[ -n "$SSH_AGENT_PID" ]] && [[ -f ~/.ssh-agent-started-by-zsh ]]; then
+    eval "$(ssh-agent -k)" 2>/dev/null
+    rm -f ~/.ssh-agent-started-by-zsh
+fi
+
+# =============================================================================
+# Temporary File Cleanup
+# =============================================================================
+# Clean up session-specific temp files
+local session_tmp="$TMPDIR/zsh-session-$$"
+[[ -d "$session_tmp" ]] && rm -rf "$session_tmp"
+
+# =============================================================================
+# Terminal Cleanup
+# =============================================================================
+# Clear screen for privacy
+clear
+
+# Reset terminal to default state
+# This helps if the terminal was left in a weird state
+reset 2>/dev/null
+
+# =============================================================================
+# Farewell
+# =============================================================================
+echo "Session ended. Goodbye!"
+
+# Brief pause so message is visible
+sleep 0.5
+```
+
+## Minimal Configuration
+
+For most users, a simple `.zlogout` is sufficient:
+
+```zsh
+# ~/.zlogout - Simple cleanup
+
+# Clear the screen for privacy
+clear
+
+# Ensure history is saved
+fc -W 2>/dev/null
+```
+
+## Testing .zlogout
+
+Since `.zlogout` only runs on exit, testing requires starting a new login shell:
+
+```zsh
+# Start a login shell and immediately exit
+zsh --login -c 'echo "In login shell"; exit'
+
+# Or enter a login shell interactively
+zsh --login
+# ... do things ...
+exit  # This triggers .zlogout
+```
+
+## Common Patterns
+
+### Pattern: Conditional Cleanup
+
+```zsh
+# Only clean up if session lasted more than 5 minutes
+if (( SECONDS > 300 )); then
+    # Session was substantial, do cleanup
+    fc -W
+    clear
+fi
+```
+
+### Pattern: Remote vs Local
+
+```zsh
+if [[ -n "$SSH_CLIENT" ]]; then
+    # Remote session - clear screen
+    clear
+    echo "SSH session closed"
+else
+    # Local session - might want to keep scrollback
+    echo "Local session ended"
+fi
+```
+
+### Pattern: Safe Cleanup
+
+```zsh
+# Cleanup with fallbacks - don't let failures stop logout
+{
+    fc -W
+    clear
+    reset
+} 2>/dev/null || true
+```
+
+## Troubleshooting
+
+### .zlogout Not Running
+
+Common causes:
+
+1. **Not a login shell**: Check with `echo $0` (login shell shows `-zsh`)
+2. **Shell was killed**: `SIGKILL` prevents cleanup
+3. **Used exec**: Replacing shell doesn't run `.zlogout`
+4. **Syntax error**: A syntax error prevents sourcing
+
+Debug by adding:
+```zsh
+# At top of .zlogout
+echo "DEBUG: .zlogout is running" >&2
+sleep 2
+```
+
+### Terminal Closes Too Fast
+
+If you can't see output before the terminal closes:
+
+```zsh
+echo "Goodbye!"
+sleep 2  # Wait 2 seconds
+```
+
+## Related Files
+
+- [.zshenv](./zshenv.mdx) - Environment for all shells
+- [.zprofile](./zprofile.mdx) - Login shell setup
+- [.zshrc](./zshrc.mdx) - Interactive shell configuration
+- [.zlogin](./zlogin.mdx) - Post-setup login commands
+
+## References
+
+- [Zsh Manual: Startup/Shutdown Files](https://zsh.sourceforge.io/Doc/Release/Files.html#Startup_002fShutdown-Files)
+- [Unix StackExchange: Zsh Startup Files](https://unix.stackexchange.com/questions/71253/what-should-shouldnt-go-in-zshenv-zshrc-zlogin-zprofile-zlogout)

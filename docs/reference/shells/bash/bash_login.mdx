@@ -1,0 +1,137 @@
+# .bash_login
+
+The `.bash_login` file is an **alternative** to `.bash_profile` for login shell initialization. It is only sourced if `.bash_profile` does not exist. Most users should use `.bash_profile` instead.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `~/.bash_login` |
+| **When Sourced** | Login shells (if `.bash_profile` missing) |
+| **Shell Types** | Login only |
+| **Load Order** | Second choice for login shells |
+
+## When It's Sourced
+
+`.bash_login` is sourced **only** when:
+
+- ✅ It's a login shell, AND
+- ✅ `~/.bash_profile` does NOT exist
+
+If `.bash_profile` exists, `.bash_login` is **completely ignored**.
+
+## Load Order Position
+
+Bash sources **only the first file found**:
+
+```
+1. /etc/profile           ← System-wide (always)
+2. ~/.bash_profile        ← First choice
+3. ~/.bash_login          ← YOU ARE HERE (second choice)
+4. ~/.profile             ← Third choice
+```
+
+## Should You Use It?
+
+**In most cases: No.**
+
+Use `.bash_profile` instead. It's:
+- More widely recognized
+- The convention in macOS and most Linux distributions
+- What tutorials and documentation reference
+
+## When .bash_login Makes Sense
+
+- You're maintaining compatibility with older Unix systems
+- You have a specific setup where `.bash_profile` is managed by another tool
+- You prefer the Csh naming convention (historical)
+
+## Historical Context
+
+`.bash_login` exists for historical reasons:
+
+| Shell | Login File |
+|-------|------------|
+| Bourne Shell (sh) | `.profile` |
+| C Shell (csh) | `.login` |
+| Bash | `.bash_profile` (Bourne) or `.bash_login` (C shell) |
+
+Bash provides both options for compatibility with users migrating from either tradition.
+
+## What to Put Here
+
+If you do use `.bash_login`, treat it exactly like `.bash_profile`:
+
+```bash
+#!/bin/bash
+# ~/.bash_login - Login shell initialization (alternative to .bash_profile)
+
+# =============================================================================
+# Environment Variables
+# =============================================================================
+export EDITOR="vim"
+export VISUAL="$EDITOR"
+export PAGER="less"
+
+# =============================================================================
+# PATH
+# =============================================================================
+export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+
+# =============================================================================
+# Source .bashrc for Interactive Features
+# =============================================================================
+if [ -f ~/.bashrc ]; then
+    source ~/.bashrc
+fi
+```
+
+## Migration to .bash_profile
+
+If you're using `.bash_login` and want to switch to the more common `.bash_profile`:
+
+```bash
+# Move the file
+mv ~/.bash_login ~/.bash_profile
+
+# Verify no issues
+bash --login -c 'echo "Login works"'
+```
+
+## Troubleshooting
+
+### .bash_login Not Being Read
+
+Check if `.bash_profile` exists:
+
+```bash
+ls -la ~/.bash_profile
+
+# If it exists and you want .bash_login read instead:
+mv ~/.bash_profile ~/.bash_profile.bak
+```
+
+### Both Files Exist
+
+If both `.bash_profile` and `.bash_login` exist, only `.bash_profile` is read. The common solution:
+
+```bash
+# Option 1: Remove .bash_login
+rm ~/.bash_login
+
+# Option 2: Source .bash_login from .bash_profile (unusual)
+# In .bash_profile:
+[ -f ~/.bash_login ] && source ~/.bash_login
+```
+
+## Related Files
+
+- [.bash_profile](./bash_profile.mdx) - Primary login shell file (preferred)
+- [.bashrc](./bashrc.mdx) - Interactive shell configuration
+- [.bash_logout](./bash_logout.mdx) - Login shell cleanup
+- [.profile](./profile.mdx) - POSIX-compatible fallback
+
+## References
+
+- [Bash Reference Manual: Startup Files](https://www.gnu.org/software/bash/manual/bash.html#Bash-Startup-Files)
+- [Bash FAQ: Startup Files](https://mywiki.wooledge.org/DotFiles)

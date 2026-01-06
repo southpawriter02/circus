@@ -1,0 +1,444 @@
+# .bashrc
+
+The `.bashrc` file is sourced for **interactive non-login shells**. This is where you configure everything related to your interactive experience: aliases, functions, prompt, completions, and shell options.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `~/.bashrc` |
+| **When Sourced** | Interactive non-login shells |
+| **Shell Types** | Interactive (non-login by default) |
+| **Load Order** | Directly (for non-login) or via `.bash_profile` |
+
+## When It's Sourced
+
+`.bashrc` is sourced in these scenarios:
+
+- ✅ Opening a new terminal tab (on most Linux systems)
+- ✅ Starting an interactive subshell (`bash`)
+- ✅ Running `bash -i`
+- ✅ When sourced from `.bash_profile` (recommended)
+
+`.bashrc` is **NOT** sourced when:
+
+- ❌ Opening a new terminal window (macOS — login shell)
+- ❌ Running a script (`./script.sh`)
+- ❌ Running `bash -c "command"`
+- ❌ SSH login without further sourcing
+
+## Load Order Position
+
+**For interactive non-login shells:**
+```
+1. /etc/bash.bashrc     ← System-wide (Debian/Ubuntu)
+   or /etc/bashrc       ← System-wide (RHEL/Fedora)
+2. ~/.bashrc            ← YOU ARE HERE
+```
+
+**For login shells (when sourced from `.bash_profile`):**
+```
+1. /etc/profile
+2. ~/.bash_profile
+   └── source ~/.bashrc  ← Manually sourced
+```
+
+## The Essential Setup
+
+Since login shells (macOS terminal windows) don't source `.bashrc` automatically, add this to your `.bash_profile`:
+
+```bash
+# In ~/.bash_profile
+if [ -f ~/.bashrc ]; then
+    source ~/.bashrc
+fi
+```
+
+## What to Put Here
+
+### ✅ Recommended Content
+
+**Guard for Non-Interactive Shells**
+```bash
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+    *) return ;;
+esac
+```
+
+**Aliases**
+```bash
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ~='cd ~'
+
+# Listing files
+alias ls='ls --color=auto'
+alias ll='ls -lah'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Safety aliases
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Grep with color
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Git shortcuts
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git log --oneline -10'
+alias gd='git diff'
+
+# Misc
+alias df='df -h'
+alias du='du -h'
+alias free='free -h'
+```
+
+**Functions**
+```bash
+# Create directory and cd into it
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# Extract any archive
+extract() {
+    if [ -f "$1" ]; then
+        case "$1" in
+            *.tar.bz2) tar xjf "$1" ;;
+            *.tar.gz)  tar xzf "$1" ;;
+            *.tar.xz)  tar xJf "$1" ;;
+            *.bz2)     bunzip2 "$1" ;;
+            *.rar)     unrar x "$1" ;;
+            *.gz)      gunzip "$1" ;;
+            *.tar)     tar xf "$1" ;;
+            *.tbz2)    tar xjf "$1" ;;
+            *.tgz)     tar xzf "$1" ;;
+            *.zip)     unzip "$1" ;;
+            *.Z)       uncompress "$1" ;;
+            *.7z)      7z x "$1" ;;
+            *)         echo "'$1' cannot be extracted" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+# Quick find in current directory
+f() {
+    find . -name "*$1*" 2>/dev/null
+}
+
+# Quick grep in current directory
+g() {
+    grep -r "$1" . 2>/dev/null
+}
+```
+
+**Prompt Configuration**
+```bash
+# Color codes
+RED='\[\033[0;31m\]'
+GREEN='\[\033[0;32m\]'
+YELLOW='\[\033[0;33m\]'
+BLUE='\[\033[0;34m\]'
+PURPLE='\[\033[0;35m\]'
+CYAN='\[\033[0;36m\]'
+WHITE='\[\033[0;37m\]'
+RESET='\[\033[0m\]'
+
+# Simple colored prompt
+PS1="${GREEN}\u${RESET}@${CYAN}\h${RESET}:${YELLOW}\w${RESET}\$ "
+
+# With git branch (if function exists)
+parse_git_branch() {
+    git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+PS1="${GREEN}\u${RESET}@${CYAN}\h${RESET}:${YELLOW}\w${PURPLE}\$(parse_git_branch)${RESET}\$ "
+```
+
+**History Configuration**
+```bash
+# History file location
+HISTFILE="$HOME/.bash_history"
+
+# History size
+HISTSIZE=10000
+HISTFILESIZE=20000
+
+# Don't put duplicate lines or lines starting with space in history
+HISTCONTROL=ignoreboth
+
+# Append to history file, don't overwrite
+shopt -s histappend
+
+# Save multi-line commands as one entry
+shopt -s cmdhist
+
+# Timestamp in history
+HISTTIMEFORMAT="%F %T  "
+```
+
+**Shell Options**
+```bash
+# Check window size after each command
+shopt -s checkwinsize
+
+# Correct minor spelling errors in cd
+shopt -s cdspell
+
+# Allow ** for recursive globbing
+shopt -s globstar 2>/dev/null
+
+# Case-insensitive globbing
+shopt -s nocaseglob
+
+# Autocorrect typos in path names when using `cd`
+shopt -s dirspell 2>/dev/null
+
+# Enable extended pattern matching
+shopt -s extglob
+```
+
+**Completion**
+```bash
+# Enable programmable completion
+if ! shopt -oq posix; then
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        source /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        source /etc/bash_completion
+    elif [ -f /opt/homebrew/etc/profile.d/bash_completion.sh ]; then
+        source /opt/homebrew/etc/profile.d/bash_completion.sh
+    fi
+fi
+
+# Git completion (if available)
+if [ -f /opt/homebrew/etc/bash_completion.d/git-completion.bash ]; then
+    source /opt/homebrew/etc/bash_completion.d/git-completion.bash
+fi
+```
+
+**Tool Initialization** (Interactive Only)
+```bash
+# fzf
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# zoxide (smart cd)
+if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init bash)"
+fi
+
+# starship prompt
+if command -v starship &>/dev/null; then
+    eval "$(starship init bash)"
+fi
+
+# direnv
+if command -v direnv &>/dev/null; then
+    eval "$(direnv hook bash)"
+fi
+
+# nvm (lazy loaded)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+```
+
+**Color Support**
+```bash
+# Enable color support
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
+
+# Set LS_COLORS for macOS
+export CLICOLOR=1
+export LSCOLORS="GxFxCxDxBxegedabagaced"
+```
+
+## What to Avoid
+
+### ❌ Do Not Include
+
+**Environment Variables (Usually)**
+```bash
+# These typically belong in .bash_profile
+export PATH="..."
+export EDITOR="vim"
+```
+
+Exception: Variables only used in interactive contexts are fine:
+```bash
+# OK in .bashrc
+export CLICOLOR=1       # Only affects interactive ls
+export HISTSIZE=10000   # Only affects interactive history
+```
+
+**Long-Running Commands**
+```bash
+# BAD - slows down every new shell
+eval "$(slow-tool init)"  # Consider lazy loading or .bash_profile
+```
+
+## Example Configuration
+
+```bash
+#!/bin/bash
+# ~/.bashrc - Interactive shell configuration
+
+# =============================================================================
+# Non-Interactive Guard
+# =============================================================================
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+    *) return ;;
+esac
+
+# =============================================================================
+# History Configuration
+# =============================================================================
+HISTSIZE=50000
+HISTFILESIZE=100000
+HISTCONTROL=ignoreboth:erasedups
+HISTTIMEFORMAT="%F %T  "
+
+shopt -s histappend
+shopt -s cmdhist
+
+# =============================================================================
+# Shell Options
+# =============================================================================
+shopt -s checkwinsize
+shopt -s cdspell
+shopt -s globstar 2>/dev/null
+shopt -s nocaseglob
+shopt -s dirspell 2>/dev/null
+shopt -s extglob
+
+# =============================================================================
+# Prompt
+# =============================================================================
+# Git branch in prompt
+parse_git_branch() {
+    git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+
+# Colorful prompt with git branch
+PS1='\[\033[0;32m\]\u\[\033[0m\]@\[\033[0;36m\]\h\[\033[0m\]:\[\033[0;33m\]\w\[\033[0;35m\]$(parse_git_branch)\[\033[0m\]\$ '
+
+# =============================================================================
+# Aliases
+# =============================================================================
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ~='cd ~'
+
+# Listing
+alias ls='ls --color=auto 2>/dev/null || ls -G'
+alias ll='ls -lah'
+alias la='ls -A'
+
+# Safety
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Git
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gd='git diff'
+alias gl='git log --oneline -n 10'
+
+# Grep
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Utilities
+alias df='df -h'
+alias du='du -h'
+alias free='free -h 2>/dev/null || vm_stat'
+
+# =============================================================================
+# Functions
+# =============================================================================
+# Create directory and cd into it
+mkcd() {
+    mkdir -p "$@" && cd "$_"
+}
+
+# =============================================================================
+# Completion
+# =============================================================================
+if ! shopt -oq posix; then
+    if [ -f /opt/homebrew/etc/profile.d/bash_completion.sh ]; then
+        source /opt/homebrew/etc/profile.d/bash_completion.sh
+    elif [ -f /usr/share/bash-completion/bash_completion ]; then
+        source /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        source /etc/bash_completion
+    fi
+fi
+
+# =============================================================================
+# Color Support
+# =============================================================================
+export CLICOLOR=1
+export LSCOLORS="GxFxCxDxBxegedabagaced"
+
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
+
+# =============================================================================
+# Tool Initialization
+# =============================================================================
+# fzf
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# =============================================================================
+# Local Configuration
+# =============================================================================
+# Load machine-specific config if present
+[ -f ~/.bashrc.local ] && source ~/.bashrc.local
+```
+
+## Applying Changes
+
+```bash
+# Reload .bashrc
+source ~/.bashrc
+
+# Or start a new shell
+bash
+```
+
+## Related Files
+
+- [.bash_profile](./bash_profile.mdx) - Login shell initialization
+- [.bash_login](./bash_login.mdx) - Alternative login setup
+- [.bash_logout](./bash_logout.mdx) - Login shell cleanup
+- [.profile](./profile.mdx) - POSIX-compatible fallback
+
+## References
+
+- [Bash Reference Manual: Startup Files](https://www.gnu.org/software/bash/manual/bash.html#Bash-Startup-Files)
+- [Bash Reference Manual: Shell Variables](https://www.gnu.org/software/bash/manual/bash.html#Bash-Variables)
+- [Bash Reference Manual: Aliases](https://www.gnu.org/software/bash/manual/bash.html#Aliases)

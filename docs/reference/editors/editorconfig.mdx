@@ -1,0 +1,468 @@
+# .editorconfig
+
+The `.editorconfig` file defines consistent coding styles across different editors and IDEs. It helps maintain consistent formatting (indentation, line endings, etc.) across a team, regardless of what editor each person uses.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | Project root (or any directory) |
+| **Scope** | Files in the same directory and subdirectories |
+| **Format** | INI-style configuration |
+| **Support** | Native or via plugin in most editors |
+
+## How It Works
+
+1. Editor opens a file
+2. Editor/plugin searches for `.editorconfig` files from the file's directory up to root
+3. Settings are applied with closer files taking precedence
+4. The `root = true` directive stops upward searching
+
+## Editor Support
+
+### Native Support
+
+- Visual Studio Code
+- GitHub (for viewing/editing)
+- GitLab
+- JetBrains IDEs (IntelliJ, PyCharm, WebStorm, etc.)
+- Visual Studio
+- Vim/Neovim (with plugins or builtin)
+
+### Plugin Required
+
+- Sublime Text (EditorConfig package)
+- Atom (editorconfig package)
+- Emacs (editorconfig-emacs)
+- Vim (editorconfig-vim)
+
+## File Syntax
+
+```ini
+# EditorConfig is awesome: https://editorconfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# All files
+[*]
+indent_style = space
+indent_size = 4
+
+# Match specific files
+[*.py]
+indent_size = 4
+
+# Match multiple extensions
+[*.{js,ts}]
+indent_size = 2
+
+# Match specific file
+[Makefile]
+indent_style = tab
+
+# Match path pattern
+[lib/**.js]
+indent_size = 2
+```
+
+## Core Properties
+
+### Indentation
+
+```ini
+# Use spaces for indentation
+indent_style = space
+indent_size = 4
+
+# Use tabs
+indent_style = tab
+tab_width = 4
+
+# Tab width ≠ indent size (if tabs display wider/narrower)
+indent_style = space
+indent_size = 2
+tab_width = 4
+```
+
+### Line Endings
+
+```ini
+# Unix-style (LF) - Recommended for most projects
+end_of_line = lf
+
+# Windows-style (CRLF)
+end_of_line = crlf
+
+# Old Mac style (CR) - Rarely used
+end_of_line = cr
+```
+
+### Final Newline
+
+```ini
+# Ensure file ends with a newline (POSIX standard)
+insert_final_newline = true
+
+# Don't add trailing newline
+insert_final_newline = false
+```
+
+### Trailing Whitespace
+
+```ini
+# Remove whitespace at end of lines
+trim_trailing_whitespace = true
+
+# Preserve trailing whitespace (rare)
+trim_trailing_whitespace = false
+```
+
+### Character Encoding
+
+```ini
+# UTF-8 (recommended)
+charset = utf-8
+
+# UTF-8 with BOM (for Windows compatibility in some cases)
+charset = utf-8-bom
+
+# Latin-1
+charset = latin1
+```
+
+### Maximum Line Length
+
+```ini
+# Soft limit - editor may show guideline
+max_line_length = 80
+
+# Or longer
+max_line_length = 120
+
+# Disable
+max_line_length = off
+```
+
+## Glob Patterns
+
+```ini
+# All files
+[*]
+
+# Specific extension
+[*.py]
+
+# Multiple extensions
+[*.{js,jsx,ts,tsx}]
+
+# Specific file
+[Makefile]
+[package.json]
+
+# Files in directory
+[src/**.js]         # All .js in src/
+[lib/*.c]           # Only .c directly in lib/
+
+# Match any single character
+[test?.py]          # test1.py, testA.py, etc.
+
+# Match character range
+[test[0-9].py]      # test0.py through test9.py
+```
+
+## Language-Specific Settings
+
+### Python
+
+```ini
+[*.py]
+indent_style = space
+indent_size = 4
+max_line_length = 88  # Black formatter default
+```
+
+### JavaScript/TypeScript
+
+```ini
+[*.{js,jsx,ts,tsx}]
+indent_style = space
+indent_size = 2
+```
+
+### HTML/CSS
+
+```ini
+[*.{html,htm,css,scss,less}]
+indent_style = space
+indent_size = 2
+```
+
+### Go
+
+```ini
+[*.go]
+indent_style = tab
+tab_width = 4
+```
+
+### Makefiles
+
+```ini
+[Makefile]
+indent_style = tab
+```
+
+### YAML
+
+```ini
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+```
+
+### Markdown
+
+```ini
+[*.md]
+trim_trailing_whitespace = false  # Trailing spaces = line break in MD
+max_line_length = off
+```
+
+### JSON
+
+```ini
+[*.json]
+indent_style = space
+indent_size = 2
+```
+
+### Shell Scripts
+
+```ini
+[*.sh]
+indent_style = space
+indent_size = 4
+end_of_line = lf  # Critical for shell scripts
+```
+
+## Example Configuration
+
+```ini
+# ==============================================================================
+# EditorConfig - https://editorconfig.org
+# ==============================================================================
+
+# Top-most EditorConfig file
+root = true
+
+# ------------------------------------------------------------------------------
+# Default Settings (All Files)
+# ------------------------------------------------------------------------------
+[*]
+# Use Unix-style line endings
+end_of_line = lf
+
+# UTF-8 encoding
+charset = utf-8
+
+# Remove trailing whitespace
+trim_trailing_whitespace = true
+
+# End files with a newline
+insert_final_newline = true
+
+# Default indentation: 2 spaces
+indent_style = space
+indent_size = 2
+
+# ------------------------------------------------------------------------------
+# Language-Specific Settings
+# ------------------------------------------------------------------------------
+
+# Python: 4 spaces (PEP 8)
+[*.py]
+indent_size = 4
+max_line_length = 88
+
+# Go: tabs
+[*.go]
+indent_style = tab
+tab_width = 4
+
+# Makefiles: tabs required
+[Makefile]
+indent_style = tab
+
+# Shell scripts
+[*.sh]
+indent_size = 4
+end_of_line = lf
+
+# Markdown: preserve trailing spaces (line breaks)
+[*.md]
+trim_trailing_whitespace = false
+
+# YAML: 2 spaces
+[*.{yml,yaml}]
+indent_size = 2
+
+# JavaScript/TypeScript: 2 spaces
+[*.{js,jsx,ts,tsx,vue}]
+indent_size = 2
+
+# CSS/SCSS/Less: 2 spaces
+[*.{css,scss,sass,less}]
+indent_size = 2
+
+# HTML: 2 spaces
+[*.{html,htm}]
+indent_size = 2
+
+# JSON: 2 spaces
+[*.json]
+indent_size = 2
+
+# XML: 2 spaces
+[*.xml]
+indent_size = 2
+
+# Ruby: 2 spaces
+[*.rb]
+indent_size = 2
+
+# Rust: 4 spaces
+[*.rs]
+indent_size = 4
+
+# C/C++: 4 spaces (or tabs depending on project)
+[*.{c,cpp,h,hpp}]
+indent_size = 4
+
+# Java: 4 spaces
+[*.java]
+indent_size = 4
+
+# ------------------------------------------------------------------------------
+# Configuration Files
+# ------------------------------------------------------------------------------
+[*.{json,yml,yaml,toml}]
+indent_size = 2
+
+[{package.json,tsconfig.json}]
+indent_size = 2
+
+# ------------------------------------------------------------------------------
+# Git
+# ------------------------------------------------------------------------------
+[.git*]
+indent_size = 4
+```
+
+## Hierarchy and Precedence
+
+EditorConfig searches for files from the file's location up to root:
+
+```
+project/
+├── .editorconfig       ← root = true (stops search)
+├── src/
+│   ├── .editorconfig   ← Can override parent settings
+│   └── app.js
+└── tests/
+    └── test.js
+```
+
+Rules:
+1. Search stops at file with `root = true`
+2. Closer file's settings override parent directories
+3. Later rules in the same file override earlier ones
+
+## Verifying Settings
+
+### EditorConfig CLI
+
+```bash
+# Install
+npm install -g editorconfig
+
+# Check settings for a file
+editorconfig path/to/file.js
+```
+
+### VS Code
+
+1. Install EditorConfig extension (if not using native support)
+2. Open Output panel → Select "EditorConfig"
+3. See applied settings when opening files
+
+## Common Patterns
+
+### Pattern: Monorepo with Different Standards
+
+```ini
+# /project/.editorconfig (root)
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+
+# /project/backend/.editorconfig
+[*.py]
+indent_size = 4
+
+# /project/frontend/.editorconfig  
+[*.{js,ts}]
+indent_size = 2
+```
+
+### Pattern: Exclude Vendor Files
+
+```ini
+# Vendor/dependency files might have their own style
+[vendor/**]
+indent_style = unset
+indent_size = unset
+```
+
+### Pattern: Force CRLF for Windows Batch Files
+
+```ini
+[*.{bat,cmd}]
+end_of_line = crlf
+```
+
+## Common Mistakes
+
+### ❌ Wrong: No `root = true`
+
+Without this, EditorConfig searches parent directories, potentially finding unexpected settings.
+
+### ❌ Wrong: Forgetting Makefile Tabs
+
+```ini
+# Makefiles REQUIRE tabs - this will break builds if wrong
+[Makefile]
+indent_style = tab
+```
+
+### ❌ Wrong: Trimming Markdown Trailing Whitespace
+
+```ini
+# Two trailing spaces = line break in Markdown
+[*.md]
+trim_trailing_whitespace = false  # Don't trim!
+```
+
+## Related Files
+
+- `.prettierrc` - Prettier configuration (JavaScript formatter)
+- `.eslintrc` - ESLint configuration (JavaScript linter)
+- `pyproject.toml` - Python project configuration (Black, isort)
+
+## References
+
+- [EditorConfig Official Site](https://editorconfig.org/)
+- [EditorConfig Properties](https://github.com/editorconfig/editorconfig/wiki/EditorConfig-Properties)
+- [EditorConfig Specification](https://spec.editorconfig.org/)

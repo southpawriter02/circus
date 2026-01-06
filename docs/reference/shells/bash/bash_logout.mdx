@@ -1,0 +1,261 @@
+# .bash_logout
+
+The `.bash_logout` file is sourced when a **login shell exits**. It's used for cleanup tasks such as clearing the terminal, logging session information, or releasing resources.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `~/.bash_logout` |
+| **When Sourced** | Login shell exit |
+| **Shell Types** | Login shells only |
+| **Load Order** | On exit (not startup) |
+
+## When It's Sourced
+
+`.bash_logout` is sourced in these scenarios:
+
+- ✅ Typing `exit` or `logout` in a login shell
+- ✅ Pressing `Ctrl+D` in a login shell
+- ✅ Closing a terminal window that was a login shell
+- ✅ Logging out of an SSH session
+- ✅ Shell terminates normally
+
+`.bash_logout` is **NOT** sourced when:
+
+- ❌ Exiting a non-login shell
+- ❌ Shell is killed with `SIGKILL` (kill -9)
+- ❌ Using `exec` to replace the shell
+- ❌ Terminal crashes
+
+## Load Order Position
+
+**On login shell exit:**
+```
+[Shell session ends]
+    ↓
+~/.bash_logout           ← YOU ARE HERE
+```
+
+**Note**: Unlike startup files, there's only one logout file.
+
+## What to Put Here
+
+### ✅ Recommended Content
+
+**Clear the Terminal**
+```bash
+# Clear screen on logout
+clear
+```
+
+**More Thorough Screen Clear**
+```bash
+# Clear screen and scrollback buffer
+printf '\033[2J\033[3J\033[H'
+
+# Or reset terminal completely
+reset 2>/dev/null
+```
+
+**Session Logging**
+```bash
+# Log session end
+echo "$(date '+%Y-%m-%d %H:%M:%S') logout $USER from $(tty)" >> ~/.session_log
+```
+
+**Clean Up Temporary Files**
+```bash
+# Remove session-specific temp files
+if [ -d "$TMPDIR/session-$$" ]; then
+    rm -rf "$TMPDIR/session-$$"
+fi
+```
+
+**Stop SSH Agent** (if started for this session)
+```bash
+# Kill ssh-agent if we started it
+if [ -n "$SSH_AGENT_PID" ]; then
+    eval "$(ssh-agent -k)" 2>/dev/null
+fi
+```
+
+**Sync History**
+```bash
+# Force history to be written
+history -w
+```
+
+## What to Avoid
+
+### ❌ Do Not Include
+
+**Long-Running Operations**
+```bash
+# BAD - delays logout
+rsync ~/important /backup/          # May take too long
+```
+
+**Commands That Might Fail**
+```bash
+# CAREFUL - failures are annoying at logout
+critical-command || echo "Failed!"  # Don't fail on logout
+```
+
+**Interactive Prompts**
+```bash
+# BAD - blocks logout
+read -p "Are you sure? " answer      # User wants to leave!
+```
+
+## Example Configuration
+
+```bash
+#!/bin/bash
+# ~/.bash_logout - Login shell cleanup
+
+# =============================================================================
+# Session Logging
+# =============================================================================
+{
+    echo "=== Logout ==="
+    echo "User: $USER"
+    echo "Time: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "TTY:  $(tty)"
+    echo ""
+} >> "${HOME}/.session_log" 2>/dev/null
+
+# =============================================================================
+# History
+# =============================================================================
+# Force history to disk
+history -a
+
+# =============================================================================
+# SSH Agent Cleanup
+# =============================================================================
+# Only kill agent if we started it (check for our marker)
+if [ -n "$SSH_AGENT_PID" ] && [ -f ~/.ssh-agent-started-here ]; then
+    eval "$(ssh-agent -k)" 2>/dev/null
+    rm -f ~/.ssh-agent-started-here
+fi
+
+# =============================================================================
+# Temporary Files
+# =============================================================================
+# Clean session-specific temp directory
+[ -d "/tmp/$USER-session" ] && rm -rf "/tmp/$USER-session"
+
+# =============================================================================
+# Terminal Cleanup
+# =============================================================================
+# Clear screen for privacy
+clear
+```
+
+## Minimal Version
+
+For most users, a simple cleanup is sufficient:
+
+```bash
+#!/bin/bash
+# ~/.bash_logout
+
+# Clear the screen for privacy
+clear
+```
+
+## Testing .bash_logout
+
+Since this file only runs on exit, you need to start and exit a login shell:
+
+```bash
+# Start a login shell
+bash --login
+
+# Do something
+echo "In login shell"
+
+# Exit (this triggers .bash_logout)
+exit
+```
+
+Or as a one-liner:
+
+```bash
+bash --login -c 'echo test; exit'
+```
+
+## Common Patterns
+
+### Pattern: Conditional Clear
+
+```bash
+# Only clear if we had a long session
+if [ "${SECONDS:-0}" -gt 300 ]; then
+    clear
+fi
+```
+
+### Pattern: SSH vs Local
+
+```bash
+if [ -n "$SSH_CLIENT" ]; then
+    # Remote session - definitely clear
+    clear
+    echo "SSH session ended"
+else
+    # Local - optional
+    echo "Goodbye!"
+fi
+```
+
+### Pattern: Safe Cleanup
+
+```bash
+# All cleanup in a block that can't fail
+{
+    history -a
+    clear
+} 2>/dev/null || true
+```
+
+## Troubleshooting
+
+### .bash_logout Not Running
+
+1. **Check if it's a login shell**:
+   ```bash
+   shopt -q login_shell && echo "Login" || echo "Not login"
+   ```
+
+2. **Check file permissions**:
+   ```bash
+   ls -la ~/.bash_logout
+   # Should be readable by user
+   ```
+
+3. **Check for syntax errors**:
+   ```bash
+   bash -n ~/.bash_logout
+   ```
+
+### Terminal Closes Too Fast
+
+Add a delay to see output:
+
+```bash
+echo "Goodbye!"
+sleep 2
+```
+
+## Related Files
+
+- [.bash_profile](./bash_profile.mdx) - Login shell initialization
+- [.bashrc](./bashrc.mdx) - Interactive shell configuration
+- [.bash_login](./bash_login.mdx) - Alternative login setup
+- [.profile](./profile.mdx) - POSIX-compatible fallback
+
+## References
+
+- [Bash Reference Manual: Startup Files](https://www.gnu.org/software/bash/manual/bash.html#Bash-Startup-Files)

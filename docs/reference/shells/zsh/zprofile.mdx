@@ -1,0 +1,270 @@
+# .zprofile
+
+The `.zprofile` file is sourced for **login shells only**, after `.zshenv` but before `.zshrc`. It's the Zsh equivalent of Bash's `.bash_profile` and is ideal for session initialization that should only happen once.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `$ZDOTDIR/.zprofile` or `~/.zprofile` |
+| **When Sourced** | Login shells only |
+| **Shell Types** | Login (interactive or non-interactive) |
+| **Load Order** | After `.zshenv`, before `.zshrc` |
+
+## When It's Sourced
+
+`.zprofile` is sourced in these scenarios:
+
+- ✅ Opening a new terminal window (macOS Terminal, iTerm2)
+- ✅ Logging in via SSH
+- ✅ Starting a shell with `zsh --login` or `zsh -l`
+- ✅ Using `su -` to switch users
+- ✅ Console login (tty)
+
+`.zprofile` is **NOT** sourced when:
+
+- ❌ Opening a new tab in an existing terminal (usually)
+- ❌ Running a script (`./script.zsh`)
+- ❌ Starting a subshell (`zsh` without `-l`)
+- ❌ Running commands via `zsh -c "command"`
+
+## Load Order Position
+
+```
+1. ~/.zshenv            
+2. ~/.zprofile          ← YOU ARE HERE
+3. [interactive] ~/.zshrc
+4. ~/.zlogin
+```
+
+**Note**: `.zprofile` runs **before** `.zshrc`, while `.zlogin` runs **after**.
+
+## .zprofile vs .zlogin
+
+Both files are for login shells, but they differ in timing:
+
+| File | When | Use Case |
+|------|------|----------|
+| `.zprofile` | Before `.zshrc` | Environment setup, PATH additions |
+| `.zlogin` | After `.zshrc` | Welcome messages, session info |
+
+**Historical Context**: `.zprofile` comes from Ksh/Bash tradition (`.profile`), while `.zlogin` comes from Csh tradition (`.login`). The Zsh documentation suggests using one or the other—not both—though using both works fine.
+
+## What to Put Here
+
+### ✅ Recommended Content
+
+**Time-Consuming Environment Setup**
+```zsh
+# Heavy initialization that should only run once per session
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+**Session-Specific Environment Variables**
+```zsh
+# Variables that don't need updating frequently
+export GPG_TTY=$(tty)
+export SSH_AUTH_SOCK="$HOME/.ssh/agent.sock"
+```
+
+**One-Time PATH Modifications**
+```zsh
+# Add to PATH if not done in .zshenv
+path=(
+    /opt/homebrew/bin
+    $path
+)
+```
+
+**Starting Background Services**
+```zsh
+# Start ssh-agent if not running
+if [[ ! -S "$SSH_AUTH_SOCK" ]]; then
+    eval "$(ssh-agent -s)" > /dev/null
+fi
+```
+
+**Compilation Flags**
+```zsh
+# Compiler configuration (time-consuming to compute)
+export LDFLAGS="-L/opt/homebrew/opt/openssl/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/openssl/include"
+```
+
+## What to Avoid
+
+### ❌ Do Not Include
+
+**Interactive-Only Features**
+```zsh
+# BAD - .zprofile may run for non-interactive login shells
+alias ll='ls -la'           # Put in .zshrc
+bindkey '^R' history-search # Put in .zshrc
+compinit                    # Put in .zshrc
+```
+
+**Commands That Produce Output (Usually)**
+```zsh
+# CAREFUL - may interfere with scripts expecting clean output
+echo "Welcome back!"   # Better in .zlogin (runs after .zshrc)
+fortune               # Better in .zlogin
+```
+
+**Things Already in .zshenv**
+```zsh
+# REDUNDANT - .zshenv is already sourced
+export EDITOR="vim"   # Already set in .zshenv
+```
+
+## Example Configuration
+
+```zsh
+#!/bin/zsh
+# ~/.zprofile - Login shell initialization (before .zshrc)
+
+# =============================================================================
+# Homebrew Setup
+# =============================================================================
+# Initialize Homebrew environment (sets PATH, MANPATH, etc.)
+if [[ -x "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# =============================================================================
+# SSH Agent
+# =============================================================================
+# Start ssh-agent if not already running
+if [[ -z "$SSH_AUTH_SOCK" ]] || [[ ! -S "$SSH_AUTH_SOCK" ]]; then
+    eval "$(ssh-agent -s)" > /dev/null 2>&1
+    # Optionally add default key
+    # ssh-add -q ~/.ssh/id_ed25519 2>/dev/null
+fi
+
+# =============================================================================
+# GPG Agent
+# =============================================================================
+export GPG_TTY=$(tty)
+
+# =============================================================================
+# Compilation Flags
+# =============================================================================
+# For compiling software that needs Homebrew libraries
+if [[ -d "$HOMEBREW_PREFIX/opt/openssl" ]]; then
+    export LDFLAGS="-L$HOMEBREW_PREFIX/opt/openssl/lib $LDFLAGS"
+    export CPPFLAGS="-I$HOMEBREW_PREFIX/opt/openssl/include $CPPFLAGS"
+    export PKG_CONFIG_PATH="$HOMEBREW_PREFIX/opt/openssl/lib/pkgconfig:$PKG_CONFIG_PATH"
+fi
+
+# =============================================================================
+# Session-Specific Setup
+# =============================================================================
+# Set TERM for better color support
+if [[ "$TERM" == "xterm" ]]; then
+    export TERM="xterm-256color"
+fi
+
+# =============================================================================
+# Language Version Managers (if needed early)
+# =============================================================================
+# These can also go in .zshrc if you prefer
+
+# pyenv
+if command -v pyenv &>/dev/null; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    eval "$(pyenv init --path)"
+fi
+
+# rbenv
+if command -v rbenv &>/dev/null; then
+    eval "$(rbenv init - --no-rehash)"
+fi
+```
+
+## Common Patterns
+
+### Pattern: Detect Login Shell Type
+
+```zsh
+# Different setup for SSH vs local login
+if [[ -n "$SSH_CLIENT" ]] || [[ -n "$SSH_TTY" ]]; then
+    # SSH session
+    export DISPLAY=":0"
+else
+    # Local session
+    :
+fi
+```
+
+### Pattern: One-Time Initialization Flag
+
+```zsh
+# Only run certain commands once per session
+if [[ -z "$__ZPROFILE_SOURCED" ]]; then
+    export __ZPROFILE_SOURCED=1
+    
+    # Put one-time initialization here
+    eval "$(slow-tool init)"
+fi
+```
+
+### Pattern: macOS Specific Setup
+
+```zsh
+# macOS-specific initialization
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Add macOS paths
+    path=(
+        /Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin
+        $path
+    )
+    
+    # Set clipboard commands
+    export CLIPBOARD_COPY="pbcopy"
+    export CLIPBOARD_PASTE="pbpaste"
+fi
+```
+
+## Applying Changes
+
+Changes to `.zprofile` take effect on **new login shells**:
+
+```zsh
+# Start a new login shell
+exec zsh --login
+
+# Or source manually (though this may cause duplicate initialization)
+source ~/.zprofile
+```
+
+## Troubleshooting
+
+### Problem: .zprofile Not Being Read
+
+**macOS Terminal**: Each new window is a login shell (reads `.zprofile`), but new tabs may not be.
+
+Check in Terminal preferences: **Preferences → Profiles → Shell → Run command** should be unchecked or set to `/bin/zsh -l`.
+
+### Problem: Duplicate Initialization
+
+If you source `.zprofile` multiple times (via nested login shells), use a guard:
+
+```zsh
+# At top of .zprofile
+[[ -n "$__ZPROFILE_SOURCED" ]] && return
+export __ZPROFILE_SOURCED=1
+
+# Rest of configuration...
+```
+
+## Related Files
+
+- [.zshenv](./zshenv.mdx) - Environment for all shells (before `.zprofile`)
+- [.zshrc](./zshrc.mdx) - Interactive shell configuration
+- [.zlogin](./zlogin.mdx) - Post-setup login commands (after `.zshrc`)
+- [.zlogout](./zlogout.mdx) - Login shell cleanup
+
+## References
+
+- [Zsh Manual: Startup Files](https://zsh.sourceforge.io/Doc/Release/Files.html#Startup_002fShutdown-Files)
+- [Unix StackExchange: Zsh Startup Files](https://unix.stackexchange.com/questions/71253/what-should-shouldnt-go-in-zshenv-zshrc-zlogin-zprofile-zlogout)
+- [Apple StackExchange: Zsh Configuration](https://apple.stackexchange.com/questions/388622/zsh-zprofile-zshrc-zlogin-what-goes-where)

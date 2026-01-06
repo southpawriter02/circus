@@ -1,0 +1,283 @@
+# .profile
+
+The `.profile` file is the **POSIX-standard** login shell initialization file. It serves as a fallback for Bash when neither `.bash_profile` nor `.bash_login` exist, and is also used by other POSIX-compatible shells like `sh` and `dash`.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `~/.profile` |
+| **When Sourced** | Login shells (Bash fallback, sh/dash always) |
+| **Shell Types** | Login only |
+| **Load Order** | Third choice for Bash, first for sh/dash |
+
+## When It's Sourced
+
+### By Bash
+
+`.profile` is sourced by Bash **only** when both of these are true:
+
+- ✅ It's a login shell
+- ✅ Neither `~/.bash_profile` nor `~/.bash_login` exist
+
+### By sh/dash
+
+`.profile` is always sourced by POSIX shells (sh, dash) for login shells.
+
+### Not Sourced
+
+- ❌ If `.bash_profile` or `.bash_login` exists (Bash ignores `.profile`)
+- ❌ Non-login shells
+- ❌ By Zsh (which uses `.zprofile` instead)
+
+## Load Order Position
+
+### Bash Login Shells
+
+Bash sources **only the first file found**:
+
+```
+1. ~/.bash_profile        ← First choice
+2. ~/.bash_login          ← Second choice
+3. ~/.profile             ← YOU ARE HERE (third choice)
+```
+
+### sh/dash Login Shells
+
+```
+1. /etc/profile           ← System-wide
+2. ~/.profile             ← User configuration
+```
+
+## POSIX Compatibility
+
+`.profile` should contain only POSIX-compatible syntax for maximum portability:
+
+### ✅ POSIX Compatible
+
+```sh
+# Variable assignment (no spaces around =)
+EDITOR=vim
+export EDITOR
+
+# Conditionals with [ ]
+if [ -d "$HOME/bin" ]; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+# Command substitution with $()
+TODAY=$(date +%Y-%m-%d)
+```
+
+### ❌ Not POSIX Compatible (Bash-Only)
+
+```bash
+# Arrays (Bash-only)
+arr=(one two three)
+
+# [[ ]] conditionals (Bash-only)
+[[ -f file ]]
+
+# {a..z} brace expansion (Bash-only)
+echo {1..10}
+
+# function keyword (use POSIX syntax instead)
+function foo() { ... }  # Use: foo() { ... }
+```
+
+## What to Put Here
+
+### ✅ Recommended Content
+
+**Environment Variables**
+```sh
+# Default editor
+EDITOR=vim
+export EDITOR
+
+# Default pager
+PAGER=less
+export PAGER
+
+# Locale
+LANG="en_US.UTF-8"
+export LANG
+```
+
+**PATH Configuration**
+```sh
+# Add user bin directories
+if [ -d "$HOME/.local/bin" ]; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
+if [ -d "$HOME/bin" ]; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+export PATH
+```
+
+**Source Bash-Specific Config** (if running Bash)
+```sh
+# If running Bash, source .bashrc
+if [ -n "$BASH_VERSION" ]; then
+    if [ -f "$HOME/.bashrc" ]; then
+        . "$HOME/.bashrc"
+    fi
+fi
+```
+
+## What to Avoid
+
+### ❌ Do Not Include
+
+**Bash-Specific Syntax**
+```sh
+# BAD - arrays don't exist in sh
+PATH_DIRS=(bin .local/bin)
+
+# BAD - [[ ]] is not POSIX
+[[ -d "$HOME/bin" ]] && PATH="$HOME/bin:$PATH"
+
+# BAD - function keyword
+function myfunc() { ... }
+```
+
+**Interactive-Only Features**
+```sh
+# BAD - aliases are for .bashrc
+alias ll='ls -la'
+```
+
+## Example Configuration
+
+```sh
+#!/bin/sh
+# ~/.profile - POSIX-compatible login shell initialization
+
+# =============================================================================
+# Environment Variables
+# =============================================================================
+EDITOR=vim
+VISUAL=$EDITOR
+PAGER=less
+LANG="en_US.UTF-8"
+
+export EDITOR VISUAL PAGER LANG
+
+# =============================================================================
+# PATH Configuration
+# =============================================================================
+# Add local bin directories to PATH
+if [ -d "$HOME/.local/bin" ]; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
+if [ -d "$HOME/bin" ]; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+export PATH
+
+# =============================================================================
+# XDG Base Directory (if not set)
+# =============================================================================
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+
+export XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME
+
+# =============================================================================
+# Bash-Specific Configuration
+# =============================================================================
+# If running Bash interactively, source .bashrc
+if [ -n "$BASH_VERSION" ]; then
+    case $- in
+        *i*)
+            if [ -f "$HOME/.bashrc" ]; then
+                . "$HOME/.bashrc"
+            fi
+            ;;
+    esac
+fi
+```
+
+## Common Strategies
+
+### Strategy 1: Bash-First (Common)
+
+Use `.bash_profile` for Bash and don't rely on `.profile`:
+
+```
+~/.bash_profile    → Main Bash config
+~/.bashrc          → Interactive features
+~/.profile         → (Not used by Bash)
+```
+
+### Strategy 2: POSIX-First (Portable)
+
+Use `.profile` for shared config, with shell-specific extensions:
+
+```
+~/.profile         → Shared environment (POSIX)
+~/.bash_profile    → source ~/.profile, then Bash-specific
+~/.bashrc          → Interactive features
+```
+
+Example `.bash_profile`:
+```bash
+# ~/.bash_profile
+# Source POSIX config
+[ -f ~/.profile ] && . ~/.profile
+
+# Bash-specific additions
+export BASH_ENV="$HOME/.bashrc"
+
+# Source interactive config
+[ -f ~/.bashrc ] && . ~/.bashrc
+```
+
+### Strategy 3: Single File (Simple)
+
+For simple setups, just use `.profile` and don't create `.bash_profile`:
+
+```
+~/.profile         → All login config (POSIX syntax)
+~/.bashrc          → Interactive features
+```
+
+## macOS Considerations
+
+On macOS:
+
+- The default shell is now Zsh (since Catalina)
+- Terminal.app opens login shells
+- If using Bash, `.bash_profile` takes precedence
+
+For scripts that might run under `/bin/sh` (which is dash-like on newer macOS), keep `.profile` POSIX-compatible.
+
+## Applying Changes
+
+```sh
+# Start a new login shell
+exec sh -l       # For sh
+exec bash -l     # For Bash (only if no .bash_profile)
+
+# Or source manually
+. ~/.profile
+```
+
+## Related Files
+
+- [.bash_profile](./bash_profile.mdx) - Bash login shell (takes precedence)
+- [.bash_login](./bash_login.mdx) - Alternative to .bash_profile
+- [.bashrc](./bashrc.mdx) - Interactive shell configuration
+- [.bash_logout](./bash_logout.mdx) - Login shell cleanup
+
+## References
+
+- [POSIX Shell Specification](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html)
+- [Bash Reference Manual: Startup Files](https://www.gnu.org/software/bash/manual/bash.html#Bash-Startup-Files)
+- [Dash Manual](https://man7.org/linux/man-pages/man1/dash.1.html)

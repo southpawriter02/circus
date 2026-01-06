@@ -1,0 +1,322 @@
+# .bash_profile
+
+The `.bash_profile` file is sourced for **login shells only**. It's the primary configuration file for Bash login sessions and is where you should set environment variables and source your `.bashrc`.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `~/.bash_profile` |
+| **When Sourced** | Login shells only |
+| **Shell Types** | Login (interactive or non-interactive) |
+| **Load Order** | First choice for login shells |
+
+## When It's Sourced
+
+`.bash_profile` is sourced in these scenarios:
+
+- ✅ Opening a new terminal window (macOS)
+- ✅ Logging in via SSH
+- ✅ Starting a shell with `bash --login` or `bash -l`
+- ✅ Using `su -` to switch users
+- ✅ Console login (tty)
+
+`.bash_profile` is **NOT** sourced when:
+
+- ❌ Opening a new tab in some terminals
+- ❌ Running a script (`./script.sh`)
+- ❌ Starting an interactive subshell (`bash` without `-l`)
+- ❌ Running commands via `bash -c "command"`
+
+## Load Order Position
+
+Bash sources **only the first file found** from this list:
+
+```
+1. /etc/profile           ← System-wide (always first)
+2. ~/.bash_profile        ← YOU ARE HERE (first choice)
+3. ~/.bash_login          ← Only if .bash_profile missing
+4. ~/.profile             ← Only if both above missing
+```
+
+**Important**: Unlike Zsh, login shells do NOT automatically source `.bashrc`.
+
+## The Critical Pattern
+
+Because login shells skip `.bashrc`, you should source it manually:
+
+```bash
+# ~/.bash_profile
+# Load interactive config if this ends up being interactive
+if [ -f ~/.bashrc ]; then
+    source ~/.bashrc
+fi
+```
+
+This ensures your aliases, functions, and prompt work in all situations.
+
+## What to Put Here
+
+### ✅ Recommended Content
+
+**Source .bashrc First**
+```bash
+# Essential: load interactive config
+if [ -f ~/.bashrc ]; then
+    source ~/.bashrc
+fi
+```
+
+**Environment Variables**
+```bash
+export EDITOR="vim"
+export VISUAL="$EDITOR"
+export PAGER="less"
+export LANG="en_US.UTF-8"
+```
+
+**PATH Configuration**
+```bash
+# Add user bin directories
+export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+
+# Deduplicate PATH
+PATH=$(echo "$PATH" | awk -v RS=: -v ORS=: '!seen[$0]++' | sed 's/:$//')
+```
+
+**Tool Initialization**
+```bash
+# Homebrew (macOS)
+if [ -x "/opt/homebrew/bin/brew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# pyenv
+if command -v pyenv &>/dev/null; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init --path)"
+fi
+
+# rbenv
+if [ -d "$HOME/.rbenv" ]; then
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init -)"
+fi
+```
+
+**SSH Agent**
+```bash
+# Start ssh-agent if not running
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval "$(ssh-agent -s)" > /dev/null
+fi
+```
+
+**XDG Base Directories**
+```bash
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_STATE_HOME="$HOME/.local/state"
+```
+
+## What to Avoid
+
+### ❌ Do Not Include
+
+**Aliases and Functions**
+```bash
+# BAD - these should be in .bashrc
+alias ll='ls -la'     # Put in .bashrc
+myfunc() { ... }      # Put in .bashrc
+```
+
+**Prompt Configuration**
+```bash
+# BAD - PS1 should be in .bashrc
+PS1='\u@\h:\w\$ '     # Put in .bashrc
+```
+
+**Completion Setup**
+```bash
+# BAD - completion is for interactive shells
+source /etc/bash_completion  # Put in .bashrc
+```
+
+**Commands That Produce Output**
+```bash
+# CAREFUL - may break scp/rsync/git over SSH
+echo "Welcome!"        # Put in .bashrc with guard, or skip
+```
+
+## Example Configuration
+
+```bash
+#!/bin/bash
+# ~/.bash_profile - Login shell initialization
+
+# =============================================================================
+# XDG Base Directory Specification
+# =============================================================================
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+
+# =============================================================================
+# Default Programs
+# =============================================================================
+export EDITOR="vim"
+export VISUAL="$EDITOR"
+export PAGER="less"
+export BROWSER="open"
+
+# =============================================================================
+# Language & Locale
+# =============================================================================
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
+# =============================================================================
+# PATH Configuration
+# =============================================================================
+# Add directories to PATH (prepend for priority)
+PATH="$HOME/.local/bin:$PATH"
+PATH="$HOME/bin:$PATH"
+
+# =============================================================================
+# Homebrew (macOS)
+# =============================================================================
+if [ -x "/opt/homebrew/bin/brew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x "/usr/local/bin/brew" ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# =============================================================================
+# Programming Languages
+# =============================================================================
+# Go
+export GOPATH="$HOME/go"
+export PATH="$GOPATH/bin:$PATH"
+
+# Rust
+if [ -f "$HOME/.cargo/env" ]; then
+    source "$HOME/.cargo/env"
+fi
+
+# Node Version Manager
+export NVM_DIR="$HOME/.nvm"
+
+# =============================================================================
+# Tool Configuration
+# =============================================================================
+# less
+export LESS="-R -F -X -i -M"
+export LESSHISTFILE="$XDG_STATE_HOME/less/history"
+
+# GPG
+export GPG_TTY=$(tty)
+
+# =============================================================================
+# SSH Agent
+# =============================================================================
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval "$(ssh-agent -s)" > /dev/null
+fi
+
+# =============================================================================
+# Source .bashrc for Interactive Features
+# =============================================================================
+# This is ESSENTIAL - login shells don't source .bashrc automatically
+if [ -f "$HOME/.bashrc" ]; then
+    source "$HOME/.bashrc"
+fi
+```
+
+## Common Patterns
+
+### Pattern: Guard for Interactive
+
+```bash
+# Only show welcome message if interactive
+case $- in
+    *i*) echo "Welcome to $(hostname)" ;;
+esac
+```
+
+### Pattern: OS-Specific Configuration
+
+```bash
+case "$(uname -s)" in
+    Darwin)
+        # macOS specific
+        export BROWSER="open"
+        export CLIPBOARD_COPY="pbcopy"
+        ;;
+    Linux)
+        # Linux specific
+        export BROWSER="xdg-open"
+        export CLIPBOARD_COPY="xclip -selection clipboard"
+        ;;
+esac
+```
+
+### Pattern: Load Additional Files
+
+```bash
+# Load all files from a directory
+if [ -d "$HOME/.bash_profile.d" ]; then
+    for file in "$HOME/.bash_profile.d/"*.sh; do
+        [ -f "$file" ] && source "$file"
+    done
+fi
+```
+
+## Applying Changes
+
+Changes require a **new login shell**:
+
+```bash
+# Start a new login shell
+exec bash --login
+
+# Or source manually (may cause duplicate initialization)
+source ~/.bash_profile
+```
+
+## Troubleshooting
+
+### Problem: Changes Not Taking Effect
+
+1. Check if you're in a login shell:
+   ```bash
+   shopt -q login_shell && echo "Login" || echo "Non-login"
+   ```
+
+2. Verify `.bash_profile` exists and has no syntax errors:
+   ```bash
+   bash -n ~/.bash_profile && echo "Syntax OK"
+   ```
+
+### Problem: .bashrc Settings Missing
+
+You likely forgot to source `.bashrc`:
+
+```bash
+# Add to end of .bash_profile
+[ -f ~/.bashrc ] && source ~/.bashrc
+```
+
+## Related Files
+
+- [.bashrc](./bashrc.mdx) - Interactive shell configuration
+- [.bash_login](./bash_login.mdx) - Alternative login setup
+- [.bash_logout](./bash_logout.mdx) - Login shell cleanup
+- [.profile](./profile.mdx) - POSIX-compatible fallback
+
+## References
+
+- [Bash Reference Manual: Startup Files](https://www.gnu.org/software/bash/manual/bash.html#Bash-Startup-Files)
+- [Bash Guide: DotFiles](https://mywiki.wooledge.org/DotFiles)

@@ -1,0 +1,422 @@
+# .gitignore_global
+
+The `.gitignore_global` file specifies patterns for files that Git should ignore across **all repositories** on your system. This is ideal for OS-generated files, editor artifacts, and other personal cruft that shouldn't be tracked.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `~/.gitignore_global` (conventional) |
+| **Scope** | All Git repositories for the current user |
+| **Format** | Same as regular `.gitignore` |
+| **Setup Required** | Must be configured in `.gitconfig` |
+
+## Configuration
+
+The global gitignore file must be configured in your `.gitconfig`:
+
+```ini
+[core]
+    excludesfile = ~/.gitignore_global
+```
+
+Or via command line:
+
+```bash
+git config --global core.excludesfile ~/.gitignore_global
+```
+
+## When to Use Global vs Local Gitignore
+
+| Use Case | File |
+|----------|------|
+| OS-specific files (.DS_Store, Thumbs.db) | **Global** `.gitignore_global` |
+| Editor files (.idea/, .vscode/) | **Global** `.gitignore_global` |
+| Personal temp files (*~, *.swp) | **Global** `.gitignore_global` |
+| Project build artifacts (dist/, node_modules/) | **Local** `.gitignore` |
+| Project-specific secrets (.env) | **Local** `.gitignore` |
+
+**Rule of thumb**: If it's specific to your machine/editor, use global. If it's project-related, use local.
+
+## Pattern Syntax
+
+```gitignore
+# Comments start with #
+
+# Simple file match
+.DS_Store
+
+# Wildcard patterns
+*.log           # All .log files
+*.swp           # All .swp files
+*~              # All files ending with ~
+
+# Directory match (trailing slash)
+node_modules/   # Match directory at any level
+/build/         # Match only at root level
+
+# Double asterisk (recursive)
+**/*.bak        # Any .bak file at any depth
+logs/**/debug.log
+
+# Negation (re-include)
+!important.log  # Don't ignore this specific file
+
+# Character ranges
+*.[oa]          # Match .o and .a files
+```
+
+## Common Categories
+
+### macOS Files
+
+```gitignore
+# macOS system files
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+._*
+
+# Icon files
+Icon
+Icon?
+
+# Spotlight
+.Spotlight-V100
+.Trashes
+
+# Thumbnails
+.fseventsd
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+.com.apple.timemachine.supported
+```
+
+### Windows Files
+
+```gitignore
+# Windows system files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Windows shortcuts
+*.lnk
+
+# Folder config
+Desktop.ini
+
+# Recycle Bin
+$RECYCLE.BIN/
+```
+
+### Linux Files
+
+```gitignore
+# Linux trash
+.Trash-*
+
+# KDE
+.directory
+
+# Linux temp
+*~
+```
+
+### Editor and IDE Files
+
+```gitignore
+# Vim
+*.swp
+*.swo
+*.swn
+*~
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+.#*
+*.elc
+auto-save-list
+
+# VS Code (prefer global over per-project)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# TextMate
+*.tmproj
+*.tmproject
+tmtags
+```
+
+### Backup and Temp Files
+
+```gitignore
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Temp files
+*.tmp
+*.temp
+*.cache
+*~
+
+# Patch files
+*.patch
+*.diff
+*.rej
+```
+
+### Language-Specific (Personal Preference)
+
+```gitignore
+# Python (if you don't work with others who use different tools)
+__pycache__/
+*.py[cod]
+.Python
+*.egg-info/
+.eggs/
+*.egg
+.mypy_cache/
+.pytest_cache/
+
+# Node.js (usually in local .gitignore)
+# node_modules/
+
+# Ruby
+*.gem
+.bundle/
+vendor/bundle
+```
+
+## Example Configuration
+
+```gitignore
+# ==============================================================================
+# Global .gitignore
+# ==============================================================================
+# This file contains patterns for files that should be ignored across ALL
+# repositories on this machine. Project-specific ignores should go in the
+# project's own .gitignore file.
+
+# ------------------------------------------------------------------------------
+# macOS
+# ------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.AppleDB
+.AppleDesktop
+.com.apple.timemachine.supported
+
+# ------------------------------------------------------------------------------
+# Windows
+# ------------------------------------------------------------------------------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ------------------------------------------------------------------------------
+# Linux
+# ------------------------------------------------------------------------------
+.Trash-*
+.directory
+*~
+
+# ------------------------------------------------------------------------------
+# Editors: Vim
+# ------------------------------------------------------------------------------
+*.swp
+*.swo
+*.swn
+.netrwhist
+Session.vim
+.vim/
+
+# ------------------------------------------------------------------------------
+# Editors: VS Code
+# ------------------------------------------------------------------------------
+.vscode/
+*.code-workspace
+
+# ------------------------------------------------------------------------------
+# Editors: JetBrains
+# ------------------------------------------------------------------------------
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# ------------------------------------------------------------------------------
+# Editors: Other
+# ------------------------------------------------------------------------------
+*.sublime-workspace
+*.sublime-project
+*~
+\#*\#
+.#*
+
+# ------------------------------------------------------------------------------
+# Temporary & Backup Files
+# ------------------------------------------------------------------------------
+*.bak
+*.backup
+*.tmp
+*.temp
+*.orig
+*.rej
+*.log
+*.cache
+
+# ------------------------------------------------------------------------------
+# Build Artifacts (common)
+# ------------------------------------------------------------------------------
+*.o
+*.so
+*.a
+*.dylib
+*.exe
+*.dll
+```
+
+## Checking Ignore Status
+
+### Verify a File Would Be Ignored
+
+```bash
+git check-ignore -v filename
+# Shows which pattern and file causes the ignore
+
+git check-ignore -v .DS_Store
+# .gitignore_global:5:.DS_Store    .DS_Store
+```
+
+### List All Ignored Files
+
+```bash
+git status --ignored
+```
+
+### Debug Ignore Issues
+
+```bash
+# See if a file is tracked (ignores don't affect tracked files)
+git ls-files | grep filename
+
+# Force remove from tracking (keep file locally)
+git rm --cached filename
+```
+
+## Important Notes
+
+### Ignored Files That Are Already Tracked
+
+Adding a pattern to `.gitignore_global` does NOT affect files already tracked by Git. To stop tracking a file:
+
+```bash
+# Remove from Git but keep the file locally
+git rm --cached .DS_Store
+
+# Commit the change
+git commit -m "Remove .DS_Store from tracking"
+```
+
+### Pattern Priority
+
+1. Patterns in `.git/info/exclude` (repo-specific, not shared)
+2. Patterns in `.gitignore` files in the directory hierarchy
+3. Patterns in `core.excludesfile` (your global gitignore)
+
+Local patterns override global patterns.
+
+### Don't Include Project-Specific Patterns
+
+Bad: Including `node_modules/` or `.env` in global gitignore
+
+**Why**: Project collaborators should see these patterns in the project's `.gitignore`, so they know what's intentionally ignored.
+
+## Common Mistakes
+
+### ❌ Wrong: Project-Specific in Global
+
+```gitignore
+# Don't put these in global (put in project .gitignore)
+node_modules/
+vendor/
+.env
+dist/
+build/
+```
+
+### ❌ Wrong: Ignoring Important Config Files
+
+```gitignore
+# Be careful with editor settings that might be useful
+.vscode/settings.json  # Often useful to share
+.editorconfig          # Should be in repo!
+```
+
+### ✅ Correct: Personal/System Files Only
+
+```gitignore
+# These are machine-specific and don't belong in any repo
+.DS_Store
+*.swp
+.idea/
+```
+
+## Applying Changes
+
+Changes take effect immediately for new `git status` and `git add` operations. No restart or reload needed.
+
+To verify:
+
+```bash
+# Check if your global gitignore is configured
+git config --global core.excludesfile
+
+# Test if a file is ignored
+git check-ignore -v .DS_Store
+```
+
+## Related Files
+
+- [.gitconfig](./gitconfig.mdx) - Git configuration (must configure `excludesfile`)
+- `.gitignore` - Repository-specific ignore patterns
+- `.git/info/exclude` - Repository-specific, unshared ignore patterns
+
+## References
+
+- [Git Documentation: gitignore](https://git-scm.com/docs/gitignore)
+- [GitHub: gitignore Templates](https://github.com/github/gitignore)
+- [gitignore.io](https://www.toptal.com/developers/gitignore) - Generate gitignore files

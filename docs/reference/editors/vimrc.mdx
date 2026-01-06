@@ -1,0 +1,585 @@
+# .vimrc
+
+The `.vimrc` file is Vim's primary configuration file. It controls the editor's behavior, appearance, key mappings, and plugins, allowing you to customize Vim to your exact preferences.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `~/.vimrc` (Unix) or `~/_vimrc` (Windows) |
+| **Scope** | All Vim sessions for the user |
+| **Format** | Vimscript |
+| **Alternative** | `~/.vim/vimrc` (modern) or Neovim's `init.vim` |
+
+## Configuration Locations
+
+Vim reads configuration from multiple places:
+
+```
+~/.vimrc                          ← Traditional user config
+~/.vim/vimrc                      ← Modern location (Vim 8+)
+~/.config/nvim/init.vim           ← Neovim
+~/.config/nvim/init.lua           ← Neovim (Lua config)
+$VIM/vimrc or /etc/vimrc          ← System-wide
+```
+
+Modern best practice is to use `~/.vim/vimrc` and keep all Vim files organized under `~/.vim/`.
+
+## Essential Settings
+
+### Encoding and Compatibility
+
+```vim
+" Use Vim settings, not Vi
+set nocompatible
+
+" UTF-8 encoding
+set encoding=utf-8
+set fileencoding=utf-8
+```
+
+### Appearance
+
+```vim
+" Enable syntax highlighting
+syntax on
+
+" Show line numbers
+set number
+
+" Show relative line numbers (useful for motions)
+set relativenumber
+
+" Show cursor position in status bar
+set ruler
+
+" Highlight current line
+set cursorline
+
+" Enable 256 colors
+set t_Co=256
+
+" True color support (for modern terminals)
+if has('termguicolors')
+    set termguicolors
+endif
+
+" Color scheme
+colorscheme desert
+" Or for a dark theme: colorscheme elflord
+
+" Always show status line
+set laststatus=2
+
+" Show partial commands in last line
+set showcmd
+
+" Show matching brackets
+set showmatch
+
+" Line wrapping
+set wrap
+set linebreak       " Wrap at word boundaries
+```
+
+### Indentation
+
+```vim
+" Smart indentation
+set autoindent      " Copy indent from current line
+set smartindent     " Smart indentation for C-like languages
+
+" Tabs vs Spaces
+set expandtab       " Use spaces instead of tabs
+set tabstop=4       " Tab width = 4 spaces
+set shiftwidth=4    " Indentation width = 4 spaces
+set softtabstop=4   " Backspace through spaces like tabs
+
+" Smart tab behavior
+set smarttab
+```
+
+### Search
+
+```vim
+" Incremental search (search as you type)
+set incsearch
+
+" Highlight search matches
+set hlsearch
+
+" Case-insensitive search...
+set ignorecase
+
+" ...unless search contains uppercase
+set smartcase
+
+" Press Enter to clear highlights
+nnoremap <CR> :nohlsearch<CR><CR>
+```
+
+### Navigation
+
+```vim
+" Enable mouse in all modes
+set mouse=a
+
+" Scroll offset (keep context lines visible)
+set scrolloff=8
+set sidescrolloff=8
+
+" Allow backspace over everything
+set backspace=indent,eol,start
+
+" Enable file type detection
+filetype on
+filetype plugin on
+filetype indent on
+```
+
+### Editing
+
+```vim
+" Auto-reload files changed outside Vim
+set autoread
+
+" Confirm before closing unsaved files
+set confirm
+
+" Persistent undo (create undo directory first!)
+set undofile
+set undodir=~/.vim/undo
+
+" Enable hidden buffers (switch without saving)
+set hidden
+
+" Command history size
+set history=1000
+
+" Undo levels
+set undolevels=1000
+```
+
+### Completion
+
+```vim
+" Command-line completion
+set wildmenu
+set wildmode=longest:full,full
+
+" Ignore certain files in completion
+set wildignore+=*.o,*.obj,*.exe
+set wildignore+=*.pyc,__pycache__
+set wildignore+=.git,.svn
+set wildignore+=node_modules
+set wildignore+=.DS_Store
+```
+
+## Key Mappings
+
+### Leader Key
+
+```vim
+" Set leader key to Space
+let mapleader = " "
+let maplocalleader = "\\"
+```
+
+### Common Mappings
+
+```vim
+" Quick save
+nnoremap <leader>w :w<CR>
+
+" Quick quit
+nnoremap <leader>q :q<CR>
+
+" Save and quit
+nnoremap <leader>x :x<CR>
+
+" Edit vimrc
+nnoremap <leader>ev :edit $MYVIMRC<CR>
+
+" Reload vimrc
+nnoremap <leader>sv :source $MYVIMRC<CR>
+```
+
+### Window Navigation
+
+```vim
+" Navigate splits with Ctrl+hjkl
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Resize splits
+nnoremap <C-Up> :resize +2<CR>
+nnoremap <C-Down> :resize -2<CR>
+nnoremap <C-Left> :vertical resize -2<CR>
+nnoremap <C-Right> :vertical resize +2<CR>
+```
+
+### Buffer Navigation
+
+```vim
+" Next/Previous buffer
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
+
+" Close buffer
+nnoremap <leader>bd :bdelete<CR>
+
+" List buffers
+nnoremap <leader>bl :ls<CR>
+```
+
+### Line Movement
+
+```vim
+" Move line up/down in normal mode
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+
+" Move selection up/down in visual mode
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
+```
+
+### Quality of Life
+
+```vim
+" Y yanks to end of line (like D and C)
+nnoremap Y y$
+
+" Keep cursor centered when searching
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+" Keep cursor centered when joining lines
+nnoremap J mzJ`z
+
+" Indent and stay in visual mode
+vnoremap < <gv
+vnoremap > >gv
+
+" Don't jump on * search
+nnoremap * *N
+
+" Paste without overwriting register
+vnoremap p "_dP
+```
+
+## File Type Configuration
+
+```vim
+" Automatically detect file types
+filetype on
+filetype plugin on
+filetype indent on
+
+" Python: 4 spaces indentation
+autocmd FileType python setlocal tabstop=4 shiftwidth=4 expandtab
+
+" JavaScript/TypeScript: 2 spaces
+autocmd FileType javascript,typescript,json setlocal tabstop=2 shiftwidth=2 expandtab
+
+" Makefiles: require tabs
+autocmd FileType make setlocal noexpandtab
+
+" YAML: 2 spaces
+autocmd FileType yaml setlocal tabstop=2 shiftwidth=2 expandtab
+
+" Go: tabs
+autocmd FileType go setlocal noexpandtab tabstop=4 shiftwidth=4
+
+" Markdown: wrap at 80 columns
+autocmd FileType markdown setlocal textwidth=80
+
+" Remove trailing whitespace on save
+autocmd BufWritePre * :%s/\s\+$//e
+```
+
+## Plugin Management
+
+### vim-plug (Recommended)
+
+Install vim-plug:
+
+```bash
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+```
+
+Configure in `.vimrc`:
+
+```vim
+call plug#begin('~/.vim/plugged')
+
+" File explorer
+Plug 'preservim/nerdtree'
+
+" Fuzzy finder
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+" Git integration
+Plug 'tpope/vim-fugitive'
+
+" Status line
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
+" Syntax highlighting
+Plug 'sheerun/vim-polyglot'
+
+" Color scheme
+Plug 'morhetz/gruvbox'
+
+" Auto-pairs
+Plug 'jiangmiao/auto-pairs'
+
+" Comment toggling
+Plug 'tpope/vim-commentary'
+
+" Surround text objects
+Plug 'tpope/vim-surround'
+
+call plug#end()
+
+" After adding plugins, run :PlugInstall
+```
+
+## Example Configuration
+
+```vim
+" ==============================================================================
+" ~/.vimrc - Vim Configuration
+" ==============================================================================
+
+" ------------------------------------------------------------------------------
+" Core Settings
+" ------------------------------------------------------------------------------
+
+" Be Vim, not Vi
+set nocompatible
+
+" Encoding
+set encoding=utf-8
+set fileencoding=utf-8
+
+" Enable syntax and file type detection
+syntax on
+filetype plugin indent on
+
+" ------------------------------------------------------------------------------
+" Appearance
+" ------------------------------------------------------------------------------
+
+" Line numbers
+set number
+set relativenumber
+
+" Cursor line
+set cursorline
+
+" Status bar
+set laststatus=2
+set showcmd
+set showmode
+
+" Colors
+set t_Co=256
+if has('termguicolors')
+    set termguicolors
+endif
+
+" Color scheme (change to your preference)
+colorscheme desert
+
+" Show matching brackets
+set showmatch
+
+" Wrap lines at word boundaries
+set wrap
+set linebreak
+
+" ------------------------------------------------------------------------------
+" Editing
+" ------------------------------------------------------------------------------
+
+" Indentation
+set autoindent
+set smartindent
+set expandtab
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set smarttab
+
+" Backspace behavior
+set backspace=indent,eol,start
+
+" Enable mouse
+set mouse=a
+
+" Auto-reload external changes
+set autoread
+
+" Confirm unsaved changes
+set confirm
+
+" Hidden buffers
+set hidden
+
+" Clipboard integration (system clipboard)
+if has('clipboard')
+    set clipboard=unnamedplus
+endif
+
+" ------------------------------------------------------------------------------
+" Search
+" ------------------------------------------------------------------------------
+
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+
+" Clear search highlights with Enter
+nnoremap <CR> :nohlsearch<CR><CR>
+
+" ------------------------------------------------------------------------------
+" Navigation
+" ------------------------------------------------------------------------------
+
+" Keep context when scrolling
+set scrolloff=8
+set sidescrolloff=8
+
+" Command-line completion
+set wildmenu
+set wildmode=longest:full,full
+
+" Ignore these files
+set wildignore+=*.o,*.obj,*.pyc,__pycache__
+set wildignore+=.git,.svn,node_modules
+set wildignore+=.DS_Store
+
+" ------------------------------------------------------------------------------
+" Persistence
+" ------------------------------------------------------------------------------
+
+" Command history
+set history=1000
+
+" Undo history (create directory: mkdir -p ~/.vim/undo)
+if has('persistent_undo')
+    set undofile
+    set undodir=~/.vim/undo
+    set undolevels=1000
+endif
+
+" Swap and backup files in organized location
+set directory=~/.vim/swap//
+set backupdir=~/.vim/backup//
+
+" ------------------------------------------------------------------------------
+" Key Mappings
+" ------------------------------------------------------------------------------
+
+" Leader key
+let mapleader = " "
+
+" Quick save/quit
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>x :x<CR>
+
+" Window navigation
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Buffer navigation
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
+nnoremap <leader>bd :bdelete<CR>
+
+" Y yanks to end of line
+nnoremap Y y$
+
+" Keep visual selection when indenting
+vnoremap < <gv
+vnoremap > >gv
+
+" ------------------------------------------------------------------------------
+" File Type Settings
+" ------------------------------------------------------------------------------
+
+" 2-space indentation for web files
+autocmd FileType javascript,typescript,json,html,css,yaml setlocal tabstop=2 shiftwidth=2
+
+" Tabs for Makefiles
+autocmd FileType make setlocal noexpandtab
+
+" Remove trailing whitespace on save
+autocmd BufWritePre * :%s/\s\+$//e
+
+" Return to last edit position
+autocmd BufReadPost *
+    \ if line("'\"") >= 1 && line("'\"") <= line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
+```
+
+## Creating Required Directories
+
+Before using persistent undo and organized swap/backup:
+
+```bash
+mkdir -p ~/.vim/{undo,swap,backup}
+```
+
+## Applying Changes
+
+```vim
+" Reload vimrc from within Vim
+:source $MYVIMRC
+" Or
+:so %    " If editing the vimrc file
+```
+
+## Checking Settings
+
+```vim
+" Show current value of a setting
+:set tabstop?
+
+" Show where a setting was last changed
+:verbose set tabstop?
+
+" Show all settings
+:set all
+
+" Show all mappings
+:map
+:nmap    " Normal mode
+:imap    " Insert mode
+:vmap    " Visual mode
+```
+
+## Related Files
+
+- `~/.vim/` - Vim configuration directory
+- `~/.vim/after/` - Settings applied after plugins
+- `~/.vim/colors/` - Color schemes
+- `~/.vim/plugin/` - Plugin scripts
+
+## References
+
+- [Vim Documentation](https://vimhelp.org/)
+- [Learn Vimscript the Hard Way](https://learnvimscriptthehardway.stevelosh.com/)
+- [Vim Tips Wiki](https://vim.fandom.com/wiki/Vim_Tips_Wiki)
+- [vim-plug GitHub](https://github.com/junegunn/vim-plug)

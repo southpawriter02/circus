@@ -1,0 +1,264 @@
+# .zshenv
+
+The `.zshenv` file is sourced on **every** Zsh invocation—login shells, interactive shells, non-interactive shells, and even when running scripts. This makes it the most universally loaded configuration file.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Location** | `$ZDOTDIR/.zshenv` or `~/.zshenv` |
+| **When Sourced** | Every Zsh invocation |
+| **Shell Types** | Login, interactive, non-interactive, scripts |
+| **Load Order** | First (after `/etc/zsh/zshenv`) |
+
+## When It's Sourced
+
+`.zshenv` is sourced in these scenarios:
+
+- ✅ Opening a new terminal window
+- ✅ Starting a login shell (`zsh --login`)
+- ✅ Starting an interactive shell (`zsh -i`)
+- ✅ Running a shell script (`#!/bin/zsh`)
+- ✅ Running a command via `zsh -c "command"`
+- ✅ Subshells spawned by programs (e.g., `make`, `vim`)
+- ✅ SSH commands (`ssh host 'command'`)
+
+## Load Order Position
+
+```
+1. /etc/zsh/zshenv     ← System-wide (if exists)
+2. ~/.zshenv           ← YOU ARE HERE
+3. [login] ~/.zprofile
+4. [interactive] ~/.zshrc
+5. [login] ~/.zlogin
+```
+
+## What to Put Here
+
+### ✅ Recommended Content
+
+**Environment Variables**
+```zsh
+# Editor configuration
+export EDITOR="nvim"
+export VISUAL="$EDITOR"
+
+# Pager configuration
+export PAGER="less"
+export LESS="-R -F -X"
+
+# Language and locale
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+```
+
+**PATH Extensions**
+```zsh
+# Use typeset -U to prevent duplicate entries
+typeset -U path
+
+# Add directories to PATH
+path=(
+    $HOME/.local/bin
+    $HOME/bin
+    /usr/local/bin
+    $path
+)
+
+# Export for child processes
+export PATH
+```
+
+**ZDOTDIR (Alternative Config Location)**
+```zsh
+# Store Zsh config in a custom directory
+export ZDOTDIR="$HOME/.config/zsh"
+```
+
+**Tool Configuration**
+```zsh
+# Homebrew (Apple Silicon)
+export HOMEBREW_PREFIX="/opt/homebrew"
+
+# Go
+export GOPATH="$HOME/go"
+
+# Rust
+export CARGO_HOME="$HOME/.cargo"
+
+# Node Version Manager
+export NVM_DIR="$HOME/.nvm"
+```
+
+**XDG Base Directories**
+```zsh
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_STATE_HOME="$HOME/.local/state"
+```
+
+## What to Avoid
+
+### ❌ Do Not Include
+
+**Aliases**
+```zsh
+# BAD - aliases are for interactive shells only
+alias ll='ls -la'  # Put in .zshrc instead
+```
+
+**Commands That Produce Output**
+```zsh
+# BAD - breaks tools that parse shell output
+echo "Loading environment..."  # Put in .zlogin instead
+fortune | cowsay               # Put in .zlogin instead
+```
+
+**Interactive-Only Features**
+```zsh
+# BAD - these only make sense in interactive shells
+bindkey '^R' history-incremental-search-backward  # Put in .zshrc
+compinit                                           # Put in .zshrc
+```
+
+**Time-Consuming Commands**
+```zsh
+# BAD - slows down every shell invocation
+eval "$(rbenv init -)"        # Put in .zshrc or .zprofile
+source slow-plugin.zsh        # Put in .zshrc
+```
+
+**Changing Default Command Behavior**
+```zsh
+# BAD - may break scripts and tools
+alias grep='grep --color=always'  # Use in .zshrc with --color=auto
+alias rm='rm -i'                  # Breaks scripts expecting non-interactive rm
+```
+
+## Example Configuration
+
+```zsh
+#!/bin/zsh
+# ~/.zshenv - Environment variables for all Zsh shells
+
+# =============================================================================
+# XDG Base Directory Specification
+# =============================================================================
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+
+# =============================================================================
+# Zsh Configuration
+# =============================================================================
+# Use XDG directory for Zsh configuration
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+
+# History file location
+export HISTFILE="$XDG_STATE_HOME/zsh/history"
+
+# =============================================================================
+# Default Programs
+# =============================================================================
+export EDITOR="nvim"
+export VISUAL="$EDITOR"
+export PAGER="less"
+export BROWSER="open"
+
+# =============================================================================
+# PATH Configuration
+# =============================================================================
+typeset -U path  # Unique entries only
+
+path=(
+    "$HOME/.local/bin"
+    "$HOME/bin"
+    "$CARGO_HOME/bin"
+    "$GOPATH/bin"
+    $path
+)
+
+export PATH
+
+# =============================================================================
+# Language & Locale
+# =============================================================================
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
+# =============================================================================
+# Tool-Specific Configuration
+# =============================================================================
+# Less
+export LESS="-R -F -X -i -M"
+export LESSHISTFILE="$XDG_STATE_HOME/less/history"
+
+# Homebrew
+if [[ -d "/opt/homebrew" ]]; then
+    export HOMEBREW_PREFIX="/opt/homebrew"
+    export HOMEBREW_CELLAR="$HOMEBREW_PREFIX/Cellar"
+    export HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX"
+    path=("$HOMEBREW_PREFIX/bin" "$HOMEBREW_PREFIX/sbin" $path)
+fi
+```
+
+## Common Pitfalls
+
+### Problem: PATH Duplicates
+
+Every new shell appends to PATH, causing duplicates.
+
+**Solution**: Use `typeset -U`
+```zsh
+typeset -U path  # Ensures unique entries
+```
+
+### Problem: Breaking Non-Interactive Scripts
+
+Aliases or output in `.zshenv` break scripts.
+
+**Solution**: Guard interactive-only code
+```zsh
+# Only run in interactive shells
+[[ -o interactive ]] || return
+
+# Safe to use interactive features here
+alias ll='ls -la'
+```
+
+### Problem: Slow Shell Startup
+
+Heavy initialization in `.zshenv` affects all shells.
+
+**Solution**: Move slow operations to `.zshrc` or `.zprofile`
+```zsh
+# In .zshrc instead of .zshenv
+eval "$(pyenv init -)"
+```
+
+## Applying Changes
+
+Changes to `.zshenv` take effect in **new shell sessions**. To apply immediately:
+
+```zsh
+# Source the file manually
+source ~/.zshenv
+
+# Or start a new shell
+exec zsh
+```
+
+## Related Files
+
+- [.zprofile](./zprofile.mdx) - Login shell setup (after `.zshenv`)
+- [.zshrc](./zshrc.mdx) - Interactive shell configuration
+- [.zlogin](./zlogin.mdx) - Post-setup login commands
+- [.zlogout](./zlogout.mdx) - Login shell cleanup
+
+## References
+
+- [Zsh Manual: Startup Files](https://zsh.sourceforge.io/Doc/Release/Files.html#Startup_002fShutdown-Files)
+- [Zsh Manual: Parameters](https://zsh.sourceforge.io/Doc/Release/Parameters.html)
+- [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
