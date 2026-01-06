@@ -1,0 +1,231 @@
+# Hot Corners
+
+Configure actions triggered by moving the mouse to screen corners.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Keys** | `wvous-tl-corner`, `wvous-tr-corner`, `wvous-bl-corner`, `wvous-br-corner` |
+| **Type** | Integer |
+| **Default Value** | `0` (all corners disabled) |
+| **Requires Restart** | Dock restart |
+
+## Description
+
+Hot Corners allow you to trigger actions by moving the mouse cursor to the corners of your screen. Each corner can be assigned a different action, providing quick access to frequently used features without keyboard shortcuts.
+
+The setting name follows the pattern `wvous-XX-corner` where XX indicates the corner:
+- `tl` = Top Left
+- `tr` = Top Right
+- `bl` = Bottom Left
+- `br` = Bottom Right
+
+## Action Values
+
+| Value | Action | Description |
+|-------|--------|-------------|
+| `0` | **Disabled** | No action (default) |
+| `2` | **Mission Control** | Show all windows and Spaces |
+| `3` | **Application Windows** | Show windows for current app |
+| `4` | **Desktop** | Reveal desktop by moving windows aside |
+| `5` | **Start Screen Saver** | Activate screen saver immediately |
+| `6` | **Disable Screen Saver** | Prevent screen saver activation |
+| `10` | **Put Display to Sleep** | Turn off the display |
+| `11` | **Launchpad** | Show Launchpad app launcher |
+| `12` | **Notification Center** | Open Notification Center sidebar |
+| `13` | **Lock Screen** | Lock the Mac (macOS 10.13+) |
+| `14` | **Quick Note** | Create a Quick Note (macOS 12+) |
+
+### Deprecated Values
+
+| Value | Action | Notes |
+|-------|--------|-------|
+| `7` | Dashboard | Removed in macOS Catalina 10.15 |
+
+## Our Configuration
+
+| Corner | Value | Action | Rationale |
+|--------|-------|--------|-----------|
+| Top Left | `5` | Start Screen Saver | Quick way to lock Mac (with password required) |
+| Top Right | `4` | Desktop | Quickly access desktop files |
+| Bottom Left | `2` | Mission Control | Window overview and Space switching |
+| Bottom Right | `0` | Disabled | Avoid accidental triggers near resize handles |
+
+## Code Examples
+
+### Read Current Values
+
+```bash
+# Check all hot corner settings
+defaults read com.apple.dock | grep wvous
+```
+
+### Set Individual Corners
+
+```bash
+# Top Left: Start Screen Saver
+defaults write com.apple.dock wvous-tl-corner -int 5
+defaults write com.apple.dock wvous-tl-modifier -int 0
+
+# Top Right: Show Desktop
+defaults write com.apple.dock wvous-tr-corner -int 4
+defaults write com.apple.dock wvous-tr-modifier -int 0
+
+# Bottom Left: Mission Control
+defaults write com.apple.dock wvous-bl-corner -int 2
+defaults write com.apple.dock wvous-bl-modifier -int 0
+
+# Bottom Right: Disabled
+defaults write com.apple.dock wvous-br-corner -int 0
+defaults write com.apple.dock wvous-br-modifier -int 0
+
+# Apply changes
+killall Dock
+```
+
+### Disable All Hot Corners
+
+```bash
+defaults write com.apple.dock wvous-tl-corner -int 0
+defaults write com.apple.dock wvous-tr-corner -int 0
+defaults write com.apple.dock wvous-bl-corner -int 0
+defaults write com.apple.dock wvous-br-corner -int 0
+
+killall Dock
+```
+
+## Modifier Keys
+
+Each corner has an associated `wvous-XX-modifier` key that can require a modifier key to be held:
+
+| Modifier Value | Key Required |
+|----------------|--------------|
+| `0` | None (trigger immediately) |
+| `131072` | Shift (⇧) |
+| `262144` | Control (⌃) |
+| `524288` | Option (⌥) |
+| `1048576` | Command (⌘) |
+
+### Example: Require Command Key
+
+```bash
+# Mission Control in bottom-left, but only with Command held
+defaults write com.apple.dock wvous-bl-corner -int 2
+defaults write com.apple.dock wvous-bl-modifier -int 1048576
+
+killall Dock
+```
+
+This prevents accidental activation—you must hold ⌘ while moving to the corner.
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Hot Corners...** (button at bottom)
+
+The dialog shows a preview of the screen with dropdown menus for each corner. Hold modifier keys while selecting to require them.
+
+## Popular Configurations
+
+### Security-Focused
+
+| Corner | Action |
+|--------|--------|
+| Top Left | Lock Screen (`13`) |
+| Top Right | Disabled |
+| Bottom Left | Disabled |
+| Bottom Right | Disabled |
+
+### Productivity-Focused
+
+| Corner | Action |
+|--------|--------|
+| Top Left | Mission Control (`2`) |
+| Top Right | Desktop (`4`) |
+| Bottom Left | Application Windows (`3`) |
+| Bottom Right | Quick Note (`14`) |
+
+### Minimal (Our Default)
+
+| Corner | Action |
+|--------|--------|
+| Top Left | Screen Saver (`5`) |
+| Top Right | Desktop (`4`) |
+| Bottom Left | Mission Control (`2`) |
+| Bottom Right | Disabled (`0`) |
+
+## Why Disable Bottom Right?
+
+The bottom-right corner is prone to accidental activation when:
+- Resizing windows by dragging the corner
+- Using scrollbars
+- Clicking "Done" or "OK" buttons in dialogs
+
+Leaving it disabled prevents unwanted triggers.
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ (Quick Note added) |
+| macOS 10.13 (High Sierra) | ✅ (Lock Screen added) |
+| macOS 10.3 (Panther) and later | ✅ (basic support) |
+
+## Troubleshooting
+
+### Hot Corners Not Working
+
+1. Verify settings:
+   ```bash
+   defaults read com.apple.dock | grep wvous
+   ```
+
+2. Restart Dock:
+   ```bash
+   killall Dock
+   ```
+
+3. Check for modifier requirements (modifier value should be 0 for no modifier)
+
+### Accidental Activation
+
+Add a modifier key requirement:
+```bash
+# Require Shift to be held
+defaults write com.apple.dock wvous-tl-modifier -int 131072
+killall Dock
+```
+
+### Lock Screen Not Available
+
+Lock Screen (value `13`) requires macOS 10.13 or later. On older versions, use Screen Saver (`5`) with password-on-wake enabled.
+
+## References
+
+- [Apple Support: Use Hot Corners on your Mac](https://support.apple.com/guide/mac-help/use-hot-corners-mchlp3000/mac)
+- [Apple Support: Use Mission Control on Mac](https://support.apple.com/en-us/102556)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/interface/mission_control.sh`](../../../defaults/interface/mission_control.sh)
+
+```bash
+# --- Top Left Hot Corner: Start Screen Saver ---
+# Key:          wvous-tl-corner
+# Domain:       com.apple.dock
+# Description:  Configures the action triggered when the mouse cursor
+#               moves to the top-left corner of the screen.
+# Default:      0 (no action)
+# Options:      See HOT CORNER VALUES in header (0-14)
+# Set to:       5 (Start Screen Saver)
+# UI Location:  System Settings > Desktop & Dock > Hot Corners... > Top Left
+# Source:       https://support.apple.com/guide/mac-help/use-hot-corners-mchlp3000/mac
+run_defaults "com.apple.dock" "wvous-tl-corner" "-int" "5"
+run_defaults "com.apple.dock" "wvous-tl-modifier" "-int" "0"
+```

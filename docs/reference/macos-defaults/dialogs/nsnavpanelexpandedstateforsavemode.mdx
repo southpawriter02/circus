@@ -1,0 +1,52 @@
+# NSNavPanelExpandedStateForSaveMode
+
+Expand the Save dialog by default.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSNavPanelExpandedStateForSaveMode` / `NSNavPanelExpandedStateForSaveMode2` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the Save dialog shows the expanded view with full file browser, or the condensed view with just a filename field.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Expanded** — Full file browser with folder navigation |
+| `false` | **Condensed** (default) — Minimal view, just filename |
+
+## Our Configuration
+
+**Set to**: `true` — Full navigator for easier file management.
+
+## Code Examples
+
+```bash
+# Expand Save dialogs by default (set both for compatibility)
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+```
+
+## UI Location
+
+When saving a file (⌘S), click the disclosure arrow to toggle. This setting changes the default state.
+
+## Related: Expand Print Dialog
+
+```bash
+# Also expand Print dialogs
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+```
+
+## References
+
+- [Apple Support: Save documents on Mac](https://support.apple.com/guide/mac-help/save-documents-mchlp1088/mac)

@@ -1,0 +1,245 @@
+# tilesize
+
+Set the size of icons in the Dock.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `tilesize` |
+| **Type** | Integer |
+| **Default Value** | `64` |
+| **Our Setting** | `48` |
+| **Requires Restart** | Dock restart |
+
+## Description
+
+Controls the size of application icons in the Dock, measured in pixels. Smaller icons allow more applications to fit in the Dock, while larger icons are easier to see and click.
+
+The icon size affects the overall height (or width, for side-positioned Docks) consumed by the Dock.
+
+## Values
+
+| Value | Size | Use Case |
+|-------|------|----------|
+| `16` | 16px | Minimum — Extremely small, hard to click |
+| `32` | 32px | Very small — High density displays |
+| `48` | 48px | **Our setting** — Compact but usable |
+| `64` | 64px | **Default** — Apple's standard |
+| `80` | 80px | Large — Easy visibility |
+| `96` | 96px | Very large — Maximum from UI |
+| `128` | 128px | Maximum — Only via command line |
+
+Valid range: `16` to `128` pixels
+
+## Default Behavior
+
+**Apple's default**: `64` pixels
+
+This provides a balanced icon size that's easy to see and click while not consuming excessive screen space. The default works well on most display sizes.
+
+## Our Configuration
+
+**Set to**: `48` pixels
+
+**Rationale**: A slightly smaller Dock icon size:
+- Allows more apps to fit without scrolling
+- Frees up additional screen real estate
+- Still large enough to click accurately
+- Works well with magnification enabled
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current icon size
+defaults read com.apple.dock tilesize
+```
+
+### Set Compact Size
+
+```bash
+# Set to 48 pixels (our preference)
+defaults write com.apple.dock tilesize -int 48
+
+# Restart Dock to apply
+killall Dock
+```
+
+### Set Default Size
+
+```bash
+# Restore Apple's default (64 pixels)
+defaults write com.apple.dock tilesize -int 64
+
+killall Dock
+```
+
+### Set Maximum Size
+
+```bash
+# Set to maximum size (128 pixels, beyond UI limit)
+defaults write com.apple.dock tilesize -int 128
+
+killall Dock
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting
+defaults delete com.apple.dock tilesize
+
+killall Dock
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Size** (slider)
+
+The slider allows values from approximately 16 to 96 pixels. The command line can set values up to 128 pixels.
+
+## Related Setting: Magnification
+
+Dock icons can magnify when you hover over them, making small icon sizes more practical:
+
+### Enable Magnification
+
+```bash
+# Enable magnification on hover
+defaults write com.apple.dock magnification -bool true
+
+# Set magnification size (max when hovering)
+defaults write com.apple.dock largesize -int 80
+
+killall Dock
+```
+
+### Magnification Values
+
+| Key | Description | Range |
+|-----|-------------|-------|
+| `magnification` | Enable/disable hover magnification | `true`/`false` |
+| `largesize` | Size icons grow to when hovered | 16-128 |
+
+### Example with Magnification
+
+```bash
+# Compact Dock with magnification for usability
+defaults write com.apple.dock tilesize -int 36      # Small when not focused
+defaults write com.apple.dock magnification -bool true
+defaults write com.apple.dock largesize -int 72     # Larger on hover
+
+killall Dock
+```
+
+## Size Recommendations
+
+### For Different Display Sizes
+
+| Display | Recommended Size | Notes |
+|---------|-----------------|-------|
+| 13" MacBook | 40-48 | Maximize screen space |
+| 14" MacBook Pro | 48-56 | Balanced |
+| 16" MacBook Pro | 48-64 | More room available |
+| 24" iMac | 56-72 | Comfortable viewing distance |
+| 27"+ External | 64-80 | Larger for arm's length viewing |
+
+### For Different Use Cases
+
+| Use Case | Recommended Size | Notes |
+|----------|-----------------|-------|
+| Many apps | 36-48 | Fit 15+ apps without scrolling |
+| Standard use | 48-64 | Balanced visibility and space |
+| Accessibility | 72-96 | Easier to see and click |
+| Presentations | 80-128 | Visible from a distance |
+
+## Effect on Screen Real Estate
+
+The Dock's vertical height is directly proportional to `tilesize`. Approximate Dock heights:
+
+| Tile Size | Dock Height | Screen Lost (1080p) |
+|-----------|-------------|---------------------|
+| 36px | ~52px | ~4.8% |
+| 48px | ~64px | ~5.9% |
+| 64px | ~80px | ~7.4% |
+| 96px | ~112px | ~10.4% |
+
+With auto-hide enabled, the Dock consumes no permanent screen space regardless of icon size.
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.0 and later | ✅ |
+
+This setting has existed since the Dock was introduced in Mac OS X.
+
+## Troubleshooting
+
+### Dock Size Not Changing
+
+1. Restart the Dock:
+   ```bash
+   killall Dock
+   ```
+
+2. Verify the setting:
+   ```bash
+   defaults read com.apple.dock tilesize
+   ```
+
+### Icons Look Blurry
+
+At very small sizes (below 36px), icons may appear blurry on non-Retina displays. On Retina displays, icons look crisp at any size.
+
+### Dock Too Tall/Wide
+
+If the Dock is taking too much space:
+```bash
+# Set to minimum usable size
+defaults write com.apple.dock tilesize -int 36
+defaults write com.apple.dock magnification -bool true
+defaults write com.apple.dock largesize -int 64
+killall Dock
+```
+
+Or enable auto-hide for zero permanent space usage.
+
+## References
+
+- [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)
+- [Apple Support: Use the Dock on Mac](https://support.apple.com/guide/mac-help/open-apps-using-the-dock-mh35859/mac)
+- [defaults man page](x-man-page://defaults)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/interface/dock.sh`](../../../defaults/interface/dock.sh)
+
+```bash
+# --- Dock Icon Size ---
+# Key:          tilesize
+# Domain:       com.apple.dock
+# Description:  Controls the size of icons in the Dock, measured in pixels.
+#               Smaller icons allow more apps in the Dock, while larger icons
+#               are easier to click and identify.
+# Default:      64 (pixels)
+# Options:      Integer value from 16 to 128 pixels
+#               16-32 = Very small (many icons fit)
+#               48    = Small (compact but usable)
+#               64    = Default (balanced)
+#               96-128 = Large (easy to see)
+# Set to:       48 (compact dock for more screen space)
+# UI Location:  System Settings > Desktop & Dock > Size slider
+# Source:       https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac
+run_defaults "com.apple.dock" "tilesize" "-int" "48"
+```

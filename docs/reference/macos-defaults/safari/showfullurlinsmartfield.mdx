@@ -1,0 +1,199 @@
+# ShowFullURLInSmartSearchField
+
+Show the complete URL in Safari's address bar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `ShowFullURLInSmartSearchField` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+| **Requires Restart** | None (immediate) |
+
+## Description
+
+Controls whether Safari displays the complete URL in the address bar (Smart Search Field), including the protocol (`https://`), path, and query parameters, or just the simplified domain name.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Full URL** — Shows complete address: `https://example.com/path/page.html?query=value` |
+| `false` | **Simplified** (default) — Shows only domain: `example.com` |
+
+## Visual Comparison
+
+**With ShowFullURLInSmartSearchField = false (default):**
+```
+┌────────────────────────────────────────┐
+│ 🔒  example.com                        │
+└────────────────────────────────────────┘
+```
+
+**With ShowFullURLInSmartSearchField = true:**
+```
+┌────────────────────────────────────────┐
+│ 🔒  https://example.com/products/item  │
+└────────────────────────────────────────┘
+```
+
+## Default Behavior
+
+**Apple's default**: `false` (simplified URL)
+
+Safari hides URL complexity to create a cleaner interface. While this looks nice, it:
+- Obscures the exact page location
+- Makes it harder to spot phishing URLs
+- Hides whether you're on HTTP vs HTTPS
+- Removes visibility of URL parameters
+
+## Our Configuration
+
+**Set to**: `true`
+
+**Rationale**: Showing the full URL is important for:
+
+### Security
+- **Spot phishing attempts** — See `bank.evil.com` instead of just "bank"
+- **Verify HTTPS** — Confirm secure connection visually
+- **Check subdomains** — Notice suspicious subdomains like `login.example.ph1shing.com`
+
+### Development
+- **Debug URLs** — See exact paths and query parameters
+- **API testing** — View complete request URLs
+- **Route debugging** — Verify you're on the correct path
+
+### General Use
+- **Copy accurate URLs** — Get the full address when sharing
+- **Navigation awareness** — Know exactly where you are in a site
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read com.apple.Safari ShowFullURLInSmartSearchField
+```
+
+### Enable Full URL
+
+```bash
+# Show complete URL in address bar
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+```
+
+### Disable Full URL
+
+```bash
+# Show simplified URL (domain only)
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool false
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **Advanced** → **Show full website address**
+
+This is a checkbox toggle that takes effect immediately in Safari.
+
+## Security Implications
+
+### Phishing Detection Examples
+
+**Legitimate URL:**
+```
+https://www.bankofamerica.com/login
+```
+
+**Phishing URL (hidden by simplified view):**
+```
+https://bankofamerica.malicious-site.com/login
+```
+
+With simplified URLs, both might show as just:
+```
+bankofamerica.com
+```
+
+But with full URLs, the phishing attempt is obvious.
+
+### Subdomain Awareness
+
+Full URL reveals deceptive subdomains:
+```
+https://login.microsoft.com.attacker.net
+```
+
+Simplified view might only show: `microsoft.com`
+
+## Related Safari Security Settings
+
+```bash
+# Show full URL
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+
+# Warn about fraudulent websites
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+
+# Don't send search queries to Apple
+defaults write com.apple.Safari UniversalSearchEnabled -bool false
+```
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 10.10 (Yosemite) and later | ✅ |
+
+## Troubleshooting
+
+### Setting Not Applied
+
+The setting should take effect immediately. If not:
+1. Verify the setting:
+   ```bash
+   defaults read com.apple.Safari ShowFullURLInSmartSearchField
+   ```
+2. Quit Safari completely (⌘Q) and reopen
+
+### Still Seeing Simplified URL
+
+Make sure you've set the value to `true`:
+```bash
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+```
+
+## References
+
+- [Apple Support: Safari Security settings](https://support.apple.com/guide/safari/security-ibrw1074/mac)
+- [Apple Support: Customize Safari settings](https://support.apple.com/guide/safari/customize-settings-ibrwb0c38ea7/mac)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/applications/safari.sh`](../../../defaults/applications/safari.sh)
+
+```bash
+# --- Show Full URL ---
+# Key:          ShowFullURLInSmartSearchField
+# Domain:       com.apple.Safari
+# Description:  Shows the complete URL in the address bar, including the
+#               protocol (http:// or https://) and trivial subdomains (www).
+#               Showing the full URL makes it easier to identify the exact
+#               page and spot phishing attempts using deceptive URLs.
+# Default:      false (simplified URL, shows only domain name)
+# Options:      true  = Show complete URL including protocol and path
+#               false = Show simplified URL (domain only)
+# Set to:       true (show complete URL for security awareness)
+# UI Location:  Safari > Settings > Advanced > Show full website address
+# Source:       https://support.apple.com/guide/safari/customize-settings-ibrwb0c38ea7/mac
+run_defaults "com.apple.Safari" "ShowFullURLInSmartSearchField" "-bool" "true"
+```

@@ -1,0 +1,218 @@
+# mru-spaces
+
+Control whether Spaces automatically rearrange based on recent use.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `mru-spaces` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+| **Requires Restart** | Dock restart |
+
+## Description
+
+Controls whether macOS automatically reorders your virtual desktops (Spaces) based on which ones you used most recently. When enabled, the Space you use most frequently gradually moves to the left side of the Spaces bar in Mission Control.
+
+**MRU** stands for "Most Recently Used."
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-rearrange** (default) — Spaces reorder based on usage frequency |
+| `false` | **Fixed order** — Spaces stay in the order you arranged them |
+
+## Default Behavior
+
+**Apple's default**: `true` (Spaces rearrange automatically)
+
+With automatic rearranging:
+- Frequently used Spaces move toward the left
+- Space positions change unpredictably
+- ⌃1, ⌃2, etc. keyboard shortcuts access different Spaces over time
+- The Spaces bar order in Mission Control shifts based on usage
+
+## Our Configuration
+
+**Set to**: `false` (Fixed Space ordering)
+
+**Rationale**: Disabling auto-rearrange is essential for:
+
+1. **Muscle Memory** — ⌃1 always goes to the same Space
+2. **Mental Model** — "Code is on Space 2, Browser on Space 3"
+3. **Predictability** — Spaces don't unexpectedly swap positions
+4. **Keyboard Navigation** — Direct Space switching with numbered shortcuts works reliably
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read com.apple.dock mru-spaces
+```
+
+### Disable Auto-Rearrange (Fixed Order)
+
+```bash
+# Keep Spaces in fixed positions
+defaults write com.apple.dock mru-spaces -bool false
+
+# Restart Dock to apply
+killall Dock
+```
+
+### Enable Auto-Rearrange
+
+```bash
+# Allow Spaces to reorder by usage (Apple default)
+defaults write com.apple.dock mru-spaces -bool true
+
+# Restart Dock to apply
+killall Dock
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting
+defaults delete com.apple.dock mru-spaces
+
+killall Dock
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Mission Control** → **Automatically rearrange Spaces based on most recent use**
+
+This is a checkbox toggle.
+
+## Keyboard Shortcuts for Spaces
+
+With `mru-spaces` disabled (`false`), these shortcuts become reliable:
+
+| Shortcut | Action |
+|----------|--------|
+| ⌃1 | Switch to Space 1 |
+| ⌃2 | Switch to Space 2 |
+| ⌃3 | Switch to Space 3 |
+| ⌃→ | Move to next Space |
+| ⌃← | Move to previous Space |
+| ⌃↑ | Mission Control |
+
+**Note**: By default, ⌃1, ⌃2, ⌃3 may not be enabled. Enable in:
+**System Settings** → **Keyboard** → **Keyboard Shortcuts** → **Mission Control** → **Switch to Desktop 1/2/3...**
+
+## Workflow Example
+
+### With Fixed Spaces (mru-spaces = false)
+
+```
+Space 1: Communication (Slack, Mail)
+Space 2: Code (VS Code, Terminal)
+Space 3: Browser (Chrome, Safari)
+Space 4: Reference (Notes, Documentation)
+```
+
+- ⌃2 always takes you to Code
+- ⌃3 always takes you to Browser
+- Positions never change unexpectedly
+
+### With Auto-Rearrange (mru-spaces = true)
+
+- If you use Browser heavily, it might become Space 1
+- Code might shift to Space 3
+- Your ⌃2 habit now opens the wrong Space
+- Mental overhead to remember current positions
+
+## Related Settings
+
+### Displays Have Separate Spaces
+
+```bash
+# Each monitor has independent Spaces
+defaults write com.apple.spaces spans-displays -bool false
+```
+
+### Switch to Space on App Click
+
+```bash
+# Click Dock icon → jump to app's Space
+defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool true
+```
+
+### Group Windows by Application
+
+```bash
+# Mission Control groups same-app windows
+defaults write com.apple.dock expose-group-apps -bool true
+```
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 10.7 (Lion) and later | ✅ |
+
+This setting has existed since Spaces was introduced in Mac OS X Leopard and Mission Control in Lion.
+
+## Troubleshooting
+
+### Spaces Still Rearranging
+
+1. Verify the setting:
+   ```bash
+   defaults read com.apple.dock mru-spaces
+   # Should return 0 or false
+   ```
+
+2. Restart the Dock:
+   ```bash
+   killall Dock
+   ```
+
+3. Log out and back in (some changes need a full session restart)
+
+### Keyboard Shortcuts Not Working
+
+Enable Space switching shortcuts:
+1. Go to **System Settings** → **Keyboard** → **Keyboard Shortcuts**
+2. Select **Mission Control**
+3. Enable "Switch to Desktop 1", "Switch to Desktop 2", etc.
+
+## References
+
+- [Apple Support: Work in multiple spaces on Mac](https://support.apple.com/guide/mac-help/work-in-multiple-spaces-mh14112/mac)
+- [Apple Support: Use Mission Control on Mac](https://support.apple.com/en-us/102556)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/interface/mission_control.sh`](../../../defaults/interface/mission_control.sh)
+
+```bash
+# --- Disable Automatic Rearranging of Spaces ---
+# Key:          mru-spaces
+# Domain:       com.apple.dock
+# Description:  Controls whether macOS automatically reorders your virtual
+#               desktops (Spaces) based on which one you used most recently.
+#               Disabling this preserves your spatial memory and keeps
+#               workspaces in a consistent, predictable order.
+# Default:      true (Spaces reorder automatically based on recent use)
+# Options:      true  = Reorder Spaces based on most recent use
+#               false = Maintain manual/fixed Space ordering
+# Set to:       false (preserve consistent ordering for muscle memory)
+# UI Location:  System Settings > Desktop & Dock > Mission Control >
+#               Automatically rearrange Spaces based on most recent use
+# Source:       https://support.apple.com/guide/mac-help/work-in-multiple-spaces-mh14112/mac
+run_defaults "com.apple.dock" "mru-spaces" "-bool" "false"
+```

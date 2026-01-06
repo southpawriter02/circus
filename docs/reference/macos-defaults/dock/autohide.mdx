@@ -1,0 +1,208 @@
+# autohide
+
+Automatically hide and show the Dock.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `autohide` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+| **Requires Restart** | Dock restart |
+
+## Description
+
+Controls whether the Dock automatically hides when not in use. When enabled, the Dock slides off-screen to maximize available screen space and only reappears when you move the cursor to the edge of the screen where the Dock is positioned.
+
+Auto-hide is popular among users who want maximum screen real estate, especially on smaller displays like laptops. However, it adds a small delay when accessing the Dock.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-hide enabled** — Dock slides off-screen when not in use, reappears on mouse hover at screen edge |
+| `false` | **Always visible** (default) — Dock remains on screen at all times |
+
+## Default Behavior
+
+**Apple's default**: `false` (Dock always visible)
+
+The Dock is pinned to the screen edge (bottom, left, or right) and consumes screen space. This provides instant access to applications but reduces the usable window area.
+
+## Our Configuration
+
+**Set to**: `false`
+
+**Rationale**: We keep the Dock visible for quick, predictable access to applications. The small screen space trade-off is worth the convenience of always-visible app icons and the download progress indicators.
+
+**Alternative consideration**: If you prefer maximum screen space, set to `true` and use the keyboard shortcut ⌘⌥D to toggle Dock visibility.
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read com.apple.dock autohide
+```
+
+### Enable Auto-Hide
+
+```bash
+# Enable Dock auto-hide
+defaults write com.apple.dock autohide -bool true
+
+# Restart Dock to apply
+killall Dock
+```
+
+### Disable Auto-Hide
+
+```bash
+# Disable Dock auto-hide (always visible)
+defaults write com.apple.dock autohide -bool false
+
+# Restart Dock to apply
+killall Dock
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting
+defaults delete com.apple.dock autohide
+
+# Restart Dock to apply
+killall Dock
+```
+
+## Related Settings
+
+When `autohide` is enabled, these settings control the animation timing:
+
+### Auto-Hide Delay
+
+```bash
+# Time before Dock appears after moving cursor to edge (seconds)
+# Default: 0.2
+defaults write com.apple.dock autohide-delay -float 0
+
+# Set to 0 for instant appearance
+```
+
+### Auto-Hide Time Modifier
+
+```bash
+# Speed of the hide/show animation (seconds)
+# Default: 0.2
+defaults write com.apple.dock autohide-time-modifier -float 0.15
+
+# Lower = faster animation
+```
+
+## Keyboard Shortcut
+
+Toggle Dock visibility without changing the preference:
+
+**⌘⌥D** (Command + Option + D)
+
+This shortcut works whether auto-hide is enabled or not:
+- If auto-hide is **off**: Hides the Dock temporarily
+- If auto-hide is **on**: Shows the Dock temporarily
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Automatically hide and show the Dock**
+
+This is a checkbox toggle. When enabled, additional options for mouse position may appear.
+
+## Behavior Details
+
+### When Auto-Hide is Enabled
+
+1. **Hiding**: Dock slides off-screen after ~0.5 seconds of inactivity
+2. **Showing**: Move cursor to screen edge, wait for `autohide-delay` duration
+3. **Screen edge**: Depends on `orientation` setting (bottom/left/right)
+4. **Keyboard access**: ⌃F3 (Control+F3) moves focus to Dock
+
+### Interaction with Full Screen Apps
+
+- In full-screen apps, the Dock always auto-hides regardless of this setting
+- Move cursor firmly to the screen edge to reveal the Dock in full-screen mode
+
+### Menu Bar and Dock Together
+
+On laptops with notch displays (14" and 16" MacBook Pro), the menu bar and Dock visibility are independent. You can hide just the Dock while keeping the menu bar visible.
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.15 and earlier | ✅ |
+
+This preference has been available since the original macOS Dock.
+
+## Troubleshooting
+
+### Dock Won't Auto-Hide
+
+1. Check the setting is enabled:
+   ```bash
+   defaults read com.apple.dock autohide
+   # Should return 1 or true
+   ```
+
+2. Restart the Dock:
+   ```bash
+   killall Dock
+   ```
+
+3. Check for window overlap—some windows may prevent the Dock from hiding
+
+### Dock Slow to Appear
+
+Reduce the show delay:
+```bash
+defaults write com.apple.dock autohide-delay -float 0
+killall Dock
+```
+
+### Can't Find Dock After Enabling Auto-Hide
+
+Move your cursor firmly to the bottom (or side) edge of the screen. If using a second monitor, ensure you're at the correct screen edge.
+
+## References
+
+- [Apple Support: Use the Dock on Mac](https://support.apple.com/guide/mac-help/open-apps-using-the-dock-mh35859/mac)
+- [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)
+- [defaults man page](x-man-page://defaults)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/interface/dock.sh`](../../../defaults/interface/dock.sh)
+
+```bash
+# --- Auto-Hide Dock ---
+# Key:          autohide
+# Domain:       com.apple.dock
+# Description:  Controls whether the Dock automatically hides when not in use.
+#               When enabled, the Dock slides off-screen and reappears when you
+#               move the cursor to the screen edge where the Dock is located.
+# Default:      false (Dock always visible)
+# Options:      true  = Auto-hide Dock (more screen space)
+#               false = Always show Dock
+# Set to:       false (keep Dock visible for quick access)
+# UI Location:  System Settings > Desktop & Dock > Automatically hide and show the Dock
+# Source:       https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac
+run_defaults "com.apple.dock" "autohide" "-bool" "false"
+```

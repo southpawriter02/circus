@@ -1,0 +1,243 @@
+# AppleShowAllFiles
+
+Show or hide hidden files and folders in Finder.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `AppleShowAllFiles` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+| **Requires Restart** | Finder restart |
+
+## Description
+
+Controls whether Finder displays hidden files—those whose names start with a dot (`.`), such as `.gitignore`, `.bashrc`, `.env`, and `.DS_Store`.
+
+By default, macOS hides these files to reduce visual clutter for casual users. However, developers and power users frequently need to access and edit these configuration files. This setting makes them permanently visible in all Finder windows.
+
+When enabled, hidden files appear slightly dimmed compared to regular files, making them visually distinguishable while still accessible.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show hidden files** — All files beginning with `.` are visible in Finder, displayed with slightly dimmed icons |
+| `false` | **Hide hidden files** (default) — Files beginning with `.` are completely hidden from Finder views |
+
+## Default Behavior
+
+**Apple's default**: `false` (hidden files are invisible)
+
+Hidden files are not shown in:
+- Finder windows (all view modes)
+- Open/Save dialogs
+- Desktop
+
+Hidden files remain accessible via:
+- Terminal commands
+- "Go to Folder" (⌘⇧G) with explicit path
+- Keyboard shortcut toggle (⌘⇧.)
+
+## Our Configuration
+
+**Set to**: `true`
+
+**Rationale**: Essential for developers working with:
+- Git configuration (`.gitignore`, `.gitattributes`)
+- Shell configuration (`.bashrc`, `.zshrc`, `.profile`)
+- Environment files (`.env`, `.envrc`)
+- Editor settings (`.editorconfig`, `.vscode/`)
+- Package configs (`.npmrc`, `.yarnrc`)
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read com.apple.finder AppleShowAllFiles
+```
+
+### Enable (Show Hidden Files)
+
+```bash
+# Show hidden files
+defaults write com.apple.finder AppleShowAllFiles -bool true
+
+# Restart Finder to apply
+killall Finder
+```
+
+### Disable (Hide Hidden Files)
+
+```bash
+# Hide hidden files (restore default)
+defaults write com.apple.finder AppleShowAllFiles -bool false
+
+# Restart Finder to apply
+killall Finder
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting, use system default
+defaults delete com.apple.finder AppleShowAllFiles
+
+# Restart Finder to apply
+killall Finder
+```
+
+### One-Liner Toggle
+
+```bash
+# Toggle hidden files (useful for alias/function)
+defaults write com.apple.finder AppleShowAllFiles -bool \
+  $(defaults read com.apple.finder AppleShowAllFiles | grep -q 1 && echo false || echo true) \
+  && killall Finder
+```
+
+## Keyboard Shortcut Alternative
+
+You can temporarily toggle hidden file visibility without changing the preference:
+
+**⌘⇧.** (Command + Shift + Period)
+
+This keyboard shortcut toggles visibility in the current Finder window without modifying the `defaults` setting. The toggle persists until you close the window or press the shortcut again.
+
+## UI Location
+
+There is no direct System Settings interface for this preference.
+
+**Access methods**:
+1. Keyboard shortcut: **⌘⇧.** (temporary toggle)
+2. Terminal: `defaults write` command (permanent)
+
+## Finder Views Affected
+
+This setting applies to all Finder views:
+
+| View | Hidden Files Display |
+|------|---------------------|
+| Icon View | Dimmed icons |
+| List View | Dimmed text, shows in file list |
+| Column View | Dimmed text in columns |
+| Gallery View | Dimmed thumbnails |
+| Desktop | Hidden files on desktop become visible |
+
+## Related Files That Become Visible
+
+When enabled, you'll see files like:
+
+```
+~/
+├── .bash_history
+├── .bash_profile
+├── .bashrc
+├── .cache/
+├── .config/
+├── .gitconfig
+├── .local/
+├── .npm/
+├── .ssh/
+├── .vim/
+├── .vimrc
+├── .zshrc
+└── .zsh_history
+```
+
+## Security Considerations
+
+**Showing hidden files** can expose:
+- `.ssh/` directory (SSH keys)
+- `.gnupg/` directory (GPG keys)
+- `.env` files (may contain secrets)
+- Application data in `~/Library/`
+
+This is informational only—the files exist regardless of visibility. However, be mindful when sharing screens or taking screenshots.
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.15 (Catalina) | ✅ |
+| macOS 10.14 and earlier | ✅ |
+
+This preference has existed since early versions of macOS and remains consistent across versions.
+
+## Troubleshooting
+
+### Changes Not Taking Effect
+
+Finder must be restarted for changes to apply:
+
+```bash
+killall Finder
+```
+
+Or: Hold ⌥ (Option), right-click Finder in Dock, select "Relaunch"
+
+### Hidden Files Still Hidden After Setting
+
+Check the current value is set correctly:
+
+```bash
+defaults read com.apple.finder AppleShowAllFiles
+# Should output: 1 (for true) or "true"
+```
+
+If value is correct but files aren't showing:
+1. Restart Finder: `killall Finder`
+2. Try logging out and back in
+3. Verify you're in the correct user account
+
+### Keyboard Shortcut Not Working
+
+The ⌘⇧. shortcut:
+- Only works in Finder windows (not Open/Save dialogs in all apps)
+- May conflict with other app shortcuts
+- Requires a Finder window to be focused
+
+## Related Settings
+
+- [FXPreferredViewStyle](./finder-fxpreferredviewstyle.mdx) — Default Finder view mode
+- [AppleShowAllExtensions](./nsglobaldomain-appleshowallextensions.mdx) — Show all file extensions
+- [ShowPathbar](./finder-showpathbar.mdx) — Show path bar in Finder windows
+
+## References
+
+- [Apple Support: View hidden files and folders on Mac](https://support.apple.com/guide/mac-help/view-hidden-files-and-folders-mchlp1791/mac)
+- [defaults man page](x-man-page://defaults)
+- [Finder Preferences Reference](https://support.apple.com/guide/mac-help/finder-mchlp2605/mac)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/interface/finder.sh`](../../../defaults/interface/finder.sh)
+
+```bash
+# --- Show Hidden Files ---
+# Key:          AppleShowAllFiles
+# Domain:       com.apple.finder
+# Description:  Controls whether Finder shows hidden files (those starting
+#               with a dot, like .gitignore, .bashrc, .env). These files are
+#               hidden by default to reduce clutter for casual users, but
+#               developers need to see them regularly.
+# Default:      false (hidden files are hidden)
+# Options:      true  = Show hidden files (dimmed in Finder)
+#               false = Hide files starting with dot
+# Set to:       true (essential for developers working with dotfiles)
+# UI Location:  No direct UI - toggle with ⌘⇧. keyboard shortcut
+# Source:       https://support.apple.com/guide/mac-help/view-hidden-files-and-folders-mchlp1791/mac
+run_defaults "com.apple.finder" "AppleShowAllFiles" "-bool" "true"
+```

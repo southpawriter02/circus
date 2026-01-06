@@ -1,0 +1,46 @@
+# Clicking
+
+Enable tap to click on the trackpad.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` / `com.apple.driver.AppleBluetoothMultitouch.trackpad` |
+| **Key** | `Clicking` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+
+## Description
+
+Enables "tap to click" on Mac trackpads, allowing a light tap to register as a click without physically pressing down.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `1` | **Tap to click enabled** — Light tap = click |
+| `0` | **Disabled** (default) — Must press to click |
+
+## Our Configuration
+
+**Set to**: `1` — Faster, quieter, less strain on fingers.
+
+## Code Examples
+
+```bash
+# Enable for built-in trackpad
+defaults write com.apple.AppleMultitouchTrackpad Clicking -int 1
+
+# Enable for Bluetooth Magic Trackpad
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -int 1
+```
+
+## UI Location
+
+**System Settings** → **Trackpad** → **Point & Click** → **Tap to click**
+
+## References
+
+- [Apple Support: Change Trackpad settings](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac)

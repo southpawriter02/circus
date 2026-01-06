@@ -1,0 +1,50 @@
+# AppleShowScrollBars
+
+Control when scrollbars are visible.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `AppleShowScrollBars` |
+| **Type** | String |
+| **Default Value** | `Automatic` |
+| **Our Setting** | `Always` |
+
+## Description
+
+Controls when scrollbars appear in windows and scrollable views across all applications.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `Always` | **Always visible** — Scrollbars shown at all times |
+| `Automatic` | **Auto** (default) — Based on input device (hidden with trackpad) |
+| `WhenScrolling` | **When scrolling** — Only visible during active scrolling |
+
+## Our Configuration
+
+**Set to**: `Always` — Constant awareness of document position, especially useful with mice.
+
+## Code Examples
+
+```bash
+# Always show scrollbars
+defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
+
+# Show based on input device (Apple default)
+defaults write NSGlobalDomain AppleShowScrollBars -string "Automatic"
+
+# Show only when scrolling
+defaults write NSGlobalDomain AppleShowScrollBars -string "WhenScrolling"
+```
+
+## UI Location
+
+**System Settings** → **Appearance** → **Show scroll bars**
+
+## References
+
+- [Apple Support: Change Appearance settings](https://support.apple.com/guide/mac-help/change-appearance-settings-mchlp1225/mac)

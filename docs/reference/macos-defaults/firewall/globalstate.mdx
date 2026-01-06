@@ -1,0 +1,251 @@
+# globalstate
+
+Enable or disable the macOS Application Firewall.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `/Library/Preferences/com.apple.alf` |
+| **Key** | `globalstate` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+| **Requires Restart** | Firewall service restart |
+| **Requires Admin** | Yes (sudo) |
+
+## Description
+
+Controls the overall state of the macOS Application Level Firewall (ALF). The firewall monitors incoming network connections and can block unauthorized applications from receiving connections, providing protection against network-based attacks.
+
+The macOS firewall operates at the application level, meaning it controls which apps can accept incoming connections rather than blocking specific ports.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Off** (default) — Firewall disabled, all incoming connections allowed |
+| `1` | **On** — Firewall enabled with per-application control |
+| `2` | **Block All** — Block all incoming connections except essential services |
+
+### Value Details
+
+**`0` - Off (Default)**
+- All applications can accept incoming connections
+- No protection against unauthorized network access
+- Apple's default on consumer Macs
+
+**`1` - On (Recommended)**
+- Firewall monitors incoming connections
+- Signed apps can be auto-allowed (configurable)
+- Prompts for unsigned apps attempting to receive connections
+- Good balance of security and usability
+
+**`2` - Block All**
+- Blocks ALL incoming connections
+- Only allows essential system services (DHCP, Bonjour, IPSec)
+- May break legitimate apps that need incoming connections
+- Use for high-security environments
+
+## Default Behavior
+
+**Apple's default**: `0` (Firewall is OFF)
+
+Surprisingly, macOS ships with the firewall disabled by default. This prioritizes ease of use (no firewall prompts) over security.
+
+> ⚠️ **Security Note**: Any Mac connected to public networks (coffee shops, airports, hotels) should have the firewall enabled.
+
+## Our Configuration
+
+**Set to**: `1` (On with per-app control)
+
+**Rationale**: Provides network security without breaking legitimate applications. Combined with `stealthenabled`, this protects the Mac from:
+- Port scans and network reconnaissance
+- Unauthorized remote access attempts
+- Malware trying to receive command-and-control connections
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check firewall state (requires admin)
+sudo defaults read /Library/Preferences/com.apple.alf globalstate
+```
+
+### Enable Firewall
+
+```bash
+# Enable firewall with per-app control
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+
+# Restart firewall service
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+```
+
+### Enable Block All Mode
+
+```bash
+# Block all incoming connections (strict mode)
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 2
+
+# Restart firewall service
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+```
+
+### Disable Firewall
+
+```bash
+# Turn off firewall (not recommended)
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 0
+
+# Restart firewall service
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+```
+
+### Alternative: Using socketfilterfw
+
+```bash
+# Enable firewall
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+
+# Disable firewall
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
+
+# Check status
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+```
+
+## UI Location
+
+**System Settings** → **Network** → **Firewall**
+
+Toggle the firewall on/off, then click **Options...** for additional settings like stealth mode and per-app rules.
+
+## Related Settings
+
+### Stealth Mode
+
+```bash
+# Enable stealth mode (don't respond to pings/port scans)
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 1
+```
+
+See [stealthenabled](./stealthenabled.mdx) for details.
+
+### Firewall Logging
+
+```bash
+# Enable firewall logging
+sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -int 1
+
+# View firewall logs
+log show --predicate 'subsystem == "com.apple.alf"' --last 1h
+```
+
+### Allow Signed Apps
+
+```bash
+# Auto-allow signed apps
+sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -int 1
+
+# Auto-allow downloaded signed apps
+sudo defaults write /Library/Preferences/com.apple.alf allowdownloadsignedenabled -int 1
+```
+
+## Firewall vs. Gatekeeper
+
+| Feature | Firewall (ALF) | Gatekeeper |
+|---------|---------------|------------|
+| Purpose | Network protection | App launch protection |
+| Controls | Incoming connections | Which apps can run |
+| Scope | Running apps | App execution |
+| This setting | `globalstate` | `spctl --master-enable` |
+
+Both should be enabled for complete protection.
+
+## What the Firewall Blocks
+
+When enabled (`globalstate = 1`):
+
+**Blocked** (unless allowed):
+- Incoming connections to unsigned apps
+- Network services from unauthorized apps
+- Remote access attempts to non-approved apps
+
+**Always Allowed**:
+- Outgoing connections (firewall only controls incoming)
+- Essential services (DHCP, Bonjour for local discovery)
+- Signed Apple system services
+- Apps you've explicitly allowed
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 10.7 (Lion) and later | ✅ |
+
+## Troubleshooting
+
+### Firewall Changes Not Taking Effect
+
+Restart the firewall service:
+```bash
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+```
+
+### App Can't Receive Connections
+
+1. Check firewall settings in System Settings
+2. Look for the app in the allowed list
+3. Add the app to allowed list:
+   ```bash
+   sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add /path/to/app.app
+   ```
+
+### Verify Firewall Status
+
+```bash
+# Check overall status
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+
+# List allowed apps
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --listapps
+```
+
+## References
+
+- [Apple Support: About the application firewall](https://support.apple.com/en-us/102445)
+- [Apple Support: Block connections with a firewall](https://support.apple.com/guide/mac-help/block-connections-to-your-mac-with-a-firewall-mh34041/mac)
+- [Apple Support: Use stealth mode](https://support.apple.com/guide/mac-help/use-stealth-mode-to-keep-your-mac-more-secure-mh11463/mac)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/system/firewall.sh`](../../../defaults/system/firewall.sh)
+
+```bash
+# --- Enable Firewall ---
+# Key:          globalstate
+# Domain:       /Library/Preferences/com.apple.alf
+# Description:  Controls the overall state of the macOS Application Level
+#               Firewall (ALF). When enabled, macOS monitors incoming network
+#               connections and can block unauthorized applications.
+# Default:      0 (Off - firewall is disabled on most Macs)
+# Options:      0 = Off (firewall disabled, all incoming connections allowed)
+#               1 = On (firewall enabled, per-app control)
+#               2 = On (block all incoming connections except essential services)
+# Set to:       1 (enabled with per-app control for balanced security)
+# UI Location:  System Settings > Network > Firewall
+# Source:       https://support.apple.com/en-us/102445
+run_sudo_defaults "/Library/Preferences/com.apple.alf" "globalstate" "-int" "1"
+```

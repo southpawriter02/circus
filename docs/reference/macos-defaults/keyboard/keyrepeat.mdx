@@ -1,0 +1,216 @@
+# KeyRepeat
+
+Set the speed at which keys repeat when held down.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `KeyRepeat` |
+| **Type** | Integer |
+| **Default Value** | `6` |
+| **Our Setting** | `1` |
+| **Requires Restart** | Logout/restart recommended |
+
+## Description
+
+Controls the interval between repeated characters when a key is held down. This determines how fast text appears when holding a key like backspace, arrow keys, or any letter.
+
+The value represents the interval between key repeats in "ticks" where each tick is approximately 15 milliseconds. Lower values mean faster repeating.
+
+This setting is crucial for:
+- **Vim users**: Rapid j/k navigation through code
+- **Terminal users**: Holding arrow keys in shell history
+- **Text editing**: Quick deletion with backspace
+- **Gaming**: Rapid key input (though most games handle this separately)
+
+## Values
+
+| Value | Approximate Interval | Characters/Second | Experience |
+|-------|---------------------|-------------------|------------|
+| `1` | ~15ms | ~67 | **Extremely fast** — Preferred by vim users |
+| `2` | ~30ms | ~33 | **Very fast** — Comfortable for power users |
+| `4` | ~60ms | ~17 | **Fast** |
+| `6` | ~90ms | ~11 | **Normal** — Apple's default |
+| `10` | ~150ms | ~7 | **Slow** |
+| `15` | ~225ms | ~4 | **Very slow** |
+
+> **Note**: The System Settings slider doesn't go as low as the command line allows. The UI's "Fast" setting is approximately `2`, while `1` is only achievable via `defaults`.
+
+## Default Behavior
+
+**Apple's default**: `6` (~90ms between repeats)
+
+This is a conservative default that prevents accidental repeated input but feels sluggish to power users and developers who rely on key repeat for navigation.
+
+## Our Configuration
+
+**Set to**: `1` (fastest)
+
+**Rationale**: Essential for vim users who hold `j`/`k` to navigate, and for anyone who deletes text by holding backspace. The fastest setting makes navigation feel instant and responsive.
+
+Combined with `InitialKeyRepeat` = `10`, this creates an extremely responsive keyboard ideal for coding.
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read NSGlobalDomain KeyRepeat
+```
+
+### Set Fastest Repeat
+
+```bash
+# Set to fastest (beyond UI limit)
+defaults write NSGlobalDomain KeyRepeat -int 1
+
+# Log out or restart for changes to take full effect
+```
+
+### Set Normal Speed
+
+```bash
+# Restore to Apple's default
+defaults write NSGlobalDomain KeyRepeat -int 6
+```
+
+### Set Custom Speed
+
+```bash
+# Set a comfortable middle ground (very fast)
+defaults write NSGlobalDomain KeyRepeat -int 2
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting
+defaults delete NSGlobalDomain KeyRepeat
+```
+
+## Related Setting: Initial Key Repeat
+
+The `InitialKeyRepeat` setting controls the delay *before* repeating starts:
+
+```bash
+# Delay before key repeat begins (in ~15ms ticks)
+# Default: 25 (~375ms)
+defaults write NSGlobalDomain InitialKeyRepeat -int 10
+
+# Value 10 = ~150ms delay (very short)
+# Value 15 = ~225ms delay (short)
+# Value 25 = ~375ms delay (Apple's default)
+```
+
+**Our setting**: `10` (very short delay)
+
+### Complete Fast Keyboard Configuration
+
+```bash
+# The ultimate responsive keyboard for developers
+defaults write NSGlobalDomain KeyRepeat -int 1
+defaults write NSGlobalDomain InitialKeyRepeat -int 10
+
+# Logout or restart to apply
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Key repeat rate** (slider)
+
+The slider shows "Slow" on the left and "Fast" on the right. Note that even the "Fast" position is not as fast as setting `KeyRepeat` to `1` via the command line.
+
+## Relationship with Press and Hold
+
+By default, holding a key shows an accent character popup (like on iOS) instead of repeating. To enable key repeat, you must also disable press-and-hold:
+
+```bash
+# Disable press-and-hold to enable key repeat
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+```
+
+See [ApplePressAndHoldEnabled](../nsglobaldomain/applepressandholdenabled.mdx) for details.
+
+## Per-Application Behavior
+
+Some applications override system key repeat settings:
+- Terminal.app generally respects system settings
+- VS Code may have its own key repeat handling
+- Vim running in terminal uses system settings
+- Games often handle input directly
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.5 (Leopard) and later | ✅ |
+
+## Troubleshooting
+
+### Key Repeat Not Working at All
+
+1. Check if press-and-hold is disabled:
+   ```bash
+   defaults read NSGlobalDomain ApplePressAndHoldEnabled
+   # Should return 0 or false
+   ```
+
+2. If not disabled, turn it off:
+   ```bash
+   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+   ```
+
+### Changes Not Taking Effect
+
+1. Log out and log back in (recommended)
+2. Or restart the Mac
+3. Some apps may need to be relaunched
+
+### Key Repeat Too Fast in Certain Apps
+
+Some apps (like Slack, Electron apps) may handle key repeat differently. The system setting is a preference, not a guarantee.
+
+### Testing Key Repeat
+
+Open TextEdit or any text field and hold a key to test:
+```bash
+# Test in Terminal
+# Hold the 'a' key for 2 seconds, observe the output
+```
+
+## References
+
+- [Apple Support: Change Keyboard settings](https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac)
+- [defaults man page](x-man-page://defaults)
+- [Mathias Bynens' dotfiles](https://github.com/mathiasbynens/dotfiles/blob/main/.macos)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+# --- Key Repeat Rate ---
+# Key:          KeyRepeat
+# Domain:       NSGlobalDomain
+# Description:  Controls the speed at which a character repeats when a key
+#               is held down. Lower values mean faster repeating.
+# Default:      6 (approximately 90ms between repeats)
+# Options:      1  = ~15ms (extremely fast, ~67 chars/sec)
+#               2  = ~30ms (very fast, ~33 chars/sec)
+#               6  = ~90ms (Apple's default, ~11 chars/sec)
+#               10 = ~150ms (slow)
+# Set to:       1 (fastest for vim users and power typists)
+# UI Location:  System Settings > Keyboard > Key repeat rate (slider)
+# Source:       https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac
+run_defaults "KeyRepeat" "-int" "1"
+```

@@ -1,0 +1,54 @@
+# com.apple.swipescrolldirection
+
+Control natural vs traditional scroll direction.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.swipescrolldirection` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls the scroll direction for trackpads and mice:
+- **Natural scrolling** (`true`): Content moves with your finger (iOS-style)
+- **Traditional scrolling** (`false`): Viewport moves with gesture (classic)
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Natural** (default) — Swipe up = content moves up |
+| `false` | **Traditional** — Swipe up = scroll up (see content above) |
+
+## Our Configuration
+
+**Set to**: `false` — Matches classic Mac/Windows behavior for muscle memory.
+
+## Code Examples
+
+```bash
+# Enable traditional scrolling
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
+
+# Enable natural scrolling (Apple default)
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+```
+
+## UI Location
+
+**System Settings** → **Trackpad** → **Scroll & Zoom** → **Natural scrolling**
+
+Also: **System Settings** → **Mouse** → **Natural scrolling**
+
+## Note
+
+This setting affects both trackpad and mouse scrolling globally.
+
+## References
+
+- [Apple Support: Change Trackpad settings](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac)
