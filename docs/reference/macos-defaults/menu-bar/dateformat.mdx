@@ -1,0 +1,81 @@
+# DateFormat
+
+Customize the menu bar clock format.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.menuextra.clock` |
+| **Key** | `DateFormat` |
+| **Type** | String |
+| **Default Value** | Locale-dependent |
+| **Our Setting** | `"EEE d MMM  HH:mm:ss"` |
+
+## Description
+
+Sets the format of the clock in the menu bar using ICU date format patterns. You can customize what information appears (date, time, day of week) and how it's formatted (12/24 hour, with/without seconds).
+
+## Common Format Patterns
+
+| Pattern | Displays As | Description |
+|---------|-------------|-------------|
+| `HH:mm` | 14:30 | 24-hour time |
+| `h:mm a` | 2:30 PM | 12-hour with AM/PM |
+| `HH:mm:ss` | 14:30:45 | 24-hour with seconds |
+| `EEE` | Mon | Short day name |
+| `EEEE` | Monday | Full day name |
+| `d` | 6 | Day of month |
+| `MMM` | Jan | Short month |
+| `MMMM` | January | Full month |
+
+## Example Formats
+
+| Format String | Result |
+|---------------|--------|
+| `"EEE d MMM  HH:mm"` | Mon 6 Jan  14:30 |
+| `"EEE d MMM  HH:mm:ss"` | Mon 6 Jan  14:30:45 |
+| `"EEE MMM d  h:mm a"` | Mon Jan 6  2:30 PM |
+| `"HH:mm"` | 14:30 |
+| `"EEEE, MMMM d  h:mm a"` | Monday, January 6  2:30 PM |
+
+## Our Configuration
+
+**Set to**: `"EEE d MMM  HH:mm:ss"` — Shows day, date, and 24-hour time with seconds.
+
+## Code Examples
+
+```bash
+# Set 24-hour format with seconds
+defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM  HH:mm:ss"
+
+# Set 12-hour format with AM/PM
+defaults write com.apple.menuextra.clock DateFormat -string "EEE MMM d  h:mm a"
+
+# Restart menu bar
+killall SystemUIServer
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Clock Options**
+
+UI provides toggle options; custom formats require terminal.
+
+## Related Settings
+
+```bash
+# Show seconds
+defaults write com.apple.menuextra.clock ShowSeconds -bool true
+
+# Show day of week
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+
+# Use analog clock
+defaults write com.apple.menuextra.clock IsAnalog -bool false
+```
+
+## References
+
+- [ICU Date Format Patterns](https://unicode-org.github.io/icu/userguide/format_parse/datetime/)
+- [Apple Support: Change Date & Time preferences](https://support.apple.com/guide/mac-help/change-date-time-preferences-mchlp2996/mac)

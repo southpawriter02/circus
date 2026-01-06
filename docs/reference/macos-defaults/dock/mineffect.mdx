@@ -1,0 +1,71 @@
+# mineffect
+
+Set the window minimize animation style.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `mineffect` |
+| **Type** | String |
+| **Default Value** | `genie` |
+| **Our Setting** | `scale` |
+
+## Description
+
+Controls the animation used when minimizing windows to the Dock. The scale effect is faster and less visually distracting than the default genie effect.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `genie` | **Genie effect** (default) — Window "pours" into Dock like a genie into a lamp |
+| `scale` | **Scale effect** — Window shrinks directly to Dock (faster) |
+| `suck` | **Suck effect** — Hidden option, window gets "sucked" into Dock |
+
+## Our Configuration
+
+**Set to**: `scale` — Faster, more professional feel.
+
+## Visual Comparison
+
+- **Genie**: Playful, curved animation (slower)
+- **Scale**: Professional, direct shrink (faster)
+- **Suck**: Similar to scale but with a vortex effect (hidden)
+
+## Code Examples
+
+```bash
+# Use scale effect (faster)
+defaults write com.apple.dock mineffect -string "scale"
+
+# Use genie effect (Apple default)
+defaults write com.apple.dock mineffect -string "genie"
+
+# Use suck effect (hidden option)
+defaults write com.apple.dock mineffect -string "suck"
+
+# Restart Dock
+killall Dock
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Minimize windows using**
+
+The UI only shows Genie and Scale. Suck is a hidden option accessible via terminal.
+
+## Related Settings
+
+```bash
+# Minimize to application icon instead of Dock section
+defaults write com.apple.dock minimize-to-application -bool true
+
+# Double-click title bar to minimize
+defaults write NSGlobalDomain AppleMiniaturizeOnDoubleClick -bool true
+```
+
+## References
+
+- [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)

@@ -1,0 +1,70 @@
+# RichText
+
+Set TextEdit to use plain text by default.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.TextEdit` |
+| **Key** | `RichText` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `0` |
+
+## Description
+
+Controls whether new TextEdit documents are created as Rich Text Format (RTF) with formatting, or as plain text (.txt) without formatting.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Plain text** — Simple .txt files, no formatting |
+| `1` | **Rich Text Format** (default) — .rtf files with fonts, colors, etc. |
+
+## Our Configuration
+
+**Set to**: `0` (plain text) — Better for developers and code snippets.
+
+### Why Plain Text?
+
+- No hidden formatting to cause issues
+- Better for config files, scripts, notes
+- Smaller file size
+- More compatible across systems
+- Ideal for quick code snippets
+
+## Code Examples
+
+```bash
+# Default to plain text
+defaults write com.apple.TextEdit RichText -int 0
+
+# Default to rich text (Apple default)
+defaults write com.apple.TextEdit RichText -int 1
+```
+
+## UI Location
+
+**TextEdit** → **Settings** (⌘,) → **New Document** → **Format** → **Plain text**
+
+Or use **Format** menu → **Make Plain Text** (⇧⌘T) per document.
+
+## Related Settings
+
+```bash
+# Disable smart quotes (essential for code)
+defaults write com.apple.TextEdit SmartQuotes -bool false
+
+# Disable smart dashes
+defaults write com.apple.TextEdit SmartDashes -bool false
+
+# Set monospace font for plain text
+defaults write com.apple.TextEdit NSFixedPitchFont -string "Menlo-Regular"
+defaults write com.apple.TextEdit NSFixedPitchFontSize -int 12
+```
+
+## References
+
+- [Apple Support: Work with plain text documents in TextEdit](https://support.apple.com/guide/textedit/work-with-plain-text-documents-txted1098/mac)

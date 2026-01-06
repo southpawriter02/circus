@@ -1,0 +1,59 @@
+# showWindowTitlebarIcons
+
+Always show window title bar proxy icons.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `showWindowTitlebarIcons` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the proxy icon (document/folder icon) in window title bars is always visible or only appears on hover. The proxy icon represents the current file and can be dragged or Command-clicked to reveal the path.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Always show** — Icon visible at all times |
+| `false` | **Show on hover** (default) — Icon appears when mouse hovers over title |
+
+## Our Configuration
+
+**Set to**: `true` — Always visible for quick file access.
+
+## Why Always Show?
+
+- **Drag files directly** — Drag the icon to attach to emails, move files, etc.
+- **Reveal path** — Command-click to see and navigate the full path
+- **Quick identification** — See file type at a glance
+- **Consistent** — No waiting for hover animation
+
+## Code Examples
+
+```bash
+# Always show title bar icons
+defaults write com.apple.universalaccess showWindowTitlebarIcons -bool true
+
+# Show only on hover (macOS default)
+defaults write com.apple.universalaccess showWindowTitlebarIcons -bool false
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Display** → **Show window title icons**
+
+## Using the Proxy Icon
+
+1. **Drag to move/copy** — Drag the icon to Finder, Mail attachments, etc.
+2. **Command-click** — Shows full path; click any folder to navigate there
+3. **Option-Command-drag** — Creates an alias
+
+## References
+
+- [Apple Support: Change Display preferences for accessibility](https://support.apple.com/guide/mac-help/change-display-preferences-mchlp1108/mac)

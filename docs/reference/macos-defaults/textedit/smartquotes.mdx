@@ -1,0 +1,79 @@
+# SmartQuotes
+
+Disable automatic curly quote substitution.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.TextEdit` / `NSGlobalDomain` |
+| **Key** | `SmartQuotes` / `NSAutomaticQuoteSubstitutionEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether straight quotes (`"` and `'`) are automatically converted to typographic "curly" quotes (`"` `"` and `'` `'`). While prettier for prose, smart quotes break code and scripts.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Smart quotes** (default) — Auto-converts to curly quotes |
+| `false` | **Straight quotes** — Keeps ASCII `"` and `'` |
+
+## The Problem for Developers
+
+```javascript
+// With smart quotes (BROKEN):
+console.log("Hello");  // ← Syntax error!
+
+// With straight quotes (CORRECT):
+console.log("Hello");  // ← Works
+```
+
+Smart quotes are different Unicode characters that cause syntax errors in virtually all programming languages.
+
+## Our Configuration
+
+**Set to**: `false` — Essential for anyone who writes code.
+
+## Code Examples
+
+### TextEdit Specific
+
+```bash
+# Disable smart quotes in TextEdit
+defaults write com.apple.TextEdit SmartQuotes -bool false
+```
+
+### System-Wide
+
+```bash
+# Disable smart quotes globally
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+```
+
+## UI Location
+
+### TextEdit
+**Edit** menu → **Substitutions** → uncheck **Smart Quotes**
+
+### System-Wide
+**System Settings** → **Keyboard** → **Text Input** → **Input Sources** → **Edit** → uncheck **Use smart quotes and dashes**
+
+## Related Settings
+
+```bash
+# Also disable smart dashes (-- becoming –)
+defaults write com.apple.TextEdit SmartDashes -bool false
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Disable auto-correct
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+```
+
+## References
+
+- [Apple Support: Use substitutions in apps](https://support.apple.com/guide/mac-help/use-substitutions-in-apps-mchlp1171/mac)

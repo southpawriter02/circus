@@ -1,0 +1,50 @@
+# CriticalUpdateInstall
+
+Automatically install security updates and system files.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.SoftwareUpdate` |
+| **Key** | `CriticalUpdateInstall` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Automatically installs security updates and system data files including XProtect (malware definitions), Gatekeeper data, and MRT (Malware Removal Tool) updates. These small, critical updates patch vulnerabilities often without requiring a restart.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-install security updates** (default, recommended) |
+| `false` | **Manual installation** — NOT recommended |
+
+## Our Configuration
+
+**Set to**: `true` — This is one of the most important security settings. Never disable.
+
+## Code Examples
+
+```bash
+# Enable automatic security updates (should already be default)
+defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
+
+# Check current setting
+defaults read com.apple.SoftwareUpdate CriticalUpdateInstall
+```
+
+## UI Location
+
+**System Settings** → **General** → **Software Update** → **Automatic updates** → **Install Security Responses and system files**
+
+## Security Warning
+
+⚠️ **Never disable this setting.** Security updates patch actively exploited vulnerabilities and protect against emerging threats.
+
+## References
+
+- [Apple Support: Keep your Mac up to date](https://support.apple.com/en-us/102582)

@@ -1,0 +1,59 @@
+# AutomaticCheckEnabled
+
+Automatically check for software updates.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.SoftwareUpdate` |
+| **Key** | `AutomaticCheckEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Tells macOS to periodically contact Apple's servers to check for new macOS versions, security patches, and system data files. This is the foundation of keeping your Mac secure.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Check automatically** (default) — Notifies when updates available |
+| `false` | **Manual only** — Only checks when you open Software Update |
+
+## Our Configuration
+
+**Set to**: `true` — Essential for staying informed about security updates.
+
+## Code Examples
+
+```bash
+# Enable automatic update checking
+defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
+
+# Set check frequency (days)
+defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
+```
+
+## UI Location
+
+**System Settings** → **General** → **Software Update** → **Automatic updates** → **Check for updates**
+
+## Related Settings
+
+```bash
+# Download updates in background
+defaults write com.apple.SoftwareUpdate AutomaticDownload -bool true
+
+# Install macOS updates automatically
+defaults write com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool true
+
+# Install security updates automatically
+defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
+```
+
+## References
+
+- [Apple Support: Keep your Mac up to date](https://support.apple.com/en-us/102582)

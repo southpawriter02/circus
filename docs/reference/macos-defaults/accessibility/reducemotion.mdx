@@ -1,0 +1,61 @@
+# reduceMotion
+
+Reduce motion and animation effects.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `reduceMotion` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Reduces motion effects throughout macOS including parallax on the desktop, window zoom animations, and other animated transitions. Useful for users who experience motion sickness or prefer simpler animations.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Reduce motion** — Simpler cross-fade transitions |
+| `false` | **Full animations** (default) — All motion effects enabled |
+
+## Effects When Enabled
+
+- Window open/close becomes a cross-fade instead of zoom
+- Desktop parallax effect is disabled
+- Notification animations simplified
+- Space switching uses cross-fade
+- App launch animations reduced
+
+## Our Configuration
+
+**Set to**: `false` — Keep animations for modern visual experience.
+
+## Code Examples
+
+```bash
+# Enable reduced motion
+defaults write com.apple.universalaccess reduceMotion -bool true
+
+# Disable reduced motion (full animations)
+defaults write com.apple.universalaccess reduceMotion -bool false
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Display** → **Reduce motion**
+
+## Benefits of Enabling
+
+- Reduces motion sickness for sensitive users
+- May improve performance on older Macs
+- Less visual distraction
+- Faster perceived transitions
+
+## References
+
+- [Apple Support: Change Display preferences for accessibility](https://support.apple.com/guide/mac-help/change-display-preferences-mchlp1108/mac)

@@ -1,0 +1,61 @@
+# reduceTransparency
+
+Reduce transparency effects in the interface.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `reduceTransparency` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Reduces the translucent/transparent effects in macOS, making windows, sidebars, the menu bar, and the Dock more opaque and solid. Improves readability and can boost performance.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Reduce transparency** — Solid, opaque UI elements |
+| `false` | **Normal transparency** (default) — Frosted glass effects |
+
+## Effects When Enabled
+
+- Menu bar becomes solid
+- Sidebars lose blur/transparency
+- Dock becomes opaque
+- Alert dialogs solid
+- Notification Center solid
+
+## Our Configuration
+
+**Set to**: `false` — Keep visual effects for modern appearance.
+
+## Code Examples
+
+```bash
+# Enable reduced transparency (more solid)
+defaults write com.apple.universalaccess reduceTransparency -bool true
+
+# Normal transparency
+defaults write com.apple.universalaccess reduceTransparency -bool false
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Display** → **Reduce transparency**
+
+## Benefits of Enabling
+
+- **Readability** — Text easier to read without background bleed-through
+- **Performance** — Reduces GPU compositing load on older Macs
+- **Battery** — May slightly improve battery life
+- **Focus** — Less distracting background content
+
+## References
+
+- [Apple Support: Change Display preferences for accessibility](https://support.apple.com/guide/mac-help/change-display-preferences-mchlp1108/mac)
