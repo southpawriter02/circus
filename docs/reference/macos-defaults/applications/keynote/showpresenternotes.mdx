@@ -1,0 +1,109 @@
+# Keynote Presenter Notes
+
+Show presenter notes panel while editing presentations.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Keynote` |
+| **Key** | `ShowPresenterNotes` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Shows the presenter notes panel below the slide canvas while editing your presentation. Presenter notes are your personal script that appears only on your screen during the presentation — the audience only sees the slide.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show notes** — Notes panel visible while editing |
+| `false` | **Hide notes** (default) — More slide space |
+
+## Our Configuration
+
+**Set to**: `true` — Keep notes visible while building presentations.
+
+### Benefits
+
+1. **Write as you build** — Add notes while creating slides
+2. **Context visible** — See notes alongside slide content
+3. **Better preparation** — Develop talking points early
+4. **Efficient workflow** — No toggling back and forth
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Keynote ShowPresenterNotes
+
+# Show presenter notes (recommended)
+defaults write com.apple.iWork.Keynote ShowPresenterNotes -bool true
+
+# Hide presenter notes (more canvas space)
+defaults write com.apple.iWork.Keynote ShowPresenterNotes -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Keynote ShowPresenterNotes
+```
+
+## UI Location
+
+**View** menu → **Show Presenter Notes**
+
+Or keyboard shortcut: ⇧⌘P
+
+## Presenter Notes Best Practices
+
+| Do | Don't |
+|----|-------|
+| ✓ Key talking points | ✗ Full script to read |
+| ✓ Transitions/cues | ✗ Exact slide content |
+| ✓ Timing reminders | ✗ Too much text |
+| ✓ Technical notes | ✗ Audience-visible info |
+
+## During Presentation
+
+When presenting with an external display:
+- Your Mac shows: Current slide, next slide, notes, timer
+- Projector shows: Only the slide
+
+Configure in **Play** → **Customize Presenter Display**
+
+## Related Settings
+
+```bash
+# Complete editing setup
+defaults write com.apple.iWork.Keynote ShowPresenterNotes -bool true
+defaults write com.apple.iWork.Keynote KNShowsObjectCenterGuides -bool true
+defaults write com.apple.iWork.Keynote KNShowsObjectEdgeGuides -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Notes panel not showing | Use ⇧⌘P to toggle |
+| Notes not appearing on presenter display | Check **Play** → **Customize Presenter Display** |
+| Notes not saving | Notes are part of .key file; save presentation |
+
+## Compatibility
+
+- **Keynote**: macOS 10.13+
+- **Syncs**: Notes sync with the presentation file via iCloud
+
+## Source File
+
+**File**: [`defaults/applications/keynote.sh`](../../../../defaults/applications/keynote.sh)
+
+```bash
+run_defaults "com.apple.iWork.Keynote" "ShowPresenterNotes" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Add presenter notes in Keynote](https://support.apple.com/guide/keynote/add-presenter-notes-tan7a88c5d92/mac)
+

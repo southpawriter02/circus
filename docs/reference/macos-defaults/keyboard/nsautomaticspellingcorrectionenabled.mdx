@@ -37,11 +37,17 @@ Controls whether macOS automatically corrects spelling as you type. While helpfu
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read NSGlobalDomain NSAutomaticSpellingCorrectionEnabled
+
 # Disable auto-correct
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
 # Enable auto-correct
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSAutomaticSpellingCorrectionEnabled
 ```
 
 ## UI Location
@@ -57,6 +63,28 @@ defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still auto-correcting | Restart app or log out/in |
+| Some apps still correct | Check app-specific settings |
+| Corrections underlined | Separate spell-check feature |
+
+## Compatibility
+
+- **Keyboard**: macOS 10.12+
+- **Applies to**: All text input fields
+
+## Source File
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSAutomaticSpellingCorrectionEnabled" "-bool" "false"
+```
+
 ## References
 
 - [Apple Support: Change Keyboard settings](https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac)
+

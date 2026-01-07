@@ -52,11 +52,17 @@ Without protection:
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.mail ProtectMailActivityInICloud
+
 # Enable Mail Privacy Protection (should be default)
 defaults write com.apple.mail ProtectMailActivityInICloud -bool true
 
-# Check current setting
-defaults read com.apple.mail ProtectMailActivityInICloud
+# Disable (not recommended)
+defaults write com.apple.mail ProtectMailActivityInICloud -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.mail ProtectMailActivityInICloud
 ```
 
 ## UI Location
@@ -91,10 +97,18 @@ defaults write com.apple.mail DisableURLLoading -bool true
 | Open time | Exact timestamp | Randomized/hidden |
 | Open count | Accurate | Unreliable |
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Images not loading | Check "Protect Mail Activity" not "Block All" |
+| Still seeing tracking concerns | Only protects Mail.app, not webmail |
+| Uses extra bandwidth | Pre-fetching downloads all remote content |
+
 ## Compatibility
 
-- **macOS**: 12.0 (Monterey) and later
-- **iOS**: 15.0 and later
+- **macOS**: 12.0 (Monterey)+
+- **iOS**: 15.0+
 - **Requirements**: Works with any email account in Mail.app
 
 ## Limitations
@@ -113,7 +127,16 @@ defaults write com.apple.mail DisableURLLoading -bool true
 defaults write com.apple.mail ConversationViewEnabled -bool true
 ```
 
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "ProtectMailActivityInICloud" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Mail Privacy Protection](https://support.apple.com/guide/mail/use-mail-privacy-protection-mlhl03be2866/mac)
 - [Apple Privacy: Mail](https://www.apple.com/privacy/features/)
+

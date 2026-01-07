@@ -31,6 +31,9 @@ Controls when scrollbars appear in windows and scrollable views across all appli
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read NSGlobalDomain AppleShowScrollBars
+
 # Always show scrollbars
 defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
 
@@ -39,12 +42,37 @@ defaults write NSGlobalDomain AppleShowScrollBars -string "Automatic"
 
 # Show only when scrolling
 defaults write NSGlobalDomain AppleShowScrollBars -string "WhenScrolling"
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain AppleShowScrollBars
 ```
 
 ## UI Location
 
 **System Settings** → **Appearance** → **Show scroll bars**
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Scrollbars still hidden | Restart apps to apply change |
+| Scrollbars thick/thin | Controlled by system appearance |
+| Per-app behavior differs | Some apps override system settings |
+
+## Compatibility
+
+- **macOS**: 10.7+
+- **Affects**: All Cocoa applications
+
+## Source File
+
+**File**: [`defaults/interface/appearance.sh`](../../../defaults/interface/appearance.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "AppleShowScrollBars" "-string" "Always"
+```
+
 ## References
 
 - [Apple Support: Change Appearance settings](https://support.apple.com/guide/mac-help/change-appearance-settings-mchlp1225/mac)
+

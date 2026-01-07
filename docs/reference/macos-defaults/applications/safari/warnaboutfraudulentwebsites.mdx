@@ -134,8 +134,17 @@ defaults write com.apple.Safari AutoFillPasswords -bool false
 defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
 ```
 
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "WarnAboutFraudulentWebsites" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Safari security features](https://support.apple.com/guide/safari/security-ibrw1074/mac)
 - [Google Safe Browsing](https://safebrowsing.google.com/)
 - [Apple Platform Security Guide](https://support.apple.com/guide/security/welcome/web)
+

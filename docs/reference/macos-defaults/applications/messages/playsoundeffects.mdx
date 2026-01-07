@@ -51,11 +51,17 @@ Controls whether Messages plays audio feedback when sending and receiving messag
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.MobileSMS PlaySoundEffects
+
 # Enable message sounds
 defaults write com.apple.MobileSMS PlaySoundEffects -bool true
 
 # Disable message sounds
 defaults write com.apple.MobileSMS PlaySoundEffects -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.MobileSMS PlaySoundEffects
 ```
 
 ## UI Location
@@ -94,11 +100,28 @@ Note: This setting controls Messages-specific sounds. System notification sounds
 
 **System Settings** → **Notifications** → **Messages**
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No sounds playing | Check system volume and mute switch |
+| Sounds playing during Focus | Adjust Focus mode notification settings |
+| Wrong notification sound | Change in System Settings → Notifications → Messages |
+
 ## Compatibility
 
 - **Messages**: macOS 10.15+
 - **Affects**: Desktop Messages app only
 
+## Source File
+
+**File**: [`defaults/applications/messages.sh`](../../../../defaults/applications/messages.sh)
+
+```bash
+run_defaults "com.apple.MobileSMS" "PlaySoundEffects" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Messages preferences](https://support.apple.com/guide/messages/change-messages-preferences-icht491d3b70/mac)
+

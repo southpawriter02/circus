@@ -1,0 +1,109 @@
+# Books Auto Night Theme
+
+Automatically switch to dark reading theme based on ambient light.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iBooksX` |
+| **Key** | `BKAutoNightThemeEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Automatically switches the reading theme from light to dark based on ambient lighting conditions or time of day. This reduces eye strain when reading in low-light environments and matches system-wide Dark Mode behavior.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-switch** — Adapts to lighting conditions |
+| `false` | **Manual only** (default) — You control the theme |
+
+## Our Configuration
+
+**Set to**: `true` — Automatic theme adaptation for eye comfort.
+
+### How It Works
+
+The Books app can detect:
+1. **System Dark Mode** — Follows macOS appearance
+2. **Time of day** — Darker at night
+3. **Ambient light** (on devices with sensors)
+
+When conditions suggest low light, the app switches to a sepia or dark theme automatically.
+
+## Theme Options in Books
+
+| Theme | Background | Best For |
+|-------|------------|----------|
+| White | Bright white | Daylight reading |
+| Sepia | Warm beige | Reduced eye strain |
+| Night | Dark gray/black | Low light reading |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iBooksX BKAutoNightThemeEnabled
+
+# Enable auto night theme (recommended)
+defaults write com.apple.iBooksX BKAutoNightThemeEnabled -bool true
+
+# Disable auto switching
+defaults write com.apple.iBooksX BKAutoNightThemeEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iBooksX BKAutoNightThemeEnabled
+
+# Restart Books to apply
+killall Books
+```
+
+## UI Location
+
+**Books** → **Settings** (⌘,) → **Reading** → ☑ **Auto-Night Theme**
+
+## Manual Theme Override
+
+Even with auto-theme enabled, you can manually override:
+1. Open a book
+2. Click the **Aa** button in toolbar
+3. Choose White, Sepia, or Night theme
+
+## Related Settings
+
+```bash
+# Complete reading comfort setup
+defaults write com.apple.iBooksX BKAutoNightThemeEnabled -bool true
+defaults write com.apple.iBooksX BKShowStatusBarWhileReading -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Theme not switching | Check System Settings → Display for Dark Mode |
+| Manual theme overridden | Auto-theme respects most recent manual choice |
+| Books not restarting | Force quit from Activity Monitor |
+
+## Compatibility
+
+- **Books**: macOS 10.14+
+- **Syncs**: Theme preference syncs via iCloud
+
+## Source File
+
+**File**: [`defaults/applications/books.sh`](../../../../defaults/applications/books.sh)
+
+```bash
+run_defaults "com.apple.iBooksX" "BKAutoNightThemeEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change reading settings in Books](https://support.apple.com/guide/books/settings-ibks1016d5f5/mac)
+

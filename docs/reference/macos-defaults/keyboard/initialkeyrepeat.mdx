@@ -34,11 +34,17 @@ Values are in approximately 15ms ticks.
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read NSGlobalDomain InitialKeyRepeat
+
 # Set short initial delay (fast)
 defaults write NSGlobalDomain InitialKeyRepeat -int 10
 
 # Apple's default
 defaults write NSGlobalDomain InitialKeyRepeat -int 25
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain InitialKeyRepeat
 
 # Log out or restart to apply
 ```
@@ -60,6 +66,28 @@ defaults write NSGlobalDomain KeyRepeat -int 1
 defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Delay unchanged | Log out and back in |
+| Too fast/accidental repeats | Increase value to 15 or 25 |
+| Not working with press-and-hold | Disable ApplePressAndHoldEnabled |
+
+## Compatibility
+
+- **Keyboard**: macOS 10.5+
+- **Requires**: Logout or restart to apply
+
+## Source File
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "InitialKeyRepeat" "-int" "10"
+```
+
 ## References
 
 - [Apple Support: Change Keyboard settings](https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac)
+

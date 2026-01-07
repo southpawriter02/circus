@@ -94,7 +94,7 @@ Each category has its own checkbox:
 
 ## Compatibility
 
-- **macOS**: 10.10 (Yosemite) and later
+- **macOS**: 10.10+
 - **Safari**: All modern versions
 - **Prerequisite**: Safari must have been launched at least once
 
@@ -125,8 +125,19 @@ defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
 defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
 ```
 
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "AutoFillFromAddressBook" "-bool" "false"
+run_defaults "com.apple.Safari" "AutoFillPasswords" "-bool" "false"
+run_defaults "com.apple.Safari" "AutoFillCreditCardData" "-bool" "false"
+```
+
 ## References
 
 - [Apple Support: AutoFill web forms in Safari](https://support.apple.com/guide/safari/autofill-web-forms-ibrw1103/mac)
 - [Apple Support: Safari security](https://support.apple.com/guide/safari/security-ibrw1074/mac)
 - [WebKit Security Blog](https://webkit.org/blog/category/security/)
+

@@ -57,12 +57,22 @@ All three set to `true` — Full conversation threading with newest first.
 ## Code Examples
 
 ```bash
+# Read current values
+defaults read com.apple.mail ConversationViewEnabled
+defaults read com.apple.mail ConversationViewAllMailboxes
+defaults read com.apple.mail ConversationViewSortDescending
+
 # Complete conversation view setup
 defaults write com.apple.mail ConversationViewEnabled -bool true
 defaults write com.apple.mail ConversationViewAllMailboxes -bool true
 defaults write com.apple.mail ConversationViewSortDescending -bool true
 
-# Restart Mail
+# Delete (reset to defaults)
+defaults delete com.apple.mail ConversationViewEnabled
+defaults delete com.apple.mail ConversationViewAllMailboxes
+defaults delete com.apple.mail ConversationViewSortDescending
+
+# Restart Mail to apply
 killall Mail
 ```
 
@@ -106,11 +116,29 @@ Also in **Mail** → **Settings** (⌘,) → **Viewing**
 defaults write com.apple.mail ConversationViewMarkAllAsRead -bool false
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Messages not grouping | Enable via View → Organize by Conversation |
+| Sent messages not showing | Enable "Include Related Messages" |
+| Thread order wrong | Check View → Sort By → Date setting |
+
 ## Compatibility
 
-- **Mail.app**: macOS 10.7 (Lion) and later
+- **Mail.app**: macOS 10.7+
 - **Works with**: All email account types
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "ConversationViewEnabled" "-bool" "true"
+run_defaults "com.apple.mail" "ConversationViewAllMailboxes" "-bool" "true"
+```
 
 ## References
 
 - [Apple Support: Organize emails by conversation](https://support.apple.com/guide/mail/organize-emails-by-conversation-mlhlcc79f5d8/mac)
+

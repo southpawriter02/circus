@@ -90,6 +90,23 @@ With this enabled:
 - **Syncs**: Nicknames sync via iCloud to all devices
 - **System-wide**: Affects Messages, Mail, Siri, etc.
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Nickname not showing | Check nickname field exists |
+| Not showing in Messages | Restart Messages app |
+| Siri uses wrong name | Enable ABPrefersNickname |
+
+## Source File
+
+**File**: [`defaults/applications/contacts.sh`](../../../../defaults/applications/contacts.sh)
+
+```bash
+run_defaults "com.apple.AddressBook" "ABShowNickname" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Add nicknames](https://support.apple.com/guide/contacts/add-and-edit-contacts-adrbf71ccd0e/mac)
+

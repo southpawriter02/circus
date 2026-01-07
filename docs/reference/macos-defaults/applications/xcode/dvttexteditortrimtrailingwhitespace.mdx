@@ -93,17 +93,24 @@ defaults write com.apple.dt.Xcode DVTTextEditorTrimWhitespaceOnlyLines -bool tru
 - **Xcode**: 8.0 and later
 - **File types**: All text-based source files
 
-## Edge Cases
+## Troubleshooting
 
-### Markdown Files
+| Issue | Solution |
+|-------|----------|
+| Whitespace not trimmed | Restart Xcode after setting |
+| Markdown breaks affected | Be careful with .md files in Xcode |
+| Setting not persisting | Verify with `defaults read` |
 
-Some Markdown syntax uses trailing spaces for line breaks. Xcode's trimming applies to all files, so be aware when editing `.md` files in Xcode.
+## Source File
 
-### Pre-commit Hooks
+**File**: [`defaults/applications/xcode.sh`](../../../../defaults/applications/xcode.sh)
 
-If your team uses git pre-commit hooks for whitespace, Xcode's built-in trimming reduces hook failures.
+```bash
+run_defaults "com.apple.dt.Xcode" "DVTTextEditorTrimTrailingWhitespace" "-bool" "true"
+```
 
 ## References
 
 - [Apple Developer: Xcode Text Editing](https://developer.apple.com/documentation/xcode)
 - [Swift Style Guide](https://google.github.io/swift/#whitespace)
+

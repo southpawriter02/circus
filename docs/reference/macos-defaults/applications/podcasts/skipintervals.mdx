@@ -1,0 +1,108 @@
+# Podcasts Skip Intervals
+
+Set how many seconds to skip forward and back during playback.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Keys** | `skipForwardTime`, `skipBackTime` |
+| **Type** | Integer |
+| **Default Value** | `30`, `15` |
+| **Our Setting** | `30`, `15` |
+
+## Description
+
+Controls the duration of the skip forward and skip back buttons during podcast playback. Asymmetric values (larger forward, smaller back) match typical use patterns.
+
+## Values
+
+| Setting | Options | Default |
+|---------|---------|---------|
+| Skip Forward | 10, 15, 30, 45, 60 seconds | 30 |
+| Skip Back | 10, 15, 30, 45, 60 seconds | 15 |
+
+## Our Configuration
+
+**Forward**: `30` seconds — Skip ads, intros, tangents
+**Back**: `15` seconds — Replay what you missed
+
+### Why Different Values?
+
+- **Forward (30s)**: Skip past ads (typically 15-60s), long intros
+- **Back (15s)**: Replay a sentence or brief moment you missed
+
+## Code Examples
+
+```bash
+# Standard intervals (recommended)
+defaults write com.apple.podcasts skipForwardTime -int 30
+defaults write com.apple.podcasts skipBackTime -int 15
+
+# Quick navigation
+defaults write com.apple.podcasts skipForwardTime -int 15
+defaults write com.apple.podcasts skipBackTime -int 10
+
+# Large jumps
+defaults write com.apple.podcasts skipForwardTime -int 60
+defaults write com.apple.podcasts skipBackTime -int 30
+```
+
+## UI Location
+
+**Podcasts** → **Settings** (⌘,) → **Playback**
+
+- Skip Forward: [dropdown]
+- Skip Back: [dropdown]
+
+## Skip Controls
+
+| Control | Action |
+|---------|--------|
+| ⌘→ | Skip forward |
+| ⌘← | Skip back |
+| Touch Bar | Skip buttons (if available) |
+| AirPods | Double-tap (configurable) |
+
+## Common Use Cases
+
+| Situation | Skip |
+|-----------|------|
+| Skip ad read | Forward 30-60s |
+| Miss something | Back 15s |
+| Skip intro music | Forward 30s |
+| Long tangent | Forward 60s |
+
+## AirPods Integration
+
+On AirPods Pro/Max, you can set double-tap actions:
+- **System Settings** → **Bluetooth** → AirPods → **Options**
+- Set double-tap to "Skip Forward" or "Skip Back"
+
+## Compatibility
+
+- **Podcasts**: macOS 10.15+
+- **Syncs**: Skip preferences sync via iCloud
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Skip too short/long | Change in Podcasts settings |
+| AirPods skip not working | Configure in Bluetooth settings |
+| Different on iPhone | Setting syncs, check values |
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../defaults/applications/podcasts.sh)
+
+```bash
+run_defaults "com.apple.podcasts" "skipForwardTime" "-int" "30"
+run_defaults "com.apple.podcasts" "skipBackTime" "-int" "15"
+```
+
+## References
+
+- [Apple Support: Podcasts playback settings](https://support.apple.com/guide/podcasts/change-settings-podb804dc5bd/mac)
+

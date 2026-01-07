@@ -1,0 +1,125 @@
+# Podcasts Episode Management
+
+Control automatic downloading and removal of episodes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Keys** | `downloadNewEpisodes`, `removePlayedEpisodes`, `episodeLimit` |
+| **Type** | Boolean, Boolean, Integer |
+| **Default Value** | `true`, `true`, `0` |
+| **Our Setting** | `true`, `true`, `10` |
+
+## Description
+
+These settings control how Podcasts manages episode downloads and storage, balancing offline availability with storage space management.
+
+## The Three Episode Settings
+
+| Key | Purpose | Our Setting |
+|-----|---------|-------------|
+| `downloadNewEpisodes` | Auto-download new episodes | `true` |
+| `removePlayedEpisodes` | Delete after playing | `true` |
+| `episodeLimit` | Max episodes to keep | `10` |
+
+## Episode Limit Values
+
+| Value | Keeps |
+|-------|-------|
+| `0` | All episodes (no limit) |
+| `1` | Most recent only |
+| `3` | Last 3 episodes |
+| `5` | Last 5 episodes |
+| `10` | Last 10 episodes (recommended) |
+
+## Our Configuration
+
+- **Auto-download**: `true` — Offline listening available
+- **Remove played**: `true` — Recover storage space
+- **Limit**: `10` — Balance availability and storage
+
+### Workflow
+
+```
+New episode released
+    ↓
+Auto-downloaded
+    ↓
+Available offline
+    ↓
+Played
+    ↓
+Automatically deleted
+```
+
+## Code Examples
+
+```bash
+# Balanced storage management
+defaults write com.apple.podcasts downloadNewEpisodes -bool true
+defaults write com.apple.podcasts removePlayedEpisodes -bool true
+defaults write com.apple.podcasts episodeLimit -int 10
+
+# Minimal storage usage
+defaults write com.apple.podcasts downloadNewEpisodes -bool false
+defaults write com.apple.podcasts removePlayedEpisodes -bool true
+defaults write com.apple.podcasts episodeLimit -int 1
+
+# Archive everything
+defaults write com.apple.podcasts downloadNewEpisodes -bool true
+defaults write com.apple.podcasts removePlayedEpisodes -bool false
+defaults write com.apple.podcasts episodeLimit -int 0
+```
+
+## UI Location
+
+**Podcasts** → **Settings** (⌘,) → **General**
+
+- Download Episodes: [On/Off]
+- Remove Played Downloads: [On/Off]
+- Limit Episodes: [dropdown]
+
+## Per-Show Override
+
+You can configure individual shows differently:
+1. Right-click a podcast in your library
+2. Select **Settings**
+3. Override download and episode limit settings
+
+## Storage Considerations
+
+| Subscription Count | Avg Episode Size | 10 eps/show |
+|-------------------|------------------|-------------|
+| 5 shows | 50 MB | ~2.5 GB |
+| 10 shows | 50 MB | ~5 GB |
+| 20 shows | 50 MB | ~10 GB |
+
+## Compatibility
+
+- **Podcasts**: macOS 10.15+
+- **Syncs**: Download settings sync via iCloud
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Too much storage | Reduce episode limit |
+| Episodes not downloading | Check network connection |
+| Old episodes persisting | Check per-show override settings |
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../defaults/applications/podcasts.sh)
+
+```bash
+run_defaults "com.apple.podcasts" "downloadNewEpisodes" "-bool" "true"
+run_defaults "com.apple.podcasts" "removePlayedEpisodes" "-bool" "true"
+run_defaults "com.apple.podcasts" "episodeLimit" "-int" "10"
+```
+
+## References
+
+- [Apple Support: Download and save podcast episodes](https://support.apple.com/guide/podcasts/download-and-save-episodes-podb66e47fe9/mac)
+

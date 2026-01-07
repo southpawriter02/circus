@@ -30,9 +30,16 @@ Controls whether the Save dialog shows the expanded view with full file browser,
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read NSGlobalDomain NSNavPanelExpandedStateForSaveMode
+
 # Expand Save dialogs by default (set both for compatibility)
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSNavPanelExpandedStateForSaveMode
+defaults delete NSGlobalDomain NSNavPanelExpandedStateForSaveMode2
 ```
 
 ## UI Location
@@ -47,6 +54,29 @@ defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Dialog still condensed | Set both keys (with and without "2") |
+| Per-app behavior differs | Some apps override system setting |
+| Setting resets | Log out and back in |
+
+## Compatibility
+
+- **Dialogs**: macOS 10.6+
+- **Applies to**: All native Save dialogs
+
+## Source File
+
+**File**: [`defaults/interface/dialogs.sh`](../../../defaults/interface/dialogs.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSNavPanelExpandedStateForSaveMode" "-bool" "true"
+run_defaults "NSGlobalDomain" "NSNavPanelExpandedStateForSaveMode2" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Save documents on Mac](https://support.apple.com/guide/mac-help/save-documents-mchlp1088/mac)
+

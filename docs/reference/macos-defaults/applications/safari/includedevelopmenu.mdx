@@ -64,6 +64,9 @@ Develop
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.Safari IncludeDevelopMenu
+
 # Enable Develop menu (recommended for developers)
 defaults write com.apple.Safari IncludeDevelopMenu -bool true
 
@@ -71,7 +74,10 @@ defaults write com.apple.Safari IncludeDevelopMenu -bool true
 defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
 defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled" -bool true
 
-# Restart Safari
+# Delete (reset to default)
+defaults delete com.apple.Safari IncludeDevelopMenu
+
+# Restart Safari to apply
 killall Safari
 ```
 
@@ -117,12 +123,29 @@ defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.Web
 defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Develop menu not showing | Restart Safari: `killall Safari` |
+| Web Inspector won't open | Check all WebKit keys are set |
+| iOS device not appearing | Ensure Web Inspector enabled on device |
+
 ## Compatibility
 
-- **Safari**: All modern versions
+- **Safari**: macOS 10.10+
 - **Web Inspector**: WebKit-based, similar to Chrome DevTools
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "IncludeDevelopMenu" "-bool" "true"
+```
 
 ## References
 
 - [Apple Developer: Safari Web Inspector](https://developer.apple.com/documentation/safari-release-notes)
 - [WebKit Web Inspector Reference](https://webkit.org/web-inspector/)
+

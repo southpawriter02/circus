@@ -1,0 +1,107 @@
+# Books Sync Settings
+
+Sync bookmarks, highlights, and reading position across devices.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iBooksX` |
+| **Keys** | `BKSyncBookmarksAndHighlights`, `BKSyncReadingPosition`, `BKSyncCollections` |
+| **Type** | Boolean |
+| **Default Value** | `true` (all) |
+| **Our Setting** | `true` (all) |
+
+## Description
+
+Syncs your Books reading data across all Apple devices via iCloud, including bookmarks, highlights, annotations, collections, and your current reading position in each book.
+
+## The Three Sync Settings
+
+| Key | Syncs | Our Setting |
+|-----|-------|-------------|
+| `BKSyncBookmarksAndHighlights` | Bookmarks, highlights, notes | `true` |
+| `BKSyncReadingPosition` | Current page in each book | `true` |
+| `BKSyncCollections` | Custom book collections | `true` |
+
+## Our Configuration
+
+**All set to**: `true` — Full sync across all devices.
+
+### Benefits of Syncing
+
+1. **Seamless reading** — Start on Mac, continue on iPhone
+2. **Preserved annotations** — Highlights available everywhere
+3. **Organized library** — Collections sync automatically
+4. **No lost progress** — Never lose your place
+
+## Code Examples
+
+```bash
+# Enable all sync features (recommended)
+defaults write com.apple.iBooksX BKSyncBookmarksAndHighlights -bool true
+defaults write com.apple.iBooksX BKSyncReadingPosition -bool true
+defaults write com.apple.iBooksX BKSyncCollections -bool true
+
+# Disable sync (keep data local)
+defaults write com.apple.iBooksX BKSyncBookmarksAndHighlights -bool false
+defaults write com.apple.iBooksX BKSyncReadingPosition -bool false
+defaults write com.apple.iBooksX BKSyncCollections -bool false
+```
+
+## UI Location
+
+**Books** → **Settings** (⌘,) → **General**
+
+- ☑ Sync bookmarks, highlights, and collections across devices
+
+## What Syncs
+
+| Data | Synced |
+|------|--------|
+| Books purchased from Apple | ✓ (automatically) |
+| Uploaded PDFs/EPUBs | ✓ via iCloud Drive |
+| Highlights (colored) | ✓ |
+| Notes/Annotations | ✓ |
+| Bookmarks | ✓ |
+| Collections (folders) | ✓ |
+| Reading position | ✓ |
+| Book ratings | ✓ |
+
+## iCloud Requirements
+
+For sync to work:
+1. Signed into same Apple ID on all devices
+2. iCloud Drive enabled
+3. Books enabled in iCloud settings
+
+**System Settings** → **Apple ID** → **iCloud** → **iCloud Drive** → ☑ **Books**
+
+## Compatibility
+
+- **Books**: macOS 10.14+
+- **iOS**: Books app 
+- **Requires**: iCloud account
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Not syncing | Check iCloud Books is enabled |
+| Highlights missing | Force sync by toggling setting |
+| Wrong position | Ensure same Apple ID on devices |
+
+## Source File
+
+**File**: [`defaults/applications/books.sh`](../../../../defaults/applications/books.sh)
+
+```bash
+run_defaults "com.apple.iBooksX" "BKSyncBookmarksAndHighlights" "-bool" "true"
+run_defaults "com.apple.iBooksX" "BKSyncReadingPosition" "-bool" "true"
+run_defaults "com.apple.iBooksX" "BKSyncCollections" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Sync Books](https://support.apple.com/guide/books/sync-books-across-devices-ibks26c81393/mac)
+

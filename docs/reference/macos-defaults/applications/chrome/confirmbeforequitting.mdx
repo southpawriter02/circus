@@ -97,7 +97,24 @@ Firefox has a similar feature:
 - **Chrome**: 55 and later
 - **All platforms**: This feature exists on macOS only
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still quits immediately | Restart Chrome after setting |
+| Menu item not appearing | Check Chrome version 55+ |
+| Setting resets | Verify with `defaults read` |
+
+## Source File
+
+**File**: [`defaults/applications/chrome.sh`](../../../../defaults/applications/chrome.sh)
+
+```bash
+run_defaults "com.google.Chrome" "confirmBeforeQuitting" "-bool" "true"
+```
+
 ## References
 
 - [Chrome Help: Keyboard shortcuts](https://support.google.com/chrome/answer/157179)
 - [Chrome Release Notes](https://chromereleases.googleblog.com/)
+

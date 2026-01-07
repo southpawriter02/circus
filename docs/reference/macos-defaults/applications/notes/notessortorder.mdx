@@ -43,6 +43,9 @@ Determines how notes are ordered in the notes list. Sorting by date edited keeps
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.Notes NotesSortOrder
+
 # Sort by date edited (default, recommended)
 defaults write com.apple.Notes NotesSortOrder -int 1
 
@@ -51,6 +54,9 @@ defaults write com.apple.Notes NotesSortOrder -int 2
 
 # Sort by title (A-Z)
 defaults write com.apple.Notes NotesSortOrder -int 3
+
+# Delete (reset to default)
+defaults delete com.apple.Notes NotesSortOrder
 ```
 
 ## UI Location
@@ -85,11 +91,28 @@ defaults write com.apple.Notes GroupNotesByDate -bool true
 defaults write com.apple.Notes FoldersSortOrder -int 1
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Sort order not changing | Restart Notes app |
+| Notes not in folders | Sorting applies within folders |
+| Pinned notes affected | Pinned notes always stay at top |
+
 ## Compatibility
 
 - **Notes app**: macOS 10.15+
 - **Syncs**: Setting syncs via iCloud
 
+## Source File
+
+**File**: [`defaults/applications/notes.sh`](../../../../defaults/applications/notes.sh)
+
+```bash
+run_defaults "com.apple.Notes" "NotesSortOrder" "-int" "1"
+```
+
 ## References
 
 - [Apple Support: Organize notes in folders](https://support.apple.com/guide/notes/organize-notes-in-folders-apd070d46b59/mac)
+

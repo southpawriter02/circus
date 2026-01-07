@@ -94,6 +94,23 @@ This setting:
 - **Account**: May be overridden by meeting host settings
 - **Admin**: Organization policies may enforce video
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Video still on when joining | Restart Zoom: `killall zoom.us` |
+| Host forces video | Host settings override personal preference |
+| Setting reverts | Zoom updates may reset prefs |
+
+## Source File
+
+**File**: [`defaults/applications/zoom_app.sh`](../../../../defaults/applications/zoom_app.sh)
+
+```bash
+run_defaults "us.zoom.xos" "ZMEnableStopVideoWhenJoin" "-bool" "true"
+```
+
 ## References
 
 - [Zoom Help: Video settings](https://support.zoom.us/hc/en-us/articles/201362163-Desktop-client-settings)
+

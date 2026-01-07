@@ -48,8 +48,17 @@ Smart dashes (`–` and `—`) are different Unicode characters than the hyphen-
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.TextEdit SmartDashes
+
 # Disable smart dashes in TextEdit
 defaults write com.apple.TextEdit SmartDashes -bool false
+
+# Enable smart dashes (default)
+defaults write com.apple.TextEdit SmartDashes -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.TextEdit SmartDashes
 
 # Also disable smart quotes (companion setting)
 defaults write com.apple.TextEdit SmartQuotes -bool false
@@ -99,11 +108,28 @@ defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 
 UI: **System Settings** → **Keyboard** → **Text Input** → **Input Sources** → **Edit...** → uncheck **Use smart quotes and dashes**
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Dashes still converting | Restart TextEdit or check Edit → Substitutions |
+| System-wide setting not working | Some apps override; set per-app too |
+| Existing dashes in document | Find & replace: `–` → `-` |
+
 ## Compatibility
 
-- **TextEdit**: All macOS versions
+- **TextEdit**: macOS 10.8+
 - **Affects**: New documents and paste operations
+
+## Source File
+
+**File**: [`defaults/applications/textedit.sh`](../../../../defaults/applications/textedit.sh)
+
+```bash
+run_defaults "com.apple.TextEdit" "SmartDashes" "-bool" "false"
+```
 
 ## References
 
 - [Apple Support: Use substitutions in apps](https://support.apple.com/guide/mac-help/use-substitutions-in-apps-mchlp1171/mac)
+

@@ -30,12 +30,19 @@ Controls whether the Dock shows recently used applications in a separate section
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.dock show-recents
+
 # Hide recent applications
 defaults write com.apple.dock show-recents -bool false
 
 # Show recent applications (Apple default)
 defaults write com.apple.dock show-recents -bool true
 
+# Delete (reset to default)
+defaults delete com.apple.dock show-recents
+
+# Restart Dock to apply
 killall Dock
 ```
 
@@ -50,6 +57,28 @@ killall Dock
 - Cleaner, less cluttered appearance
 - More predictable icon positions
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Recents still showing | Restart Dock: `killall Dock` |
+| Setting resets after reboot | Verify with `defaults read` |
+| Want some recents | Use Launchpad or Spotlight instead |
+
+## Compatibility
+
+- **Dock**: macOS 10.14+
+- **Note**: Recents section added in Mojave
+
+## Source File
+
+**File**: [`defaults/interface/dock.sh`](../../../defaults/interface/dock.sh)
+
+```bash
+run_defaults "com.apple.dock" "show-recents" "-bool" "false"
+```
+
 ## References
 
 - [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)
+

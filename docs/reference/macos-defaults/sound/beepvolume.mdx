@@ -33,6 +33,9 @@ Controls the volume of alert sounds (beeps, notifications). Independent of the m
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read NSGlobalDomain com.apple.sound.beep.volume
+
 # Set moderate alert volume
 defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.5
 
@@ -41,6 +44,9 @@ defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.0
 
 # Full volume alerts
 defaults write NSGlobalDomain com.apple.sound.beep.volume -float 1.0
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain com.apple.sound.beep.volume
 ```
 
 ## UI Location
@@ -59,6 +65,28 @@ defaults write NSGlobalDomain com.apple.sound.beep.sound -string "/System/Librar
 Available sounds in `/System/Library/Sounds/`:
 Basso, Blow, Bottle, Frog, Funk, Glass, Hero, Morse, Ping, Pop, Purr, Sosumi, Submarine, Tink
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Alerts still loud | Value is 0.0-1.0 range |
+| No alerts at all | Check main volume not muted |
+| Changes not applying | Log out and back in |
+
+## Compatibility
+
+- **Sound**: macOS 10.0+
+- **Applies to**: System alerts and notifications
+
+## Source File
+
+**File**: [`defaults/system/sound.sh`](../../../defaults/system/sound.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.sound.beep.volume" "-float" "0.5"
+```
+
 ## References
 
 - [Apple Support: Change the alert sound](https://support.apple.com/guide/mac-help/change-the-alert-sound-mchlp2207/mac)
+

@@ -37,6 +37,9 @@ Controls the animation used when minimizing windows to the Dock. The scale effec
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.dock mineffect
+
 # Use scale effect (faster)
 defaults write com.apple.dock mineffect -string "scale"
 
@@ -46,7 +49,10 @@ defaults write com.apple.dock mineffect -string "genie"
 # Use suck effect (hidden option)
 defaults write com.apple.dock mineffect -string "suck"
 
-# Restart Dock
+# Delete (reset to default)
+defaults delete com.apple.dock mineffect
+
+# Restart Dock to apply
 killall Dock
 ```
 
@@ -66,6 +72,28 @@ defaults write com.apple.dock minimize-to-application -bool true
 defaults write NSGlobalDomain AppleMiniaturizeOnDoubleClick -bool true
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Effect not changing | Restart Dock: `killall Dock` |
+| Suck not available | Type exactly "suck" in lowercase |
+| Slow animations still | Try reducing motion in Accessibility |
+
+## Compatibility
+
+- **Dock**: macOS 10.0+
+- **Note**: Suck effect hidden since macOS 10.5
+
+## Source File
+
+**File**: [`defaults/interface/dock.sh`](../../../defaults/interface/dock.sh)
+
+```bash
+run_defaults "com.apple.dock" "mineffect" "-string" "scale"
+```
+
 ## References
 
 - [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)
+

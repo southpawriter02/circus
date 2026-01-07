@@ -107,7 +107,24 @@ If auto-join causes issues:
 - **Zoom**: All desktop versions
 - **Requires**: Working microphone and speakers
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still showing dialog | Restart Zoom: `killall zoom.us` |
+| No audio after joining | Check audio device in System Settings |
+| Setting reverts | Zoom updates may reset prefs |
+
+## Source File
+
+**File**: [`defaults/applications/zoom_app.sh`](../../../../defaults/applications/zoom_app.sh)
+
+```bash
+run_defaults "us.zoom.xos" "ZMEnableAutoJoinVoip" "-bool" "true"
+```
+
 ## References
 
 - [Zoom Help: Audio settings](https://support.zoom.us/hc/en-us/articles/201362623-Meeting-settings)
 - [Zoom audio troubleshooting](https://support.zoom.us/hc/en-us/articles/115003279466)
+

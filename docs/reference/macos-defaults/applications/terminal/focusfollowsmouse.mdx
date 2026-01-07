@@ -44,14 +44,17 @@ Some power users prefer focus-follows-mouse when:
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.Terminal FocusFollowsMouse
+
 # Standard macOS behavior (click to focus)
 defaults write com.apple.Terminal FocusFollowsMouse -bool false
 
 # X11-style focus follows mouse
 defaults write com.apple.Terminal FocusFollowsMouse -bool true
 
-# Check current setting
-defaults read com.apple.Terminal FocusFollowsMouse
+# Delete (reset to default)
+defaults delete com.apple.Terminal FocusFollowsMouse
 ```
 
 ## UI Location
@@ -88,12 +91,29 @@ defaults write com.apple.Terminal NewTabWorkingDirectoryBehavior -int 2
 defaults write com.apple.Terminal SecureKeyboardEntry -bool true
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Focus not following mouse | Restart Terminal after setting |
+| Other apps affected | This only affects Terminal.app |
+| Accidentally typing in wrong window | Disable setting; use click-to-focus |
+
 ## Compatibility
 
-- **Terminal**: macOS 10.6 and later
+- **Terminal**: macOS 10.6+
 - **Note**: This ONLY affects Terminal.app, not other applications
+
+## Source File
+
+**File**: [`defaults/applications/terminal.sh`](../../../../defaults/applications/terminal.sh)
+
+```bash
+run_defaults "com.apple.Terminal" "FocusFollowsMouse" "-bool" "false"
+```
 
 ## References
 
 - [macos-defaults.com: Focus Follows Mouse](https://macos-defaults.com/terminal/focusfollowsmouse.html)
 - [Apple Support: Terminal](https://support.apple.com/guide/terminal/welcome/mac)
+

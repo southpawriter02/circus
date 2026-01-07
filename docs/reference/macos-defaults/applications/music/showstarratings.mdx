@@ -56,13 +56,19 @@ Re-enables the classic 5-star rating system that was hidden in the modern Music 
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.Music showStarRatings
+
 # Show star ratings
 defaults write com.apple.Music showStarRatings -bool true
 
 # Hide star ratings
 defaults write com.apple.Music showStarRatings -bool false
 
-# Restart Music
+# Delete (reset to default)
+defaults delete com.apple.Music showStarRatings
+
+# Restart Music to apply
 killall Music
 ```
 
@@ -88,13 +94,30 @@ With star ratings, create playlists like:
 | ⌘1-5 | Set rating 1-5 stars |
 | ⌘0 | Clear rating |
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Rating column not visible | Right-click column headers → check Rating |
+| Shortcuts not working | Focus must be on song in list |
+| Ratings not syncing | Check iCloud Music Library is enabled |
+
 ## Compatibility
 
 - **Music app**: macOS 10.15+
 - **Syncs**: Ratings sync via iCloud Music Library
 - **iOS**: Ratings visible in Music app if enabled in iOS Settings
 
+## Source File
+
+**File**: [`defaults/applications/music.sh`](../../../../defaults/applications/music.sh)
+
+```bash
+run_defaults "com.apple.Music" "showStarRatings" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Rate songs in Music](https://support.apple.com/guide/music/rate-music-mus3eb980c32/mac)
 - [Apple Support: Smart Playlists](https://support.apple.com/guide/music/create-smart-playlists-mus1712973f4/mac)
+

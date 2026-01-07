@@ -31,12 +31,19 @@ Determines where Finder searches when you type in the search field. Searching th
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.finder FXDefaultSearchScope
+
 # Search current folder by default
 defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 
 # Search entire Mac (Apple default)
 defaults write com.apple.finder FXDefaultSearchScope -string "SCev"
 
+# Delete (reset to default)
+defaults delete com.apple.finder FXDefaultSearchScope
+
+# Restart Finder to apply
 killall Finder
 ```
 
@@ -51,6 +58,28 @@ killall Finder
 - Makes sense for project-based workflows
 - Can still expand scope from search bar
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still searching entire Mac | Restart Finder: `killall Finder` |
+| Scope changes unexpectedly | Check "Previous Scope" isn't set |
+| Search not finding files | Current folder search is literal; check location |
+
+## Compatibility
+
+- **Finder**: macOS 10.9+
+- **Applies to**: Search bar in Finder windows
+
+## Source File
+
+**File**: [`defaults/interface/finder.sh`](../../../defaults/interface/finder.sh)
+
+```bash
+run_defaults "com.apple.finder" "FXDefaultSearchScope" "-string" "SCcf"
+```
+
 ## References
 
 - [Apple Support: Narrow search results on Mac](https://support.apple.com/guide/mac-help/narrow-search-results-mchlp1067/mac)
+

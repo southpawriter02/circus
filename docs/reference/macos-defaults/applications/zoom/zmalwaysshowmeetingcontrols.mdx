@@ -108,6 +108,23 @@ defaults write us.zoom.xos ZMEnableChatNotification -bool true
 - **Zoom**: All desktop versions
 - **Fullscreen**: Controls still visible in fullscreen mode
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Controls still auto-hide | Restart Zoom: `killall zoom.us` |
+| Setting reverts | Zoom updates may reset prefs; reapply |
+| Not in fullscreen | Some versions behave differently |
+
+## Source File
+
+**File**: [`defaults/applications/zoom_app.sh`](../../../../defaults/applications/zoom_app.sh)
+
+```bash
+run_defaults "us.zoom.xos" "ZMAlwaysShowMeetingControls" "-bool" "true"
+```
+
 ## References
 
 - [Zoom Help: Meeting controls](https://support.zoom.us/hc/en-us/articles/201362603-Host-and-co-host-controls-in-a-meeting)
+

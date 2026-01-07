@@ -58,13 +58,19 @@ Mon  Tue  Wed  Thu  Fri  Sat  Sun
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.iCal "first day of week"
+
 # Set Monday as first day (ISO 8601)
 defaults write com.apple.iCal "first day of week" -int 1
 
 # Set Sunday as first day (US default)
 defaults write com.apple.iCal "first day of week" -int 0
 
-# Restart Calendar
+# Delete (reset to default)
+defaults delete com.apple.iCal "first day of week"
+
+# Restart Calendar to apply
 killall Calendar
 ```
 
@@ -89,13 +95,29 @@ defaults write com.apple.iCal "Show Week Numbers" -bool true
 defaults write com.apple.iCal "scroll by weeks in week view" -bool true
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Week still starts on Sunday | Restart Calendar: `killall Calendar` |
+| Setting not persisting | Check you're using quotes around key name |
+| Different on iPhone | iOS setting is separate: Settings → Calendar |
+
 ## Compatibility
 
-- **Calendar**: All macOS versions
-- **Syncs**: Preference is local (does NOT sync to iPhone)
-- **Set separately**: Configure iOS in Settings → Calendar
+- **Calendar**: macOS 10.8+
+- **Syncs**: Local only (does NOT sync to iPhone)
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../defaults/applications/calendar.sh)
+
+```bash
+run_defaults "com.apple.iCal" "first day of week" "-int" "1"
+```
 
 ## References
 
 - [Apple Support: Calendar preferences](https://support.apple.com/guide/calendar/change-general-preferences-icl1023/mac)
 - [ISO 8601 Week Definition](https://en.wikipedia.org/wiki/ISO_8601)
+

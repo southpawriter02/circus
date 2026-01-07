@@ -1,0 +1,112 @@
+# Podcasts Continuous Playback
+
+Automatically play the next episode when current one ends.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Key** | `continuousPlaybackEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the next episode in your queue automatically starts playing when the current episode ends. Essential for hands-free listening during commutes, workouts, or while doing chores.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-play next** (default) — Continuous listening |
+| `false` | **Stop after episode** — Manual play required |
+
+## Our Configuration
+
+**Set to**: `true` — Continuous listening experience.
+
+### Use Cases
+
+**Enable for:**
+- Driving/commuting
+- Exercise
+- Background listening while working
+- Podcast binge sessions
+
+**Disable if:**
+- You prefer to choose each episode manually
+- Listening to individual episodes
+- Want to avoid spoilers in series podcasts
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.podcasts continuousPlaybackEnabled
+
+# Enable continuous playback (recommended)
+defaults write com.apple.podcasts continuousPlaybackEnabled -bool true
+
+# Stop after each episode
+defaults write com.apple.podcasts continuousPlaybackEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.podcasts continuousPlaybackEnabled
+
+# Restart Podcasts to apply
+killall Podcasts
+```
+
+## UI Location
+
+**Podcasts** → **Settings** (⌘,) → **Playback** → ☑ **Continuous Playback**
+
+## Playback Queue
+
+With continuous playback enabled, episodes play in this order:
+1. Current episode finishes
+2. Next episode in Up Next queue
+3. Next episode of same show (if no queue)
+4. Stop when nothing remains
+
+### Managing Up Next
+
+- **Add to Up Next**: Right-click episode → Add to Up Next
+- **Play Next**: Episode plays immediately after current
+- **Play Later**: Episode added to end of queue
+
+## Related Playback Settings
+
+```bash
+# Customize skip intervals
+defaults write com.apple.podcasts skipForwardTime -int 30
+defaults write com.apple.podcasts skipBackTime -int 15
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Next episode not playing | Check Up Next queue has episodes |
+| Wrong episode plays next | Reorder Up Next queue in app |
+| Playback stops unexpectedly | Check episode limit settings |
+
+## Compatibility
+
+- **Podcasts**: macOS 10.15+
+- **Syncs**: Setting syncs via iCloud
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../defaults/applications/podcasts.sh)
+
+```bash
+run_defaults "com.apple.podcasts" "continuousPlaybackEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Podcasts playback settings](https://support.apple.com/guide/podcasts/change-settings-podb804dc5bd/mac)
+

@@ -92,7 +92,25 @@ defaults write com.apple.AddressBook ABUse21telephones -bool false
 - **Photos**: JPEG embedded in vCard
 - **Notes**: Plain text field
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Photos not exporting | Check ABIncludePhotosInVCards |
+| Notes still included | Change before export |
+| vCard too large | Exclude photos |
+
+## Source File
+
+**File**: [`defaults/applications/contacts.sh`](../../../../defaults/applications/contacts.sh)
+
+```bash
+run_defaults "com.apple.AddressBook" "ABIncludePhotosInVCards" "-bool" "true"
+run_defaults "com.apple.AddressBook" "ABIncludeNotesInVCard" "-bool" "false"
+```
+
 ## References
 
 - [Apple Support: Export contacts](https://support.apple.com/guide/contacts/export-contacts-adrbf72a35f0/mac)
 - [vCard specification](https://en.wikipedia.org/wiki/VCard)
+

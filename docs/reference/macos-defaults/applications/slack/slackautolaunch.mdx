@@ -97,6 +97,23 @@ defaults write com.tinyspeck.slackmacgap SlackBounceEnabled -bool false
 - **Slack**: Desktop app
 - **macOS**: All supported versions
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Slack not starting | Check Login Items in System Settings |
+| Conflicts with Login Items | Remove from one place or the other |
+| Setting not working | Restart Mac to test |
+
+## Source File
+
+**File**: [`defaults/applications/slack.sh`](../../../../defaults/applications/slack.sh)
+
+```bash
+run_defaults "com.tinyspeck.slackmacgap" "SlackAutoLaunch" "-bool" "true"
+```
+
 ## References
 
 - [Slack Help: Manage your preferences](https://slack.com/help/articles/201374536-Manage-your-preferences)
+

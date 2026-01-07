@@ -34,13 +34,19 @@ Displays line numbers in the gutter (left margin) of Xcode's source code editor.
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.dt.Xcode DVTTextShowLineNumbers
+
 # Show line numbers (recommended)
 defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool true
 
 # Hide line numbers
 defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool false
 
-# Restart Xcode
+# Delete (reset to default)
+defaults delete com.apple.dt.Xcode DVTTextShowLineNumbers
+
+# Restart Xcode to apply
 killall Xcode 2>/dev/null
 ```
 
@@ -98,12 +104,29 @@ defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool true
 defaults write com.apple.dt.Xcode DVTTextEditorTrimWhitespaceOnlyLines -bool true
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Line numbers not showing | Restart Xcode: `killall Xcode` |
+| Setting not persisting | Run while Xcode is closed |
+| Numbers too small | Increase font size in Xcode → Settings → Fonts & Colors |
+
 ## Compatibility
 
 - **Xcode**: All versions
-- **macOS**: 10.10 and later
+- **macOS**: 10.10+
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../defaults/applications/xcode.sh)
+
+```bash
+run_defaults "com.apple.dt.Xcode" "DVTTextShowLineNumbers" "-bool" "true"
+```
 
 ## References
 
 - [Apple Developer: Xcode Documentation](https://developer.apple.com/documentation/xcode)
 - [Xcode Help: Source Editor](https://help.apple.com/xcode/mac/current/#/dev8716704af)
+

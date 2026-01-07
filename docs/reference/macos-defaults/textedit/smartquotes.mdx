@@ -74,6 +74,29 @@ defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Quotes still curly | Applies to new text only |
+| Per-app behavior | Some apps override system setting |
+| Need curly quotes once | Edit → Substitutions → Smart Quotes |
+
+## Compatibility
+
+- **TextEdit**: All macOS versions
+- **System-wide**: Affects most Cocoa apps
+
+## Source File
+
+**File**: [`defaults/applications/textedit.sh`](../../../defaults/applications/textedit.sh)
+
+```bash
+run_defaults "com.apple.TextEdit" "SmartQuotes" "-bool" "false"
+run_defaults "NSGlobalDomain" "NSAutomaticQuoteSubstitutionEnabled" "-bool" "false"
+```
+
 ## References
 
 - [Apple Support: Use substitutions in apps](https://support.apple.com/guide/mac-help/use-substitutions-in-apps-mchlp1171/mac)
+

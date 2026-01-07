@@ -46,13 +46,19 @@ Sets the format of the clock in the menu bar using ICU date format patterns. You
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.menuextra.clock DateFormat
+
 # Set 24-hour format with seconds
 defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM  HH:mm:ss"
 
 # Set 12-hour format with AM/PM
 defaults write com.apple.menuextra.clock DateFormat -string "EEE MMM d  h:mm a"
 
-# Restart menu bar
+# Delete (reset to default)
+defaults delete com.apple.menuextra.clock DateFormat
+
+# Restart menu bar to apply
 killall SystemUIServer
 ```
 
@@ -75,7 +81,29 @@ defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
 defaults write com.apple.menuextra.clock IsAnalog -bool false
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Format not changing | Restart SystemUIServer |
+| Wrong time zone | Check Date & Time settings |
+| Seconds not showing | Also set ShowSeconds true |
+
+## Compatibility
+
+- **Menu Bar**: macOS 10.10+
+- **Applies to**: Menu bar clock
+
+## Source File
+
+**File**: [`defaults/interface/menubar.sh`](../../../defaults/interface/menubar.sh)
+
+```bash
+run_defaults "com.apple.menuextra.clock" "DateFormat" "-string" "EEE d MMM  HH:mm:ss"
+```
+
 ## References
 
 - [ICU Date Format Patterns](https://unicode-org.github.io/icu/userguide/format_parse/datetime/)
 - [Apple Support: Change Date & Time preferences](https://support.apple.com/guide/mac-help/change-date-time-preferences-mchlp2996/mac)
+

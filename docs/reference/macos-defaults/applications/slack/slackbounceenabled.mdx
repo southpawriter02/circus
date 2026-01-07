@@ -95,7 +95,24 @@ killall Dock
 - **macOS**: All supported versions
 - **Domain**: `com.tinyspeck.slackmacgap` (not `com.slack.Slack`)
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Icon still bouncing | Restart Slack: `killall Slack` |
+| Wrong domain | Use `com.tinyspeck.slackmacgap` |
+| Setting resets | Check Slack preferences UI |
+
+## Source File
+
+**File**: [`defaults/applications/slack.sh`](../../../../defaults/applications/slack.sh)
+
+```bash
+run_defaults "com.tinyspeck.slackmacgap" "SlackBounceEnabled" "-bool" "false"
+```
+
 ## References
 
 - [Slack Help: Manage your preferences](https://slack.com/help/articles/201374536-Manage-your-preferences)
 - [Slack Help: Notification preferences](https://slack.com/help/articles/201355156-Notification-preferences)
+

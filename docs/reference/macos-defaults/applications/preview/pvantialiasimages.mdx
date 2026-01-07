@@ -95,7 +95,24 @@ defaults write com.apple.Preview PVBackgroundColor -int 0
 - **Preview**: All macOS versions
 - **Affects**: All image formats
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Images still blurry | Set to true and restart Preview |
+| Pixel art looks wrong | Set to false for exact pixels |
+| Only visible zoomed out | Expected at 100% zoom, no difference |
+
+## Source File
+
+**File**: [`defaults/applications/preview.sh`](../../../../defaults/applications/preview.sh)
+
+```bash
+run_defaults "com.apple.Preview" "PVAntiAliasImages" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Preview preferences](https://support.apple.com/guide/preview/change-preferences-prvw11793/mac)
 - [Wikipedia: Anti-aliasing](https://en.wikipedia.org/wiki/Spatial_anti-aliasing)
+

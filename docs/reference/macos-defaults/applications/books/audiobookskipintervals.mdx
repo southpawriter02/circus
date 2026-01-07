@@ -1,0 +1,115 @@
+# Books Audiobook Skip Intervals
+
+Set how many seconds to skip forward and back during audiobook playback.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iBooksX` |
+| **Keys** | `BKAudiobookSkipForward`, `BKAudiobookSkipBack` |
+| **Type** | Integer |
+| **Default Value** | `15` (both) |
+| **Our Setting** | `15` (both) |
+
+## Description
+
+Controls the duration of skip forward and skip back actions during audiobook playback in Apple Books. Unlike podcasts, audiobooks typically use symmetric skip intervals since you're more likely to replay content you missed.
+
+## Values
+
+| Setting | Options |
+|---------|---------|
+| Skip Forward | 15, 30, 45, 60 seconds |
+| Skip Back | 15, 30, 45, 60 seconds |
+
+## Our Configuration
+
+**Forward**: `15` seconds
+**Back**: `15` seconds
+
+### Why Symmetric?
+
+Unlike podcasts (which have ads to skip), audiobooks benefit from:
+- Equal forward/back for navigation
+- Shorter skips for precise positioning
+- Replay segments for comprehension
+
+## Code Examples
+
+```bash
+# Standard intervals (recommended)
+defaults write com.apple.iBooksX BKAudiobookSkipForward -int 15
+defaults write com.apple.iBooksX BKAudiobookSkipBack -int 15
+
+# Larger jumps for quick navigation
+defaults write com.apple.iBooksX BKAudiobookSkipForward -int 30
+defaults write com.apple.iBooksX BKAudiobookSkipBack -int 30
+```
+
+## UI Location
+
+Controls appear during audiobook playback. Settings may be accessible during playback.
+
+## Audiobook Controls
+
+```
+┌─────────────────────────────┐
+│       Now Playing           │
+│  "Chapter 5: The Journey"   │
+│                             │
+│   ⏪15s    ▶️/⏸️    15s⏩   │
+│                             │
+│   ───●───────────────       │
+│   2:45          4:32:10     │
+└─────────────────────────────┘
+```
+
+## Playback Speed
+
+Books also supports playback speed adjustment:
+- 0.5x, 0.75x — Slower for difficult content
+- 1x — Normal
+- 1.25x, 1.5x, 2x — Faster for familiar content
+
+## Keyboard Shortcuts
+
+| Action | Key |
+|--------|-----|
+| Skip forward | → |
+| Skip back | ← |
+| Play/Pause | Space |
+
+## CarPlay Integration
+
+Audiobook controls including skip work in CarPlay:
+- Steering wheel controls
+- Screen taps
+- Siri: "Skip back" / "Go back 30 seconds"
+
+## Compatibility
+
+- **Books**: macOS 10.14+
+- **Syncs**: Playback position syncs via iCloud
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Skip too short/long | Adjust in app settings |
+| Controls not responding | Restart Books app |
+| Different on other device | Setting is per-device |
+
+## Source File
+
+**File**: [`defaults/applications/books.sh`](../../../../defaults/applications/books.sh)
+
+```bash
+run_defaults "com.apple.iBooksX" "BKAudiobookSkipForward" "-int" "15"
+run_defaults "com.apple.iBooksX" "BKAudiobookSkipBack" "-int" "15"
+```
+
+## References
+
+- [Apple Support: Listen to audiobooks in Books](https://support.apple.com/guide/books/listen-to-audiobooks-ibks1e08ff7f/mac)
+

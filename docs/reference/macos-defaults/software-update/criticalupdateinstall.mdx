@@ -45,6 +45,28 @@ defaults read com.apple.SoftwareUpdate CriticalUpdateInstall
 
 ⚠️ **Never disable this setting.** Security updates patch actively exploited vulnerabilities and protect against emerging threats.
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Updates not installing | Check internet connection |
+| Setting appears disabled | May require admin approval |
+| Updates failing | See Apple System Status |
+
+## Compatibility
+
+- **macOS**: 10.14+
+- **Applies to**: XProtect, Gatekeeper, MRT updates
+
+## Source File
+
+**File**: [`defaults/system/software_update.sh`](../../../defaults/system/software_update.sh)
+
+```bash
+run_defaults "com.apple.SoftwareUpdate" "CriticalUpdateInstall" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Keep your Mac up to date](https://support.apple.com/en-us/102582)
+

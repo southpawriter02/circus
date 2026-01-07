@@ -33,6 +33,9 @@ Controls the default text size for the body text in new notes. A comfortable rea
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.Notes DefaultFontSize
+
 # Set default text size to 16pt
 defaults write com.apple.Notes DefaultFontSize -int 16
 
@@ -41,6 +44,9 @@ defaults write com.apple.Notes DefaultFontSize -int 18
 
 # Smaller for more compact notes
 defaults write com.apple.Notes DefaultFontSize -int 14
+
+# Delete (reset to default)
+defaults delete com.apple.Notes DefaultFontSize
 ```
 
 ## UI Location
@@ -85,11 +91,28 @@ defaults write com.apple.Notes NotesSortOrder -int 1
 defaults write com.apple.Notes GroupNotesByDate -bool true
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Size not changing | Only affects new notes, not existing |
+| Notes still small | Check in-note zoom (⌘0 to reset) |
+| Setting not persisting | Restart Notes app |
+
 ## Compatibility
 
 - **Notes app**: macOS 10.15+
-- **Applies to**: New notes only (existing notes unchanged)
+- **Applies to**: New notes only
+
+## Source File
+
+**File**: [`defaults/applications/notes.sh`](../../../../defaults/applications/notes.sh)
+
+```bash
+run_defaults "com.apple.Notes" "DefaultFontSize" "-int" "16"
+```
 
 ## References
 
 - [Apple Support: Notes on Mac](https://support.apple.com/guide/notes/welcome/mac)
+

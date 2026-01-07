@@ -99,6 +99,23 @@ defaults write com.apple.Preview PVSidebarViewModeForNewDocuments -int 1
 - **Preview**: All macOS versions
 - **Affects**: PDF files only
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Opens to first page | Extended attributes may be stripped |
+| Position lost after move | Copy to non-APFS may lose metadata |
+| Not working on new PDFs | Only after first close/reopen |
+
+## Source File
+
+**File**: [`defaults/applications/preview.sh`](../../../../defaults/applications/preview.sh)
+
+```bash
+run_defaults "com.apple.Preview" "PVPDFRememberCurrentPage" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Preview preferences](https://support.apple.com/guide/preview/change-preferences-prvw11793/mac)
+

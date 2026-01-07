@@ -30,17 +30,47 @@ Enables "tap to click" on Mac trackpads, allowing a light tap to register as a c
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad Clicking
+
 # Enable for built-in trackpad
 defaults write com.apple.AppleMultitouchTrackpad Clicking -int 1
 
 # Enable for Bluetooth Magic Trackpad
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -int 1
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad Clicking
+defaults delete com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking
 ```
 
 ## UI Location
 
 **System Settings** → **Trackpad** → **Point & Click** → **Tap to click**
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Tap not registering | Ensure setting applied to both domains |
+| Only works on built-in | Set on Bluetooth domain too |
+| Logs you out | Changes may require logout |
+
+## Compatibility
+
+- **Trackpad**: macOS 10.7+
+- **Applies to**: Built-in and Magic Trackpad
+
+## Source File
+
+**File**: [`defaults/hardware/trackpad.sh`](../../../defaults/hardware/trackpad.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "Clicking" "-int" "1"
+run_defaults "com.apple.driver.AppleBluetoothMultitouch.trackpad" "Clicking" "-int" "1"
+```
+
 ## References
 
 - [Apple Support: Change Trackpad settings](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac)
+

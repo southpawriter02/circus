@@ -108,8 +108,17 @@ killall Xcode 2>/dev/null
 open -a Xcode
 ```
 
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../defaults/applications/xcode.sh)
+
+```bash
+run_defaults "com.apple.dt.Xcode" "ShowBuildOperationDuration" "-bool" "true"
+```
+
 ## References
 
 - [Apple Developer: Xcode Overview](https://developer.apple.com/documentation/xcode)
 - [WWDC: Building Faster in Xcode](https://developer.apple.com/videos/play/wwdc2022/110362/)
 - [Xcode Build Settings Reference](https://developer.apple.com/documentation/xcode/build-settings-reference)
+

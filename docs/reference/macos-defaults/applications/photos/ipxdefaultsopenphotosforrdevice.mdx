@@ -92,7 +92,24 @@ defaults write com.apple.Photos IPXDefaultsDeleteAfterImport -bool false
 - **Photos**: macOS 10.13 (High Sierra) and later
 - **Devices**: iPhone, iPad, cameras, SD cards
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Photos still opens | Check per-device setting in Image Capture |
+| Setting not persisting | Quit Photos before running command |
+| Affects all devices | Yes, applies to all connected devices |
+
+## Source File
+
+**File**: [`defaults/applications/photos.sh`](../../../../defaults/applications/photos.sh)
+
+```bash
+run_defaults "com.apple.Photos" "IPXDefaultsOpenPhotosForDevice" "-bool" "false"
+```
+
 ## References
 
 - [Apple Support: Import photos to Photos on Mac](https://support.apple.com/guide/photos/import-photos-pht7d1ae05e/mac)
 - [Apple Support: Use Image Capture](https://support.apple.com/guide/image-capture/welcome/mac)
+

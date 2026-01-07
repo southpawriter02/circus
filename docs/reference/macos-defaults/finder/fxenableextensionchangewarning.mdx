@@ -30,12 +30,19 @@ Controls whether Finder shows a warning dialog when you change a file's extensio
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.finder FXEnableExtensionChangeWarning
+
 # Disable extension change warning
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
 # Enable warning (Apple default)
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool true
 
+# Delete (reset to default)
+defaults delete com.apple.finder FXEnableExtensionChangeWarning
+
+# Restart Finder to apply
 killall Finder
 ```
 
@@ -47,6 +54,28 @@ No direct toggle. The warning dialog appears when renaming a file with a differe
 
 Disabling this is recommended for developers who frequently rename files and understand the implications of changing extensions.
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Warning still showing | Restart Finder: `killall Finder` |
+| Some extensions still warn | System-protected extensions may still warn |
+| Accidentally changed extension | Use ⌘Z to undo rename |
+
+## Compatibility
+
+- **Finder**: macOS 10.5+
+- **Applies to**: All file renaming operations
+
+## Source File
+
+**File**: [`defaults/interface/finder.sh`](../../../defaults/interface/finder.sh)
+
+```bash
+run_defaults "com.apple.finder" "FXEnableExtensionChangeWarning" "-bool" "false"
+```
+
 ## References
 
 - [Apple Support: Rename files, folders, and disks](https://support.apple.com/guide/mac-help/rename-files-folders-and-disks-mchlp1144/mac)
+

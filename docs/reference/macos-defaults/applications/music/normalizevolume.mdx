@@ -52,13 +52,19 @@ With Sound Check:
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.Music normalizeVolume
+
 # Enable Sound Check
 defaults write com.apple.Music normalizeVolume -bool true
 
 # Disable Sound Check (original levels)
 defaults write com.apple.Music normalizeVolume -bool false
 
-# Restart Music
+# Delete (reset to default)
+defaults delete com.apple.Music normalizeVolume
+
+# Restart Music to apply
 killall Music
 ```
 
@@ -90,6 +96,23 @@ defaults write com.apple.Music crossfadeEnabled -bool false
 - **iTunes**: Similar setting available
 - **Syncs**: Setting does NOT sync to iPhone, set separately
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Some songs still loud | Library may need re-analysis |
+| Normalization too aggressive | Disable for critical listening |
+| Takes effect slowly | Analysis happens in background |
+
+## Source File
+
+**File**: [`defaults/applications/music.sh`](../../../../defaults/applications/music.sh)
+
+```bash
+run_defaults "com.apple.Music" "normalizeVolume" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Sound Check in Music](https://support.apple.com/guide/music/change-playback-preferences-mus7a8b90c6/mac)
+

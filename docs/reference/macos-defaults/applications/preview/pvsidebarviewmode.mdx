@@ -96,6 +96,23 @@ defaults write com.apple.Preview PVPDFRememberCurrentPage -bool true
 - **Preview**: macOS 10.14+
 - **Supported formats**: PDFs, multi-page TIFFs, image collections
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Sidebar still hidden | Restart Preview after setting |
+| No table of contents | PDF must have embedded TOC |
+| Sidebar too narrow | Drag divider to resize |
+
+## Source File
+
+**File**: [`defaults/applications/preview.sh`](../../../../defaults/applications/preview.sh)
+
+```bash
+run_defaults "com.apple.Preview" "PVSidebarViewModeForNewDocuments" "-int" "1"
+```
+
 ## References
 
 - [Apple Support: Preview User Guide](https://support.apple.com/guide/preview/welcome/mac)
+

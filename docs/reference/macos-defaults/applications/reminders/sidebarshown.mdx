@@ -113,6 +113,23 @@ Organize lists into folders:
 - **Reminders**: macOS 10.15+
 - **Syncs**: Lists sync via iCloud
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Sidebar state not saving | Quit Reminders fully before running |
+| Smart lists missing | Check iCloud Reminders is enabled |
+| Sidebar empty | Ensure at least one list exists |
+
+## Source File
+
+**File**: [`defaults/applications/reminders.sh`](../../../../defaults/applications/reminders.sh)
+
+```bash
+run_defaults "com.apple.reminders" "SidebarShown" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Use Reminders on Mac](https://support.apple.com/guide/reminders/welcome/mac)
+

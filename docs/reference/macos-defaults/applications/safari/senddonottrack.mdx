@@ -114,8 +114,25 @@ defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -boo
 - **Safari**: All modern versions
 - **Standard**: W3C Tracking Preference Expression
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still tracked | DNT is a request, not enforcement |
+| Better protection needed | Use ITP and content blockers |
+| Header not sending | Restart Safari after applying |
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "SendDoNotTrackHTTPHeader" "-bool" "true"
+```
+
 ## References
 
 - [W3C: Tracking Preference Expression (DNT)](https://www.w3.org/TR/tracking-dnt/)
 - [Apple Safari Privacy](https://www.apple.com/safari/)
 - [EFF: Do Not Track](https://www.eff.org/issues/do-not-track)
+

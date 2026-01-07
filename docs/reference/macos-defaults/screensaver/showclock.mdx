@@ -30,17 +30,45 @@ Displays a clock overlay on the screen saver, showing the current time while the
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.screensaver showClock
+
 # Show clock on screen saver
 defaults write com.apple.screensaver showClock -bool true
 
 # Hide clock
 defaults write com.apple.screensaver showClock -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.screensaver showClock
 ```
 
 ## UI Location
 
 **System Settings** → **Lock Screen** → **Show large clock**
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Clock not showing | Verify screen saver is running, not display off |
+| Clock style wrong | Controlled by system appearance (dark/light) |
+| Clock position off | Cannot be repositioned |
+
+## Compatibility
+
+- **Screensaver**: macOS 10.7+
+- **Applies to**: Lock screen and screen saver
+
+## Source File
+
+**File**: [`defaults/system/screensaver.sh`](../../../defaults/system/screensaver.sh)
+
+```bash
+run_defaults "com.apple.screensaver" "showClock" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Change Lock Screen settings](https://support.apple.com/guide/mac-help/change-lock-screen-settings-mchl8a3b1a59/mac)
+

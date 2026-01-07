@@ -37,12 +37,19 @@ Controls whether Finder displays file extensions for all files. By default, macO
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read NSGlobalDomain AppleShowAllExtensions
+
 # Show all file extensions
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
 # Hide known extensions (Apple default)
 defaults write NSGlobalDomain AppleShowAllExtensions -bool false
 
+# Delete (reset to default)
+defaults delete NSGlobalDomain AppleShowAllExtensions
+
+# Restart Finder to apply
 killall Finder
 ```
 
@@ -56,6 +63,28 @@ Showing extensions helps identify disguised malicious files:
 - `invoice.pdf` (icon looks like PDF but might be something else)
 - `invoice.pdf.app` (clearly an application, not a PDF)
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Extensions still hidden | Restart Finder: `killall Finder` |
+| Some files still have no extension | File genuinely has no extension |
+| Per-file overrides | Uncheck "Hide extension" in File → Get Info |
+
+## Compatibility
+
+- **Finder**: macOS 10.4+
+- **Applies to**: All Finder views
+
+## Source File
+
+**File**: [`defaults/interface/finder.sh`](../../../defaults/interface/finder.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "AppleShowAllExtensions" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Show or hide filename extensions](https://support.apple.com/guide/mac-help/show-or-hide-filename-extensions-mchlp2304/mac)
+

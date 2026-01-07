@@ -116,7 +116,24 @@ Continuing to build after errors uses more CPU (compiling files that may not be 
 - **Xcode**: 8.0 and later
 - **Applies to**: All build operations
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still stops on first error | Restart Xcode after setting |
+| Too many errors shown | Some are cascading; fix root cause first |
+| Build takes longer | Expected; compiles all files |
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../defaults/applications/xcode.sh)
+
+```bash
+run_defaults "com.apple.dt.Xcode" "IDEBuildingContinueBuildingAfterErrors" "-bool" "true"
+```
+
 ## References
 
 - [Apple Developer: Xcode Build System](https://developer.apple.com/documentation/xcode/building-and-running-an-app)
 - [WWDC: What's New in Xcode Build System](https://developer.apple.com/videos/)
+

@@ -1,0 +1,109 @@
+# Podcasts Sync Settings
+
+Sync subscriptions and listening progress across devices.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Keys** | `syncPodcasts`, `syncListeningHistory` |
+| **Type** | Boolean |
+| **Default Value** | `true` (both) |
+| **Our Setting** | `true` (both) |
+
+## Description
+
+Syncs your podcast subscriptions, episode library, and listening progress across all Apple devices signed into the same Apple ID via iCloud.
+
+## The Two Sync Settings
+
+| Key | Syncs |
+|-----|-------|
+| `syncPodcasts` | Subscriptions and library |
+| `syncListeningHistory` | Played status and position |
+
+## Our Configuration
+
+**Both set to**: `true` — Seamless multi-device listening.
+
+### What Syncs
+
+| Data | Synced |
+|------|--------|
+| Subscribed shows | ✓ |
+| Episode library | ✓ |
+| Played/Unplayed status | ✓ |
+| Playback position | ✓ |
+| Custom stations | ✓ |
+| Episode ratings | ✓ |
+
+### The Magic
+
+```
+iPhone at gym:
+Play episode, pause at 15:32
+    ↓
+iCloud sync
+    ↓
+Mac at desk:
+Resume from 15:32
+```
+
+## Code Examples
+
+```bash
+# Enable full sync (recommended)
+defaults write com.apple.podcasts syncPodcasts -bool true
+defaults write com.apple.podcasts syncListeningHistory -bool true
+
+# Disable sync (local only)
+defaults write com.apple.podcasts syncPodcasts -bool false
+defaults write com.apple.podcasts syncListeningHistory -bool false
+```
+
+## UI Location
+
+**Podcasts** → **Settings** (⌘,) → **General** → ☑ **Sync Podcasts**
+
+### iCloud Settings
+
+Also ensure Podcasts is enabled in iCloud:
+**System Settings** → **Apple ID** → **iCloud** → **Show All** → ☑ **Podcasts**
+
+## Troubleshooting Sync
+
+If sync isn't working:
+1. Check same Apple ID on all devices
+2. Verify iCloud → Podcasts is enabled
+3. Check internet connection
+4. Force quit and reopen Podcasts
+5. Wait — sync can take a few minutes
+
+## Storage Considerations
+
+Sync shares metadata, not downloads:
+- Subscriptions sync (small data)
+- Progress syncs (tiny data)
+- Downloaded episodes do NOT sync (large files)
+- Each device downloads its own copies
+
+## Compatibility
+
+- **Podcasts**: macOS 10.15+
+- **iOS**: Podcasts app
+- **Requires**: iCloud account
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../defaults/applications/podcasts.sh)
+
+```bash
+run_defaults "com.apple.podcasts" "syncPodcasts" "-bool" "true"
+run_defaults "com.apple.podcasts" "syncListeningHistory" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Sync podcasts across devices](https://support.apple.com/guide/podcasts/sync-podcasts-across-devices-podb2ea880a0/mac)
+

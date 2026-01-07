@@ -30,13 +30,19 @@ Displays a clickable path bar at the bottom of Finder windows showing the full h
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.finder ShowPathbar
+
 # Show path bar
 defaults write com.apple.finder ShowPathbar -bool true
 
 # Hide path bar
 defaults write com.apple.finder ShowPathbar -bool false
 
-# Restart Finder
+# Delete (reset to default)
+defaults delete com.apple.finder ShowPathbar
+
+# Restart Finder to apply
 killall Finder
 ```
 
@@ -51,6 +57,28 @@ killall Finder
 - **Command-click** for full disk path
 - **Right-click** for context menu
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Path bar not showing | Restart Finder: `killall Finder` |
+| Path bar too small | Cannot resize; it auto-sizes |
+| Path not clickable | Ensure click is on folder name |
+
+## Compatibility
+
+- **Finder**: macOS 10.5+
+- **Applies to**: All Finder windows
+
+## Source File
+
+**File**: [`defaults/interface/finder.sh`](../../../defaults/interface/finder.sh)
+
+```bash
+run_defaults "com.apple.finder" "ShowPathbar" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: See the path to a file](https://support.apple.com/guide/mac-help/see-the-path-to-a-file-mchlp1774/mac)
+

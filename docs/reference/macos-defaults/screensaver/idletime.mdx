@@ -33,6 +33,9 @@ Sets the idle time (in seconds) before the screen saver starts. The screensaver 
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.screensaver idleTime
+
 # Set to 10 minutes (600 seconds)
 defaults write com.apple.screensaver idleTime -int 600
 
@@ -41,6 +44,9 @@ defaults write com.apple.screensaver idleTime -int 300
 
 # Disable screen saver
 defaults write com.apple.screensaver idleTime -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.screensaver idleTime
 ```
 
 ## UI Location
@@ -51,6 +57,28 @@ defaults write com.apple.screensaver idleTime -int 0
 
 Video playback and presentations typically prevent the screensaver from activating. Coordinate this with display sleep settings in Energy Saver.
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Screen saver not starting | Check caffeinate or apps preventing sleep |
+| Starts too soon | Increase value |
+| Not activating at all | Ensure value is > 0 |
+
+## Compatibility
+
+- **Screensaver**: macOS 10.0+
+- **Applies to**: All screen savers
+
+## Source File
+
+**File**: [`defaults/system/screensaver.sh`](../../../defaults/system/screensaver.sh)
+
+```bash
+run_defaults "com.apple.screensaver" "idleTime" "-int" "600"
+```
+
 ## References
 
 - [Apple Support: Use a screen saver on Mac](https://support.apple.com/guide/mac-help/use-a-screen-saver-mchl4b68853d/mac)
+

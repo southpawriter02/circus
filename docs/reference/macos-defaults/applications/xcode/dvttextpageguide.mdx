@@ -100,7 +100,25 @@ defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool true
 - **Xcode**: All versions
 - **Applies to**: All text editing in Xcode
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Guide not visible | Scroll right; may be past current view |
+| Guide at wrong column | Verify DVTTextPageGuideLocation value |
+| Not showing after restart | Check both keys are set |
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../defaults/applications/xcode.sh)
+
+```bash
+run_defaults "com.apple.dt.Xcode" "DVTTextShowPageGuide" "-bool" "true"
+run_defaults "com.apple.dt.Xcode" "DVTTextPageGuideLocation" "-int" "120"
+```
+
 ## References
 
 - [Swift API Design Guidelines](https://swift.org/documentation/api-design-guidelines/)
 - [Google Swift Style Guide](https://google.github.io/swift/)
+

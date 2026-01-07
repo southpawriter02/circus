@@ -1,0 +1,217 @@
+# [Setting Display Name]
+
+[One-line description of what this setting does.]
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `[com.apple.DomainName]` |
+| **Key** | `[SettingKeyName]` |
+| **Type** | [Boolean / Integer / String / Float] |
+| **Default Value** | `[default]` |
+| **Our Setting** | `[configured value]` |
+
+## Description
+
+[2-3 sentences explaining what this setting controls, why it exists, and what problem it solves. Include context about when/why a user would care about this setting.]
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `[value1]` | **[Label]** — [Description of behavior] |
+| `[value2]` | **[Label]** (default) — [Description of behavior] |
+
+<!-- For integer settings with multiple options, use a more detailed table: -->
+<!-- 
+| Value | Description |
+|-------|-------------|
+| `0` | [Meaning] |
+| `1` | [Meaning] |
+| `2` | [Meaning] |
+-->
+
+## Our Configuration
+
+**Set to**: `[value]` — [Brief rationale for this choice].
+
+### Why This Setting?
+
+<!-- Provide 3-5 bullet points explaining the benefits of the configured value -->
+
+1. **[Benefit 1]** — [Explanation]
+2. **[Benefit 2]** — [Explanation]
+3. **[Benefit 3]** — [Explanation]
+
+### When to Use Different Values
+
+<!-- Optional: When might users prefer other values? -->
+
+- **Alternative value X**: [Use case for this alternative]
+- **Alternative value Y**: [Use case for this alternative]
+
+## Code Examples
+
+```bash
+# [Description of what this command does]
+defaults write [domain] [key] -[type] [value]
+
+# [Alternative configuration]
+defaults write [domain] [key] -[type] [alternative_value]
+
+# Read current value
+defaults read [domain] [key]
+
+# Delete (reset to default)
+defaults delete [domain] [key]
+
+# Restart application to apply changes (if needed)
+killall [ApplicationName]
+```
+
+## UI Location
+
+**[Application Name]** → **[Menu/Settings]** (⌘,) → **[Tab/Section]** → **[Setting Name]**
+
+<!-- Include the exact navigation path. Use → for menu hierarchy. -->
+<!-- Include keyboard shortcuts where applicable (⌘, ⌥, ⌃, ⇧) -->
+
+## Visual Example
+
+<!-- Optional: Include ASCII diagrams, before/after comparisons, or visual explanations -->
+
+```
+[ASCII diagram or visual representation if helpful]
+```
+
+## Related Settings
+
+<!-- Link to related settings that users might want to configure together -->
+
+```bash
+# [Related setting 1]
+defaults write [domain] [related_key1] -[type] [value]
+
+# [Related setting 2]  
+defaults write [domain] [related_key2] -[type] [value]
+```
+
+See also:
+- [Related Setting Name](./related-setting.mdx)
+
+## Complete [Feature/App] Setup
+
+<!-- Optional: Show a complete configuration snippet for common use cases -->
+
+```bash
+# [Use case description, e.g., "Complete privacy-focused setup"]
+defaults write [domain] [key1] -[type] [value1]
+defaults write [domain] [key2] -[type] [value2]
+defaults write [domain] [key3] -[type] [value3]
+```
+
+## Troubleshooting
+
+<!-- Optional: Common issues and solutions -->
+
+| Issue | Solution |
+|-------|----------|
+| [Problem description] | [Fix] |
+| [Problem description] | [Fix] |
+
+## Security Considerations
+
+<!-- Optional: Include for security-sensitive settings -->
+
+> ⚠️ **Security Note**: [Important security information about this setting]
+
+## Compatibility
+
+- **[App Name]**: macOS [version]+ 
+- **Syncs**: [Yes via iCloud / No, local only]
+- **Requires**: [Any prerequisites, e.g., subscription, specific hardware]
+
+## References
+
+- [Apple Support: Topic](https://support.apple.com/guide/...)
+- [Additional Resource](https://...)
+
+---
+
+<!-- 
+==============================================================================
+TEMPLATE USAGE NOTES (Remove in final document)
+==============================================================================
+
+FILE NAMING:
+- Use lowercase with no spaces
+- Name after the key: `keyname.mdx` or `settingname.mdx`
+- For multi-key settings: `descriptive-name.mdx`
+
+DIRECTORY STRUCTURE:
+docs/reference/macos-defaults/
+├── applications/
+│   └── [app-name]/
+│       └── [setting].mdx
+├── finder/
+├── dock/
+├── keyboard/
+├── security/
+└── ...
+
+CONTENT GUIDELINES:
+
+1. OVERVIEW TABLE: Always include. Provides at-a-glance reference.
+
+2. DESCRIPTION: 
+   - What does it do?
+   - Why does it exist?
+   - Who benefits from changing it?
+
+3. VALUES TABLE:
+   - Boolean: Show both true/false with clear behavior descriptions
+   - Integer: List all valid options with meanings
+   - String: Show valid string values and what they represent
+
+4. OUR CONFIGURATION:
+   - State what we set and why
+   - This is the opinionated recommendation
+
+5. CODE EXAMPLES:
+   - Always show: write command, read command, delete command
+   - Include killall if restart is needed
+   - Show alternative configurations
+
+6. UI LOCATION:
+   - Exact click path to find this in GUI
+   - Include if there IS a UI option
+   - Say "Not exposed in UI" if terminal-only
+
+7. OPTIONAL SECTIONS (include when relevant):
+   - Visual Example: For complex or visual settings
+   - Related Settings: When settings work together
+   - Complete Setup: For common multi-setting configurations
+   - Troubleshooting: For settings that often cause issues
+   - Security Considerations: For security-sensitive settings
+
+8. COMPATIBILITY:
+   - Minimum macOS version
+   - Whether setting syncs via iCloud
+   - Any requirements (subscriptions, hardware, etc.)
+
+9. TONE:
+   - Technical but accessible
+   - Assume reader knows basics of Terminal/defaults
+   - Explain WHY, not just WHAT
+   - Use tables for structured data
+   - Use code blocks for commands
+
+10. FORMATTING:
+    - Use **bold** for key terms and emphasis
+    - Use `backticks` for values, keys, domains, commands
+    - Use → for menu navigation
+    - Use ⌘⌥⌃⇧ for keyboard shortcuts
+    - Keep line lengths readable
+==============================================================================
+-->

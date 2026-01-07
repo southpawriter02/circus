@@ -30,12 +30,19 @@ Enables selecting and copying text from Quick Look previews (spacebar preview). 
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.finder QLEnableTextSelection
+
 # Enable text selection in Quick Look
 defaults write com.apple.finder QLEnableTextSelection -bool true
 
 # Disable (Apple default)
 defaults write com.apple.finder QLEnableTextSelection -bool false
 
+# Delete (reset to default)
+defaults delete com.apple.finder QLEnableTextSelection
+
+# Restart Finder to apply
 killall Finder
 ```
 
@@ -58,6 +65,28 @@ Text selection works in:
 - RTF documents
 - Some code files
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Text not selectable | Restart Finder: `killall Finder` |
+| Only works in some files | Not all file types support selection |
+| Selection cursor missing | File type may not support text selection |
+
+## Compatibility
+
+- **Finder**: macOS 10.5+
+- **Note**: Not all file types support text selection
+
+## Source File
+
+**File**: [`defaults/interface/finder.sh`](../../../defaults/interface/finder.sh)
+
+```bash
+run_defaults "com.apple.finder" "QLEnableTextSelection" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: View files with Quick Look](https://support.apple.com/guide/mac-help/view-and-edit-files-quick-look-mh14119/mac)
+

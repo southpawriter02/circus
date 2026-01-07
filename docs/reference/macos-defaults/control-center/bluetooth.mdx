@@ -32,13 +32,19 @@ Controls whether the Bluetooth icon appears in the menu bar. The icon provides q
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.controlcenter Bluetooth
+
 # Always show Bluetooth in menu bar
 defaults write com.apple.controlcenter Bluetooth -int 2
 
 # Show only in Control Center (Apple default)
 defaults write com.apple.controlcenter Bluetooth -int 18
 
-# Restart menu bar
+# Delete (reset to default)
+defaults delete com.apple.controlcenter Bluetooth
+
+# Restart Control Center to apply
 killall ControlCenter
 ```
 
@@ -53,6 +59,28 @@ killall ControlCenter
 - Fast access to turn Bluetooth on/off
 - Easy device connection management
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Icon not appearing | Restart ControlCenter |
+| Value unclear | Use `2` for always, `18` for Control Center only |
+| Changes not sticking | Log out and back in |
+
+## Compatibility
+
+- **Control Center**: macOS 11.0+
+- **Applies to**: Menu bar icon
+
+## Source File
+
+**File**: [`defaults/interface/controlcenter.sh`](../../../defaults/interface/controlcenter.sh)
+
+```bash
+run_defaults "com.apple.controlcenter" "Bluetooth" "-int" "2"
+```
+
 ## References
 
 - [Apple Support: Use Bluetooth on your Mac](https://support.apple.com/en-us/HT201171)
+

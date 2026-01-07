@@ -60,13 +60,19 @@ By default, Safari only shows the domain name (e.g., "apple.com") in the address
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.Safari ShowFullURLInSmartSearchField
+
 # Show full URL (recommended for developers)
 defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
 
 # Show domain only (Apple default)
 defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool false
 
-# Restart Safari
+# Delete (reset to default)
+defaults delete com.apple.Safari ShowFullURLInSmartSearchField
+
+# Restart Safari to apply
 killall Safari
 ```
 
@@ -104,12 +110,29 @@ With full URL visible:
 - **⌘L** — Select address bar
 - **⌘C** — Copy complete URL
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still showing domain only | Restart Safari: `killall Safari` |
+| URL still truncated | This is normal for very long URLs |
+| Setting not persisting | Check Safari sandbox permissions |
+
 ## Compatibility
 
 - **Safari**: macOS 10.10+
 - **All sites**: Works everywhere
 
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "ShowFullURLInSmartSearchField" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Safari settings](https://support.apple.com/guide/safari/customize-settings-ibrw1011/mac)
 - [Safari Security Features](https://www.apple.com/safari/)
+

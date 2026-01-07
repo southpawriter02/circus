@@ -50,13 +50,19 @@ W5  26   27   28   29   30   31
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.iCal "Show Week Numbers"
+
 # Show week numbers
 defaults write com.apple.iCal "Show Week Numbers" -bool true
 
 # Hide week numbers
 defaults write com.apple.iCal "Show Week Numbers" -bool false
 
-# Restart Calendar
+# Delete (reset to default)
+defaults delete com.apple.iCal "Show Week Numbers"
+
+# Restart Calendar to apply
 killall Calendar
 ```
 
@@ -97,12 +103,29 @@ defaults write com.apple.iCal "first day of week" -int 1
 defaults write com.apple.iCal "Show Week Numbers" -bool true
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Week numbers not showing | Restart Calendar: `killall Calendar` |
+| Wrong week numbers | Check "first day of week" is set to Monday (1) |
+| W1 starts mid-January | ISO 8601 defines W1 as week containing Jan 4 |
+
 ## Compatibility
 
-- **Calendar**: All macOS versions
-- **Note**: Week numbering follows ISO 8601 regardless of first day setting
+- **Calendar**: macOS 10.8+
+- **Syncs**: Local preference only
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../defaults/applications/calendar.sh)
+
+```bash
+run_defaults "com.apple.iCal" "Show Week Numbers" "-bool" "true"
+```
 
 ## References
 
 - [Apple Support: Calendar advanced preferences](https://support.apple.com/guide/calendar/change-advanced-preferences-icl1027/mac)
 - [ISO 8601 Week Date](https://en.wikipedia.org/wiki/ISO_week_date)
+

@@ -49,13 +49,19 @@ Unmuted mic incidents include:
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read us.zoom.xos ZMEnableMuteWhenJoin
+
 # Join meetings muted (recommended)
 defaults write us.zoom.xos ZMEnableMuteWhenJoin -bool true
 
 # Join meetings unmuted (Zoom default)
 defaults write us.zoom.xos ZMEnableMuteWhenJoin -bool false
 
-# Restart Zoom
+# Delete (reset to default)
+defaults delete us.zoom.xos ZMEnableMuteWhenJoin
+
+# Restart Zoom to apply
 killall zoom.us
 ```
 
@@ -96,12 +102,29 @@ Note: Meeting hosts can:
 
 Your personal setting can be overridden by host settings.
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still joining unmuted | Restart Zoom: `killall zoom.us` |
+| Setting reverts after update | Zoom updates may reset preferences; reapply |
+| Host forces unmute | Host settings override personal preference |
+
 ## Compatibility
 
-- **Zoom**: All desktop versions
-- **Works with**: Regular meetings, webinars, breakout rooms
+- **Zoom**: macOS desktop app (all versions)
+- **Syncs**: Local only (Zoom account settings are separate)
+
+## Source File
+
+**File**: [`defaults/applications/zoom_app.sh`](../../../../defaults/applications/zoom_app.sh)
+
+```bash
+run_defaults "us.zoom.xos" "ZMEnableMuteWhenJoin" "-bool" "true"
+```
 
 ## References
 
 - [Zoom Help: Audio settings](https://support.zoom.us/hc/en-us/articles/201362163-Desktop-client-settings)
 - [Zoom Etiquette](https://support.zoom.us/hc/en-us/articles/115003280666)
+

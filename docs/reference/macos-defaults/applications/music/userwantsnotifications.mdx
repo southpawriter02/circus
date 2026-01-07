@@ -55,13 +55,19 @@ When enabled, each song shows:
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.Music userWantsNotifications
+
 # Disable song change notifications (recommended)
 defaults write com.apple.Music userWantsNotifications -bool false
 
 # Enable song change notifications
 defaults write com.apple.Music userWantsNotifications -bool true
 
-# Restart Music
+# Delete (reset to default)
+defaults delete com.apple.Music userWantsNotifications
+
+# Restart Music to apply
 killall Music
 ```
 
@@ -92,11 +98,28 @@ defaults write com.apple.Music userWantsNotifications -bool false
 defaults write com.apple.Music automaticDownloadsEnabled -bool false
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Notifications still appearing | Restart Music: `killall Music` |
+| Want notifications sometimes | Control via Notification Center settings |
+| No Now Playing widget | Edit Widgets in Notification Center |
+
 ## Compatibility
 
 - **Music app**: macOS 10.15+
 - **System notifications**: Respects Focus/Do Not Disturb
 
+## Source File
+
+**File**: [`defaults/applications/music.sh`](../../../../defaults/applications/music.sh)
+
+```bash
+run_defaults "com.apple.Music" "userWantsNotifications" "-bool" "false"
+```
+
 ## References
 
 - [Apple Support: Music notifications](https://support.apple.com/guide/music/change-general-preferences-mus7a8b90c5/mac)
+

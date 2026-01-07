@@ -51,9 +51,17 @@ Sets the default font used for plain text documents in TextEdit. A good monospac
 ## Code Examples
 
 ```bash
+# Read current values
+defaults read com.apple.TextEdit NSFixedPitchFont
+defaults read com.apple.TextEdit NSFixedPitchFontSize
+
 # Set Fira Code as default (install font first)
 defaults write com.apple.TextEdit NSFixedPitchFont -string "FiraCode-Retina"
 defaults write com.apple.TextEdit NSFixedPitchFontSize -int 13
+
+# Delete (reset to defaults)
+defaults delete com.apple.TextEdit NSFixedPitchFont
+defaults delete com.apple.TextEdit NSFixedPitchFontSize
 ```
 
 ```bash
@@ -117,12 +125,30 @@ defaults write com.apple.TextEdit SmartQuotes -bool false
 defaults write com.apple.TextEdit SmartDashes -bool false
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Font not applied | Font must be installed before setting |
+| Wrong font showing | Check PostScript name in Font Book |
+| Font Book shows error | Validate fonts: Font Book → File → Validate Fonts |
+
 ## Compatibility
 
-- **TextEdit**: All macOS versions
+- **TextEdit**: macOS 10.8+
 - **Note**: Font must be installed before setting
+
+## Source File
+
+**File**: [`defaults/applications/textedit.sh`](../../../../defaults/applications/textedit.sh)
+
+```bash
+run_defaults "com.apple.TextEdit" "NSFixedPitchFont" "-string" "FiraCode-Retina"
+run_defaults "com.apple.TextEdit" "NSFixedPitchFontSize" "-int" "13"
+```
 
 ## References
 
 - [Fira Code on GitHub](https://github.com/tonsky/FiraCode)
 - [Apple Support: Change fonts in TextEdit](https://support.apple.com/guide/textedit/change-fonts-txted1112/mac)
+

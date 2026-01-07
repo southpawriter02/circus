@@ -100,7 +100,24 @@ Even with native dialog, you can quickly save PDFs:
 - **macOS**: 10.13+
 - **Enterprise Policy**: `DisablePrintPreview`
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still seeing Chrome dialog | Restart Chrome completely |
+| Print presets not showing | Use expanded print dialog |
+| PDF save missing | Use File → Print → PDF button |
+
+## Source File
+
+**File**: [`defaults/applications/chrome.sh`](../../../../defaults/applications/chrome.sh)
+
+```bash
+run_defaults "com.google.Chrome" "DisablePrintPreview" "-bool" "true"
+```
+
 ## References
 
 - [Chrome Enterprise Policies](https://chromeenterprise.google/policies/#DisablePrintPreview)
 - [Apple Print Dialog Documentation](https://support.apple.com/guide/mac-help/print-documents-mchlp2276/mac)
+

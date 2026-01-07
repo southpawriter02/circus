@@ -32,13 +32,19 @@ Controls the delay (in seconds) before the Dock appears when you move the cursor
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.dock autohide-delay
+
 # Instant Dock appearance
 defaults write com.apple.dock autohide-delay -float 0
 
 # Apple default (brief delay)
 defaults write com.apple.dock autohide-delay -float 0.2
 
-# Restart Dock
+# Delete (reset to default)
+defaults delete com.apple.dock autohide-delay
+
+# Restart Dock to apply
 killall Dock
 ```
 
@@ -70,6 +76,28 @@ defaults write com.apple.dock autohide-time-modifier -float 0.15
 killall Dock
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Delay still present | Restart Dock: `killall Dock` |
+| Setting resets on reboot | Ensure using `defaults write` correctly |
+| Only works with autohide | This setting requires `autohide -bool true` |
+
+## Compatibility
+
+- **Dock**: macOS 10.2+
+- **Note**: Only effective when autohide is enabled
+
+## Source File
+
+**File**: [`defaults/interface/dock.sh`](../../../defaults/interface/dock.sh)
+
+```bash
+run_defaults "com.apple.dock" "autohide-delay" "-float" "0"
+```
+
 ## References
 
 - [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)
+

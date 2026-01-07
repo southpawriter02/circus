@@ -30,13 +30,19 @@ Displays the battery charge percentage next to the battery icon in the menu bar,
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.menuextra.battery ShowPercent
+
 # Show battery percentage
 defaults write com.apple.menuextra.battery ShowPercent -bool true
 
 # Hide battery percentage
 defaults write com.apple.menuextra.battery ShowPercent -bool false
 
-# May need to restart SystemUIServer
+# Delete (reset to default)
+defaults delete com.apple.menuextra.battery ShowPercent
+
+# Restart SystemUIServer to apply
 killall SystemUIServer
 ```
 
@@ -50,6 +56,28 @@ Also accessible by clicking the battery icon in the menu bar.
 
 This setting only applies to MacBooks with batteries. On desktop Macs, the battery menu extra isn't shown.
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Percentage not showing | Restart SystemUIServer |
+| Only works on laptops | Not applicable to desktop Macs |
+| Shows wrong percentage | Calibrate battery or check health |
+
+## Compatibility
+
+- **Menu Bar**: macOS 10.12+
+- **Applies to**: MacBooks only
+
+## Source File
+
+**File**: [`defaults/interface/menubar.sh`](../../../defaults/interface/menubar.sh)
+
+```bash
+run_defaults "com.apple.menuextra.battery" "ShowPercent" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Monitor your Mac laptop's battery](https://support.apple.com/guide/mac-help/monitor-your-laptops-battery-mh35859/mac)
+

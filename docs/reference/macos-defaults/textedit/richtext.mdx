@@ -65,6 +65,28 @@ defaults write com.apple.TextEdit NSFixedPitchFont -string "Menlo-Regular"
 defaults write com.apple.TextEdit NSFixedPitchFontSize -int 12
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still opens as RTF | Check file extension is .txt |
+| Per-document setting | Use Format → Make Plain Text (⇧⌘T) |
+| Setting not persisting | Quit TextEdit before running command |
+
+## Compatibility
+
+- **TextEdit**: All macOS versions
+- **Applies to**: New documents only
+
+## Source File
+
+**File**: [`defaults/applications/textedit.sh`](../../../defaults/applications/textedit.sh)
+
+```bash
+run_defaults "com.apple.TextEdit" "RichText" "-int" "0"
+```
+
 ## References
 
 - [Apple Support: Work with plain text documents in TextEdit](https://support.apple.com/guide/textedit/work-with-plain-text-documents-txted1098/mac)
+

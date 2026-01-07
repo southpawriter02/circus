@@ -39,11 +39,17 @@ Controls which UI elements can be accessed via the Tab key. When set to full acc
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read NSGlobalDomain AppleKeyboardUIMode
+
 # Enable full keyboard access
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 2
 
 # Text fields only (Apple default)
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 0
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain AppleKeyboardUIMode
 ```
 
 ## UI Location
@@ -58,6 +64,28 @@ With full keyboard access:
 3. Press **Enter** to confirm default action
 4. Press **Escape** to cancel
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Tab not moving to buttons | Ensure value is 2 or 3 |
+| Only works in some dialogs | Restart app to pick up change |
+| Setting resets | Check for conflicting profiles |
+
+## Compatibility
+
+- **Keyboard**: macOS 10.0+
+- **Applies to**: All native macOS dialogs
+
+## Source File
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "AppleKeyboardUIMode" "-int" "2"
+```
+
 ## References
 
 - [Apple Support: Use your keyboard like a mouse](https://support.apple.com/guide/mac-help/use-your-keyboard-like-a-mouse-mh27469/mac)
+

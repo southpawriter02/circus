@@ -52,12 +52,19 @@ When sorting by name, keeps folders grouped at the top of the list, separate fro
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.finder _FXSortFoldersFirst
+
 # Keep folders on top
 defaults write com.apple.finder _FXSortFoldersFirst -bool true
 
 # Mix folders with files (Apple default)
 defaults write com.apple.finder _FXSortFoldersFirst -bool false
 
+# Delete (reset to default)
+defaults delete com.apple.finder _FXSortFoldersFirst
+
+# Restart Finder to apply
 killall Finder
 ```
 
@@ -65,6 +72,28 @@ killall Finder
 
 **Finder** → **Settings** (⌘,) → **Advanced** → **Keep folders on top: In windows when sorting by name**
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Folders still mixed | Restart Finder: `killall Finder` |
+| Only works in some views | Check sorting is by Name |
+| Desktop not affected | Separate "Keep folders on top: On Desktop" option |
+
+## Compatibility
+
+- **Finder**: macOS 10.12+
+- **Note**: Underscore prefix in key name is required
+
+## Source File
+
+**File**: [`defaults/interface/finder.sh`](../../../defaults/interface/finder.sh)
+
+```bash
+run_defaults "com.apple.finder" "_FXSortFoldersFirst" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Finder settings](https://support.apple.com/guide/mac-help/finder-settings-mchlp2899/mac)
+

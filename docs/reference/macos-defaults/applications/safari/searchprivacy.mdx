@@ -159,6 +159,15 @@ defaults write com.apple.Safari PreloadTopHit -bool false
 defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
 ```
 
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "UniversalSearchEnabled" "-bool" "false"
+run_defaults "com.apple.Safari" "SuppressSearchSuggestions" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Safari search settings](https://support.apple.com/guide/safari/search-the-web-ibrw1044/mac)

@@ -45,14 +45,23 @@ Enables Apple Lossless Audio Codec (ALAC) playback for Apple Music content. Loss
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.Music losslessEnabled
+
 # Enable lossless audio
 defaults write com.apple.Music losslessEnabled -bool true
 
 # Disable lossless (save bandwidth/storage)
 defaults write com.apple.Music losslessEnabled -bool false
 
+# Delete (reset to default)
+defaults delete com.apple.Music losslessEnabled
+
 # Also enable Dolby Atmos
 defaults write com.apple.Music dolbyAtmosEnabled -bool true
+
+# Restart Music to apply
+killall Music
 ```
 
 ## UI Location
@@ -95,13 +104,30 @@ defaults write com.apple.Music soundEnhancerEnabled -bool false
 defaults write com.apple.Music normalizeVolume -bool true
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No quality difference heard | Check headphones support lossless; Bluetooth does not |
+| Downloads taking too long | Lossless files are 5x larger; check storage |
+| Setting not available | Requires Apple Music subscription |
+
 ## Compatibility
 
 - **Music app**: macOS 10.15.4+
 - **Requires**: Apple Music subscription
 - **Bluetooth**: Note that Bluetooth audio compresses to AAC anyway
 
+## Source File
+
+**File**: [`defaults/applications/music.sh`](../../../../defaults/applications/music.sh)
+
+```bash
+run_defaults "com.apple.Music" "losslessEnabled" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: About lossless audio in Apple Music](https://support.apple.com/en-us/HT212183)
 - [Apple Support: Audio quality settings](https://support.apple.com/guide/music/change-playback-preferences-mus7a8b90c6/mac)
+

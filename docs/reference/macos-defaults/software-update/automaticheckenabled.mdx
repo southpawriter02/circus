@@ -30,8 +30,17 @@ Tells macOS to periodically contact Apple's servers to check for new macOS versi
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.SoftwareUpdate AutomaticCheckEnabled
+
 # Enable automatic update checking
 defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
+
+# Disable automatic checking
+defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.SoftwareUpdate AutomaticCheckEnabled
 
 # Set check frequency (days)
 defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
@@ -54,6 +63,28 @@ defaults write com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool t
 defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Updates not checking | Verify with `softwareupdate --list` |
+| Notifications not appearing | Check System Settings → Notifications |
+| Enterprise managed | MDM may override this setting |
+
+## Compatibility
+
+- **macOS**: 10.8+
+- **Requires**: Internet connection
+
+## Source File
+
+**File**: [`defaults/security/software_update.sh`](../../../defaults/security/software_update.sh)
+
+```bash
+run_defaults "com.apple.SoftwareUpdate" "AutomaticCheckEnabled" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Keep your Mac up to date](https://support.apple.com/en-us/102582)
+

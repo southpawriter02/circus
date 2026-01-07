@@ -37,11 +37,17 @@ Controls whether macOS automatically capitalizes the first letter after a period
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read NSGlobalDomain NSAutomaticCapitalizationEnabled
+
 # Disable auto-capitalization
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 
 # Enable auto-capitalization
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSAutomaticCapitalizationEnabled
 ```
 
 ## UI Location
@@ -58,6 +64,28 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still capitalizing | Restart app or log out/in |
+| Only affects some apps | Some apps override system settings |
+| Need capitalization sometimes | Toggle per-app in Edit menu |
+
+## Compatibility
+
+- **Keyboard**: macOS 10.12+
+- **Applies to**: All text input fields
+
+## Source File
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSAutomaticCapitalizationEnabled" "-bool" "false"
+```
+
 ## References
 
 - [Apple Support: Change Keyboard settings](https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac)
+

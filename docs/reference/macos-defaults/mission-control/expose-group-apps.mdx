@@ -42,12 +42,19 @@ Controls whether Mission Control groups windows by application. When enabled, wi
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.dock expose-group-apps
+
 # Group windows by application
 defaults write com.apple.dock expose-group-apps -bool true
 
 # Show all windows individually
 defaults write com.apple.dock expose-group-apps -bool false
 
+# Delete (reset to default)
+defaults delete com.apple.dock expose-group-apps
+
+# Restart Dock to apply
 killall Dock
 ```
 
@@ -61,6 +68,28 @@ killall Dock
 - Click a grouped stack to expand it
 - Easier to find related windows
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Windows not grouping | Restart Dock: `killall Dock` |
+| Some windows ungrouped | Windows from different spaces may not group |
+| Setting not persisting | Verify with `defaults read` |
+
+## Compatibility
+
+- **Mission Control**: macOS 10.10+
+- **Applies to**: Mission Control view
+
+## Source File
+
+**File**: [`defaults/interface/missioncontrol.sh`](../../../defaults/interface/missioncontrol.sh)
+
+```bash
+run_defaults "com.apple.dock" "expose-group-apps" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Use Mission Control on Mac](https://support.apple.com/en-us/102556)
+

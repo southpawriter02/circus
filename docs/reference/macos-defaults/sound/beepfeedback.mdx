@@ -37,11 +37,17 @@ Controls whether macOS plays a "pop" sound when adjusting volume using keyboard 
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read NSGlobalDomain com.apple.sound.beep.feedback
+
 # Disable volume feedback sound
 defaults write NSGlobalDomain com.apple.sound.beep.feedback -int 0
 
 # Enable volume feedback sound
 defaults write NSGlobalDomain com.apple.sound.beep.feedback -int 1
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain com.apple.sound.beep.feedback
 ```
 
 ## UI Location
@@ -52,6 +58,28 @@ defaults write NSGlobalDomain com.apple.sound.beep.feedback -int 1
 
 Hold **Shift** while pressing volume keys to temporarily invert this setting (silent if normally on, audible if normally off).
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still making sound | Log out and back in |
+| Shift trick not working | Check keyboard shortcuts not conflicting |
+| Only affects keyboard | Menu bar slider follows same setting |
+
+## Compatibility
+
+- **Sound**: macOS 10.0+
+- **Applies to**: Volume key adjustments
+
+## Source File
+
+**File**: [`defaults/system/sound.sh`](../../../defaults/system/sound.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.sound.beep.feedback" "-int" "0"
+```
+
 ## References
 
 - [Apple Support: Adjust the sound on Mac](https://support.apple.com/guide/mac-help/adjust-the-sound-on-mac-mchlp2256/mac)
+

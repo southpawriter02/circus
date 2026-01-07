@@ -101,7 +101,16 @@ defaults read com.google.Chrome AppleEnableSwipeNavigateWithScrolls
 # Should return: 0
 ```
 
+## Source File
+
+**File**: [`defaults/applications/chrome.sh`](../../../../defaults/applications/chrome.sh)
+
+```bash
+run_defaults "com.google.Chrome" "AppleEnableSwipeNavigateWithScrolls" "-bool" "false"
+```
+
 ## References
 
 - [Chrome Enterprise Policy: AppleEnableSwipeNavigateWithScrolls](https://chromeenterprise.google/policies/)
 - [Chrome Help: Keyboard shortcuts](https://support.google.com/chrome/answer/157179)
+

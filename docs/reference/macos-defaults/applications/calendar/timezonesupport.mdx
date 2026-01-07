@@ -61,13 +61,19 @@ Meeting at 12:00 PM PST (correctly converted)
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.iCal "TimeZone support enabled"
+
 # Enable time zone support
 defaults write com.apple.iCal "TimeZone support enabled" -bool true
 
 # Disable time zone support
 defaults write com.apple.iCal "TimeZone support enabled" -bool false
 
-# Restart Calendar
+# Delete (reset to default)
+defaults delete com.apple.iCal "TimeZone support enabled"
+
+# Restart Calendar to apply
 killall Calendar
 ```
 
@@ -97,12 +103,29 @@ defaults write com.apple.iCal "first day of week" -int 1
 defaults write com.apple.iCal "Show Week Numbers" -bool true
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Time zone dropdown not visible | Restart Calendar after enabling |
+| Events at wrong time after travel | Ensure events have explicit timezone set |
+| External calendars not converting | Check calendar service supports timezone |
+
 ## Compatibility
 
-- **Calendar**: All macOS versions
+- **Calendar**: macOS 10.8+
 - **iCloud**: Time zone info syncs across devices
 - **Exchange/Google**: Works with external calendars
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../defaults/applications/calendar.sh)
+
+```bash
+run_defaults "com.apple.iCal" "TimeZone support enabled" "-bool" "true"
+```
 
 ## References
 
 - [Apple Support: Time zone support in Calendar](https://support.apple.com/guide/calendar/change-advanced-preferences-icl1027/mac)
+

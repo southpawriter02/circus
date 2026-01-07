@@ -60,13 +60,19 @@ Instruments and voices are placed in 3D space, creating an immersive experience.
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.Music dolbyAtmosEnabled
+
 # Enable Dolby Atmos
 defaults write com.apple.Music dolbyAtmosEnabled -bool true
 
 # Disable (stereo only)
 defaults write com.apple.Music dolbyAtmosEnabled -bool false
 
-# Restart Music
+# Delete (reset to default)
+defaults delete com.apple.Music dolbyAtmosEnabled
+
+# Restart Music to apply
 killall Music
 ```
 
@@ -105,13 +111,30 @@ defaults write com.apple.Music normalizeVolume -bool true
 defaults write com.apple.Music soundEnhancerEnabled -bool false
 ```
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No spatial effect heard | Use AirPods Pro/Max; check head tracking |
+| Atmos not available for song | Not all tracks have Atmos mixes |
+| Sound seems different | Atmos mixes differ from stereo; intentional |
+
 ## Compatibility
 
-- **Music app**: macOS 11 (Big Sur) and later
+- **Music app**: macOS 11 (Big Sur)+
 - **Requires**: Apple Music subscription
 - **Best with**: AirPods Pro, AirPods Max
+
+## Source File
+
+**File**: [`defaults/applications/music.sh`](../../../../defaults/applications/music.sh)
+
+```bash
+run_defaults "com.apple.Music" "dolbyAtmosEnabled" "-bool" "true"
+```
 
 ## References
 
 - [Apple Support: Dolby Atmos in Apple Music](https://support.apple.com/en-us/HT212182)
 - [Apple Music Spatial Audio](https://www.apple.com/apple-music/)
+

@@ -40,6 +40,9 @@ Controls how Apple Mail's built-in junk mail filter handles detected spam:
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.mail JunkMailBehavior
+
 # Move junk mail to Junk mailbox (recommended)
 defaults write com.apple.mail JunkMailBehavior -int 2
 
@@ -48,6 +51,9 @@ defaults write com.apple.mail JunkMailBehavior -int 1
 
 # Disable junk filtering
 defaults write com.apple.mail JunkMailBehavior -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.mail JunkMailBehavior
 
 # Also trust server-side spam headers
 defaults write com.apple.mail TrustSpamHeaders -bool true
@@ -107,9 +113,18 @@ defaults write com.apple.mail TrustSpamHeaders -bool true
 
 ## Compatibility
 
-- **Mail.app**: All versions
+- **Mail.app**: macOS 10.8+
 - **Account types**: iCloud, Gmail, Exchange, IMAP, POP
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "JunkMailBehavior" "-int" "2"
+```
 
 ## References
 
 - [Apple Support: Mark email as junk or not junk](https://support.apple.com/guide/mail/mark-email-as-junk-or-not-junk-mlhlf4c27c1e/mac)
+

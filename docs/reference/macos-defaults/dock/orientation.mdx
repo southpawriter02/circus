@@ -31,6 +31,9 @@ Controls which edge of the screen the Dock appears on.
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.dock orientation
+
 # Position at bottom (default)
 defaults write com.apple.dock orientation -string "bottom"
 
@@ -40,6 +43,10 @@ defaults write com.apple.dock orientation -string "left"
 # Position on right side
 defaults write com.apple.dock orientation -string "right"
 
+# Delete (reset to default)
+defaults delete com.apple.dock orientation
+
+# Restart Dock to apply
 killall Dock
 ```
 
@@ -53,6 +60,28 @@ killall Dock
 - **Left**: Maximizes vertical space on widescreen displays
 - **Right**: Less common, keeps left side free for sidebars
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Position not changing | Restart Dock: `killall Dock` |
+| Dock on wrong monitor | Check Display arrangement in System Settings |
+| Dock flickers | Log out and back in |
+
+## Compatibility
+
+- **Dock**: macOS 10.0+
+- **Applies to**: All displays
+
+## Source File
+
+**File**: [`defaults/interface/dock.sh`](../../../defaults/interface/dock.sh)
+
+```bash
+run_defaults "com.apple.dock" "orientation" "-string" "bottom"
+```
+
 ## References
 
 - [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)
+

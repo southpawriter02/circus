@@ -91,7 +91,24 @@ echo 'export LC_ALL=en_US.UTF-8' >> ~/.zshrc
 - **SSH**: Remote servers may need UTF-8 configuration too
 - **Files**: Create files with UTF-8 by default
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Characters garbled | Check shell LANG/LC_ALL vars |
+| Remote server issues | Configure SSH for UTF-8 |
+| Settings not applying | Restart Terminal |
+
+## Source File
+
+**File**: [`defaults/applications/terminal.sh`](../../../../defaults/applications/terminal.sh)
+
+```bash
+run_defaults "com.apple.Terminal" "StringEncodings" "-array" "4"
+```
+
 ## References
 
 - [Apple Support: Terminal text encoding](https://support.apple.com/guide/terminal/change-terminal-profile-encoding-trmlenc/mac)
 - [UTF-8 Everywhere](https://utf8everywhere.org/)
+

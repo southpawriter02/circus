@@ -1,0 +1,119 @@
+# Keynote Remote Control
+
+Enable controlling presentations from iPhone or iPad.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Keynote` |
+| **Key** | `KNRemoteEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Allows you to control Keynote presentations on your Mac using the Keynote Remote app on your iPhone, iPad, or Apple Watch. Walk around the room while presenting without being tethered to your computer.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Remote enabled** (default) — iOS devices can control |
+| `false` | **Remote disabled** — Mac-only control |
+
+## Our Configuration
+
+**Set to**: `true` — Enable remote control for flexible presenting.
+
+### Remote Features
+
+The Keynote Remote shows:
+- Current slide preview
+- Next slide preview
+- Presenter notes
+- Elapsed time
+- Play/pause controls
+- Laser pointer simulation
+
+## Code Examples
+
+```bash
+# Enable remote control (recommended)
+defaults write com.apple.iWork.Keynote KNRemoteEnabled -bool true
+
+# Disable remote control
+defaults write com.apple.iWork.Keynote KNRemoteEnabled -bool false
+```
+
+## UI Location
+
+**Keynote** → **Settings** (⌘,) → **Remotes** → ☑ **Enable**
+
+## Setting Up Remote Control
+
+### On Your Mac:
+1. **Keynote** → **Settings** → **Remotes**
+2. Enable remotes
+3. Keep Keynote open
+
+### On Your iPhone/iPad:
+1. Open Keynote app
+2. Tap **Continue** on the remote prompt
+3. Your Mac should appear
+4. Tap to connect
+5. Enter the 4-digit code shown on Mac
+
+## Requirements
+
+- Both devices on same Wi-Fi network
+- OR Bluetooth enabled on both
+- Same Apple ID (optional but easier)
+- Keynote installed on iOS device
+
+## During Presentation
+
+On your iOS device:
+- **Swipe right** — Next slide
+- **Swipe left** — Previous slide  
+- **Tap** — Show laser pointer
+- **Pinch** — End presentation
+
+## Apple Watch Support
+
+With watchOS and Keynote Remote:
+- Advance slides from your wrist
+- See slide count and timer
+- Vibration cues for timing
+
+## Security Note
+
+When enabled, any Keynote Remote in range can request to connect. You must approve connections on your Mac.
+
+## Compatibility
+
+- **Keynote for Mac**: All versions
+- **Keynote for iOS**: Free from App Store
+- **Connectivity**: Wi-Fi or Bluetooth
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Remote not connecting | Ensure same WiFi network |
+| Mac not appearing | Enable remotes in Keynote settings |
+| Pairing code not showing | Restart Keynote on both devices |
+
+## Source File
+
+**File**: [`defaults/applications/keynote.sh`](../../../../defaults/applications/keynote.sh)
+
+```bash
+run_defaults "com.apple.iWork.Keynote" "KNRemoteEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Keynote Remote](https://support.apple.com/guide/keynote/use-keynote-remote-to-control-a-presentation-tan57c5d40a4/mac)
+

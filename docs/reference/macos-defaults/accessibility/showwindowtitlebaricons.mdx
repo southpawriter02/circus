@@ -37,11 +37,17 @@ Controls whether the proxy icon (document/folder icon) in window title bars is a
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.universalaccess showWindowTitlebarIcons
+
 # Always show title bar icons
 defaults write com.apple.universalaccess showWindowTitlebarIcons -bool true
 
 # Show only on hover (macOS default)
 defaults write com.apple.universalaccess showWindowTitlebarIcons -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess showWindowTitlebarIcons
 ```
 
 ## UI Location
@@ -54,6 +60,28 @@ defaults write com.apple.universalaccess showWindowTitlebarIcons -bool false
 2. **Command-click** — Shows full path; click any folder to navigate there
 3. **Option-Command-drag** — Creates an alias
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Icons still hidden | Log out and back in |
+| Not all windows have icons | Only document-based apps show proxy icons |
+| Icon not draggable | Some apps don't support drag from title |
+
+## Compatibility
+
+- **Accessibility**: macOS 12.0+
+- **Applies to**: All window title bars
+
+## Source File
+
+**File**: [`defaults/accessibility/display.sh`](../../../defaults/accessibility/display.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "showWindowTitlebarIcons" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Change Display preferences for accessibility](https://support.apple.com/guide/mac-help/change-display-preferences-mchlp1108/mac)
+

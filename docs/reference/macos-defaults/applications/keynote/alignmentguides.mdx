@@ -1,0 +1,123 @@
+# Keynote Alignment Guides
+
+Show guides when aligning objects on slides.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Keynote` |
+| **Keys** | `KNShowsObjectCenterGuides`, `KNShowsObjectEdgeGuides` |
+| **Type** | Boolean |
+| **Default Value** | `true` (both) |
+| **Our Setting** | `true` (both) |
+
+## Description
+
+Shows dynamic alignment guides when dragging objects on slides. Yellow guide lines appear when objects align with other objects' centers or edges, enabling precise visual positioning without using rulers.
+
+## The Two Guide Types
+
+| Key | Shows |
+|-----|-------|
+| `KNShowsObjectCenterGuides` | Lines when object centers align |
+| `KNShowsObjectEdgeGuides` | Lines when object edges align |
+
+## Visual Example
+
+```
+        Center Guide
+            │
+   ┌────────┼────────┐
+   │        │        │
+   │   Box  │        │
+   │   ─────┼────────┼── Edge Guide
+   └────────┼────────┘
+            │
+   ┌────────┼────────┐
+   │        │        │
+   │   Box  │        │
+   │        │        │
+   └────────┴────────┘
+```
+
+## Our Configuration
+
+**Both set to**: `true` — Maximum alignment precision.
+
+### Benefits
+
+1. **Visual precision** — See when objects align perfectly
+2. **Professional look** — Well-aligned slides
+3. **Fast workflow** — No manual measurements
+4. **Consistent spacing** — Objects align naturally
+
+## Code Examples
+
+```bash
+# Enable both guide types (recommended)
+defaults write com.apple.iWork.Keynote KNShowsObjectCenterGuides -bool true
+defaults write com.apple.iWork.Keynote KNShowsObjectEdgeGuides -bool true
+
+# Enable size/position display while moving
+defaults write com.apple.iWork.Keynote KNShowSizeAndPositionWhenMoving -bool true
+```
+
+## UI Location
+
+**Keynote** → **Settings** (⌘,) → **Rulers**
+
+- ☑ Show guides at object center
+- ☑ Show guides at object edges
+
+## Additional Alignment Tools
+
+| Tool | Access |
+|------|--------|
+| **Align buttons** | Format → Arrange → Align |
+| **Distribute** | Format → Arrange → Distribute |
+| **Smart guides** | Automatic while dragging |
+| **Rulers** | View → Show Rulers |
+
+## Keyboard Nudging
+
+For fine adjustments after visual alignment:
+- **Arrow keys** — Move 1 point
+- **⇧ + Arrow** — Move 10 points
+
+## Related Settings
+
+```bash
+# Complete precise editing setup
+defaults write com.apple.iWork.Keynote KNShowsObjectCenterGuides -bool true
+defaults write com.apple.iWork.Keynote KNShowsObjectEdgeGuides -bool true
+defaults write com.apple.iWork.Keynote KNShowSizeAndPositionWhenMoving -bool true
+defaults write com.apple.iWork.Keynote ShowPresenterNotes -bool true
+```
+
+## Compatibility
+
+- **Keynote**: All versions
+- **Also works in**: Pages, Numbers (similar settings)
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Guides not appearing | Check settings in Keynote preferences |
+| Too many guides | Disable one type temporarily |
+| Guides distracting | Toggle in View menu during editing |
+
+## Source File
+
+**File**: [`defaults/applications/keynote.sh`](../../../../defaults/applications/keynote.sh)
+
+```bash
+run_defaults "com.apple.iWork.Keynote" "KNShowsObjectCenterGuides" "-bool" "true"
+run_defaults "com.apple.iWork.Keynote" "KNShowsObjectEdgeGuides" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Position and align objects in Keynote](https://support.apple.com/guide/keynote/position-and-align-objects-tan75cf5e1a3/mac)
+

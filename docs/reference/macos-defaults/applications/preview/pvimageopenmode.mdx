@@ -109,6 +109,23 @@ Preview's setting overrides this for Preview specifically.
 - **Preview**: macOS 10.12+
 - **Tab support**: All document types
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still opens in windows | Restart Preview after setting |
+| Tab bar not visible | View → Show Tab Bar (⇧⌘T) |
+| System setting overrides | Preview setting takes precedence |
+
+## Source File
+
+**File**: [`defaults/applications/preview.sh`](../../../../defaults/applications/preview.sh)
+
+```bash
+run_defaults "com.apple.Preview" "PVImageOpenMode" "-int" "2"
+```
+
 ## References
 
 - [Apple Support: Preview preferences](https://support.apple.com/guide/preview/change-preferences-prvw11793/mac)
+

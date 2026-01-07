@@ -32,11 +32,17 @@ Controls the scroll direction for trackpads and mice:
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read NSGlobalDomain com.apple.swipescrolldirection
+
 # Enable traditional scrolling
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
 
 # Enable natural scrolling (Apple default)
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain com.apple.swipescrolldirection
 ```
 
 ## UI Location
@@ -49,6 +55,28 @@ Also: **System Settings** → **Mouse** → **Natural scrolling**
 
 This setting affects both trackpad and mouse scrolling globally.
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Scroll direction unchanged | Log out and back in |
+| Only affects trackpad | Setting applies globally |
+| Want separate mouse/trackpad | Use third-party tools like Scroll Reverser |
+
+## Compatibility
+
+- **macOS**: 10.7+
+- **Affects**: All input devices
+
+## Source File
+
+**File**: [`defaults/hardware/trackpad.sh`](../../../defaults/hardware/trackpad.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.swipescrolldirection" "-bool" "false"
+```
+
 ## References
 
 - [Apple Support: Change Trackpad settings](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac)
+

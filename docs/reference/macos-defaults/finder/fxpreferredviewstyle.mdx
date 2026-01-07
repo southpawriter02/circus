@@ -32,6 +32,9 @@ Sets the default view style for new Finder windows. Column view is preferred by 
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.finder FXPreferredViewStyle
+
 # Set Column View as default
 defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
 
@@ -41,6 +44,10 @@ defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
 # Set Icon View (Apple default)
 defaults write com.apple.finder FXPreferredViewStyle -string "icnv"
 
+# Delete (reset to default)
+defaults delete com.apple.finder FXPreferredViewStyle
+
+# Restart Finder to apply
 killall Finder
 ```
 
@@ -60,6 +67,28 @@ killall Finder
 - Preview pane on the right
 - Keyboard navigation with arrow keys
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| View not changing | Restart Finder: `killall Finder` |
+| Per-folder view overrides | Use View → Use as Defaults |
+| Value case-sensitive | Use exact case: `clmv`, `Nlsv` |
+
+## Compatibility
+
+- **Finder**: macOS 10.5+
+- **Applies to**: New Finder windows
+
+## Source File
+
+**File**: [`defaults/interface/finder.sh`](../../../defaults/interface/finder.sh)
+
+```bash
+run_defaults "com.apple.finder" "FXPreferredViewStyle" "-string" "clmv"
+```
+
 ## References
 
 - [Apple Support: View and sort files in Finder](https://support.apple.com/guide/mac-help/view-and-sort-files-mchlp1083/mac)
+

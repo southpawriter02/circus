@@ -114,6 +114,23 @@ defaults write com.apple.Preview PVScaleDocumentsToFit -bool true
 - **Preview**: macOS 10.14+
 - **Affects**: PDF files only (not images)
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Mode not changing | Restart Preview after setting |
+| Reverts on reopen | Setting is per-PDF; use for new docs |
+| Two pages cut off | Resize window wider |
+
+## Source File
+
+**File**: [`defaults/applications/preview.sh`](../../../../defaults/applications/preview.sh)
+
+```bash
+run_defaults "com.apple.Preview" "PVPDFDisplayMode" "-int" "1"
+```
+
 ## References
 
 - [Apple Support: View PDFs in Preview](https://support.apple.com/guide/preview/view-pdfs-prvw11571/mac)
+

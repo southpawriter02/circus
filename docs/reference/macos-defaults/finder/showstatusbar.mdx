@@ -30,12 +30,19 @@ Displays a status bar at the bottom of Finder windows showing the number of item
 ## Code Examples
 
 ```bash
+# Read current value
+defaults read com.apple.finder ShowStatusBar
+
 # Show status bar
 defaults write com.apple.finder ShowStatusBar -bool true
 
 # Hide status bar
 defaults write com.apple.finder ShowStatusBar -bool false
 
+# Delete (reset to default)
+defaults delete com.apple.finder ShowStatusBar
+
+# Restart Finder to apply
 killall Finder
 ```
 
@@ -48,6 +55,28 @@ killall Finder
 - **Item count**: "42 items" (or selection count when items selected)
 - **Disk space**: "125.6 GB available"
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Status bar not showing | Restart Finder: `killall Finder` |
+| Shows wrong count | Select items to see selection count |
+| Disk space wrong | Check for hidden items |
+
+## Compatibility
+
+- **Finder**: macOS 10.5+
+- **Applies to**: All Finder windows
+
+## Source File
+
+**File**: [`defaults/interface/finder.sh`](../../../defaults/interface/finder.sh)
+
+```bash
+run_defaults "com.apple.finder" "ShowStatusBar" "-bool" "true"
+```
+
 ## References
 
 - [Apple Support: Change how folders look in Finder](https://support.apple.com/guide/mac-help/change-how-folders-look-in-the-finder-mchlp2899/mac)
+

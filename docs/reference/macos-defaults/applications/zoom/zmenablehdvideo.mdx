@@ -99,7 +99,24 @@ defaults write us.zoom.xos ZMEnableTouchUpAppearance -bool false
 - **Camera**: USB/built-in cameras supporting 720p+
 - **CPU**: HD video uses more processing power
 
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Video grainy | Check lighting and camera quality |
+| Video choppy | Reduce to SD if bandwidth limited |
+| HD not available | Check camera supports 720p+ |
+
+## Source File
+
+**File**: [`defaults/applications/zoom_app.sh`](../../../../defaults/applications/zoom_app.sh)
+
+```bash
+run_defaults "us.zoom.xos" "ZMEnableHDVideo" "-bool" "true"
+```
+
 ## References
 
 - [Zoom Help: Video settings](https://support.zoom.us/hc/en-us/articles/201362623-Meeting-settings)
 - [Zoom bandwidth requirements](https://support.zoom.us/hc/en-us/articles/201362023-System-requirements-for-Zoom)
+
