@@ -1,0 +1,63 @@
+# AppleKeyboardUIMode
+
+Enable full keyboard access to all controls.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `AppleKeyboardUIMode` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls which UI elements can be accessed via the Tab key. When set to full access, you can Tab through all controls in dialogs (buttons, dropdowns, checkboxes), not just text fields.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Text fields only** (default) — Limited Tab navigation |
+| `2` | **All controls** — Full keyboard access |
+| `3` | **All controls** — Alternate value, same as 2 |
+
+## Our Configuration
+
+**Set to**: `2` — Full keyboard access for power users.
+
+## Benefits
+
+- Navigate dialogs without mouse
+- Press Tab to move between all controls
+- Press Space to activate buttons
+- Press Enter to confirm, Escape to cancel
+- Keyboard-driven workflow
+
+## Code Examples
+
+```bash
+# Enable full keyboard access
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 2
+
+# Text fields only (Apple default)
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 0
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Keyboard navigation** (toggle)
+
+## Usage in Dialogs
+
+With full keyboard access:
+1. Press **Tab** to move between controls
+2. Press **Space** to activate buttons/checkboxes
+3. Press **Enter** to confirm default action
+4. Press **Escape** to cancel
+
+## References
+
+- [Apple Support: Use your keyboard like a mouse](https://support.apple.com/guide/mac-help/use-your-keyboard-like-a-mouse-mh27469/mac)

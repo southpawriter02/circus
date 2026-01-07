@@ -1,0 +1,57 @@
+# com.apple.sound.beep.feedback
+
+Disable the sound when adjusting volume.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.sound.beep.feedback` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `0` |
+
+## Description
+
+Controls whether macOS plays a "pop" sound when adjusting volume using keyboard keys or the menu bar slider.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Silent** — No feedback sound when changing volume |
+| `1` | **Audible feedback** (default) — Pop sound on volume change |
+
+## Our Configuration
+
+**Set to**: `0` — Silent volume adjustments.
+
+## Why Disable?
+
+- Quiet adjustments during meetings
+- No sound interruption when lowering volume
+- Cleaner audio experience
+- Less intrusive
+
+## Code Examples
+
+```bash
+# Disable volume feedback sound
+defaults write NSGlobalDomain com.apple.sound.beep.feedback -int 0
+
+# Enable volume feedback sound
+defaults write NSGlobalDomain com.apple.sound.beep.feedback -int 1
+```
+
+## UI Location
+
+**System Settings** → **Sound** → **Play feedback when volume is changed**
+
+## Note
+
+Hold **Shift** while pressing volume keys to temporarily invert this setting (silent if normally on, audible if normally off).
+
+## References
+
+- [Apple Support: Adjust the sound on Mac](https://support.apple.com/guide/mac-help/adjust-the-sound-on-mac-mchlp2256/mac)

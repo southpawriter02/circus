@@ -1,0 +1,58 @@
+# Bluetooth (Control Center)
+
+Show Bluetooth icon in the menu bar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.controlcenter` |
+| **Key** | `Bluetooth` |
+| **Type** | Integer |
+| **Default Value** | `18` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls whether the Bluetooth icon appears in the menu bar. The icon provides quick access to Bluetooth devices and settings.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `2` | **Always show** — Icon always in menu bar |
+| `8` | **Show when active** — Only when Bluetooth is on |
+| `18` | **Control Center only** (default) — In Control Center, not menu bar |
+| `24` | **Don't show** — Hidden completely |
+
+## Our Configuration
+
+**Set to**: `2` — Always show in menu bar for quick access.
+
+## Code Examples
+
+```bash
+# Always show Bluetooth in menu bar
+defaults write com.apple.controlcenter Bluetooth -int 2
+
+# Show only in Control Center (Apple default)
+defaults write com.apple.controlcenter Bluetooth -int 18
+
+# Restart menu bar
+killall ControlCenter
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Bluetooth** → **Show in Menu Bar**
+
+## Why Always Show?
+
+- Quick device switching (headphones, etc.)
+- See Bluetooth status at a glance
+- Fast access to turn Bluetooth on/off
+- Easy device connection management
+
+## References
+
+- [Apple Support: Use Bluetooth on your Mac](https://support.apple.com/en-us/HT201171)

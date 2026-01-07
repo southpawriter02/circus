@@ -1,0 +1,56 @@
+# idleTime
+
+Set how long before the screen saver activates.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.screensaver` |
+| **Key** | `idleTime` |
+| **Type** | Integer |
+| **Default Value** | `1200` |
+| **Our Setting** | `600` |
+
+## Description
+
+Sets the idle time (in seconds) before the screen saver starts. The screensaver activates after no keyboard, mouse, or trackpad activity for this duration.
+
+## Values
+
+| Value | Time | Use Case |
+|-------|------|----------|
+| `0` | Never | Disable screen saver |
+| `60` | 1 minute | High security |
+| `300` | 5 minutes | Moderate security |
+| `600` | **10 minutes** | Balanced (our setting) |
+| `1200` | 20 minutes (default) | Low urgency |
+
+## Our Configuration
+
+**Set to**: `600` (10 minutes) — Balanced between security and convenience.
+
+## Code Examples
+
+```bash
+# Set to 10 minutes (600 seconds)
+defaults write com.apple.screensaver idleTime -int 600
+
+# Set to 5 minutes
+defaults write com.apple.screensaver idleTime -int 300
+
+# Disable screen saver
+defaults write com.apple.screensaver idleTime -int 0
+```
+
+## UI Location
+
+**System Settings** → **Screen Saver** → **Start after** (slider)
+
+## Note
+
+Video playback and presentations typically prevent the screensaver from activating. Coordinate this with display sleep settings in Energy Saver.
+
+## References
+
+- [Apple Support: Use a screen saver on Mac](https://support.apple.com/guide/mac-help/use-a-screen-saver-mchl4b68853d/mac)

@@ -1,0 +1,75 @@
+# autohide-delay
+
+Set delay before Dock appears when hidden.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `autohide-delay` |
+| **Type** | Float |
+| **Default Value** | `0.2` |
+| **Our Setting** | `0` |
+
+## Description
+
+Controls the delay (in seconds) before the Dock appears when you move the cursor to the screen edge. Only applies when `autohide` is enabled.
+
+## Values
+
+| Value | Delay | Experience |
+|-------|-------|------------|
+| `0` | Instant | No wait, immediate appearance |
+| `0.2` | 200ms (default) | Brief pause |
+| `0.5` | 500ms | Noticeable delay |
+| `1.0` | 1 second | Long delay |
+
+## Our Configuration
+
+**Set to**: `0` — Instant Dock appearance when needed.
+
+## Code Examples
+
+```bash
+# Instant Dock appearance
+defaults write com.apple.dock autohide-delay -float 0
+
+# Apple default (brief delay)
+defaults write com.apple.dock autohide-delay -float 0.2
+
+# Restart Dock
+killall Dock
+```
+
+## UI Location
+
+Not available in System Settings — terminal only.
+
+## Related: Auto-Hide Animation Speed
+
+Control how fast the Dock slides in/out:
+
+```bash
+# Speed up show/hide animation
+defaults write com.apple.dock autohide-time-modifier -float 0.15
+
+# Default animation speed
+defaults write com.apple.dock autohide-time-modifier -float 0.5
+
+killall Dock
+```
+
+## Complete Fast Dock Configuration
+
+```bash
+# Enable auto-hide with instant response
+defaults write com.apple.dock autohide -bool true
+defaults write com.apple.dock autohide-delay -float 0
+defaults write com.apple.dock autohide-time-modifier -float 0.15
+killall Dock
+```
+
+## References
+
+- [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)

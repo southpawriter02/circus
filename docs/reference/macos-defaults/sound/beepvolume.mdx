@@ -1,0 +1,64 @@
+# com.apple.sound.beep.volume
+
+Set the alert sound volume.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.sound.beep.volume` |
+| **Type** | Float |
+| **Default Value** | `1.0` |
+| **Our Setting** | `0.5` |
+
+## Description
+
+Controls the volume of alert sounds (beeps, notifications). Independent of the main system volume.
+
+## Values
+
+| Value | Volume |
+|-------|--------|
+| `0.0` | Muted (silent alerts) |
+| `0.25` | Quiet |
+| `0.5` | **Moderate** (our setting) |
+| `0.75` | Loud |
+| `1.0` | Full volume (default) |
+
+## Our Configuration
+
+**Set to**: `0.5` — Moderate alert volume, audible but not jarring.
+
+## Code Examples
+
+```bash
+# Set moderate alert volume
+defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.5
+
+# Mute alerts
+defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.0
+
+# Full volume alerts
+defaults write NSGlobalDomain com.apple.sound.beep.volume -float 1.0
+```
+
+## UI Location
+
+**System Settings** → **Sound** → **Alert volume** (slider)
+
+## Related Setting
+
+Change the alert sound itself:
+
+```bash
+# Set alert sound (path to .aiff file)
+defaults write NSGlobalDomain com.apple.sound.beep.sound -string "/System/Library/Sounds/Tink.aiff"
+```
+
+Available sounds in `/System/Library/Sounds/`:
+Basso, Blow, Bottle, Frog, Funk, Glass, Hero, Morse, Ping, Pop, Purr, Sosumi, Submarine, Tink
+
+## References
+
+- [Apple Support: Change the alert sound](https://support.apple.com/guide/mac-help/change-the-alert-sound-mchlp2207/mac)

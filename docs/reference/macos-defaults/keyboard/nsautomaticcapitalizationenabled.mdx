@@ -1,0 +1,63 @@
+# NSAutomaticCapitalizationEnabled
+
+Disable automatic capitalization.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticCapitalizationEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether macOS automatically capitalizes the first letter after a period or at the start of a sentence. This interferes with coding, terminal commands, and technical writing.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-capitalize enabled** (default) — First letters capitalized |
+| `false` | **Auto-capitalize disabled** — No automatic changes |
+
+## Our Configuration
+
+**Set to**: `false` — Prevent unwanted capitalization.
+
+## Why Disable?
+
+- Commands get capitalized (`ls` becomes `Ls`)
+- Variable names altered
+- Technical writing disrupted
+- Case-sensitive content changed
+
+## Code Examples
+
+```bash
+# Disable auto-capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Enable auto-capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool true
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Text Input** → **Input Sources** → **Edit...** → **Capitalize words automatically**
+
+## Related Settings
+
+```bash
+# Complete developer-friendly text input
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+```
+
+## References
+
+- [Apple Support: Change Keyboard settings](https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac)

@@ -1,0 +1,46 @@
+# showClock
+
+Show clock on the screen saver.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.screensaver` |
+| **Key** | `showClock` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Displays a clock overlay on the screen saver, showing the current time while the screen saver is active. Useful for quickly checking the time without unlocking.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show clock** — Time displayed on screen saver |
+| `false` | **Hide clock** (default) — Screen saver only |
+
+## Our Configuration
+
+**Set to**: `true` — Convenient time display.
+
+## Code Examples
+
+```bash
+# Show clock on screen saver
+defaults write com.apple.screensaver showClock -bool true
+
+# Hide clock
+defaults write com.apple.screensaver showClock -bool false
+```
+
+## UI Location
+
+**System Settings** → **Lock Screen** → **Show large clock**
+
+## References
+
+- [Apple Support: Change Lock Screen settings](https://support.apple.com/guide/mac-help/change-lock-screen-settings-mchl8a3b1a59/mac)

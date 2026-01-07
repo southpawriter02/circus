@@ -1,0 +1,62 @@
+# NSAutomaticSpellingCorrectionEnabled
+
+Disable automatic spelling correction.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticSpellingCorrectionEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether macOS automatically corrects spelling as you type. While helpful for prose, this interferes with coding, technical writing, and intentional non-words.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-correct enabled** (default) — Fixes typos automatically |
+| `false` | **Auto-correct disabled** — No automatic changes |
+
+## Our Configuration
+
+**Set to**: `false` — Prevent unwanted corrections for developers.
+
+## Why Disable?
+
+- Code and variable names get "corrected"
+- Technical terms changed unexpectedly
+- Commands altered while typing
+- Frustrating interruptions
+
+## Code Examples
+
+```bash
+# Disable auto-correct
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Enable auto-correct
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool true
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Text Input** → **Input Sources** → **Edit...** → **Correct spelling automatically**
+
+## Related Settings
+
+```bash
+# Also consider disabling:
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+```
+
+## References
+
+- [Apple Support: Change Keyboard settings](https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac)
