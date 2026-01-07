@@ -1,0 +1,99 @@
+# Zoom Video When Joining
+
+Control whether camera is on or off when joining meetings.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `us.zoom.xos` |
+| **Key** | `ZMEnableStopVideoWhenJoin` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether your camera is automatically enabled when joining a Zoom meeting. When enabled (set to `true`), you join with video OFF, giving you time to prepare before being seen.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Join with video OFF** — Camera disabled until you turn it on |
+| `false` | **Join with video ON** (default) — Camera activates immediately |
+
+## Our Configuration
+
+**Set to**: `true` — Join meetings with camera off by default.
+
+### Why Join with Video Off?
+
+1. **Preparation time** — Check appearance before being seen
+2. **Privacy** — Control when others see you
+3. **Bandwidth saving** — Video uses significant data
+4. **Comfort** — Turn on when ready, not when rushed
+5. **Background check** — Ensure nothing embarrassing visible
+
+### Professional Considerations
+
+- **Expected video**: Some meetings expect video on
+- **Quick toggle**: ⌘⇧V turns video on quickly
+- **Preview**: You can preview video before turning on
+
+## Code Examples
+
+```bash
+# Join with video OFF (recommended)
+defaults write us.zoom.xos ZMEnableStopVideoWhenJoin -bool true
+
+# Join with video ON (Zoom default)
+defaults write us.zoom.xos ZMEnableStopVideoWhenJoin -bool false
+
+# Restart Zoom
+killall zoom.us
+```
+
+## UI Location
+
+**Zoom** → **Settings** (⌘,) → **Video** → ☑ **Turn off my video when joining a meeting**
+
+## Quick Video Toggle
+
+During a meeting:
+- **⌘⇧V** — Toggle video on/off
+- Click camera icon in meeting controls
+- Space bar — Temporary video on (release to turn off)
+
+## Related Audio Setting
+
+Also start with microphone muted:
+
+```bash
+# Join with microphone muted
+defaults write us.zoom.xos ZMEnableMuteWhenJoin -bool true
+```
+
+## Complete "Quiet Join" Setup
+
+```bash
+# Enter meetings quietly
+defaults write us.zoom.xos ZMEnableStopVideoWhenJoin -bool true
+defaults write us.zoom.xos ZMEnableMuteWhenJoin -bool true
+defaults write us.zoom.xos ZMEnableAutoJoinVoip -bool true
+```
+
+This setting:
+- Video OFF
+- Microphone MUTED
+- Audio automatically connected (no prompt)
+
+## Compatibility
+
+- **Zoom**: All desktop versions
+- **Account**: May be overridden by meeting host settings
+- **Admin**: Organization policies may enforce video
+
+## References
+
+- [Zoom Help: Video settings](https://support.zoom.us/hc/en-us/articles/201362163-Desktop-client-settings)

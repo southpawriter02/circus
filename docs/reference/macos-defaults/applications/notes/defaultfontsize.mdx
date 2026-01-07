@@ -1,0 +1,95 @@
+# Notes Default Text Size
+
+Set the default font size for new notes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Notes` |
+| **Key** | `DefaultFontSize` |
+| **Type** | Integer |
+| **Default Value** | `16` |
+| **Our Setting** | `16` |
+
+## Description
+
+Controls the default text size for the body text in new notes. A comfortable reading size improves note-taking and review.
+
+## Values
+
+| Value | Size | Use Case |
+|-------|------|----------|
+| `12` | Small | Dense notes, more on screen |
+| `14` | Medium-small | Compact but readable |
+| `16` | Default | Comfortable for most users |
+| `18` | Large | Easier reading |
+| `20` | Extra large | Accessibility |
+
+## Our Configuration
+
+**Set to**: `16` — Apple's default, comfortable for most users.
+
+## Code Examples
+
+```bash
+# Set default text size to 16pt
+defaults write com.apple.Notes DefaultFontSize -int 16
+
+# Larger text for accessibility
+defaults write com.apple.Notes DefaultFontSize -int 18
+
+# Smaller for more compact notes
+defaults write com.apple.Notes DefaultFontSize -int 14
+```
+
+## UI Location
+
+**Notes** → **Settings** (⌘,) → **Default Text Size** (slider)
+
+## In-Note Zoom
+
+You can also zoom individual notes:
+- **⌘+** — Increase text size
+- **⌘-** — Decrease text size
+- **⌘0** — Reset to default
+
+This creates a per-note zoom, not changing the default.
+
+## Related Setting
+
+Control what style new notes start with:
+
+```bash
+# Start with Title style
+defaults write com.apple.Notes NewNoteBodyStyle -int 0
+
+# Start with Body style
+defaults write com.apple.Notes NewNoteBodyStyle -int 3
+```
+
+| Value | Style |
+|-------|-------|
+| `0` | Title |
+| `1` | Heading |
+| `2` | Subheading |
+| `3` | Body |
+
+## Complete Notes Setup
+
+```bash
+# Comfortable defaults
+defaults write com.apple.Notes DefaultFontSize -int 16
+defaults write com.apple.Notes NewNoteBodyStyle -int 0
+defaults write com.apple.Notes NotesSortOrder -int 1
+defaults write com.apple.Notes GroupNotesByDate -bool true
+```
+
+## Compatibility
+
+- **Notes app**: macOS 10.15+
+- **Applies to**: New notes only (existing notes unchanged)
+
+## References
+
+- [Apple Support: Notes on Mac](https://support.apple.com/guide/notes/welcome/mac)

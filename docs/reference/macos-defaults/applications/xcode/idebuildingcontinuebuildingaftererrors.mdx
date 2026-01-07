@@ -1,0 +1,122 @@
+# Xcode Continue Building After Errors
+
+Continue compiling other files after encountering build errors.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `IDEBuildingContinueBuildingAfterErrors` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+By default, Xcode stops building as soon as it encounters a compile error. When this setting is enabled, Xcode continues compiling other files and targets, showing you ALL errors at once instead of stopping at the first one.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Continue building** — Show all errors at once |
+| `false` | **Stop on first error** (default) — Fix one by one |
+
+## The Workflow Difference
+
+### Default Behavior (Stop on Error)
+
+```
+Build started...
+❌ Error in FileA.swift:42
+Build failed.
+
+[You fix FileA.swift]
+Build started...
+❌ Error in FileB.swift:17
+Build failed.
+
+[You fix FileB.swift]
+Build started...
+❌ Error in FileC.swift:89
+Build failed.
+
+... and so on
+```
+
+### With Continue Building
+
+```
+Build started...
+❌ Error in FileA.swift:42
+❌ Error in FileB.swift:17
+❌ Error in FileC.swift:89
+⚠️ Warning in FileD.swift:23
+Build failed with 3 errors.
+
+[You see everything at once and fix all issues]
+```
+
+## Our Configuration
+
+**Set to**: `true` — See all errors at once.
+
+### Benefits
+
+1. **Full picture** — Understand scope of problems
+2. **Batch fixing** — Fix related errors together
+3. **Faster iteration** — Fewer build cycles needed
+4. **Better planning** — Prioritize fixes effectively
+
+### When Default Is Better
+
+- Very large projects (build time matters)
+- Cascading errors (one error causes many false positives)
+- Limited screen space for Issues pane
+
+## Code Examples
+
+```bash
+# Continue building after errors
+defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool true
+
+# Stop at first error (Xcode default)
+defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool false
+```
+
+## UI Location
+
+**Xcode** → **Settings** (⌘,) → **General** → **Continue building after errors**
+
+## Viewing All Errors
+
+With this enabled, use the Issue Navigator (⌘5) to see all errors:
+- Red icons = Errors
+- Yellow icons = Warnings
+- Click to jump to location
+- Filter by type
+
+## Related Build Settings
+
+```bash
+# Also show build duration
+defaults write com.apple.dt.Xcode ShowBuildOperationDuration -bool true
+
+# Show runtime issues during debugging
+defaults write com.apple.dt.Xcode IDEShowRuntimeIssues -bool true
+```
+
+## Performance Note
+
+Continuing to build after errors uses more CPU (compiling files that may not be needed). On massive projects, this can add build time. For most projects, the difference is negligible.
+
+## Compatibility
+
+- **Xcode**: 8.0 and later
+- **Applies to**: All build operations
+
+## References
+
+- [Apple Developer: Xcode Build System](https://developer.apple.com/documentation/xcode/building-and-running-an-app)
+- [WWDC: What's New in Xcode Build System](https://developer.apple.com/videos/)

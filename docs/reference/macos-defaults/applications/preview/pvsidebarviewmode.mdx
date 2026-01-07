@@ -1,0 +1,101 @@
+# Preview Sidebar
+
+Show thumbnails sidebar by default when opening documents.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Preview` |
+| **Key** | `PVSidebarViewModeForNewDocuments` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls whether the sidebar is visible when opening documents in Preview, and what content it displays. The sidebar enables easy navigation in multi-page documents.
+
+## Values
+
+| Value | Sidebar Mode |
+|-------|--------------|
+| `0` | **Hidden** (default) — No sidebar |
+| `1` | **Thumbnails** — Page preview images |
+| `2` | **Table of Contents** — Document outline (PDFs only) |
+| `3` | **Annotations** — List of annotations |
+| `4` | **Bookmarks** — Bookmarked pages |
+
+## Our Configuration
+
+**Set to**: `1` — Show thumbnails for easy page navigation.
+
+### Why Thumbnails?
+
+1. **Quick navigation** — Click to jump to any page
+2. **Visual overview** — See document structure at a glance
+3. **Page recognition** — Find pages by appearance
+4. **Multi-select** — Select multiple pages for operations
+
+## Code Examples
+
+```bash
+# Show thumbnails sidebar by default
+defaults write com.apple.Preview PVSidebarViewModeForNewDocuments -int 1
+
+# Hide sidebar by default
+defaults write com.apple.Preview PVSidebarViewModeForNewDocuments -int 0
+
+# Show table of contents by default
+defaults write com.apple.Preview PVSidebarViewModeForNewDocuments -int 2
+```
+
+## UI Location
+
+**View** menu:
+- **Hide Sidebar** (⌘⌥1) — Toggles visibility
+- **Thumbnails** (⌘⌥2)
+- **Table of Contents** (⌘⌥3)
+- **Annotations** (⌘⌥4)
+- **Bookmarks** (⌘⌥5)
+
+Or click the sidebar icon in the toolbar.
+
+## Sidebar Width
+
+The sidebar width is persistent per-document. To resize:
+- Drag the divider between sidebar and main view
+
+## Table of Contents vs Thumbnails
+
+| Feature | Thumbnails | Table of Contents |
+|---------|------------|-------------------|
+| Works with all PDFs | ✓ | Only if PDF has TOC |
+| Visual navigation | ✓ | ✗ |
+| Text-based navigation | ✗ | ✓ |
+| Shows section names | ✗ | ✓ |
+
+## Complete Preview Setup
+
+```bash
+# Thumbnails sidebar by default
+defaults write com.apple.Preview PVSidebarViewModeForNewDocuments -int 1
+
+# Open documents in tabs
+defaults write com.apple.Preview PVImageOpenMode -int 2
+
+# Continuous scrolling for PDFs
+defaults write com.apple.Preview PVPDFDisplayMode -int 1
+
+# Remember position in PDFs
+defaults write com.apple.Preview PVPDFRememberCurrentPage -bool true
+```
+
+## Compatibility
+
+- **Preview**: macOS 10.14+
+- **Supported formats**: PDFs, multi-page TIFFs, image collections
+
+## References
+
+- [Apple Support: Preview User Guide](https://support.apple.com/guide/preview/welcome/mac)

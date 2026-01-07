@@ -1,0 +1,109 @@
+# DVTTextShowLineNumbers
+
+Show line numbers in Xcode's source editor.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `DVTTextShowLineNumbers` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Displays line numbers in the gutter (left margin) of Xcode's source code editor. Essential for:
+- Navigating to specific lines
+- Discussing code with teammates
+- Reading compiler errors and warnings
+- Setting breakpoints
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show line numbers** (default) — Numbers in left gutter |
+| `false` | **Hide line numbers** — More editing space, less context |
+
+## Our Configuration
+
+**Set to**: `true` — Essential for development workflows.
+
+## Code Examples
+
+```bash
+# Show line numbers (recommended)
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool true
+
+# Hide line numbers
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool false
+
+# Restart Xcode
+killall Xcode 2>/dev/null
+```
+
+## UI Location
+
+**Xcode** → **Settings** (⌘,) → **Text Editing** → **Display** → **Line numbers**
+
+## Why Line Numbers Matter
+
+### Error Messages
+
+Compiler errors reference line numbers:
+```
+MyFile.swift:42:15: error: Cannot convert value of type 'String' to expected argument type 'Int'
+```
+
+Without visible line numbers, finding line 42 requires counting or using Go to Line (⌘L).
+
+### Code Reviews
+
+Team discussions reference lines:
+> "The bug is on line 127 in `NetworkManager.swift`"
+
+### Breakpoints
+
+The gutter shows:
+- Line numbers
+- Breakpoint indicators
+- Code folding controls
+- Source control change indicators
+
+## Related Editor Settings
+
+```bash
+# Show code folding ribbon
+defaults write com.apple.dt.Xcode DVTTextShowFoldingSidebar -bool true
+
+# Show page guide at column
+defaults write com.apple.dt.Xcode DVTTextShowPageGuide -bool true
+defaults write com.apple.dt.Xcode DVTTextPageGuideLocation -int 120
+
+# Trim trailing whitespace
+defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool true
+```
+
+## Complete Editor Setup
+
+```bash
+# Optimal Xcode editor configuration
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool true
+defaults write com.apple.dt.Xcode DVTTextShowFoldingSidebar -bool true
+defaults write com.apple.dt.Xcode DVTTextShowPageGuide -bool true
+defaults write com.apple.dt.Xcode DVTTextPageGuideLocation -int 120
+defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool true
+defaults write com.apple.dt.Xcode DVTTextEditorTrimWhitespaceOnlyLines -bool true
+```
+
+## Compatibility
+
+- **Xcode**: All versions
+- **macOS**: 10.10 and later
+
+## References
+
+- [Apple Developer: Xcode Documentation](https://developer.apple.com/documentation/xcode)
+- [Xcode Help: Source Editor](https://help.apple.com/xcode/mac/current/#/dev8716704af)

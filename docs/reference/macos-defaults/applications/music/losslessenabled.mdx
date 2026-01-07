@@ -1,0 +1,107 @@
+# Music Lossless Audio
+
+Enable high-quality lossless audio streaming and downloads.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Music` |
+| **Key** | `losslessEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables Apple Lossless Audio Codec (ALAC) playback for Apple Music content. Lossless audio preserves the full quality of the studio master, unlike compressed AAC files.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Lossless enabled** — Full quality ALAC audio |
+| `false` | **AAC only** (default) — Compressed audio |
+
+## Audio Quality Comparison
+
+| Format | Bit Rate | File Size | Quality |
+|--------|----------|-----------|---------|
+| AAC 256kbps | 256 kbps | ~8 MB/song | Good |
+| Lossless | 800-1,600 kbps | ~40 MB/song | CD quality |
+| Hi-Res Lossless | up to 9,216 kbps | ~200 MB/song | Studio master |
+
+## Our Configuration
+
+**Set to**: `true` — Highest quality audio.
+
+### Requirements
+
+1. **Apple Music subscription** (lossless included at no extra cost)
+2. **Sufficient bandwidth** for streaming
+3. **Sufficient storage** for downloads
+4. **Compatible DAC** for Hi-Res (optional)
+
+## Code Examples
+
+```bash
+# Enable lossless audio
+defaults write com.apple.Music losslessEnabled -bool true
+
+# Disable lossless (save bandwidth/storage)
+defaults write com.apple.Music losslessEnabled -bool false
+
+# Also enable Dolby Atmos
+defaults write com.apple.Music dolbyAtmosEnabled -bool true
+```
+
+## UI Location
+
+**Music** → **Settings** (⌘,) → **Playback** → **Audio Quality**
+
+Options:
+- ☑ Lossless Audio
+  - Streaming quality selector
+  - Download quality selector
+
+## Bandwidth & Storage Considerations
+
+| Quality | 1 Hour Streaming | 100 Songs Downloaded |
+|---------|-----------------|---------------------|
+| AAC 256 | ~115 MB | ~800 MB |
+| Lossless | ~360 MB | ~4 GB |
+| Hi-Res | ~1.2 GB | ~20 GB |
+
+## Do You Need Lossless?
+
+### You'll benefit if:
+- Using quality headphones/speakers
+- Audio enthusiast
+- Have fast, unlimited internet
+- Have storage space
+
+### Probably won't notice if:
+- Using AirPods (Bluetooth compresses audio anyway)
+- Listening casually
+- Limited data plan
+
+## Related Settings
+
+```bash
+# Complete audiophile setup
+defaults write com.apple.Music losslessEnabled -bool true
+defaults write com.apple.Music dolbyAtmosEnabled -bool true
+defaults write com.apple.Music soundEnhancerEnabled -bool false
+defaults write com.apple.Music normalizeVolume -bool true
+```
+
+## Compatibility
+
+- **Music app**: macOS 10.15.4+
+- **Requires**: Apple Music subscription
+- **Bluetooth**: Note that Bluetooth audio compresses to AAC anyway
+
+## References
+
+- [Apple Support: About lossless audio in Apple Music](https://support.apple.com/en-us/HT212183)
+- [Apple Support: Audio quality settings](https://support.apple.com/guide/music/change-playback-preferences-mus7a8b90c6/mac)

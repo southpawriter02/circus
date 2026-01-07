@@ -1,0 +1,95 @@
+# Music Sound Check (Volume Normalization)
+
+Automatically adjust playback volume for consistent listening.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Music` |
+| **Key** | `normalizeVolume` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Sound Check analyzes your music library and automatically adjusts playback volume so all songs play at a similar loudness level. This prevents jarring volume changes between quiet acoustic tracks and loud rock songs.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Normalize volume** — Consistent loudness across songs |
+| `false` | **Original volume** (default) — Play at recorded levels |
+
+## The Problem It Solves
+
+Without Sound Check:
+```
+🎵 Quiet jazz song → 🔊 Comfortable volume
+🎵 Loud rock song → 📢 BLASTING! (scramble for volume)
+🎵 Classical piece → 🔇 Can barely hear (turn it up)
+🎵 Pop song → 📢 WAY TOO LOUD (turn it down)
+```
+
+With Sound Check:
+```
+🎵 All songs → 🔊 Consistent comfortable volume
+```
+
+## Our Configuration
+
+**Set to**: `true` — Consistent listening experience.
+
+### How It Works
+
+1. Music analyzes each track's loudness (ReplayGain-style)
+2. Stores normalization data in the library
+3. Applies gain adjustment during playback
+4. Does NOT modify the actual audio files
+
+## Code Examples
+
+```bash
+# Enable Sound Check
+defaults write com.apple.Music normalizeVolume -bool true
+
+# Disable Sound Check (original levels)
+defaults write com.apple.Music normalizeVolume -bool false
+
+# Restart Music
+killall Music
+```
+
+## UI Location
+
+**Music** → **Settings** (⌘,) → **Playback** → **Sound Check**
+
+## When to Disable
+
+You might prefer Sound Check disabled if:
+- You're an audiophile wanting original mastering
+- Playing DJ sets where volume variation is intentional
+- Listening to albums where dynamics are important
+- You want maximum volume from all tracks
+
+## Related Settings
+
+```bash
+# Disable sound "enhancement" (keeps pure audio)
+defaults write com.apple.Music soundEnhancerEnabled -bool false
+
+# Disable crossfade (clean transitions)
+defaults write com.apple.Music crossfadeEnabled -bool false
+```
+
+## Compatibility
+
+- **Music app**: macOS 10.15 (Catalina) and later
+- **iTunes**: Similar setting available
+- **Syncs**: Setting does NOT sync to iPhone, set separately
+
+## References
+
+- [Apple Support: Sound Check in Music](https://support.apple.com/guide/music/change-playback-preferences-mus7a8b90c6/mac)

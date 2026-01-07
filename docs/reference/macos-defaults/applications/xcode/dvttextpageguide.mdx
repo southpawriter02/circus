@@ -1,0 +1,106 @@
+# Xcode Page Guide
+
+Show a vertical line at a specific column to enforce line length limits.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Keys** | `DVTTextShowPageGuide`, `DVTTextPageGuideLocation` |
+| **Type** | Boolean, Integer |
+| **Default Value** | `false`, `80` |
+| **Our Setting** | `true`, `120` |
+
+## Description
+
+The page guide is a vertical line in the editor that indicates a recommended maximum line length. It helps maintain readable code by encouraging shorter lines.
+
+## The Two Settings
+
+| Key | Purpose | Our Setting |
+|-----|---------|-------------|
+| `DVTTextShowPageGuide` | Show/hide the line | `true` |
+| `DVTTextPageGuideLocation` | Column position | `120` |
+
+## Common Line Length Standards
+
+| Value | Standard | Use Case |
+|-------|----------|----------|
+| `80` | Traditional | Terminal width, legacy |
+| `100` | Swift common | Apple's Swift Style Guide |
+| `120` | Modern wide | Contemporary displays |
+| `132` | Extended | Wide monitors |
+
+## Our Configuration
+
+**Show**: `true`
+**Column**: `120` — Modern standard for wide displays.
+
+### Why 120?
+
+1. **Modern displays** — We no longer use 80-column terminals
+2. **Readable** — Still fits side-by-side diffs
+3. **Swift-friendly** — Swift's verbose syntax benefits from more room
+4. **Balance** — Not so wide that lines become hard to scan
+
+### The 80-Column Argument
+
+Some still prefer 80:
+- Side-by-side editing on laptops
+- Consistent with terminal width
+- Forces shorter, more focused code
+- Maximum portability
+
+## Code Examples
+
+```bash
+# Enable page guide at column 120
+defaults write com.apple.dt.Xcode DVTTextShowPageGuide -bool true
+defaults write com.apple.dt.Xcode DVTTextPageGuideLocation -int 120
+
+# Classic 80-column setup
+defaults write com.apple.dt.Xcode DVTTextShowPageGuide -bool true
+defaults write com.apple.dt.Xcode DVTTextPageGuideLocation -int 80
+
+# Hide page guide
+defaults write com.apple.dt.Xcode DVTTextShowPageGuide -bool false
+```
+
+## UI Location
+
+**Xcode** → **Settings** (⌘,) → **Text Editing** → **Display**:
+- ☑ **Page guide at column**: [120]
+
+## SwiftLint Integration
+
+If using SwiftLint, match your page guide to your lint rules:
+
+```yaml
+# .swiftlint.yml
+line_length:
+  warning: 120
+  error: 150
+  ignores_comments: true
+```
+
+## Complete Editor Setup
+
+```bash
+# Full Xcode editor configuration
+defaults write com.apple.dt.Xcode DVTTextShowPageGuide -bool true
+defaults write com.apple.dt.Xcode DVTTextPageGuideLocation -int 120
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool true
+defaults write com.apple.dt.Xcode DVTTextShowFoldingSidebar -bool true
+defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool true
+```
+
+## Compatibility
+
+- **Xcode**: All versions
+- **Applies to**: All text editing in Xcode
+
+## References
+
+- [Swift API Design Guidelines](https://swift.org/documentation/api-design-guidelines/)
+- [Google Swift Style Guide](https://google.github.io/swift/)

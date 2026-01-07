@@ -1,0 +1,132 @@
+# Safari AutoFill Settings
+
+Disable automatic form filling for enhanced security.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Keys** | `AutoFillFromAddressBook`, `AutoFillPasswords`, `AutoFillCreditCardData`, `AutoFillMiscellaneousForms` |
+| **Type** | Boolean (each) |
+| **Default Value** | `true` (all enabled) |
+| **Our Setting** | `false` (all disabled) |
+
+## Description
+
+Safari's AutoFill feature automatically populates web forms with saved data including:
+- **Contact info** from your address book
+- **Passwords** stored in Keychain
+- **Credit card numbers** from saved cards
+- **Other form data** like names and addresses
+
+While convenient, AutoFill poses security risks in shared environments or if your Mac is compromised by malware.
+
+## The Four AutoFill Keys
+
+| Key | Data Type | Risk Level |
+|-----|-----------|------------|
+| `AutoFillFromAddressBook` | Name, address, phone from Contacts | Medium |
+| `AutoFillPasswords` | Saved login credentials | **High** |
+| `AutoFillCreditCardData` | Credit card numbers, CVV | **Critical** |
+| `AutoFillMiscellaneousForms` | Previously entered form data | Low |
+
+## Our Configuration
+
+**All set to**: `false` — Disabled for security.
+
+### Rationale
+
+1. **Password managers are better** — Use 1Password, Bitwarden, or iCloud Keychain with explicit confirmation
+2. **Credit cards should require attention** — Manual entry ensures you notice charges
+3. **Reduces attack surface** — Malicious sites can't harvest AutoFilled data
+4. **Shared computer safety** — Others can't access your data
+
+## Code Examples
+
+```bash
+# Disable all AutoFill features
+defaults write com.apple.Safari AutoFillFromAddressBook -bool false
+defaults write com.apple.Safari AutoFillPasswords -bool false
+defaults write com.apple.Safari AutoFillCreditCardData -bool false
+defaults write com.apple.Safari AutoFillMiscellaneousForms -bool false
+```
+
+```bash
+# Re-enable AutoFill (if needed)
+defaults write com.apple.Safari AutoFillFromAddressBook -bool true
+defaults write com.apple.Safari AutoFillPasswords -bool true
+defaults write com.apple.Safari AutoFillCreditCardData -bool true
+defaults write com.apple.Safari AutoFillMiscellaneousForms -bool true
+```
+
+```bash
+# Check current settings
+defaults read com.apple.Safari | grep AutoFill
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **AutoFill**
+
+Each category has its own checkbox:
+- ☐ Using information from my contacts
+- ☐ User names and passwords
+- ☐ Credit cards
+- ☐ Other forms
+
+## Security Considerations
+
+### Why Disable AutoFill?
+
+1. **Phishing attacks**: Malicious sites can create invisible form fields that capture AutoFilled data
+2. **Shoulder surfing**: Someone watching can see your info populate
+3. **Shared computers**: Other users might access your saved data
+4. **Browser vulnerabilities**: Exploits could extract AutoFill databases
+
+### Better Alternatives
+
+| Instead of... | Use... |
+|---------------|--------|
+| Safari password AutoFill | 1Password, Bitwarden, or iCloud Keychain with master password |
+| Credit card AutoFill | Apple Pay or manual entry |
+| Address AutoFill | Manual entry or copy from Contacts |
+
+## Compatibility
+
+- **macOS**: 10.10 (Yosemite) and later
+- **Safari**: All modern versions
+- **Prerequisite**: Safari must have been launched at least once
+
+## Troubleshooting
+
+### AutoFill Still Appearing?
+
+```bash
+# Force quit Safari and reapply
+killall Safari
+defaults write com.apple.Safari AutoFillPasswords -bool false
+# Reopen Safari
+```
+
+### Check Keychain Settings
+
+AutoFill passwords require Keychain Access. To fully disable:
+1. Open **Keychain Access**
+2. Delete saved website passwords (optional, destructive)
+
+## Related Settings
+
+```bash
+# Also consider blocking tracking
+defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+
+# Enable fraudulent site warnings
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+```
+
+## References
+
+- [Apple Support: AutoFill web forms in Safari](https://support.apple.com/guide/safari/autofill-web-forms-ibrw1103/mac)
+- [Apple Support: Safari security](https://support.apple.com/guide/safari/security-ibrw1074/mac)
+- [WebKit Security Blog](https://webkit.org/blog/category/security/)

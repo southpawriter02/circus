@@ -1,0 +1,104 @@
+# Messages Sound Effects
+
+Play sounds for sent and received messages.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.MobileSMS` |
+| **Key** | `PlaySoundEffects` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Messages plays audio feedback when sending and receiving messages. The "swoosh" sound on send and notification sound on receive provide confirmation of message activity.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Sounds enabled** (default) — Audio feedback for messages |
+| `false` | **Silent** — No message sounds |
+
+## The Sounds
+
+| Action | Sound |
+|--------|-------|
+| Message sent | "Swoosh" |
+| Message received | Chime/notification |
+| iMessage delivered | Subtle confirmation |
+
+## Our Configuration
+
+**Set to**: `true` — Audio confirmation of message activity.
+
+### Why Keep Sounds?
+
+1. **Confirmation** — Know message actually sent
+2. **Awareness** — Hear incoming messages
+3. **Background activity** — Notice messages when not looking
+4. **Familiar UX** — Expected iOS/Mac behavior
+
+### When to Disable
+
+- In meetings/quiet environments (use Focus instead)
+- If using external notification system
+- Personal preference for silence
+
+## Code Examples
+
+```bash
+# Enable message sounds
+defaults write com.apple.MobileSMS PlaySoundEffects -bool true
+
+# Disable message sounds
+defaults write com.apple.MobileSMS PlaySoundEffects -bool false
+```
+
+## UI Location
+
+**Messages** → **Settings** (⌘,) → **General** → **Play sound effects**
+
+## Alternative: Focus Mode
+
+Instead of permanently disabling sounds, use Focus mode:
+- **System Settings** → **Focus** → **Do Not Disturb**
+- Silences messages during specific times/activities
+- Can allow specific contacts to break through
+
+## Related Settings
+
+```bash
+# Enable message effects (bubbles, lasers, etc.)
+defaults write com.apple.MobileSMS EnableMessageEffects -bool true
+
+# Save conversation history
+defaults write com.apple.MobileSMS SaveConversationsOnClose -bool true
+```
+
+## Complete Messages Setup
+
+```bash
+# Standard messaging experience
+defaults write com.apple.MobileSMS PlaySoundEffects -bool true
+defaults write com.apple.MobileSMS EnableMessageEffects -bool true
+defaults write com.apple.MobileSMS SaveConversationsOnClose -bool true
+```
+
+## System Notification Sounds
+
+Note: This setting controls Messages-specific sounds. System notification sounds are controlled in:
+
+**System Settings** → **Notifications** → **Messages**
+
+## Compatibility
+
+- **Messages**: macOS 10.15+
+- **Affects**: Desktop Messages app only
+
+## References
+
+- [Apple Support: Messages preferences](https://support.apple.com/guide/messages/change-messages-preferences-icht491d3b70/mac)

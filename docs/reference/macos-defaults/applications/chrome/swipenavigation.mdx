@@ -1,0 +1,107 @@
+# Chrome Swipe Navigation
+
+Disable two-finger swipe for browser history navigation.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.google.Chrome` |
+| **Key** | `AppleEnableSwipeNavigateWithScrolls` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Chrome responds to two-finger horizontal swipe gestures on the trackpad for navigating browser history (back/forward). While intuitive for casual browsing, this gesture often triggers accidentally during scrolling on pages with horizontal content.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Swipe enabled** (default) — Two-finger swipe navigates history |
+| `false` | **Swipe disabled** — Prevents accidental navigation |
+
+## Our Configuration
+
+**Set to**: `false` — Prevent accidental navigation.
+
+### Why Disable?
+
+1. **Accidental navigation** — Easy to trigger while scrolling diagonally
+2. **Form data loss** — Swiping back can lose unsaved form inputs
+3. **Web app interference** — Some web apps use horizontal gestures
+4. **Carousel conflicts** — Image carousels can trigger history swipe
+5. **Code editors** — Browser-based editors like CodeSandbox are affected
+
+## Code Examples
+
+```bash
+# Disable swipe navigation in Chrome
+defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false
+
+# Re-enable swipe navigation
+defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool true
+
+# Restart Chrome for changes to take effect
+killall "Google Chrome"
+```
+
+## UI Location
+
+Not available in Chrome's settings UI — requires `defaults` command.
+
+Chrome's UI settings (chrome://settings) don't include this option.
+
+## Alternative Navigation
+
+Without swipe gestures, use these methods:
+
+| Action | Method |
+|--------|--------|
+| Go Back | ⌘[ or ⌘← |
+| Go Forward | ⌘] or ⌘→ |
+| Back Button | Click ← in toolbar |
+| History | ⌘Y |
+
+## System-Wide Alternative
+
+To disable swipe navigation for ALL apps:
+
+**System Settings** → **Trackpad** → **More Gestures** → **Swipe between pages** → Off
+
+But this also disables the useful swipe-between-full-screen-apps gesture.
+
+## Safari Comparison
+
+Safari has the same behavior. To disable for Safari:
+
+```bash
+defaults write com.apple.Safari AppleEnableSwipeNavigateWithScrolls -bool false
+```
+
+## Compatibility
+
+- **Chrome**: All macOS versions
+- **Requires**: Trackpad or Magic Mouse with gesture support
+
+## Troubleshooting
+
+### Still Seeing Swipe Navigation?
+
+1. Fully quit Chrome (⌘Q, not just close window)
+2. Run the defaults command
+3. Reopen Chrome
+
+### Verify Setting
+
+```bash
+defaults read com.google.Chrome AppleEnableSwipeNavigateWithScrolls
+# Should return: 0
+```
+
+## References
+
+- [Chrome Enterprise Policy: AppleEnableSwipeNavigateWithScrolls](https://chromeenterprise.google/policies/)
+- [Chrome Help: Keyboard shortcuts](https://support.google.com/chrome/answer/157179)

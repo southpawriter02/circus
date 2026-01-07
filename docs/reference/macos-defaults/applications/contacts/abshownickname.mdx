@@ -1,0 +1,95 @@
+# Contacts Show Nickname
+
+Display nicknames for contacts when available.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AddressBook` |
+| **Key** | `ABShowNickname` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+When enabled, displays contact nicknames alongside their real names. Nicknames appear in parentheses after the name, helping you recognize contacts you know by informal names.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show nickname** — "John Smith (Johnny)" |
+| `false` | **Real name only** (default) — "John Smith" |
+
+## Visual Example
+
+**Without nicknames (`false`):**
+```
+John Smith
+Robert Johnson
+```
+
+**With nicknames (`true`):**
+```
+John Smith (Johnny)
+Robert Johnson (Bobby)
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show nicknames for personalized recognition.
+
+### Benefits
+
+1. **Recognition** — Spot contacts by familiar names
+2. **Context** — Remember how you know someone
+3. **Personalization** — Friendly display in Messages, Mail
+
+## Code Examples
+
+```bash
+# Show nicknames
+defaults write com.apple.AddressBook ABShowNickname -bool true
+
+# Hide nicknames
+defaults write com.apple.AddressBook ABShowNickname -bool false
+```
+
+## UI Location
+
+**Contacts** → **Settings** (⌘,) → **General** → ☑ **Show Nickname**
+
+## Related: Prefer Nickname
+
+Go further and replace first name with nickname:
+
+```bash
+# Use nickname INSTEAD of first name
+defaults write com.apple.AddressBook ABPrefersNickname -bool true
+```
+
+With this enabled:
+- Messages shows "Johnny" instead of "John"
+- Siri calls them by nickname
+- Caller ID displays nickname
+
+## Adding Nicknames to Contacts
+
+1. Open Contacts
+2. Select a contact
+3. Click **Edit**
+4. Click **+** next to name fields
+5. Select **Nickname**
+6. Enter the nickname
+
+## Compatibility
+
+- **Contacts**: All macOS versions
+- **Syncs**: Nicknames sync via iCloud to all devices
+- **System-wide**: Affects Messages, Mail, Siri, etc.
+
+## References
+
+- [Apple Support: Add nicknames](https://support.apple.com/guide/contacts/add-and-edit-contacts-adrbf71ccd0e/mac)

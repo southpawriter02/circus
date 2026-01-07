@@ -1,0 +1,98 @@
+# Contacts vCard Export Settings
+
+Control what data is included when exporting vCards.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AddressBook` |
+| **Keys** | `ABIncludePhotosInVCards`, `ABIncludeNotesInVCard` |
+| **Type** | Boolean |
+| **Default Value** | `true`, `true` |
+| **Our Setting** | `true`, `false` |
+
+## Description
+
+Controls what information is included when exporting contacts as vCard (.vcf) files. vCards are the universal format for sharing contact information between applications and devices.
+
+## The Two Settings
+
+| Key | Purpose | Our Setting |
+|-----|---------|-------------|
+| `ABIncludePhotosInVCards` | Include contact photos | `true` |
+| `ABIncludeNotesInVCard` | Include notes field | `false` |
+
+## Our Configuration
+
+**Photos**: `true` — Include for visual recognition
+**Notes**: `false` — Exclude for privacy (notes may contain private info)
+
+### Why Exclude Notes?
+
+Contact notes often contain:
+- Personal reminders ("Met at conference 2024")
+- Private information ("Wife: Susan, kids: 2")
+- Sensitive data (account numbers, preferences)
+- Internal comments not meant for sharing
+
+Excluding notes protects this information when sharing contacts.
+
+## Code Examples
+
+```bash
+# Include photos, exclude notes (recommended)
+defaults write com.apple.AddressBook ABIncludePhotosInVCards -bool true
+defaults write com.apple.AddressBook ABIncludeNotesInVCard -bool false
+
+# Exclude both (minimal vCards)
+defaults write com.apple.AddressBook ABIncludePhotosInVCards -bool false
+defaults write com.apple.AddressBook ABIncludeNotesInVCard -bool false
+
+# Include everything
+defaults write com.apple.AddressBook ABIncludePhotosInVCards -bool true
+defaults write com.apple.AddressBook ABIncludeNotesInVCard -bool true
+```
+
+## UI Location
+
+**Contacts** → **Settings** (⌘,) → **vCard**
+
+- ☑ Export photos in vCards
+- ☐ Export notes in vCards
+
+## vCard Size Comparison
+
+| Configuration | Typical Size |
+|---------------|--------------|
+| Name/email only | ~200 bytes |
+| With notes | ~500 bytes |
+| With photo | ~50 KB |
+| Full export | ~50 KB |
+
+## Exporting vCards
+
+1. Select contact(s) in Contacts
+2. **File** → **Export** → **Export vCard...**
+3. Or drag contact to Finder/Desktop
+4. Share the .vcf file
+
+## Related Setting
+
+Use modern vCard format:
+
+```bash
+# Use vCard 3.0 format (modern)
+defaults write com.apple.AddressBook ABUse21telephones -bool false
+```
+
+## Compatibility
+
+- **vCards**: Universal format, works everywhere
+- **Photos**: JPEG embedded in vCard
+- **Notes**: Plain text field
+
+## References
+
+- [Apple Support: Export contacts](https://support.apple.com/guide/contacts/export-contacts-adrbf72a35f0/mac)
+- [vCard specification](https://en.wikipedia.org/wiki/VCard)

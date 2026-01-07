@@ -1,0 +1,121 @@
+# Safari Do Not Track
+
+Send Do Not Track header to websites.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `SendDoNotTrackHTTPHeader` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Sends the "Do Not Track" (DNT) HTTP header with every web request, asking websites not to track your browsing behavior. This is a **request**, not enforcement — websites are not required to honor it.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Send DNT header** — Request not to be tracked |
+| `false` | **No header** (default) — Silent on tracking preference |
+
+## The DNT Header
+
+When enabled, every request includes:
+
+```http
+GET /page HTTP/1.1
+Host: example.com
+DNT: 1
+...
+```
+
+The `DNT: 1` header indicates you don't want to be tracked.
+
+## Our Configuration
+
+**Set to**: `true` — Express preference against tracking.
+
+### The Reality of DNT
+
+**⚠️ Important Limitations:**
+
+1. **Not enforced** — Websites can ignore it
+2. **Low adoption** — Many sites don't check for it
+3. **May be paradoxical** — Some argue it makes you more identifiable
+4. **Signal of intent** — More political statement than technical protection
+
+### Major Sites That Respect DNT
+
+- Pinterest
+- Twitter (partial)
+- Medium
+- Some ad networks
+
+### Sites That Ignore DNT
+
+- Google
+- Facebook
+- Most major advertisers
+
+## Code Examples
+
+```bash
+# Enable Do Not Track header
+defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+
+# Disable (Safari default)
+defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool false
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **Privacy** → ☑ **Prevent cross-site tracking** (related but different)
+
+Note: DNT is separate from Safari's Intelligent Tracking Prevention (ITP), which IS enforced.
+
+## Better Privacy Alternatives
+
+Since DNT is a request, use these for actual protection:
+
+| Feature | Protection Level | Enforcement |
+|---------|-----------------|-------------|
+| DNT Header | Low | Optional |
+| Intelligent Tracking Prevention | High | Automatic |
+| Safari Private Browsing | High | Session-based |
+| Content Blockers | High | Enforced |
+
+## Complete Privacy Setup
+
+```bash
+# Multi-layered privacy
+defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+
+# Block cross-site tracking (ITP)
+defaults write com.apple.Safari WebKitPreferences.privateClickMeasurementEnabled -bool true
+
+# Block popups
+defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
+```
+
+## Why Enable Despite Limitations?
+
+1. **Low cost** — No performance or compatibility impact
+2. **Legal signal** — Documents your preference
+3. **GDPR relevance** — May have legal weight in some jurisdictions
+4. **Future-proofing** — Regulations may require honoring DNT
+
+## Compatibility
+
+- **Safari**: All modern versions
+- **Standard**: W3C Tracking Preference Expression
+
+## References
+
+- [W3C: Tracking Preference Expression (DNT)](https://www.w3.org/TR/tracking-dnt/)
+- [Apple Safari Privacy](https://www.apple.com/safari/)
+- [EFF: Do Not Track](https://www.eff.org/issues/do-not-track)

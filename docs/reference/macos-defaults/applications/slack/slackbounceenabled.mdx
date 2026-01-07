@@ -1,0 +1,101 @@
+# Slack Dock Bounce
+
+Disable Dock icon bouncing for Slack notifications.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.tinyspeck.slackmacgap` |
+| **Key** | `SlackBounceEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Slack icon bounces in the Dock when you receive a notification. The bouncing continues until you click the icon. While attention-grabbing, it's distracting during focused work.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Bounce** (default) — Icon bounces on new messages |
+| `false` | **No bounce** — Static icon, badge count only |
+
+## The Distraction Problem
+
+A bouncing Dock icon:
+1. Catches peripheral vision
+2. Demands immediate attention
+3. Breaks concentration
+4. Bounces continuously until acknowledged
+
+This is especially problematic in high-traffic Slack workspaces.
+
+## Our Configuration
+
+**Set to**: `false` — Disable bouncing for less interruption.
+
+### What You Still Get
+
+With bouncing disabled, you still have:
+- **Badge count** — Red circle with unread count
+- **Banner notifications** — If enabled in System Settings
+- **Sounds** — If notification sounds are on
+- **Menu bar icon** — Slack shows in menu bar
+
+## Code Examples
+
+```bash
+# Disable Dock bouncing
+defaults write com.tinyspeck.slackmacgap SlackBounceEnabled -bool false
+
+# Enable Dock bouncing
+defaults write com.tinyspeck.slackmacgap SlackBounceEnabled -bool true
+
+# Restart Slack
+killall Slack
+```
+
+## UI Location
+
+**Slack** → **Preferences** (⌘,) → **Notifications** → **Bounce Slack's icon in the Dock**
+
+## Complete "Quiet Slack" Setup
+
+For maximum focus with Slack:
+
+```bash
+# No Dock bouncing
+defaults write com.tinyspeck.slackmacgap SlackBounceEnabled -bool false
+```
+
+Plus in Slack preferences:
+- Set up **Do Not Disturb** schedules
+- Use **keyword notifications** for important terms only
+- Mute busy channels
+- Enable **notification sounds** only for DMs
+
+## System-Wide Alternative
+
+To prevent ANY app from bouncing the Dock icon:
+
+```bash
+# Disable Dock bouncing system-wide (affects all apps)
+defaults write com.apple.dock no-bouncing -bool true
+killall Dock
+```
+
+**Warning**: This affects ALL applications, not just Slack.
+
+## Compatibility
+
+- **Slack**: Desktop app (not browser)
+- **macOS**: All supported versions
+- **Domain**: `com.tinyspeck.slackmacgap` (not `com.slack.Slack`)
+
+## References
+
+- [Slack Help: Manage your preferences](https://slack.com/help/articles/201374536-Manage-your-preferences)
+- [Slack Help: Notification preferences](https://slack.com/help/articles/201355156-Notification-preferences)

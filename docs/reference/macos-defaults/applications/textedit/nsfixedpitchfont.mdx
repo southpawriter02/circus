@@ -1,0 +1,128 @@
+# NSFixedPitchFont
+
+Set the default monospace font for TextEdit plain text.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.TextEdit` |
+| **Keys** | `NSFixedPitchFont`, `NSFixedPitchFontSize` |
+| **Type** | String, Integer |
+| **Default Value** | `Menlo-Regular`, `11` |
+| **Our Setting** | `FiraCode-Retina`, `13` |
+
+## Description
+
+Sets the default font used for plain text documents in TextEdit. A good monospace font improves readability for code snippets, config files, and technical notes.
+
+## Values
+
+### NSFixedPitchFont
+
+| Value | Font |
+|-------|------|
+| `Menlo-Regular` | Menlo (default, Apple's monospace) |
+| `Monaco` | Monaco (classic Mac font) |
+| `SF Mono-Regular` | SF Mono (Apple's modern mono) |
+| `FiraCode-Retina` | Fira Code (with ligatures) |
+
+### NSFixedPitchFontSize
+
+| Value | Size |
+|-------|------|
+| `11` | Default (small) |
+| `12` | Standard |
+| `13` | Comfortable |
+| `14` | Large |
+
+## Our Configuration
+
+**Font**: `FiraCode-Retina` — Modern coding font with ligatures
+**Size**: `13` — Comfortable reading size
+
+### Why Fira Code?
+
+1. **Ligatures** — `!=` becomes ≠, `->` becomes →, `=>` becomes ⇒
+2. **Readability** — Designed specifically for code
+3. **Free and open source** — Available via Homebrew
+4. **Wide character support** — Good Unicode coverage
+
+## Code Examples
+
+```bash
+# Set Fira Code as default (install font first)
+defaults write com.apple.TextEdit NSFixedPitchFont -string "FiraCode-Retina"
+defaults write com.apple.TextEdit NSFixedPitchFontSize -int 13
+```
+
+```bash
+# Use Apple's SF Mono
+defaults write com.apple.TextEdit NSFixedPitchFont -string "SFMono-Regular"
+defaults write com.apple.TextEdit NSFixedPitchFontSize -int 12
+```
+
+```bash
+# Reset to default (Menlo)
+defaults write com.apple.TextEdit NSFixedPitchFont -string "Menlo-Regular"
+defaults write com.apple.TextEdit NSFixedPitchFontSize -int 11
+```
+
+## Installing Fira Code
+
+```bash
+# Via Homebrew
+brew install --cask font-fira-code
+
+# Verify installation
+ls ~/Library/Fonts/ | grep -i fira
+```
+
+## UI Location
+
+**TextEdit** → **Settings** (⌘,) → **Plain text font** → **Change...**
+
+A font picker dialog opens where you can select any installed monospace font.
+
+## Popular Coding Fonts
+
+| Font | Notes | Install |
+|------|-------|---------|
+| Fira Code | Ligatures | `brew install --cask font-fira-code` |
+| JetBrains Mono | From JetBrains | `brew install --cask font-jetbrains-mono` |
+| SF Mono | Apple, no install | Built into macOS |
+| Hack | Clean, readable | `brew install --cask font-hack` |
+| Source Code Pro | Adobe | `brew install --cask font-source-code-pro` |
+
+## Font Name Gotcha
+
+Font names in `defaults` must match the **PostScript name**, not the display name:
+
+| Display Name | PostScript Name |
+|--------------|-----------------|
+| Fira Code Retina | `FiraCode-Retina` |
+| SF Mono Regular | `SFMono-Regular` |
+| JetBrains Mono | `JetBrainsMono-Regular` |
+
+Find PostScript names in **Font Book** → Select font → **Show Font Info** (⌘I)
+
+## Complete TextEdit Configuration
+
+```bash
+# Developer-friendly TextEdit setup
+defaults write com.apple.TextEdit RichText -int 0
+defaults write com.apple.TextEdit NSFixedPitchFont -string "FiraCode-Retina"
+defaults write com.apple.TextEdit NSFixedPitchFontSize -int 13
+defaults write com.apple.TextEdit SmartQuotes -bool false
+defaults write com.apple.TextEdit SmartDashes -bool false
+```
+
+## Compatibility
+
+- **TextEdit**: All macOS versions
+- **Note**: Font must be installed before setting
+
+## References
+
+- [Fira Code on GitHub](https://github.com/tonsky/FiraCode)
+- [Apple Support: Change fonts in TextEdit](https://support.apple.com/guide/textedit/change-fonts-txted1112/mac)

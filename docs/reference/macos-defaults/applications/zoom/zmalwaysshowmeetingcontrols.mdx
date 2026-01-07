@@ -1,0 +1,113 @@
+# Zoom Always Show Meeting Controls
+
+Keep the meeting toolbar visible at all times.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `us.zoom.xos` |
+| **Key** | `ZMAlwaysShowMeetingControls` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+By default, Zoom auto-hides the meeting control toolbar after a few seconds of inactivity. This setting keeps the toolbar always visible, providing constant access to mute, video, screen share, and other controls.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Always visible** — Toolbar stays on screen |
+| `false` | **Auto-hide** (default) — Toolbar fades after inactivity |
+
+## The Meeting Control Toolbar
+
+```
+┌──────────────────────────────────────────────────────┐
+│ 🎤 Mute | 📹 Video | 👤 Participants | 💬 Chat | ... │
+└──────────────────────────────────────────────────────┘
+```
+
+Controls include:
+- Mute/Unmute microphone
+- Start/Stop video
+- Participants panel
+- Chat
+- Screen sharing
+- Reactions
+- Record
+- Leave/End meeting
+
+## Our Configuration
+
+**Set to**: `true` — Keep controls always accessible.
+
+### Why Always Show?
+
+1. **Quick access** — No hunting for hidden controls
+2. **Faster muting** — Click instead of move-then-click
+3. **Visibility** — See current mute/video status
+4. **Fewer mistakes** — Controls always where expected
+5. **Accessibility** — Better for screen magnifier users
+
+### Why Auto-Hide?
+
+Some prefer auto-hide for:
+- Maximum video viewing area
+- Cleaner presenter view
+- Less visual distraction
+
+## Code Examples
+
+```bash
+# Always show controls (recommended)
+defaults write us.zoom.xos ZMAlwaysShowMeetingControls -bool true
+
+# Auto-hide controls (Zoom default)
+defaults write us.zoom.xos ZMAlwaysShowMeetingControls -bool false
+
+# Restart Zoom
+killall zoom.us
+```
+
+## UI Location
+
+**Zoom** → **Settings** (⌘,) → **General** → ☑ **Always show meeting controls**
+
+## Meeting Keyboard Shortcuts
+
+Even with controls visible, keyboard shortcuts are faster:
+
+| Action | Shortcut |
+|--------|----------|
+| Mute/Unmute | ⌘⇧A |
+| Video on/off | ⌘⇧V |
+| Screen share | ⌘⇧S |
+| Chat | ⌘⇧H |
+| Participants | ⌘U |
+| Leave meeting | ⌘W |
+
+## Related Display Settings
+
+```bash
+# Stay in window when viewing shared content
+defaults write us.zoom.xos ZMEnterFullScreenWhenShare -bool false
+
+# Enable HD video
+defaults write us.zoom.xos ZMEnableHDVideo -bool true
+
+# Show chat notifications
+defaults write us.zoom.xos ZMEnableChatNotification -bool true
+```
+
+## Compatibility
+
+- **Zoom**: All desktop versions
+- **Fullscreen**: Controls still visible in fullscreen mode
+
+## References
+
+- [Zoom Help: Meeting controls](https://support.zoom.us/hc/en-us/articles/201362603-Host-and-co-host-controls-in-a-meeting)

@@ -1,0 +1,109 @@
+# SmartDashes
+
+Disable automatic dash substitution in TextEdit.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.TextEdit` |
+| **Key** | `SmartDashes` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether TextEdit automatically converts hyphens to typographic dashes:
+- `--` becomes en-dash (–)
+- `---` becomes em-dash (—)
+
+While typographically correct for prose, this breaks code and command-line syntax.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Smart dashes** (default) — Auto-convert to typographic dashes |
+| `false` | **Regular hyphens** — Keep ASCII hyphen-minus |
+
+## The Problem for Developers
+
+```bash
+# With smart dashes (BROKEN):
+ls –la        # ← This is an en-dash, not a hyphen!
+ssh user@host –p 22  # ← FAILS: "illegal option"
+
+# With regular hyphens (CORRECT):
+ls -la
+ssh user@host -p 22
+```
+
+Smart dashes (`–` and `—`) are different Unicode characters than the hyphen-minus (`-`). Shells and programming languages don't recognize them as option flags.
+
+## Our Configuration
+
+**Set to**: `false` — Essential for anyone who writes code or commands.
+
+## Code Examples
+
+```bash
+# Disable smart dashes in TextEdit
+defaults write com.apple.TextEdit SmartDashes -bool false
+
+# Also disable smart quotes (companion setting)
+defaults write com.apple.TextEdit SmartQuotes -bool false
+```
+
+```bash
+# System-wide setting
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+```
+
+## UI Location
+
+**Edit** menu → **Substitutions** → uncheck **Smart Dashes**
+
+Or per-document:
+1. **Edit** → **Substitutions** → **Show Substitutions**
+2. Uncheck "Smart Dashes"
+
+## Character Comparison
+
+| Name | Character | Unicode | Use |
+|------|-----------|---------|-----|
+| Hyphen-minus | - | U+002D | Code, options, math |
+| En-dash | – | U+2013 | Ranges (1–10) |
+| Em-dash | — | U+2014 | Punctuation—like this |
+
+Only hyphen-minus (`-`) works in code!
+
+## Complete Developer TextEdit Setup
+
+```bash
+# Disable all "smart" text substitutions
+defaults write com.apple.TextEdit SmartDashes -bool false
+defaults write com.apple.TextEdit SmartQuotes -bool false
+defaults write com.apple.TextEdit RichText -int 0
+defaults write com.apple.TextEdit DataDetectors -bool false
+```
+
+## System-Wide Alternative
+
+To disable smart dashes in ALL applications:
+
+```bash
+# Disable smart dashes system-wide
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+```
+
+UI: **System Settings** → **Keyboard** → **Text Input** → **Input Sources** → **Edit...** → uncheck **Use smart quotes and dashes**
+
+## Compatibility
+
+- **TextEdit**: All macOS versions
+- **Affects**: New documents and paste operations
+
+## References
+
+- [Apple Support: Use substitutions in apps](https://support.apple.com/guide/mac-help/use-substitutions-in-apps-mchlp1171/mac)

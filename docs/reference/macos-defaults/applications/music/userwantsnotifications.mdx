@@ -1,0 +1,102 @@
+# Music Notifications
+
+Control whether Music shows notifications when tracks change.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Music` |
+| **Key** | `userWantsNotifications` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Music app shows macOS notifications when the currently playing song changes. Each track change triggers a banner notification showing the song name, artist, and album art.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show notifications** (default) — Banner on each song |
+| `false` | **No notifications** — Silent track changes |
+
+## The Notification
+
+When enabled, each song shows:
+
+```
+┌─────────────────────────────┐
+│ 🎵 Now Playing              │
+│ Song Title                  │
+│ Artist Name - Album Name    │
+└─────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Reduce notification noise.
+
+### Why Disable?
+
+1. **Notification overload** — Every 3-4 minutes during playback
+2. **Focus interruption** — Banners distract from work
+3. **Already visible** — Music widget/player shows current song
+4. **Known music** — You likely know what playlist you're playing
+
+### When to Enable
+
+- Discovering new music (radio, curated playlists)
+- Shuffled playlists where you want to know song names
+- Apple Music Radio listening
+
+## Code Examples
+
+```bash
+# Disable song change notifications (recommended)
+defaults write com.apple.Music userWantsNotifications -bool false
+
+# Enable song change notifications
+defaults write com.apple.Music userWantsNotifications -bool true
+
+# Restart Music
+killall Music
+```
+
+## UI Location
+
+**Music** → **Settings** (⌘,) → **General** → **Notifications**
+
+## Alternative: Now Playing Widget
+
+Instead of notifications, use the Now Playing widget:
+1. Click Notification Center icon (top-right of menu bar)
+2. Edit Widgets
+3. Add "Now Playing" widget
+4. Always visible without notifications
+
+## Control Center Now Playing
+
+Also available in Control Center:
+1. Click Control Center icon in menu bar
+2. See currently playing track
+3. Playback controls available
+
+## Complete Quiet Music Setup
+
+```bash
+# Minimal notifications
+defaults write com.apple.Music userWantsNotifications -bool false
+defaults write com.apple.Music automaticDownloadsEnabled -bool false
+```
+
+## Compatibility
+
+- **Music app**: macOS 10.15+
+- **System notifications**: Respects Focus/Do Not Disturb
+
+## References
+
+- [Apple Support: Music notifications](https://support.apple.com/guide/music/change-general-preferences-mus7a8b90c5/mac)

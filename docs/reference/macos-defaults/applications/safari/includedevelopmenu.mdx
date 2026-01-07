@@ -1,0 +1,128 @@
+# Safari Developer Menu
+
+Enable the Develop menu for web development tools.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `IncludeDevelopMenu` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+The Develop menu provides access to Safari's powerful web development and debugging tools, including the Web Inspector, JavaScript console, network inspection, and device simulation. Essential for any web developer.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show Develop menu** — Full developer tools access |
+| `false` | **Hidden** (default) — Consumer-focused browser |
+
+## The Develop Menu
+
+When enabled, you get:
+
+```
+Develop
+├── Open Page With...
+├── User Agent >
+├── ─────────────
+├── Show Web Inspector          ⌥⌘I
+├── Show JavaScript Console     ⌥⌘C
+├── Show Page Source            ⌥⌘U
+├── Show Page Resources
+├── ─────────────
+├── Start Timeline Recording
+├── Empty Caches               ⌥⌘E
+├── ─────────────
+├── Disable JavaScript
+├── Disable Images
+├── ─────────────
+├── Responsive Design Mode     ⌃⌘R
+└── Connect Web Inspector...
+```
+
+## Our Configuration
+
+**Set to**: `true` — Essential for any developer.
+
+### Key Developer Tools
+
+| Tool | Shortcut | Purpose |
+|------|----------|---------|
+| Web Inspector | ⌥⌘I | DOM, CSS, debugging |
+| JavaScript Console | ⌥⌘C | Log output, errors |
+| Page Source | ⌥⌘U | View HTML source |
+| Responsive Design | ⌃⌘R | Test mobile layouts |
+| Empty Caches | ⌥⌘E | Clear cached assets |
+
+## Code Examples
+
+```bash
+# Enable Develop menu (recommended for developers)
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+
+# Also enable Web Inspector for all contexts
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled" -bool true
+
+# Restart Safari
+killall Safari
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **Advanced** → ☑ **Show features for web developers**
+
+## Web Inspector Features
+
+The Web Inspector includes:
+
+1. **Elements** — DOM tree, CSS inspection, layout visualization
+2. **Console** — JavaScript logs, errors, REPL
+3. **Sources** — Debugger, breakpoints, call stack
+4. **Network** — Request/response inspection, timing
+5. **Storage** — Cookies, localStorage, IndexedDB
+6. **Timelines** — Performance profiling
+7. **Graphics** — Canvas/WebGL inspection
+
+## Responsive Design Mode
+
+Test mobile layouts without a device:
+1. **Develop** → **Enter Responsive Design Mode** (⌃⌘R)
+2. Select device presets (iPhone, iPad)
+3. Custom viewport sizes
+4. Touch simulation
+
+## Remote Debugging iOS Safari
+
+With Develop menu enabled:
+1. Connect iPhone/iPad via USB
+2. Enable Web Inspector on device: Settings → Safari → Advanced
+3. **Develop** → [Device Name] → [Web Page]
+4. Debug mobile Safari from your Mac!
+
+## Complete Developer Setup
+
+```bash
+# Full Safari developer configuration
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled" -bool true
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+```
+
+## Compatibility
+
+- **Safari**: All modern versions
+- **Web Inspector**: WebKit-based, similar to Chrome DevTools
+
+## References
+
+- [Apple Developer: Safari Web Inspector](https://developer.apple.com/documentation/safari-release-notes)
+- [WebKit Web Inspector Reference](https://webkit.org/web-inspector/)

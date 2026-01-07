@@ -1,0 +1,97 @@
+# StringEncodings
+
+Set Terminal to use UTF-8 text encoding.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Terminal` |
+| **Key** | `StringEncodings` |
+| **Type** | Array |
+| **Default Value** | Varies |
+| **Our Setting** | `(4)` |
+
+## Description
+
+Sets the text encoding for Terminal.app. UTF-8 (value `4`) is the universal standard for text encoding, supporting all Unicode characters including international text, emoji, and special symbols.
+
+## Values
+
+| Value | Encoding |
+|-------|----------|
+| `4` | **UTF-8** (recommended) — Universal Unicode support |
+| `30` | Mac Roman — Legacy Mac encoding |
+| `5` | ISO Latin-1 — Western European |
+| `21` | ASCII — Basic US characters only |
+
+## Our Configuration
+
+**Set to**: `4` (UTF-8) — Universal character support.
+
+### Why UTF-8?
+
+1. **International support** — All languages and scripts
+2. **Emoji** — Full emoji support in terminal
+3. **Modern standard** — What all modern systems expect
+4. **Git compatibility** — UTF-8 filenames work correctly
+5. **Programming** — Unicode strings in source code
+
+## Code Examples
+
+```bash
+# Set Terminal to UTF-8
+defaults write com.apple.Terminal StringEncodings -array 4
+
+# Check current setting
+defaults read com.apple.Terminal StringEncodings
+```
+
+## UI Location
+
+**Terminal** → **Settings** (⌘,) → **Profiles** → [Profile Name] → **Advanced** → **Text encoding**
+
+The dropdown shows available encodings. Select "Unicode (UTF-8)".
+
+## Encoding Problems
+
+### Symptoms of Wrong Encoding
+
+```
+# File with UTF-8 content viewed with wrong encoding:
+Caf├® instead of Café
+δ½ ε₧½ instead of 你好
+ðŸ'‹ instead of 👋
+```
+
+### Fix Encoding Issues
+
+1. Set encoding to UTF-8 (as above)
+2. Ensure your shell uses UTF-8:
+   ```bash
+   export LANG=en_US.UTF-8
+   export LC_ALL=en_US.UTF-8
+   ```
+3. Add to `~/.zshrc` or `~/.bashrc`
+
+## Complete UTF-8 Setup
+
+```bash
+# Terminal encoding
+defaults write com.apple.Terminal StringEncodings -array 4
+
+# Shell environment (add to ~/.zshrc)
+echo 'export LANG=en_US.UTF-8' >> ~/.zshrc
+echo 'export LC_ALL=en_US.UTF-8' >> ~/.zshrc
+```
+
+## Compatibility
+
+- **Terminal**: All macOS versions
+- **SSH**: Remote servers may need UTF-8 configuration too
+- **Files**: Create files with UTF-8 by default
+
+## References
+
+- [Apple Support: Terminal text encoding](https://support.apple.com/guide/terminal/change-terminal-profile-encoding-trmlenc/mac)
+- [UTF-8 Everywhere](https://utf8everywhere.org/)

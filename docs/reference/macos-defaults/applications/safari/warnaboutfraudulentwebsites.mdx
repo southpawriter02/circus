@@ -1,0 +1,141 @@
+# WarnAboutFraudulentWebsites
+
+Enable Safari's built-in phishing and malware protection.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `WarnAboutFraudulentWebsites` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Safari's Fraudulent Website Warning feature provides real-time protection against phishing attacks and known malicious websites. When enabled, Safari checks URLs against:
+
+1. **Google Safe Browsing** — Database of known phishing/malware sites
+2. **Apple's security database** — Additional threat intelligence
+3. **Heuristic analysis** — Pattern matching for suspicious URLs
+
+If a match is found, Safari displays a full-page warning before loading the site.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enabled** (default) — Show warnings for dangerous sites |
+| `false` | **Disabled** — No warnings, load all sites (NOT recommended) |
+
+## Our Configuration
+
+**Set to**: `true` — This is a critical security feature that should always remain enabled.
+
+## How It Works
+
+1. **URL Check**: When you navigate to a site, Safari sends a hashed prefix of the URL to Apple's servers
+2. **Database Lookup**: Apple checks against known malicious sites
+3. **Warning Display**: If dangerous, Safari shows a red warning page
+4. **User Choice**: You can proceed anyway (not recommended) or go back
+
+### Warning Types
+
+| Threat Type | Warning Message |
+|-------------|-----------------|
+| **Phishing** | "Deceptive Website Warning" |
+| **Malware** | "This website may harm your computer" |
+| **Unwanted software** | "Suspicious Website Warning" |
+
+## Code Examples
+
+```bash
+# Enable fraudulent website warnings (should be default)
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+
+# Check current setting
+defaults read com.apple.Safari WarnAboutFraudulentWebsites
+
+# NEVER do this (disables protection):
+# defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool false
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **Security** → **Warn when visiting a fraudulent website**
+
+## Security Warning
+
+⚠️ **CRITICAL SECURITY FEATURE**
+
+Never disable this setting. Fraudulent website warnings protect you from:
+- **Credential theft** — Fake login pages that steal passwords
+- **Financial fraud** — Fake banking/shopping sites
+- **Malware downloads** — Sites distributing viruses
+- **Identity theft** — Sites harvesting personal information
+
+## Privacy Considerations
+
+### How Privacy Is Protected
+
+Safari uses **hash prefixes** rather than sending full URLs to Apple:
+1. Your URL is hashed locally
+2. Only a prefix of the hash is sent to Apple
+3. Apple returns possible matches
+4. Safari checks locally if your URL matches
+
+This means Apple cannot see the exact sites you visit.
+
+### If Privacy Is a Concern
+
+If you're extremely privacy-conscious:
+- The feature provides significant security benefits
+- Apple's implementation preserves privacy better than alternatives
+- Consider the trade-off: phishing protection vs. minimal metadata
+
+## Compatibility
+
+- **macOS**: 10.10 (Yosemite) and later
+- **Safari**: All versions with this feature
+- **Requires**: Internet connection for database updates
+
+## Troubleshooting
+
+### False Positives
+
+If a legitimate site is incorrectly flagged:
+1. Report to Google: [safebrowsing.google.com](https://safebrowsing.google.com/safebrowsing/report_error/)
+2. Report to Apple: Use Safari's feedback option
+3. Temporarily proceed with caution if you're certain it's safe
+
+### Warnings Not Appearing
+
+```bash
+# Verify setting is enabled
+defaults read com.apple.Safari WarnAboutFraudulentWebsites
+# Should return: 1
+
+# Reset Safari security settings
+defaults delete com.apple.Safari WarnAboutFraudulentWebsites
+# Safari will use default (enabled)
+```
+
+## Related Security Settings
+
+```bash
+# Show full URL to spot suspicious addresses
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+
+# Disable AutoFill for additional security
+defaults write com.apple.Safari AutoFillPasswords -bool false
+
+# Block pop-up windows
+defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
+```
+
+## References
+
+- [Apple Support: Safari security features](https://support.apple.com/guide/safari/security-ibrw1074/mac)
+- [Google Safe Browsing](https://safebrowsing.google.com/)
+- [Apple Platform Security Guide](https://support.apple.com/guide/security/welcome/web)

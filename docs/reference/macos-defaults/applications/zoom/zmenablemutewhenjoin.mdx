@@ -1,0 +1,107 @@
+# Zoom Mute When Joining
+
+Automatically mute microphone when joining meetings.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `us.zoom.xos` |
+| **Key** | `ZMEnableMuteWhenJoin` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Automatically mutes your microphone when you join a Zoom meeting. This prevents accidental background noise from disrupting the meeting and is considered proper video conference etiquette.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Join muted** — Microphone off until you unmute |
+| `false` | **Join unmuted** (default) — Microphone active immediately |
+
+## Our Configuration
+
+**Set to**: `true` — Always join meetings muted.
+
+### Why Join Muted?
+
+1. **Meeting etiquette** — Avoid interrupting
+2. **Background noise** — Dogs, kids, traffic, keyboards
+3. **Unexpected sounds** — Phone calls, notifications
+4. **Professional image** — You control when you speak
+5. **Large meetings** — Essential for webinars/all-hands
+
+### The Embarrassment Factor
+
+Unmuted mic incidents include:
+- Bathroom conversations
+- Complaining about meeting participants
+- Private phone calls
+- Eating sounds
+- Family interruptions
+
+**Join muted. Always.**
+
+## Code Examples
+
+```bash
+# Join meetings muted (recommended)
+defaults write us.zoom.xos ZMEnableMuteWhenJoin -bool true
+
+# Join meetings unmuted (Zoom default)
+defaults write us.zoom.xos ZMEnableMuteWhenJoin -bool false
+
+# Restart Zoom
+killall zoom.us
+```
+
+## UI Location
+
+**Zoom** → **Settings** (⌘,) → **Audio** → ☑ **Mute my microphone when joining a meeting**
+
+## Quick Unmute
+
+During meetings:
+- **Space bar** — Push-to-talk (hold to unmute)
+- **⌘⇧A** — Toggle mute on/off
+- Click microphone icon
+
+### Space Bar Push-to-Talk
+
+The space bar for push-to-talk is the best practice:
+1. Press and hold Space to speak
+2. Release to automatically mute
+3. No risk of forgetting to mute
+
+## Complete Meeting Etiquette Setup
+
+```bash
+# Professional meeting defaults
+defaults write us.zoom.xos ZMEnableMuteWhenJoin -bool true
+defaults write us.zoom.xos ZMEnableStopVideoWhenJoin -bool true
+defaults write us.zoom.xos ZMAlwaysShowMeetingControls -bool true
+defaults write us.zoom.xos ZMEnableAutoJoinVoip -bool true
+```
+
+## Host Override
+
+Note: Meeting hosts can:
+- Mute all participants
+- Prevent unmuting without permission
+- Set "mute on entry" for the meeting
+
+Your personal setting can be overridden by host settings.
+
+## Compatibility
+
+- **Zoom**: All desktop versions
+- **Works with**: Regular meetings, webinars, breakout rooms
+
+## References
+
+- [Zoom Help: Audio settings](https://support.zoom.us/hc/en-us/articles/201362163-Desktop-client-settings)
+- [Zoom Etiquette](https://support.zoom.us/hc/en-us/articles/115003280666)

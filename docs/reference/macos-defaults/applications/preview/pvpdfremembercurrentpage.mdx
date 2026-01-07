@@ -1,0 +1,104 @@
+# Preview PDF Page Memory
+
+Remember last viewed page when reopening PDFs.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Preview` |
+| **Key** | `PVPDFRememberCurrentPage` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+When enabled, Preview remembers where you stopped reading in a PDF and automatically returns you to that page when you reopen the document. Essential for reading long documents across multiple sessions.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Remember position** (default) — Open to last-viewed page |
+| `false` | **Always start at beginning** — Open to first page |
+
+## How It Works
+
+1. Open a PDF, navigate to page 47
+2. Close the document
+3. Reopen the same PDF later
+4. Preview opens directly to page 47
+
+The page position is stored in macOS's document metadata, not in the PDF file itself.
+
+## Our Configuration
+
+**Set to**: `true` — Continue reading where you left off.
+
+### Benefits
+
+- **Long documents** — Resume reading 300-page reports
+- **Reference materials** — Return to bookmarked sections
+- **Research** — Pick up where you left off
+- **Manuals** — Jump back to relevant chapter
+
+## Code Examples
+
+```bash
+# Enable page memory (recommended)
+defaults write com.apple.Preview PVPDFRememberCurrentPage -bool true
+
+# Always open to first page
+defaults write com.apple.Preview PVPDFRememberCurrentPage -bool false
+```
+
+## UI Location
+
+**Preview** → **Settings** (⌘,) → **PDF** → **Open PDFs to the page you were on**
+
+## Where Is Position Stored?
+
+Preview stores document state in extended attributes:
+- Part of macOS's document resumption system
+- Stored per-user, per-file
+- Survives file moves (if on same volume)
+- Lost if copying to non-HFS+/APFS volume
+
+### Check Document State
+
+```bash
+# View extended attributes on a PDF
+xattr -l /path/to/document.pdf
+```
+
+## Related Setting: Zoom Level Memory
+
+Preview also remembers your zoom level per-document:
+
+```bash
+# Scale documents to fit window
+defaults write com.apple.Preview PVScaleDocumentsToFit -bool true
+```
+
+## Complete Reading Experience
+
+```bash
+# Remember page position
+defaults write com.apple.Preview PVPDFRememberCurrentPage -bool true
+
+# Continuous scrolling
+defaults write com.apple.Preview PVPDFDisplayMode -int 1
+
+# Show thumbnails for navigation
+defaults write com.apple.Preview PVSidebarViewModeForNewDocuments -int 1
+```
+
+## Compatibility
+
+- **Preview**: All macOS versions
+- **Affects**: PDF files only
+
+## References
+
+- [Apple Support: Preview preferences](https://support.apple.com/guide/preview/change-preferences-prvw11793/mac)

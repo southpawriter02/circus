@@ -1,0 +1,105 @@
+# Zoom HD Video
+
+Enable high-definition video for meetings.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `us.zoom.xos` |
+| **Key** | `ZMEnableHDVideo` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables high-definition (720p or 1080p) video output from your camera during Zoom meetings. HD video provides sharper, more professional appearance but requires more bandwidth.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **HD enabled** (default) — 720p/1080p video |
+| `false` | **Standard definition** — Lower resolution, less bandwidth |
+
+## Resolution Comparison
+
+| Setting | Resolution | Bandwidth (approx) |
+|---------|------------|-------------------|
+| SD | 360p | 600 kbps |
+| HD | 720p | 1.2 Mbps |
+| Full HD | 1080p | 2.5 Mbps |
+
+Note: 1080p requires Zoom Business/Enterprise account.
+
+## Our Configuration
+
+**Set to**: `true` — Professional video quality.
+
+### When to Use HD
+
+- **Good internet** — Stable connection with sufficient upload
+- **Professional meetings** — Client calls, interviews, presentations
+- **Quality camera** — HD cameras benefit most
+- **Well-lit environment** — Good lighting maximizes quality
+
+### When to Disable HD
+
+- **Poor connection** — Unstable or slow internet
+- **Mobile hotspot** — Limited bandwidth
+- **Large meetings** — May cause performance issues
+- **Battery concerns** — HD uses more CPU/power
+
+## Code Examples
+
+```bash
+# Enable HD video (recommended)
+defaults write us.zoom.xos ZMEnableHDVideo -bool true
+
+# Disable HD video (save bandwidth)
+defaults write us.zoom.xos ZMEnableHDVideo -bool false
+
+# Restart Zoom
+killall zoom.us
+```
+
+## UI Location
+
+**Zoom** → **Settings** (⌘,) → **Video** → ☑ **HD**
+
+## Video Quality Tips
+
+For best HD video:
+1. **Lighting** — Face a window or use ring light
+2. **Camera height** — Eye level is most flattering
+3. **Background** — Clean, uncluttered, or use virtual background
+4. **Internet** — Wired ethernet beats WiFi
+5. **Close apps** — Reduce CPU/bandwidth competition
+
+## Bandwidth Test
+
+Check your connection:
+1. Go to [speedtest.net](https://speedtest.net)
+2. Note your upload speed
+3. For HD: need 2+ Mbps upload consistently
+
+## Related Video Settings
+
+```bash
+# Complete video optimization
+defaults write us.zoom.xos ZMEnableHDVideo -bool true
+defaults write us.zoom.xos ZMMirrorVideo -bool true
+defaults write us.zoom.xos ZMEnableTouchUpAppearance -bool false
+```
+
+## Compatibility
+
+- **Zoom**: All versions (1080p requires Business account)
+- **Camera**: USB/built-in cameras supporting 720p+
+- **CPU**: HD video uses more processing power
+
+## References
+
+- [Zoom Help: Video settings](https://support.zoom.us/hc/en-us/articles/201362623-Meeting-settings)
+- [Zoom bandwidth requirements](https://support.zoom.us/hc/en-us/articles/201362023-System-requirements-for-Zoom)

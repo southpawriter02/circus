@@ -1,0 +1,100 @@
+# Music Star Ratings
+
+Show the classic 5-star rating system for songs.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Music` |
+| **Key** | `showStarRatings` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Re-enables the classic 5-star rating system that was hidden in the modern Music app. Star ratings let you manually rate songs, which can then be used to create smart playlists based on your ratings.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show stars** — Display ★★★★★ rating column |
+| `false` | **Hide stars** (default) — Modern "love" system only |
+
+## The Rating System
+
+| Rating | Meaning | Smart Playlist Use |
+|--------|---------|-------------------|
+| ★☆☆☆☆ | Dislike | Filter out |
+| ★★☆☆☆ | Below average | Skip usually |
+| ★★★☆☆ | Average | General listening |
+| ★★★★☆ | Good | Favorites |
+| ★★★★★ | Excellent | Best of the best |
+
+## Our Configuration
+
+**Set to**: `true` — Enable star ratings for power users.
+
+### Why Use Star Ratings?
+
+1. **Smart Playlists** — "Play only 4+ star songs"
+2. **Granular control** — More options than just "Love"
+3. **Classic iTunes workflow** — Familiar for long-time users
+4. **Quick curation** — Rate on the fly while listening
+
+### Love vs. Stars
+
+| Feature | Love ❤️ | Stars ★★★★★ |
+|---------|---------|-------------|
+| Levels | 2 (loved/not) | 5 levels |
+| Influences algorithm | Yes | No |
+| Smart Playlists | Limited | Powerful |
+| Column in list | No | Yes |
+
+## Code Examples
+
+```bash
+# Show star ratings
+defaults write com.apple.Music showStarRatings -bool true
+
+# Hide star ratings
+defaults write com.apple.Music showStarRatings -bool false
+
+# Restart Music
+killall Music
+```
+
+## UI Location
+
+**Music** → **Settings** (⌘,) → **General** → **Show** → **Star Ratings**
+
+After enabling, add the Rating column to your view:
+1. Right-click column header
+2. Check "Rating"
+
+## Smart Playlist Examples
+
+With star ratings, create playlists like:
+- "5-Star Songs" — Rating is ★★★★★
+- "Good Workout Music" — Rating ≥ ★★★★ AND Genre is "Electronic"
+- "Needs Review" — Rating is ☆☆☆☆☆ (unrated)
+
+## Rating Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘1-5 | Set rating 1-5 stars |
+| ⌘0 | Clear rating |
+
+## Compatibility
+
+- **Music app**: macOS 10.15+
+- **Syncs**: Ratings sync via iCloud Music Library
+- **iOS**: Ratings visible in Music app if enabled in iOS Settings
+
+## References
+
+- [Apple Support: Rate songs in Music](https://support.apple.com/guide/music/rate-music-mus3eb980c32/mac)
+- [Apple Support: Smart Playlists](https://support.apple.com/guide/music/create-smart-playlists-mus1712973f4/mac)

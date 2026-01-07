@@ -1,0 +1,106 @@
+# Chrome DisablePrintPreview
+
+Use macOS native print dialog instead of Chrome's.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.google.Chrome` |
+| **Key** | `DisablePrintPreview` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Chrome has its own built-in print preview dialog, which is separate from the macOS system print dialog. This setting switches to using the native macOS print dialog, which offers better integration with system printers and print services.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Use macOS dialog** — Native print experience |
+| `false` | **Use Chrome dialog** (default) — Chrome's built-in preview |
+
+## Comparison
+
+### Chrome's Print Preview
+
+- Web-based interface
+- "Save as PDF" prominent option
+- Limited printer-specific options
+- Doesn't support all macOS print features
+- No AirPrint printer discovery issues
+
+### macOS Native Dialog
+
+- Consistent with other Mac apps
+- Full printer feature support (duplex, stapling, etc.)
+- Better PPD/driver integration
+- PDF Services menu (Save to iCloud, etc.)
+- Print presets work correctly
+
+## Our Configuration
+
+**Set to**: `true` — Use native macOS print dialog for consistency.
+
+## Code Examples
+
+```bash
+# Use macOS native print dialog
+defaults write com.google.Chrome DisablePrintPreview -bool true
+
+# Use Chrome's print preview (default)
+defaults write com.google.Chrome DisablePrintPreview -bool false
+
+# Also expand the print dialog by default
+defaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true
+```
+
+## UI Location
+
+Not available in Chrome settings — terminal only.
+
+Access print dialog via **File** → **Print** (⌘P).
+
+## Related Setting
+
+Expand the print dialog to show all options:
+
+```bash
+# Show expanded print options
+defaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true
+```
+
+## Use Cases
+
+### When Native Dialog Is Better
+
+- Office printers with advanced features (stapling, hole punch)
+- Using macOS PDF Services
+- Need print presets
+- Better accessibility support
+
+### When Chrome Dialog Is Better
+
+- Quickly saving as PDF
+- "Print" to files often
+- Minimal printer interaction needed
+
+## Quick PDF Without Print Dialog
+
+Even with native dialog, you can quickly save PDFs:
+- **⌘P** then **⌘P** again (triggers PDF save)
+- Or enable Chrome's "Export to PDF" extension
+
+## Compatibility
+
+- **Chrome**: All versions
+- **macOS**: 10.13+
+- **Enterprise Policy**: `DisablePrintPreview`
+
+## References
+
+- [Chrome Enterprise Policies](https://chromeenterprise.google/policies/#DisablePrintPreview)
+- [Apple Print Dialog Documentation](https://support.apple.com/guide/mac-help/print-documents-mchlp2276/mac)

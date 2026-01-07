@@ -1,0 +1,102 @@
+# Slack Auto Launch
+
+Start Slack automatically when you log in.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.tinyspeck.slackmacgap` |
+| **Key** | `SlackAutoLaunch` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Slack starts automatically when you log in to your Mac. For team communication, having Slack ready immediately ensures you don't miss important messages while your machine boots up.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-start** — Slack launches on login |
+| `false` | **Manual start** (default) — Launch Slack yourself |
+
+## Our Configuration
+
+**Set to**: `true` — Stay connected from the moment you log in.
+
+### Why Enable?
+
+1. **Immediate availability** — Don't miss morning messages
+2. **Background operation** — Slack runs even if you don't open it
+3. **Consistency** — Same experience every day
+4. **Quick DMs** — Ready when colleagues message you
+
+### Why Keep Disabled?
+
+1. **Faster login** — Fewer apps starting at once
+2. **Occasional use** — You only use Slack sometimes
+3. **Performance** — Older Macs benefit from fewer startup apps
+4. **Focus** — You prefer to choose when to be "available"
+
+## Code Examples
+
+```bash
+# Enable auto-launch
+defaults write com.tinyspeck.slackmacgap SlackAutoLaunch -bool true
+
+# Disable auto-launch
+defaults write com.tinyspeck.slackmacgap SlackAutoLaunch -bool false
+```
+
+## UI Location
+
+**Slack** → **Preferences** (⌘,) → **Advanced** → **Other Options** → **Launch Slack on login**
+
+## Alternative: Login Items
+
+macOS has its own login items system:
+
+**System Settings** → **General** → **Login Items**
+
+If Slack appears here, it will launch at login regardless of this preference. The two methods can conflict.
+
+### Check Login Items
+
+```bash
+# List all login items
+osascript -e 'tell application "System Events" to get the name of every login item'
+```
+
+## Related Setting
+
+Keep Slack running even when window is closed:
+
+```bash
+# Minimize to menu bar when closed (instead of quitting)
+defaults write com.tinyspeck.slackmacgap SlackCloseToTray -bool true
+```
+
+## Complete "Always Available" Setup
+
+```bash
+# Start on login
+defaults write com.tinyspeck.slackmacgap SlackAutoLaunch -bool true
+
+# Don't quit when window closed
+defaults write com.tinyspeck.slackmacgap SlackCloseToTray -bool true
+
+# But don't bounce (less annoying)
+defaults write com.tinyspeck.slackmacgap SlackBounceEnabled -bool false
+```
+
+## Compatibility
+
+- **Slack**: Desktop app
+- **macOS**: All supported versions
+
+## References
+
+- [Slack Help: Manage your preferences](https://slack.com/help/articles/201374536-Manage-your-preferences)

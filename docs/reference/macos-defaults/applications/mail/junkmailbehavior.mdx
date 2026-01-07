@@ -1,0 +1,115 @@
+# JunkMailBehavior
+
+Configure how Mail handles spam and junk email.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `JunkMailBehavior` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls how Apple Mail's built-in junk mail filter handles detected spam:
+- Mark messages as junk (leave in inbox)
+- Move to Junk mailbox automatically
+- Disable filtering entirely
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Disabled** — No junk filtering |
+| `1` | **Mark as junk** — Flag but leave in inbox |
+| `2` | **Move to Junk** — Automatic sorting |
+
+## Our Configuration
+
+**Set to**: `2` — Automatically move junk to the Junk mailbox.
+
+### Why Move Instead of Mark?
+
+- **Cleaner inbox** — Spam doesn't clutter your view
+- **Batch review** — Check Junk folder periodically
+- **Easy recovery** — If false positive, move back to Inbox
+
+## Code Examples
+
+```bash
+# Move junk mail to Junk mailbox (recommended)
+defaults write com.apple.mail JunkMailBehavior -int 2
+
+# Mark as junk but leave in inbox
+defaults write com.apple.mail JunkMailBehavior -int 1
+
+# Disable junk filtering
+defaults write com.apple.mail JunkMailBehavior -int 0
+
+# Also trust server-side spam headers
+defaults write com.apple.mail TrustSpamHeaders -bool true
+```
+
+## UI Location
+
+**Mail** → **Settings** (⌘,) → **Junk Mail**
+
+- ☑ Enable junk mail filtering
+- ☐ Move junk messages to the Junk mailbox
+- ☐ Trust junk mail headers in messages
+
+## How Junk Filtering Works
+
+Mail uses multiple signals:
+1. **Sender reputation** — Known spam sources
+2. **Content analysis** — Typical spam patterns
+3. **Server headers** — ISP/server spam flags
+4. **Your training** — Messages you mark as junk
+
+### Training the Filter
+
+- **Mark as Junk**: Select message → Message → Move to Junk (⌘⇧J)
+- **Mark as Not Junk**: Select in Junk → Message → Move to Inbox
+
+## Related Setting: Trust Server Headers
+
+```bash
+# Trust spam classification from mail server
+defaults write com.apple.mail TrustSpamHeaders -bool true
+```
+
+Most email providers (Gmail, iCloud, Outlook) have sophisticated spam filtering. Trusting their headers improves accuracy.
+
+## Complete Junk Mail Setup
+
+```bash
+# Optimal junk mail configuration
+defaults write com.apple.mail JunkMailBehavior -int 2
+defaults write com.apple.mail TrustSpamHeaders -bool true
+```
+
+## Troubleshooting
+
+### Legitimate Email Going to Junk
+
+1. Move message to Inbox
+2. Add sender to Contacts
+3. Create a rule to whitelist the sender
+
+### Spam Not Being Caught
+
+1. Check that junk filtering is enabled (value ≠ 0)
+2. Manually mark spam as Junk to train the filter
+3. Verify server-side filtering with your email provider
+
+## Compatibility
+
+- **Mail.app**: All versions
+- **Account types**: iCloud, Gmail, Exchange, IMAP, POP
+
+## References
+
+- [Apple Support: Mark email as junk or not junk](https://support.apple.com/guide/mail/mark-email-as-junk-or-not-junk-mlhlf4c27c1e/mac)

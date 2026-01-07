@@ -1,0 +1,101 @@
+# Preview Anti-Aliasing
+
+Enable smooth image rendering when zoomed.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Preview` |
+| **Key** | `PVAntiAliasImages` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Preview applies anti-aliasing (smoothing) to images, particularly when zoomed out. Anti-aliasing smooths jagged edges but may slightly soften pixel-perfect artwork.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Smooth edges** (default) — Anti-aliased rendering |
+| `false` | **Sharp pixels** — No smoothing, exact pixel display |
+
+## Visual Difference
+
+**With Anti-Aliasing (`true`):**
+```
+Diagonal lines appear smooth
+Curved edges are clean
+Zoomed-out images look natural
+```
+
+**Without Anti-Aliasing (`false`):**
+```
+Diagonal lines show stair-stepping
+Edges appear jagged
+Pixels are crisp and exact
+```
+
+## Our Configuration
+
+**Set to**: `true` — Smooth, natural-looking images.
+
+### When to Disable
+
+You might want anti-aliasing OFF for:
+- **Pixel art** — Viewing retro game graphics
+- **Icon design** — Need exact pixel placement
+- **Image inspection** — Verifying individual pixels
+- **Screenshots** — Checking exact rendering
+
+## Code Examples
+
+```bash
+# Enable anti-aliasing (smooth rendering)
+defaults write com.apple.Preview PVAntiAliasImages -bool true
+
+# Disable anti-aliasing (sharp pixels)
+defaults write com.apple.Preview PVAntiAliasImages -bool false
+```
+
+## UI Location
+
+Not exposed in UI — terminal only.
+
+## How Anti-Aliasing Works
+
+When an image is displayed smaller than its native resolution, the system must decide how to combine multiple source pixels into fewer display pixels:
+
+**Without AA**: Nearest neighbor sampling (one pixel represents area)
+**With AA**: Weighted average of surrounding pixels (smoother result)
+
+## Zoom-Level Dependent
+
+Anti-aliasing is most noticeable when:
+- Viewing large images fitted to window
+- Zoomed out below 100%
+- Diagonal lines or curves present
+
+At 100% zoom (actual size), there's no difference.
+
+## Related Settings
+
+```bash
+# Complete image viewing setup
+defaults write com.apple.Preview PVAntiAliasImages -bool true
+defaults write com.apple.Preview PVScaleDocumentsToFit -bool true
+defaults write com.apple.Preview PVBackgroundColor -int 0
+```
+
+## Compatibility
+
+- **Preview**: All macOS versions
+- **Affects**: All image formats
+
+## References
+
+- [Apple Support: Preview preferences](https://support.apple.com/guide/preview/change-preferences-prvw11793/mac)
+- [Wikipedia: Anti-aliasing](https://en.wikipedia.org/wiki/Spatial_anti-aliasing)

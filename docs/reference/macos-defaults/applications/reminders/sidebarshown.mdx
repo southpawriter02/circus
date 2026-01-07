@@ -1,0 +1,118 @@
+# Reminders Sidebar
+
+Show or hide the sidebar with reminder lists.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.reminders` |
+| **Key** | `SidebarShown` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the sidebar containing your reminder lists is visible. The sidebar shows all your lists, smart lists (Today, Scheduled, Flagged, All), and provides quick navigation.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Sidebar visible** (default) — Full navigation |
+| `false` | **Sidebar hidden** — Focus on single list |
+
+## Sidebar Contents
+
+```
+┌─────────────────────┐
+│ 🔎 Search           │
+├─────────────────────┤
+│ 📅 Today        (3) │
+│ 📋 Scheduled    (12)│
+│ 🚩 Flagged      (2) │
+│ 📁 All          (42)│
+├─────────────────────┤
+│ My Lists            │
+│ ├ 🏠 Home       (5) │
+│ ├ 💼 Work       (8) │
+│ └ 🛒 Shopping   (4) │
+├─────────────────────┤
+│ Tags                │
+│ ├ #urgent           │
+│ └ #ideas            │
+└─────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Keep sidebar visible for easy navigation.
+
+### Benefits of Visible Sidebar
+
+1. **List switching** — Click to change lists
+2. **Badge counts** — See pending items per list
+3. **Smart lists** — Quick access to Today, Scheduled, etc.
+4. **Tags** — Filter by tags
+5. **Organization** — Visual overview of all reminders
+
+### When to Hide Sidebar
+
+- Small screen / limited space
+- Focused work on single list
+- Temporary for more viewing area
+
+## Code Examples
+
+```bash
+# Show sidebar (recommended)
+defaults write com.apple.reminders SidebarShown -bool true
+
+# Hide sidebar
+defaults write com.apple.reminders SidebarShown -bool false
+```
+
+## UI Location
+
+**View** menu → **Show Sidebar** (⌘⌥S)
+
+Or click the sidebar button in the toolbar.
+
+## Keyboard Shortcut
+
+Toggle sidebar visibility:
+**⌘⌥S** — Show/Hide Sidebar
+
+## Smart Lists Explained
+
+| Smart List | Shows |
+|------------|-------|
+| **Today** | Due today + overdue |
+| **Scheduled** | Everything with a due date |
+| **Flagged** | Items you've flagged as important |
+| **All** | Every reminder across all lists |
+
+## Related Features
+
+### Creating Lists
+
+1. **File** → **New List** (⌘L)
+2. Name your list
+3. Choose color and icon
+4. Assign to iCloud or On My Mac
+
+### List Groups
+
+Organize lists into folders:
+1. **File** → **New Group**
+2. Drag lists into the group
+
+## Compatibility
+
+- **Reminders**: macOS 10.15+
+- **Syncs**: Lists sync via iCloud
+
+## References
+
+- [Apple Support: Use Reminders on Mac](https://support.apple.com/guide/reminders/welcome/mac)

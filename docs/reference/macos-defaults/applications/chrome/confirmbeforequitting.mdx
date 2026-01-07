@@ -1,0 +1,103 @@
+# Chrome confirmBeforeQuitting
+
+Require holding Cmd+Q to quit Chrome.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.google.Chrome` |
+| **Key** | `confirmBeforeQuitting` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+When enabled, pressing ⌘Q shows a "Hold ⌘Q to Quit" overlay instead of immediately quitting Chrome. You must continue holding the keys for about 1.5 seconds to confirm the quit action. This prevents accidental closure of all browser windows and tabs.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Hold to quit** — Shows confirmation overlay |
+| `false` | **Instant quit** (default) — Quits immediately on ⌘Q |
+
+## The Problem
+
+⌘Q (Quit) is frustratingly close to:
+- ⌘W (Close Tab)
+- ⌘Tab (App Switch)
+- ⌘A (Select All)
+
+One slip and you lose all your open tabs and windows. While Chrome can restore sessions, it interrupts your workflow.
+
+## Our Configuration
+
+**Set to**: `true` — Require hold confirmation to quit.
+
+### Visual Feedback
+
+When you press ⌘Q with this enabled:
+
+```
+┌─────────────────────────────────┐
+│                                 │
+│     Hold ⌘Q to Quit            │
+│     ████████░░░░░░░░           │
+│                                 │
+└─────────────────────────────────┘
+```
+
+A progress bar fills while you hold the keys. Release before it completes to cancel.
+
+## Code Examples
+
+```bash
+# Enable hold-to-quit confirmation
+defaults write com.google.Chrome confirmBeforeQuitting -bool true
+
+# Disable (Chrome default)
+defaults write com.google.Chrome confirmBeforeQuitting -bool false
+
+# Check current setting
+defaults read com.google.Chrome confirmBeforeQuitting
+```
+
+## UI Location
+
+**Chrome** menu → **Warn Before Quitting (⌘Q)**
+
+This is a toggle menu item. A checkmark indicates the feature is enabled.
+
+## How It Works
+
+1. Press **⌘Q**
+2. Overlay appears with progress bar
+3. **Keep holding** for ~1.5 seconds to quit
+4. **Release early** to cancel (nothing happens)
+
+## Related Tip: Disable ⌘Q Entirely
+
+If you never want to use ⌘Q, you can remap it system-wide:
+
+**System Settings** → **Keyboard** → **Keyboard Shortcuts** → **App Shortcuts**
+
+Add a shortcut for "Quit Google Chrome" with an obscure key combination.
+
+## Firefox Equivalent
+
+Firefox has a similar feature:
+1. Type `about:config` in address bar
+2. Search for `browser.warnOnQuit`
+3. Set to `true`
+
+## Compatibility
+
+- **Chrome**: 55 and later
+- **All platforms**: This feature exists on macOS only
+
+## References
+
+- [Chrome Help: Keyboard shortcuts](https://support.google.com/chrome/answer/157179)
+- [Chrome Release Notes](https://chromereleases.googleblog.com/)

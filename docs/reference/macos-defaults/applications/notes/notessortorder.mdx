@@ -1,0 +1,95 @@
+# Notes Sort Order
+
+Control how notes are sorted in the list.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Notes` |
+| **Key** | `NotesSortOrder` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+
+## Description
+
+Determines how notes are ordered in the notes list. Sorting by date edited keeps your most recently worked-on notes at the top.
+
+## Values
+
+| Value | Sort By | Description |
+|-------|---------|-------------|
+| `1` | **Date Edited** (default) | Most recently modified first |
+| `2` | **Date Created** | Newest created first |
+| `3` | **Title** | Alphabetical by title |
+
+## Our Configuration
+
+**Set to**: `1` — Sort by date edited (most recent on top).
+
+### Why Date Edited?
+
+1. **Active notes surface** — Currently working notes at top
+2. **Natural workflow** — Recently used = probably needed again
+3. **Auto-organization** — No manual sorting needed
+4. **Quick access** — Find recent work immediately
+
+### When to Use Other Options
+
+- **Date Created**: Chronological journaling, meeting notes
+- **Title**: Reference notes you locate by name
+
+## Code Examples
+
+```bash
+# Sort by date edited (default, recommended)
+defaults write com.apple.Notes NotesSortOrder -int 1
+
+# Sort by date created
+defaults write com.apple.Notes NotesSortOrder -int 2
+
+# Sort by title (A-Z)
+defaults write com.apple.Notes NotesSortOrder -int 3
+```
+
+## UI Location
+
+**Notes** → **Settings** (⌘,) → **Sort Notes By**
+
+Or in the app:
+**View** menu → **Sort By**
+
+## Related: Group by Date
+
+Enable date grouping for visual organization:
+
+```bash
+# Group into Today, Yesterday, Previous 7 Days, etc.
+defaults write com.apple.Notes GroupNotesByDate -bool true
+```
+
+This creates sections like:
+- **Today**
+- **Yesterday**
+- **Previous 7 Days**
+- **Previous 30 Days**
+- **Older**
+
+## Complete Notes Organization
+
+```bash
+# Optimal organization setup
+defaults write com.apple.Notes NotesSortOrder -int 1
+defaults write com.apple.Notes GroupNotesByDate -bool true
+defaults write com.apple.Notes FoldersSortOrder -int 1
+```
+
+## Compatibility
+
+- **Notes app**: macOS 10.15+
+- **Syncs**: Setting syncs via iCloud
+
+## References
+
+- [Apple Support: Organize notes in folders](https://support.apple.com/guide/notes/organize-notes-in-folders-apd070d46b59/mac)

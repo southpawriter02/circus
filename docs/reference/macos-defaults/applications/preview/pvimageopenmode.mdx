@@ -1,0 +1,114 @@
+# Preview Open in Tabs
+
+Open documents in tabs instead of new windows.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Preview` |
+| **Key** | `PVImageOpenMode` |
+| **Type** | Integer |
+| **Default Value** | `2` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls whether Preview opens new documents in tabs within the existing window or creates separate windows. Tabs reduce window clutter and make it easier to manage multiple documents.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `1` | **New window** — Each document gets its own window |
+| `2` | **Tabs** (default) — Documents open in tabs |
+
+## Visual Comparison
+
+**New Windows (`1`):**
+```
+[Window: Document1.pdf]
+[Window: Document2.pdf]  
+[Window: Image.png]
+```
+
+**Tabs (`2`):**
+```
+┌─────────────────────────────────────────┐
+│ [Document1.pdf] [Document2.pdf] [Image] │
+│ ─────────────────────────────────────── │
+│          Document content               │
+└─────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `2` — Open in tabs (less window clutter).
+
+### Benefits of Tabs
+
+1. **Less clutter** — One window, multiple documents
+2. **Easy comparison** — Switch between documents quickly
+3. **Organized** — All Preview documents grouped
+4. **Keyboard navigation** — ⌘⇧[ and ⌘⇧] to switch tabs
+
+### When Windows Are Better
+
+- Comparing documents side-by-side
+- Multi-monitor setups
+- Need independent scrolling positions
+
+## Code Examples
+
+```bash
+# Open in tabs (recommended)
+defaults write com.apple.Preview PVImageOpenMode -int 2
+
+# Open in new windows
+defaults write com.apple.Preview PVImageOpenMode -int 1
+```
+
+## UI Location
+
+**Preview** → **Settings** (⌘,) → **General** → **When opening files**
+
+Options:
+- Open in new window
+- Open all files in one window
+
+## Tab Keyboard Shortcuts
+
+| Action | Shortcut |
+|--------|----------|
+| Next tab | ⌘⇧] |
+| Previous tab | ⌘⇧[ |
+| Close tab | ⌘W |
+| Move to new window | Window → Move Tab to New Window |
+
+## Related Settings
+
+```bash
+# Complete Preview setup
+defaults write com.apple.Preview PVImageOpenMode -int 2
+defaults write com.apple.Preview PVSidebarViewModeForNewDocuments -int 1
+defaults write com.apple.Preview PVPDFDisplayMode -int 1
+```
+
+## System-Wide Preference
+
+macOS has a system-wide tabs preference:
+
+**System Settings** → **Desktop & Dock** → **Prefer tabs when opening documents**
+
+Options: Never, In Full Screen Only, Always
+
+Preview's setting overrides this for Preview specifically.
+
+## Compatibility
+
+- **Preview**: macOS 10.12+
+- **Tab support**: All document types
+
+## References
+
+- [Apple Support: Preview preferences](https://support.apple.com/guide/preview/change-preferences-prvw11793/mac)

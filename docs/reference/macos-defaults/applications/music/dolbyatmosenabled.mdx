@@ -1,0 +1,117 @@
+# Music Dolby Atmos
+
+Enable immersive spatial audio for supported tracks.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Music` |
+| **Key** | `dolbyAtmosEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables Dolby Atmos spatial audio playback for supported Apple Music tracks. Dolby Atmos creates an immersive 3D audio experience where sounds can appear to come from all around you, including above.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Dolby Atmos enabled** — Spatial audio for supported tracks |
+| `false` | **Stereo only** — Traditional left/right audio |
+
+## What Is Dolby Atmos?
+
+Traditional stereo: Sound from left and right
+Dolby Atmos: Sound from all directions including above
+
+```
+       ↑ (height)
+   ←   •   →  (surround)
+       ↓
+```
+
+Instruments and voices are placed in 3D space, creating an immersive experience.
+
+## Our Configuration
+
+**Set to**: `true` — Enable spatial audio for immersive listening.
+
+### Requirements for Best Experience
+
+1. **Apple Music subscription** (included at no extra cost)
+2. **AirPods Pro/Max** or compatible headphones
+3. **Built-in speakers** on Mac (limited effect)
+4. **Atmos-enabled tracks** (not all music)
+
+### Compatible Devices
+
+| Device | Spatial Audio |
+|--------|---------------|
+| AirPods Pro | Full support with head tracking |
+| AirPods Max | Full support with head tracking |
+| AirPods (3rd gen) | Supported |
+| Mac speakers | Basic Atmos rendering |
+| External speakers | Requires Atmos-compatible system |
+
+## Code Examples
+
+```bash
+# Enable Dolby Atmos
+defaults write com.apple.Music dolbyAtmosEnabled -bool true
+
+# Disable (stereo only)
+defaults write com.apple.Music dolbyAtmosEnabled -bool false
+
+# Restart Music
+killall Music
+```
+
+## UI Location
+
+**Music** → **Settings** (⌘,) → **Playback** → **Dolby Atmos**
+
+Options:
+- Automatic (Atmos when available)
+- Always On
+- Off
+
+## Finding Atmos Content
+
+In Apple Music:
+1. Look for "Dolby Atmos" badge on albums
+2. Browse: **Music** → **Browse** → **Spatial Audio**
+3. Albums have "Dolby Atmos" in description
+
+## Audiophile Note
+
+Some purists prefer stereo masters:
+- Original artist intent was stereo
+- Atmos mix may differ from stereo mix
+- Personal preference matters
+
+You can disable per-session in the playback controls.
+
+## Complete Audio Setup
+
+```bash
+# Full quality audio experience
+defaults write com.apple.Music dolbyAtmosEnabled -bool true
+defaults write com.apple.Music losslessEnabled -bool true
+defaults write com.apple.Music normalizeVolume -bool true
+defaults write com.apple.Music soundEnhancerEnabled -bool false
+```
+
+## Compatibility
+
+- **Music app**: macOS 11 (Big Sur) and later
+- **Requires**: Apple Music subscription
+- **Best with**: AirPods Pro, AirPods Max
+
+## References
+
+- [Apple Support: Dolby Atmos in Apple Music](https://support.apple.com/en-us/HT212182)
+- [Apple Music Spatial Audio](https://www.apple.com/apple-music/)

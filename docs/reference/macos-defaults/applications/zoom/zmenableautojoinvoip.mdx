@@ -1,0 +1,113 @@
+# Zoom Auto Join Audio
+
+Automatically connect to meeting audio without prompting.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `us.zoom.xos` |
+| **Key** | `ZMEnableAutoJoinVoip` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+When joining a Zoom meeting, automatically connects your computer audio (microphone and speakers) without showing the "How do you want to join audio?" dialog. This creates a seamless meeting join experience.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-join computer audio** — Seamless connection |
+| `false` | **Prompt each time** (default) — Show audio options dialog |
+
+## The Audio Join Dialog
+
+Without auto-join, you see this prompt every time:
+
+```
+┌─────────────────────────────────┐
+│  How do you want to join audio? │
+│                                  │
+│  [Join with Computer Audio]     │
+│  [Phone Call]                   │
+│  [Cancel]                       │
+└─────────────────────────────────┘
+```
+
+With auto-join, you skip this and join instantly.
+
+## Our Configuration
+
+**Set to**: `true` — Skip the dialog, use computer audio.
+
+### Why Enable Auto-Join?
+
+1. **Faster joining** — One less click per meeting
+2. **No confusion** — New users don't see confusing dialog
+3. **Consistency** — Same behavior every meeting
+4. **Most common choice** — "Computer audio" is used 99% of the time
+
+### When to Keep the Prompt
+
+- **Phone audio preferred** — For better audio quality on calls
+- **Audio issues** — Need to troubleshoot regularly
+- **Multiple audio setups** — Switch between devices often
+
+## Code Examples
+
+```bash
+# Auto-join computer audio (recommended)
+defaults write us.zoom.xos ZMEnableAutoJoinVoip -bool true
+
+# Show audio prompt each time
+defaults write us.zoom.xos ZMEnableAutoJoinVoip -bool false
+
+# Restart Zoom
+killall zoom.us
+```
+
+## UI Location
+
+**Zoom** → **Settings** (⌘,) → **Audio** → ☑ **Automatically join audio by computer when joining a meeting**
+
+## Audio Options Explained
+
+| Option | Use Case |
+|--------|----------|
+| **Computer Audio** | Standard, uses Mac mic/speakers |
+| **Phone Call** | Dial in for better audio or bad internet |
+| **No Audio** | Listen only (you can't speak) |
+
+## Complete Frictionless Join
+
+```bash
+# Fastest possible meeting join
+defaults write us.zoom.xos ZMEnableAutoJoinVoip -bool true
+defaults write us.zoom.xos ZMEnableMuteWhenJoin -bool true
+defaults write us.zoom.xos ZMEnableStopVideoWhenJoin -bool true
+```
+
+This setup:
+1. Joins immediately (no audio prompt)
+2. Microphone muted (no accidents)
+3. Camera off (privacy until ready)
+
+## Troubleshooting Audio
+
+If auto-join causes issues:
+1. Test audio: **Zoom** → **Settings** → **Audio** → **Test Speaker/Mic**
+2. Check system audio: **System Settings** → **Sound**
+3. Temporarily disable to see the prompt again
+
+## Compatibility
+
+- **Zoom**: All desktop versions
+- **Requires**: Working microphone and speakers
+
+## References
+
+- [Zoom Help: Audio settings](https://support.zoom.us/hc/en-us/articles/201362623-Meeting-settings)
+- [Zoom audio troubleshooting](https://support.zoom.us/hc/en-us/articles/115003279466)

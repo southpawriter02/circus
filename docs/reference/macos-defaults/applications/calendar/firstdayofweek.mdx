@@ -1,0 +1,101 @@
+# Calendar First Day of Week
+
+Set which day the week starts on.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iCal` |
+| **Key** | `first day of week` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls which day is displayed as the first day of the week in Calendar views. This affects both the week view layout and how weeks are displayed in month view.
+
+## Values
+
+| Value | Day |
+|-------|-----|
+| `0` | **Sunday** (default, US standard) |
+| `1` | **Monday** (ISO 8601, most of world) |
+| `2` | Tuesday |
+| `3` | Wednesday |
+| `4` | Thursday |
+| `5` | Friday |
+| `6` | Saturday |
+
+## Our Configuration
+
+**Set to**: `1` — Monday (ISO 8601 international standard).
+
+### Regional Standards
+
+| Region | First Day |
+|--------|-----------|
+| USA, Canada, Japan | Sunday |
+| Most of Europe | Monday |
+| Middle East | Saturday or Sunday |
+| ISO 8601 Standard | Monday |
+
+## Visual Difference
+
+**Sunday Start (0):**
+```
+Sun  Mon  Tue  Wed  Thu  Fri  Sat
+ 1    2    3    4    5    6    7
+```
+
+**Monday Start (1):**
+```
+Mon  Tue  Wed  Thu  Fri  Sat  Sun
+ 1    2    3    4    5    6    7
+```
+
+## Code Examples
+
+```bash
+# Set Monday as first day (ISO 8601)
+defaults write com.apple.iCal "first day of week" -int 1
+
+# Set Sunday as first day (US default)
+defaults write com.apple.iCal "first day of week" -int 0
+
+# Restart Calendar
+killall Calendar
+```
+
+## UI Location
+
+**Calendar** → **Settings** (⌘,) → **General** → **Start week on**
+
+## Why Monday?
+
+1. **ISO 8601 compliance** — International date standard
+2. **Work week logic** — Mon-Fri naturally grouped
+3. **Weekend together** — Sat-Sun at week's end
+4. **International consistency** — Matches most countries
+
+## Related Settings
+
+```bash
+# Show week numbers
+defaults write com.apple.iCal "Show Week Numbers" -bool true
+
+# Scroll by week in week view
+defaults write com.apple.iCal "scroll by weeks in week view" -bool true
+```
+
+## Compatibility
+
+- **Calendar**: All macOS versions
+- **Syncs**: Preference is local (does NOT sync to iPhone)
+- **Set separately**: Configure iOS in Settings → Calendar
+
+## References
+
+- [Apple Support: Calendar preferences](https://support.apple.com/guide/calendar/change-general-preferences-icl1023/mac)
+- [ISO 8601 Week Definition](https://en.wikipedia.org/wiki/ISO_8601)

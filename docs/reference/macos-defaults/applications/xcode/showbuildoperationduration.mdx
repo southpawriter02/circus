@@ -1,0 +1,115 @@
+# ShowBuildOperationDuration
+
+Display build times in Xcode's activity viewer.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `ShowBuildOperationDuration` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Shows the duration of build operations in Xcode's activity viewer (the toolbar area at the top of the window). Essential for monitoring and optimizing build performance.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show duration** — "Build Succeeded (42.3s)" |
+| `false` | **Hide duration** (default) — "Build Succeeded" |
+
+## Visual Comparison
+
+**Disabled (`false`):**
+```
+✓ Build Succeeded
+```
+
+**Enabled (`true`):**
+```
+✓ Build Succeeded | 42.3s
+```
+
+## Our Configuration
+
+**Set to**: `true` — Monitor build performance at a glance.
+
+### Why Enable?
+
+1. **Performance awareness** — Immediately see if builds are getting slower
+2. **Optimization feedback** — Measure impact of build setting changes
+3. **Debugging slow builds** — Identify when something's wrong
+4. **Team benchmarking** — Compare build times across machines
+
+## Code Examples
+
+```bash
+# Enable build duration display
+defaults write com.apple.dt.Xcode ShowBuildOperationDuration -bool true
+
+# Disable (Xcode default)
+defaults write com.apple.dt.Xcode ShowBuildOperationDuration -bool false
+
+# Check current setting
+defaults read com.apple.dt.Xcode ShowBuildOperationDuration
+```
+
+## UI Location
+
+No direct UI toggle. This is a hidden preference accessible only via `defaults` command.
+
+The duration appears in the **Activity Viewer** in the Xcode toolbar after a build completes.
+
+## Build Performance Tips
+
+### What's a Good Build Time?
+
+| Project Size | Clean Build | Incremental |
+|--------------|-------------|-------------|
+| Small (<50 files) | <30s | <5s |
+| Medium (50-500 files) | 1-5 min | <30s |
+| Large (500+ files) | 5-15 min | <1 min |
+
+### If Builds Are Slow
+
+1. **Check Derived Data**: `rm -rf ~/Library/Developer/Xcode/DerivedData`
+2. **Enable parallel builds**: Product → Scheme → Edit Scheme → Build → Parallelize Build
+3. **Use incremental builds**: Avoid Clean Build (⇧⌘K) unless necessary
+4. **Check for Swift bridging issues**: Large bridging headers slow compilation
+
+## Related Xcode Settings
+
+```bash
+# Continue building after errors (see all issues at once)
+defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool true
+
+# Show runtime issues during debugging
+defaults write com.apple.dt.Xcode IDEShowRuntimeIssues -bool true
+```
+
+## Compatibility
+
+- **Xcode**: 8.0 and later
+- **macOS**: 10.12 (Sierra) and later
+
+## Applying Changes
+
+Restart Xcode for the setting to take effect:
+
+```bash
+# Apply and restart
+defaults write com.apple.dt.Xcode ShowBuildOperationDuration -bool true
+killall Xcode 2>/dev/null
+open -a Xcode
+```
+
+## References
+
+- [Apple Developer: Xcode Overview](https://developer.apple.com/documentation/xcode)
+- [WWDC: Building Faster in Xcode](https://developer.apple.com/videos/play/wwdc2022/110362/)
+- [Xcode Build Settings Reference](https://developer.apple.com/documentation/xcode/build-settings-reference)

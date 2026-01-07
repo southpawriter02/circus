@@ -1,0 +1,99 @@
+# FocusFollowsMouse
+
+Control whether Terminal windows auto-focus on mouse hover.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Terminal` |
+| **Key** | `FocusFollowsMouse` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Terminal windows automatically receive keyboard focus when the mouse cursor hovers over them, without requiring a click. This is a Unix/X11-style window management behavior.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Focus follows mouse** — Window under cursor is active |
+| `false` | **Click to focus** (default) — Standard macOS behavior |
+
+## Our Configuration
+
+**Set to**: `false` — Maintain standard macOS click-to-focus behavior.
+
+### Why Keep Default?
+
+1. **Consistency** — Matches rest of macOS
+2. **Predictability** — Windows don't change unexpectedly
+3. **Typing safety** — Won't accidentally type in wrong window
+4. **Multi-monitor** — Less confusing with multiple displays
+
+### When to Enable
+
+Some power users prefer focus-follows-mouse when:
+- Coming from Linux/X11 environments
+- Managing many terminal windows simultaneously
+- Using tiling window managers (like yabai)
+
+## Code Examples
+
+```bash
+# Standard macOS behavior (click to focus)
+defaults write com.apple.Terminal FocusFollowsMouse -bool false
+
+# X11-style focus follows mouse
+defaults write com.apple.Terminal FocusFollowsMouse -bool true
+
+# Check current setting
+defaults read com.apple.Terminal FocusFollowsMouse
+```
+
+## UI Location
+
+Not exposed in UI — terminal-only setting.
+
+## How It Works When Enabled
+
+1. Move mouse over Terminal window A → A becomes active
+2. Type → Keystrokes go to window A
+3. Move mouse to Terminal window B → B becomes active
+4. Type → Keystrokes now go to window B
+5. **No clicking required**
+
+### Gotchas When Enabled
+
+- **Accidental input**: Moving mouse while typing can send keys to wrong window
+- **Dialog confusion**: Moving past dialogs can dismiss them
+- **Menu bar**: Moving to menu bar might change focus unexpectedly
+
+## Alternative: Raise on Click Only
+
+For a middle ground, you might want:
+- Click to focus AND raise window (standard)
+- Or: Focus follows mouse but don't raise window
+
+macOS doesn't have a native "focus without raise" option like X11.
+
+## Related Settings
+
+```bash
+# Other Terminal window behaviors
+defaults write com.apple.Terminal NewTabWorkingDirectoryBehavior -int 2
+defaults write com.apple.Terminal SecureKeyboardEntry -bool true
+```
+
+## Compatibility
+
+- **Terminal**: macOS 10.6 and later
+- **Note**: This ONLY affects Terminal.app, not other applications
+
+## References
+
+- [macos-defaults.com: Focus Follows Mouse](https://macos-defaults.com/terminal/focusfollowsmouse.html)
+- [Apple Support: Terminal](https://support.apple.com/guide/terminal/welcome/mac)

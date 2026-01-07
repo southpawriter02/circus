@@ -1,0 +1,166 @@
+# Safari Search Privacy Settings
+
+Prevent search queries from being sent to Apple.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Keys** | `UniversalSearchEnabled`, `SuppressSearchSuggestions` |
+| **Type** | Boolean |
+| **Default Value** | `true` / `false` |
+| **Our Setting** | `false` / `true` |
+
+## Description
+
+By default, Safari sends your keystrokes from the Smart Search Field to Apple's servers to generate search suggestions, including:
+- Safari Suggestions (websites, apps, movies, etc.)
+- Siri Knowledge results
+- App Store suggestions
+
+Disabling these features keeps your search queries private.
+
+## The Two Keys
+
+| Key | Purpose | Our Setting |
+|-----|---------|-------------|
+| `UniversalSearchEnabled` | Send queries to Apple for suggestions | `false` |
+| `SuppressSearchSuggestions` | Hide Safari Suggestions | `true` |
+
+## Our Configuration
+
+**UniversalSearchEnabled**: `false` — Don't send queries to Apple
+**SuppressSearchSuggestions**: `true` — Suppress Safari's own suggestions
+
+### What This Affects
+
+**With these settings disabled:**
+- ❌ No Safari Suggestions (website recommendations)
+- ❌ No Siri Knowledge results in search
+- ❌ No App Store suggestions
+- ✅ Search engine suggestions still work (Google, DuckDuckGo, etc.)
+- ✅ Bookmarks and history suggestions still work (local)
+
+**You keep:**
+- Suggestions from your chosen search engine
+- Your browsing history matches
+- Your bookmarks matches
+- Faster response (no network call to Apple)
+
+## Code Examples
+
+```bash
+# Disable sending search queries to Apple
+defaults write com.apple.Safari UniversalSearchEnabled -bool false
+
+# Suppress Safari Suggestions
+defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+```
+
+```bash
+# Check current settings
+defaults read com.apple.Safari UniversalSearchEnabled
+defaults read com.apple.Safari SuppressSearchSuggestions
+```
+
+```bash
+# Re-enable if desired
+defaults write com.apple.Safari UniversalSearchEnabled -bool true
+defaults write com.apple.Safari SuppressSearchSuggestions -bool false
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **Search**
+
+- ☐ Include Safari Suggestions
+- ☐ Include Siri Suggestions (if available)
+
+Also accessible via:
+**System Settings** → **Siri & Spotlight** → **Safari** suggestions toggle
+
+## Privacy Analysis
+
+### What Apple Receives (When Enabled)
+
+When Universal Search is enabled, Apple receives:
+- Your partial search query as you type
+- Your approximate location (for local results)
+- Device type and Safari version
+- Language and region settings
+
+### What Apple States
+
+Apple claims:
+- Queries are not associated with your Apple ID
+- Location is approximate (city level)
+- Data is used to improve suggestions
+
+### Maximum Privacy Configuration
+
+```bash
+# Complete privacy setup
+defaults write com.apple.Safari UniversalSearchEnabled -bool false
+defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+defaults write com.apple.Safari PreloadTopHit -bool false
+defaults write com.apple.Safari ShowFrequentlyVisitedSites -bool false
+```
+
+## Alternative: Use Private Search Engine
+
+Instead of (or in addition to) disabling Safari Suggestions, consider using a privacy-focused search engine:
+
+| Search Engine | Privacy Level |
+|---------------|---------------|
+| **DuckDuckGo** | High — No tracking |
+| **Startpage** | High — Google results, no tracking |
+| **Brave Search** | High — Independent index |
+| **Ecosia** | Medium — Plants trees, some tracking |
+| **Google** | Low — Extensive tracking |
+
+Set in: **Safari** → **Settings** → **Search** → **Search engine**
+
+## Compatibility
+
+- **macOS**: 10.10 (Yosemite) and later
+- **Safari**: Modern versions
+- **Note**: Some keys may vary between macOS versions
+
+## Troubleshooting
+
+### Still Seeing Suggestions?
+
+1. Quit Safari completely: `killall Safari`
+2. Reapply settings
+3. Reopen Safari
+4. Clear Safari caches if needed
+
+### Verify Settings Applied
+
+```bash
+# Should return 0 (false)
+defaults read com.apple.Safari UniversalSearchEnabled
+
+# Should return 1 (true)  
+defaults read com.apple.Safari SuppressSearchSuggestions
+```
+
+## Related Settings
+
+```bash
+# Also hide frequently visited sites on new tabs
+defaults write com.apple.Safari ShowFrequentlyVisitedSites -bool false
+
+# Disable preloading top hit (reduces tracking)
+defaults write com.apple.Safari PreloadTopHit -bool false
+
+# Show full URL to see exactly where you're going
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+```
+
+## References
+
+- [Apple Support: Safari search settings](https://support.apple.com/guide/safari/search-the-web-ibrw1044/mac)
+- [Apple Privacy Policy](https://www.apple.com/legal/privacy/)
+- [Safari Privacy Overview](https://www.apple.com/safari/)

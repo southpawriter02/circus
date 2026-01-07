@@ -1,0 +1,98 @@
+# IPXDefaultsOpenPhotosForDevice
+
+Prevent Photos from auto-opening when devices connect.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Photos` |
+| **Key** | `IPXDefaultsOpenPhotosForDevice` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Photos app automatically opens when you connect a camera, iPhone, SD card, or other device with photos. While convenient for casual users, this behavior can be disruptive for developers and power users.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-open** (default) — Photos launches on device connection |
+| `false` | **Don't open** — Device connects silently |
+
+## Our Configuration
+
+**Set to**: `false` — Don't auto-open Photos.
+
+### Why Disable?
+
+1. **Focus interruption** — Photos popping up while coding is distracting
+2. **Multiple devices** — Connecting for charging shouldn't trigger Photos
+3. **Alternative workflows** — You might use Image Capture or command line instead
+4. **Performance** — Photos can be resource-intensive
+
+## Code Examples
+
+```bash
+# Disable auto-opening Photos on device connection
+defaults write com.apple.Photos IPXDefaultsOpenPhotosForDevice -bool false
+
+# Enable auto-open (Apple default)
+defaults write com.apple.Photos IPXDefaultsOpenPhotosForDevice -bool true
+
+# Verify setting
+defaults read com.apple.Photos IPXDefaultsOpenPhotosForDevice
+```
+
+## UI Location
+
+**Photos** → **Settings** (⌘,) → **General** → **Importing** → **Open Photos for** (dropdown)
+
+Options:
+- No application
+- Photos
+- Image Capture
+- Other...
+
+## Alternative: Image Capture
+
+For more control over imports, use Image Capture.app instead:
+1. Open **Image Capture** (in /Applications/Utilities)
+2. Connect device
+3. Select specific photos to import
+4. Choose destination folder
+
+### Set Image Capture as Default
+
+In Image Capture: **Connecting this device opens:** [dropdown] → Image Capture
+
+## Related Settings
+
+```bash
+# Don't delete photos from device after import
+defaults write com.apple.Photos IPXDefaultsDeleteAfterImport -bool false
+
+# Show metadata overlay in viewer
+defaults write com.apple.Photos IPXShowMetadataInfo -bool true
+```
+
+## Complete "Quiet" Photos Setup
+
+```bash
+# Minimal Photos interruptions
+defaults write com.apple.Photos IPXDefaultsOpenPhotosForDevice -bool false
+defaults write com.apple.Photos IPXDefaultsDeleteAfterImport -bool false
+```
+
+## Compatibility
+
+- **Photos**: macOS 10.13 (High Sierra) and later
+- **Devices**: iPhone, iPad, cameras, SD cards
+
+## References
+
+- [Apple Support: Import photos to Photos on Mac](https://support.apple.com/guide/photos/import-photos-pht7d1ae05e/mac)
+- [Apple Support: Use Image Capture](https://support.apple.com/guide/image-capture/welcome/mac)
