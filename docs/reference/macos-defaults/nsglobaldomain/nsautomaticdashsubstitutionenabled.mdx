@@ -1,0 +1,357 @@
+# NSAutomaticDashSubstitutionEnabled
+
+Control automatic conversion of hyphens to typographic dashes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticDashSubstitutionEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+| **Requires Restart** | App restart recommended |
+
+## Description
+
+Controls whether macOS automatically converts sequences of hyphens into typographic dashes as you type. When enabled:
+
+- Two hyphens (`--`) become an en-dash (`–`)
+- Three hyphens (`---`) become an em-dash (`—`)
+
+This feature is designed for writers who want professional typography without memorizing special character shortcuts. However, it causes significant problems for technical users who need literal hyphens.
+
+Smart dashes interfere with:
+
+- **Command-line arguments**: `--verbose` becomes `–verbose` (broken)
+- **Code documentation**: Double hyphens in examples get converted
+- **Markdown**: Some parsers use `---` for horizontal rules or YAML front matter
+- **SQL comments**: `-- comment` becomes `– comment`
+- **Programming**: Decrement operators and other double-hyphen syntax
+- **Configuration files**: YAML, command flags, etc.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Smart dashes enabled** (default) — `--` → `–` and `---` → `—` |
+| `false` | **Smart dashes disabled** — Hyphens remain as typed |
+
+## Dash Types Explained
+
+| Character | Name | Unicode | Typed As | Usage |
+|-----------|------|---------|----------|-------|
+| `-` | Hyphen | U+002D | Single hyphen | Compound words, CLI flags |
+| `–` | En-dash | U+2013 | `--` (converted) or ⌥- | Ranges (1–10), relationships |
+| `—` | Em-dash | U+2014 | `---` (converted) or ⌥⇧- | Parenthetical statements |
+
+## Default Behavior
+
+**Apple's default**: `true` (smart dashes enabled)
+
+The substitution happens automatically as you type:
+
+1. Type `--` followed by any character
+2. The double hyphen is replaced with en-dash
+3. For `---`, the triple hyphen becomes an em-dash
+4. The conversion is immediate and automatic
+
+## Our Configuration
+
+**Set to**: `false`
+
+**Rationale**: Technical documentation frequently contains command-line examples, code snippets, and configuration values where literal hyphens are essential. Smart dashes silently corrupt:
+
+```bash
+# What you type:
+git log --oneline
+
+# What gets saved with smart dashes:
+git log –oneline  # BROKEN - that's an en-dash, not double hyphens
+```
+
+Copying commands from documentation with smart dashes results in cryptic "command not found" errors that are difficult to debug because the dashes look similar.
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read NSGlobalDomain NSAutomaticDashSubstitutionEnabled
+
+# Returns: 1 (enabled) or 0 (disabled)
+```
+
+### Disable Smart Dashes
+
+```bash
+# Disable automatic dash substitution
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Restart apps for changes to take effect
+```
+
+### Enable Smart Dashes
+
+```bash
+# Enable automatic dash substitution (Apple's default)
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool true
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting, restore to system default
+defaults delete NSGlobalDomain NSAutomaticDashSubstitutionEnabled
+```
+
+## Per-Application Override
+
+Control smart dashes on a per-app basis:
+
+```bash
+# Disable in TextEdit (for technical documentation)
+defaults write com.apple.TextEdit NSAutomaticDashSubstitutionEnabled -bool false
+
+# Disable in Notes
+defaults write com.apple.Notes NSAutomaticDashSubstitutionEnabled -bool false
+
+# Keep enabled in Pages for formal documents
+defaults write com.apple.iWork.Pages NSAutomaticDashSubstitutionEnabled -bool true
+```
+
+### Check App-Specific Setting
+
+```bash
+# Check if an app overrides the global default
+defaults read com.apple.TextEdit NSAutomaticDashSubstitutionEnabled 2>/dev/null || echo "Using global default"
+```
+
+## Related Settings
+
+### Smart Typography Suite
+
+Smart dashes is part of a family of automatic typography features:
+
+| Setting | Key | Description |
+|---------|-----|-------------|
+| [Autocorrect](nsautomaticspellingcorrectionenabled.mdx) | `NSAutomaticSpellingCorrectionEnabled` | Correct misspelled words |
+| [Auto-capitalize](nsautomaticcapitalizationenabled.mdx) | `NSAutomaticCapitalizationEnabled` | Capitalize sentences |
+| Smart quotes | `NSAutomaticQuoteSubstitutionEnabled` | `"` → `""` |
+| Smart dashes | `NSAutomaticDashSubstitutionEnabled` | `--` → `–` |
+
+### Smart Quotes (Related)
+
+Smart quotes have similar issues for developers:
+
+```bash
+# Disable smart quotes alongside smart dashes
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+```
+
+With smart quotes enabled, `"hello"` becomes `"hello"` — curly quotes that break string literals in code.
+
+### Disable All Smart Typography
+
+```bash
+# Full "plain text" mode for technical users
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticTextCompletionEnabled -bool false
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Text Input** → **Input Sources** → **Edit...** → **Use smart dashes**
+
+Access by clicking the "Edit..." button next to your input source.
+
+### Alternative Per-App Control
+
+**Edit menu** → **Substitutions** → **Smart Dashes**
+
+Many applications offer this toggle in the Edit menu, allowing per-document control.
+
+## Behavior Details
+
+### Conversion Rules
+
+| Input | Output | Condition |
+|-------|--------|-----------|
+| `a--b` | `a–b` | Double hyphen between characters |
+| `a---b` | `a—b` | Triple hyphen between characters |
+| `--` at line start | `–` | Still converted |
+| `-- ` (space after) | `– ` | Converted with trailing space |
+| `---` in code blocks | `—` | **Still converted** (problematic) |
+
+### Where It Applies
+
+- **TextEdit** — Fully affected
+- **Notes** — Fully affected
+- **Mail** — Affected in compose view
+- **Terminal** — Not affected (raw input)
+- **Web browsers** — Depends on text field implementation
+
+### Debugging Dash Issues
+
+If you suspect smart dashes have corrupted your text:
+
+```bash
+# Show unicode values for a string
+echo "your-text-here" | xxd
+
+# Hyphen (U+002D): 2d
+# En-dash (U+2013): e2 80 93
+# Em-dash (U+2014): e2 80 94
+```
+
+### Manual Dash Entry
+
+When you need actual typographic dashes without smart substitution:
+
+| Dash Type | Keyboard Shortcut |
+|-----------|------------------|
+| En-dash (–) | ⌥ + - (Option + hyphen) |
+| Em-dash (—) | ⌥⇧ + - (Option + Shift + hyphen) |
+
+## Common Problems
+
+### Command-Line Examples in Documentation
+
+**Symptom**: Commands copied from Notes or Mail don't work
+
+```bash
+# User copies this from documentation:
+docker run –it ubuntu  # That's an en-dash!
+
+# Error: "invalid reference format"
+```
+
+**Solution**: Disable smart dashes or use a plain-text editor for technical writing.
+
+### Markdown YAML Front Matter
+
+```yaml
+---
+title: My Document
+---
+```
+
+With smart dashes, this becomes `—` (em-dash), breaking YAML parsers.
+
+### SQL Comments
+
+```sql
+-- This is a comment
+SELECT * FROM users
+```
+
+The en-dash `–` is not recognized as a comment delimiter in SQL.
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.12 (Sierra) | ✅ |
+| macOS 10.9 (Mavericks) | ✅ (introduced) |
+
+## Troubleshooting
+
+### Smart Dashes Still Converting After Disabling
+
+1. Verify the global setting:
+   ```bash
+   defaults read NSGlobalDomain NSAutomaticDashSubstitutionEnabled
+   # Should return 0
+   ```
+
+2. Check for per-app overrides:
+   ```bash
+   defaults find NSAutomaticDashSubstitutionEnabled
+   ```
+
+3. Restart the affected application
+
+4. Some applications (like Microsoft Word) have their own settings independent of system preferences
+
+### Fixing Corrupted Text
+
+Replace typographic dashes with hyphens:
+
+```bash
+# Using sed to fix a file
+sed -i '' 's/–/--/g; s/—/---/g' yourfile.txt
+
+# Using Perl for more control
+perl -i -pe 's/\x{2013}/--/g; s/\x{2014}/---/g' yourfile.txt
+```
+
+### Finding Smart Dashes in Files
+
+```bash
+# Find files containing en-dashes or em-dashes
+grep -r $'\xe2\x80\x93\|$\xe2\x80\x94' .
+```
+
+## Developer Notes
+
+### Checking Preference in Code
+
+```swift
+let smartDashesEnabled = UserDefaults.standard.bool(forKey: "NSAutomaticDashSubstitutionEnabled")
+```
+
+### NSTextView Integration
+
+Control at the view level:
+
+```swift
+textView.isAutomaticDashSubstitutionEnabled = false
+```
+
+### Respecting User Preference
+
+```swift
+if UserDefaults.standard.bool(forKey: "NSAutomaticDashSubstitutionEnabled") {
+    // Apply smart dash substitution
+}
+```
+
+## References
+
+- [Apple Support: Change Keyboard settings on Mac](https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac)
+- [Unicode Dash Characters](https://unicode.org/charts/PDF/U2010.pdf)
+- [defaults man page](x-man-page://defaults)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+# --- Smart Dashes ---
+# Key:          NSAutomaticDashSubstitutionEnabled
+# Domain:       NSGlobalDomain
+# Description:  Controls whether macOS converts -- to en-dash (–) and
+#               --- to em-dash (—). Disabling prevents corruption of
+#               command-line arguments and code in documentation.
+# Default:      true (smart dashes enabled)
+# Options:      true  = Convert hyphens to typographic dashes
+#               false = Keep hyphens as literal hyphens
+# Set to:       false (preserve literal hyphens for technical content)
+# UI Location:  System Settings > Keyboard > Text Input > Input Sources > Edit... >
+#               "Use smart dashes"
+# Source:       https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac
+run_defaults "NSGlobalDomain" "NSAutomaticDashSubstitutionEnabled" "-bool" "false"
+```

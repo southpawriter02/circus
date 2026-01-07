@@ -1,0 +1,335 @@
+# _FXShowPosixPathInTitle
+
+Display the full POSIX path in Finder window title bars.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `_FXShowPosixPathInTitle` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+| **Requires Restart** | Finder restart |
+
+## Description
+
+Controls whether Finder window title bars display the full POSIX path (e.g., `/Users/username/Documents/Project`) instead of just the folder name (e.g., `Project`). This is an undocumented but stable preference that power users rely on for efficient navigation.
+
+When enabled, you can instantly see the complete path to your current location, making it easy to:
+
+- **Understand context**: Know exactly where you are in the filesystem
+- **Copy paths**: ⌘-click the title to reveal path components, or copy the full path
+- **Navigate**: Click path components in the title to jump to parent directories
+- **Debug**: Verify you're looking at the correct location, especially with similarly-named folders
+- **Terminal integration**: Quickly see paths for use in command-line operations
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Full path shown** — Title displays `/Users/username/Documents/Folder` |
+| `false` | **Folder name only** (default) — Title displays just `Folder` |
+
+## Visual Comparison
+
+### With Full Path (Recommended)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ /Users/alex/Developer/projects/myapp/src                        │
+├─────────────────────────────────────────────────────────────────┤
+│  📁 components    📁 utils    📁 hooks    📄 index.ts           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Without Full Path (Default)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                             src                                  │
+├─────────────────────────────────────────────────────────────────┤
+│  📁 components    📁 utils    📁 hooks    📄 index.ts           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Default Behavior
+
+**Apple's default**: `false` (folder name only)
+
+Apple's design philosophy favors clean, minimal UI. The folder-name-only approach looks tidier but sacrifices context, especially when working with multiple windows or similarly-named folders.
+
+## Our Configuration
+
+**Set to**: `true`
+
+**Rationale**: Developers and power users frequently work with multiple windows open to different locations. Seeing the full path eliminates confusion and provides instant context. The extra information is worth the slightly longer title bar text.
+
+This is particularly valuable when:
+- Working on multiple projects with similar folder structures
+- Navigating deep directory hierarchies
+- Copying files between locations
+- Debugging "where did I put that?" situations
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read com.apple.finder _FXShowPosixPathInTitle
+
+# Returns: 1 (enabled) or 0 (disabled)
+# Note: May error if never set; absence means false
+```
+
+### Enable Full Path in Title
+
+```bash
+# Show full POSIX path in title bar
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+
+# Restart Finder to apply
+killall Finder
+```
+
+### Disable Full Path in Title
+
+```bash
+# Show folder name only (Apple's default)
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool false
+
+# Restart Finder to apply
+killall Finder
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting, restore to system default
+defaults delete com.apple.finder _FXShowPosixPathInTitle
+
+# Restart Finder to apply
+killall Finder
+```
+
+## Related Settings
+
+### Path Bar (Bottom of Window)
+
+For persistent path visibility without modifying the title:
+
+```bash
+# Show path bar at bottom of Finder windows
+defaults write com.apple.finder ShowPathbar -bool true
+killall Finder
+```
+
+See [ShowPathbar](showpathbar.mdx) for full details.
+
+**Comparison**:
+- **Path bar**: Always visible, clickable, takes vertical space
+- **Title path**: Compact, in existing title bar space, requires ⌘-click for interaction
+
+### Status Bar
+
+Shows item count and disk space:
+
+```bash
+# Show status bar at bottom
+defaults write com.apple.finder ShowStatusBar -bool true
+killall Finder
+```
+
+See [ShowStatusBar](showstatusbar.mdx) for details.
+
+### Combine All Navigation Aids
+
+```bash
+# Comprehensive Finder navigation setup
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+defaults write com.apple.finder ShowPathbar -bool true
+defaults write com.apple.finder ShowStatusBar -bool true
+
+killall Finder
+```
+
+## UI Location
+
+There is no direct UI toggle for this setting. It must be configured via `defaults` command.
+
+**Alternative UI options**:
+- **Path Bar**: **View** → **Show Path Bar** (or ⌥⌘P)
+- **Title bar path menu**: ⌘-click the folder icon in the title bar (works regardless of this setting)
+
+## Interaction with Title Bar
+
+### ⌘-Click Title Bar
+
+Regardless of this setting, you can always ⌘-click (Command-click) the folder icon or name in the title bar to see a path popup:
+
+```
+┌────────────────┐
+│ 📁 Macintosh HD │
+│ 📁 Users        │
+│ 📁 alex         │
+│ 📁 Developer    │
+│ 📁 projects     │
+│ 📁 myapp        │
+│ 📁 src         ←│ (current)
+└────────────────┘
+```
+
+Clicking any level navigates to that folder.
+
+### Proxy Icon
+
+The folder icon in the title bar (proxy icon) can be:
+- **Dragged**: To move/copy the folder
+- **⌘-clicked**: To reveal path hierarchy
+- **Right-clicked**: For context menu options
+
+Note: In recent macOS versions, the proxy icon may be hidden by default. See [showWindowTitlebarProxyIcon](../nsglobaldomain/showwindowtitlebarproxyicon.mdx) to control this.
+
+## Behavior Details
+
+### Path Format
+
+The path shown is the POSIX (Unix-style) path:
+- Starts with `/`
+- Uses forward slashes as separators
+- Shows the actual filesystem path, not aliases
+
+### Home Directory
+
+Your home directory is shown as `/Users/username`, not `~`:
+
+```
+/Users/alex/Documents/Project
+```
+
+### Network and External Volumes
+
+For mounted volumes, the path reflects the mount point:
+
+```
+/Volumes/External Drive/Projects/MyProject
+/Volumes/server.local/shared/documents
+```
+
+### Long Paths
+
+Very long paths may be truncated in narrow windows. The window title shows as much as space allows, with the rightmost (current folder) portion prioritized.
+
+## Use Cases
+
+### Development Workflows
+
+When working on code:
+- Multiple project windows open
+- Similar folder structures (`src`, `dist`, `node_modules`)
+- Need to know which project a window belongs to
+
+### File Organization
+
+When organizing files:
+- Moving files between similarly-named folders
+- Verifying correct destination before operations
+- Avoiding accidental overwrites
+
+### System Administration
+
+When managing the filesystem:
+- Navigating to system directories
+- Verifying locations in multi-user environments
+- Documenting paths for scripts
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.15 (Catalina) | ✅ |
+| macOS 10.5 (Leopard) and later | ✅ |
+
+This is an undocumented preference that has been stable across many macOS versions.
+
+## Troubleshooting
+
+### Path Not Showing After Enabling
+
+1. Verify the setting:
+   ```bash
+   defaults read com.apple.finder _FXShowPosixPathInTitle
+   # Should return 1
+   ```
+
+2. Restart Finder:
+   ```bash
+   killall Finder
+   ```
+
+3. Check that you're viewing a folder window, not search results or a special view
+
+### Path Is Truncated
+
+- Widen the Finder window
+- The path prioritizes showing the current location; parent directories may truncate
+- Consider using Path Bar for always-visible full path
+
+### Setting Reverts After Restart
+
+1. Check for MDM profiles that might override:
+   ```bash
+   sudo profiles list
+   ```
+
+2. Verify you're writing to user preferences:
+   ```bash
+   defaults read com.apple.finder | grep _FXShowPosixPathInTitle
+   ```
+
+## Developer Notes
+
+### Preference Key
+
+The underscore prefix (`_FX`) indicates this is an internal/undocumented preference. Despite this, it has remained stable across macOS versions and is widely used.
+
+### Detecting in Code
+
+```swift
+let showPath = UserDefaults.standard.bool(forKey: "_FXShowPosixPathInTitle")
+```
+
+## References
+
+- [defaults man page](x-man-page://defaults)
+- [Finder keyboard shortcuts](https://support.apple.com/en-us/102650)
+- [Mathias Bynens' dotfiles](https://github.com/mathiasbynens/dotfiles/blob/main/.macos)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/interface/finder.sh`](../../../defaults/interface/finder.sh)
+
+```bash
+# --- Full POSIX Path in Title Bar ---
+# Key:          _FXShowPosixPathInTitle
+# Domain:       com.apple.finder
+# Description:  Shows the full path (e.g., /Users/alex/Documents/Project)
+#               in Finder window title bars instead of just the folder name.
+#               Essential for developers and power users who need context.
+# Default:      false (show folder name only)
+# Options:      true  = Show full POSIX path in title
+#               false = Show folder name only
+# Set to:       true (always know where you are)
+# UI Location:  No direct UI control; use View > Show Path Bar as alternative
+# Source:       Undocumented but stable preference
+run_defaults "com.apple.finder" "_FXShowPosixPathInTitle" "-bool" "true"
+```

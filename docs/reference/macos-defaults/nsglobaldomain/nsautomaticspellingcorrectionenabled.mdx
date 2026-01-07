@@ -1,0 +1,301 @@
+# NSAutomaticSpellingCorrectionEnabled
+
+Control automatic spelling correction (autocorrect) system-wide.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticSpellingCorrectionEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+| **Requires Restart** | App restart recommended |
+
+## Description
+
+Controls whether macOS automatically corrects misspelled words as you type. When enabled, the system replaces words it considers misspelled with its best guess at the correct spelling. This behavior is inherited from iOS and is designed to help users type quickly without worrying about typos.
+
+However, autocorrect can be counterproductive for:
+
+- **Developers**: Code snippets, variable names, and technical terms are frequently "corrected" incorrectly
+- **Writers**: Intentional stylistic choices, brand names, and neologisms are changed
+- **Multilingual users**: Words from other languages are "corrected" to English
+- **Technical documentation**: Domain-specific terminology is mangled
+
+The autocorrect system uses a combination of the system dictionary, user-added words, and machine learning to determine corrections. Unfortunately, it can be overly aggressive and difficult to predict.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Autocorrect enabled** (default) — Misspelled words are automatically replaced as you type |
+| `false` | **Autocorrect disabled** — Words are underlined but not automatically changed |
+
+## Default Behavior
+
+**Apple's default**: `true` (autocorrect enabled)
+
+When enabled, macOS will:
+1. Detect words it considers misspelled
+2. Automatically replace them with corrections
+3. Show a brief popup indicating the change
+4. Allow undo with ⌘Z immediately after correction
+
+The corrections are applied immediately as you continue typing or press space/punctuation.
+
+## Our Configuration
+
+**Set to**: `false`
+
+**Rationale**: Developers and power users typically prefer to control their own text. Autocorrect frequently mangles:
+- Variable names (`camelCase` → "Camel Case")
+- Technical terms (`nginx` → "engine")
+- Command names (`kubectl` → "rubric")
+- Intentional abbreviations
+- Code in documentation
+
+Disabling autocorrect prevents unexpected text changes while preserving spell-check (red underlines) for manual review.
+
+**Alternative**: Keep autocorrect enabled but use the Text Replacements feature in System Settings for commonly autocorrected terms you want to preserve.
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read NSGlobalDomain NSAutomaticSpellingCorrectionEnabled
+
+# Returns: 1 (enabled) or 0 (disabled)
+```
+
+### Disable Autocorrect
+
+```bash
+# Disable automatic spelling correction
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Restart apps for changes to take effect
+```
+
+### Enable Autocorrect
+
+```bash
+# Enable automatic spelling correction (Apple's default)
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool true
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting, restore to system default
+defaults delete NSGlobalDomain NSAutomaticSpellingCorrectionEnabled
+```
+
+## Per-Application Override
+
+Some applications allow overriding this setting. You can set it per-application:
+
+```bash
+# Disable autocorrect only in Terminal
+defaults write com.apple.Terminal NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Disable autocorrect only in Notes
+defaults write com.apple.Notes NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Keep autocorrect enabled in Messages
+defaults write com.apple.MobileSMS NSAutomaticSpellingCorrectionEnabled -bool true
+```
+
+### Check Per-App Setting
+
+```bash
+# Check if an app has a custom setting
+defaults read com.apple.Terminal NSAutomaticSpellingCorrectionEnabled 2>/dev/null || echo "Using global default"
+```
+
+## Related Settings
+
+### Spell Checking (Underlines Only)
+
+Disabling autocorrect does **not** disable spell checking. Misspelled words will still be underlined in red. To control spell checking:
+
+```bash
+# Spell checking is controlled separately in most apps
+# via Edit > Spelling and Grammar > Check Spelling While Typing
+```
+
+### Other Automatic Text Features
+
+| Setting | Key | Description |
+|---------|-----|-------------|
+| [Auto-capitalization](nsautomaticcapitalizationenabled.mdx) | `NSAutomaticCapitalizationEnabled` | Capitalize first letter of sentences |
+| [Smart dashes](nsautomaticdashsubstitutionenabled.mdx) | `NSAutomaticDashSubstitutionEnabled` | Convert `--` to em-dash |
+| Smart quotes | `NSAutomaticQuoteSubstitutionEnabled` | Convert straight quotes to curly |
+| Text completion | `NSAutomaticTextCompletionEnabled` | Show word completions while typing |
+
+### Disable All Automatic Text Features
+
+```bash
+# Disable all "smart" typing features
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticTextCompletionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Text Input** → **Input Sources** → **Edit...** → **Correct spelling automatically**
+
+The checkbox is in the Text Input panel, accessible by clicking "Edit..." next to your input source.
+
+### Alternative Location (Per-App)
+
+**Edit menu** → **Spelling and Grammar** → **Correct Spelling Automatically**
+
+This menu item allows toggling autocorrect for the current application only.
+
+## Behavior Details
+
+### How Autocorrect Works
+
+1. **Word boundary detection**: Correction triggers when you press space, punctuation, or return
+2. **Dictionary lookup**: System checks against built-in and user dictionaries
+3. **Machine learning**: Recent corrections and typing patterns influence suggestions
+4. **Replacement**: If confidence is high, automatic replacement occurs
+5. **Popup notification**: A small bubble appears showing the original word
+
+### Escaping Autocorrect
+
+Even with autocorrect enabled, you can prevent individual corrections:
+
+1. Press **Esc** when the correction popup appears
+2. Press **⌘Z** immediately after a correction
+3. Right-click and choose the original spelling
+4. Add the word to your dictionary (right-click → "Learn Spelling")
+
+### Words That Get Corrected
+
+Common frustrations include:
+
+| You Type | Gets "Corrected" To |
+|----------|---------------------|
+| `teh` | `the` |
+| `dont` | `don't` |
+| `nginx` | `engine` or `Nginx` |
+| `kubectl` | Various |
+| `github` | `GitHub` (capitalization) |
+| `localhost` | `local host` |
+| Custom abbreviations | Various "corrections" |
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.12 (Sierra) | ✅ |
+| macOS 10.9 (Mavericks) | ✅ (introduced) |
+
+Autocorrect was added to macOS in Mavericks (10.9), bringing the iOS feature to the desktop.
+
+## Troubleshooting
+
+### Autocorrect Still Active After Disabling
+
+1. Verify the setting:
+   ```bash
+   defaults read NSGlobalDomain NSAutomaticSpellingCorrectionEnabled
+   # Should return 0
+   ```
+
+2. Restart the affected application
+
+3. Check for per-application overrides:
+   ```bash
+   defaults read com.apple.AppName NSAutomaticSpellingCorrectionEnabled
+   ```
+
+4. Log out and log back in for system-wide effect
+
+### Specific Words Keep Getting Corrected
+
+Add them to your personal dictionary:
+
+1. Type the word
+2. Right-click when it's underlined
+3. Select "Learn Spelling"
+
+Or manage the dictionary directly:
+```bash
+# View learned words
+cat ~/Library/Spelling/LocalDictionary
+```
+
+### Want Autocorrect in Some Apps Only
+
+Set the global default to disabled, then enable per-app:
+
+```bash
+# Disable globally
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Enable in specific apps
+defaults write com.apple.Notes NSAutomaticSpellingCorrectionEnabled -bool true
+defaults write com.apple.mail NSAutomaticSpellingCorrectionEnabled -bool true
+```
+
+## Developer Notes
+
+### Detecting Autocorrect in Your App
+
+For Cocoa developers, you can check this preference:
+
+```swift
+let autocorrectEnabled = UserDefaults.standard.bool(forKey: "NSAutomaticSpellingCorrectionEnabled")
+```
+
+### NSTextView Integration
+
+`NSTextView` respects this preference automatically. You can also control it programmatically:
+
+```swift
+textView.isAutomaticSpellingCorrectionEnabled = false
+```
+
+## References
+
+- [Apple Support: Change Keyboard settings on Mac](https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac)
+- [Apple Developer: NSSpellChecker](https://developer.apple.com/documentation/appkit/nsspellchecker)
+- [defaults man page](x-man-page://defaults)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+# --- Automatic Spelling Correction ---
+# Key:          NSAutomaticSpellingCorrectionEnabled
+# Domain:       NSGlobalDomain
+# Description:  Controls whether macOS automatically corrects misspelled words
+#               as you type. Disabling prevents unexpected text changes while
+#               preserving spell-check underlines for manual review.
+# Default:      true (autocorrect enabled)
+# Options:      true  = Automatically correct spelling
+#               false = Only underline misspelled words
+# Set to:       false (prevent unwanted corrections for technical writing)
+# UI Location:  System Settings > Keyboard > Text Input > Input Sources > Edit... >
+#               "Correct spelling automatically"
+# Source:       https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac
+run_defaults "NSGlobalDomain" "NSAutomaticSpellingCorrectionEnabled" "-bool" "false"
+```

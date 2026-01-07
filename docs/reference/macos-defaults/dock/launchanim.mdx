@@ -1,0 +1,347 @@
+# launchanim
+
+Control the bouncing animation when launching applications from the Dock.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `launchanim` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+| **Requires Restart** | Dock restart |
+
+## Description
+
+Controls whether application icons bounce in the Dock when launching. This animation provides visual feedback that an application is starting, which can take several seconds for heavy applications. The bouncing continues until the application is ready to receive input.
+
+The bounce animation serves several purposes:
+
+- **Visual feedback**: Confirms your click was registered
+- **Status indicator**: Shows the app is loading, not frozen
+- **Attention signal**: Draws your eye to track app status
+- **System responsiveness**: Indicates macOS is working, not hung
+
+Some users find the bouncing:
+- **Distracting**: Especially when launching multiple apps
+- **Unnecessary**: On fast SSDs where apps launch quickly
+- **Annoying**: Repeated bouncing for slow-launching apps
+- **Resource-consuming**: Minor GPU/CPU usage for animation
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Bounce enabled** (default) — Icons bounce while apps launch |
+| `false` | **Bounce disabled** — Icons remain still during app launch (dot indicator only) |
+
+## Animation Phases
+
+### With Bouncing Enabled (Default)
+
+1. **Click detected**: Icon immediately starts bouncing
+2. **App launching**: Continues bouncing (up to ~20 seconds for slow apps)
+3. **App ready**: Bouncing stops, dot appears below icon
+4. **Attention requests**: App may bounce again if requesting attention while in background
+
+### With Bouncing Disabled
+
+1. **Click detected**: No visual feedback initially
+2. **App launching**: Dot slowly fades in below icon
+3. **App ready**: Dot remains, fully opaque
+4. **Attention requests**: Dot pulses, no bounce
+
+## Default Behavior
+
+**Apple's default**: `true` (bouncing enabled)
+
+Apple's design includes bounce animation for:
+- Clear feedback that launch was initiated
+- Status visibility during long launches
+- Traditional Mac behavior since early OS X
+
+## Our Configuration
+
+**Set to**: `true`
+
+**Rationale**: The bounce animation provides valuable feedback, especially when launching resource-intensive applications like Xcode, Docker, or Adobe Creative Suite. Without it, users may click repeatedly thinking their first click didn't register, potentially causing multiple app instances.
+
+**Alternative consideration**: Users with fast Macs (M-series chips, SSD storage) where apps launch nearly instantly may prefer to disable bouncing for a calmer Dock experience.
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read com.apple.dock launchanim
+
+# Returns: 1 (enabled) or 0 (disabled)
+```
+
+### Disable Bounce Animation
+
+```bash
+# Disable application bouncing
+defaults write com.apple.dock launchanim -bool false
+
+# Restart Dock to apply
+killall Dock
+```
+
+### Enable Bounce Animation
+
+```bash
+# Enable application bouncing (Apple's default)
+defaults write com.apple.dock launchanim -bool true
+
+# Restart Dock to apply
+killall Dock
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting, restore to system default
+defaults delete com.apple.dock launchanim
+
+# Restart Dock to apply
+killall Dock
+```
+
+## Related Settings
+
+### Application Attention Bounce
+
+When a background application needs attention (e.g., finished download, new message), it bounces to alert you. This is separate from launch bouncing:
+
+```bash
+# There's no direct preference for attention bouncing
+# It's controlled by the application sending NSRequestUserAttention
+```
+
+The attention bounce will still occur even if `launchanim` is disabled.
+
+### Reduce Motion (Accessibility)
+
+For users sensitive to animation, the accessibility setting affects this and other animations:
+
+```bash
+# Check reduce motion status
+defaults read com.apple.universalaccess reduceMotion
+
+# Enabling reduces or eliminates many system animations
+```
+
+When Reduce Motion is enabled, the bounce is typically replaced with a fade effect.
+
+### Dock Minimize Effect
+
+Control the animation when minimizing windows:
+
+```bash
+# Set minimize effect: "genie" or "scale"
+defaults write com.apple.dock mineffect -string "scale"
+killall Dock
+```
+
+See [mineffect](mineffect.mdx) for details.
+
+### Complete Animation Control
+
+To minimize all Dock animations:
+
+```bash
+# Disable launch bounce
+defaults write com.apple.dock launchanim -bool false
+
+# Use faster minimize effect
+defaults write com.apple.dock mineffect -string "scale"
+
+# Instant auto-hide (if enabled)
+defaults write com.apple.dock autohide-delay -float 0
+defaults write com.apple.dock autohide-time-modifier -float 0.15
+
+killall Dock
+```
+
+## UI Location
+
+There is no direct UI toggle for this setting. It must be configured via `defaults` command.
+
+**Related UI settings**:
+- **System Settings** → **Accessibility** → **Display** → **Reduce motion** (affects this and other animations)
+- **System Settings** → **Desktop & Dock** → Various Dock settings
+
+## Behavior Details
+
+### Launch Indicator Without Bounce
+
+When bouncing is disabled, app launch status is shown via the Dock indicator dot:
+
+1. **Before launch**: No dot (unless app is already running)
+2. **Launching**: Dot fades in progressively
+3. **Launched**: Dot is fully visible
+4. **Quit**: Dot disappears
+
+### Multiple Clicks
+
+Without bounce feedback, users may:
+- Click multiple times, launching multiple instances
+- Not realize an app is already launching
+- Need to watch more carefully for the indicator dot
+
+### Force Touch / Trackpad Feedback
+
+If you have a Force Touch trackpad, you still receive haptic feedback on click, even without visual bounce.
+
+### Slow-Launching Applications
+
+Some apps take considerable time to launch:
+- Xcode (10-30 seconds first launch)
+- Adobe Creative Suite apps
+- Virtual machines
+- Docker Desktop
+- Microsoft Office apps
+
+Without bounce animation, these provide minimal visual feedback during the wait.
+
+## Performance Impact
+
+The bounce animation has negligible performance impact:
+- Minor GPU compositing for animation frames
+- No CPU impact on app launch time
+- Does not affect app startup performance
+- Animation is purely cosmetic
+
+Disabling won't make apps launch faster—it only removes the visual feedback.
+
+## Use Cases
+
+### Disable for Minimal Interface
+
+```bash
+# Clean, calm Dock with no animations
+defaults write com.apple.dock launchanim -bool false
+defaults write com.apple.dock autohide -bool true
+defaults write com.apple.dock autohide-time-modifier -float 0
+killall Dock
+```
+
+### Keep for Feedback
+
+Recommended for:
+- Users who launch apps from Dock
+- Systems with slow-launching apps
+- New Mac users learning the interface
+- Accessibility needs (visual confirmation)
+
+### Screen Recording
+
+For professional recordings, bouncing may be distracting:
+
+```bash
+# Disable for screen recording
+defaults write com.apple.dock launchanim -bool false
+killall Dock
+
+# Record your content...
+
+# Re-enable after recording
+defaults write com.apple.dock launchanim -bool true
+killall Dock
+```
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.15 (Catalina) | ✅ |
+| Mac OS X 10.0 and later | ✅ |
+
+The Dock bounce animation has been part of macOS since its introduction.
+
+## Troubleshooting
+
+### Icons Still Bouncing After Disabling
+
+1. Verify the setting:
+   ```bash
+   defaults read com.apple.dock launchanim
+   # Should return 0
+   ```
+
+2. Restart the Dock:
+   ```bash
+   killall Dock
+   ```
+
+3. Note: Attention bounces (when apps request user attention) are separate and will still occur
+
+### No Launch Feedback at All
+
+If you've disabled bouncing and want some feedback:
+- Watch for the indicator dot appearing below the icon
+- Enable haptic feedback on Force Touch trackpads
+- Consider re-enabling bounce: `defaults write com.apple.dock launchanim -bool true`
+
+### Accidentally Launching Multiple Instances
+
+Without bounce feedback, it's easy to click multiple times. Solutions:
+- Wait and watch for the indicator dot
+- Re-enable bounce animation
+- Check if app supports single-instance mode
+
+## Developer Notes
+
+### Checking Preference in Code
+
+```swift
+let bounceEnabled = UserDefaults(suiteName: "com.apple.dock")?.bool(forKey: "launchanim") ?? true
+```
+
+### Triggering Attention Bounce Programmatically
+
+```swift
+// Request user attention (causes bounce regardless of launchanim setting)
+NSApp.requestUserAttention(.criticalRequest)  // Continuous bounce
+NSApp.requestUserAttention(.informationalRequest)  // Single bounce
+```
+
+### Dock Communication
+
+The Dock is a separate process. Preferences are stored in `com.apple.dock.plist` and read on Dock restart.
+
+## References
+
+- [Apple Human Interface Guidelines: Dock](https://developer.apple.com/design/human-interface-guidelines/the-dock)
+- [Apple Support: Use the Dock on Mac](https://support.apple.com/guide/mac-help/open-apps-using-the-dock-mh35859/mac)
+- [defaults man page](x-man-page://defaults)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/interface/dock.sh`](../../../defaults/interface/dock.sh)
+
+```bash
+# --- Launch Animation (Bouncing) ---
+# Key:          launchanim
+# Domain:       com.apple.dock
+# Description:  Controls whether application icons bounce in the Dock when
+#               launching. Provides visual feedback that an app is starting.
+# Default:      true (bouncing enabled)
+# Options:      true  = Icons bounce while apps launch
+#               false = No bounce animation (dot indicator only)
+# Set to:       true (visual feedback valuable for launch status)
+# UI Location:  No direct UI control; related to Accessibility > Reduce Motion
+# Source:       https://support.apple.com/guide/mac-help/open-apps-using-the-dock-mh35859/mac
+run_defaults "com.apple.dock" "launchanim" "-bool" "true"
+```

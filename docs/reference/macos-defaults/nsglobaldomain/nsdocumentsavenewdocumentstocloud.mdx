@@ -1,0 +1,380 @@
+# NSDocumentSaveNewDocumentsToCloud
+
+Control whether new documents are saved to iCloud by default.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSDocumentSaveNewDocumentsToCloud` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+| **Requires Restart** | App restart recommended |
+
+## Description
+
+Controls the default save location for new documents in iCloud-enabled applications. When enabled, the save dialog defaults to iCloud Drive. When disabled, it defaults to local storage (typically the Documents folder or the last-used location).
+
+This setting affects the initial selection in save dialogs for apps that support iCloud document storage, including:
+
+- **TextEdit**
+- **Preview** (when saving new files)
+- **Pages, Numbers, Keynote**
+- **Many third-party document apps**
+
+The setting does not force documents to iCloud—users can always change the location in the save dialog. It only controls the default selection.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **iCloud default** (default) — Save dialogs default to iCloud Drive |
+| `false` | **Local default** — Save dialogs default to local storage |
+
+## Default Save Location Behavior
+
+### With iCloud Default (true)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Save As: [Untitled.txt                               ] │
+│ Tags:    [                                           ] │
+│                                                         │
+│ Where:   [☁️ iCloud Drive - TextEdit                 ▼] │
+│          ┌───────────────────────────────────────────┐ │
+│          │ ☁️ iCloud Drive - TextEdit  ← (default)   │ │
+│          │ 📁 On My Mac                              │ │
+│          │ 📁 Desktop                                │ │
+│          │ 📁 Documents                              │ │
+│          └───────────────────────────────────────────┘ │
+│                                                         │
+│                              [Cancel]  [Save]          │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With Local Default (false)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Save As: [Untitled.txt                               ] │
+│ Tags:    [                                           ] │
+│                                                         │
+│ Where:   [📁 Documents                               ▼] │
+│          ┌───────────────────────────────────────────┐ │
+│          │ ☁️ iCloud Drive - TextEdit                │ │
+│          │ 📁 On My Mac                              │ │
+│          │ 📁 Desktop                                │ │
+│          │ 📁 Documents  ← (default)                 │ │
+│          └───────────────────────────────────────────┘ │
+│                                                         │
+│                              [Cancel]  [Save]          │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Default Behavior
+
+**Apple's default**: `true` (iCloud default)
+
+Apple promotes iCloud as the default storage to:
+- Enable seamless access across devices
+- Provide automatic backup
+- Simplify the "where is my file" question
+- Encourage use of Apple's ecosystem
+
+## Our Configuration
+
+**Set to**: `false`
+
+**Rationale**: Local storage provides more control and predictability:
+
+- **Privacy**: Files stay on your machine, not uploaded to Apple servers
+- **Offline access**: No dependency on internet connectivity
+- **Performance**: No sync delays or conflicts
+- **Storage management**: iCloud storage limits don't apply
+- **Developer workflows**: Code and project files should stay local
+- **Confidential work**: Sensitive documents shouldn't auto-upload
+
+Users can still choose iCloud when needed, but the default should be local storage.
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read NSGlobalDomain NSDocumentSaveNewDocumentsToCloud
+
+# Returns: 1 (iCloud default) or 0 (local default)
+```
+
+### Set Local Storage as Default
+
+```bash
+# Default new documents to local storage
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+# Restart apps for changes to take effect
+```
+
+### Set iCloud as Default
+
+```bash
+# Default new documents to iCloud (Apple's default)
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool true
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting, restore to system default
+defaults delete NSGlobalDomain NSDocumentSaveNewDocumentsToCloud
+```
+
+## Per-Application Override
+
+Some apps may store this preference independently:
+
+```bash
+# Check TextEdit's preference
+defaults read com.apple.TextEdit NSDocumentSaveNewDocumentsToCloud 2>/dev/null
+
+# Override for specific app
+defaults write com.apple.TextEdit NSDocumentSaveNewDocumentsToCloud -bool false
+```
+
+Note: Not all apps respect per-app overrides; many rely solely on the global setting.
+
+## Related Settings
+
+### iCloud Desktop & Documents
+
+Control whether Desktop and Documents folders sync to iCloud:
+
+**System Settings** → **Apple ID** → **iCloud** → **iCloud Drive** → **Options...** → **Desktop & Documents Folders**
+
+This is separate from the save dialog default—it controls folder syncing.
+
+### Optimized Mac Storage
+
+Control whether iCloud files are downloaded on demand:
+
+**System Settings** → **Apple ID** → **iCloud** → **Optimize Mac Storage**
+
+When enabled, files may show as "cloud-only" placeholders to save local space.
+
+### Save Dialog Expansion
+
+Control whether save dialogs open expanded:
+
+```bash
+# Always expand save dialogs
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+```
+
+See [NSNavPanelExpandedStateForSaveMode](../dialogs/nsnavpanelexpandedstateforsavemode.mdx) for details.
+
+## UI Location
+
+**System Settings** → **Apple ID** → **iCloud** → **iCloud Drive** → **Options...**
+
+The UI doesn't directly expose "default save location," but iCloud document preferences are managed here.
+
+Alternatively, in supported apps:
+- Some apps remember the last-used location
+- Some apps have their own default location preferences
+- The system setting provides the initial default
+
+## Behavior Details
+
+### Apps That Respect This Setting
+
+- **TextEdit**: Fully respects the setting
+- **Pages, Numbers, Keynote**: Respect with iCloud Drive enabled
+- **Preview**: For new document saves
+- **Many Cocoa document-based apps**: If properly implemented
+
+### Apps That Don't Respect This Setting
+
+- **Terminal**: Uses current directory or home
+- **Most IDEs**: Have their own project location logic
+- **Electron apps**: Often have custom save dialogs
+- **Web browsers**: Download folder is separate
+
+### Last-Used Location
+
+Many apps remember the last-used save location, overriding the default:
+
+1. First save: Uses system default (iCloud or local)
+2. Subsequent saves: May remember last location
+3. Behavior varies by app
+
+### iCloud Sign-In State
+
+If not signed into iCloud, the setting has no effect—iCloud isn't available as an option.
+
+## Privacy Considerations
+
+### What Goes to iCloud
+
+When saving to iCloud:
+- File is uploaded to Apple servers
+- Encrypted in transit and at rest
+- Accessible from other devices with same Apple ID
+- Counts against iCloud storage quota
+- Subject to Apple's data retention policies
+
+### Sensitive Documents
+
+For sensitive documents (financial, medical, legal, trade secrets):
+- Consider local storage only
+- Use FileVault for local encryption
+- Be aware of iCloud access on other devices
+- Check organizational policies
+
+### Developer Files
+
+Code and project files should generally stay local:
+- Version control (git) handles syncing
+- iCloud sync can corrupt repositories
+- Build artifacts don't belong in iCloud
+- `.gitignore` patterns don't work with iCloud
+
+## Use Cases
+
+### Privacy-Focused Configuration
+
+```bash
+# Default to local storage
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+# Disable Desktop & Documents iCloud sync (via System Settings)
+# Keep manual iCloud Drive access for intentional uploads
+```
+
+### Multi-Device Workflow
+
+For users who want seamless access across Mac, iPad, iPhone:
+
+```bash
+# Keep iCloud as default
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool true
+
+# Ensure iCloud Drive is enabled in System Settings
+```
+
+### Development Machine
+
+```bash
+# Local default for development work
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+# Keeps code projects out of iCloud
+# Prevents sync conflicts with git repos
+```
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.8 (Mountain Lion) and later | ✅ (iCloud Documents introduced) |
+
+iCloud Document support was introduced in OS X 10.8 Mountain Lion.
+
+## Troubleshooting
+
+### Save Dialog Still Defaults to iCloud
+
+1. Verify the setting:
+   ```bash
+   defaults read NSGlobalDomain NSDocumentSaveNewDocumentsToCloud
+   # Should return 0
+   ```
+
+2. Restart the app
+
+3. The app may remember the last-used location—try saving to local, then check next new document
+
+4. Some apps have their own preference (check app settings)
+
+### iCloud Option Not Available
+
+- Ensure iCloud Drive is enabled in System Settings
+- Check Apple ID sign-in status
+- Verify the app supports iCloud documents
+
+### Documents Syncing Despite Local Default
+
+This setting only affects the default in save dialogs. If you've enabled "Desktop & Documents Folders" sync in iCloud settings, those folders sync regardless.
+
+To stop folder syncing:
+1. **System Settings** → **Apple ID** → **iCloud** → **iCloud Drive**
+2. Click **Options...**
+3. Uncheck **Desktop & Documents Folders**
+
+## Developer Notes
+
+### Checking Preference in Code
+
+```swift
+let iCloudDefault = UserDefaults.standard.bool(forKey: "NSDocumentSaveNewDocumentsToCloud")
+```
+
+### NSDocument Integration
+
+For document-based apps, the framework handles this:
+
+```swift
+class Document: NSDocument {
+    // NSDocument respects NSDocumentSaveNewDocumentsToCloud
+    // when presenting save panels
+}
+```
+
+### Custom Save Panels
+
+If creating custom save panels, respect user preference:
+
+```swift
+let savePanel = NSSavePanel()
+if UserDefaults.standard.bool(forKey: "NSDocumentSaveNewDocumentsToCloud") {
+    savePanel.directoryURL = // iCloud container URL
+} else {
+    savePanel.directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+}
+```
+
+## References
+
+- [Apple Support: Set up iCloud Drive](https://support.apple.com/guide/mac-help/set-up-icloud-drive-mchl228a7b6b/mac)
+- [Apple Developer: iCloud Design Guide](https://developer.apple.com/library/archive/documentation/General/Conceptual/iCloudDesignGuide/Chapters/Introduction.html)
+- [defaults man page](x-man-page://defaults)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/system/icloud.sh`](../../../defaults/system/icloud.sh)
+
+```bash
+# --- Default Save Location ---
+# Key:          NSDocumentSaveNewDocumentsToCloud
+# Domain:       NSGlobalDomain
+# Description:  Controls the default save location for new documents in
+#               iCloud-enabled apps. When true, save dialogs default to
+#               iCloud Drive. When false, they default to local storage.
+# Default:      true (iCloud default)
+# Options:      true  = Default to iCloud Drive
+#               false = Default to local storage
+# Set to:       false (keep documents local by default)
+# UI Location:  No direct UI toggle; related to System Settings > Apple ID > iCloud
+# Source:       https://support.apple.com/guide/mac-help/set-up-icloud-drive-mchl228a7b6b/mac
+run_defaults "NSGlobalDomain" "NSDocumentSaveNewDocumentsToCloud" "-bool" "false"
+```

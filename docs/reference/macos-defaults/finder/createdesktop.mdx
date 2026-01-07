@@ -1,0 +1,388 @@
+# CreateDesktop
+
+Control whether icons are displayed on the desktop.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `CreateDesktop` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+| **Requires Restart** | Finder restart |
+
+## Description
+
+Controls whether Finder displays icons on the desktop. When disabled, the desktop becomes a clean, empty surface showing only your wallpaper. Files and folders in `~/Desktop` still exist and are accessible via Finder windows, but they don't appear as icons on the desktop.
+
+This setting is popular among users who:
+
+- **Prefer minimal aesthetics**: Clean desktop for screenshots, presentations, or focus
+- **Use launcher apps**: Alfred, Raycast, or Spotlight instead of desktop icons
+- **Want privacy**: Hide desktop contents during screen sharing or presentations
+- **Have organizational systems**: Keep files organized in folders rather than desktop clutter
+- **Disable desktop access**: Prevent accidental desktop interactions
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Desktop icons visible** (default) — Files in ~/Desktop appear as icons on the desktop |
+| `false` | **Desktop icons hidden** — Desktop shows wallpaper only; files remain in ~/Desktop folder |
+
+## Visual Comparison
+
+### With Desktop Icons (Default)
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│  📁 Projects    📄 Notes.txt    📁 Downloads    🖼️ Screenshot  │
+│                                                                 │
+│  📦 Package     💾 Backup       📋 Todo.md      🔧 Config      │
+│                                                                 │
+│                     [Wallpaper Image]                           │
+│                                                                 │
+│                                                                 │
+├────────────────────────────────────────────────────────────────┤
+│                          Dock                                   │
+└────────────────────────────────────────────────────────────────┘
+```
+
+### Without Desktop Icons
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                                                                 │
+│                                                                 │
+│                                                                 │
+│                     [Wallpaper Image]                           │
+│                                                                 │
+│                                                                 │
+├────────────────────────────────────────────────────────────────┤
+│                          Dock                                   │
+└────────────────────────────────────────────────────────────────┘
+```
+
+## Default Behavior
+
+**Apple's default**: `true` (desktop icons visible)
+
+The traditional Mac desktop serves as a visual staging area for:
+- Files in active use
+- Screenshots (default save location)
+- Downloaded files
+- Temporary storage
+- Drive and volume icons
+
+## Our Configuration
+
+**Set to**: `true`
+
+**Rationale**: Desktop icons provide convenient access to frequently-used files and serve as a natural drop zone for screenshots and downloads. While some prefer a clean desktop, the utility of visible icons outweighs aesthetic concerns for most workflows.
+
+**Alternative consideration**: Power users who rely on launcher apps and organized folder structures may benefit from disabling desktop icons to reduce visual clutter and prevent desktop-as-dumping-ground habits.
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read com.apple.finder CreateDesktop
+
+# Returns: 1 (icons visible) or 0 (icons hidden)
+```
+
+### Hide Desktop Icons
+
+```bash
+# Hide all desktop icons
+defaults write com.apple.finder CreateDesktop -bool false
+
+# Restart Finder to apply
+killall Finder
+```
+
+### Show Desktop Icons
+
+```bash
+# Show desktop icons (Apple's default)
+defaults write com.apple.finder CreateDesktop -bool true
+
+# Restart Finder to apply
+killall Finder
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting, restore to system default
+defaults delete com.apple.finder CreateDesktop
+
+# Restart Finder to apply
+killall Finder
+```
+
+### Toggle Desktop Icons
+
+```bash
+# Toggle desktop icon visibility
+current=$(defaults read com.apple.finder CreateDesktop 2>/dev/null)
+if [[ "$current" == "0" ]]; then
+    defaults write com.apple.finder CreateDesktop -bool true
+    echo "Desktop icons: VISIBLE"
+else
+    defaults write com.apple.finder CreateDesktop -bool false
+    echo "Desktop icons: HIDDEN"
+fi
+killall Finder
+```
+
+## Related Settings
+
+### Desktop Icon Types
+
+Control which types of items appear on the desktop:
+
+```bash
+# Show hard drives on desktop
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
+
+# Show external drives on desktop
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+
+# Show removable media on desktop
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+
+# Show connected servers on desktop
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
+
+killall Finder
+```
+
+### Desktop Icon Size and Spacing
+
+```bash
+# Set desktop icon size (pixels)
+/usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 48" ~/Library/Preferences/com.apple.finder.plist
+
+# Set grid spacing
+/usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 54" ~/Library/Preferences/com.apple.finder.plist
+
+killall Finder
+```
+
+### Desktop Stacks
+
+Organize desktop icons into stacks (macOS Mojave and later):
+
+```bash
+# Enable stacks on desktop
+defaults write com.apple.finder StackGroupBy -string Kind
+killall Finder
+```
+
+## UI Location
+
+There is no direct System Settings toggle for completely hiding desktop icons. However:
+
+**Finder** → **Settings** (⌘,) → **General** tab:
+- Checkboxes for showing specific item types on desktop (hard disks, external disks, CDs/DVDs, connected servers)
+
+**Right-click Desktop** → **View Options** (or ⌘J):
+- Icon size, grid spacing, sort by, and stacks options
+
+## Behavior Details
+
+### What Happens to Desktop Files
+
+When desktop icons are hidden:
+- Files remain in `~/Desktop` folder
+- Accessible via Finder window opened to Desktop
+- Can still save files to Desktop (they just won't be visible)
+- Screenshots still save to Desktop by default
+- Dragging files to desktop area has no effect (they go nowhere visible)
+
+### Desktop Interaction
+
+With icons hidden:
+- Right-click on desktop still shows context menu
+- Can still change wallpaper
+- Desktop Stacks feature is disabled (nothing to stack)
+- Keyboard shortcut ⇧⌘D still opens Desktop folder in Finder
+
+### Stage Manager Interaction
+
+On macOS Ventura and later, Stage Manager provides another way to manage desktop visibility. Stage Manager can show or hide desktop icons independently of this setting.
+
+## Use Cases
+
+### Presentation Mode
+
+Hide desktop icons before presentations or screen sharing:
+
+```bash
+# Quick hide for presentations
+defaults write com.apple.finder CreateDesktop -bool false && killall Finder
+
+# Restore after presentation
+defaults write com.apple.finder CreateDesktop -bool true && killall Finder
+```
+
+### Screenshot Background
+
+For clean screenshots showing just an app:
+
+```bash
+# Hide desktop icons
+defaults write com.apple.finder CreateDesktop -bool false
+killall Finder
+
+# Take screenshots...
+
+# Restore desktop icons
+defaults write com.apple.finder CreateDesktop -bool true
+killall Finder
+```
+
+### Kiosk or Shared Computers
+
+Prevent users from cluttering or accessing the desktop:
+
+```bash
+# Disable desktop icons
+defaults write com.apple.finder CreateDesktop -bool false
+
+# Hide desktop folder in sidebar (additional step)
+# Configure via Finder preferences
+```
+
+### Focus Mode
+
+For distraction-free work environments:
+
+```bash
+# Combine with Dock auto-hide for maximum focus
+defaults write com.apple.finder CreateDesktop -bool false
+defaults write com.apple.dock autohide -bool true
+killall Finder
+killall Dock
+```
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.15 (Catalina) | ✅ |
+| macOS 10.4 (Tiger) and later | ✅ |
+
+This preference has been available for many macOS versions.
+
+## Troubleshooting
+
+### Desktop Icons Not Hiding
+
+1. Verify the setting:
+   ```bash
+   defaults read com.apple.finder CreateDesktop
+   # Should return 0
+   ```
+
+2. Restart Finder:
+   ```bash
+   killall Finder
+   ```
+
+3. Check for conflicting settings:
+   ```bash
+   defaults read com.apple.finder | grep -i desktop
+   ```
+
+### Desktop Icons Reappear
+
+1. Check if another process is resetting the preference
+
+2. Verify you're not in a managed environment (MDM):
+   ```bash
+   sudo profiles list
+   ```
+
+3. Ensure the preference is in the correct domain:
+   ```bash
+   defaults read com.apple.finder CreateDesktop
+   ```
+
+### Can't Access Desktop Files
+
+When icons are hidden, access Desktop via:
+- Finder sidebar (if Desktop is visible there)
+- Finder menu: **Go** → **Desktop** (⇧⌘D)
+- Terminal: `open ~/Desktop`
+- Spotlight: Search for "Desktop"
+
+### Screenshots Disappearing
+
+Screenshots still save to Desktop but aren't visible. Access them via:
+```bash
+open ~/Desktop
+```
+
+Or change screenshot location:
+```bash
+defaults write com.apple.screencapture location ~/Pictures/Screenshots
+killall SystemUIServer
+```
+
+## Developer Notes
+
+### Checking Preference in Code
+
+```swift
+let showDesktop = UserDefaults(suiteName: "com.apple.finder")?.bool(forKey: "CreateDesktop") ?? true
+```
+
+### AppleScript Access
+
+```applescript
+tell application "Finder"
+    set desktop position of window 1 to {0, 0}
+end tell
+```
+
+Note: AppleScript Finder commands still work even when icons are hidden.
+
+## References
+
+- [Apple Support: Change Desktop picture and screen saver](https://support.apple.com/guide/mac-help/change-desktop-picture-mchlp3013/mac)
+- [defaults man page](x-man-page://defaults)
+- [Mathias Bynens' dotfiles](https://github.com/mathiasbynens/dotfiles/blob/main/.macos)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/interface/finder.sh`](../../../defaults/interface/finder.sh)
+
+```bash
+# --- Desktop Icons ---
+# Key:          CreateDesktop
+# Domain:       com.apple.finder
+# Description:  Controls whether Finder displays icons on the desktop.
+#               When disabled, the desktop shows only wallpaper and files
+#               in ~/Desktop are only accessible via Finder windows.
+# Default:      true (desktop icons visible)
+# Options:      true  = Show files and folders on desktop
+#               false = Hide desktop icons (clean desktop)
+# Set to:       true (default provides convenient file access)
+# UI Location:  No direct UI toggle; Finder > Settings > General has related options
+# Source:       Built-in macOS preference
+run_defaults "com.apple.finder" "CreateDesktop" "-bool" "true"
+```

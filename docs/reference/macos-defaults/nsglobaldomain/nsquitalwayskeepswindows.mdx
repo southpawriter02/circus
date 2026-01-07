@@ -1,0 +1,405 @@
+# NSQuitAlwaysKeepsWindows
+
+Control whether applications restore their windows when relaunched.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSQuitAlwaysKeepsWindows` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+| **Requires Restart** | Logout recommended |
+
+## Description
+
+Controls macOS's "Resume" feature, which restores application windows and state when apps are relaunched. When enabled, quitting and reopening an app brings back all previously open windows, scroll positions, and unsaved documents. When disabled, apps start fresh with no windows or a default new document.
+
+This feature, introduced in OS X Lion, aims to make quitting apps less disruptive by preserving state. It works system-wide, affecting restart, logout, and individual app quit/relaunch cycles.
+
+**The Resume feature preserves**:
+- Open windows and their positions
+- Tab states (in supported apps)
+- Scroll positions
+- Unsaved document changes
+- Selection states
+- Some app-specific data
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Resume enabled** (default) — Apps restore previous windows on relaunch |
+| `false` | **Resume disabled** — Apps start fresh with no windows or default state |
+
+## Terminology Clarification
+
+This setting has confusing naming:
+- **`true`** = Resume IS enabled (windows ARE restored)
+- **`false`** = Resume IS disabled (windows are NOT restored)
+
+The key name `NSQuitAlwaysKeepsWindows` suggests "always keep windows"—setting it `true` enables this behavior.
+
+## Default Behavior
+
+**Apple's default**: `true` (Resume enabled)
+
+When Resume is enabled:
+1. **Quit app**: State is saved automatically
+2. **Reopen app**: Previous windows restore
+3. **Restart Mac**: All apps reopen with their windows
+4. **Logout/Login**: Apps from previous session may restore
+
+This makes the computer feel persistent across sessions.
+
+## Our Configuration
+
+**Set to**: `false`
+
+**Rationale**: Many users prefer explicit control over their workspace:
+
+- **Fresh starts**: Each session begins clean, not cluttered with yesterday's work
+- **Privacy**: Closed windows stay closed; useful on shared machines
+- **Performance**: No state restoration overhead on app launch
+- **Predictability**: Apps behave consistently regardless of previous state
+- **Memory**: No hidden state files accumulating
+
+Users who want to restore specific windows can keep apps running or use app-specific history features.
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read NSGlobalDomain NSQuitAlwaysKeepsWindows
+
+# Returns: 1 (Resume enabled) or 0 (Resume disabled)
+```
+
+### Disable Resume (Start Fresh)
+
+```bash
+# Disable window restoration - apps start fresh
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
+
+# Log out and back in for full effect
+```
+
+### Enable Resume (Apple's Default)
+
+```bash
+# Enable window restoration - apps restore previous state
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool true
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting, restore to system default
+defaults delete NSGlobalDomain NSQuitAlwaysKeepsWindows
+```
+
+## Where State Is Stored
+
+Resume data is stored in the Saved Application State folder:
+
+```bash
+# View saved state files
+ls ~/Library/Saved\ Application\ State/
+
+# Each app has a folder like:
+# com.apple.TextEdit.savedState/
+# com.apple.Preview.savedState/
+```
+
+### Clear All Saved States
+
+```bash
+# Remove all saved application states
+rm -rf ~/Library/Saved\ Application\ State/*
+
+# Warning: This clears unsaved document changes!
+```
+
+### Clear Specific App State
+
+```bash
+# Remove saved state for TextEdit only
+rm -rf ~/Library/Saved\ Application\ State/com.apple.TextEdit.savedState
+```
+
+## Related Settings
+
+### Close Windows When Quitting (UI Setting)
+
+The System Settings checkbox is related but slightly different:
+
+**System Settings** → **Desktop & Dock** → **Close windows when quitting an app**
+
+| UI Setting | `NSQuitAlwaysKeepsWindows` | Behavior |
+|------------|---------------------------|----------|
+| ☑️ Checked | `false` | Windows don't restore |
+| ☐ Unchecked | `true` | Windows restore |
+
+The UI checkbox is the inverse of the preference value for user-friendliness.
+
+### Automatic Termination
+
+Resume works with automatic termination:
+
+```bash
+# Check automatic termination setting
+defaults read NSGlobalDomain NSDisableAutomaticTermination
+```
+
+See [NSDisableAutomaticTermination](nsdisableautomatictermination.mdx) for details.
+
+### Login Items Restore
+
+Control which apps open at login:
+
+**System Settings** → **General** → **Login Items**
+
+These apps explicitly open at login, separate from Resume's "restore last session" behavior.
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Close windows when quitting an app**
+
+- **Checked**: Resume disabled (start fresh)
+- **Unchecked**: Resume enabled (restore windows)
+
+This checkbox directly controls `NSQuitAlwaysKeepsWindows`.
+
+## Behavior Details
+
+### What Gets Restored
+
+| Element | Restored? |
+|---------|-----------|
+| Open windows | ✅ Yes |
+| Window positions | ✅ Yes |
+| Window sizes | ✅ Yes |
+| Tab states | ✅ Yes (if app supports) |
+| Scroll positions | ✅ Yes |
+| Unsaved changes | ✅ Yes |
+| Open documents | ✅ Yes |
+| Selection states | ✅ Sometimes |
+| Undo history | ⚠️ Varies by app |
+| Network connections | ❌ No |
+| Running processes | ❌ No |
+
+### Apps That Support Resume Well
+
+- **TextEdit**: Excellent support, restores unsaved documents
+- **Preview**: Restores open PDFs and images
+- **Safari**: Restores windows, tabs, and scroll positions
+- **Finder**: Restores open windows
+- **Terminal**: Restores window positions (not command history)
+- **Most Apple apps**: Generally good support
+
+### Apps with Limited Support
+
+- **Some third-party apps**: May not implement state restoration
+- **Electron apps**: Varies significantly
+- **Legacy apps**: May not support the feature
+
+### When Restoration Happens
+
+1. **Normal app quit (⌘Q)**: State saved, restored on next launch
+2. **Force quit**: State may not be saved properly
+3. **System restart**: State saved before shutdown
+4. **Crash**: State from before crash may restore
+5. **Logout**: State saved, restored on next login
+
+## Interaction with Restart
+
+When restarting your Mac:
+
+### With Resume Enabled
+1. Apps are told to quit (saving state)
+2. Mac restarts
+3. Previous apps relaunch automatically
+4. Windows restore to previous positions
+
+### With Resume Disabled
+1. Apps quit normally
+2. Mac restarts
+3. Only Login Items launch
+4. Apps start fresh when manually opened
+
+### Option During Restart
+
+Regardless of this setting, the restart dialog offers:
+
+```
+☐ Reopen windows when logging back in
+```
+
+This checkbox provides one-time control, overriding the system preference for that specific restart.
+
+## Use Cases
+
+### Privacy-Conscious Configuration
+
+```bash
+# Disable Resume for privacy
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
+
+# Clear existing saved states
+rm -rf ~/Library/Saved\ Application\ State/*
+```
+
+Documents and windows won't automatically reappear on shared machines.
+
+### Clean-Start Workflow
+
+For users who prefer organized, intentional workspaces:
+
+```bash
+# Start fresh each time
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
+```
+
+### Productivity Workflow with Resume
+
+For users who want seamless session continuity:
+
+```bash
+# Restore previous state (default)
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool true
+```
+
+### Per-App Control
+
+Some apps have their own restore settings, overriding system preference:
+- Safari: Settings → General → Safari opens with
+- Terminal: Settings → General → On startup, open
+- Many IDEs: Their own workspace restoration
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.7 (Lion) and later | ✅ (Resume introduced) |
+
+The Resume feature was introduced in OS X 10.7 Lion as part of the "Versions and Resume" feature set.
+
+## Troubleshooting
+
+### Windows Still Restoring After Disabling
+
+1. Verify the setting:
+   ```bash
+   defaults read NSGlobalDomain NSQuitAlwaysKeepsWindows
+   # Should return 0
+   ```
+
+2. Log out and back in
+
+3. Clear saved states:
+   ```bash
+   rm -rf ~/Library/Saved\ Application\ State/*
+   ```
+
+4. Some apps have their own restore logic—check app settings
+
+### Unsaved Documents Lost
+
+When Resume is disabled, unsaved documents are NOT automatically preserved across quit/launch cycles. Be sure to:
+- Save documents before quitting
+- Use app-specific auto-save features
+- Don't rely on Resume for unsaved work
+
+### Restart Dialog Checkbox
+
+Even with Resume disabled, the restart dialog checkbox can override:
+- Uncheck "Reopen windows when logging back in" for fresh start
+- Check it for one-time session restoration
+
+### App Won't Start Fresh
+
+If a specific app always restores despite this setting:
+1. Check app's own preferences
+2. Clear its saved state:
+   ```bash
+   rm -rf ~/Library/Saved\ Application\ State/com.example.app.savedState
+   ```
+3. The app may handle restoration independently
+
+## Developer Notes
+
+### Implementing State Restoration
+
+For Cocoa apps:
+
+```swift
+class Document: NSDocument {
+    override class var autosavesInPlace: Bool { true }
+
+    override func restoreState(with coder: NSCoder) {
+        super.restoreState(with: coder)
+        // Restore custom state
+    }
+
+    override func encodeRestorableState(with coder: NSCoder) {
+        super.encodeRestorableState(with: coder)
+        // Save custom state
+    }
+}
+```
+
+### Checking Preference in Code
+
+```swift
+let resumeEnabled = UserDefaults.standard.bool(forKey: "NSQuitAlwaysKeepsWindows")
+```
+
+### Respecting User Preference
+
+Well-behaved apps should check this preference:
+
+```swift
+// System handles most restoration automatically
+// But check if you have app-specific restoration:
+if !UserDefaults.standard.bool(forKey: "NSQuitAlwaysKeepsWindows") {
+    // Don't restore custom state
+}
+```
+
+## References
+
+- [Apple Support: Close windows when quitting an app](https://support.apple.com/guide/mac-help/close-windows-when-quitting-an-app-mchlp2499/mac)
+- [Apple Developer: State Restoration](https://developer.apple.com/documentation/appkit/documents_data_and_pasteboard/supporting_the_continuation_and_restoration_of_a_document)
+- [defaults man page](x-man-page://defaults)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/system/session.sh`](../../../defaults/system/session.sh)
+
+```bash
+# --- Window Restoration (Resume) ---
+# Key:          NSQuitAlwaysKeepsWindows
+# Domain:       NSGlobalDomain
+# Description:  Controls macOS Resume feature. When enabled, apps restore
+#               their previous windows and state when relaunched. When
+#               disabled, apps start fresh.
+# Default:      true (Resume enabled)
+# Options:      true  = Restore windows on app relaunch
+#               false = Start fresh with no windows
+# Set to:       false (prefer clean starts over session restoration)
+# UI Location:  System Settings > Desktop & Dock > "Close windows when quitting an app"
+#               (checkbox is inverse: checked = Resume disabled)
+# Source:       https://support.apple.com/guide/mac-help/close-windows-when-quitting-an-app-mchlp2499/mac
+run_defaults "NSGlobalDomain" "NSQuitAlwaysKeepsWindows" "-bool" "false"
+```

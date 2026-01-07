@@ -1,0 +1,365 @@
+# NSDisableAutomaticTermination
+
+Prevent macOS from automatically terminating idle applications.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSDisableAutomaticTermination` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+| **Requires Restart** | Logout recommended |
+
+## Description
+
+Controls whether macOS can automatically terminate applications that have been idle and have no open windows. This feature, called "Automatic Termination," was introduced in OS X Lion to improve system resource management.
+
+When automatic termination is enabled (the default), macOS may quit idle apps to free memory and reduce power consumption. The apps appear to remain running (still in Dock, ⌘Tab), but are actually terminated. Re-activating them causes a seamless relaunch that restores their previous state.
+
+**Key points**:
+- Apps must explicitly support this feature (most Apple apps do)
+- User data is preserved via state restoration
+- The app appears to never have quit from the user's perspective
+- Only affects apps with no open windows that are idle
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Automatic termination disabled** — Apps remain running until explicitly quit |
+| `false` | **Automatic termination enabled** (default) — Idle apps may be terminated automatically |
+
+## How It Works
+
+### With Automatic Termination (Default)
+
+1. **User launches app**: App starts normally
+2. **User closes all windows**: App continues running (visible in Dock)
+3. **System needs resources**: macOS terminates idle app silently
+4. **User clicks app icon**: App relaunches instantly, restoring state
+5. **User experience**: Appears as if app never quit
+
+### Without Automatic Termination
+
+1. **User launches app**: App starts normally
+2. **User closes all windows**: App continues running
+3. **System needs resources**: App remains running, consuming memory
+4. **User clicks app icon**: App was already running, opens new window
+5. **User experience**: Traditional Mac behavior
+
+## Default Behavior
+
+**Apple's default**: `false` (automatic termination enabled)
+
+This optimization helps:
+- Reduce memory pressure on systems with limited RAM
+- Improve battery life on laptops
+- Allow users to "leave apps open" without resource guilt
+- Maintain the illusion of apps being always available
+
+## Our Configuration
+
+**Set to**: `false` (keep default)
+
+**Rationale**: Automatic termination works well for most users and provides memory/power benefits. The feature is transparent when working correctly and helps systems with limited resources.
+
+**Alternative consideration**: Power users who want explicit control over running processes, or users troubleshooting memory issues, may prefer to disable automatic termination to see which apps are truly running.
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read NSGlobalDomain NSDisableAutomaticTermination
+
+# Returns: 1 (termination disabled) or 0 (termination enabled)
+# Note: May error if never set; absence means false (enabled)
+```
+
+### Disable Automatic Termination
+
+```bash
+# Keep all apps running until explicitly quit
+defaults write NSGlobalDomain NSDisableAutomaticTermination -bool true
+
+# Log out and back in for full effect
+```
+
+### Enable Automatic Termination
+
+```bash
+# Allow system to terminate idle apps (Apple's default)
+defaults write NSGlobalDomain NSDisableAutomaticTermination -bool false
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting, restore to system default
+defaults delete NSGlobalDomain NSDisableAutomaticTermination
+```
+
+## Affected Applications
+
+### Apps That Support Automatic Termination
+
+Most Apple apps support this feature:
+- **Finder** (special case, can't actually be terminated)
+- **Preview**
+- **TextEdit**
+- **Calendar**
+- **Contacts**
+- **Notes**
+- **Reminders**
+- **Maps**
+- **Photo Booth**
+
+### Apps That Don't Support It
+
+Some apps opt out because termination would be disruptive:
+- **Safari** (maintains browsing session)
+- **Mail** (needs to check for new mail)
+- **iTunes/Music** (may be playing)
+- **Most third-party apps** (haven't implemented the feature)
+
+### How Apps Opt In/Out
+
+Developers control this via their app's `Info.plist`:
+
+```xml
+<key>NSSupportsAutomaticTermination</key>
+<true/>
+```
+
+Or programmatically:
+
+```swift
+ProcessInfo.processInfo.automaticTerminationSupportEnabled = true
+```
+
+## Related Settings
+
+### Sudden Termination
+
+A related but different feature for apps that can quit instantly:
+
+```bash
+# Disable sudden termination system-wide
+defaults write NSGlobalDomain NSSuddenTerminationEnabled -bool false
+```
+
+Sudden termination allows apps to be killed immediately without the standard quit process, useful for apps with no unsaved state.
+
+### Resume / State Restoration
+
+Automatic termination relies on state restoration. Control window restoration:
+
+```bash
+# Disable "Resume" feature (reopening windows on restart)
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
+```
+
+See [NSQuitAlwaysKeepsWindows](nsquitalwayskeepswindows.mdx) for details.
+
+### App Nap
+
+Another power-saving feature that throttles hidden apps:
+
+```bash
+# Disable App Nap for a specific application
+defaults write com.example.app NSAppSleepDisabled -bool true
+```
+
+## UI Location
+
+There is no direct UI toggle for automatic termination.
+
+**Related settings**:
+- **System Settings** → **General** → **Close windows when quitting an app** (affects state restoration)
+- Individual apps may have their own background behavior settings
+
+## Behavior Details
+
+### When Termination Occurs
+
+The system decides to terminate apps based on:
+- Available memory
+- Power state (battery vs. plugged in)
+- App idle time
+- Number of open apps
+- System resource pressure
+
+There's no fixed timer—it's dynamic based on system needs.
+
+### What Gets Preserved
+
+When an app is automatically terminated:
+- Window positions and sizes
+- Scroll positions
+- Open documents (if supported)
+- Undo history (varies by app)
+- User preferences
+
+What may not be preserved:
+- Clipboard contents (system-wide)
+- Network connections
+- Background processes
+- Non-persistent state
+
+### Distinguishing Real Quit from Auto-Termination
+
+From the user's perspective, there's no visible difference. However:
+- Activity Monitor shows the app as terminated
+- `ps` command won't show the process
+- App's dock icon remains (with indicator dot if configured)
+- ⌘Tab shows the app
+
+## Use Cases
+
+### Disable for Debugging
+
+When troubleshooting app behavior:
+
+```bash
+# Prevent automatic termination to monitor true app state
+defaults write NSGlobalDomain NSDisableAutomaticTermination -bool true
+
+# Use Activity Monitor to see actual running processes
+```
+
+### Disable for Resource Monitoring
+
+To accurately measure resource usage:
+
+```bash
+# See true memory usage
+defaults write NSGlobalDomain NSDisableAutomaticTermination -bool true
+
+# Now Activity Monitor shows apps that are actually running
+```
+
+### Keep Enabled for Laptops
+
+For battery life on MacBooks:
+
+```bash
+# Ensure automatic termination is enabled
+defaults write NSGlobalDomain NSDisableAutomaticTermination -bool false
+```
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.7 (Lion) and later | ✅ (introduced) |
+
+Automatic termination was introduced in OS X 10.7 Lion as part of the "Resume" feature set.
+
+## Troubleshooting
+
+### Apps Quitting Unexpectedly
+
+If apps seem to quit randomly:
+1. This may be automatic termination (normal behavior)
+2. Check if state is preserved on relaunch
+3. If state is lost, the app may have a bug
+
+### Activity Monitor Confusion
+
+Apps may appear running (Dock) but not in Activity Monitor:
+- This is normal with automatic termination
+- The app has been terminated but will seamlessly restore
+
+### Disabling Doesn't Seem to Work
+
+1. Verify the setting:
+   ```bash
+   defaults read NSGlobalDomain NSDisableAutomaticTermination
+   # Should return 1
+   ```
+
+2. Log out and back in
+
+3. Note that apps must support the feature—non-supporting apps aren't affected either way
+
+### Memory Still Being Reclaimed
+
+macOS has other memory management systems:
+- Memory compression
+- Memory pressure responses
+- App Nap
+- Swap usage
+
+Disabling automatic termination doesn't prevent these.
+
+## Developer Notes
+
+### Implementing Automatic Termination
+
+In your app:
+
+```swift
+// Enable automatic termination support
+ProcessInfo.processInfo.automaticTerminationSupportEnabled = true
+
+// Disable during critical operations
+ProcessInfo.processInfo.disableAutomaticTermination("Saving file")
+// ... do critical work ...
+ProcessInfo.processInfo.enableAutomaticTermination("Saving file")
+```
+
+### State Restoration
+
+Pair automatic termination with proper state restoration:
+
+```swift
+class AppDelegate: NSApplicationDelegate {
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return false  // Don't quit, allow automatic termination later
+    }
+}
+```
+
+### Checking Termination Status
+
+```swift
+let canTerminate = ProcessInfo.processInfo.automaticTerminationSupportEnabled
+```
+
+## References
+
+- [Apple Developer: Automatic Termination](https://developer.apple.com/library/archive/documentation/Performance/Conceptual/power_efficiency_guidelines_osx/TerminateCleanly.html)
+- [Apple Developer: ProcessInfo](https://developer.apple.com/documentation/foundation/processinfo)
+- [defaults man page](x-man-page://defaults)
+
+## Source File
+
+This setting is typically not modified in dotfiles configurations. If configured:
+
+**File**: [`defaults/system/performance.sh`](../../../defaults/system/performance.sh)
+
+```bash
+# --- Automatic Termination ---
+# Key:          NSDisableAutomaticTermination
+# Domain:       NSGlobalDomain
+# Description:  Controls whether macOS can automatically terminate idle apps
+#               that support this feature. When enabled (false), idle apps
+#               may be silently quit to free resources, then seamlessly
+#               restored when reactivated.
+# Default:      false (automatic termination enabled)
+# Options:      true  = Keep all apps running until explicitly quit
+#               false = Allow system to terminate idle apps
+# Set to:       false (default provides good resource management)
+# UI Location:  No direct UI control
+# Source:       https://developer.apple.com/documentation/foundation/processinfo
+# run_defaults "NSGlobalDomain" "NSDisableAutomaticTermination" "-bool" "false"
+```

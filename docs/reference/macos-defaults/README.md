@@ -83,9 +83,10 @@ Dock appearance, behavior, and animations.
 |---------|-------------|
 | [Size & Magnification](dock/) | Icon size and hover effects |
 | [Position](dock/) | Left, bottom, or right |
-| [Auto-hide](dock/) | Show/hide behavior |
-| [Animations](dock/) | Launch and minimize effects |
-| [Recent Apps](dock/) | Show recent applications |
+| [Auto-hide](dock/autohide.mdx) | Show/hide behavior |
+| [Minimize Effect](dock/mineffect.mdx) | Genie or scale animation |
+| [Launch Animation](dock/launchanim.mdx) | Bouncing icons when launching apps |
+| [Recent Apps](dock/show-recents.mdx) | Show recent applications |
 
 ---
 
@@ -95,15 +96,15 @@ File browser settings and view options.
 
 | Setting | Description |
 |---------|-------------|
-| [Show Extensions](finder/) | Always show file extensions |
-| [Show Hidden Files](finder/) | Display hidden files and folders |
-| [Default View](finder/) | Icon, list, column, or gallery |
-| [Path Bar](finder/) | Show full path at bottom |
-| [Status Bar](finder/) | Show item count and disk space |
-| [New Window Location](finder/) | Default folder for new windows |
-| [Search Scope](finder/) | Where to search by default |
-| [Desktop Icons](finder/) | Show drives, servers on desktop |
-| [Sidebar Items](finder/) | Configure sidebar content |
+| [Show Extensions](finder/appleshowallextensions.mdx) | Always show file extensions |
+| [Show Hidden Files](finder/appleshowallfiles.mdx) | Display hidden files and folders |
+| [Default View](finder/fxpreferredviewstyle.mdx) | Icon, list, column, or gallery |
+| [Path Bar](finder/showpathbar.mdx) | Show full path at bottom |
+| [Status Bar](finder/showstatusbar.mdx) | Show item count and disk space |
+| [Search Scope](finder/fxdefaultsearchscope.mdx) | Where to search by default |
+| [Full Path in Title](finder/_fxshowposixpathintitle.mdx) | Show POSIX path in title bar |
+| [Desktop Icons](finder/createdesktop.mdx) | Show/hide all desktop icons |
+| [Sort Folders First](finder/fxsortfoldersfirst.mdx) | List folders before files |
 
 ---
 
@@ -213,8 +214,33 @@ Trackpad gestures and sensitivity.
 
 | Setting | Description |
 |---------|-------------|
-| [Tap to Click](trackpad/) | Enable single-finger tap |
-| [Tracking Speed](trackpad/) | Cursor movement speed |
+| [Tap to Click](trackpad/clicking.mdx) | Enable single-finger tap |
+| [Scroll Direction](trackpad/swipescrolldirection.mdx) | Natural or traditional scrolling |
+
+---
+
+### ✏️ Text Input
+
+Automatic text correction and formatting features.
+
+| Setting | Description |
+|---------|-------------|
+| [Autocorrect](nsglobaldomain/nsautomaticspellingcorrectionenabled.mdx) | Automatically correct misspelled words |
+| [Auto-Capitalization](nsglobaldomain/nsautomaticcapitalizationenabled.mdx) | Capitalize first letter of sentences |
+| [Smart Dashes](nsglobaldomain/nsautomaticdashsubstitutionenabled.mdx) | Convert `--` to em-dash |
+
+---
+
+### ⚙️ System Behavior
+
+Core system behavior and session management.
+
+| Setting | Description |
+|---------|-------------|
+| [Smooth Scrolling](nsglobaldomain/nsscrollanimationenabled.mdx) | Animated scrolling for keyboard navigation |
+| [Automatic Termination](nsglobaldomain/nsdisableautomatictermination.mdx) | Allow system to quit idle apps |
+| [iCloud Save Default](nsglobaldomain/nsdocumentsavenewdocumentstocloud.mdx) | Default save location for new documents |
+| [Window Restoration](nsglobaldomain/nsquitalwayskeepswindows.mdx) | Restore app windows on relaunch |
 
 ---
 

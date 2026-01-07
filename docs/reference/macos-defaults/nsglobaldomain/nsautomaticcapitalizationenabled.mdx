@@ -1,0 +1,290 @@
+# NSAutomaticCapitalizationEnabled
+
+Control automatic capitalization of the first letter in sentences.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticCapitalizationEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+| **Requires Restart** | App restart recommended |
+
+## Description
+
+Controls whether macOS automatically capitalizes the first letter after a period, question mark, exclamation point, or at the beginning of a new line. This feature, inherited from iOS, is designed to help with casual typing but can interfere with technical work.
+
+Auto-capitalization causes problems for:
+
+- **Developers**: Code snippets that start with lowercase keywords (`let`, `var`, `function`)
+- **Technical writers**: Commands and paths that must be lowercase (`cd /usr/local`)
+- **System administrators**: Configuration values are case-sensitive
+- **Markdown authors**: Bullet points starting with code or lowercase words
+- **Anyone writing email addresses**: `john@example.com` becomes `John@example.com`
+
+The system determines sentence boundaries heuristically, which can lead to unpredictable capitalizations in non-standard text formats.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-capitalize enabled** (default) — First letter after sentence-ending punctuation is capitalized |
+| `false` | **Auto-capitalize disabled** — Text is left exactly as typed |
+
+## Default Behavior
+
+**Apple's default**: `true` (auto-capitalization enabled)
+
+When enabled, macOS will:
+1. Detect sentence boundaries (`.`, `?`, `!` followed by space)
+2. Automatically capitalize the next character typed
+3. Capitalize the first character in new text fields
+4. Apply to most text input across the system
+
+## Our Configuration
+
+**Set to**: `false`
+
+**Rationale**: Technical users need precise control over capitalization. The feature frequently interferes with:
+- Writing code examples in documentation
+- Email addresses and URLs
+- Case-sensitive identifiers
+- Command-line instructions
+- Variable names in prose
+
+Disabling auto-capitalization ensures text appears exactly as typed.
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read NSGlobalDomain NSAutomaticCapitalizationEnabled
+
+# Returns: 1 (enabled) or 0 (disabled)
+```
+
+### Disable Auto-Capitalization
+
+```bash
+# Disable automatic capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Restart apps for changes to take effect
+```
+
+### Enable Auto-Capitalization
+
+```bash
+# Enable automatic capitalization (Apple's default)
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool true
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting, restore to system default
+defaults delete NSGlobalDomain NSAutomaticCapitalizationEnabled
+```
+
+## Per-Application Override
+
+Override the system setting for specific applications:
+
+```bash
+# Disable in Terminal (useful for documentation)
+defaults write com.apple.Terminal NSAutomaticCapitalizationEnabled -bool false
+
+# Keep enabled in Notes for casual writing
+defaults write com.apple.Notes NSAutomaticCapitalizationEnabled -bool true
+
+# Disable in VS Code (if it respects system settings)
+defaults write com.microsoft.VSCode NSAutomaticCapitalizationEnabled -bool false
+```
+
+### Check App-Specific Setting
+
+```bash
+# See if an app overrides the global default
+defaults read com.apple.Notes NSAutomaticCapitalizationEnabled 2>/dev/null || echo "Using global default"
+```
+
+## Related Settings
+
+### Complete Text Automation Control
+
+Auto-capitalization is one of several "smart" typing features:
+
+| Setting | Key | Description |
+|---------|-----|-------------|
+| [Autocorrect](nsautomaticspellingcorrectionenabled.mdx) | `NSAutomaticSpellingCorrectionEnabled` | Correct misspelled words |
+| [Smart dashes](nsautomaticdashsubstitutionenabled.mdx) | `NSAutomaticDashSubstitutionEnabled` | Convert `--` to em-dash |
+| Smart quotes | `NSAutomaticQuoteSubstitutionEnabled` | Convert `"` to `""` |
+| Period substitution | `NSAutomaticPeriodSubstitutionEnabled` | Double-space for period |
+| Text completion | `NSAutomaticTextCompletionEnabled` | Suggest word completions |
+
+### Disable All Smart Text Features
+
+```bash
+# Comprehensive "plain text" mode
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticTextCompletionEnabled -bool false
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Text Input** → **Input Sources** → **Edit...** → **Capitalize words automatically**
+
+Access by clicking the "Edit..." button next to your input source in the Text Input section.
+
+### Alternative Location (Per-App)
+
+**Edit menu** → **Substitutions** → **Capitalization**
+
+Some applications offer this control in their Edit menu.
+
+## Behavior Details
+
+### Sentence Detection Logic
+
+The system identifies "sentence endings" using these rules:
+
+1. Period (`.`) followed by one or more spaces
+2. Question mark (`?`) followed by space
+3. Exclamation point (`!`) followed by space
+4. Beginning of a text field
+5. After a newline in some contexts
+
+### False Positive Examples
+
+The heuristic approach causes issues with:
+
+| Context | Problem |
+|---------|---------|
+| `Dr. Smith` | "Smith" gets capitalized even after abbreviated period |
+| `config.json` | Depending on context, might capitalize after the period |
+| `e.g. examples` | May capitalize "Examples" incorrectly |
+| `end. let x = 1` | Code after prose gets capitalized |
+| URLs | Parts after `/` may be affected |
+
+### Where Auto-Capitalization Applies
+
+- **TextEdit**, **Notes**, **Mail** — Fully affected
+- **Terminal** — Generally not affected (raw input)
+- **VS Code** — Has its own settings, may ignore system preference
+- **Web browsers** — Depends on the text field implementation
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.12 (Sierra) | ✅ |
+| macOS 10.9 (Mavericks) | ✅ (introduced) |
+
+Auto-capitalization was introduced alongside autocorrect in macOS Mavericks.
+
+## Troubleshooting
+
+### Capitalization Still Happening After Disabling
+
+1. Verify the setting:
+   ```bash
+   defaults read NSGlobalDomain NSAutomaticCapitalizationEnabled
+   # Should return 0
+   ```
+
+2. Restart the affected application
+
+3. Check for per-application settings:
+   ```bash
+   defaults find NSAutomaticCapitalizationEnabled
+   ```
+
+4. Some web-based applications handle capitalization in JavaScript, independent of system settings
+
+### Want Capitalization in Specific Apps Only
+
+```bash
+# Disable globally
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Enable in casual writing apps
+defaults write com.apple.Notes NSAutomaticCapitalizationEnabled -bool true
+defaults write com.apple.mail NSAutomaticCapitalizationEnabled -bool true
+defaults write com.apple.iChat NSAutomaticCapitalizationEnabled -bool true
+```
+
+### Caps Lock Interference
+
+Auto-capitalization is independent of Caps Lock. The feature modifies individual characters, not the keyboard state.
+
+## Developer Notes
+
+### Detecting in Your App
+
+Check the preference in Swift:
+
+```swift
+let autoCapEnabled = UserDefaults.standard.bool(forKey: "NSAutomaticCapitalizationEnabled")
+```
+
+### NSTextView Control
+
+`NSTextView` respects this preference. Override programmatically:
+
+```swift
+textView.isAutomaticTextCompletionEnabled = false
+// Note: Direct capitalization control may require subclassing
+```
+
+### Respecting User Preference
+
+Well-behaved apps should check this preference before applying auto-capitalization:
+
+```swift
+if UserDefaults.standard.bool(forKey: "NSAutomaticCapitalizationEnabled") {
+    // Apply capitalization logic
+}
+```
+
+## References
+
+- [Apple Support: Change Keyboard settings on Mac](https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac)
+- [Apple Developer: Managing Text Input](https://developer.apple.com/documentation/appkit/text_input)
+- [defaults man page](x-man-page://defaults)
+
+## Source File
+
+This setting is configured in the circus dotfiles repository:
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+# --- Automatic Capitalization ---
+# Key:          NSAutomaticCapitalizationEnabled
+# Domain:       NSGlobalDomain
+# Description:  Controls whether macOS automatically capitalizes the first
+#               letter of sentences. Disabling ensures text appears exactly
+#               as typed, important for technical writing and code.
+# Default:      true (auto-capitalize enabled)
+# Options:      true  = Capitalize first letter after sentence endings
+#               false = Leave text exactly as typed
+# Set to:       false (precise control for technical users)
+# UI Location:  System Settings > Keyboard > Text Input > Input Sources > Edit... >
+#               "Capitalize words automatically"
+# Source:       https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac
+run_defaults "NSGlobalDomain" "NSAutomaticCapitalizationEnabled" "-bool" "false"
+```

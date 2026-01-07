@@ -1,0 +1,315 @@
+# NSScrollAnimationEnabled
+
+Control smooth scrolling animations throughout the system.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSScrollAnimationEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+| **Requires Restart** | App restart recommended |
+
+## Description
+
+Controls whether macOS uses animated (smooth) scrolling when navigating content using keyboard shortcuts, scroll bars, or programmatic scroll commands. When enabled, scrolling actions animate smoothly to their destination. When disabled, scrolling jumps instantly to the target position.
+
+This setting affects scrolling initiated by:
+
+- **Page Up/Page Down keys**
+- **Home/End keys**
+- **Space bar in browsers** (page down)
+- **Scroll bar clicks** (clicking the track)
+- **Programmatic scrolling** via JavaScript or Cocoa
+- **Scroll-to-top gestures**
+
+It does **not** affect trackpad or mouse wheel scrolling, which have their own physics-based smooth scrolling.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Smooth scrolling enabled** (default) — Content animates to new position |
+| `false` | **Instant scrolling** — Content jumps immediately to destination |
+
+## Default Behavior
+
+**Apple's default**: `true` (smooth scrolling enabled)
+
+When you press Page Down, the content smoothly glides to the new position over approximately 200-300ms. This provides visual continuity and helps users maintain their sense of position within a document.
+
+## Our Configuration
+
+**Set to**: `true`
+
+**Rationale**: Smooth scrolling provides better spatial awareness when navigating long documents. The animation helps users understand where they are relative to where they were. Most users prefer the polished feel of animated scrolling.
+
+**Alternative consideration**: Users who prioritize maximum responsiveness over visual polish may prefer instant scrolling. Disabling can also help users who experience motion sensitivity, though `reduceMotion` is a better solution for accessibility needs.
+
+## Code Examples
+
+### Read Current Value
+
+```bash
+# Check current setting
+defaults read NSGlobalDomain NSScrollAnimationEnabled
+
+# Returns: 1 (enabled) or 0 (disabled)
+```
+
+### Disable Smooth Scrolling
+
+```bash
+# Disable smooth scroll animations
+defaults write NSGlobalDomain NSScrollAnimationEnabled -bool false
+
+# Restart apps for changes to take effect
+```
+
+### Enable Smooth Scrolling
+
+```bash
+# Enable smooth scroll animations (Apple's default)
+defaults write NSGlobalDomain NSScrollAnimationEnabled -bool true
+```
+
+### Delete (Reset to System Default)
+
+```bash
+# Remove custom setting, restore to system default
+defaults delete NSGlobalDomain NSScrollAnimationEnabled
+```
+
+## What This Affects
+
+### Keyboard Scrolling
+
+| Key | With Animation | Without Animation |
+|-----|----------------|-------------------|
+| Page Down | Smooth glide down | Instant jump |
+| Page Up | Smooth glide up | Instant jump |
+| Home | Smooth scroll to top | Instant jump to top |
+| End | Smooth scroll to bottom | Instant jump to bottom |
+| Space (browsers) | Smooth page down | Instant page down |
+| ⇧Space (browsers) | Smooth page up | Instant page up |
+
+### Scroll Bar Interaction
+
+Clicking in the scroll bar track (not the thumb) triggers this animation. The behavior depends on another system preference:
+
+**System Settings** → **Appearance** → **Click in the scroll bar to:**
+- "Jump to the next page" — Scrolls one page with/without animation
+- "Jump to the spot that's clicked" — Scrolls to that position with/without animation
+
+### Programmatic Scrolling
+
+Applications using `scrollRectToVisible:` or JavaScript `scrollTo()` respect this setting.
+
+## What This Does NOT Affect
+
+- **Trackpad scrolling**: Uses separate momentum physics
+- **Mouse wheel scrolling**: Has its own smooth/discrete behavior
+- **Inertial scrolling**: Controlled by trackpad/mouse settings
+- **List view scrolling**: Arrow key navigation in Finder, etc.
+
+## Related Settings
+
+### Reduce Motion (Accessibility)
+
+For users sensitive to motion, the accessibility setting is more comprehensive:
+
+```bash
+# Check reduce motion status
+defaults read com.apple.universalaccess reduceMotion
+
+# This affects many more animations than just scrolling
+```
+
+See [Reduce Motion](../accessibility/reducemotion.mdx) for full details.
+
+### Scroll Bar Visibility
+
+Control when scroll bars appear:
+
+```bash
+# Show scroll bars: "Automatic", "WhenScrolling", or "Always"
+defaults read NSGlobalDomain AppleShowScrollBars
+```
+
+See [AppleShowScrollBars](../appearance/appleshowscrollbars.mdx) for details.
+
+### Trackpad Scroll Direction
+
+The "natural" scrolling direction setting:
+
+```bash
+# Check trackpad scroll direction
+defaults read NSGlobalDomain com.apple.swipescrolldirection
+```
+
+## UI Location
+
+There is no direct UI toggle for this setting. However, related controls exist:
+
+**System Settings** → **Accessibility** → **Display** → **Reduce motion**
+
+This broader setting also affects scroll animations along with many other system animations.
+
+**System Settings** → **Appearance** → **Click in the scroll bar to:**
+
+Controls what happens when clicking in the scroll bar track.
+
+## Per-Application Behavior
+
+Most Cocoa applications respect this setting. Some applications may:
+
+- **Override the setting**: Electron apps often have their own scroll behavior
+- **Ignore the setting**: Some games and media applications
+- **Have their own controls**: Chrome, VS Code, etc. have separate smooth scroll settings
+
+### Check App-Specific Behavior
+
+```bash
+# Some apps store scroll preferences
+defaults read com.google.Chrome AppleSmoothScroll
+defaults read com.microsoft.VSCode
+```
+
+## Use Cases
+
+### When to Disable
+
+- **Maximum responsiveness priority**: Competitive gaming, rapid document navigation
+- **Older hardware**: Reduce CPU/GPU usage on older Macs
+- **Motion sensitivity**: Though `reduceMotion` is preferred
+- **Screen recording**: Prevent motion blur in tutorials
+- **Testing**: Verify functionality without animation delays
+
+### When to Keep Enabled
+
+- **General use**: Provides polished, modern feel
+- **Long documents**: Helps maintain spatial awareness
+- **Presentations**: Professional appearance
+- **Accessibility**: Animated transitions can help some users follow content
+
+## Performance Considerations
+
+Smooth scrolling requires:
+- GPU compositing for the animation
+- Frame rendering during transition
+- Slightly increased power consumption
+
+On modern Macs, the impact is negligible. On older machines or when running on battery, disabling may provide marginal battery improvement.
+
+## Compatibility
+
+| macOS Version | Supported |
+|---------------|-----------|
+| macOS 15 (Sequoia) | ✅ |
+| macOS 14 (Sonoma) | ✅ |
+| macOS 13 (Ventura) | ✅ |
+| macOS 12 (Monterey) | ✅ |
+| macOS 11 (Big Sur) | ✅ |
+| macOS 10.15 (Catalina) | ✅ |
+| macOS 10.14 (Mojave) | ✅ |
+| macOS 10.7 (Lion) and later | ✅ |
+
+Smooth scrolling has been part of macOS since Lion introduced the "natural" scrolling paradigm.
+
+## Troubleshooting
+
+### Scrolling Feels Laggy
+
+1. This setting doesn't affect trackpad scroll lag
+2. Check for app-specific issues:
+   ```bash
+   # Test in different apps to isolate the problem
+   ```
+3. Disable scroll animation to test if animation is the issue:
+   ```bash
+   defaults write NSGlobalDomain NSScrollAnimationEnabled -bool false
+   ```
+
+### Setting Not Taking Effect
+
+1. Verify the setting:
+   ```bash
+   defaults read NSGlobalDomain NSScrollAnimationEnabled
+   ```
+
+2. Restart the affected application
+
+3. Some apps (browsers, Electron apps) don't respect this preference
+
+4. Log out and log back in for system-wide effect
+
+### Want Different Behavior Per App
+
+This setting is primarily global. Per-app control requires:
+- Using the app's own preferences (if available)
+- Third-party utilities like Scroll Reverser
+
+## Developer Notes
+
+### Checking Preference in Code
+
+```swift
+let smoothScrollEnabled = UserDefaults.standard.bool(forKey: "NSScrollAnimationEnabled")
+```
+
+### NSScrollView Integration
+
+`NSScrollView` respects this preference automatically. For custom scroll behavior:
+
+```swift
+// Check if animation is enabled
+if NSScrollAnimationEnabled {
+    scrollView.scroll(toPoint: targetPoint, animationDuration: 0.25)
+} else {
+    scrollView.scroll(toPoint: targetPoint)
+}
+```
+
+### JavaScript Consideration
+
+Web content can detect this preference via `prefers-reduced-motion` media query:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+}
+```
+
+Note: This media query is more closely tied to `reduceMotion` than `NSScrollAnimationEnabled`.
+
+## References
+
+- [Apple Human Interface Guidelines: Motion](https://developer.apple.com/design/human-interface-guidelines/motion)
+- [Apple Developer: NSScrollView](https://developer.apple.com/documentation/appkit/nsscrollview)
+- [defaults man page](x-man-page://defaults)
+
+## Source File
+
+This setting is typically not modified in dotfiles configurations as the default provides a good user experience. If configured:
+
+**File**: [`defaults/interface/animations.sh`](../../../defaults/interface/animations.sh)
+
+```bash
+# --- Smooth Scrolling ---
+# Key:          NSScrollAnimationEnabled
+# Domain:       NSGlobalDomain
+# Description:  Controls whether keyboard-initiated scrolling (Page Up/Down,
+#               Home/End) uses smooth animation or instant jumping.
+# Default:      true (smooth scrolling enabled)
+# Options:      true  = Animated smooth scrolling
+#               false = Instant scroll jumps
+# Set to:       true (default provides good UX)
+# UI Location:  No direct UI control; related to Accessibility > Reduce Motion
+# Source:       Built-in macOS preference
+# run_defaults "NSGlobalDomain" "NSScrollAnimationEnabled" "-bool" "true"
+```
