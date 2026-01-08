@@ -1,0 +1,145 @@
+# Window Animations
+
+Control opening and closing window animations.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticWindowAnimationsEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether macOS shows animations when opening, closing, and resizing windows. When disabled, windows appear and disappear instantly without any animation effect.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Animations enabled** (default) — Smooth open/close |
+| `false` | **Animations disabled** — Instant window changes |
+
+## Our Configuration
+
+**Set to**: `true` — Keep animations for polished experience.
+
+### Why Keep Animations?
+
+1. **Visual polish** — macOS's signature smooth experience
+2. **Spatial awareness** — See where windows come from/go to
+3. **Modern feel** — Part of the macOS aesthetic
+4. **Minimal impact** — Performance is negligible on modern Macs
+
+### Why Disable?
+
+- Older Mac hardware
+- Performance optimization
+- Preference for instant response
+- Accessibility needs
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSAutomaticWindowAnimationsEnabled
+
+# Enable window animations (default)
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool true
+
+# Disable window animations (instant)
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSAutomaticWindowAnimationsEnabled
+```
+
+## UI Location
+
+Not available in System Settings — terminal only.
+
+For related animation controls:
+**System Settings** → **Accessibility** → **Display** → **Reduce motion**
+
+## Related Animation Settings
+
+### Window Resize Speed
+
+```bash
+# Faster window resize (0.001 = instant, 0.2 = default)
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+```
+
+### Dock Animation Speed
+
+```bash
+# Faster Dock auto-hide
+defaults write com.apple.dock autohide-time-modifier -float 0.5
+
+# Instant Dock auto-hide
+defaults write com.apple.dock autohide-time-modifier -float 0
+```
+
+### Reduce All Motion
+
+For system-wide motion reduction:
+
+```bash
+# Enable Reduce Motion (accessibility feature)
+defaults write com.apple.universalaccess reduceMotion -bool true
+```
+
+This also affects:
+- Parallax effects
+- Zoom transitions
+- Full-screen animations
+
+## Complete Speed Optimization
+
+```bash
+# Maximum speed setup
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+defaults write com.apple.dock autohide-time-modifier -float 0
+defaults write com.apple.dock launchanim -bool false
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
+killall Dock
+killall Finder
+```
+
+## Performance Note
+
+On modern Macs (2016+), animations have minimal performance impact. Disabling them primarily affects perception, not actual speed. Consider keeping animations unless:
+- Using older Mac hardware
+- Experiencing UI lag
+- Strong personal preference
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still seeing animations | Log out and back in |
+| Some apps still animate | App-specific animations may differ |
+| Jerky animations | May indicate graphics issue |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Applies to**: Most native macOS apps
+- **Note**: Some apps have custom animations
+
+## Source File
+
+**File**: [`defaults/interface/window_management.sh`](../../../defaults/interface/window_management.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSAutomaticWindowAnimationsEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use accessibility features on Mac](https://support.apple.com/guide/mac-help/accessibility-features-on-mac-mh35884/mac)

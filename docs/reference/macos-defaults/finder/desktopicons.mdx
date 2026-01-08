@@ -1,0 +1,153 @@
+# Finder Desktop Icons
+
+Control which items appear on the Desktop.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Keys** | `ShowHardDrivesOnDesktop`, `ShowExternalHardDrivesOnDesktop`, `ShowMountedServersOnDesktop`, `ShowRemovableMediaOnDesktop` |
+| **Type** | Boolean |
+| **Default Value** | `false` (most items) |
+| **Our Setting** | See below |
+
+## Description
+
+Controls which device icons appear on the macOS Desktop. By default, modern macOS shows minimal icons on the Desktop, but you can enable display of hard drives, external drives, servers, and removable media.
+
+## Settings Overview
+
+| Key | Shows | Default | Our Setting |
+|-----|-------|---------|-------------|
+| `ShowHardDrivesOnDesktop` | Internal drives | `false` | `false` |
+| `ShowExternalHardDrivesOnDesktop` | External HDDs/SSDs | `true` | `true` |
+| `ShowMountedServersOnDesktop` | Network shares | `false` | `false` |
+| `ShowRemovableMediaOnDesktop` | USB drives, SD cards | `true` | `true` |
+
+## Our Configuration
+
+- **Internal drives**: Hidden — Access via Finder sidebar
+- **External drives**: Shown — Easy access when connecting
+- **Servers**: Hidden — Access via Finder sidebar
+- **Removable media**: Shown — Important for USB/SD workflows
+
+### Why This Configuration?
+
+1. **Clean Desktop** — Minimal clutter
+2. **Visibility for removable** — Know when drives are connected
+3. **Easy eject** — Right-click Desktop icons to eject
+4. **Network via Finder** — Servers accessed from sidebar
+
+## Code Examples
+
+```bash
+# Read current settings
+defaults read com.apple.finder ShowHardDrivesOnDesktop
+defaults read com.apple.finder ShowExternalHardDrivesOnDesktop
+defaults read com.apple.finder ShowMountedServersOnDesktop
+defaults read com.apple.finder ShowRemovableMediaOnDesktop
+
+# Show external and removable drives only (recommended)
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool false
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+
+# Show ALL devices
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+
+# Hide ALL devices (completely clean Desktop)
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool false
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool false
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool false
+
+# Restart Finder to apply
+killall Finder
+```
+
+## UI Location
+
+**Finder** → **Settings** (⌘,) → **General** tab → **Show these items on the desktop:**
+
+Checkboxes:
+- ☐ Hard disks
+- ☑ External disks
+- ☐ Connected servers
+- ☑ CDs, DVDs, and iPods
+
+## Desktop Icon States
+
+| Icon | State |
+|------|-------|
+| 💿 | Internal drive |
+| 💾 | External HDD |
+| ⚡ | External SSD |
+| 🖥️ | Server/NAS |
+| 💽 | USB/SD card |
+| 📀 | Optical disc |
+
+## Use Cases
+
+### Clean Minimalist Desktop
+
+```bash
+# Hide everything
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool false
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool false
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool false
+killall Finder
+```
+
+### Developer/IT Setup (Show All)
+
+```bash
+# Show all devices for easy access
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+killall Finder
+```
+
+## Accessing Hidden Drives
+
+Even when hidden from Desktop, drives are accessible via:
+- **Finder sidebar** → Locations section
+- **Finder** → **Go** → **Computer** (⇧⌘C)
+- **Terminal** → `/Volumes/` directory
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Icons not updating | Restart Finder: `killall Finder` |
+| Drive not appearing | Check if mounted in Disk Utility |
+| Can't eject hidden drive | Finder sidebar → right-click → Eject |
+
+## Compatibility
+
+- **Finder**: All macOS versions
+- **Applies to**: Desktop only (not Finder windows)
+- **Note**: iPods use ShowRemovableMediaOnDesktop
+
+## Source File
+
+**File**: [`defaults/finder/desktop.sh`](../../../defaults/finder/desktop.sh)
+
+```bash
+run_defaults "com.apple.finder" "ShowHardDrivesOnDesktop" "-bool" "false"
+run_defaults "com.apple.finder" "ShowExternalHardDrivesOnDesktop" "-bool" "true"
+run_defaults "com.apple.finder" "ShowMountedServersOnDesktop" "-bool" "false"
+run_defaults "com.apple.finder" "ShowRemovableMediaOnDesktop" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Finder preferences](https://support.apple.com/guide/mac-help/finder-preferences-mchldcbd56d7/mac)
+- [Apple Support: Change what shows on your Mac desktop](https://support.apple.com/guide/mac-help/organize-files-on-your-mac-mchl9bacde46/mac)

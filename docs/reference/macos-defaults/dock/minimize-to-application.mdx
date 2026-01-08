@@ -1,0 +1,126 @@
+# Minimize to Application Icon
+
+Minimize windows into their app icon instead of the Dock section.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `minimize-to-application` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls where minimized windows go in the Dock. By default, minimized windows appear as separate icons in the right section of the Dock (near the Trash). When enabled, minimized windows are tucked into their application's icon instead.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Minimize to app icon** — Windows hide inside app icon |
+| `false` | **Minimize to Dock section** (default) — Separate thumbnails |
+
+## Visual Comparison
+
+**minimize-to-application = false (default):**
+```
+[Finder][Safari][Mail] | [Min'd Safari][Min'd Mail] | [Trash]
+                         ↑ Clutters Dock
+```
+
+**minimize-to-application = true (our setting):**
+```
+[Finder][Safari•][Mail•] | [Trash]
+         ↑ Dot indicates minimized windows
+         Click to see them
+```
+
+## Our Configuration
+
+**Set to**: `true` — Cleaner Dock with minimized windows hidden in app icons.
+
+### Why Enable?
+
+1. **Cleaner Dock** — No minimized window clutter
+2. **Organization** — Windows stay with their app
+3. **Space saving** — Dock doesn't grow with each minimized window
+4. **Discoverability** — Click app icon, see all windows
+
+### How to Access Minimized Windows
+
+When enabled, access minimized windows by:
+- Right-click or long-press the app icon
+- Click app icon (shows window list)
+- Use Mission Control (F3)
+- App Exposé (⌃↓ or trackpad gesture)
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dock minimize-to-application
+
+# Enable (minimize to app icon - recommended)
+defaults write com.apple.dock minimize-to-application -bool true
+killall Dock
+
+# Disable (minimize to Dock section - Apple default)
+defaults write com.apple.dock minimize-to-application -bool false
+killall Dock
+
+# Delete (reset to default)
+defaults delete com.apple.dock minimize-to-application
+killall Dock
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → ☑ **Minimize windows into application icon**
+
+## Related Settings
+
+```bash
+# Complete Dock window management
+defaults write com.apple.dock minimize-to-application -bool true
+defaults write com.apple.dock mineffect -string "scale"
+defaults write com.apple.dock show-recents -bool false
+killall Dock
+```
+
+## Minimize Effects
+
+Choose the animation when minimizing:
+
+| Effect | Command |
+|--------|---------|
+| Genie (default) | `defaults write com.apple.dock mineffect -string "genie"` |
+| Scale (faster) | `defaults write com.apple.dock mineffect -string "scale"` |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Minimized windows still in Dock | Run `killall Dock` to apply |
+| Can't find minimized window | Right-click app icon in Dock |
+| Some apps show thumbnails anyway | App-specific behavior |
+
+## Compatibility
+
+- **macOS**: 10.10+
+- **Applies to**: All applications
+- **Note**: Works with any minimize effect
+
+## Source File
+
+**File**: [`defaults/interface/window_management.sh`](../../../defaults/interface/window_management.sh)
+
+```bash
+run_defaults "com.apple.dock" "minimize-to-application" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mh26282/mac)

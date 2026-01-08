@@ -1,0 +1,128 @@
+# App Store Video Previews
+
+Control automatic video playback in App Store listings.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.appstore` |
+| **Key** | `AutoPlayVideoSetting` |
+| **Type** | String |
+| **Default Value** | `on` |
+| **Our Setting** | `off` |
+
+## Description
+
+Controls whether video previews in App Store app listings automatically start playing when you view an app. When enabled, videos play automatically as you browse. When disabled, you must click to play videos, saving bandwidth and reducing distractions.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `on` | **Auto-play** (default) — Videos start automatically |
+| `off` | **Click to play** — Videos require manual start |
+
+## Our Configuration
+
+**Set to**: `off` — Manual video playback for cleaner browsing.
+
+### Why Disable Auto-Play?
+
+1. **Focus** — Browse without video distractions
+2. **Bandwidth** — Save data on limited connections
+3. **Battery** — Video playback uses power
+4. **Control** — Watch videos when you choose
+5. **Quieter** — No unexpected audio
+
+### When Auto-Play Is Better
+
+- Casually browsing for apps
+- Evaluating games (visual preview important)
+- Fast internet connection
+- Don't mind videos playing
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.appstore AutoPlayVideoSetting
+
+# Disable video auto-play (recommended)
+defaults write com.apple.appstore AutoPlayVideoSetting -string "off"
+
+# Enable video auto-play (Apple default)
+defaults write com.apple.appstore AutoPlayVideoSetting -string "on"
+
+# Delete (reset to default)
+defaults delete com.apple.appstore AutoPlayVideoSetting
+
+# Restart App Store to apply (close and reopen)
+killall "App Store"
+```
+
+## UI Location
+
+**App Store** → **App Store** menu → **Settings** (⌘,) → **Video Autoplay**
+
+Options:
+- On
+- Off
+
+## Related Settings
+
+```bash
+# Complete App Store configuration
+defaults write com.apple.appstore AutoPlayVideoSetting -string "off"
+
+# In-app ratings prompts (if you want to disable)
+defaults write com.apple.appstore InAppReviewEnabled -bool false
+
+# Automatic downloads from other devices
+defaults write com.apple.appstore AutomaticallyDownloadApps -bool false
+```
+
+## App Store Behavior
+
+### With Auto-Play Disabled
+
+When viewing an app page:
+1. Video thumbnail shows with play button
+2. Click to start playback
+3. Video plays in place or modal
+4. Other app videos stay paused
+
+### Video Preview Benefits
+
+Even with auto-play off, manually watching previews helps:
+- See actual gameplay
+- Preview app interface
+- Evaluate visual quality
+- Understand app functionality
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Videos still auto-playing | Restart App Store app |
+| Setting not in preferences | Check macOS version; may be newer UI |
+| Audio still plays | Mute in video player controls |
+
+## Compatibility
+
+- **App Store**: macOS 10.14+
+- **iOS**: Similar setting exists on iPhone/iPad
+- **Syncs**: Setting does not sync across devices
+
+## Source File
+
+**File**: [`defaults/applications/appstore.sh`](../../../../defaults/applications/appstore.sh)
+
+```bash
+run_defaults "com.apple.appstore" "AutoPlayVideoSetting" "-string" "off"
+```
+
+## References
+
+- [Apple Support: Use the App Store](https://support.apple.com/guide/app-store/welcome/mac)
+- [Apple Support: App Store settings](https://support.apple.com/guide/mac-help/app-store-settings-mchl0e2c39bd/mac)

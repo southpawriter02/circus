@@ -1,0 +1,172 @@
+# Font Book Preview Size
+
+Set the default preview size for fonts in Font Book.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.FontBook` |
+| **Keys** | `FBPreviewSize`, `FBPreviewText` |
+| **Type** | Float, String |
+| **Default Value** | `24.0`, `<sample text>` |
+| **Our Setting** | `48.0`, `"The quick brown fox..."` |
+
+## Description
+
+Font Book is macOS's built-in font manager. These settings control the default preview size for viewing fonts and the sample text displayed. A larger preview size makes it easier to evaluate font characteristics, while custom preview text lets you test how fonts look with your actual content.
+
+## Values
+
+### Preview Size
+
+| Value | Display |
+|-------|---------|
+| `12.0` | Small (12pt) |
+| `24.0` | Default (24pt) |
+| `48.0` | Large (48pt) - recommended |
+| `72.0` | Very large (72pt) |
+| `144.0` | Maximum (144pt) |
+
+### Preview Text
+
+The text displayed when previewing fonts. Can be:
+- Default system sample text
+- Custom string of your choice
+- Pangram like "The quick brown fox..."
+
+## Our Configuration
+
+**Preview Size**: `48.0` — Large enough to see font details
+**Preview Text**: Standard pangram for consistency
+
+### Why Larger Preview?
+
+1. **Detail visibility** — See serifs, kerning, letterforms
+2. **Character comparison** — Distinguish similar fonts
+3. **Design evaluation** — Better judge aesthetic
+4. **Accessibility** — Easier on eyes
+
+## Code Examples
+
+```bash
+# Read current settings
+defaults read com.apple.FontBook FBPreviewSize
+defaults read com.apple.FontBook FBPreviewText
+
+# Set larger preview size
+defaults write com.apple.FontBook FBPreviewSize -float 48.0
+
+# Set custom preview text
+defaults write com.apple.FontBook FBPreviewText -string "The quick brown fox jumps over the lazy dog. 0123456789"
+
+# Reset preview size to default
+defaults write com.apple.FontBook FBPreviewSize -float 24.0
+
+# Delete (reset to defaults)
+defaults delete com.apple.FontBook FBPreviewSize
+defaults delete com.apple.FontBook FBPreviewText
+
+# Restart Font Book
+killall "Font Book"
+```
+
+## UI Location
+
+**Font Book** → **Preview** menu → **Show Preview**
+
+Then use the slider in the preview pane to adjust size.
+
+For custom text, click in the preview area and type.
+
+## Preview Modes
+
+Font Book offers three preview modes:
+
+| Mode | Shows | Menu |
+|------|-------|------|
+| **Sample** | Pangram text | Preview → Sample |
+| **Repertoire** | All glyphs in grid | Preview → Repertoire |
+| **Custom** | Your text | Preview → Custom |
+
+Toggle via **Preview** menu or toolbar.
+
+## Useful Preview Texts
+
+```bash
+# Pangram (all letters)
+defaults write com.apple.FontBook FBPreviewText -string "The quick brown fox jumps over the lazy dog."
+
+# Numbers and punctuation
+defaults write com.apple.FontBook FBPreviewText -string "0123456789 !@#$%^&*() []{}|;':\",./<>?"
+
+# Programming sample
+defaults write com.apple.FontBook FBPreviewText -string "func hello() { return 0xDEADBEEF; } // 1lI0O"
+
+# Mixed case test
+defaults write com.apple.FontBook FBPreviewText -string "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"
+```
+
+## Font Management
+
+```bash
+# Install font via command line
+cp MyFont.ttf ~/Library/Fonts/
+
+# Validate font
+/usr/bin/atsutil fonts -verify
+
+# List installed fonts
+/usr/bin/atsutil fonts -list | grep "FontName"
+
+# Clear font cache
+sudo atsutil databases -remove
+atsutil server -shutdown
+atsutil server -ping
+```
+
+## Related Settings
+
+```bash
+# Show font info panel by default
+defaults write com.apple.FontBook FBShowFontInfoPanel -bool true
+
+# Column widths and view settings are also stored
+defaults read com.apple.FontBook | grep -i column
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Preview not updating | Select a different font, then back |
+| Size slider not responding | Restart Font Book |
+| Custom text not saving | Ensure proper string escaping |
+| Fonts not appearing | Clear font cache with atsutil |
+
+## Font Locations
+
+| Location | Scope |
+|----------|-------|
+| `~/Library/Fonts/` | Current user only |
+| `/Library/Fonts/` | All users |
+| `/System/Library/Fonts/` | System fonts (protected) |
+
+## Compatibility
+
+- **Font Book**: All macOS versions
+- **Formats**: .ttf, .otf, .ttc, .dfont
+- **Syncs**: Font preferences don't sync
+
+## Source File
+
+**File**: [`defaults/applications/fontbook.sh`](../../../../defaults/applications/fontbook.sh)
+
+```bash
+run_defaults "com.apple.FontBook" "FBPreviewSize" "-float" "48.0"
+```
+
+## References
+
+- [Apple Support: Font Book User Guide](https://support.apple.com/guide/font-book/welcome/mac)
+- [Apple Support: Install and validate fonts](https://support.apple.com/guide/font-book/install-and-validate-fonts-fntbk1000/mac)

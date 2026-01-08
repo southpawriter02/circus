@@ -1,0 +1,163 @@
+# Dock Magnification
+
+Enable icon magnification when hovering over the Dock.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Keys** | `magnification`, `largesize` |
+| **Type** | Boolean, Integer |
+| **Default Value** | `false`, `128` |
+| **Our Setting** | `false`, `64` |
+
+## Description
+
+Dock magnification causes icons to enlarge as you hover your cursor over them, creating a "fish-eye lens" effect. This helps identify apps when using a small Dock size but can feel distracting to some users. The `largesize` key controls how large icons become when magnified.
+
+## Values
+
+### Magnification Toggle
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enabled** — Icons enlarge on hover |
+| `false` | **Disabled** (default) — Icons stay constant size |
+
+### Large Size (pixels)
+
+| Value | Size |
+|-------|------|
+| `16` | Tiny magnification |
+| `64` | Subtle magnification |
+| `128` | Medium magnification (default when enabled) |
+| `256` | Maximum magnification |
+
+## Visual Example
+
+**Without magnification:**
+```
+│ 🔵 │ 🟢 │ 🟣 │ 🟠 │ 🔴 │
+```
+
+**With magnification (hovering over middle):**
+```
+│ 🔵 │ 🟢 │  🟣  │ 🟠 │ 🔴 │
+         ↑
+      enlarged
+```
+
+## Our Configuration
+
+**Magnification**: `false` — Consistent Dock size
+**Large Size**: `64` — Subtle if enabled
+
+### Why Disable Magnification?
+
+1. **Predictability** — Dock doesn't shift around
+2. **Click accuracy** — Icons don't move as you approach
+3. **Clean aesthetic** — Minimal visual effects
+4. **Performance** — Slightly less GPU work (negligible)
+
+### When to Enable Magnification
+
+- Small Dock tile size (hard to see icons)
+- Many apps in Dock (need visual distinction)
+- Preference for dynamic interfaces
+- Accessibility (larger targets on hover)
+
+## Code Examples
+
+```bash
+# Read current values
+defaults read com.apple.dock magnification
+defaults read com.apple.dock largesize
+
+# Disable magnification (recommended)
+defaults write com.apple.dock magnification -bool false
+killall Dock
+
+# Enable magnification with large icons
+defaults write com.apple.dock magnification -bool true
+defaults write com.apple.dock largesize -int 128
+killall Dock
+
+# Enable subtle magnification
+defaults write com.apple.dock magnification -bool true
+defaults write com.apple.dock largesize -int 64
+killall Dock
+
+# Delete (reset to defaults)
+defaults delete com.apple.dock magnification
+defaults delete com.apple.dock largesize
+killall Dock
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Dock** section:
+- **Magnification** toggle
+- **Size slider** (for magnified size)
+
+Or right-click Dock divider → **Dock Settings**.
+
+## Size Relationships
+
+For best results, set `largesize` larger than `tilesize`:
+
+```bash
+# Small Dock with large magnification
+defaults write com.apple.dock tilesize -int 36
+defaults write com.apple.dock magnification -bool true
+defaults write com.apple.dock largesize -int 128
+killall Dock
+
+# Medium Dock with subtle magnification
+defaults write com.apple.dock tilesize -int 48
+defaults write com.apple.dock magnification -bool true
+defaults write com.apple.dock largesize -int 64
+killall Dock
+```
+
+## Complete Dock Configuration
+
+```bash
+# Comprehensive Dock setup
+defaults write com.apple.dock tilesize -int 48
+defaults write com.apple.dock magnification -bool false
+defaults write com.apple.dock orientation -string "bottom"
+defaults write com.apple.dock autohide -bool true
+defaults write com.apple.dock show-recents -bool false
+defaults write com.apple.dock mineffect -string "scale"
+killall Dock
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Magnification not working | Ensure `magnification` is true |
+| Too much/little magnification | Adjust `largesize` value |
+| Dock position shifts | Normal behavior with magnification |
+| Setting not applying | Run `killall Dock` |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Applies to**: Main Dock only
+- **Note**: Touch Bar Dock (if present) is separate
+
+## Source File
+
+**File**: [`defaults/dock/dock.sh`](../../../defaults/dock/dock.sh)
+
+```bash
+run_defaults "com.apple.dock" "magnification" "-bool" "false"
+run_defaults "com.apple.dock" "largesize" "-int" "64"
+```
+
+## References
+
+- [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mh26282/mac)
+- [Apple Support: Use the Dock on Mac](https://support.apple.com/guide/mac-help/use-the-dock-mh35859/mac)

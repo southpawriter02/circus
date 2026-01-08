@@ -1,0 +1,144 @@
+# Desktop Widgets
+
+Control widget visibility on the macOS desktop.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.WindowManager` |
+| **Key** | `ShowOnDesktop` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Starting with macOS Sonoma, widgets can be displayed directly on the desktop, not just in Notification Center. This setting controls whether widgets appear on your desktop background.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show widgets** (default) — Widgets visible on desktop |
+| `false` | **Hide widgets** — Widgets only in Notification Center |
+
+## Our Configuration
+
+**Set to**: `true` — Show widgets on desktop.
+
+### Why Show Widgets?
+
+1. **At-a-glance info** — Weather, calendar, reminders visible
+2. **Quick access** — Interact without opening apps
+3. **Customizable** — Choose what information matters
+4. **iPhone widgets** — Use iOS widgets on Mac
+
+### Why Hide Widgets?
+
+- Prefer clean desktop
+- Widgets distract from wallpaper
+- Performance concerns
+- Minimalist preference
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.WindowManager ShowOnDesktop
+
+# Show widgets on desktop (default)
+defaults write com.apple.WindowManager ShowOnDesktop -bool true
+
+# Hide widgets from desktop
+defaults write com.apple.WindowManager ShowOnDesktop -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.WindowManager ShowOnDesktop
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Widgets** section
+
+Options:
+- Show Widgets: On Desktop / In Notification Center
+- Click desktop to show Desktop: Always / Only in Stage Manager
+- Widget style: Automatic / Monochrome / Full Color
+
+## Adding Widgets
+
+1. Click the date/time in menu bar
+2. Click **Edit Widgets** at bottom
+3. Drag widgets to desktop
+4. Click **Done**
+
+Or right-click desktop → **Edit Widgets**
+
+## Widget Types
+
+### macOS Native Widgets
+
+- Weather
+- Calendar
+- Reminders
+- Clock
+- Notes
+- Stocks
+- Photos
+- Podcasts
+- Batteries
+- Screen Time
+
+### iPhone Widgets
+
+With iOS 17+ and macOS Sonoma:
+- iPhone must be nearby
+- Same Apple ID on both devices
+- Many iOS apps provide Mac widgets
+
+## Related Settings
+
+```bash
+# Widget style (monochrome vs color)
+defaults write com.apple.WindowManager "WidgetConfiguration" ...
+# (Complex plist structure)
+
+# Hide widgets in Stage Manager
+defaults write com.apple.WindowManager StandardHideWidgets -bool true
+```
+
+## Widget Positions
+
+Widget layout is stored in:
+```
+~/Library/Containers/com.apple.widgets/
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Widgets not appearing | Enable in System Settings |
+| iPhone widgets missing | Check same Apple ID, iPhone nearby |
+| Can't edit widgets | Right-click desktop → Edit Widgets |
+| Widgets wrong color | Check Widget style in settings |
+
+## Compatibility
+
+- **macOS**: 14.0 (Sonoma)+ for desktop widgets
+- **Earlier macOS**: Widgets only in Notification Center
+- **iPhone widgets**: Requires iOS 17+
+
+## Source File
+
+**File**: [`defaults/interface/notifications.sh`](../../../defaults/interface/notifications.sh)
+
+```bash
+run_defaults "com.apple.WindowManager" "ShowOnDesktop" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use widgets on Mac](https://support.apple.com/guide/mac-help/use-widgets-mchl52be5da5/mac)
+- [Apple Support: Add iPhone widgets to Mac](https://support.apple.com/guide/mac-help/add-iphone-widgets-to-your-mac-desktop-mchlcb243f3e/mac)

@@ -1,0 +1,124 @@
+# AirDrop Discoverability
+
+Control who can send files to your Mac via AirDrop.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.sharingd` |
+| **Key** | `DiscoverableMode` |
+| **Type** | String |
+| **Default Value** | `Contacts Only` |
+| **Our Setting** | `Contacts Only` |
+
+## Description
+
+Controls who can see your Mac when AirDrop is active. AirDrop uses Bluetooth to discover nearby devices and Wi-Fi for the actual file transfer. This setting affects your privacy and security on public networks.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `Off` | **No one** — Mac invisible to AirDrop |
+| `Contacts Only` | **Only contacts** (default) — People in your Contacts |
+| `Everyone` | **Anyone nearby** — All AirDrop users can see you |
+
+## Our Configuration
+
+**Set to**: `Contacts Only` — Balanced security and usability.
+
+### Why Contacts Only?
+
+1. **Privacy** — Strangers can't see your Mac
+2. **Security** — Prevents unsolicited file sends
+3. **Usability** — Friends/colleagues can still share
+4. **Default** — Apple's recommended setting
+
+### When to Use "Everyone"
+
+The "Everyone" setting should be temporary:
+- Receiving files from someone not in Contacts
+- Quick sharing in a trusted environment
+- Remember to change back when done
+
+## Security Warning
+
+> ⚠️ **Public Network Risk**: Setting AirDrop to "Everyone" in public places (airports, cafes) exposes your Mac to potential harassment or malicious file sends. Always use "Contacts Only" or "Off" in public.
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.sharingd DiscoverableMode
+
+# Set to Contacts Only (recommended)
+defaults write com.apple.sharingd DiscoverableMode -string "Contacts Only"
+
+# Set to Everyone (temporary use only)
+defaults write com.apple.sharingd DiscoverableMode -string "Everyone"
+
+# Turn off AirDrop visibility
+defaults write com.apple.sharingd DiscoverableMode -string "Off"
+
+# Delete (reset to default)
+defaults delete com.apple.sharingd DiscoverableMode
+```
+
+## UI Location
+
+**Finder** → **AirDrop** (sidebar) → **Allow me to be discovered by:** dropdown
+
+Or: **Control Center** → **AirDrop** → Choose setting
+
+Or: **System Settings** → **General** → **AirDrop & Handoff**
+
+## Requirements
+
+For AirDrop to work:
+- Wi-Fi enabled (doesn't need to be connected)
+- Bluetooth enabled
+- Personal Hotspot disabled
+- Firewall allows AirDrop (check "Block all incoming connections")
+
+## Related Settings
+
+```bash
+# Enable AirDrop over Ethernet (older Macs)
+defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
+```
+
+## AirDrop Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Mac not visible | Check Wi-Fi and Bluetooth are on |
+| Can't send to contact | Both need iCloud signed in |
+| Firewall blocking | Check "Block all incoming connections" |
+| Very slow transfer | Move devices closer together |
+
+## Contacts Only Requirements
+
+For "Contacts Only" to work:
+1. Both devices signed into iCloud
+2. Sender's email/phone in your Contacts
+3. Your email/phone in sender's Contacts
+
+## Compatibility
+
+- **macOS**: 10.10+
+- **Hardware**: 2012 or newer Mac (with some exceptions)
+- **Cross-platform**: Works with iOS devices
+
+## Source File
+
+**File**: [`defaults/system/airdrop.sh`](../../../defaults/system/airdrop.sh)
+
+```bash
+run_defaults "com.apple.sharingd" "DiscoverableMode" "-string" "Contacts Only"
+```
+
+## References
+
+- [Apple Support: Use AirDrop on your Mac](https://support.apple.com/guide/mac-help/use-airdrop-mh35868/mac)
+- [Apple Support: AirDrop not working?](https://support.apple.com/en-us/HT203106)

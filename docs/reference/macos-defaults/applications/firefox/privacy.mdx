@@ -1,0 +1,155 @@
+# Firefox Privacy Settings
+
+Configure Firefox for enhanced privacy via macOS defaults.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `org.mozilla.firefox` |
+| **Keys** | Various |
+| **Type** | Mixed |
+| **Default Value** | Varies |
+| **Our Setting** | Privacy-focused |
+
+## Description
+
+While Firefox primarily uses its own preference system (`about:config`), some settings can be configured via macOS defaults. However, most Firefox customization should be done through Firefox's native preferences or user.js files.
+
+## Firefox on macOS
+
+Firefox stores preferences in:
+- **Profile folder**: `~/Library/Application Support/Firefox/Profiles/[profile]/`
+- **Preferences file**: `prefs.js` (auto-generated)
+- **User overrides**: `user.js` (custom)
+
+## Configuring Firefox
+
+### Through Firefox Settings
+
+**Firefox** → **Settings** (⌘,) or `about:preferences`
+
+Key privacy settings:
+- **Privacy & Security** → **Enhanced Tracking Protection**
+- **Privacy & Security** → **Cookies and Site Data**
+- **Privacy & Security** → **Logins and Passwords**
+
+### Through about:config
+
+Navigate to `about:config` in Firefox for advanced settings.
+
+Useful privacy settings:
+```
+privacy.trackingprotection.enabled = true
+privacy.donottrackheader.enabled = true
+browser.send_pings = false
+geo.enabled = false
+```
+
+## User.js Configuration
+
+For persistent, portable Firefox configuration, create `user.js`:
+
+```bash
+# Find your profile folder
+ls ~/Library/Application\ Support/Firefox/Profiles/
+
+# Create user.js
+cat > ~/Library/Application\ Support/Firefox/Profiles/*.default-release/user.js << 'EOF'
+// Privacy settings
+user_pref("privacy.trackingprotection.enabled", true);
+user_pref("privacy.trackingprotection.socialtracking.enabled", true);
+user_pref("browser.send_pings", false);
+user_pref("geo.enabled", false);
+user_pref("network.cookie.cookieBehavior", 1);
+user_pref("media.peerconnection.enabled", false);
+EOF
+```
+
+## Recommended Privacy Settings
+
+| Setting | Value | Purpose |
+|---------|-------|---------|
+| `privacy.trackingprotection.enabled` | `true` | Block trackers |
+| `browser.send_pings` | `false` | Block ping tracking |
+| `geo.enabled` | `false` | Disable geolocation |
+| `media.peerconnection.enabled` | `false` | Disable WebRTC (prevents IP leak) |
+| `network.dns.disablePrefetch` | `true` | Disable DNS prefetching |
+
+## macOS Defaults (Limited)
+
+Some Firefox installation settings:
+
+```bash
+# Check for updates automatically
+defaults write org.mozilla.firefox app.update.enabled -bool true
+
+# Note: Most Firefox settings don't use macOS defaults
+```
+
+## Firefox Profiles
+
+Firefox supports multiple profiles:
+
+```bash
+# Launch with profile manager
+/Applications/Firefox.app/Contents/MacOS/firefox -P
+
+# Create new profile
+/Applications/Firefox.app/Contents/MacOS/firefox -CreateProfile "Work"
+```
+
+## Shell Script Setup
+
+For portable Firefox config:
+
+```bash
+#!/bin/bash
+# firefox-config.sh
+
+PROFILE_DIR=$(find ~/Library/Application\ Support/Firefox/Profiles -name "*.default-release" -type d | head -1)
+
+if [ -d "$PROFILE_DIR" ]; then
+    cp "$DOTFILES_DIR/firefox/user.js" "$PROFILE_DIR/user.js"
+    echo "Firefox user.js installed"
+else
+    echo "Firefox profile not found. Open Firefox first to create profile."
+fi
+```
+
+## Extensions for Privacy
+
+Consider these privacy-focused extensions:
+- **uBlock Origin** — Ad and tracker blocking
+- **Privacy Badger** — Automatic tracker blocking
+- **HTTPS Everywhere** — Force HTTPS connections
+- **Facebook Container** — Isolate Facebook
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Settings not persisting | Use user.js instead of about:config |
+| Can't find profile | Check ~/Library/Application Support/Firefox/Profiles/ |
+| Settings overwritten | Firefox updates may reset some settings |
+
+## Compatibility
+
+- **Firefox**: All modern versions
+- **Configuration**: Primarily via user.js or about:config
+- **macOS Defaults**: Limited applicability
+
+## Source File
+
+**File**: [`defaults/applications/firefox.sh`](../../../../defaults/applications/firefox.sh)
+
+```bash
+# Firefox is primarily configured via user.js
+# This script copies a user.js template to the Firefox profile
+```
+
+## References
+
+- [Firefox User.js](https://wiki.mozilla.org/Prefs)
+- [Arkenfox user.js](https://github.com/arkenfox/user.js) — Privacy-focused template
+- [Firefox Privacy Guide](https://www.privacytools.io/browsers/#firefox)

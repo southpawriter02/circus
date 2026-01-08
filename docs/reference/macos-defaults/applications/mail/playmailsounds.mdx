@@ -1,0 +1,120 @@
+# Mail Sound Effects
+
+Control the "swoosh" sound when sending emails.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `PlayMailSounds` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Mail plays sound effects during operations. The most notable sound is the "swoosh" when sending an email. When disabled, Mail operates silently, which is preferable in quiet environments or when you find the sounds distracting.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Sounds enabled** (default) — Swoosh on send, sounds for new mail |
+| `false` | **Silent** — No Mail sound effects |
+
+## Sounds Affected
+
+| Action | Sound |
+|--------|-------|
+| Sending email | "Swoosh" send sound |
+| New mail arrival | Alert sound (if enabled separately) |
+| Error | Error alert sound |
+
+## Our Configuration
+
+**Set to**: `false` — Silent Mail operation.
+
+### Why Disable Sounds?
+
+1. **Professional environments** — No swoosh during meetings
+2. **Focus** — Fewer audio interruptions
+3. **Shared spaces** — Considerate to others nearby
+4. **Late night** — Silent email without muting system
+
+### When to Keep Enabled
+
+- Confirmation that email sent successfully
+- Audible notification of new mail
+- Users who appreciate audio feedback
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail PlayMailSounds
+
+# Disable all Mail sounds (recommended)
+defaults write com.apple.mail PlayMailSounds -bool false
+
+# Enable Mail sounds (Apple default)
+defaults write com.apple.mail PlayMailSounds -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.mail PlayMailSounds
+
+# Restart Mail to apply
+killall Mail
+```
+
+## UI Location
+
+**Mail** → **Settings** (⌘,) → **General** → **New message sound** (for new mail only)
+
+Note: The full `PlayMailSounds` key affects all sounds including send, which isn't directly exposed in UI.
+
+## Related Sound Settings
+
+```bash
+# Disable send sound specifically (if supported)
+defaults write com.apple.mail PlaySendMailSound -bool false
+
+# Complete silent Mail setup
+defaults write com.apple.mail PlayMailSounds -bool false
+defaults write com.apple.mail NewMessagesSoundName -string ""
+```
+
+## Alternative: System Sound Control
+
+You can also control sounds at the system level:
+
+**System Settings** → **Sound** → **Sound Effects**
+
+Or mute specific apps in **Sound** → **Application** → **Mail**.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Sounds still playing | Restart Mail completely |
+| New mail sound persists | Check NewMessagesSoundName setting |
+| All Mac sounds affected | This only affects Mail app |
+
+## Compatibility
+
+- **Mail**: All macOS versions
+- **Affects**: Only Mail.app sounds
+- **Syncs**: No, local preference only
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "PlayMailSounds" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Mail preferences](https://support.apple.com/guide/mail/change-general-preferences-cpmlprefgen/mac)
+- [defaults-write.com: Mail settings](https://www.defaults-write.com/tag/mail/)

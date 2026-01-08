@@ -1,0 +1,161 @@
+# Window Tabbing Mode
+
+Control when documents open in tabs vs new windows.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `AppleWindowTabbingMode` |
+| **Type** | String |
+| **Default Value** | `fullscreen` |
+| **Our Setting** | `fullscreen` |
+
+## Description
+
+Controls whether macOS applications open new documents in tabs within the same window or in separate windows. This is a system-wide preference that affects all compatible apps.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `always` | **Always use tabs** — New documents open as tabs |
+| `fullscreen` | **In full screen only** (default) — Tabs only when in full screen |
+| `manual` | **Never auto-tab** — Always open in new windows |
+
+## Visual Comparison
+
+**always:**
+```
+┌─────────────────────────────────────┐
+│ [Doc1] [Doc2] [Doc3] [+]            │
+├─────────────────────────────────────┤
+│                                     │
+│        Current Document             │
+│                                     │
+└─────────────────────────────────────┘
+All documents in one window with tabs
+```
+
+**manual:**
+```
+┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+│    Doc1      │ │    Doc2      │ │    Doc3      │
+├──────────────┤ ├──────────────┤ ├──────────────┤
+│              │ │              │ │              │
+└──────────────┘ └──────────────┘ └──────────────┘
+Each document in its own window
+```
+
+## Our Configuration
+
+**Set to**: `fullscreen` — Tabs in full screen, windows otherwise.
+
+### Why "In Full Screen Only"?
+
+1. **Flexibility** — Tabs when space is limited (full screen)
+2. **Traditional feel** — Separate windows for normal use
+3. **Comparison** — Easy side-by-side with windows
+4. **Default** — Expected behavior for most users
+
+### When to Use "Always"
+
+- Prefer browser-like tabbed interface
+- Limited screen space
+- Reduce window clutter
+- Single-window workflow
+
+### When to Use "Manual"
+
+- Need side-by-side document comparison
+- Use multiple monitors
+- Prefer traditional Mac experience
+- Window management tools (like Rectangle)
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain AppleWindowTabbingMode
+
+# Tabs only in full screen (default)
+defaults write NSGlobalDomain AppleWindowTabbingMode -string "fullscreen"
+
+# Always prefer tabs
+defaults write NSGlobalDomain AppleWindowTabbingMode -string "always"
+
+# Never auto-tab (manual only)
+defaults write NSGlobalDomain AppleWindowTabbingMode -string "manual"
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain AppleWindowTabbingMode
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Prefer tabs when opening documents**
+
+Dropdown options:
+- Always
+- In Full Screen Only
+- Never
+
+## Tab Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘T | New tab |
+| ⌘W | Close tab |
+| ⌃⇥ | Next tab |
+| ⌃⇧⇥ | Previous tab |
+| ⌘⇧] | Next tab (alternate) |
+| ⌘⇧[ | Previous tab (alternate) |
+| ⌘1-9 | Go to specific tab |
+
+## Merge Windows
+
+Even with separate windows, you can merge them:
+**Window** menu → **Merge All Windows**
+
+This combines all open windows into tabs.
+
+## App Compatibility
+
+Most native macOS apps support window tabbing:
+- Finder
+- TextEdit
+- Preview
+- Numbers, Pages, Keynote
+- Many third-party apps
+
+Some apps have their own tab implementations:
+- Safari (browser tabs)
+- Terminal (its own tabbing)
+- Xcode (project tabs)
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| App doesn't support tabs | Not all apps are compatible |
+| Tabs not appearing | Check app's View menu |
+| Lost merge option | Select "Show Tab Bar" first |
+
+## Compatibility
+
+- **macOS**: 10.12 (Sierra)+
+- **Apps**: Most native Cocoa apps
+- **Note**: Electron apps may not support
+
+## Source File
+
+**File**: [`defaults/interface/window_management.sh`](../../../defaults/interface/window_management.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "AppleWindowTabbingMode" "-string" "fullscreen"
+```
+
+## References
+
+- [Apple Support: Use tabs in windows on Mac](https://support.apple.com/guide/mac-help/use-tabs-in-windows-mchla4695cce/mac)

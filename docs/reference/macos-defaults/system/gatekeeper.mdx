@@ -1,0 +1,166 @@
+# Gatekeeper and Quarantine
+
+Control app verification and downloaded file quarantine.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.LaunchServices` |
+| **Key** | `LSQuarantine` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Gatekeeper is macOS's security feature that verifies downloaded applications against known malware and checks developer signatures. The quarantine system marks files downloaded from the internet and prompts users before opening them.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Quarantine enabled** (default) — Show "Are you sure?" dialog |
+| `false` | **Quarantine disabled** — Open downloads without prompting |
+
+## Our Configuration
+
+**Set to**: `true` — Keep quarantine protection enabled.
+
+### Why Keep Quarantine?
+
+1. **Security layer** — Prevents accidental malware execution
+2. **Verification** — Gatekeeper checks app signatures
+3. **Awareness** — Know when opening downloaded files
+4. **Best practice** — Apple strongly recommends this
+
+## Security Warning
+
+> ⚠️ **Critical Security Feature**: Disabling quarantine removes an important security layer. Only disable for specific testing scenarios, never permanently.
+
+## How Quarantine Works
+
+When you download a file:
+
+1. **Extended attribute added**: `com.apple.quarantine`
+2. **First launch**: macOS shows warning dialog
+3. **Gatekeeper check**: Verifies developer signature
+4. **Malware scan**: XProtect checks for known threats
+5. **User decision**: Open, cancel, or move to trash
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.LaunchServices LSQuarantine
+
+# Keep quarantine enabled (recommended)
+defaults write com.apple.LaunchServices LSQuarantine -bool true
+
+# Disable quarantine (NOT recommended)
+defaults write com.apple.LaunchServices LSQuarantine -bool false
+```
+
+## Managing Quarantine Manually
+
+### View Quarantine Attribute
+
+```bash
+# Check if file is quarantined
+xattr -l /path/to/file
+
+# Look for: com.apple.quarantine
+```
+
+### Remove Quarantine from Single File
+
+```bash
+# Remove quarantine (use with caution)
+xattr -d com.apple.quarantine /path/to/file
+```
+
+### Remove Quarantine Recursively
+
+```bash
+# Remove from app bundle (careful!)
+xattr -dr com.apple.quarantine /Applications/SomeApp.app
+```
+
+## Gatekeeper Options
+
+Gatekeeper is controlled via `spctl`:
+
+```bash
+# Check Gatekeeper status
+spctl --status
+
+# Enable Gatekeeper (recommended)
+sudo spctl --master-enable
+
+# Disable Gatekeeper (strongly NOT recommended)
+sudo spctl --master-disable
+
+# Allow specific blocked app
+sudo spctl --add /path/to/app.app
+```
+
+## UI Location
+
+**System Settings** → **Privacy & Security** → **Security** section
+
+Options:
+- App Store (most restrictive)
+- App Store and identified developers (default)
+
+## Opening Blocked Apps
+
+If an app is blocked by Gatekeeper:
+
+1. **Right-click** the app → **Open**
+2. Click **Open** in the dialog
+3. This creates an exception for that app
+
+Or via Terminal:
+```bash
+sudo spctl --add /path/to/blocked-app.app
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| App won't open | Right-click → Open |
+| "Damaged" app message | Remove quarantine attribute |
+| Dialog keeps appearing | App may be unsigned |
+| Can't find security option | Check Privacy & Security settings |
+
+## For Developers
+
+Apps you're developing may trigger quarantine:
+
+```bash
+# Sign your app
+codesign -s "Developer ID" /path/to/app.app
+
+# Notarize for distribution
+xcrun notarytool submit app.zip --apple-id "you@email.com" --password "@keychain:AC_PASSWORD"
+```
+
+## Compatibility
+
+- **Gatekeeper**: macOS 10.7.5+
+- **Quarantine**: All modern macOS
+- **Note**: SIP protects these settings
+
+## Source File
+
+**File**: [`defaults/system/gatekeeper.sh`](../../../defaults/system/gatekeeper.sh)
+
+```bash
+run_defaults "com.apple.LaunchServices" "LSQuarantine" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Safely open apps on your Mac](https://support.apple.com/en-us/HT202491)
+- [Apple Support: About Gatekeeper](https://support.apple.com/guide/security/gatekeeper-and-runtime-protection-sec5599b66df/web)

@@ -1,0 +1,133 @@
+# Remember Windows on Quit
+
+Control whether apps restore windows when relaunched.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSQuitAlwaysKeepsWindows` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls macOS's "Resume" feature—whether applications remember and restore their open windows and documents when relaunched. When enabled, quitting an app closes windows permanently. When disabled (default), the app reopens with the same windows.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Close windows on quit** — Fresh start on relaunch |
+| `false` | **Remember windows** (default) — Restore previous state |
+
+## Our Configuration
+
+**Set to**: `false` — Remember and restore windows.
+
+### Why Remember Windows?
+
+1. **Continuity** — Pick up where you left off
+2. **Productivity** — Don't re-open documents
+3. **Context** — Window positions preserved
+4. **macOS Feature** — Part of Resume functionality
+
+### Why Close Windows?
+
+- Prefer fresh start
+- Privacy (don't show previous documents)
+- Reduce memory on launch
+- Cleaner workflow
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSQuitAlwaysKeepsWindows
+
+# Remember windows (restore on relaunch)
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
+
+# Close windows on quit (fresh start)
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSQuitAlwaysKeepsWindows
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → ☐ **Close windows when quitting an application**
+
+When checked = windows close (fresh start)
+When unchecked = windows restore (Resume)
+
+## Per-App Quit Behavior
+
+You can also choose at quit time:
+
+When quitting with unsaved work, some apps ask:
+- Keep Windows
+- Close Windows
+
+Hold **Option** when selecting **Quit** from menu for options.
+
+## Interaction with Reopen Windows at Login
+
+There are two related settings:
+
+1. **This setting (NSQuitAlwaysKeepsWindows)** — Per-app window memory
+2. **Reopen windows at login** — System-wide session restore
+
+Login setting:
+```bash
+# System Settings → Users & Groups → Login Options
+# "Reopen windows when logging back in"
+```
+
+## Privacy Consideration
+
+If you work with sensitive documents, consider enabling "Close windows when quitting" to prevent documents from reopening automatically when others use your Mac.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Windows still restoring | Check UI setting matches command |
+| Some apps don't remember | App may not support Resume |
+| Too many windows on launch | Enable close windows on quit |
+
+## Compatible Apps
+
+Most native macOS apps support Resume:
+- Finder
+- TextEdit
+- Preview
+- Numbers, Pages, Keynote
+- Safari (reopens tabs)
+- Many third-party apps
+
+Some apps manage their own state:
+- Browsers (tab restoration)
+- IDEs (project state)
+- Adobe apps (recovery system)
+
+## Compatibility
+
+- **macOS**: 10.7 (Lion)+
+- **Feature name**: Resume / State Restoration
+- **Apps**: Most native Cocoa apps
+
+## Source File
+
+**File**: [`defaults/interface/window_management.sh`](../../../defaults/interface/window_management.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSQuitAlwaysKeepsWindows" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Resume feature](https://support.apple.com/guide/mac-help/resume-apps-windows-mac-starts-up-mh19569/mac)

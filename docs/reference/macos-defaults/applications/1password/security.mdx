@@ -1,0 +1,144 @@
+# 1Password Security Settings
+
+Configure 1Password behavior via macOS defaults.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.1password.1password` |
+| **Keys** | Various security and behavior settings |
+| **Type** | Mixed |
+| **Our Focus** | Security best practices |
+
+## Description
+
+1Password is a popular password manager. While most settings are configured within the app, some preferences can be set via macOS defaults. The primary configuration should be done through 1Password's native interface.
+
+## Key Settings
+
+### Auto-Lock Timeout
+
+Controls how long before 1Password locks after inactivity:
+
+```bash
+# 1Password 8 uses its own secure storage
+# Settings are primarily configured in-app
+```
+
+### Lock on Sleep
+
+1Password typically locks when:
+- Mac goes to sleep
+- Screen locks
+- User switches
+- After idle timeout
+
+## In-App Configuration
+
+**1Password** → **Settings** (⌘,) → **Security**
+
+Key security options:
+- **Lock after computer is idle**: [time]
+- **Lock when screen saver starts**: [on/off]
+- **Lock when screen is locked**: [on/off]
+- **Require password after**: [time]
+
+## Recommended Security Settings
+
+| Setting | Recommendation |
+|---------|----------------|
+| Lock on sleep | Enable |
+| Lock on screen saver | Enable |
+| Conceal passwords | Enable |
+| Auto-lock timeout | 1-5 minutes |
+| Show in menu bar | Enable for quick access |
+
+## 1Password CLI Integration
+
+For automation and scripts:
+
+```bash
+# Install 1Password CLI
+brew install --cask 1password-cli
+
+# Sign in
+op signin
+
+# Get item
+op item get "My Login" --fields password
+
+# List vaults
+op vault list
+```
+
+## Browser Extension
+
+1Password's browser extension connects through:
+- Native messaging
+- 1Password desktop app
+- Direct browser extension (standalone)
+
+Configure in 1Password → **Settings** → **Browser**
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘\ | Fill login |
+| ⌃⌥⌘L | Lock 1Password |
+| ⌘⇧X | Quick access |
+| ⌘⇧L | Lock from menu bar |
+
+Configure at: **Settings** → **General** → **Keyboard shortcuts**
+
+## SSH Agent
+
+1Password can act as your SSH agent:
+
+**Settings** → **Developer** → **Set up the SSH Agent**
+
+```bash
+# Add to .zshrc
+export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
+```
+
+## Security Best Practices
+
+1. **Use a strong master password**
+2. **Enable biometric unlock** (Touch ID, Apple Watch)
+3. **Lock on sleep**: Always
+4. **Enable auto-lock**: 1-5 minutes
+5. **Review Watchtower alerts**
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Not auto-filling | Check browser extension settings |
+| Quick access not working | Check keyboard shortcut conflicts |
+| SSH not working | Verify SSH agent socket path |
+| Biometric not available | Check System Settings → Touch ID |
+
+## Compatibility
+
+- **1Password 8**: Subscription-based, Electron app
+- **1Password 7**: Legacy, native app
+- **macOS**: 10.15+
+- **Sync**: 1Password.com, Dropbox, iCloud (v7)
+
+## Source File
+
+**File**: [`defaults/applications/1password.sh`](../../../../defaults/applications/1password.sh)
+
+```bash
+# 1Password 8 uses secure internal storage
+# Configuration primarily done via the app's native interface
+# This script documents best practices rather than defaults commands
+```
+
+## References
+
+- [1Password Support](https://support.1password.com/)
+- [1Password CLI Documentation](https://developer.1password.com/docs/cli/)
+- [1Password SSH Agent](https://developer.1password.com/docs/ssh/)

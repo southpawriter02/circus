@@ -1,0 +1,143 @@
+# Spotlight Suggestions
+
+Control whether Spotlight sends searches to Apple.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.lookup.shared` |
+| **Key** | `LookupSuggestionsDisabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Spotlight can send your search queries to Apple to provide suggestions from the internet, including Wikipedia articles, news, iTunes content, and web results. Disabling this keeps all searches local for privacy.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Suggestions disabled** — Local search only |
+| `false` | **Suggestions enabled** (default) — Queries sent to Apple |
+
+## Our Configuration
+
+**Set to**: `true` — Disable internet suggestions for privacy.
+
+### What Gets Sent to Apple
+
+When Spotlight Suggestions are enabled:
+- Your search query (as you type)
+- Approximate location (for local results)
+- Device information
+- Language and region
+
+### What You Lose
+
+When disabled, you won't see:
+- Wikipedia summaries
+- Web search suggestions
+- iTunes/App Store results
+- News results
+- Maps suggestions
+
+### What You Keep
+
+Local Spotlight still searches:
+- Applications
+- Documents
+- Folders
+- Emails
+- Calendar events
+- Contacts
+- System Preferences
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.lookup.shared LookupSuggestionsDisabled
+
+# Disable Spotlight suggestions (privacy)
+defaults write com.apple.lookup.shared LookupSuggestionsDisabled -bool true
+
+# Enable Spotlight suggestions (Apple default)
+defaults write com.apple.lookup.shared LookupSuggestionsDisabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.lookup.shared LookupSuggestionsDisabled
+```
+
+## UI Location
+
+**System Settings** → **Siri & Spotlight** → **Spotlight Privacy**
+
+Also configurable per-category:
+**System Settings** → **Siri & Spotlight** → **Search Results** — uncheck categories
+
+## Related Privacy Settings
+
+```bash
+# Disable Siri Suggestions in Spotlight
+defaults write com.apple.Siri SiriCanLearnFromAppBlacklist -array "com.apple.Spotlight"
+
+# Exclude folders from Spotlight indexing
+# Use: System Settings → Siri & Spotlight → Spotlight Privacy → Add folders
+```
+
+## Spotlight Reindexing
+
+If Spotlight behaves unexpectedly:
+
+```bash
+# Reindex entire drive
+sudo mdutil -E /
+
+# Check indexing status
+mdutil -s /
+
+# Disable/enable indexing
+sudo mdutil -i off /
+sudo mdutil -i on /
+```
+
+## Privacy Note
+
+> 🔒 For maximum privacy, disable Spotlight Suggestions. Your searches stay on your Mac and aren't sent to Apple's servers. Use your browser for web searches instead.
+
+## Alternative Search
+
+With Spotlight Suggestions disabled, for web searches:
+- Open browser and search directly
+- Use Alfred or Raycast with web search
+- Configure keyboard shortcut for browser search
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Suggestions still appearing | Log out and back in |
+| Search results slow | Run `sudo mdutil -E /` to reindex |
+| Some apps not appearing | Add to Spotlight search categories |
+
+## Compatibility
+
+- **macOS**: 10.10+
+- **Siri Integration**: Similar settings in Siri preferences
+- **Note**: Some features require Siri to be enabled
+
+## Source File
+
+**File**: [`defaults/system/spotlight.sh`](../../../defaults/system/spotlight.sh)
+
+```bash
+run_defaults "com.apple.lookup.shared" "LookupSuggestionsDisabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Spotlight on your Mac](https://support.apple.com/guide/mac-help/spotlight-mchlp1008/mac)
+- [Apple Support: Change Spotlight preferences](https://support.apple.com/guide/mac-help/change-spotlight-preferences-mchlp2811/mac)

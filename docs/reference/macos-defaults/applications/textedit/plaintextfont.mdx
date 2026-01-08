@@ -1,0 +1,154 @@
+# TextEdit Plain Text Default Font
+
+Set the default monospace font for plain text documents.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.TextEdit` |
+| **Keys** | `NSFixedPitchFont`, `NSFixedPitchFontSize` |
+| **Type** | String, Integer |
+| **Default Value** | `Monaco`, `10` |
+| **Our Setting** | `MesloLGS-NF-Regular`, `14` |
+
+## Description
+
+Controls the default monospace font and size used when creating or viewing plain text documents in TextEdit. A good monospace font is essential for readability when editing code snippets, configuration files, or any text where character alignment matters.
+
+## Our Configuration
+
+**Font**: `MesloLGS-NF-Regular` (or `Menlo-Regular`)
+**Size**: `14` — Comfortable reading size for coding
+
+### Why Change the Font?
+
+1. **Readability** — Larger size reduces eye strain
+2. **Modern fonts** — Better character distinction (0/O, 1/l/I)
+3. **Nerd fonts** — Add icons for development (if using Nerd Fonts)
+4. **Consistency** — Match your terminal/editor fonts
+
+### Popular Monospace Fonts
+
+| Font | Notes |
+|------|-------|
+| `Menlo-Regular` | Default macOS, excellent |
+| `Monaco` | Classic Mac font |
+| `SF Mono-Regular` | Apple's San Francisco Mono |
+| `JetBrainsMono-Regular` | Great for coding |
+| `FiraCode-Regular` | Has ligatures |
+| `MesloLGS-NF-Regular` | Nerd Font version |
+
+## Code Examples
+
+```bash
+# Read current values
+defaults read com.apple.TextEdit NSFixedPitchFont
+defaults read com.apple.TextEdit NSFixedPitchFontSize
+
+# Set Menlo 14pt (recommended)
+defaults write com.apple.TextEdit NSFixedPitchFont -string "Menlo-Regular"
+defaults write com.apple.TextEdit NSFixedPitchFontSize -int 14
+
+# Set SF Mono 13pt
+defaults write com.apple.TextEdit NSFixedPitchFont -string "SFMono-Regular"
+defaults write com.apple.TextEdit NSFixedPitchFontSize -int 13
+
+# Set Monaco 12pt (classic)
+defaults write com.apple.TextEdit NSFixedPitchFont -string "Monaco"
+defaults write com.apple.TextEdit NSFixedPitchFontSize -int 12
+
+# Delete (reset to default)
+defaults delete com.apple.TextEdit NSFixedPitchFont
+defaults delete com.apple.TextEdit NSFixedPitchFontSize
+
+# Restart TextEdit to apply
+killall TextEdit
+```
+
+## UI Location
+
+**TextEdit** → **Settings** (⌘,) → **New Document** → **Plain text font** → **Change...**
+
+This opens the Font panel where you can select any installed font.
+
+## Finding Font Names
+
+To find the exact PostScript name for a font:
+
+### Using Font Book
+
+1. Open **Font Book**
+2. Select the font
+3. **View** → **Show Font Info**
+4. Copy the **PostScript name**
+
+### Using Terminal
+
+```bash
+# List all available fonts
+atsutil fonts -list | grep -i "menlo"
+
+# Or query Font Book
+osascript -e 'tell application "Font Book" to name of every font family'
+```
+
+## Related Settings
+
+```bash
+# Complete TextEdit setup for developers
+# Plain text by default
+defaults write com.apple.TextEdit RichText -int 0
+
+# Monospace font and size
+defaults write com.apple.TextEdit NSFixedPitchFont -string "Menlo-Regular"
+defaults write com.apple.TextEdit NSFixedPitchFontSize -int 14
+
+# Disable smart quotes (breaks code)
+defaults write com.apple.TextEdit SmartQuotes -bool false
+
+# Disable smart dashes
+defaults write com.apple.TextEdit SmartDashes -bool false
+```
+
+## Installing Nerd Fonts
+
+If you want icon support (Nerd Fonts):
+
+```bash
+# Using Homebrew
+brew tap homebrew/cask-fonts
+brew install --cask font-meslo-lg-nerd-font
+
+# Then use:
+defaults write com.apple.TextEdit NSFixedPitchFont -string "MesloLGS-NF-Regular"
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Font not applying | Check exact PostScript name |
+| Font not found | Verify font is installed in Font Book |
+| Wrong style (bold/italic) | Use correct variant name |
+| Changes only affect new docs | Existing documents retain their font |
+
+## Compatibility
+
+- **TextEdit**: All macOS versions
+- **Applies to**: Plain text mode only (not rich text)
+- **Requirements**: Font must be installed on system
+
+## Source File
+
+**File**: [`defaults/applications/textedit.sh`](../../../../defaults/applications/textedit.sh)
+
+```bash
+run_defaults "com.apple.TextEdit" "NSFixedPitchFont" "-string" "Menlo-Regular"
+run_defaults "com.apple.TextEdit" "NSFixedPitchFontSize" "-int" "14"
+```
+
+## References
+
+- [Apple Support: TextEdit User Guide](https://support.apple.com/guide/textedit/welcome/mac)
+- [Apple Support: Install and validate fonts](https://support.apple.com/guide/font-book/install-and-validate-fonts-fntbk1000/mac)

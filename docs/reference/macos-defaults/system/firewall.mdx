@@ -1,0 +1,163 @@
+# Firewall Configuration
+
+Enable and configure the macOS Application Level Firewall.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `/Library/Preferences/com.apple.alf` |
+| **Key** | `globalstate` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+
+## Description
+
+The macOS Application Level Firewall (ALF) protects your Mac by blocking unauthorized incoming network connections. Unlike network-level firewalls, ALF operates at the application level—it controls which apps can receive incoming connections.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Off** (default) — No firewall protection |
+| `1` | **On** — Per-app control of incoming connections |
+| `2` | **Block all** — Block all incoming except essential services |
+
+## Our Configuration
+
+**Set to**: `1` — Firewall on with per-app control.
+
+### Why Enable Firewall?
+
+1. **Network security** — Blocks unauthorized access
+2. **Public Wi-Fi** — Essential protection on untrusted networks
+3. **Service blocking** — Control which apps accept connections
+4. **Audit trail** — Log connection attempts
+
+### When Is Firewall Essential?
+
+- Public networks (coffee shops, airports, hotels)
+- Shared networks (offices, schools)
+- Any network you don't control
+- When running server software
+
+## Code Examples
+
+```bash
+# Check current status
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+
+# Enable firewall (recommended)
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+
+# Block all incoming connections (strict)
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 2
+
+# Disable firewall (not recommended)
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 0
+
+# Apply changes - restart firewall service
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+```
+
+## UI Location
+
+**System Settings** → **Network** → **Firewall**
+
+Toggle on/off and click **Options...** for detailed settings.
+
+## Additional Firewall Settings
+
+### Stealth Mode
+
+Makes your Mac invisible to network probes:
+
+```bash
+# Enable stealth mode (recommended for security)
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 1
+```
+
+Stealth mode:
+- Ignores ICMP ping requests
+- Doesn't respond to port scans
+- Makes Mac appear offline to probing
+
+### Firewall Logging
+
+```bash
+# Enable logging for security auditing
+sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -int 1
+
+# View logs
+log show --predicate 'subsystem == "com.apple.alf"' --last 1h
+```
+
+### Allow Signed Applications
+
+```bash
+# Auto-allow signed apps (balanced)
+sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -int 1
+
+# Auto-allow signed downloads
+sudo defaults write /Library/Preferences/com.apple.alf allowdownloadsignedenabled -int 1
+```
+
+## Complete Firewall Setup
+
+```bash
+# Comprehensive firewall configuration
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 1
+sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -int 1
+sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -int 1
+sudo defaults write /Library/Preferences/com.apple.alf allowdownloadsignedenabled -int 1
+
+# Restart firewall
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| App can't receive connections | Add to firewall exceptions |
+| Screen sharing not working | Firewall may block; add exception |
+| AirDrop not working | Check firewall isn't blocking |
+| VPN issues | Some VPNs need firewall adjustment |
+
+### Adding App Exceptions
+
+```bash
+# Add app to allowed list
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add /path/to/app
+
+# Remove app from allowed list
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --remove /path/to/app
+
+# List all app rules
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --listapps
+```
+
+## Compatibility
+
+- **macOS**: 10.7+
+- **Requires**: Administrator privileges
+- **Note**: Some system services always allowed through
+
+## Source File
+
+**File**: [`defaults/system/firewall.sh`](../../../defaults/system/firewall.sh)
+
+```bash
+run_sudo_defaults "/Library/Preferences/com.apple.alf" "globalstate" "-int" "1"
+run_sudo_defaults "/Library/Preferences/com.apple.alf" "stealthenabled" "-int" "1"
+run_sudo_defaults "/Library/Preferences/com.apple.alf" "loggingenabled" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Use stealth mode](https://support.apple.com/guide/mac-help/use-stealth-mode-to-keep-your-mac-more-secure-mh11463/mac)
+- [Apple Support: About the application firewall](https://support.apple.com/en-us/102445)

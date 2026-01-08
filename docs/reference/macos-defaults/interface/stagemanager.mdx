@@ -1,0 +1,140 @@
+# Stage Manager
+
+Control the Stage Manager window organization feature.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.WindowManager` |
+| **Key** | `GloballyEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Stage Manager is an alternative window management mode introduced in macOS Ventura. When enabled, it organizes your open windows into groups on the left side of the screen, with only one app (or group) visible at a time. The rest are thumbnailed on the side for quick access.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Stage Manager enabled** — Windows organized in side strip |
+| `false` | **Traditional mode** (default) — Normal window management |
+
+## Visual Example
+
+**Traditional Window Management:**
+```
+┌─────────────────────────────────────┐
+│  ┌────────────────────────┐         │
+│  │     App Window 1       │         │
+│  │    ┌──────────────────┐│         │
+│  └────│  App Window 2    ││         │
+│       │                  ││         │
+│       └──────────────────┘│         │
+└─────────────────────────────────────┘
+```
+
+**Stage Manager:**
+```
+┌─────────────────────────────────────┐
+│ ┌──┐                                │
+│ │📱│  ┌──────────────────────────┐  │
+│ └──┘  │                          │  │
+│ ┌──┐  │    Active App Window     │  │
+│ │📱│  │                          │  │
+│ └──┘  │                          │  │
+│ ┌──┐  └──────────────────────────┘  │
+│ │📱│                                │
+│ └──┘  Sidebar shows other apps      │
+└─────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Use traditional window management.
+
+### Why Traditional Mode?
+
+1. **Flexibility** — See multiple windows simultaneously
+2. **Efficiency** — Faster access to overlapping windows
+3. **Familiarity** — Classic Mac experience
+4. **Screen space** — No sidebar taking space
+
+### When Stage Manager Helps
+
+- Single-task focus
+- Reducing visual clutter
+- iPad-like experience
+- Users who prefer modal interfaces
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.WindowManager GloballyEnabled
+
+# Disable Stage Manager (traditional mode)
+defaults write com.apple.WindowManager GloballyEnabled -bool false
+
+# Enable Stage Manager
+defaults write com.apple.WindowManager GloballyEnabled -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.WindowManager GloballyEnabled
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Stage Manager** toggle
+
+Or toggle via **Control Center** → **Stage Manager**.
+
+## Related Settings
+
+```bash
+# Stage Manager behavior settings
+defaults write com.apple.WindowManager AutoHide -bool false
+defaults write com.apple.WindowManager HideDesktop -bool false
+defaults write com.apple.WindowManager AppWindowGroupingBehavior -int 0
+defaults write com.apple.WindowManager StandardHideWidgets -bool false
+```
+
+| Key | Purpose |
+|-----|---------|
+| `AutoHide` | Auto-hide recent apps strip |
+| `HideDesktop` | Hide desktop items in Stage Manager |
+| `AppWindowGroupingBehavior` | 0=group by app, 1=separate windows |
+| `StandardHideWidgets` | Hide widgets in Stage Manager |
+
+## Keyboard Shortcut
+
+Toggle Stage Manager: **Globe/Fn + S** (if configured)
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Stage Manager not available | Requires macOS 13 Ventura or later |
+| Strip not showing | Check AutoHide setting |
+| Can't see desktop | Check HideDesktop setting |
+
+## Compatibility
+
+- **macOS**: 13.0 (Ventura) and later
+- **Hardware**: Apple Silicon and Intel Macs
+- **External displays**: Works on each display independently
+
+## Source File
+
+**File**: [`defaults/interface/stage_manager.sh`](../../../defaults/interface/stage_manager.sh)
+
+```bash
+run_defaults "com.apple.WindowManager" "GloballyEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Stage Manager on your Mac](https://support.apple.com/guide/mac-help/mchl534ba392/mac)

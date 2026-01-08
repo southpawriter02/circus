@@ -1,0 +1,190 @@
+# Finder CreateDesktop
+
+Completely hide or show the Desktop icons and files.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `CreateDesktop` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the Desktop displays any icons at all, including files, folders, drives, and aliases. When disabled, the Desktop becomes a clean wallpaper-only surface. Files still exist in `~/Desktop` but are not rendered visually. This is different from hiding specific device icons—this hides EVERYTHING.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show Desktop items** (default) — Normal Desktop with all icons |
+| `false` | **Hide Desktop items** — Clean wallpaper, no icons visible |
+
+## Visual Comparison
+
+**CreateDesktop enabled (`true`):**
+```
+┌─────────────────────────────────────────┐
+│  📁 Project   📄 Notes.txt   💾 USB    │
+│  📁 Downloads 🖼️ Photo.png   📁 Work   │
+│                                         │
+│            [Wallpaper]                  │
+│                                         │
+│  📄 Report.pdf  🗑️ Trash               │
+└─────────────────────────────────────────┘
+```
+
+**CreateDesktop disabled (`false`):**
+```
+┌─────────────────────────────────────────┐
+│                                         │
+│                                         │
+│            [Clean Wallpaper]            │
+│                                         │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Keep Desktop functional.
+
+### Why Enable (Default)?
+
+1. **File access** — Quick access to commonly used files
+2. **Drag and drop** — Desktop as staging area
+3. **Visual reminders** — See pending tasks/files
+4. **Convention** — Expected behavior for most users
+
+### Why Disable?
+
+1. **Clean aesthetic** — Minimalist, distraction-free workspace
+2. **Focus** — Nothing to tempt you away from work
+3. **Presentations** — Professional look when sharing screen
+4. **Philosophy** — Force use of organized folders instead
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.finder CreateDesktop
+
+# Hide all Desktop icons (clean Desktop)
+defaults write com.apple.finder CreateDesktop -bool false
+killall Finder
+
+# Show Desktop icons (normal behavior)
+defaults write com.apple.finder CreateDesktop -bool true
+killall Finder
+
+# Delete (reset to default)
+defaults delete com.apple.finder CreateDesktop
+killall Finder
+```
+
+## UI Location
+
+Not available in Finder preferences — terminal only.
+
+## Accessing Hidden Desktop Files
+
+Even with CreateDesktop disabled, files still exist:
+
+```bash
+# List Desktop files
+ls -la ~/Desktop
+
+# Open Desktop folder in Finder
+open ~/Desktop
+```
+
+Or navigate via Finder sidebar → your username → Desktop.
+
+## Toggle Script
+
+Create a quick toggle script:
+
+```bash
+#!/bin/bash
+# Toggle Desktop icons visibility
+
+current=$(defaults read com.apple.finder CreateDesktop 2>/dev/null)
+
+if [ "$current" = "0" ] || [ "$current" = "false" ]; then
+    defaults write com.apple.finder CreateDesktop -bool true
+    echo "Desktop icons: VISIBLE"
+else
+    defaults write com.apple.finder CreateDesktop -bool false
+    echo "Desktop icons: HIDDEN"
+fi
+
+killall Finder
+```
+
+## Use Cases
+
+### Presentation Mode
+
+```bash
+# Before presentation - clean Desktop
+defaults write com.apple.finder CreateDesktop -bool false
+killall Finder
+
+# After presentation - restore
+defaults write com.apple.finder CreateDesktop -bool true
+killall Finder
+```
+
+### Minimalist Setup
+
+Combine with other settings for ultimate minimalism:
+
+```bash
+# Complete minimalist setup
+defaults write com.apple.finder CreateDesktop -bool false
+defaults write com.apple.dock autohide -bool true
+defaults write com.apple.dock tilesize -int 36
+killall Finder
+killall Dock
+```
+
+## Related Settings
+
+```bash
+# Specific device icon control (alternative to CreateDesktop)
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool false
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool false
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Desktop items still visible | Run `killall Finder` |
+| Can't find files | They're in ~/Desktop folder |
+| Setting reverts | Check no profile management overrides |
+| Wallpaper not showing | Unrelated; check Desktop & Screen Saver prefs |
+
+## Compatibility
+
+- **Finder**: macOS 10.4+
+- **Applies to**: All Desktop content
+- **Note**: Does not affect menu bar or Dock
+
+## Source File
+
+**File**: [`defaults/finder/desktop.sh`](../../../defaults/finder/desktop.sh)
+
+```bash
+run_defaults "com.apple.finder" "CreateDesktop" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Customize Finder](https://support.apple.com/guide/mac-help/customize-the-finder-mchlp2629/mac)
+- [macOS Defaults: CreateDesktop](https://macos-defaults.com/finder/createdesktop.html)

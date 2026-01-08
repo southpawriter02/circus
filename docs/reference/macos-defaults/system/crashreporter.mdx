@@ -1,0 +1,170 @@
+# Crash Reporter Behavior
+
+Control how crash reports are handled and submitted.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.CrashReporter` |
+| **Key** | `DialogType` |
+| **Type** | String |
+| **Default Value** | `crashreport` |
+| **Our Setting** | `developer` |
+
+## Description
+
+Controls the behavior of the macOS Crash Reporter when an application crashes. This setting determines whether crash reports are shown, automatically submitted, or handled in developer mode with additional details.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `basic` | Minimal notification, auto-submit option |
+| `crashreport` | Standard dialog (default) — Shows report, asks to submit |
+| `developer` | Developer mode — Shows full crash log immediately |
+| `server` | Silent mode — Submits automatically, no dialog |
+| `none` | Disabled — No crash reporter dialogs |
+
+## Visual Comparison
+
+**Standard (`crashreport`):**
+```
+┌─────────────────────────────────────┐
+│  ⚠️ "AppName" quit unexpectedly     │
+│                                     │
+│  Click Reopen to reopen the app.    │
+│  Click Report to see details and    │
+│  send a report to Apple.            │
+│                                     │
+│  [Ignore]  [Report...]  [Reopen]    │
+└─────────────────────────────────────┘
+```
+
+**Developer (`developer`):**
+```
+┌─────────────────────────────────────┐
+│  ⚠️ "AppName" crashed               │
+│                                     │
+│  [Full crash log with stack trace]  │
+│  Thread 0 Crashed:                  │
+│  0 libsystem_kernel.dylib...        │
+│  1 AppName...                       │
+│                                     │
+│  [Save]  [Close]                    │
+└─────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `developer` — Immediate access to crash details.
+
+### Why Developer Mode?
+
+1. **Instant diagnostics** — See crash log immediately
+2. **Debug faster** — Stack trace visible without extra clicks
+3. **Better development** — Essential for app developers
+4. **Symbolicated data** — Full technical details
+5. **Power user** — More information, more control
+
+### When to Use Other Modes
+
+- **basic/crashreport**: Regular users, less technical info
+- **server**: Enterprise, silent reporting
+- **none**: Privacy-focused, no reports sent
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.CrashReporter DialogType
+
+# Enable developer mode (recommended for developers)
+defaults write com.apple.CrashReporter DialogType -string "developer"
+
+# Standard crash dialog (Apple default)
+defaults write com.apple.CrashReporter DialogType -string "crashreport"
+
+# Silent/server mode (no dialogs)
+defaults write com.apple.CrashReporter DialogType -string "server"
+
+# Disable crash reporter entirely
+defaults write com.apple.CrashReporter DialogType -string "none"
+
+# Delete (reset to default)
+defaults delete com.apple.CrashReporter DialogType
+```
+
+## UI Location
+
+**System Settings** → **Privacy & Security** → **Analytics & Improvements** → **Share Mac Analytics**
+
+Note: This UI controls whether reports are sent to Apple, not the `DialogType` behavior.
+
+## Crash Log Location
+
+Crash logs are saved to:
+```
+~/Library/Logs/DiagnosticReports/
+/Library/Logs/DiagnosticReports/
+```
+
+View with:
+```bash
+# Recent crash logs
+ls -la ~/Library/Logs/DiagnosticReports/
+
+# Or use Console.app → Crash Reports
+```
+
+## Reading Crash Logs
+
+Key sections in a crash report:
+
+| Section | Contents |
+|---------|----------|
+| **Exception Type** | Crash reason (EXC_CRASH, EXC_BAD_ACCESS) |
+| **Crashed Thread** | Which thread crashed |
+| **Thread Backtrace** | Stack trace with function calls |
+| **Binary Images** | Loaded libraries |
+
+## Related Settings
+
+```bash
+# Complete developer setup
+defaults write com.apple.CrashReporter DialogType -string "developer"
+
+# Never auto-submit reports
+defaults write com.apple.CrashReporter AutoSubmit -bool false
+```
+
+## Privacy Considerations
+
+> ⚠️ **Privacy Note**: Crash reports may contain sensitive information like file paths, user data, or application state. Consider whether you want reports auto-submitted.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No crash dialog appears | Check DialogType isn't "none" or "server" |
+| Can't find crash logs | Check ~/Library/Logs/DiagnosticReports |
+| Too many dialogs | Use "server" for silent mode |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Applies to**: All applications
+- **Note**: Some system processes have their own crash handling
+
+## Source File
+
+**File**: [`defaults/system/crash_reporter.sh`](../../../defaults/system/crash_reporter.sh)
+
+```bash
+run_defaults "com.apple.CrashReporter" "DialogType" "-string" "developer"
+```
+
+## References
+
+- [Apple Developer: Diagnosing issues using crash reports](https://developer.apple.com/documentation/xcode/diagnosing-issues-using-crash-reports-and-device-logs)
+- [Apple Support: How to read a crash report](https://developer.apple.com/library/archive/technotes/tn2151/_index.html)

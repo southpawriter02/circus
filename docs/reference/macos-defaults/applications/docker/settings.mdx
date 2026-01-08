@@ -1,0 +1,197 @@
+# Docker Desktop Settings
+
+Configure Docker Desktop behavior on macOS.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.docker.docker` |
+| **Config File** | `~/.docker/config.json` |
+| **Settings File** | `~/Library/Group Containers/group.com.docker/settings.json` |
+| **Our Focus** | Developer-friendly defaults |
+
+## Description
+
+Docker Desktop for Mac primarily uses its own configuration files rather than macOS defaults. This document covers how to configure Docker for optimal development experience.
+
+## Configuration Methods
+
+Docker Desktop can be configured via:
+1. **GUI Settings** — Docker Desktop → Settings
+2. **settings.json** — Direct file editing
+3. **daemon.json** — Docker daemon configuration
+4. **Docker CLI** — Command-line configuration
+
+## Key Settings
+
+### Resource Limits
+
+Configure in Docker Desktop → Settings → Resources:
+
+| Resource | Default | Recommended |
+|----------|---------|-------------|
+| CPUs | 50% | 4-8 cores |
+| Memory | 2 GB | 8-16 GB |
+| Swap | 1 GB | 2-4 GB |
+| Disk | 64 GB | 100+ GB |
+
+### Start Docker on Login
+
+```json
+// ~/Library/Group Containers/group.com.docker/settings.json
+{
+  "autoStart": true
+}
+```
+
+### Use Resources Saver
+
+Docker can pause when idle to save resources:
+```json
+{
+  "useResourceSaver": true,
+  "resourceSaverMinutes": 5
+}
+```
+
+## Code Examples
+
+### Check Docker Status
+
+```bash
+# Docker version
+docker version
+
+# Docker info (resources, volumes, etc.)
+docker info
+
+# Live container stats
+docker stats
+```
+
+### Daemon Configuration
+
+Edit `~/.docker/daemon.json`:
+
+```json
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  },
+  "dns": ["8.8.8.8", "8.8.4.4"]
+}
+```
+
+### Docker Compose
+
+```bash
+# Start services
+docker compose up -d
+
+# Stop and remove containers
+docker compose down
+
+# View logs
+docker compose logs -f
+```
+
+## UI Location
+
+Click the **Docker whale icon** in menu bar → **Settings** (⚙️)
+
+Sections:
+- **General** — Startup, updates
+- **Resources** — CPU, Memory, Disk
+- **Docker Engine** — Daemon config
+- **Kubernetes** — Enable local K8s
+
+## Useful Commands
+
+```bash
+# Disk usage
+docker system df
+
+# Clean up unused resources
+docker system prune -a
+
+# Remove all stopped containers
+docker container prune
+
+# Remove dangling images
+docker image prune
+
+# Nuclear option: remove everything
+docker system prune -a --volumes
+```
+
+## Performance Tips
+
+### Virtual Machine Backend
+
+Docker Desktop can use:
+- **Apple Hypervisor** (recommended for Apple Silicon)
+- **qemu** (alternative virtualization)
+
+Settings → General → Virtual machine options
+
+### File Sharing Performance
+
+For bind mounts, use:
+- **VirtioFS** (fastest, default on newer versions)
+- **gRPC FUSE** (fallback)
+- **osxfs** (legacy)
+
+### Avoid Syncing node_modules
+
+```yaml
+# docker-compose.yml
+volumes:
+  - .:/app
+  - /app/node_modules  # Anonymous volume
+```
+
+## Login to Registries
+
+```bash
+# Docker Hub
+docker login
+
+# Private registry
+docker login registry.example.com
+
+# Credentials stored in:
+# ~/.docker/config.json
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Docker not starting | Check VM resources |
+| Containers slow | Increase memory allocation |
+| Disk space issues | Run `docker system prune` |
+| Network problems | Restart Docker Desktop |
+
+## Compatibility
+
+- **macOS**: 11.0+ (Big Sur)
+- **Architecture**: Apple Silicon and Intel
+- **Alternatives**: Colima, Rancher Desktop, Podman
+
+## Source File
+
+**File**: [`defaults/applications/docker.sh`](../../../../defaults/applications/docker.sh)
+
+```bash
+# Docker Desktop uses its own configuration files
+# This script documents best practices and common configurations
+```
+
+## References
+
+- [Docker Desktop for Mac](https://docs.docker.com/desktop/mac/)
+- [Docker Engine Daemon](https://docs.docker.com/engine/reference/commandline/dockerd/)
+- [Docker Compose](https://docs.docker.com/compose/)

@@ -1,0 +1,176 @@
+# Screenshot Configuration
+
+Customize screenshot format, location, and behavior.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.screencapture` |
+| **Keys** | `location`, `type`, `disable-shadow`, `name` |
+| **Type** | String, String, Boolean, String |
+| **Default Value** | `~/Desktop`, `png`, `false`, `Screenshot` |
+| **Our Setting** | `~/Screenshots`, `png`, `true`, `Screenshot` |
+
+## Description
+
+macOS provides extensive customization for screenshots. You can change where they're saved, what format they use, whether window shadows are included, and the filename prefix. These settings affect screenshots taken via keyboard shortcuts (⌘⇧3, ⌘⇧4, ⌘⇧5).
+
+## Settings Overview
+
+| Key | Purpose | Our Setting |
+|-----|---------|-------------|
+| `location` | Save directory | `~/Screenshots` |
+| `type` | Image format | `png` |
+| `disable-shadow` | Remove window shadows | `true` |
+| `name` | Filename prefix | `Screenshot` |
+
+## Image Format Options
+
+| Value | Format | Best For |
+|-------|--------|----------|
+| `png` | PNG (default) | Lossless, transparency |
+| `jpg` | JPEG | Smaller files, photos |
+| `gif` | GIF | Simple graphics |
+| `pdf` | PDF | Documents |
+| `tiff` | TIFF | High quality |
+
+## Our Configuration
+
+**Location**: `~/Screenshots` — Keep Desktop clean
+**Format**: `png` — Lossless quality
+**Shadow**: Disabled — Cleaner window captures
+
+### Why These Settings?
+
+1. **Organized files** — Screenshots in dedicated folder
+2. **Clean Desktop** — No screenshot clutter
+3. **No shadows** — Better for documentation
+4. **PNG format** — Perfect quality, supports transparency
+
+## Code Examples
+
+```bash
+# Read current settings
+defaults read com.apple.screencapture
+
+# Create screenshots folder
+mkdir -p ~/Screenshots
+
+# Set screenshot location
+defaults write com.apple.screencapture location -string "~/Screenshots"
+
+# Set format to PNG (recommended)
+defaults write com.apple.screencapture type -string "png"
+
+# For smaller files, use JPEG
+# defaults write com.apple.screencapture type -string "jpg"
+
+# Disable window shadows (cleaner look)
+defaults write com.apple.screencapture disable-shadow -bool true
+
+# Custom filename prefix
+defaults write com.apple.screencapture name -string "Screenshot"
+
+# Apply changes
+killall SystemUIServer
+```
+
+## Complete Screenshot Setup
+
+```bash
+# Professional screenshot configuration
+mkdir -p ~/Screenshots
+defaults write com.apple.screencapture location -string "$HOME/Screenshots"
+defaults write com.apple.screencapture type -string "png"
+defaults write com.apple.screencapture disable-shadow -bool true
+defaults write com.apple.screencapture name -string "Screenshot"
+killall SystemUIServer
+```
+
+## UI Location
+
+**Screenshot App** (⌘⇧5) → **Options** menu:
+- Save to: [Location dropdown]
+- Other settings in dropdown
+
+For format and shadow, no direct UI — terminal only.
+
+## Window Shadow Comparison
+
+**With Shadow (default):**
+```
+      ░░░░░░░░░░░░░░░
+    ░░┌──────────────┐░░
+    ░░│              │░░
+    ░░│   Window     │░░
+    ░░│              │░░
+    ░░└──────────────┘░░
+      ░░░░░░░░░░░░░░░
+```
+
+**Without Shadow (our setting):**
+```
+┌──────────────┐
+│              │
+│   Window     │
+│              │
+└──────────────┘
+```
+
+Shadows add visual appeal but can interfere with documentation and cropping.
+
+## Screenshot Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘⇧3 | Capture entire screen |
+| ⌘⇧4 | Capture selection |
+| ⌘⇧4 then Space | Capture window |
+| ⌘⇧5 | Screenshot/Recording toolbar |
+| ⌘⇧6 | Touch Bar (if applicable) |
+
+Add **⌃** to any above to copy to clipboard instead of saving.
+
+## Related Settings
+
+```bash
+# Include the date in filename
+defaults write com.apple.screencapture include-date -bool true
+
+# Show floating thumbnail after capture
+defaults write com.apple.screencapture show-thumbnail -bool true
+
+# Timer delay (for ⌘⇧5)
+defaults write com.apple.screencapture timer -int 5
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Screenshots not appearing | Check location folder exists |
+| Wrong format | Verify `type` setting |
+| Shadows still showing | Run `killall SystemUIServer` |
+| Location reset | Use full path with $HOME expansion |
+
+## Compatibility
+
+- **macOS**: 10.14+
+- **Applies to**: System screenshot tools only
+- **Third-party**: Apps may have own settings
+
+## Source File
+
+**File**: [`defaults/system/screencapture.sh`](../../../defaults/system/screencapture.sh)
+
+```bash
+run_defaults "com.apple.screencapture" "location" "-string" "$HOME/Screenshots"
+run_defaults "com.apple.screencapture" "type" "-string" "png"
+run_defaults "com.apple.screencapture" "disable-shadow" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Take screenshots on Mac](https://support.apple.com/en-us/HT201361)
+- [Apple Support: Screenshot app](https://support.apple.com/guide/mac-help/take-screenshots-or-screen-recordings-mh26782/mac)

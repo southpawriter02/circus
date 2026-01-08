@@ -1,0 +1,156 @@
+# QuickTime Player Auto-Play
+
+Control automatic playback of movies when opened.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.QuickTimePlayerX` |
+| **Key** | `MGPlayMovieOnOpen` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether QuickTime Player automatically starts playing movies when you open them. When enabled, double-clicking a video file immediately starts playback. When disabled, the movie opens paused, giving you control over when playback begins.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-play** (default) — Movie starts immediately |
+| `false` | **Paused** — Movie opens ready but not playing |
+
+## Our Configuration
+
+**Set to**: `false` — Open movies paused.
+
+### Why Disable Auto-Play?
+
+1. **Control** — Start playback when ready
+2. **Quiet** — No unexpected audio
+3. **Review** — Check video before playing
+4. **Scrubbing** — Navigate to specific point first
+5. **Presentations** — Set up before playing
+
+### When Auto-Play Is Useful
+
+- Casual video viewing
+- Quick previews
+- Known short clips
+- Entertainment focus
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.QuickTimePlayerX MGPlayMovieOnOpen
+
+# Open movies paused (recommended)
+defaults write com.apple.QuickTimePlayerX MGPlayMovieOnOpen -bool false
+
+# Auto-play movies (Apple default)
+defaults write com.apple.QuickTimePlayerX MGPlayMovieOnOpen -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.QuickTimePlayerX MGPlayMovieOnOpen
+
+# Restart QuickTime Player to apply
+killall "QuickTime Player"
+```
+
+## UI Location
+
+**QuickTime Player** → **Settings** (⌘,) — Limited options available.
+
+This specific setting is not exposed in the UI.
+
+## Keyboard Shortcuts
+
+| Action | Shortcut |
+|--------|----------|
+| Play/Pause | Space |
+| Step forward 1 frame | → |
+| Step backward 1 frame | ← |
+| Skip forward 5 seconds | ⌘→ |
+| Skip backward 5 seconds | ⌘← |
+| Full screen | ⌘F |
+| Actual size | ⌘1 |
+
+## Related Settings
+
+```bash
+# Complete QuickTime configuration
+defaults write com.apple.QuickTimePlayerX MGPlayMovieOnOpen -bool false
+
+# Show audio recording quality options
+defaults write com.apple.QuickTimePlayerX MGShowAudioRecordingQualityOptions -bool true
+
+# Remember playback position
+defaults write com.apple.QuickTimePlayerX MGRememberPlaybackPosition -bool true
+```
+
+## Workflow Comparison
+
+### With Auto-Play (default)
+
+```
+Double-click video.mp4
+     ↓
+QuickTime opens
+     ↓
+Video immediately starts playing with audio
+     ↓
+Scramble for pause button or volume
+```
+
+### Without Auto-Play (our setting)
+
+```
+Double-click video.mp4
+     ↓
+QuickTime opens, video paused at 0:00
+     ↓
+Review video info, adjust volume
+     ↓
+Press Space when ready to play
+```
+
+## Loop Playback
+
+For looping videos (presentations, ambient displays):
+
+```bash
+# Enable loop by default
+defaults write com.apple.QuickTimePlayerX MGLoopMovie -bool true
+```
+
+Or use **View** → **Loop** (⌘L) in QuickTime Player.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still auto-playing | Restart QuickTime Player |
+| Setting not persisting | Close all QuickTime windows first |
+| Different behavior in Safari | In-browser video has separate controls |
+
+## Compatibility
+
+- **QuickTime Player**: macOS 10.10+
+- **File types**: .mov, .mp4, .m4v, .mp3, and supported formats
+- **Note**: Quick Look previews have separate behavior
+
+## Source File
+
+**File**: [`defaults/applications/quicktime.sh`](../../../../defaults/applications/quicktime.sh)
+
+```bash
+run_defaults "com.apple.QuickTimePlayerX" "MGPlayMovieOnOpen" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: QuickTime Player User Guide](https://support.apple.com/guide/quicktime-player/welcome/mac)

@@ -1,0 +1,199 @@
+# Energy Settings
+
+Configure display sleep, system sleep, and power management.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Tool** | `pmset` |
+| **Keys** | `displaysleep`, `sleep`, `powernap`, etc. |
+| **Type** | Integer (minutes) |
+| **Default Value** | Varies |
+| **Our Setting** | See below |
+
+## Description
+
+Power management on macOS is controlled via the `pmset` command rather than `defaults write`. These settings control display timeout, system sleep, Power Nap, and other energy-related behaviors. Settings can differ between battery (`-b`) and AC power (`-c`).
+
+## Key Settings
+
+| Setting | Battery | AC | Purpose |
+|---------|---------|-----|---------|
+| `displaysleep` | 5 min | 15 min | Display off timeout |
+| `sleep` | 10 min | 0 (never) | System sleep timeout |
+| `powernap` | 0 (off) | 1 (on) | Background tasks while sleeping |
+| `womp` | 0 (off) | 1 (on) | Wake on network access |
+
+## Our Configuration
+
+### Display Sleep
+
+```bash
+# Display off after 5 minutes on battery (save power)
+sudo pmset -b displaysleep 5
+
+# Display off after 15 minutes on AC
+sudo pmset -c displaysleep 15
+```
+
+### System Sleep
+
+```bash
+# System sleeps after 10 minutes on battery
+sudo pmset -b sleep 10
+
+# Never sleep on AC (stay available)
+sudo pmset -c sleep 0
+```
+
+### Power Nap
+
+```bash
+# Disable Power Nap on battery (preserve battery)
+sudo pmset -b powernap 0
+
+# Enable Power Nap on AC (background sync)
+sudo pmset -c powernap 1
+```
+
+## Code Examples
+
+```bash
+# View current settings
+pmset -g
+
+# View all custom settings
+pmset -g custom
+
+# View battery status
+pmset -g batt
+
+# View system capabilities
+pmset -g cap
+```
+
+## Common Configurations
+
+### Maximum Battery Life
+
+```bash
+sudo pmset -b displaysleep 2
+sudo pmset -b sleep 5
+sudo pmset -b powernap 0
+sudo pmset -b womp 0
+sudo pmset -b lessbright 1
+```
+
+### Always Available (Server/Desktop)
+
+```bash
+sudo pmset -c displaysleep 30
+sudo pmset -c sleep 0
+sudo pmset -c powernap 1
+sudo pmset -c womp 1
+```
+
+## UI Location
+
+**System Settings** → **Battery** (or **Energy Saver** on older Macs)
+
+Tabs/sections:
+- **Battery** — Settings when unplugged
+- **Power Adapter** — Settings when plugged in
+- **Options** — Additional settings
+
+## Advanced Settings
+
+### Hibernation Mode
+
+```bash
+# 0 = RAM stays powered (fast wake)
+# 3 = Safe sleep - RAM + hibernate file (default for laptops)
+# 25 = Hibernate after standby delay
+sudo pmset -a hibernatemode 3
+```
+
+### Wake on Lid Open
+
+```bash
+# Wake when MacBook lid is opened
+sudo pmset -a lidwake 1
+```
+
+### Standby (Deep Sleep)
+
+```bash
+# Enable standby for long sleep sessions
+sudo pmset -a standby 1
+
+# Wait 24 hours before standby (high battery)
+sudo pmset -a standbydelayhigh 86400
+
+# Wait 3 hours before standby (low battery)
+sudo pmset -a standbydelaylow 10800
+```
+
+### Automatic Graphics Switching
+
+```bash
+# Automatic GPU switching (saves power)
+sudo pmset -a gpuswitch 2
+```
+
+## Preventing Sleep
+
+### Temporarily Prevent Sleep
+
+```bash
+# Keep Mac awake for 1 hour
+caffeinate -t 3600
+
+# Keep awake until command finishes
+caffeinate -s long_running_command
+
+# Keep awake indefinitely (Ctrl+C to stop)
+caffeinate
+```
+
+### Check What's Preventing Sleep
+
+```bash
+pmset -g assertions
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Mac won't sleep | Check `pmset -g assertions` |
+| Display stays on | Check displaysleep setting |
+| Battery drains during sleep | Disable Power Nap |
+| Can't change settings | Run with `sudo` |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: Some settings only apply to laptops
+- **Hardware**: GPU switching only on multi-GPU Macs
+
+## Source File
+
+**File**: [`defaults/system/energy.sh`](../../../defaults/system/energy.sh)
+
+```bash
+# Battery settings
+sudo pmset -b displaysleep 5
+sudo pmset -b sleep 10
+sudo pmset -b powernap 0
+
+# AC settings
+sudo pmset -c displaysleep 15
+sudo pmset -c sleep 0
+sudo pmset -c powernap 1
+```
+
+## References
+
+- [Apple Support: Use Power Nap](https://support.apple.com/en-us/HT204032)
+- [man pmset](x-man-page://pmset)

@@ -1,0 +1,187 @@
+# Visual Studio Code Setup
+
+Configure VS Code extensions and settings synchronization.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Settings Location** | `~/Library/Application Support/Code/User/settings.json` |
+| **Extensions** | `~/.vscode/extensions/` |
+| **Keybindings** | `~/Library/Application Support/Code/User/keybindings.json` |
+| **Our Approach** | Symlink settings from dotfiles |
+
+## Description
+
+Visual Studio Code doesn't use macOS defaults for configuration. Instead, it uses JSON configuration files. Our approach is to symlink these files from a dotfiles repository for version control and cross-machine sync.
+
+## Configuration Files
+
+| File | Purpose |
+|------|---------|
+| `settings.json` | User preferences |
+| `keybindings.json` | Keyboard shortcuts |
+| `snippets/` | Code snippets |
+| `extensions.json` | Workspace recommendations |
+
+## Setup Approach
+
+### Option 1: Symlink from Dotfiles (Our Method)
+
+```bash
+# Create config directory in dotfiles
+mkdir -p ~/dotfiles/vscode
+
+# Move existing settings
+mv ~/Library/Application\ Support/Code/User/settings.json ~/dotfiles/vscode/
+
+# Create symlink
+ln -sf ~/dotfiles/vscode/settings.json ~/Library/Application\ Support/Code/User/settings.json
+```
+
+### Option 2: VS Code Settings Sync (Native)
+
+Use VS Code's built-in sync:
+1. Open Command Palette (⌘⇧P)
+2. Search "Settings Sync: Turn On"
+3. Sign in with GitHub or Microsoft account
+
+## Installing Extensions
+
+### Via Command Line
+
+```bash
+# Install single extension
+code --install-extension esbenp.prettier-vscode
+
+# Install from list
+cat extensions.txt | xargs -L 1 code --install-extension
+
+# List installed extensions
+code --list-extensions
+```
+
+### Extensions List File
+
+Create `extensions.txt`:
+```
+# Essential
+esbenp.prettier-vscode
+dbaeumer.vscode-eslint
+ms-vsliveshare.vsliveshare
+
+# Git
+eamodio.gitlens
+mhutchie.git-graph
+
+# Theme
+dracula-theme.theme-dracula
+
+# Languages
+golang.go
+ms-python.python
+rust-lang.rust-analyzer
+```
+
+## Recommended Settings
+
+```json
+{
+  // Editor
+  "editor.fontSize": 14,
+  "editor.fontFamily": "JetBrains Mono, Menlo, monospace",
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.minimap.enabled": false,
+  
+  // Files
+  "files.autoSave": "onFocusChange",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  
+  // Terminal
+  "terminal.integrated.fontFamily": "MesloLGS NF",
+  
+  // Formatting
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
+```
+
+## Code CLI Setup
+
+Install the `code` command:
+1. Open VS Code
+2. Open Command Palette (⌘⇧P)
+3. Type "Shell Command: Install 'code' command in PATH"
+4. Press Enter
+
+Or manually:
+```bash
+# Create symlink
+ln -sf "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" /usr/local/bin/code
+```
+
+## Keyboard Shortcuts
+
+Edit `keybindings.json`:
+
+```json
+[
+  {
+    "key": "cmd+shift+d",
+    "command": "editor.action.duplicateSelection"
+  },
+  {
+    "key": "cmd+/",
+    "command": "editor.action.commentLine"
+  }
+]
+```
+
+## Workspace Settings
+
+Per-project settings in `.vscode/settings.json`:
+
+```json
+{
+  "editor.tabSize": 4,
+  "python.pythonPath": "./venv/bin/python"
+}
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| `code` command not found | Install via Command Palette |
+| Settings not syncing | Check symlink or Settings Sync |
+| Extensions not installing | Check extension ID is correct |
+| Settings conflict | Workspace settings override user |
+
+## Compatibility
+
+- **VS Code**: All versions
+- **Configuration**: JSON files (not macOS defaults)
+- **Sync**: Settings Sync or manual symlink
+
+## Source File
+
+**File**: [`defaults/applications/vscode.sh`](../../../../defaults/applications/vscode.sh)
+
+```bash
+# Symlink VS Code settings from dotfiles
+mkdir -p "$HOME/Library/Application Support/Code/User"
+ln -sf "$DOTFILES_DIR/etc/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
+
+# Install extensions from list
+cat "$DOTFILES_DIR/etc/vscode/extensions.txt" | xargs -L 1 code --install-extension
+```
+
+## References
+
+- [VS Code Settings](https://code.visualstudio.com/docs/getstarted/settings)
+- [VS Code Command Line](https://code.visualstudio.com/docs/editor/command-line)
+- [Settings Sync](https://code.visualstudio.com/docs/editor/settings-sync)

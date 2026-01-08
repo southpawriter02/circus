@@ -1,0 +1,168 @@
+# Login Window Settings
+
+Configure login screen appearance and security options.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.loginwindow` |
+| **Keys** | `SHOWFULLNAME`, `GuestEnabled`, `RetriesUntilHint` |
+| **Type** | Boolean, Boolean, Integer |
+| **Default Value** | `false`, `false`, `3` |
+| **Our Setting** | `false`, `false`, `0` |
+
+## Description
+
+Login window settings control the appearance and security of the macOS login screen. These settings affect what users see when logging in and can enhance security by hiding information from potential attackers.
+
+## Key Settings
+
+| Key | Purpose | Our Setting |
+|-----|---------|-------------|
+| `SHOWFULLNAME` | Show name/password fields vs user list | `false` |
+| `GuestEnabled` | Enable guest account | `false` |
+| `RetriesUntilHint` | Failed attempts before showing hint | `0` (never) |
+| `DisableConsoleAccess` | Block console login | `true` |
+
+## Our Configuration
+
+### User List vs Name/Password Fields
+
+```bash
+# Show user list (convenience)
+defaults write com.apple.loginwindow SHOWFULLNAME -bool false
+
+# Show name and password fields (more secure)
+defaults write com.apple.loginwindow SHOWFULLNAME -bool true
+```
+
+**User list (SHOWFULLNAME=false):**
+- Shows user icons to click
+- More convenient
+- Reveals usernames to anyone at the computer
+
+**Name and password (SHOWFULLNAME=true):**
+- Requires typing username and password
+- More secure (hides usernames)
+- Recommended for shared/public computers
+
+### Disable Guest Account
+
+```bash
+# Disable guest account (recommended)
+defaults write com.apple.loginwindow GuestEnabled -bool false
+```
+
+Guest account risks:
+- Anyone can use your Mac
+- Potential access point for malware
+- Unnecessary for most home users
+
+### Disable Password Hints
+
+```bash
+# Never show password hints (most secure)
+defaults write com.apple.loginwindow RetriesUntilHint -int 0
+
+# Show after 3 attempts (default)
+defaults write com.apple.loginwindow RetriesUntilHint -int 3
+```
+
+Password hints can reveal information to attackers.
+
+## Code Examples
+
+```bash
+# Read current settings
+defaults read com.apple.loginwindow
+
+# Complete secure login window setup
+defaults write com.apple.loginwindow SHOWFULLNAME -bool false
+defaults write com.apple.loginwindow GuestEnabled -bool false
+defaults write com.apple.loginwindow RetriesUntilHint -int 0
+defaults write com.apple.loginwindow DisableConsoleAccess -bool true
+defaults write com.apple.loginwindow PowerOffDisabled -bool false
+defaults write com.apple.loginwindow showInputMenu -bool true
+```
+
+## UI Location
+
+**System Settings** → **Users & Groups** → **Login Options**
+
+Settings include:
+- Automatic login
+- Display login window as
+- Show password hints
+- Show input menu
+- Show fast user switching menu
+
+## Additional Login Settings
+
+### Show Input Menu
+
+```bash
+# Enable input menu on login (for multiple keyboard layouts)
+defaults write com.apple.loginwindow showInputMenu -bool true
+```
+
+### Disable Automatic Login
+
+```bash
+# Remove auto-login user (security)
+sudo defaults delete com.apple.loginwindow autoLoginUser
+```
+
+### Custom Login Message
+
+```bash
+# Display message on login screen
+defaults write com.apple.loginwindow LoginwindowText -string "If found, contact: email@example.com"
+```
+
+### Disable External Accounts
+
+```bash
+# Block network/LDAP accounts (home users)
+defaults write com.apple.loginwindow EnableExternalAccounts -bool false
+```
+
+## Power Options
+
+```bash
+# Keep restart/shutdown buttons on login screen
+defaults write com.apple.loginwindow PowerOffDisabled -bool false
+
+# Allow sleep from login screen
+defaults write com.apple.loginwindow SleepDisabled -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Guest account reappears | Check Find My Mac settings |
+| Can't see user list | SHOWFULLNAME may be set to true |
+| Auto-login still works | Check FileVault status |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Requires**: Administrator privileges for some settings
+- **Note**: FileVault disables automatic login
+
+## Source File
+
+**File**: [`defaults/system/login.sh`](../../../defaults/system/login.sh)
+
+```bash
+run_defaults "com.apple.loginwindow" "SHOWFULLNAME" "-bool" "false"
+run_defaults "com.apple.loginwindow" "GuestEnabled" "-bool" "false"
+run_defaults "com.apple.loginwindow" "RetriesUntilHint" "-int" "0"
+run_defaults "com.apple.loginwindow" "DisableConsoleAccess" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change Login Items](https://support.apple.com/guide/mac-help/open-items-automatically-when-you-log-in-mh15189/mac)
+- [Apple Support: Log in to your Mac](https://support.apple.com/guide/mac-help/log-in-to-your-mac-mh35843/mac)

@@ -1,0 +1,116 @@
+# Window Title Bar Double-Click
+
+Control the action when double-clicking a window's title bar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `AppleActionOnDoubleClick` |
+| **Type** | String |
+| **Default Value** | `Maximize` |
+| **Our Setting** | `Maximize` |
+
+## Description
+
+Controls what happens when you double-click on a window's title bar. Options include maximizing the window (filling available screen space), minimizing it to the Dock, or doing nothing.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `Maximize` | **Fill screen** (default) — Window expands to fill available space |
+| `Minimize` | **Minimize to Dock** — Window minimizes like clicking yellow button |
+| `None` | **No action** — Double-click does nothing |
+
+## Our Configuration
+
+**Set to**: `Maximize` — Quick way to expand windows.
+
+### Maximize Behavior
+
+Double-clicking the title bar is similar to the green zoom button but:
+- Doesn't enter full-screen mode
+- Fills available space while keeping menu bar and Dock visible
+- Another double-click returns to original size
+
+### Why Maximize?
+
+1. **Productivity** — Quickly expand work area
+2. **Reversible** — Double-click again to restore
+3. **Expected behavior** — Common across operating systems
+4. **No full-screen** — Stay in regular desktop view
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain AppleActionOnDoubleClick
+
+# Set to Maximize (recommended)
+defaults write NSGlobalDomain AppleActionOnDoubleClick -string "Maximize"
+
+# Set to Minimize
+defaults write NSGlobalDomain AppleActionOnDoubleClick -string "Minimize"
+
+# Set to None (disable)
+defaults write NSGlobalDomain AppleActionOnDoubleClick -string "None"
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain AppleActionOnDoubleClick
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Double-click a window's title bar to**
+
+Dropdown options:
+- Fill (Maximize)
+- Minimize
+- (unchecked = None)
+
+## Related Window Actions
+
+| Action | Effect |
+|--------|--------|
+| Green button click | Enter full screen |
+| Green button Option-click | Maximize/zoom |
+| Yellow button click | Minimize |
+| Red button click | Close window |
+| Double-click title bar | Configurable (this setting) |
+
+## Keyboard Alternatives
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘M | Minimize window |
+| ⌘⌃F | Toggle full screen |
+| ⌘H | Hide window |
+| ⌘W | Close window |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Double-click not working | Check setting value |
+| Wrong action | Verify string value is exact |
+| Some apps don't respond | App may have custom title bar |
+
+## Compatibility
+
+- **macOS**: 10.10+
+- **Applies to**: All native macOS apps
+- **Note**: Some apps with custom title bars may ignore this
+
+## Source File
+
+**File**: [`defaults/interface/window_management.sh`](../../../defaults/interface/window_management.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "AppleActionOnDoubleClick" "-string" "Maximize"
+```
+
+## References
+
+- [Apple Support: Change Dock and window behavior](https://support.apple.com/guide/mac-help/change-dock-preferences-mh35859/mac)

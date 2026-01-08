@@ -1,0 +1,179 @@
+# Console Message Filtering
+
+Configure Console.app for developer logging.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Console` |
+| **Keys** | `LogLevel`, `AlwaysDisplaySubsystem` |
+| **Type** | Integer, Boolean |
+| **Default Value** | `0`, `true` |
+| **Our Setting** | `1`, `true` |
+
+## Description
+
+Console.app is macOS's built-in log viewer, essential for debugging apps and diagnosing system issues. These settings control the default log level filter and what information is displayed in log entries.
+
+## Log Levels
+
+| Value | Level | Shows |
+|-------|-------|-------|
+| `0` | Default | Errors, faults, and important messages |
+| `1` | Info | Above + informational messages |
+| `2` | Debug | Above + debug messages (verbose) |
+
+## Our Configuration
+
+**LogLevel**: `1` (Info) — More detail without overwhelming
+**AlwaysDisplaySubsystem**: `true` — Show app/subsystem names
+
+### Why Info Level?
+
+1. **Debugging** — More context than default
+2. **Manageable** — Not as noisy as debug level
+3. **Development** — Essential for app development
+4. **Troubleshooting** — Find issues faster
+
+## Code Examples
+
+```bash
+# Read current settings
+defaults read com.apple.Console
+
+# Set Info level logging
+defaults write com.apple.Console LogLevel -int 1
+
+# Set Debug level logging (verbose)
+defaults write com.apple.Console LogLevel -int 2
+
+# Set Default level (errors only)
+defaults write com.apple.Console LogLevel -int 0
+
+# Always show subsystem/category
+defaults write com.apple.Console AlwaysDisplaySubsystem -bool true
+
+# Delete (reset to defaults)
+defaults delete com.apple.Console LogLevel
+```
+
+## UI Location
+
+**Console** → **Action** menu → **Include Info Messages** / **Include Debug Messages**
+
+Or click the filter buttons in Console's toolbar.
+
+## Using Console for Debugging
+
+### Filter by App
+
+1. Open Console
+2. Click search field
+3. Type app name (e.g., "Safari")
+4. Add filter: **Process** equals **Safari**
+
+### Filter by Message Content
+
+```
+subsystem:com.apple.WebKit  # WebKit messages
+process:kernel              # Kernel messages
+category:network            # Network-related
+message:error              # Messages containing "error"
+```
+
+### Save Filter
+
+1. Configure your filters
+2. **File** → **Save Search**
+3. Name it for quick access
+
+## Command Line Alternative
+
+The `log` command provides more power:
+
+```bash
+# Stream system log
+log stream
+
+# Stream with predicates (e.g., Safari only)
+log stream --predicate 'process == "Safari"'
+
+# Show specific log level
+log stream --level info
+
+# Show debug messages
+log stream --level debug
+
+# Historical logs
+log show --last 1h --predicate 'process == "MyApp"'
+```
+
+## Developer Subsystems
+
+Common subsystems to monitor:
+
+| Subsystem | Area |
+|-----------|------|
+| `com.apple.network` | Networking |
+| `com.apple.bluetooth` | Bluetooth |
+| `com.apple.security` | Security/Keychain |
+| `com.apple.launchd` | Launch services |
+| `com.apple.WebKit` | Safari/WebViews |
+| `com.apple.coredata` | Core Data |
+
+## Enabling Debug Logging for Apps
+
+For your own app (requires code):
+
+```swift
+import os.log
+let logger = Logger(subsystem: "com.myapp", category: "network")
+logger.debug("Debug message")
+logger.info("Info message")
+logger.error("Error message")
+```
+
+## Related Settings
+
+```bash
+# Complete Console developer setup
+defaults write com.apple.Console LogLevel -int 1
+defaults write com.apple.Console AlwaysDisplaySubsystem -bool true
+defaults write com.apple.Console AlwaysDisplayCategory -bool true
+defaults write com.apple.Console AlwaysDisplayTimestamp -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Too many messages | Use filters or reduce log level |
+| Messages not appearing | Check if debug logging enabled for that subsystem |
+| Console slow | Narrow date range or filter more specifically |
+| Logs not updating | Check "Now" button is active |
+
+## Privacy Note
+
+> ⚠️ **Logs may contain sensitive information** including file paths, usernames, network details, and app data. Be careful when sharing Console output.
+
+## Compatibility
+
+- **Console**: macOS 10.12+ (Unified Logging)
+- **Note**: Log format changed significantly in Sierra
+- **Streaming**: Works with connected iOS devices too
+
+## Source File
+
+**File**: [`defaults/applications/console.sh`](../../../../defaults/applications/console.sh)
+
+```bash
+run_defaults "com.apple.Console" "LogLevel" "-int" "1"
+run_defaults "com.apple.Console" "AlwaysDisplaySubsystem" "-bool" "true"
+```
+
+## References
+
+- [Apple Developer: Logging](https://developer.apple.com/documentation/os/logging)
+- [WWDC: Unified Logging](https://developer.apple.com/videos/play/wwdc2016/721/)
+- [Apple Support: Use Console on Mac](https://support.apple.com/guide/console/welcome/mac)

@@ -1,0 +1,137 @@
+# Mail Inline Attachment Viewing
+
+Show email attachments as icons instead of previewing inline.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `DisableInlineAttachmentViewing` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Mail displays supported attachments (images, PDFs) inline within the message body or shows them as downloadable icon attachments. When disabled, images and documents appear embedded in the email. When enabled, all attachments appear as file icons at the bottom.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show as icons** — Attachments appear as downloadable file icons |
+| `false` | **Show inline** (default) — Images and PDFs render within message body |
+
+## Visual Comparison
+
+**Inline (default):**
+```
+From: sender@example.com
+Subject: Photos from trip
+
+Here are the photos!
+
+┌─────────────────┐
+│                 │
+│   [Rendered     │
+│    Image]       │
+│                 │
+└─────────────────┘
+
+Let me know what you think!
+```
+
+**As Icons (our setting):**
+```
+From: sender@example.com
+Subject: Photos from trip
+
+Here are the photos!
+
+Let me know what you think!
+
+Attachments: 📎 photo1.jpg  📎 photo2.jpg  📎 photo3.jpg
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show attachments as icons for cleaner reading.
+
+### Why Show as Icons?
+
+1. **Faster loading** — Don't render large images inline
+2. **Better overview** — See all attachments at a glance
+3. **Privacy** — Prevents tracking pixels from loading automatically
+4. **Cleaner reading** — Text-focused email experience
+5. **Intentional viewing** — Open attachments when you choose
+
+### When Inline Is Better
+
+- Casual email with photo sharing
+- Marketing emails with designed layouts
+- Quick visual review of images
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail DisableInlineAttachmentViewing
+
+# Show attachments as icons (recommended)
+defaults write com.apple.mail DisableInlineAttachmentViewing -bool true
+
+# Show attachments inline (Apple default)
+defaults write com.apple.mail DisableInlineAttachmentViewing -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.mail DisableInlineAttachmentViewing
+
+# Restart Mail to apply
+killall Mail
+```
+
+## UI Location
+
+Not available in Mail preferences — terminal only.
+
+## Security Note
+
+> ⚠️ **Privacy Consideration**: Inline images can contain tracking pixels that notify senders when you open an email. Disabling inline viewing prevents automatic loading of these trackers.
+
+## Related Settings
+
+```bash
+# Complete privacy-focused Mail setup
+defaults write com.apple.mail DisableInlineAttachmentViewing -bool true
+
+# Also hide remote content (tracking protection)
+defaults write com.apple.mail DisableURLLoading -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still showing inline | Restart Mail: `killall Mail` |
+| Some images still inline | HTML emails may embed images directly |
+| Can't preview attachments | Double-click icons to open |
+
+## Compatibility
+
+- **Mail**: macOS 10.10+
+- **Affects**: Received messages only
+- **Note**: Does not affect how recipients see your emails
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "DisableInlineAttachmentViewing" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: View attachments in Mail](https://support.apple.com/guide/mail/view-save-or-delete-attachments-mlhl40376e0f/mac)
+- [Apple Communities Discussion](https://discussions.apple.com/thread/7296702)

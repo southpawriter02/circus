@@ -1,0 +1,178 @@
+# Archive Utility Behavior
+
+Control what happens after extracting archives.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.archiveutility` |
+| **Keys** | `dearchive-move-after`, `dearchive-reveal-after` |
+| **Type** | String, Boolean |
+| **Default Value** | `<empty>`, `false` |
+| **Our Setting** | `~/.Trash`, `true` |
+
+## Description
+
+Archive Utility handles extraction of .zip, .tar.gz, and other archive formats on macOS. These settings control what happens to the original archive file after extraction and whether the extracted contents are revealed in Finder.
+
+## Settings Overview
+
+| Key | Purpose | Options |
+|-----|---------|---------|
+| `dearchive-move-after` | Move archive after extracting | Path or delete |
+| `dearchive-reveal-after` | Open Finder to extracted files | true/false |
+
+## Values
+
+### Move Archive After Extracting
+
+| Value | Behavior |
+|-------|----------|
+| `<empty>` | Leave archive in place (default) |
+| `~/.Trash` | Move to Trash |
+| `/path/to/folder` | Move to specific folder |
+
+### Reveal After Extracting
+
+| Value | Behavior |
+|-------|----------|
+| `true` | Open Finder showing extracted contents |
+| `false` | Extract silently (default) |
+
+## Our Configuration
+
+**Move after**: `~/.Trash` — Clean up automatically
+**Reveal after**: `true` — Show extracted contents
+
+### Why These Settings?
+
+1. **Auto-cleanup** — Archive files moved to Trash after extraction
+2. **Discovery** — Immediately see what was extracted
+3. **Workflow** — No manual archive deletion needed
+4. **Organization** — Keep Downloads folder clean
+
+## Code Examples
+
+```bash
+# Read current settings
+defaults read com.apple.archiveutility
+
+# Move archives to Trash after extracting
+defaults write com.apple.archiveutility dearchive-move-after -string "$HOME/.Trash"
+
+# Reveal extracted contents in Finder
+defaults write com.apple.archiveutility dearchive-reveal-after -bool true
+
+# Leave archives in place (default)
+defaults write com.apple.archiveutility dearchive-move-after -string ""
+
+# Delete (reset to defaults)
+defaults delete com.apple.archiveutility dearchive-move-after
+defaults delete com.apple.archiveutility dearchive-reveal-after
+```
+
+## UI Location
+
+**Archive Utility** → **Preferences** (⌘,)
+
+To access:
+1. Extract any archive (or find Archive Utility in /System/Library/CoreServices/Applications/)
+2. Click Archive Utility menu in menu bar
+3. Select Preferences
+
+Options:
+- **After expanding**: Leave archive alone / Move to Trash / Delete / Move to...
+- **Reveal expanded item in Finder**: Checkbox
+
+## Complete Archive Utility Configuration
+
+```bash
+# Full Archive Utility setup
+defaults write com.apple.archiveutility dearchive-move-after -string "$HOME/.Trash"
+defaults write com.apple.archiveutility dearchive-reveal-after -bool true
+
+# For compression, keep defaults (create archive in same location)
+defaults write com.apple.archiveutility archive-reveal-after -bool true
+```
+
+## Workflow Comparison
+
+### Default Behavior
+
+```
+Download file.zip
+     ↓
+Double-click to extract
+     ↓
+file.zip stays in Downloads
+extracted "file" folder appears
+     ↓
+Manually delete file.zip later
+```
+
+### With Our Settings
+
+```
+Download file.zip
+     ↓
+Double-click to extract
+     ↓
+file.zip moves to Trash automatically
+Finder opens showing extracted contents
+     ↓
+Done! No cleanup needed
+```
+
+## Compression Settings
+
+Archive Utility also handles creating archives:
+
+```bash
+# Use same location as source files
+defaults write com.apple.archiveutility archive-use-source-path -bool true
+
+# Use Archive Format (options: "zip", "cpgz", "cpio")
+defaults write com.apple.archiveutility archive-format -string "zip"
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Archives not moving to Trash | Check path uses $HOME not ~ |
+| Finder not revealing | Verify boolean is true |
+| Settings not applying | Archive Utility caches preferences |
+| Can't find Archive Utility | `/System/Library/CoreServices/Applications/` |
+
+## Related Tools
+
+For more control over archives:
+
+```bash
+# Command-line alternatives
+unzip file.zip              # Extract zip
+tar -xzf file.tar.gz        # Extract tar.gz
+ditto -x -k file.zip ./     # Apple's ditto command
+```
+
+## Compatibility
+
+- **Archive Utility**: macOS 10.4+
+- **Supports**: .zip, .tar, .tar.gz, .tar.bz2, .cpgz, .cpio
+- **Note**: Third-party archivers (The Unarchiver, etc.) have separate settings
+
+## Source File
+
+**File**: [`defaults/applications/archive_utility.sh`](../../../../defaults/applications/archive_utility.sh)
+
+```bash
+run_defaults "com.apple.archiveutility" "dearchive-move-after" "-string" "$HOME/.Trash"
+run_defaults "com.apple.archiveutility" "dearchive-reveal-after" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Compress and uncompress files](https://support.apple.com/guide/mac-help/compress-and-uncompress-files-mchlp2528/mac)
+</Parameter>
+<parameter name="Complexity">4

@@ -1,0 +1,155 @@
+# Notification Previews
+
+Control when notification content is shown on the lock screen.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.ncprefs` |
+| **Key** | `content_visibility` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls when the content of notifications (message text, sender names, etc.) is displayed in banners, alerts, and Notification Center. This is a privacy setting that affects what others can see on your screen.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Never** — Only app name shown, no content |
+| `1` | **Always** (default) — Full content always visible |
+| `2` | **When unlocked** — Content shown only after authentication |
+
+## Visual Comparison
+
+**Always (value = 1):**
+```
+┌─────────────────────────────────┐
+│ 📱 Messages                      │
+│ John: Hey, did you see the...   │
+│ [Preview shows on lock screen]  │
+└─────────────────────────────────┘
+```
+
+**When Unlocked (value = 2, our setting):**
+```
+Lock Screen:                    After Unlock:
+┌────────────────────┐          ┌────────────────────┐
+│ 📱 Messages         │          │ 📱 Messages         │
+│ [1 Notification]   │    →     │ John: Hey, did...  │
+└────────────────────┘          └────────────────────┘
+```
+
+**Never (value = 0):**
+```
+┌─────────────────────────────────┐
+│ 📱 Messages                      │
+│ [No preview, just app icon]     │
+└─────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `2` (When unlocked) — Balance of privacy and usability.
+
+### Why "When Unlocked"?
+
+1. **Privacy** — Others can't read your messages on lock screen
+2. **Usability** — Full previews after you authenticate
+3. **Security** — Sensitive info not exposed at a glance
+4. **Balance** — Know you have notifications without revealing content
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.ncprefs content_visibility
+
+# Show previews only when unlocked (recommended)
+defaults write com.apple.ncprefs content_visibility -int 2
+
+# Always show previews (Apple default)
+defaults write com.apple.ncprefs content_visibility -int 1
+
+# Never show previews (maximum privacy)
+defaults write com.apple.ncprefs content_visibility -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.ncprefs content_visibility
+
+# Restart Notification Center
+killall NotificationCenter
+```
+
+## UI Location
+
+**System Settings** → **Notifications** → **Show Previews**
+
+Dropdown:
+- Always
+- When Unlocked
+- Never
+
+## Per-App Settings
+
+You can also configure previews per-app:
+
+**System Settings** → **Notifications** → [App Name] → **Show Previews**
+
+This allows you to:
+- Hide previews for sensitive apps (banking, messaging)
+- Keep previews for less sensitive apps (news, weather)
+
+## Related Settings
+
+### Banner Duration
+
+```bash
+# How long banners stay on screen (seconds)
+defaults write com.apple.notificationcenterui bannerTime -int 5
+```
+
+### Do Not Disturb
+
+For complete notification control, use Focus modes:
+- **System Settings** → **Focus**
+- **Control Center** → **Focus**
+
+## Lock Screen Options
+
+```bash
+# Show notifications on lock screen
+# Configured per-app in Notifications settings
+```
+
+Navigate to: **System Settings** → **Notifications** → [App] → **Show on Lock Screen**
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Previews still showing | Restart NotificationCenter |
+| Setting not applying | Log out and back in |
+| Per-app overrides | Check individual app settings |
+
+## Compatibility
+
+- **macOS**: 10.14+
+- **Syncs**: Via iCloud (if enabled)
+- **Note**: Some apps may have their own preview settings
+
+## Source File
+
+**File**: [`defaults/interface/notifications.sh`](../../../defaults/interface/notifications.sh)
+
+```bash
+run_defaults "com.apple.ncprefs" "content_visibility" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Change Notifications preferences](https://support.apple.com/guide/mac-help/change-notifications-preferences-mh40583/mac)

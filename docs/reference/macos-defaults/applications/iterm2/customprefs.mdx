@@ -1,0 +1,157 @@
+# iTerm2 Custom Preferences
+
+Configure iTerm2 to load settings from a custom directory.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.googlecode.iterm2` |
+| **Keys** | `LoadPrefsFromCustomFolder`, `PrefsCustomFolder` |
+| **Type** | Boolean, String |
+| **Default Value** | `false`, `""` |
+| **Our Setting** | `true`, `$DOTFILES_DIR/etc/iterm2` |
+
+## Description
+
+iTerm2 can load and save its preferences to a custom folder instead of the default `~/Library/Preferences` location. This enables version controlling your terminal configuration and syncing it across machines via Git or cloud storage.
+
+## Our Configuration
+
+**LoadPrefsFromCustomFolder**: `true` — Use custom folder
+**PrefsCustomFolder**: `$DOTFILES_DIR/etc/iterm2` — Path to synced config
+
+### Why Sync iTerm2 Preferences?
+
+1. **Version control** — Track changes to terminal config
+2. **Multi-machine sync** — Same setup on all computers
+3. **Backup** — Never lose your carefully crafted setup
+4. **Sharing** — Share terminal config with team
+
+## Code Examples
+
+```bash
+# Read current settings
+defaults read com.googlecode.iterm2 LoadPrefsFromCustomFolder
+defaults read com.googlecode.iterm2 PrefsCustomFolder
+
+# Enable custom preferences folder
+defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+
+# Set path to custom folder
+defaults write com.googlecode.iterm2 PrefsCustomFolder -string "/path/to/dotfiles/iterm2"
+
+# Disable custom folder (use default location)
+defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool false
+```
+
+## UI Location
+
+**iTerm2** → **Settings** (⌘,) → **General** → **Preferences** tab
+
+Options:
+- ☐ Load preferences from a custom folder or URL
+- [Browse...] to select folder
+- ☐ Save changes to folder when iTerm2 quits
+
+## Setup Steps
+
+### Initial Setup
+
+1. Open iTerm2 and configure to your liking
+2. Create folder in your dotfiles: `mkdir -p ~/dotfiles/iterm2`
+3. Go to **Settings** → **General** → **Preferences**
+4. Check **Load preferences from a custom folder or URL**
+5. Click **Browse** and select `~/dotfiles/iterm2`
+6. Check **Save changes to folder when iTerm2 quits**
+7. Quit and reopen iTerm2
+
+### On a New Machine
+
+1. Clone your dotfiles repository
+2. Install iTerm2
+3. Run:
+```bash
+defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+defaults write com.googlecode.iterm2 PrefsCustomFolder -string "$HOME/dotfiles/iterm2"
+```
+4. Restart iTerm2
+
+## What Gets Synced
+
+The custom folder contains:
+- **com.googlecode.iterm2.plist** — All iTerm2 preferences
+- Color schemes
+- Profiles (fonts, colors, key mappings)
+- Window arrangements
+- Triggers
+- Keyboard shortcuts
+
+## Synced Settings Include
+
+| Category | Examples |
+|----------|----------|
+| **Appearance** | Theme, tab bar style, window style |
+| **Profiles** | Shell, colors, fonts, key mappings |
+| **Keys** | Hotkey window, custom shortcuts |
+| **Pointer** | Trackpad gestures, selection |
+| **Advanced** | All advanced preferences |
+
+## Git Integration
+
+Commit the preferences to your dotfiles:
+
+```bash
+cd ~/dotfiles
+git add iterm2/
+git commit -m "Add iTerm2 preferences"
+```
+
+When settings change, iTerm2 updates the file automatically.
+
+## Alternative: Dynamic Profiles
+
+For sharing just profiles (not full config):
+
+```bash
+# Dynamic profiles location
+~/Library/Application Support/iTerm2/DynamicProfiles/
+```
+
+Create JSON profile files here for automatic loading.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Settings not loading | Check file exists and path is correct |
+| Changes not saving | Enable "Save changes" checkbox |
+| Preferences conflict | Only one machine should save at a time |
+| Path not working | Use full path, not ~ or $HOME |
+
+## Cloud Sync Options
+
+You can point to cloud-synced folders:
+- `~/Dropbox/dotfiles/iterm2`
+- `~/Library/Mobile Documents/com~apple~CloudDocs/iterm2`
+- Any Git-synced directory
+
+## Compatibility
+
+- **iTerm2**: 3.0+
+- **macOS**: 10.12+
+- **Sync**: Via any file sync method
+
+## Source File
+
+**File**: [`defaults/applications/iterm2.sh`](../../../../defaults/applications/iterm2.sh)
+
+```bash
+defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+defaults write com.googlecode.iterm2 PrefsCustomFolder -string "$DOTFILES_DIR/etc/iterm2"
+```
+
+## References
+
+- [iTerm2 Documentation](https://iterm2.com/documentation.html)
+- [iTerm2 Preferences Documentation](https://iterm2.com/documentation-preferences-general.html)

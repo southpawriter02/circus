@@ -1,0 +1,158 @@
+# Safari Auto-Open Safe Downloads
+
+Control automatic opening of "safe" downloaded files.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `AutoOpenSafeDownloads` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+When enabled, Safari automatically opens certain "safe" file types after downloading, including images, movies, sounds, PDFs, text files, and disk images. While convenient, this behavior can be a security risk as it automatically executes content without user confirmation.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-open** (default) — Safe files open automatically |
+| `false` | **Manual open** — All downloads require manual action |
+
+## "Safe" File Types
+
+Safari considers these safe for auto-opening:
+
+| Category | Extensions |
+|----------|------------|
+| **Images** | .jpg, .jpeg, .png, .gif, .bmp, .tiff |
+| **Documents** | .pdf, .txt, .rtf |
+| **Media** | .mov, .mp4, .mp3, .wav, .aiff |
+| **Archives** | .zip (extracts via Archive Utility) |
+| **Disk Images** | .dmg (mounts automatically) |
+
+## Our Configuration
+
+**Set to**: `false` — Never auto-open downloads.
+
+### Why Disable Auto-Open?
+
+1. **Security** — Prevents automatic execution of content
+2. **Control** — Choose when to open downloads
+3. **Malware protection** — Don't auto-mount unknown .dmg files
+4. **Bandwidth** — Don't trigger archive extraction unexpectedly
+5. **Organization** — Review downloads before opening
+
+### Security Risk Example
+
+```
+User visits malicious site
+     ↓
+Site triggers download of setup.dmg
+     ↓
+Safari auto-mounts the disk image
+     ↓
+Installer appears, user may click through
+     ↓
+Malware installed
+```
+
+With auto-open disabled, the user must explicitly choose to mount the DMG.
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari AutoOpenSafeDownloads
+
+# Disable auto-open (recommended for security)
+defaults write com.apple.Safari AutoOpenSafeDownloads -bool false
+
+# Enable auto-open (Safari default)
+defaults write com.apple.Safari AutoOpenSafeDownloads -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.Safari AutoOpenSafeDownloads
+
+# Restart Safari to apply
+killall Safari
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **General** → ☐ **Open "safe" files after downloading**
+
+## Security Best Practices
+
+Combine with other Safari security settings:
+
+```bash
+# Complete Safari security setup
+defaults write com.apple.Safari AutoOpenSafeDownloads -bool false
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
+```
+
+## Download Location
+
+Consider also setting a dedicated downloads location:
+
+```bash
+# Set download location (not via defaults, but good practice)
+# Safari → Settings → General → File download location
+```
+
+Keeping downloads in a contained folder makes it easier to review before opening.
+
+## Alternative Workflow
+
+With auto-open disabled, your workflow becomes:
+
+1. Download file (saved to Downloads folder)
+2. Review file in Finder (check name, source)
+3. Double-click to open when ready
+4. Delete if unwanted
+
+This adds a verification step that can prevent mistakes.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Files still auto-opening | Restart Safari |
+| Want some files to auto-open | No per-type control; all or nothing |
+| Archive Utility still runs | Separate setting in Archive Utility |
+
+## Related Settings
+
+```bash
+# Also configure Archive Utility
+# Archive Utility → Preferences → After expanding: Move archive to Trash
+
+# Prevent JavaScript pop-ups
+defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
+```
+
+## Compatibility
+
+- **Safari**: All versions
+- **Applies to**: Safari downloads only
+- **Note**: Other browsers have separate settings
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "AutoOpenSafeDownloads" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Safari preferences](https://support.apple.com/guide/safari/general-ibrw1068/mac)
+- [Apple Support: If Safari downloads don't work](https://support.apple.com/en-us/HT203106)

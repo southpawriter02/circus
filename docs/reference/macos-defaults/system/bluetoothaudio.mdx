@@ -1,0 +1,162 @@
+# Bluetooth Audio Codec Quality
+
+Prioritize high-quality audio codecs for Bluetooth devices.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.BluetoothAudioAgent` |
+| **Key** | `Apple Bitpool Min (editable)` |
+| **Type** | Integer |
+| **Default Value** | `2` |
+| **Our Setting** | `40` |
+
+## Description
+
+Controls the minimum bitpool value for Bluetooth audio, which affects audio quality for A2DP (stereo Bluetooth audio). A higher bitpool means better audio quality at the cost of potentially less stable connections. This is particularly relevant for the SBC codec when AAC isn't available.
+
+## Understanding Bitpool
+
+| Bitpool | Quality | Bandwidth |
+|---------|---------|-----------|
+| 2 | Poor (default min) | ~127 kbps |
+| 35 | Good | ~229 kbps |
+| 40 | Very Good | ~260 kbps |
+| 53 | Excellent (max) | ~328 kbps |
+
+The default minimum of 2 allows macOS to downgrade quality significantly if it detects interference, which can result in noticeably poor audio.
+
+## Our Configuration
+
+**Set to**: `40` — Maintain high quality audio minimum.
+
+### Why Increase Bitpool?
+
+1. **Audio quality** — Noticeably better sound
+2. **Consistency** — Prevents sudden quality drops
+3. **Music listening** — Essential for enjoyment
+4. **Modern devices** — Most support higher bitrates
+
+### When to Keep Default
+
+- Very congested wireless environments
+- Older Bluetooth devices
+- Frequent dropouts/stuttering
+- Prioritizing stability over quality
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)"
+
+# Set high quality minimum (recommended)
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
+
+# Set maximum quality (may cause issues)
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Max (editable)" -int 80
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 53
+
+# Reset to default (allows low quality)
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 2
+
+# Delete (reset to system default)
+defaults delete com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)"
+
+# Reload Bluetooth audio (reconnect headphones)
+sudo killall bluetoothaudiod
+```
+
+## Applying Changes
+
+After changing Bluetooth audio settings:
+
+1. Disconnect Bluetooth audio device
+2. Run `sudo killall bluetoothaudiod` (or restart Mac)
+3. Reconnect device
+4. Test audio quality
+
+## Audio Codecs on macOS
+
+macOS supports several Bluetooth audio codecs:
+
+| Codec | Quality | Notes |
+|-------|---------|-------|
+| **AAC** | High | Apple's preferred codec |
+| **SBC** | Varies | Universal fallback (bitpool affects this) |
+| **aptX** | High | Not natively supported on Mac |
+
+AirPods use AAC, but third-party headphones often fall back to SBC.
+
+## Complete Bluetooth Audio Setup
+
+```bash
+# High quality Bluetooth audio configuration
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Max (editable)" -int 80
+defaults write com.apple.BluetoothAudioAgent "Apple Initial Bitpool (editable)" -int 53
+defaults write com.apple.BluetoothAudioAgent "Apple Initial Bitpool Min (editable)" -int 53
+defaults write com.apple.BluetoothAudioAgent "Negotiated Bitpool" -int 53
+defaults write com.apple.BluetoothAudioAgent "Negotiated Bitpool Max" -int 53
+defaults write com.apple.BluetoothAudioAgent "Negotiated Bitpool Min" -int 53
+
+sudo killall coreaudiod
+```
+
+## UI Location
+
+Not available in System Settings — terminal only.
+
+Bluetooth preferences show connected devices but don't expose codec settings.
+
+## Checking Active Codec
+
+To see what codec your device is using:
+
+1. **Option-click** the Bluetooth menu bar icon
+2. Hover over your connected audio device
+3. Look for "Active Codec" in the menu
+
+## Troubleshooting Audio Quality
+
+| Issue | Solution |
+|-------|----------|
+| Audio sounds compressed | Increase bitpool minimum |
+| Frequent stuttering | Lower bitpool or check interference |
+| No improvement | Device may not support higher bitpool |
+| Audio cutting out | Too high bitpool for environment |
+
+## Interference Mitigation
+
+If you need high bitpool but have interference:
+
+1. Reduce distance to Mac
+2. Move away from WiFi router (2.4GHz conflicts)
+3. Remove other Bluetooth devices
+4. Use 5GHz WiFi to reduce 2.4GHz congestion
+
+## Compatibility
+
+- **macOS**: 10.10+
+- **Bluetooth**: 4.0+ recommended
+- **Devices**: Affects SBC codec devices most
+- **AirPods**: Use AAC, less affected by these settings
+
+## Security Note
+
+> ⚠️ These settings require `sudo` to restart the Bluetooth daemon. The settings themselves are user-level preferences.
+
+## Source File
+
+**File**: [`defaults/system/bluetooth.sh`](../../../defaults/system/bluetooth.sh)
+
+```bash
+run_defaults "com.apple.BluetoothAudioAgent" "Apple Bitpool Min (editable)" "-int" "40"
+```
+
+## References
+
+- [Bluetooth SBC Codec](https://en.wikipedia.org/wiki/SBC_(codec))
+- [Apple Support: Bluetooth accessories](https://support.apple.com/en-us/HT201171)
+- [Understanding A2DP Bitpool](https://www.soundguys.com/understanding-bluetooth-codecs-15352/)

@@ -1,0 +1,175 @@
+# Time Machine Local Snapshots
+
+Control Time Machine's local snapshot behavior.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.TimeMachine` |
+| **Key** | `AutoBackup` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Time Machine creates local snapshots on your Mac even when your backup drive isn't connected. These snapshots allow you to recover files from recent points in time. This setting controls whether automatic backups (including local snapshots) are enabled.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enabled** (default) — Automatic backups and local snapshots |
+| `false` | **Disabled** — No automatic backups |
+
+## Local Snapshots Explained
+
+Even without a backup drive connected, Time Machine creates hourly snapshots:
+
+| Timeframe | Snapshot Frequency |
+|-----------|-------------------|
+| Last 24 hours | Hourly |
+| Past week | Daily |
+| Past month | Weekly |
+
+Snapshots are stored on your main drive and use APFS copy-on-write (minimal space).
+
+## Our Configuration
+
+**Set to**: `true` — Keep automatic backups enabled.
+
+### Why Keep Enabled?
+
+1. **Continuous protection** — Backups even when drive is away
+2. **File recovery** — Retrieve deleted files
+3. **Mistake reversal** — Undo changes before next full backup
+4. **Space efficient** — APFS snapshots use minimal extra space
+5. **Automatic** — No user intervention required
+
+### When to Disable
+
+- Very low disk space situations
+- Specific testing/development scenarios
+- Enterprise with different backup solutions
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.TimeMachine AutoBackup
+
+# Enable automatic backups (recommended)
+defaults write com.apple.TimeMachine AutoBackup -bool true
+
+# Disable automatic backups (not recommended)
+defaults write com.apple.TimeMachine AutoBackup -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.TimeMachine AutoBackup
+```
+
+## Using tmutil (Preferred)
+
+For Time Machine control, `tmutil` is the recommended tool:
+
+```bash
+# Check Time Machine status
+tmutil status
+
+# Enable Time Machine
+sudo tmutil enable
+
+# Disable Time Machine
+sudo tmutil disable
+
+# List local snapshots
+tmutil listlocalsnapshots /
+
+# Delete specific snapshot
+sudo tmutil deletelocalsnapshots 2024-01-15-123456
+
+# Delete all local snapshots
+sudo tmutil deletelocalsnapshots / --all
+```
+
+## UI Location
+
+**System Settings** → **General** → **Time Machine**
+
+- Toggle "Back Up Automatically"
+- Select backup disk
+- Manage exclusions with "Options..."
+
+## Space Management
+
+APFS snapshots are space-efficient:
+- Only changed blocks are stored
+- Automatically deleted when space is needed
+- Typically use 5-20% of changed data size
+
+### Checking Snapshot Space
+
+```bash
+# See purgeable space (includes snapshots)
+tmutil listlocalsnapshots /
+
+# Detailed space info
+diskutil apfs list
+```
+
+## Excluding Folders
+
+To exclude folders from Time Machine:
+
+```bash
+# Add exclusion via tmutil
+sudo tmutil addexclusion /path/to/exclude
+
+# Or via defaults
+defaults write com.apple.TimeMachine ExcludeByPath -array-add "/path/to/exclude"
+```
+
+Common exclusions:
+- `~/Downloads`
+- `~/Library/Caches`
+- `node_modules` directories
+- Virtual machine images
+
+## Related Settings
+
+```bash
+# Complete Time Machine configuration
+defaults write com.apple.TimeMachine AutoBackup -bool true
+
+# Don't offer new disks for backup
+defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Backups not running | Check `sudo tmutil enable` |
+| No local snapshots | Verify APFS filesystem |
+| Too much space used | Delete old snapshots with tmutil |
+| Disk not recognized | Re-select in Time Machine preferences |
+
+## Compatibility
+
+- **macOS**: 10.12+ (local snapshots)
+- **Filesystem**: APFS required for local snapshots
+- **Note**: HFS+ drives don't support local snapshots
+
+## Source File
+
+**File**: [`defaults/system/timemachine.sh`](../../../defaults/system/timemachine.sh)
+
+```bash
+run_defaults "com.apple.TimeMachine" "AutoBackup" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Back up your Mac with Time Machine](https://support.apple.com/en-us/HT201250)
+- [Apple Support: Time Machine local snapshots](https://support.apple.com/en-us/HT204015)

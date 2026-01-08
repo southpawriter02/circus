@@ -1,0 +1,145 @@
+# Activity Monitor Dock Icon
+
+Display CPU, network, or disk activity in the Dock icon.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.ActivityMonitor` |
+| **Key** | `IconType` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `5` |
+
+## Description
+
+Activity Monitor can display real-time system statistics directly in its Dock icon. This provides at-a-glance monitoring without opening the full application. The icon updates continuously while Activity Monitor is running.
+
+## Values
+
+| Value | Icon Display |
+|-------|--------------|
+| `0` | **Application icon** (default) — Standard Activity Monitor icon |
+| `2` | **Network usage** — Upload/download graph |
+| `3` | **Disk activity** — Read/write indicator |
+| `5` | **CPU usage** — CPU percentage bar |
+| `6` | **CPU history** — Rolling CPU graph |
+
+## Visual Examples
+
+```
+Standard (0):        CPU Usage (5):       CPU History (6):
+┌─────────┐          ┌─────────┐          ┌─────────┐
+│  ⚙️     │          │ ████░░░ │          │ ▂▄█▆▄▂▁ │
+│         │          │  45%    │          │         │
+└─────────┘          └─────────┘          └─────────┘
+
+Network (2):         Disk (3):
+┌─────────┐          ┌─────────┐
+│ ↑↓ ▂▄█▆ │          │ 📀 ▂█▄  │
+│         │          │         │
+└─────────┘          └─────────┘
+```
+
+## Our Configuration
+
+**Set to**: `5` (CPU Usage) — Quick CPU load visibility.
+
+### Why CPU Usage?
+
+1. **Most useful** — CPU load indicates system responsiveness
+2. **Instant awareness** — Spot runaway processes immediately
+3. **Performance monitoring** — Track load during tasks
+4. **Troubleshooting** — See if Mac is struggling
+
+### Alternative Choices
+
+- **CPU History (6)**: See trends over time
+- **Network (2)**: Monitor bandwidth usage
+- **Disk (3)**: Watch for disk bottlenecks
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.ActivityMonitor IconType
+
+# Show CPU usage in Dock icon (recommended)
+defaults write com.apple.ActivityMonitor IconType -int 5
+
+# Show CPU history graph
+defaults write com.apple.ActivityMonitor IconType -int 6
+
+# Show network activity
+defaults write com.apple.ActivityMonitor IconType -int 2
+
+# Show standard icon (default)
+defaults write com.apple.ActivityMonitor IconType -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.ActivityMonitor IconType
+
+# Restart Activity Monitor to apply
+killall "Activity Monitor"
+```
+
+## UI Location
+
+**Activity Monitor** → **View** menu → **Dock Icon** → [Select display type]
+
+Or right-click the Dock icon while running → **Dock Icon** submenu.
+
+## Requirements
+
+- Activity Monitor must be running for the live icon to display
+- Consider keeping Activity Monitor in **Login Items** for always-on monitoring
+
+### Add to Login Items
+
+**System Settings** → **General** → **Login Items** → **+** → Select Activity Monitor
+
+Or:
+```bash
+osascript -e 'tell application "System Events" to make login item at end with properties {path:"/System/Applications/Utilities/Activity Monitor.app", hidden:false}'
+```
+
+## Related Settings
+
+```bash
+# Complete monitoring setup
+defaults write com.apple.ActivityMonitor IconType -int 5
+
+# Show all processes (not just user)
+defaults write com.apple.ActivityMonitor ShowCategory -int 0
+
+# Update frequency: 1=Very Often, 2=Often, 5=Normally
+defaults write com.apple.ActivityMonitor UpdatePeriod -int 2
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Icon not updating | Ensure Activity Monitor is running |
+| Wrong display type | Restart Activity Monitor |
+| Icon reverts | Add to Login Items for persistence |
+
+## Compatibility
+
+- **Activity Monitor**: All macOS versions
+- **Requirements**: Activity Monitor must be running
+- **Performance**: Minimal impact from Dock icon updates
+
+## Source File
+
+**File**: [`defaults/applications/activity_monitor.sh`](../../../../defaults/applications/activity_monitor.sh)
+
+```bash
+run_defaults "com.apple.ActivityMonitor" "IconType" "-int" "5"
+```
+
+## References
+
+- [Apple Support: Activity Monitor User Guide](https://support.apple.com/guide/activity-monitor/welcome/mac)
+- [Apple Support: Check CPU usage](https://support.apple.com/guide/activity-monitor/check-cpu-usage-actmntr1001/mac)

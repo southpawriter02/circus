@@ -1,0 +1,157 @@
+# Calculator Thousands Separator
+
+Display numbers with thousands separators for readability.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.calculator` |
+| **Key** | `SeparatorsDefaultsKey` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Calculator displays numbers with thousands separators (commas or locale-appropriate delimiters). When enabled, large numbers like 1000000 display as 1,000,000, making them much easier to read and verify.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **With separators** — 1,234,567.89 |
+| `false` | **No separators** (default) — 1234567.89 |
+
+## Visual Example
+
+**Without separators:**
+```
+┌────────────────────────┐
+│              1234567890│
+└────────────────────────┘
+Hard to read - is this 1.2 billion or 123 million?
+```
+
+**With separators:**
+```
+┌────────────────────────┐
+│        1,234,567,890   │
+└────────────────────────┘
+Easy to read - clearly 1.2 billion
+```
+
+## Our Configuration
+
+**Set to**: `true` — Display thousands separators.
+
+### Why Enable Separators?
+
+1. **Readability** — Instantly parse large numbers
+2. **Accuracy** — Verify you typed the right number of zeros
+3. **Finance** — Essential for monetary calculations
+4. **Professional** — Standard number formatting
+
+### Why Disable?
+
+- Programming contexts (no commas in code)
+- Data entry where you'll copy/paste
+- Personal preference
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.calculator SeparatorsDefaultsKey
+
+# Enable thousands separators (recommended)
+defaults write com.apple.calculator SeparatorsDefaultsKey -bool true
+
+# Disable separators (Apple default)
+defaults write com.apple.calculator SeparatorsDefaultsKey -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.calculator SeparatorsDefaultsKey
+
+# Restart Calculator to apply
+killall Calculator
+```
+
+## UI Location
+
+**Calculator** → **View** menu → ☑ **Show Thousands Separators**
+
+Or use keyboard shortcut: **⌘,** while Calculator is active.
+
+## Calculator Modes
+
+Calculator has three modes with increasing functionality:
+
+| Mode | Access | Features |
+|------|--------|----------|
+| Basic | ⌘1 | Standard arithmetic |
+| Scientific | ⌘2 | Trig, logs, exponents |
+| Programmer | ⌘3 | Binary, hex, octal |
+
+Thousands separators apply to all modes.
+
+## Locale Support
+
+The separator character follows your system locale:
+
+| Locale | Number |
+|--------|--------|
+| US/UK (English) | 1,234,567.89 |
+| Germany (German) | 1.234.567,89 |
+| France (French) | 1 234 567,89 |
+| Switzerland | 1'234'567.89 |
+
+Set via **System Settings** → **General** → **Language & Region**.
+
+## Related Settings
+
+```bash
+# Paper Tape (calculation history)
+# View → Show Paper Tape (⌘T)
+
+# RPN Mode (Reverse Polish Notation)
+# Calculator → Preferences → RPN Mode
+```
+
+## Keyboard Shortcuts
+
+| Action | Shortcut |
+|--------|----------|
+| Clear | C or Escape |
+| Clear All | ⌘E |
+| Copy Result | ⌘C |
+| Paste | ⌘V |
+| Basic Mode | ⌘1 |
+| Scientific Mode | ⌘2 |
+| Programmer Mode | ⌘3 |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Separators not showing | Restart Calculator |
+| Wrong separator style | Check System locale settings |
+| Commas in results causing issues | Disable before copying to code |
+
+## Compatibility
+
+- **Calculator**: All macOS versions
+- **Locale**: Follows system region settings
+- **Applies to**: Display only, not input
+
+## Source File
+
+**File**: [`defaults/applications/calculator.sh`](../../../../defaults/applications/calculator.sh)
+
+```bash
+run_defaults "com.apple.calculator" "SeparatorsDefaultsKey" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Calculator on Mac](https://support.apple.com/guide/calculator/welcome/mac)

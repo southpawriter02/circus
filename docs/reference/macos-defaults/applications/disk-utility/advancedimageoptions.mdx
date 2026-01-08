@@ -1,0 +1,147 @@
+# Disk Utility Advanced Options
+
+Show all devices and partitions in Disk Utility.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.DiskUtility` |
+| **Key** | `DUDebugMenuEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables advanced features in Disk Utility including the Debug menu and additional disk imaging options. This reveals hidden partitions like the EFI System Partition and Recovery HD, and provides more control over disk operations.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Advanced mode** — Show all partitions and Debug menu |
+| `false` | **Standard mode** (default) — Simplified view |
+
+## What Advanced Mode Reveals
+
+### Additional Visible Partitions
+
+| Partition | Purpose |
+|-----------|---------|
+| **EFI** | Boot loader partition |
+| **Recovery HD** | macOS Recovery environment |
+| **Preboot** | Boot-time resources |
+| **VM** | Virtual memory swap space |
+
+### Debug Menu Options
+
+When enabled, a **Debug** menu appears with:
+- Show Every Partition
+- Force unmount
+- Enable/disable disk verification
+- Additional diagnostic tools
+
+## Our Configuration
+
+**Set to**: `true` — Full visibility for power users.
+
+### Why Enable?
+
+1. **Complete view** — See all partitions including hidden system partitions
+2. **Troubleshooting** — Access recovery partitions directly
+3. **EFI access** — Manage boot configurations
+4. **Diagnostic tools** — Additional repair options
+5. **Professional use** — Essential for IT and system administration
+
+### When to Keep Disabled
+
+- Casual users who might accidentally modify system partitions
+- Simplified interface preferred
+- Preventing accidental data loss
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.DiskUtility DUDebugMenuEnabled
+
+# Enable advanced options (recommended for power users)
+defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
+
+# Also show all devices in sidebar
+defaults write com.apple.DiskUtility SidebarShowAllDevices -bool true
+
+# Disable (Apple default)
+defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.DiskUtility DUDebugMenuEnabled
+
+# Restart Disk Utility to apply
+killall "Disk Utility"
+```
+
+## UI Location
+
+**Disk Utility** → **View** menu → **Show All Devices**
+
+Note: The Debug menu only appears when `DUDebugMenuEnabled` is true.
+
+## Security Warning
+
+> ⚠️ **Caution**: Modifying system partitions (EFI, Recovery HD, Preboot) can render your Mac unbootable. Only make changes if you understand the implications.
+
+## Related Settings
+
+```bash
+# Complete power user Disk Utility setup
+defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
+defaults write com.apple.DiskUtility SidebarShowAllDevices -bool true
+
+# Show APFS snapshots
+defaults write com.apple.DiskUtility ShowAPFSSnapshots -bool true
+```
+
+## Use Cases
+
+### Accessing EFI Partition
+
+1. Enable advanced options
+2. Open Disk Utility
+3. Select the EFI partition in sidebar
+4. Mount it to access boot files
+
+### Verifying Recovery Partition
+
+1. Locate "Recovery HD" in sidebar
+2. Verify it exists and is healthy
+3. Useful before major macOS updates
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Debug menu not appearing | Restart Disk Utility |
+| Partitions still hidden | Check SidebarShowAllDevices too |
+| EFI won't mount | May require Terminal or SIP disable |
+
+## Compatibility
+
+- **Disk Utility**: macOS 10.11+
+- **Note**: Some features vary by macOS version
+- **SIP**: Some operations may require System Integrity Protection disabled
+
+## Source File
+
+**File**: [`defaults/applications/disk_utility.sh`](../../../../defaults/applications/disk_utility.sh)
+
+```bash
+run_defaults "com.apple.DiskUtility" "DUDebugMenuEnabled" "-bool" "true"
+run_defaults "com.apple.DiskUtility" "SidebarShowAllDevices" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Disk Utility User Guide](https://support.apple.com/guide/disk-utility/welcome/mac)
+- [Apple Support: About macOS Recovery](https://support.apple.com/en-us/HT201314)

@@ -1,0 +1,169 @@
+# Dropbox Preferences
+
+Configure Dropbox sync and behavior settings.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.dropbox.Dropbox` |
+| **Keys** | Various |
+| **Type** | Mixed |
+| **Dropbox Folder** | `~/Dropbox` or custom |
+
+## Description
+
+Dropbox preferences can be partially configured via macOS defaults, though most settings should be managed through the Dropbox app. Key behaviors like selective sync, bandwidth limits, and notifications are controlled through the app interface.
+
+## Key Settings
+
+### Dropbox Folder Location
+
+```bash
+# Default location
+~/Dropbox
+
+# Can be changed in Dropbox Preferences → Sync → Dropbox folder location
+```
+
+### Badge/Icon Settings
+
+```bash
+# Read Dropbox preferences
+defaults read com.dropbox.Dropbox
+
+# Note: Most settings are in Dropbox's internal database, not defaults
+```
+
+## In-App Configuration
+
+**Dropbox menu bar icon** → **Preferences** (⚙️ → Preferences)
+
+### General Tab
+- Start Dropbox on system startup
+- Show desktop notifications
+- Default sharing settings
+
+### Sync Tab
+- Selective Sync (choose folders)
+- Smart Sync (online-only files)
+- Dropbox folder location
+- Bandwidth limits
+
+### Backup Tab
+- Computer backup settings
+- Screenshots
+- Photos
+
+## Selective Sync
+
+Choose which folders sync to this Mac:
+
+1. Click Dropbox icon → ⚙️ → Preferences
+2. Go to **Sync** tab
+3. Click **Choose folders to sync**
+4. Uncheck folders you don't need locally
+
+## Smart Sync (Online-Only)
+
+Save disk space with online-only files:
+- Files stay in cloud until accessed
+- Download on demand
+- Requires Dropbox Plus/Professional/Business
+
+## Ignore Patterns
+
+Create `.dropboxignore` file (hidden feature):
+```
+# In Dropbox folder root
+node_modules
+*.log
+.DS_Store
+__pycache__
+```
+
+## Command Line Access
+
+### Dropbox CLI (if available)
+
+```bash
+# Check status
+dropbox status
+
+# Start/stop
+dropbox start
+dropbox stop
+
+# Selective sync
+dropbox exclude add ~/Dropbox/ExcludeThisFolder
+dropbox exclude list
+```
+
+Note: CLI availability varies by installation method.
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| Click icon | Open Dropbox menu |
+| ⌘Click icon | Open Dropbox folder |
+
+## Login Items
+
+Dropbox adds itself to Login Items automatically.
+
+To manage:
+**System Settings** → **General** → **Login Items**
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Sync stuck | Pause and resume sync |
+| High CPU usage | Exclude large folders |
+| Conflicts | Check Conflicted copy files |
+| Badge icons missing | Check Finder extension settings |
+
+### Reset Dropbox
+
+```bash
+# Stop Dropbox
+osascript -e 'quit app "Dropbox"'
+
+# Clear cache (keeps files)
+rm -rf ~/.dropbox
+rm -rf ~/Library/Dropbox
+
+# Restart Dropbox
+open -a Dropbox
+```
+
+## Finder Integration
+
+Dropbox adds Finder sync badges:
+- ✓ Green check: Synced
+- ↻ Blue arrows: Syncing
+- ☁ Cloud: Online-only
+
+Enable at: **Dropbox** → **Preferences** → **General** → **Enable Finder integration**
+
+## Compatibility
+
+- **macOS**: 10.13+
+- **Sync**: Automatic with Dropbox account
+- **Storage**: Varies by plan
+
+## Source File
+
+**File**: [`defaults/applications/dropbox.sh`](../../../../defaults/applications/dropbox.sh)
+
+```bash
+# Dropbox configuration is primarily managed through the app
+# This script documents best practices for developer workflows
+```
+
+## References
+
+- [Dropbox Help Center](https://help.dropbox.com/)
+- [Dropbox CLI](https://help.dropbox.com/installs-integrations/desktop/linux-commands)
+- [Smart Sync](https://help.dropbox.com/sync/smart-sync)
