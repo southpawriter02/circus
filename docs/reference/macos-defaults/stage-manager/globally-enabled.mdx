@@ -1,0 +1,309 @@
+# Stage Manager Enable/Disable
+
+Master toggle for Stage Manager window organization feature.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.WindowManager` |
+| **Key** | `GloballyEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Stage Manager is enabled on your Mac. Stage Manager is a window organization feature introduced in macOS Ventura that automatically arranges windows into groups on the left side of the screen, keeping your current work front and center while other apps are accessible in the strip.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Traditional mode** (default) — Classic window management |
+| `true` | **Stage Manager enabled** — Windows organized in strip |
+
+## Visual Demonstration
+
+### Traditional Window Management (Stage Manager Off):
+```
++-------------------------------------------------------------+
+|  Desktop - Traditional Mode                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +----------------------------------+                        |
+|  |  Finder                          |                        |
+|  |  +---------------------------+   |  +------------------+  |
+|  |  | Documents                 |   |  | Safari           |  |
+|  |  |                           |   |  |                  |  |
+|  |  | +-------+  +-------+      |   |  |  Web page        |  |
+|  |  | |       |  |       |      |   |  |  content         |  |
+|  |  | | file1 |  | file2 |      |   |  |                  |  |
+|  |  | +-------+  +-------+      |   |  |                  |  |
+|  |  +---------------------------+   |  +------------------+  |
+|  +----------------------------------+                        |
+|                                                              |
+|         +------------------------------------------+         |
+|         |  VS Code                                 |         |
+|         |                                          |         |
+|         |  function hello() {                      |         |
+|         |    console.log("Hello");                 |         |
+|         |  }                                       |         |
+|         +------------------------------------------+         |
+|                                                              |
+|  Windows overlap freely - manual arrangement                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Stage Manager Enabled:
+```
++-------------------------------------------------------------+
+|  Desktop - Stage Manager Mode                                |
++-------------------------------------------------------------+
+|                                                              |
+|  RECENT       CURRENT WINDOW                                 |
+|  APPS                                                        |
+|  +------+    +------------------------------------------+    |
+|  |      |    |                                          |    |
+|  | [1]  |    |  VS Code                                 |    |
+|  |Safari|    |                                          |    |
+|  |      |    |  function hello() {                      |    |
+|  +------+    |    console.log("Hello");                 |    |
+|  |      |    |  }                                       |    |
+|  | [2]  |    |                                          |    |
+|  |Finder|    |                                          |    |
+|  |      |    |                                          |    |
+|  +------+    |                                          |    |
+|  |      |    |                                          |    |
+|  | [3]  |    |                                          |    |
+|  |Mail  |    |                                          |    |
+|  |      |    +------------------------------------------+    |
+|  +------+                                                    |
+|     ^                        ^                               |
+|  Strip of               Main window                          |
+|  recent apps            (focused)                            |
+|                                                              |
+|  Click strip items to switch - automatic organization        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Stage Manager Interaction:
+```
++-------------------------------------------------------------+
+|  Stage Manager Workflow                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  1. CLICK APP IN STRIP                                       |
+|     +------+                                                 |
+|     |Safari| <-- Click                                       |
+|     +------+                                                 |
+|                                                              |
+|  2. APPS SWAP POSITIONS                                      |
+|     +------+    +------------------------------------------+ |
+|     |      |    |                                          | |
+|     |VSCode| <- VS Code moves    Safari becomes   ->       | |
+|     |      |    to strip          main window              | |
+|     +------+    |  Safari                                  | |
+|                 |  +---------------------------------+     | |
+|                 |  |  Browsing content               |     | |
+|                 |  +---------------------------------+     | |
+|                 +------------------------------------------+ |
+|                                                              |
+|  3. DRAG TO CREATE GROUPS                                    |
+|     Drag app from strip onto main window to group them       |
+|                                                              |
+|     +------+    +------------------------------------------+ |
+|     |      |    |  VS Code        |  Terminal             | |
+|     |Safari|    |  +-----------+  |  +-----------+        | |
+|     |      |    |  | Code      |  |  | $ npm     |        | |
+|     +------+    |  |           |  |  |   start   |        | |
+|                 |  +-----------+  |  +-----------+        | |
+|                 +------------------------------------------+ |
+|                        ^                                     |
+|                  Two apps grouped together                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Use traditional window management.
+
+### Why Keep Stage Manager Disabled?
+
+1. **Familiarity** — Traditional window management is proven
+2. **Flexibility** — Manual window arrangement preferred
+3. **Screen space** — No strip taking up side of screen
+4. **Predictability** — Windows stay where you put them
+5. **Compatibility** — Works with all window managers
+
+### Why Enable Stage Manager?
+
+- Automatic organization
+- Cleaner desktop appearance
+- Quick app switching
+- Focus on one task at a time
+- Good for single-display setups
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.WindowManager GloballyEnabled
+
+# Enable Stage Manager
+defaults write com.apple.WindowManager GloballyEnabled -bool true
+
+# Disable Stage Manager (traditional mode)
+defaults write com.apple.WindowManager GloballyEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.WindowManager GloballyEnabled
+```
+
+Changes take effect immediately.
+
+## UI Location
+
+**System Settings** > **Desktop & Dock** > **Stage Manager**
+
+Or toggle from **Control Center**:
+
+```
++-------------------------------------------------------------+
+|  Control Center Toggle                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  Menu Bar:                                                   |
+|  +------------------------------------------------------+   |
+|  |                               [Control Center icon]  |   |
+|  +------------------------------------------------------+   |
+|                                        |                     |
+|                                        v                     |
+|                              +------------------+            |
+|                              | Control Center   |            |
+|                              |------------------|            |
+|                              | [Wi-Fi]    [BT]  |            |
+|                              | [AirDrop] [Focus]|            |
+|                              |                  |            |
+|                              | Stage Manager    |            |
+|                              | +------------+   |            |
+|                              | | [ON/OFF]   |   |            |
+|                              | +------------+   |            |
+|                              |        ^         |            |
+|                              |   Quick toggle   |            |
+|                              +------------------+            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+System Settings location:
+
+```
++-------------------------------------------------------------+
+|  System Settings > Desktop & Dock                            |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Desktop & Dock                                  |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Stage Manager                                   |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | [ ] Stage Manager                          |  |       |
+|  |  |                                            |  |       |
+|  |  | Organize windows and apps so it's easy    |  |       |
+|  |  | to focus on your current task.            |  |       |
+|  |  |                                            |  |       |
+|  |  | [Customize...]                             |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Enable/disable Stage Manager (this setting)
+defaults write com.apple.WindowManager GloballyEnabled -bool false
+
+# Show recent apps strip
+defaults write com.apple.WindowManager AutoHide -bool false
+
+# Hide desktop items in Stage Manager
+defaults write com.apple.WindowManager HideDesktop -bool false
+
+# Window grouping behavior
+defaults write com.apple.WindowManager AppWindowGroupingBehavior -int 0
+
+# Hide widgets
+defaults write com.apple.WindowManager StandardHideWidgets -bool false
+```
+
+## Stage Manager Features
+
+| Feature | Description |
+|---------|-------------|
+| Recent Apps Strip | Shows recent apps on left side |
+| Window Groups | Group multiple apps together |
+| Desktop Access | Click desktop to show all windows |
+| Single App Focus | Main window takes center stage |
+| Automatic Sizing | Windows resize to fill space |
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| Globe + S | Toggle Stage Manager (if configured) |
+| Click desktop | Show all windows |
+| Click strip item | Switch to that app |
+| Drag to strip | Add app to existing group |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Stage Manager won't enable | Requires macOS Ventura (13.0)+ |
+| Strip not visible | Check AutoHide setting |
+| Desktop icons missing | Check HideDesktop setting |
+| Windows not grouping | Drag apps onto each other |
+| Can't disable | Use Control Center or System Settings |
+
+## Requirements
+
+- **macOS**: 13.0+ (Ventura)
+- **Hardware**: All Apple Silicon Macs, Intel Macs with macOS Ventura
+
+## Comparison with Other Window Managers
+
+| Feature | Stage Manager | Mission Control | Spaces |
+|---------|--------------|-----------------|--------|
+| Auto-organize | Yes | No | No |
+| Window groups | Yes | Limited | Via desktop |
+| Side strip | Yes | No | No |
+| Learning curve | Low | Low | Medium |
+| Customization | Limited | Limited | High |
+
+## Compatibility
+
+- **macOS**: 13.0+ (Ventura)
+- **Note**: Takes effect immediately
+- **Note**: Can be toggled from Control Center
+- **Note**: Works alongside Spaces
+
+## Source File
+
+**File**: [`defaults/interface/stage_manager.sh`](../../defaults/interface/stage_manager.sh)
+
+```bash
+run_defaults "com.apple.WindowManager" "GloballyEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Stage Manager on Mac](https://support.apple.com/guide/mac-help/mchl534ba392/mac)
+- [Apple Support: Organize windows with Stage Manager](https://support.apple.com/guide/mac-help/use-stage-manager-mchl7c5f7cc3/mac)

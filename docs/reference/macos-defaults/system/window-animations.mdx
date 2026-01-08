@@ -1,0 +1,290 @@
+# System Window Animations
+
+Control opening and closing animations for windows.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticWindowAnimationsEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether windows animate when opening, closing, minimizing, or performing other transitions. When disabled, windows appear and disappear instantly without the zoom/fade animations. This can make the system feel more responsive and is particularly beneficial for users who prefer immediate visual feedback or those sensitive to motion.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Animations enabled** (default) — Windows zoom/fade in/out |
+| `false` | **Animations disabled** — Windows appear/disappear instantly |
+
+## Visual Demonstration
+
+### With Window Animations Enabled (default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Window Opening Animation                               │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Frame 1 (0ms):           Frame 2 (100ms):              │
+│  ┌─────┐                  ┌───────────┐                 │
+│  │     │                  │           │                 │
+│  │ 20% │                  │    50%    │                 │
+│  │     │                  │           │                 │
+│  └─────┘                  └───────────┘                 │
+│                                                         │
+│  Frame 3 (200ms):         Frame 4 (300ms):              │
+│  ┌─────────────────┐      ┌───────────────────────┐     │
+│  │                 │      │                       │     │
+│  │      75%        │      │         100%          │     │
+│  │                 │      │    Full Size Window   │     │
+│  │                 │      │                       │     │
+│  └─────────────────┘      └───────────────────────┘     │
+│                                                         │
+│  Smooth zoom animation takes ~300ms                     │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Without Window Animations:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Window Opening — No Animation                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Before (nothing):        After (instant):              │
+│                           ┌───────────────────────┐     │
+│                           │                       │     │
+│      (empty desktop)      │    Full Size Window   │     │
+│                           │                       │     │
+│                           │    Appears instantly  │     │
+│                           │                       │     │
+│                           └───────────────────────┘     │
+│                                                         │
+│  Window appears in final position immediately           │
+│  No zoom, no fade, just instant appearance              │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Window Close Comparison:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Window Closing                                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  WITH ANIMATIONS:                                       │
+│  ┌───────────────────────┐                              │
+│  │   Closing Window      │                              │
+│  └───────────────────────┘                              │
+│           ↓ shrinks and fades                           │
+│      ┌───────────┐                                      │
+│      │  fading   │                                      │
+│      └───────────┘                                      │
+│           ↓                                             │
+│        ┌─────┐                                          │
+│        │     │  → disappears                            │
+│        └─────┘                                          │
+│                                                         │
+│  WITHOUT ANIMATIONS:                                    │
+│  ┌───────────────────────┐                              │
+│  │   Closing Window      │                              │
+│  └───────────────────────┘                              │
+│           ↓ poof! gone instantly                        │
+│                                                         │
+│      (window immediately disappears)                    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable animations for instant window operations.
+
+### Why Disable Window Animations?
+
+1. **Speed** — Actions complete instantly
+2. **Responsiveness** — System feels snappier
+3. **Productivity** — No waiting for animations
+4. **Motion sensitivity** — Reduces visual motion
+5. **Older hardware** — Less GPU usage
+
+### Why Enable Window Animations?
+
+- Visual feedback of window state
+- Smoother user experience
+- Easier to track window changes
+- Default macOS experience
+- Aesthetic preference
+
+## What's Affected
+
+| Animation Type | With Setting Off |
+|----------------|------------------|
+| Window open | Instant appearance |
+| Window close | Instant disappearance |
+| Window zoom (green button) | Instant resize |
+| Sheet dialogs | Instant appearance |
+| App launch windows | Instant appearance |
+| Full screen transition | Still animated (separate setting) |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSAutomaticWindowAnimationsEnabled
+
+# Disable window animations
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+
+# Enable window animations (default)
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSAutomaticWindowAnimationsEnabled
+```
+
+No restart required — takes effect for newly opened windows.
+
+## UI Location
+
+There is no direct GUI toggle for this setting.
+
+Related settings available at:
+**System Settings** → **Accessibility** → **Display** → ☑ **Reduce motion**
+
+Note: "Reduce motion" affects many animations including window animations, but this `defaults` command provides more specific control.
+
+## Related Animation Settings
+
+```bash
+# Window animations (this setting)
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+
+# Window resize animation time
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+
+# Dock animations
+defaults write com.apple.dock autohide-time-modifier -float 0
+defaults write com.apple.dock autohide-delay -float 0
+
+# Finder animations
+defaults write com.apple.finder DisableAllAnimations -bool true
+
+# Mission Control animation duration
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
+# Launchpad animation
+defaults write com.apple.dock springboard-show-duration -float 0
+defaults write com.apple.dock springboard-hide-duration -float 0
+
+# Apply Dock changes
+killall Dock
+```
+
+## Full "No Animations" Configuration
+
+For maximum speed, combine multiple settings:
+
+```bash
+# Window opening/closing
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+
+# Window resize speed
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+
+# Dock
+defaults write com.apple.dock autohide-time-modifier -float 0
+defaults write com.apple.dock autohide-delay -float 0
+defaults write com.apple.dock launchanim -bool false
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
+# Finder
+defaults write com.apple.finder DisableAllAnimations -bool true
+
+# Mail (compose window)
+defaults write com.apple.mail DisableReplyAnimations -bool true
+defaults write com.apple.mail DisableSendAnimations -bool true
+
+# Apply changes
+killall Dock
+killall Finder
+```
+
+## Accessibility Considerations
+
+For users with motion sensitivity:
+
+| Option | Effect |
+|--------|--------|
+| This setting | Disables window animations only |
+| Reduce Motion | Disables most UI animations |
+| Both combined | Maximum motion reduction |
+
+```bash
+# Reduce motion (broader effect)
+defaults write com.apple.universalaccess reduceMotion -bool true
+
+# Plus window animations (specific)
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Some animations still play | App-specific animations may persist |
+| Full screen still animates | Use separate full-screen settings |
+| Setting doesn't apply | Close and reopen affected apps |
+| Want some animations back | Enable setting, use Reduce Motion instead |
+
+## App-Specific Behavior
+
+Some apps have their own animation settings:
+
+| App | Has Own Animation Control |
+|-----|---------------------------|
+| Safari | Tab animations |
+| Mail | Send/reply animations |
+| Messages | Message bubbles |
+| Finder | Copy dialogs |
+
+These may need separate configuration.
+
+## Performance Impact
+
+| Setting | CPU/GPU Usage | Visual Effect |
+|---------|---------------|---------------|
+| Enabled | Higher during animations | Smooth transitions |
+| Disabled | Lower | Instant changes |
+
+Particularly noticeable on:
+- Older Macs
+- Integrated graphics
+- Battery power (less drain)
+- Remote desktop sessions
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Takes effect immediately for new windows
+- **Note**: Some app-specific animations unaffected
+- **Note**: Full screen animations controlled separately
+
+## Source File
+
+**File**: [`defaults/system/animations.sh`](../../defaults/system/animations.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSAutomaticWindowAnimationsEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Change Accessibility Display preferences](https://support.apple.com/guide/mac-help/change-display-accessibility-preferences-mchlp2298/mac)
+- [Apple HIG: Motion](https://developer.apple.com/design/human-interface-guidelines/motion)

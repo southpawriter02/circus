@@ -1,0 +1,288 @@
+# Siri Voice Feedback
+
+Control whether Siri speaks responses aloud.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Siri` |
+| **Key** | `VoiceFeedback` |
+| **Type** | String |
+| **Default Value** | `On` |
+| **Our Setting** | `Off` |
+
+## Description
+
+Controls whether Siri speaks its responses aloud or displays them silently as text. When voice feedback is off, Siri shows responses on screen without audio, making it suitable for quiet environments or when you prefer to read responses.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `On` | **Voice feedback enabled** (default) — Siri speaks responses |
+| `Off` | **Silent mode** — Responses displayed as text only |
+
+## Visual Demonstration
+
+### Voice Feedback On (Default):
+```
++-------------------------------------------------------------+
+|  Siri - Voice Feedback Enabled                               |
++-------------------------------------------------------------+
+|                                                              |
+|  You: "What's the weather today?"                           |
+|                                                              |
+|  +---------------------------+                               |
+|  |      +-----------+        |                               |
+|  |      |   ))))    |        |  Siri speaks:                |
+|  |      |   Siri    |        |  "Today in San Francisco,    |
+|  |      |   ))))    |        |   expect partly cloudy       |
+|  |      +-----------+        |   skies with a high of 68    |
+|  |                           |   degrees..."                 |
+|  |  "Today in San Francisco, |                               |
+|  |   expect partly cloudy    |   [Audio plays through       |
+|  |   skies with a high of    |    speakers/headphones]      |
+|  |   68 degrees..."          |                               |
+|  |                           |                               |
+|  +---------------------------+                               |
+|                                                              |
+|  Good for:                                                   |
+|  * Hands-free operation                                     |
+|  * Accessibility needs                                      |
+|  * When not looking at screen                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Voice Feedback Off:
+```
++-------------------------------------------------------------+
+|  Siri - Voice Feedback Disabled (Silent)                     |
++-------------------------------------------------------------+
+|                                                              |
+|  You: "What's the weather today?"                           |
+|                                                              |
+|  +---------------------------+                               |
+|  |      +-----------+        |                               |
+|  |      |           |        |  No audio output             |
+|  |      |   Siri    |        |  (silent)                    |
+|  |      |           |        |                               |
+|  |      +-----------+        |                               |
+|  |                           |                               |
+|  |  Weather in San Francisco |                               |
+|  |  +---------------------+  |                               |
+|  |  | Partly Cloudy       |  |                               |
+|  |  | 68F / 56F           |  |  Text-only response          |
+|  |  | 10% chance of rain  |  |                               |
+|  |  +---------------------+  |                               |
+|  |                           |                               |
+|  +---------------------------+                               |
+|                                                              |
+|  Good for:                                                   |
+|  * Quiet environments (office, library)                     |
+|  * Late night use                                           |
+|  * Public spaces                                            |
+|  * When wearing headphones for music                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Combined with Type to Siri:
+```
++-------------------------------------------------------------+
+|  Complete Silent Siri Experience                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Settings combination for fully silent Siri:                |
+|                                                              |
+|  1. Type to Siri: ENABLED                                   |
+|     (Type queries instead of speaking)                      |
+|                                                              |
+|  2. Voice Feedback: OFF                                     |
+|     (Read responses instead of hearing)                     |
+|                                                              |
+|  Result:                                                     |
+|  +---------------------------+                               |
+|  |  Siri                     |                               |
+|  |  +---------------------+  |                               |
+|  |  | Set timer 5 min     |  |  <-- Type your query        |
+|  |  +---------------------+  |                               |
+|  |                           |                               |
+|  |  Timer set for 5 minutes  |  <-- Read the response       |
+|  |  [===========] 5:00       |                               |
+|  |                           |                               |
+|  +---------------------------+                               |
+|                                                              |
+|  Completely silent interaction!                              |
+|  No speaking, no audio feedback                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `Off` — Silent Siri responses (text only).
+
+### Why Disable Voice Feedback?
+
+1. **Quiet environments** — Library, shared office, bedroom
+2. **Privacy** — Others don't hear your queries
+3. **Discretion** — Responses aren't announced
+4. **Focus** — No audio interruptions
+5. **Preference** — Some prefer reading to listening
+
+### Why Keep Voice Feedback?
+
+- Hands-free operation
+- Accessibility needs
+- Can't look at screen
+- Natural conversation feel
+- HomeKit voice control
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Siri VoiceFeedback
+
+# Disable voice feedback (silent)
+defaults write com.apple.Siri VoiceFeedback -string "Off"
+
+# Enable voice feedback (default)
+defaults write com.apple.Siri VoiceFeedback -string "On"
+
+# Delete (reset to default)
+defaults delete com.apple.Siri VoiceFeedback
+```
+
+Changes take effect immediately for new Siri interactions.
+
+## UI Location
+
+**System Settings** > **Siri & Spotlight** > **Siri Responses**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Siri & Spotlight                          |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Siri & Spotlight                                |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Siri Responses                                  |       |
+|  |  +--------------------------------------------+  |       |
+|  |  |  Voice Feedback                            |  |       |
+|  |  |                                            |  |       |
+|  |  |  (*) On                                    |  |       |
+|  |  |      Siri speaks responses                 |  |       |
+|  |  |                                            |  |       |
+|  |  |  ( ) Off                                   |  |       |
+|  |  |      Show responses silently               |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |                                                  |       |
+|  |  Siri Voice                                      |       |
+|  |  [American (Voice 4)             v]              |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Voice feedback (this setting)
+defaults write com.apple.Siri VoiceFeedback -string "Off"
+
+# Type to Siri (for fully silent experience)
+defaults write com.apple.Siri TypeToSiriEnabled -bool true
+
+# Master Siri toggle
+defaults write com.apple.assistant.support "Assistant Enabled" -bool true
+
+# Siri Suggestions
+defaults write com.apple.Siri SiriSuggestionsEnabled -bool false
+```
+
+## Voice Feedback Scenarios
+
+| Scenario | Recommendation |
+|----------|----------------|
+| Working from home alone | On |
+| Open office | Off |
+| Library or study | Off |
+| Driving (CarPlay) | On |
+| Late night | Off |
+| Accessibility needs | On |
+| Public transit | Off |
+| Kitchen/cooking | On |
+
+## "Hey Siri" Behavior
+
+When using "Hey Siri" (voice activation):
+- Siri still listens with microphone
+- Response follows Voice Feedback setting
+- Voice Feedback Off = Siri responds silently
+
+```
++-------------------------------------------------------------+
+|  "Hey Siri" with Voice Feedback Off                          |
++-------------------------------------------------------------+
+|                                                              |
+|  You: "Hey Siri, set a timer for 5 minutes"                 |
+|       (spoken aloud to activate)                            |
+|                                                              |
+|  Siri: (responds silently on screen)                        |
+|  +---------------------------+                               |
+|  |  Timer                    |                               |
+|  |  5:00                     |  No audio confirmation       |
+|  |  [Start]                  |                               |
+|  +---------------------------+                               |
+|                                                              |
+|  Note: You still speak to Siri, but Siri doesn't speak back |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Siri still speaking | Restart Siri, verify setting |
+| Can't hear Siri | Check Voice Feedback is On |
+| Setting not persisting | Verify with `defaults read` |
+| Volume issues | Check system volume separately |
+| Siri voice different | Separate "Siri Voice" setting |
+
+## Accessibility Considerations
+
+Voice feedback can be important for:
+- Vision impairments
+- Motor difficulties (can't look at screen)
+- Learning disabilities
+- Multitasking needs
+
+If using Siri for accessibility, keep Voice Feedback enabled.
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra)
+- **Note**: Takes effect immediately
+- **Note**: Separate from system volume settings
+- **Note**: "Hey Siri" activation still uses microphone
+
+## Source File
+
+**File**: [`defaults/system/siri.sh`](../../defaults/system/siri.sh)
+
+```bash
+run_defaults "com.apple.Siri" "VoiceFeedback" "-string" "Off"
+```
+
+## References
+
+- [Apple Support: Use Siri on your Mac](https://support.apple.com/guide/mac-help/mchl6b029310/mac)
+- [Apple Support: Change Siri settings](https://support.apple.com/guide/mac-help/change-siri-settings-mchl75c3f1d7/mac)
+- [Apple Support: Accessibility features for Siri](https://support.apple.com/guide/mac-help/accessibility-features-for-siri-mchl637e3ceb/mac)

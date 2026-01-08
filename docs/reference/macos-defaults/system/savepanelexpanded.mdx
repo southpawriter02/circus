@@ -1,0 +1,276 @@
+# Save Dialog Expanded State
+
+Automatically expand the save dialog to show file browser.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSNavPanelExpandedStateForSaveMode2` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the save dialog opens in expanded mode, showing the full file browser with folder navigation, sidebar, and file list. By default, macOS shows a simplified save dialog with just a filename field and a dropdown. Enabling this setting shows the full Finder-like browser immediately.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Collapsed** (default) — Simple filename and location dropdown |
+| `true` | **Expanded** — Full file browser visible |
+
+## Visual Demonstration
+
+### Collapsed Save Dialog (default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Save Dialog — Collapsed                                │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │  Save As: [Untitled.txt                    ]   │    │
+│  │                                                 │    │
+│  │  Tags:    [                                ]   │    │
+│  │                                                 │    │
+│  │  Where:   [Documents                     ▼]   │    │
+│  │              ↑                                  │    │
+│  │        Limited location options                 │    │
+│  │        Can't browse to other folders easily     │    │
+│  │                                                 │    │
+│  │           [▼]     [Cancel]    [Save]            │    │
+│  │            ↑                                    │    │
+│  │    Click to expand (if you notice it!)          │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Where does "Documents" actually save to?              │
+│  Hard to navigate to specific subfolders!               │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Expanded Save Dialog:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Save Dialog — Expanded                                 │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Save As: [Untitled.txt                    ]   │    │
+│  │  Tags:    [                                ]   │    │
+│  │                                                 │    │
+│  │  ┌──────────────┬──────────────────────────┐   │    │
+│  │  │ Favorites    │ Name          Date       │   │    │
+│  │  │ ─────────    │ ──────────────────────── │   │    │
+│  │  │ 📁 Desktop   │ 📁 Projects    Today     │   │    │
+│  │  │ 📁 Documents │ 📁 Archives    Yesterday │   │    │
+│  │  │ 📁 Downloads │ 📄 Notes.txt   Jan 5     │   │    │
+│  │  │              │ 📄 Todo.md     Jan 4     │   │    │
+│  │  │ iCloud       │                          │   │    │
+│  │  │ ─────────    │                          │   │    │
+│  │  │ ☁️ iCloud    │                          │   │    │
+│  │  │              │                          │   │    │
+│  │  │ Tags         │ [New Folder]             │   │    │
+│  │  │ ─────────    │                          │   │    │
+│  │  │ 🔴 Important │                          │   │    │
+│  │  └──────────────┴──────────────────────────┘   │    │
+│  │                                                 │    │
+│  │           [▲]     [Cancel]    [Save]            │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Full Finder browser! Navigate anywhere!                │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Expanded Dialog Features:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Features in Expanded Save Dialog                       │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Sidebar:                                               │
+│  • Favorites (Desktop, Documents, Downloads, etc.)      │
+│  • iCloud Drive                                         │
+│  • Tags for organization                                │
+│  • Recent folders                                       │
+│                                                         │
+│  File Browser:                                          │
+│  • Full folder navigation                               │
+│  • See existing files                                   │
+│  • Sort by name, date, size                            │
+│  • Change view style (icons, list, columns)            │
+│                                                         │
+│  Additional Controls:                                   │
+│  • [New Folder] button                                  │
+│  • Search field                                         │
+│  • View options                                         │
+│  • Path bar (shows current location)                    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show expanded save dialog for full control.
+
+### Why Enable Expanded Dialog?
+
+1. **Navigation** — Browse to any folder
+2. **Context** — See existing files
+3. **Organization** — Access favorites and tags
+4. **New Folder** — Create folders on the fly
+5. **Certainty** — Know exactly where file saves
+
+### Why Keep Collapsed (Default)?
+
+- Quick saves to recent locations
+- Always save to same folder
+- Prefer minimal interface
+- Trust default locations
+- Speed over flexibility
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSNavPanelExpandedStateForSaveMode2
+
+# Enable expanded save dialog
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+
+# Also set the older key (for compatibility)
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+
+# Disable (collapsed, default)
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool false
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSNavPanelExpandedStateForSaveMode2
+```
+
+Changes take effect immediately for new save dialogs.
+
+## UI Location
+
+There is no system setting for this. Each save dialog has:
+- **▼** button (next to filename) to expand
+- **▲** button to collapse
+
+The setting makes expanded the default state.
+
+## Keyboard Shortcuts in Save Dialog
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘D | Go to Desktop |
+| ⌘⇧G | Go to Folder (type path) |
+| ⌘⇧N | New Folder |
+| ⌘⇧. | Show hidden files |
+| ↑↓ | Navigate file list |
+| Return | Save/Select |
+
+## Related Dialog Settings
+
+```bash
+# Expanded save dialog (this setting)
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+
+# Expanded print dialog
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+
+# Show all file extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+```
+
+## Go to Folder Shortcut
+
+Even in collapsed dialog, use **⌘⇧G** to type a path:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Go to Folder (⌘⇧G)                                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │  Go to the folder:                              │    │
+│  │  [~/Documents/Projects/2024/               ]   │    │
+│  │                                                 │    │
+│  │     Tab-completion works! Type and press Tab    │    │
+│  │                                                 │    │
+│  │              [Cancel]    [Go]                   │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Works in both save and open dialogs                    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## iCloud Integration
+
+Expanded dialog makes iCloud easier:
+- See iCloud Drive in sidebar
+- Navigate to app-specific iCloud folders
+- Save directly to iCloud
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Dialog still collapsed | Setting applies to new dialogs |
+| Some apps different | App may override system setting |
+| Sidebar missing items | Customize in Finder → Preferences → Sidebar |
+| Can't see hidden files | Press ⌘⇧. to toggle |
+
+## App-Specific Dialogs
+
+Some apps use custom save dialogs:
+- **Adobe apps** — Own save interface
+- **Office apps** — Custom with cloud options
+- **Terminal apps** — Text-based saving
+
+These may not respect the system setting.
+
+## Legacy Key
+
+macOS uses two preference keys:
+
+| Key | macOS Version |
+|-----|---------------|
+| `NSNavPanelExpandedStateForSaveMode` | 10.6-10.8 |
+| `NSNavPanelExpandedStateForSaveMode2` | 10.9+ |
+
+Set both for maximum compatibility:
+```bash
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+```
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Note**: Takes effect immediately for new save dialogs
+- **Note**: Some applications have custom save dialogs
+- **Note**: Works in open dialogs too (NSNavPanelExpandedStateForOpenMode)
+
+## Source File
+
+**File**: [`defaults/dialogs/save.sh`](../../defaults/dialogs/save.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSNavPanelExpandedStateForSaveMode2" "-bool" "true"
+run_defaults "NSGlobalDomain" "NSNavPanelExpandedStateForSaveMode" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Save and name files](https://support.apple.com/guide/mac-help/save-and-name-files-mchl50654197/mac)
+- [Apple Support: Organize files in folders](https://support.apple.com/guide/mac-help/organize-files-in-folders-mchlp1014/mac)

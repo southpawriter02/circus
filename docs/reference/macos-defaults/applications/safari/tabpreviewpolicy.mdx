@@ -1,0 +1,270 @@
+# Safari Tab Preview Update Policy
+
+Control how Safari updates tab thumbnail previews.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `DebugSnapshotsUpdatePolicy` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls Safari's behavior for updating tab thumbnail preview images. Safari creates visual snapshots of tabs for the Tab Overview feature and tab bar previews. This setting determines when these snapshots are updated, affecting both performance and the accuracy of tab previews. Setting to `2` prevents unnecessary updates, reducing resource usage.
+
+## Values
+
+| Value | Behavior |
+|-------|---------|
+| `0` | **Auto** (default) — Safari decides when to update |
+| `1` | **Aggressive** — Update frequently |
+| `2` | **Conservative** — Update only when necessary |
+
+## Visual Demonstration
+
+### Tab Overview Feature:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Safari Tab Overview (⇧⌘\)                              │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐       │
+│  │ ┌─────────┐ │ │ ┌─────────┐ │ │ ┌─────────┐ │       │
+│  │ │ 📧 Mail │ │ │ │ 🛒 Shop │ │ │ │ 📰 News │ │       │
+│  │ │ preview │ │ │ │ preview │ │ │ │ preview │ │       │
+│  │ │ image   │ │ │ │ image   │ │ │ │ image   │ │       │
+│  │ └─────────┘ │ │ └─────────┘ │ │ └─────────┘ │       │
+│  │  Gmail      │ │  Amazon     │ │  BBC News   │       │
+│  └─────────────┘ └─────────────┘ └─────────────┘       │
+│                                                         │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐       │
+│  │ ┌─────────┐ │ │ ┌─────────┐ │ │ ┌─────────┐ │       │
+│  │ │ 💻 Dev  │ │ │ │ 📹 Video│ │ │ │ 📚 Docs │ │       │
+│  │ │ preview │ │ │ │ preview │ │ │ │ preview │ │       │
+│  │ │ image   │ │ │ │ image   │ │ │ │ image   │ │       │
+│  │ └─────────┘ │ │ └─────────┘ │ │ └─────────┘ │       │
+│  │  GitHub     │ │  YouTube    │ │  Apple Dev  │       │
+│  └─────────────┘ └─────────────┘ └─────────────┘       │
+│                                                         │
+│  These thumbnail previews require periodic updates      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Update Policy Impact:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Snapshot Update Policies                               │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Policy 0 (Auto):                                       │
+│  ─────────────────────────────────────────────────────  │
+│  Safari updates snapshots based on:                     │
+│  • Tab visibility changes                               │
+│  • Page content updates                                 │
+│  • Memory availability                                  │
+│  • User interaction patterns                            │
+│  Resource usage: Moderate                               │
+│                                                         │
+│  Policy 1 (Aggressive):                                 │
+│  ─────────────────────────────────────────────────────  │
+│  Safari updates snapshots frequently:                   │
+│  • More current previews                                │
+│  • Higher CPU/memory usage                              │
+│  • Battery impact on laptops                            │
+│  Resource usage: Higher                                 │
+│                                                         │
+│  Policy 2 (Conservative):                               │
+│  ─────────────────────────────────────────────────────  │
+│  Safari minimizes snapshot updates:                     │
+│  • Previews may be slightly stale                       │
+│  • Lower resource usage                                 │
+│  • Better battery life                                  │
+│  • Recommended for many tabs                            │
+│  Resource usage: Lower                                  │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Resource Usage Comparison:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Resource Usage by Policy                               │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  With 20+ tabs open:                                    │
+│                                                         │
+│  Policy     CPU     Memory    Battery                   │
+│  ──────────────────────────────────────────────         │
+│  0 (Auto)   ██░░░   ███░░     ██░░░                     │
+│  1 (Aggr)   ████░   ████░     ████░                     │
+│  2 (Cons)   █░░░░   ██░░░     █░░░░  ← Recommended      │
+│                                                         │
+│  █ = Usage level (more = higher usage)                  │
+│                                                         │
+│  Conservative mode significantly reduces background     │
+│  processing for users with many tabs.                   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `2` — Conservative updates for better performance.
+
+### Why Use Conservative (2)?
+
+1. **Performance** — Less background processing
+2. **Battery** — Reduced power consumption
+3. **Many tabs** — Better with 20+ tabs open
+4. **Memory** — Lower RAM usage
+5. **Focus** — Less background activity
+
+### Why Use Auto (0)?
+
+- Want most current previews
+- Fewer tabs open
+- Desktop Mac (no battery concern)
+- Visual accuracy is priority
+- Default Safari experience
+
+### Why Use Aggressive (1)?
+
+- Need always-current previews
+- Very few tabs
+- Plenty of system resources
+- High-end Mac
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari DebugSnapshotsUpdatePolicy
+
+# Set conservative (recommended)
+defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 2
+
+# Set auto (default)
+defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 0
+
+# Set aggressive
+defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 1
+
+# Delete (reset to default)
+defaults delete com.apple.Safari DebugSnapshotsUpdatePolicy
+```
+
+Restart Safari for changes to take effect.
+
+## UI Location
+
+There is no GUI for this setting. It's a debug/hidden preference.
+
+The Tab Overview feature itself can be accessed via:
+- **View** → **Show Tab Overview**
+- Keyboard: **⇧⌘\\**
+- Pinch gesture on trackpad
+
+## Related Safari Performance Settings
+
+```bash
+# Tab preview policy (this setting)
+defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 2
+
+# Disable preloading top search hit
+defaults write com.apple.Safari PreloadTopHit -bool false
+
+# Disable Safe Browsing (not recommended for security)
+# defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+
+# Show full URL (doesn't affect performance)
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+
+# Disable auto-fill (slight privacy/performance benefit)
+# defaults write com.apple.Safari AutoFillPasswords -bool false
+```
+
+## Tab Management Tips
+
+For users with many tabs:
+
+| Tip | Benefit |
+|-----|---------|
+| Use Tab Groups | Organize related tabs |
+| Pin important tabs | Quick access, won't close accidentally |
+| Use Reading List | Save for later without keeping tab open |
+| Close unused tabs | Reduces memory and CPU |
+| Conservative snapshots | Less background processing |
+
+## Memory Impact
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Safari Memory Usage                                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Tab snapshots stored in memory:                        │
+│                                                         │
+│  10 tabs:   ~50-100 MB for snapshots                    │
+│  20 tabs:   ~100-200 MB for snapshots                   │
+│  50 tabs:   ~250-500 MB for snapshots                   │
+│  100 tabs:  ~500 MB - 1 GB for snapshots                │
+│                                                         │
+│  Conservative policy reduces update frequency,          │
+│  allowing Safari to manage memory more efficiently.     │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Debug Preference Note
+
+This is a "Debug" preference (note the key name `DebugSnapshotsUpdatePolicy`), meaning:
+- It's an internal/hidden setting
+- May change in future Safari versions
+- Not officially documented by Apple
+- Safe to use but monitor behavior after Safari updates
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Tab previews look outdated | Switch to policy 0 or 1 |
+| Safari using too much CPU | Switch to policy 2 |
+| Previews not loading | Safari restart may be needed |
+| Setting has no effect | Ensure Safari is restarted |
+
+## Energy Impact
+
+On MacBooks, tab snapshot updates affect battery:
+
+| Policy | Battery Impact | Best For |
+|--------|----------------|----------|
+| Auto (0) | Moderate | Balanced use |
+| Aggressive (1) | Higher | Plugged in |
+| Conservative (2) | Lower | Battery power |
+
+Monitor in Activity Monitor → Safari → Energy Impact.
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra)
+- **Safari**: 10.0+
+- **Note**: Debug preference, may change in future versions
+- **Note**: Requires Safari restart to apply
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "DebugSnapshotsUpdatePolicy" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Use tabs in Safari](https://support.apple.com/guide/safari/use-tabs-sfri40838/mac)
+- [Apple Support: Organize tabs with Tab Groups](https://support.apple.com/guide/safari/organize-tabs-with-tab-groups-ibrwa2d5f52e/mac)

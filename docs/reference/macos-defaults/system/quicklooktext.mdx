@@ -1,0 +1,261 @@
+# QuickLook Text Selection
+
+Enable text selection and copying in QuickLook previews.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `QLEnableTextSelection` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether you can select and copy text from QuickLook previews. By default, QuickLook shows a read-only preview of files. When enabled, you can select text in QuickLook previews of text files, PDFs, and other documents, then copy it to the clipboard without opening the file in a full application.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Read-only preview** (default) — Cannot select text |
+| `true` | **Text selection enabled** — Select and copy text |
+
+## Visual Demonstration
+
+### Without Text Selection (default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  QuickLook Preview (Read-Only)                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Press Space on a file:                                 │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │  Meeting Notes.txt                              │    │
+│  │  ═══════════════════                            │    │
+│  │                                                 │    │
+│  │  Attendees: John, Sarah, Mike                   │    │
+│  │  Date: January 8, 2026                          │    │
+│  │                                                 │    │
+│  │  Action Items:                                  │    │
+│  │  - Review proposal by Friday                    │    │
+│  │  - Schedule follow-up meeting                   │    │
+│  │                                                 │    │
+│  │  🚫 Cannot select or copy this text            │    │
+│  │     Must open in TextEdit to copy               │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With Text Selection Enabled:
+```
+┌─────────────────────────────────────────────────────────┐
+│  QuickLook Preview (Selectable)                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Press Space on a file:                                 │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │  Meeting Notes.txt                              │    │
+│  │  ═══════════════════                            │    │
+│  │                                                 │    │
+│  │  Attendees: John, Sarah, Mike                   │    │
+│  │  Date: █████████████████████                    │    │
+│  │              ↑ Selected text                    │    │
+│  │  Action Items:                                  │    │
+│  │  - Review proposal by Friday                    │    │
+│  │  - Schedule follow-up meeting                   │    │
+│  │                                                 │    │
+│  │  ✓ Select text with mouse                      │    │
+│  │  ✓ Press ⌘C to copy                            │    │
+│  │  ✓ No need to open full application            │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Workflow Comparison:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Copying Text from a Document                           │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  WITHOUT Text Selection:                                │
+│  ─────────────────────────────────────────────────────  │
+│  1. Select file in Finder                               │
+│  2. Press Space (QuickLook)                             │
+│  3. See text but can't copy ❌                          │
+│  4. Press Space to close QuickLook                      │
+│  5. Double-click to open in app                         │
+│  6. Wait for app to launch                              │
+│  7. Select text                                         │
+│  8. Copy (⌘C)                                           │
+│  9. Close app                                           │
+│  Total: ~10+ seconds, multiple apps                     │
+│                                                         │
+│  WITH Text Selection:                                   │
+│  ─────────────────────────────────────────────────────  │
+│  1. Select file in Finder                               │
+│  2. Press Space (QuickLook)                             │
+│  3. Select text                                         │
+│  4. Copy (⌘C) ✓                                         │
+│  5. Press Space to close                                │
+│  Total: ~3 seconds, stays in Finder                     │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable text selection in QuickLook.
+
+### Why Enable Text Selection?
+
+1. **Speed** — Copy without opening apps
+2. **Efficiency** — Stay in Finder workflow
+3. **Convenience** — Quick text extraction
+4. **Resource savings** — Don't launch heavy apps
+5. **Productivity** — Common need for many users
+
+### Why Keep Disabled (Default)?
+
+- Prefer viewing-only preview
+- Accidental text selection is annoying
+- QuickLook already has "Open with" button
+- Don't need to copy from previews
+- Minimal use case
+
+## Supported File Types
+
+Text selection works in QuickLook for:
+
+| File Type | Selection Support |
+|-----------|-------------------|
+| Plain text (.txt) | ✓ Full support |
+| Rich text (.rtf) | ✓ Full support |
+| PDF documents | ✓ Full support |
+| Word documents | ✓ With Quick Look plugin |
+| Source code | ✓ Full support |
+| Markdown (.md) | ✓ Full support |
+| Images | ✗ No text (it's an image) |
+| Videos | ✗ No text |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.finder QLEnableTextSelection
+
+# Enable text selection
+defaults write com.apple.finder QLEnableTextSelection -bool true
+
+# Disable text selection (default)
+defaults write com.apple.finder QLEnableTextSelection -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.finder QLEnableTextSelection
+
+# Restart Finder to apply
+killall Finder
+```
+
+## UI Location
+
+There is no GUI for this setting. Use the Terminal command.
+
+To use QuickLook:
+1. Select a file in Finder
+2. Press **Space** bar
+3. Preview appears
+4. Press **Space** again to close
+
+## QuickLook Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| Space | Open/close QuickLook |
+| ⌘Y | Open QuickLook (alternative) |
+| ← → | Previous/next file (in selection) |
+| ⌥ Space | Open in full screen |
+| ⌘C | Copy (with text selection enabled) |
+| ⌘A | Select all (with text selection enabled) |
+
+## Related QuickLook Settings
+
+```bash
+# Enable text selection (this setting)
+defaults write com.apple.finder QLEnableTextSelection -bool true
+
+# QuickLook animation
+# (controlled by system Reduce Motion setting)
+
+# QuickLook plugins are installed to:
+# /Library/QuickLook/ (system-wide)
+# ~/Library/QuickLook/ (per-user)
+```
+
+## QuickLook Plugins
+
+Extend QuickLook to preview more file types:
+
+| Plugin | Adds Support For |
+|--------|------------------|
+| QLMarkdown | Markdown rendering |
+| QLColorCode | Syntax-highlighted code |
+| QLStephen | Plain text without extension |
+| QuickLookJSON | JSON formatting |
+| QLVideo | Video thumbnails |
+
+Install plugins to `~/Library/QuickLook/` and run:
+```bash
+qlmanage -r
+```
+
+## Force Touch QuickLook
+
+On Force Touch trackpads:
+- Force click on a file → QuickLook preview
+- Works without selecting the file first
+- Same text selection applies
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't select text | Run `killall Finder` after setting |
+| Selection works in some files only | File type may not support it |
+| Text appears but won't select | PDF may be image-based (scanned) |
+| Setting doesn't persist | Verify with `defaults read` |
+
+## OCR for Scanned Documents
+
+Scanned PDFs (image-based) don't support text selection even with this setting. Use:
+- Preview → Tools → Text Selection (if OCR layer exists)
+- Third-party OCR software
+- macOS Live Text (for images)
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Requires `killall Finder` to apply
+- **Note**: Works with built-in QuickLook generators
+- **Note**: Some file types may not support selection
+
+## Source File
+
+**File**: [`defaults/finder/quicklook.sh`](../../defaults/finder/quicklook.sh)
+
+```bash
+run_defaults "com.apple.finder" "QLEnableTextSelection" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Preview files with Quick Look](https://support.apple.com/guide/mac-help/preview-files-with-quick-look-mh14119/mac)
+- [Apple Developer: Quick Look](https://developer.apple.com/documentation/quicklook)

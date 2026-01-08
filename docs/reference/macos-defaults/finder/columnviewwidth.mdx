@@ -1,0 +1,282 @@
+# Finder Column View Default Width
+
+Set the default width of columns in Finder's column view.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `ColumnWidth` |
+| **Type** | Integer (pixels) |
+| **Default Value** | `175` |
+| **Our Setting** | `200` |
+
+## Description
+
+Controls the default width of columns when using Finder's column view. Wider columns show more of file names without truncation, while narrower columns allow more columns to be visible on screen. This setting affects new Finder windows and folders that haven't had their column width manually adjusted.
+
+## Values
+
+| Value | Width | Description |
+|-------|-------|-------------|
+| `100` | Narrow | More columns visible, names truncated |
+| `150` | Compact | Balance of width and visibility |
+| `175` | Default | Standard macOS column width |
+| `200` | Wide | Better name visibility |
+| `250` | Very Wide | Full names, fewer columns |
+| `300` | Extra Wide | Maximum readability |
+
+## Visual Demonstration
+
+### Narrow Columns (100px):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Finder — Column View (Narrow 100px)                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────┬─────────┬─────────┬─────────┬─────────┐    │
+│  │Documents│ Projects│  2024   │  Q4     │ Reports │    │
+│  ├─────────┼─────────┼─────────┼─────────┼─────────┤    │
+│  │📁 Proj..│📁 2023  │📁 Q1    │📄 Bud.. │         │    │
+│  │📁 Arch..│📁 2024  │📁 Q2    │📄 Sum.. │         │    │
+│  │📁 Down..│📁 2025  │📁 Q3    │📄 Rep.. │         │    │
+│  │📁 Pict..│         │📁 Q4    │         │         │    │
+│  └─────────┴─────────┴─────────┴─────────┴─────────┘    │
+│                                                         │
+│  ✓ Can see 5 columns                                   │
+│  ✗ File names truncated ("Proj..", "Bud..")            │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Wide Columns (200px):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Finder — Column View (Wide 200px)                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌───────────────┬───────────────┬───────────────┐      │
+│  │  Documents    │   Projects    │     2024      │      │
+│  ├───────────────┼───────────────┼───────────────┤      │
+│  │📁 Projects    │📁 2023        │📁 Q1          │      │
+│  │📁 Archives    │📁 2024        │📁 Q2          │      │
+│  │📁 Downloads   │📁 2025        │📁 Q3          │      │
+│  │📁 Pictures    │               │📁 Q4          │      │
+│  │📁 Music       │               │               │      │
+│  └───────────────┴───────────────┴───────────────┘      │
+│                                                         │
+│  ✓ Full file/folder names visible                      │
+│  ✓ Can see 3 columns (scroll for more)                 │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Column Width Controls:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Manual Column Width Adjustment                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Each column has a resize handle:                       │
+│                                                         │
+│  ┌───────────────╫───────────────┐                      │
+│  │               ║               │                      │
+│  │  Column 1     ║  Column 2     │                      │
+│  │               ║               │                      │
+│  │               ║               │                      │
+│  └───────────────╫───────────────┘                      │
+│                  ↑                                      │
+│            Drag to resize                               │
+│                                                         │
+│  Double-click handle → Auto-fit to content              │
+│  Hold Option + drag → Resize all columns               │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `200` — Wider columns for better file name visibility.
+
+### Why Use Wider Columns?
+
+1. **Readability** — See full file names
+2. **Navigation** — Less guessing truncated names
+3. **Professional** — Descriptive file names visible
+4. **Projects** — Long folder names common
+5. **Fewer errors** — Select correct file first time
+
+### Why Use Narrower Columns?
+
+- See more directory depth
+- Small screen real estate
+- Shallow folder structures
+- Short file names
+- Preference for more columns
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.finder ColumnWidth
+
+# Set wider columns (200px)
+defaults write com.apple.finder ColumnWidth -int 200
+
+# Set default columns (175px)
+defaults write com.apple.finder ColumnWidth -int 175
+
+# Set narrow columns (150px)
+defaults write com.apple.finder ColumnWidth -int 150
+
+# Delete (reset to default)
+defaults delete com.apple.finder ColumnWidth
+
+# Restart Finder to apply
+killall Finder
+```
+
+## UI Location
+
+There is no direct GUI setting for default column width.
+
+To manually resize columns:
+1. Open Finder in Column View (⌘3)
+2. Drag the divider between columns
+3. Double-click divider to auto-fit
+4. **Option + drag** to resize all columns at once
+
+## Finder View Options
+
+Access view options for more control:
+- **View** → **Show View Options** (⌘J)
+- Or right-click in window → **Show View Options**
+
+## Related Finder Settings
+
+```bash
+# Column view default width (this setting)
+defaults write com.apple.finder ColumnWidth -int 200
+
+# Default view style (Nlsv=List, icnv=Icon, clmv=Column, glyv=Gallery)
+defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
+
+# Show preview column
+defaults write com.apple.finder ColumnShowIcons -bool true
+
+# Arrange by (none, name, date, size, kind, tags)
+defaults write com.apple.finder FXArrangeGroupViewBy -string "Name"
+```
+
+## Column View Features
+
+| Feature | Description |
+|---------|-------------|
+| Preview column | Shows file preview on right |
+| Quick Actions | Edit actions in preview |
+| Resize columns | Drag dividers |
+| Auto-fit | Double-click divider |
+| Uniform resize | Option + drag |
+
+## View Styles Comparison
+
+| View | Best For | Keyboard |
+|------|----------|----------|
+| Icon | Visual files (photos) | ⌘1 |
+| List | Detailed file info | ⌘2 |
+| Column | Directory navigation | ⌘3 |
+| Gallery | Media preview | ⌘4 |
+
+## Per-Folder Settings
+
+Individual folder settings override the default:
+
+1. Navigate to folder
+2. Press ⌘J (View Options)
+3. Adjust column width via resize
+4. Check "Always open in column view"
+5. Click "Use as Defaults" for global effect
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Width not applying | Run `killall Finder` |
+| Some folders different | Per-folder settings override |
+| Columns too narrow | Increase ColumnWidth value |
+| Can't see all columns | Scroll right or narrow columns |
+| Reset all columns | Delete `.DS_Store` files |
+
+## Resetting Folder View Settings
+
+To reset view settings for a folder:
+```bash
+# Remove .DS_Store in specific folder (resets that folder's settings)
+rm ~/Documents/.DS_Store
+
+# Remove all .DS_Store files (resets all folder settings)
+find ~ -name ".DS_Store" -delete
+```
+
+⚠️ This resets icon positions and view preferences for all folders.
+
+## Column View Navigation
+
+Efficient keyboard navigation in column view:
+
+| Shortcut | Action |
+|----------|--------|
+| → | Enter selected folder |
+| ← | Go to parent folder |
+| ↓↑ | Navigate items |
+| ⌘↑ | Go to parent |
+| ⌘↓ | Open selected |
+| Space | Quick Look |
+
+## Preview Column
+
+The rightmost column shows file preview:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Preview Column                                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌──────────────┬──────────────┬──────────────────────┐ │
+│  │  Documents   │  Reports     │  ┌────────────────┐  │ │
+│  ├──────────────┼──────────────┤  │                │  │ │
+│  │📁 Reports    │📄 Q4.pdf     │  │   PDF Preview  │  │ │
+│  │📁 Archive    │📄 Annual.pdf │  │                │  │ │
+│  │              │              │  │   4 pages      │  │ │
+│  │              │              │  │   2.3 MB       │  │ │
+│  │              │              │  │                │  │ │
+│  │              │              │  │  Quick Actions │  │ │
+│  │              │              │  │  [Markup]      │  │ │
+│  │              │              │  └────────────────┘  │ │
+│  └──────────────┴──────────────┴──────────────────────┘ │
+│                                                         │
+│  Preview column width adjusts automatically             │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Compatibility
+
+- **macOS**: 10.5+ (Leopard)
+- **Note**: Requires `killall Finder` to apply
+- **Note**: Per-folder settings override global default
+- **Note**: .DS_Store files store per-folder preferences
+
+## Source File
+
+**File**: [`defaults/finder/views.sh`](../../defaults/finder/views.sh)
+
+```bash
+run_defaults "com.apple.finder" "ColumnWidth" "-int" "200"
+```
+
+## References
+
+- [Apple Support: Change how items appear in Finder](https://support.apple.com/guide/mac-help/change-how-items-appear-in-finder-mchld5765c42/mac)
+- [Apple Support: Use Column view in Finder](https://support.apple.com/guide/mac-help/column-view-mchl609d4e57/mac)

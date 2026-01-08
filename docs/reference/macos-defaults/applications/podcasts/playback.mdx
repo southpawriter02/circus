@@ -1,0 +1,333 @@
+# Podcasts Playback Settings
+
+Configure skip times, continuous playback, and headphone controls.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Keys** | `skipForwardTime`, `skipBackTime`, `continuousPlaybackEnabled` |
+| **Type** | Integer (times), Boolean (continuous) |
+| **Default Values** | Forward: 30s, Back: 15s, Continuous: true |
+| **Our Setting** | Forward: 30s, Back: 15s, Continuous: true |
+
+## Description
+
+Controls playback behavior in Apple Podcasts including how many seconds to skip forward/backward and whether to automatically play the next episode when one finishes. These settings apply globally but can be overridden with keyboard shortcuts.
+
+## Values
+
+### Skip Forward Time
+
+| Value | Skip Duration |
+|-------|---------------|
+| `10` | 10 seconds |
+| `15` | 15 seconds |
+| `30` | 30 seconds (default) |
+| `45` | 45 seconds |
+| `60` | 60 seconds |
+
+### Skip Back Time
+
+| Value | Skip Duration |
+|-------|---------------|
+| `10` | 10 seconds |
+| `15` | 15 seconds (default) |
+| `30` | 30 seconds |
+| `45` | 45 seconds |
+| `60` | 60 seconds |
+
+### Continuous Playback
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-play next** (default) — Next episode plays automatically |
+| `false` | **Stop after episode** — Playback stops when episode ends |
+
+## Visual Demonstration
+
+### Playback Controls:
+```
++-------------------------------------------------------------+
+|  Podcasts Player                                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Now Playing:                                                |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  The Daily - "Morning Headlines"                     |   |
+|  |  New York Times                                      |   |
+|  |                                                      |   |
+|  |  [Album Art]                                         |   |
+|  |                                                      |   |
+|  |  12:34 =========O==================== 28:45          |   |
+|  |         ^                                            |   |
+|  |    Current position                                  |   |
+|  |                                                      |   |
+|  |    [<<15]     [|>]      [30>>]                       |   |
+|  |      ^         ^          ^                          |   |
+|  |   Skip Back  Play/    Skip Forward                   |   |
+|  |   (15 sec)   Pause    (30 sec)                      |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Skip Functionality:
+```
++-------------------------------------------------------------+
+|  Skip Button Behavior                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  Current Position: 12:34                                     |
+|                                                              |
+|  SKIP FORWARD (30 seconds):                                  |
+|  12:34 --> 13:04                                            |
+|  [  ====O==============  ]  -->  [  ========O==========  ]  |
+|                                                              |
+|  SKIP BACK (15 seconds):                                     |
+|  12:34 --> 12:19                                            |
+|  [  ====O==============  ]  -->  [  ===O===============  ]  |
+|                                                              |
+|  Use Cases:                                                  |
+|  * Skip forward: Jump past ads, intros                      |
+|  * Skip back: Replay missed dialogue, rewind                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Continuous Playback:
+```
++-------------------------------------------------------------+
+|  Continuous Playback Behavior                                |
++-------------------------------------------------------------+
+|                                                              |
+|  ENABLED (default):                                          |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  Episode 1 ends...                                   |   |
+|  |  [==================================] 28:45/28:45    |   |
+|  |                                                      |   |
+|  |  Up Next: Episode 2                                  |   |
+|  |  Starting in 3... 2... 1...                          |   |
+|  |                                                      |   |
+|  |  [Auto-plays Episode 2]                              |   |
+|  |  [O=================================] 0:00/32:10     |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  DISABLED:                                                   |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  Episode 1 ends...                                   |   |
+|  |  [==================================] 28:45/28:45    |   |
+|  |                                                      |   |
+|  |  [Playback Stopped]                                  |   |
+|  |                                                      |   |
+|  |  Up Next: Episode 2                                  |   |
+|  |  [>] Click to play                                   |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: Skip Forward 30s, Skip Back 15s, Continuous Playback enabled.
+
+### Recommended Settings by Use Case
+
+| Use Case | Forward | Back | Continuous |
+|----------|---------|------|------------|
+| News podcasts | 30s | 15s | Yes |
+| Interview shows | 30s | 15s | Yes |
+| Educational | 15s | 10s | No |
+| Music podcasts | 15s | 10s | Yes |
+| Audiobook-style | 30s | 30s | Yes |
+| Falling asleep | 30s | 15s | No |
+
+## Code Examples
+
+```bash
+# Read current values
+defaults read com.apple.podcasts skipForwardTime
+defaults read com.apple.podcasts skipBackTime
+defaults read com.apple.podcasts continuousPlaybackEnabled
+
+# Set skip forward time (30 seconds)
+defaults write com.apple.podcasts skipForwardTime -int 30
+
+# Set skip back time (15 seconds)
+defaults write com.apple.podcasts skipBackTime -int 15
+
+# Enable continuous playback
+defaults write com.apple.podcasts continuousPlaybackEnabled -bool true
+
+# Disable continuous playback
+defaults write com.apple.podcasts continuousPlaybackEnabled -bool false
+
+# Delete (reset all to defaults)
+defaults delete com.apple.podcasts skipForwardTime
+defaults delete com.apple.podcasts skipBackTime
+defaults delete com.apple.podcasts continuousPlaybackEnabled
+```
+
+Restart Podcasts for changes to take effect.
+
+## UI Location
+
+**Podcasts** > **Settings** (Cmd + ,) > **Playback**
+
+```
++-------------------------------------------------------------+
+|  Podcasts Settings > Playback                                |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Playback                                        |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Skip Forward                                    |       |
+|  |  [30 seconds                          v]         |       |
+|  |                                                  |       |
+|  |  Skip Back                                       |       |
+|  |  [15 seconds                          v]         |       |
+|  |                                                  |       |
+|  |  Continuous Playback                             |       |
+|  |  [*] Play the next episode automatically         |       |
+|  |                                                  |       |
+|  |  Headphone Controls                              |       |
+|  |  [ ] Double-press skips to next episode          |       |
+|  |      (instead of skipping forward)               |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| Right Arrow | Skip forward |
+| Left Arrow | Skip back |
+| Space | Play/Pause |
+| Cmd + Right | Next episode |
+| Cmd + Left | Previous episode |
+| Cmd + Up | Volume up |
+| Cmd + Down | Volume down |
+
+## Headphone Controls
+
+```
++-------------------------------------------------------------+
+|  Headphone Button Behavior                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  AirPods / Wired Headphones:                                |
+|                                                              |
+|  Single Press:    Play / Pause                              |
+|  Double Press:    Skip Forward (default)                    |
+|                   OR Next Episode (if enabled)              |
+|  Triple Press:    Skip Back                                 |
+|                                                              |
+|  Setting: headphoneControlsNextEpisode                      |
+|  +------------------------------------------------------+   |
+|  |  [ ] Double-press skips to next episode              |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+```bash
+# Headphone double-press behavior
+# false = skip forward, true = next episode
+defaults write com.apple.podcasts headphoneControlsNextEpisode -bool false
+```
+
+## Related Settings
+
+```bash
+# Skip forward time (this setting)
+defaults write com.apple.podcasts skipForwardTime -int 30
+
+# Skip back time (this setting)
+defaults write com.apple.podcasts skipBackTime -int 15
+
+# Continuous playback (this setting)
+defaults write com.apple.podcasts continuousPlaybackEnabled -bool true
+
+# Headphone controls
+defaults write com.apple.podcasts headphoneControlsNextEpisode -bool false
+
+# Auto-download episodes
+defaults write com.apple.podcasts downloadNewEpisodes -bool true
+
+# Remove played episodes
+defaults write com.apple.podcasts removePlayedEpisodes -bool true
+```
+
+## Up Next Queue
+
+Continuous playback uses the Up Next queue:
+
+```
++-------------------------------------------------------------+
+|  Up Next Queue                                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Currently Playing:                                          |
+|  +------------------------------------------------------+   |
+|  |  [>] The Daily - "Morning Headlines"     12:34/28:45 |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Up Next:                                                    |
+|  +------------------------------------------------------+   |
+|  |  1. The Daily - "Evening Update"              32:10  |   |
+|  |  2. Serial - "Episode 5"                      45:22  |   |
+|  |  3. This American Life - "Story"              58:30  |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Drag to reorder                                          |
+|  * Swipe to remove                                          |
+|  * Shows play in order when continuous is enabled           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Skip buttons not working | Restart Podcasts, check settings |
+| Wrong skip duration | Verify defaults with `defaults read` |
+| Continuous playback not working | Check Up Next queue isn't empty |
+| Headphones skip wrong | Check headphoneControlsNextEpisode setting |
+| Settings reset | Preferences may have corrupted; delete plist |
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina)
+- **Note**: Restart Podcasts for changes to take effect
+- **Note**: Skip times must be one of: 10, 15, 30, 45, 60
+- **Note**: Headphone controls depend on headphone type
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../defaults/applications/podcasts.sh)
+
+```bash
+run_defaults "com.apple.podcasts" "skipForwardTime" "-int" "30"
+run_defaults "com.apple.podcasts" "skipBackTime" "-int" "15"
+run_defaults "com.apple.podcasts" "continuousPlaybackEnabled" "-bool" "true"
+run_defaults "com.apple.podcasts" "headphoneControlsNextEpisode" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Podcasts on Mac](https://support.apple.com/guide/podcasts/welcome/mac)
+- [Apple Support: Change Podcasts settings](https://support.apple.com/guide/podcasts/change-settings-podb804dc5bd/mac)
+- [Apple Support: Control playback](https://support.apple.com/guide/podcasts/control-playback-podb6bc88a79/mac)

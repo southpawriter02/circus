@@ -1,0 +1,308 @@
+# Stage Manager Hide Desktop Items
+
+Control desktop icon visibility in Stage Manager mode.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.WindowManager` |
+| **Key** | `HideDesktop` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether desktop items (files, folders, drives, and icons) are visible when Stage Manager is active. When enabled, the desktop appears clean with no items, providing a distraction-free workspace. Desktop items remain accessible through Finder but don't appear on the desktop background.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Show desktop items** (default) — Icons visible on desktop |
+| `true` | **Hide desktop items** — Clean, empty desktop |
+
+## Visual Demonstration
+
+### Show Desktop Items (false - Default):
+```
++-------------------------------------------------------------+
+|  Stage Manager with Desktop Items Visible                    |
++-------------------------------------------------------------+
+|                                                              |
+|  STRIP        MAIN WORKSPACE          DESKTOP                |
+|  +------+    +------------------+    +------------------+    |
+|  |      |    |                  |    |  +----+  +----+  |    |
+|  |Safari|    |  VS Code         |    |  |    |  |    |  |    |
+|  |      |    |                  |    |  |Doc1|  |Doc2|  |    |
+|  +------+    |  function() {    |    |  +----+  +----+  |    |
+|  |      |    |    // code       |    |                  |    |
+|  |Finder|    |  }               |    |  +----+  +----+  |    |
+|  |      |    |                  |    |  |    |  |    |  |    |
+|  +------+    +------------------+    |  |USB |  |Proj|  |    |
+|                                      |  +----+  +----+  |    |
+|                                      |                  |    |
+|                                      |  Desktop icons   |    |
+|                                      |  remain visible  |    |
+|                                      +------------------+    |
+|                                                              |
+|  Click desktop to show all windows and access icons          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Hide Desktop Items (true):
+```
++-------------------------------------------------------------+
+|  Stage Manager with Desktop Items Hidden                     |
++-------------------------------------------------------------+
+|                                                              |
+|  STRIP        MAIN WORKSPACE          DESKTOP                |
+|  +------+    +------------------+    +------------------+    |
+|  |      |    |                  |    |                  |    |
+|  |Safari|    |  VS Code         |    |                  |    |
+|  |      |    |                  |    |                  |    |
+|  +------+    |  function() {    |    |   Clean, empty   |    |
+|  |      |    |    // code       |    |   desktop        |    |
+|  |Finder|    |  }               |    |                  |    |
+|  |      |    |                  |    |   No icons       |    |
+|  +------+    +------------------+    |   visible        |    |
+|                                      |                  |    |
+|                                      |   (wallpaper     |    |
+|                                      |    only)         |    |
+|                                      |                  |    |
+|                                      +------------------+    |
+|                                                              |
+|  Files still exist - access via Finder > Desktop folder      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Accessing Hidden Desktop Items:
+```
++-------------------------------------------------------------+
+|  Accessing Desktop Items When Hidden                         |
++-------------------------------------------------------------+
+|                                                              |
+|  Method 1: Finder Sidebar                                    |
+|  +--------------------------------------------------+       |
+|  |  Finder                                          |       |
+|  |  +----------+  +-----------------------------+   |       |
+|  |  | Favorites|  | Desktop                     |   |       |
+|  |  |          |  |                             |   |       |
+|  |  | [*]Desktop|  | +------+  +------+         |   |       |
+|  |  |    Docs  |  | |      |  |      |         |   |       |
+|  |  |    Down  |  | | Doc1 |  | Doc2 |         |   |       |
+|  |  |          |  | +------+  +------+         |   |       |
+|  |  +----------+  +-----------------------------+   |       |
+|  +--------------------------------------------------+       |
+|                                                              |
+|  Method 2: Go Menu                                           |
+|  +----------------------+                                    |
+|  |  Go                  |                                    |
+|  |  ----------------    |                                    |
+|  |  Desktop     Cmd+D   |  <-- Quick access                 |
+|  |  Documents           |                                    |
+|  |  Downloads           |                                    |
+|  +----------------------+                                    |
+|                                                              |
+|  Method 3: Click Desktop + Shift                            |
+|  Shift + Click on desktop area shows hidden items            |
+|  temporarily in some macOS versions                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Keep desktop items visible.
+
+### Why Show Desktop Items?
+
+1. **Accessibility** — Quick access to files
+2. **Visual reference** — See active projects
+3. **Drag and drop** — Easy file management
+4. **Familiarity** — Traditional desktop experience
+5. **Temporary files** — Quick download/screenshot access
+
+### Why Hide Desktop Items?
+
+- Clean, minimal aesthetic
+- Distraction-free environment
+- Presentation mode
+- Wallpaper appreciation
+- Force organized workflow
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.WindowManager HideDesktop
+
+# Hide desktop items
+defaults write com.apple.WindowManager HideDesktop -bool true
+
+# Show desktop items (default)
+defaults write com.apple.WindowManager HideDesktop -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.WindowManager HideDesktop
+```
+
+Changes take effect immediately.
+
+## UI Location
+
+**System Settings** > **Desktop & Dock** > **Stage Manager** > **Customize**
+
+```
++-------------------------------------------------------------+
+|  Stage Manager Customization                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Desktop & Dock > Stage Manager            |
+|                                                              |
+|  Click "Customize..." button:                                |
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Stage Manager Options                           |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Show windows from an application                |       |
+|  |  (*) All at Once                                 |       |
+|  |  ( ) One at a Time                               |       |
+|  |                                                  |       |
+|  |  ------------------------------------------------|       |
+|  |                                                  |       |
+|  |  Desktop Items                                   |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | [*] Show items on desktop                  |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |          ^                                       |       |
+|  |     Toggle this option                           |       |
+|  |                                                  |       |
+|  |  Recent Apps                                     |       |
+|  |  [*] Show recent apps                            |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Hide desktop items (this setting)
+defaults write com.apple.WindowManager HideDesktop -bool false
+
+# Enable Stage Manager
+defaults write com.apple.WindowManager GloballyEnabled -bool true
+
+# Window grouping behavior
+defaults write com.apple.WindowManager AppWindowGroupingBehavior -int 0
+
+# Show recent apps strip
+defaults write com.apple.WindowManager AutoHide -bool false
+
+# Hide widgets in Stage Manager
+defaults write com.apple.WindowManager StandardHideWidgets -bool false
+```
+
+## Desktop Items Include
+
+| Item Type | Affected |
+|-----------|----------|
+| Files | Yes |
+| Folders | Yes |
+| External drives | Yes |
+| Network drives | Yes |
+| Screenshots | Yes |
+| Downloads (if saved to Desktop) | Yes |
+| Disk images | Yes |
+| Aliases/Shortcuts | Yes |
+
+## Finder Desktop Settings
+
+Note: This is separate from Finder's desktop item settings:
+
+```bash
+# Finder: Show hard disks on desktop
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
+
+# Finder: Show external disks on desktop
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+
+# Finder: Show removable media on desktop
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+
+# Finder: Show connected servers on desktop
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
+```
+
+These Finder settings control what CAN appear on desktop.
+The Stage Manager HideDesktop controls whether desktop items are VISIBLE.
+
+## Workflow Tips
+
+```
++-------------------------------------------------------------+
+|  Efficient Workflows with Hidden Desktop                     |
++-------------------------------------------------------------+
+|                                                              |
+|  1. USE STACKS (when desktop shown)                          |
+|     Finder > View > Use Stacks                               |
+|     Auto-organize desktop items by kind                      |
+|                                                              |
+|  2. DESKTOP FOLDER IN DOCK                                   |
+|     Drag ~/Desktop to Dock for quick access                  |
+|     +------------------------------------------------+      |
+|     | [Apps...] | [Desktop Folder] [Downloads] [Trash]|      |
+|     +------------------------------------------------+      |
+|                                                              |
+|  3. KEYBOARD SHORTCUT                                        |
+|     Cmd + Shift + D = Open Desktop folder                    |
+|                                                              |
+|  4. HOT CORNERS                                              |
+|     Set corner to "Desktop" for quick show/hide              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Desktop still shows items | Restart Stage Manager (toggle) |
+| Can't find files | Use Finder > Go > Desktop |
+| Drives not appearing | Check Finder preferences |
+| Setting not applying | Verify Stage Manager is enabled |
+| Items reappear | Check if Stage Manager was disabled |
+
+## Behavior Notes
+
+- **External drives**: Still mount, just not visible on desktop
+- **Screenshots**: Still saved to desktop (if that's your setting)
+- **Downloads**: Still saved to desktop (if that's your setting)
+- **Drag to desktop**: May not work when hidden
+- **Click desktop**: Shows all windows, not items
+
+## Compatibility
+
+- **macOS**: 13.0+ (Ventura)
+- **Note**: Only applies when Stage Manager is enabled
+- **Note**: Takes effect immediately
+- **Note**: Desktop folder contents unaffected
+
+## Source File
+
+**File**: [`defaults/interface/stage_manager.sh`](../../defaults/interface/stage_manager.sh)
+
+```bash
+run_defaults "com.apple.WindowManager" "HideDesktop" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Stage Manager on Mac](https://support.apple.com/guide/mac-help/mchl534ba392/mac)
+- [Apple Support: Show or hide desktop items](https://support.apple.com/guide/mac-help/mh15059/mac)

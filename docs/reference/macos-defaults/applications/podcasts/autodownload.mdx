@@ -1,0 +1,303 @@
+# Podcasts Auto Download
+
+Control automatic downloading of new podcast episodes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Key** | `downloadNewEpisodes` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Apple Podcasts automatically downloads new episodes when they become available. When enabled, subscribed podcasts download in the background for offline listening. Individual shows can override this default setting.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-download enabled** (default) — New episodes download automatically |
+| `false` | **Streaming only** — Episodes stream on-demand, manual download |
+
+## Visual Demonstration
+
+### Auto-Download Enabled (Default):
+```
++-------------------------------------------------------------+
+|  Podcasts - Auto Download ON                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  New Episode Available:                                      |
+|  +------------------------------------------------------+   |
+|  |  The Daily - "Morning Headlines"                     |   |
+|  |  Published: Today, 6:00 AM                           |   |
+|  |                                                      |   |
+|  |  [=======>                   ] 45%                   |   |
+|  |  Downloading automatically...                        |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  After Download:                                             |
+|  +------------------------------------------------------+   |
+|  |  The Daily - "Morning Headlines"      [*] Downloaded |   |
+|  |  Published: Today, 6:00 AM            42 MB          |   |
+|  |                                                      |   |
+|  |  [>] Play     Ready for offline listening!           |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Benefits:                                                   |
+|  * Listen offline (airplane, subway, no signal)            |
+|  * No buffering during playback                            |
+|  * Episodes ready when you are                             |
+|  * Background download while you work                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Streaming Only (Auto-Download Disabled):
+```
++-------------------------------------------------------------+
+|  Podcasts - Auto Download OFF                                |
++-------------------------------------------------------------+
+|                                                              |
+|  New Episode Available:                                      |
+|  +------------------------------------------------------+   |
+|  |  The Daily - "Morning Headlines"      [Cloud Icon]   |   |
+|  |  Published: Today, 6:00 AM                           |   |
+|  |                                                      |   |
+|  |  [>] Stream     [Down Arrow] Download                |   |
+|  |                                                      |   |
+|  |  * Requires internet connection to play              |   |
+|  |  * Click download for offline access                 |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  During Playback (Streaming):                               |
+|  +------------------------------------------------------+   |
+|  |  [|||] Buffering...                                  |   |
+|  |        Waiting for data...                           |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Trade-offs:                                                 |
+|  + Saves storage space                                      |
+|  + No background data usage                                 |
+|  - Requires reliable internet                               |
+|  - Potential buffering delays                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Download Status Indicators:
+```
++-------------------------------------------------------------+
+|  Episode Status Icons                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  [Cloud]        Stream only - not downloaded                |
+|  [Down Arrow]   Click to download                           |
+|  [Progress]     Currently downloading                       |
+|  [Checkmark]    Downloaded - ready offline                  |
+|  [Play]         Currently playing                           |
+|                                                              |
+|  Library View:                                               |
+|  +------------------------------------------------------+   |
+|  |  Episode List                                        |   |
+|  |  ------------------------------------------------    |   |
+|  |  [*] Morning Headlines      Downloaded    42 MB      |   |
+|  |  [*] Evening Update         Downloaded    38 MB      |   |
+|  |  [C] Weekend Special        Cloud         --         |   |
+|  |  [>] Interview Part 1       Downloading   12%        |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Automatically download new episodes.
+
+### Why Enable Auto-Download?
+
+1. **Offline listening** — Listen without internet
+2. **No buffering** — Instant playback
+3. **Commute-ready** — Episodes ready for subway/airplane
+4. **Background sync** — Downloads while you work
+5. **Reliable playback** — No network interruptions
+
+### Why Disable Auto-Download?
+
+- Limited storage space
+- Metered data connection
+- Only listen to select episodes
+- Prefer streaming
+- Manage downloads manually
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.podcasts downloadNewEpisodes
+
+# Enable auto-download (default)
+defaults write com.apple.podcasts downloadNewEpisodes -bool true
+
+# Disable auto-download (stream only)
+defaults write com.apple.podcasts downloadNewEpisodes -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.podcasts downloadNewEpisodes
+```
+
+Restart Podcasts for changes to take effect.
+
+## UI Location
+
+**Podcasts** > **Settings** (Cmd + ,) > **General** > **Download Episodes**
+
+```
++-------------------------------------------------------------+
+|  Podcasts Settings                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  General                                         |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Download Episodes                               |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | [*] Download new episodes automatically    |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |                                                  |       |
+|  |  Enable Downloads Over Cellular                  |       |
+|  |  [ ] Allow downloads when not on Wi-Fi           |       |
+|  |                                                  |       |
+|  |  Remove Played Downloads                         |       |
+|  |  [*] Automatically remove after playing          |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Per-Show Override
+
+Individual shows can override the global setting:
+
+```
++-------------------------------------------------------------+
+|  Per-Show Download Settings                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Show Page > Settings (gear icon):                           |
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Show Settings: "The Daily"                      |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Download Episodes                               |       |
+|  |  (*) Use Default Setting                         |       |
+|  |  ( ) Download New Episodes                       |       |
+|  |  ( ) Off (Stream Only)                           |       |
+|  |                                                  |       |
+|  |  Limit Episodes                                  |       |
+|  |  [Most Recent 10          v]                     |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
+|  Use case: Download daily news, stream long interviews      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Auto-download episodes (this setting)
+defaults write com.apple.podcasts downloadNewEpisodes -bool true
+
+# Remove played episodes automatically
+defaults write com.apple.podcasts removePlayedEpisodes -bool true
+
+# Episode limit per show
+defaults write com.apple.podcasts episodeLimit -int 10
+
+# Skip forward time (seconds)
+defaults write com.apple.podcasts skipForwardTime -int 30
+
+# Skip back time (seconds)
+defaults write com.apple.podcasts skipBackTime -int 15
+
+# Continuous playback
+defaults write com.apple.podcasts continuousPlaybackEnabled -bool true
+```
+
+## Storage Management
+
+```
++-------------------------------------------------------------+
+|  Managing Podcast Storage                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Storage Location:                                           |
+|  ~/Library/Group Containers/.../Podcasts/                   |
+|                                                              |
+|  Check storage usage:                                        |
+|  System Settings > General > Storage > Podcasts             |
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Podcasts                           2.4 GB       |       |
+|  |  ------------------------------------------------|       |
+|  |  The Daily                          800 MB       |       |
+|  |  Serial                             600 MB       |       |
+|  |  This American Life                 500 MB       |       |
+|  |  Other shows                        500 MB       |       |
+|  +--------------------------------------------------+       |
+|                                                              |
+|  Tips:                                                       |
+|  * Enable "Remove Played Downloads" to auto-clean           |
+|  * Set episode limits per show                              |
+|  * Manually delete old episodes                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Episodes not downloading | Check internet, restart Podcasts |
+| Downloads paused | Check storage space |
+| Slow downloads | Check network speed, try Wi-Fi |
+| Setting not applying | Restart Podcasts app |
+| Per-show override not working | Check show-specific settings |
+
+## Sync Behavior
+
+When syncing is enabled:
+- Download settings sync across devices
+- Per-show overrides sync
+- Downloaded files do NOT sync (too large)
+- Each device downloads independently
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina)
+- **Note**: Podcasts app required (included with macOS)
+- **Note**: Restart app for changes to take effect
+- **Note**: Per-show settings override global default
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../defaults/applications/podcasts.sh)
+
+```bash
+run_defaults "com.apple.podcasts" "downloadNewEpisodes" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Podcasts on Mac](https://support.apple.com/guide/podcasts/welcome/mac)
+- [Apple Support: Change Podcasts settings](https://support.apple.com/guide/podcasts/change-settings-podb804dc5bd/mac)
+- [Apple Support: Download podcasts](https://support.apple.com/guide/podcasts/download-episodes-podb6bc88a78/mac)

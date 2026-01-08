@@ -1,0 +1,266 @@
+# Dock Auto-Hide Animation Speed
+
+Control the duration of the Dock show/hide animation.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `autohide-time-modifier` |
+| **Type** | Float (seconds) |
+| **Default Value** | `0.5` |
+| **Our Setting** | `0.3` |
+
+## Description
+
+Controls how fast the Dock slides in and out of view when auto-hide is enabled. The value represents the animation duration in seconds. Lower values make the Dock appear and disappear faster, while higher values create a slower, more gradual animation. Setting to `0` makes the Dock appear instantly with no animation.
+
+## Values
+
+| Value | Speed | Description |
+|-------|-------|-------------|
+| `0` | Instant | No animation, appears/disappears immediately |
+| `0.1` | Very Fast | Quick snap animation |
+| `0.3` | Fast | Snappy but visible animation |
+| `0.5` | Normal | Default macOS animation speed |
+| `1.0` | Slow | Leisurely animation |
+| `2.0` | Very Slow | Dramatic, slow reveal |
+
+## Visual Demonstration
+
+### Animation Speed Comparison:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Dock Auto-Hide Animation                               │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Time Modifier = 0 (Instant):                           │
+│  ─────────────────────────────────────────────────────  │
+│  Frame 1: [No Dock]                                     │
+│  Frame 2: [Full Dock Visible] ← Instant appearance      │
+│                                                         │
+│  Time Modifier = 0.3 (Fast):                            │
+│  ─────────────────────────────────────────────────────  │
+│  ░░░░░░░░ → ▒▒▒▒▒▒▒▒ → ████████                        │
+│  0ms        150ms       300ms                           │
+│                                                         │
+│  Time Modifier = 0.5 (Default):                         │
+│  ─────────────────────────────────────────────────────  │
+│  ░░░░░░░░ → ▒▒▒▒▒▒▒▒ → ▓▓▓▓▓▓▓▓ → ████████             │
+│  0ms        170ms       330ms       500ms               │
+│                                                         │
+│  Time Modifier = 1.0 (Slow):                            │
+│  ─────────────────────────────────────────────────────  │
+│  ░░ → ▒▒ → ▒▒ → ▓▓ → ▓▓ → ▓▓ → ██ → ██ → ██ → ██       │
+│  0    100  200  300  400  500  600  700  800  1000ms    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Screen Position During Animation:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Dock Sliding In (Bottom Position)                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │              Desktop Content                    │    │
+│  │                                                 │    │
+│  │                                                 │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│ ↑  │
+│  └─────────────────────────────────────────────────┘ │  │
+│                                                 Sliding│  │
+│  ┌─────────────────────────────────────────────────┐ up │
+│  │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ │  │
+│  └─────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │🔵 📁 🌐 📧 💬 🎵 📷 ⚙️  │ 📄 │ 🗑️            │    │
+│  └─────────────────────────────────────────────────┘    │
+│                    ↑ Fully visible                      │
+│                                                         │
+│  Animation duration controlled by autohide-time-modifier│
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `0.3` — Faster animation for quicker Dock access.
+
+### Why Use Faster Animation?
+
+1. **Productivity** — Less waiting for Dock to appear
+2. **Responsive feel** — System feels snappier
+3. **Workflow** — Quick app switching
+4. **Focus** — Less distraction from slow animations
+5. **Screen space** — Dock hidden more of the time
+
+### Why Use Slower Animation?
+
+- Visual aesthetics preference
+- Easier to track Dock position
+- Matches default macOS behavior
+- Gentler on the eyes
+- Presentation/demo purposes
+
+## Prerequisites
+
+This setting only affects the Dock when auto-hide is enabled:
+
+```bash
+# Enable Dock auto-hide first
+defaults write com.apple.dock autohide -bool true
+
+# Then set animation speed
+defaults write com.apple.dock autohide-time-modifier -float 0.3
+
+# Apply changes
+killall Dock
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dock autohide-time-modifier
+
+# Set instant (no animation)
+defaults write com.apple.dock autohide-time-modifier -float 0
+
+# Set fast animation (0.3 seconds)
+defaults write com.apple.dock autohide-time-modifier -float 0.3
+
+# Set default animation (0.5 seconds)
+defaults write com.apple.dock autohide-time-modifier -float 0.5
+
+# Set slow animation (1.0 second)
+defaults write com.apple.dock autohide-time-modifier -float 1.0
+
+# Delete (reset to default)
+defaults delete com.apple.dock autohide-time-modifier
+
+# Apply changes
+killall Dock
+```
+
+## UI Location
+
+There is no GUI for animation speed. The standard auto-hide toggle is at:
+
+**System Settings** → **Desktop & Dock** → ☑ **Automatically hide and show the Dock**
+
+Animation speed must be set via Terminal.
+
+## Related Dock Settings
+
+```bash
+# Animation speed (this setting)
+defaults write com.apple.dock autohide-time-modifier -float 0.3
+
+# Delay before Dock appears (separate setting)
+defaults write com.apple.dock autohide-delay -float 0
+
+# Enable/disable auto-hide
+defaults write com.apple.dock autohide -bool true
+
+# Dock position (left, bottom, right)
+defaults write com.apple.dock orientation -string "bottom"
+
+# Dock size
+defaults write com.apple.dock tilesize -int 48
+
+# Magnification
+defaults write com.apple.dock magnification -bool true
+defaults write com.apple.dock largesize -int 64
+
+# Apply all changes
+killall Dock
+```
+
+## Animation vs Delay
+
+Two settings control Dock auto-hide behavior:
+
+| Setting | Purpose | Recommended |
+|---------|---------|-------------|
+| `autohide-delay` | Wait before showing (after cursor reaches edge) | `0` |
+| `autohide-time-modifier` | Duration of slide animation | `0.3` |
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Timeline: Cursor → Dock Visible                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Cursor reaches    Delay period     Animation plays     │
+│  screen edge          (wait)          (slide in)        │
+│       │                 │                 │             │
+│       ▼                 ▼                 ▼             │
+│  ─────┬─────────────────┬─────────────────┬─────────    │
+│       │◄─ autohide-delay─►│◄─ autohide-time ─►│         │
+│       │    (seconds)     │     modifier      │          │
+│       │                  │    (seconds)      │          │
+│                                                         │
+│  For instant Dock: Set both to 0                        │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Instant Dock Configuration
+
+For maximum responsiveness:
+
+```bash
+# No delay waiting
+defaults write com.apple.dock autohide-delay -float 0
+
+# No animation
+defaults write com.apple.dock autohide-time-modifier -float 0
+
+# Apply
+killall Dock
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting has no effect | Ensure auto-hide is enabled first |
+| Dock still slow | Check autohide-delay value too |
+| Animation jerky | Value may be too low, try 0.2-0.3 |
+| Setting resets | Re-run killall Dock after setting |
+| Dock doesn't appear | Move cursor firmly to screen edge |
+
+## Performance Considerations
+
+| Value | CPU Impact | Visual Impact |
+|-------|------------|---------------|
+| 0 | Minimal | Instant pop |
+| 0.1-0.3 | Low | Smooth but quick |
+| 0.5 | Normal | Default experience |
+| 1.0+ | Higher | May feel sluggish |
+
+Lower values use less animation frames, reducing CPU usage slightly.
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion)
+- **Requires**: Auto-hide enabled (`autohide -bool true`)
+- **Note**: Requires `killall Dock` to apply
+- **Note**: Not available in System Settings GUI
+
+## Source File
+
+**File**: [`defaults/dock/behavior.sh`](../../defaults/dock/behavior.sh)
+
+```bash
+run_defaults "com.apple.dock" "autohide-time-modifier" "-float" "0.3"
+```
+
+## References
+
+- [Apple Support: Use the Dock](https://support.apple.com/guide/mac-help/dock-mh35859/mac)
+- [Apple Support: Change Dock settings](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)

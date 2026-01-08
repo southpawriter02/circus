@@ -1,0 +1,290 @@
+# Notification Banner Display Time
+
+Control how long notification banners stay visible on screen.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.notificationcenterui` |
+| **Key** | `bannerTime` |
+| **Type** | Integer (seconds) |
+| **Default Value** | `5` |
+| **Our Setting** | `3` |
+
+## Description
+
+Controls the duration that notification banners remain visible in the upper-right corner of the screen before automatically dismissing. Shorter times reduce distraction, while longer times give more time to read and interact with notifications. This affects all banner-style notifications system-wide, though individual apps can be configured to use alerts (which require manual dismissal) instead.
+
+## Values
+
+| Value | Duration |
+|-------|----------|
+| `2` | 2 seconds — Very brief |
+| `3` | 3 seconds — Quick glance |
+| `5` | 5 seconds (default) — Standard |
+| `7` | 7 seconds — Extended |
+| `10` | 10 seconds — Long display |
+| `15` | 15 seconds — Maximum practical |
+
+## Visual Demonstration
+
+### Banner Notification Lifecycle:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Notification Banner Timeline                           │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Time: 0s                        Upper Right Corner     │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │                              ╭────────────────────╮│ │
+│  │                              │ 📧 Mail           ││ │
+│  │                              │ New message from   ││ │
+│  │                              │ John Smith         ││ │
+│  │                              ╰────────────────────╯│ │
+│  │                              ↑ Banner appears      │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                         │
+│  Time: 3s (with bannerTime=3)                          │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │                              ╭────────────────────╮│ │
+│  │                              │ 📧 Mail       ╲╲╲ ││ │
+│  │                              │ New message... ╲╲╲││ │
+│  │                              │ John Smith     ╲╲╲││ │
+│  │                              ╰────────────────────╯│ │
+│  │                              ↑ Banner fading out   │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                         │
+│  Time: 3.5s                                            │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │                                                    │ │
+│  │                                                    │ │
+│  │                              Banner dismissed,     │ │
+│  │                              moved to Notification │ │
+│  │                              Center                │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Duration Comparison:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Banner Duration Examples                               │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  2 seconds:  ██░░░░░░░░  Very brief, easy to miss      │
+│                                                         │
+│  3 seconds:  ███░░░░░░░  Quick, for experienced users  │
+│                                                         │
+│  5 seconds:  █████░░░░░  Default, balanced             │
+│                                                         │
+│  7 seconds:  ███████░░░  Extended reading time         │
+│                                                         │
+│  10 seconds: ██████████  Long, for accessibility       │
+│                                                         │
+│  █ = Banner visible    ░ = Banner dismissed             │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Banner vs Alert Style:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Notification Styles                                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  BANNER (affected by bannerTime):                       │
+│  ╭──────────────────────────────╮                       │
+│  │ 📧 Mail                      │                       │
+│  │ New message from John        │  Auto-dismisses       │
+│  ╰──────────────────────────────╯  after X seconds      │
+│                                                         │
+│  ALERT (NOT affected by bannerTime):                    │
+│  ╭──────────────────────────────╮                       │
+│  │ 📧 Mail                      │                       │
+│  │ New message from John        │  Stays until          │
+│  │                              │  manually dismissed   │
+│  │  [Close]        [View]       │  with buttons         │
+│  ╰──────────────────────────────╯                       │
+│                                                         │
+│  Configure per-app in System Settings → Notifications   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `3` — Brief banners to minimize distraction.
+
+### Why Use Shorter Banner Time?
+
+1. **Less distraction** — Banners disappear quickly
+2. **Focus** — Less interruption to workflow
+3. **Clean screen** — Banners don't linger
+4. **Efficiency** — Glance and continue working
+5. **Notification Center** — Full details available there
+
+### Why Use Longer Banner Time?
+
+- Accessibility needs (more reading time)
+- Important notifications shouldn't be missed
+- Slower reading speed
+- Want time to click/interact
+- Less frequently at computer
+
+## Notification Interaction
+
+Even with short banner time, you can:
+
+| Action | How |
+|--------|-----|
+| Pause dismissal | Hover mouse over banner |
+| Quick actions | Click banner or use buttons |
+| View later | Check Notification Center |
+| Dismiss immediately | Swipe right or click X |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.notificationcenterui bannerTime
+
+# Set to 3 seconds (quick)
+defaults write com.apple.notificationcenterui bannerTime -int 3
+
+# Set to 5 seconds (default)
+defaults write com.apple.notificationcenterui bannerTime -int 5
+
+# Set to 10 seconds (extended)
+defaults write com.apple.notificationcenterui bannerTime -int 10
+
+# Delete (reset to default)
+defaults delete com.apple.notificationcenterui bannerTime
+
+# Restart Notification Center to apply
+killall NotificationCenter
+```
+
+## UI Location
+
+There is no direct UI for banner duration. Configure via:
+- Terminal using `defaults` command
+- Per-app notification style: **System Settings** → **Notifications** → [App] → **Banner style**
+
+## Related Notification Settings
+
+```bash
+# Banner display time (this setting)
+defaults write com.apple.notificationcenterui bannerTime -int 3
+
+# Disable notification sounds globally
+defaults write com.apple.notificationcenterui shouldPlaySound -bool false
+```
+
+### Per-App Notification Settings
+
+Configure individual apps via System Settings:
+
+| Setting | Location |
+|---------|----------|
+| Notification style | Settings → Notifications → [App] |
+| Sound | Settings → Notifications → [App] → ☑ Play sound |
+| Badges | Settings → Notifications → [App] → ☑ Badge app icon |
+| Lock screen | Settings → Notifications → [App] → Show on lock screen |
+| Banners | Settings → Notifications → [App] → Banner style |
+
+## Do Not Disturb
+
+For complete focus, use Do Not Disturb instead of short banners:
+
+| Method | Effect |
+|--------|--------|
+| Control Center → Focus | Silences notifications |
+| ⌥-click Notification Center | Quick toggle DND |
+| Scheduled Focus | Automatic quiet hours |
+
+## Notification Center Access
+
+After banners dismiss:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Accessing Notification Center                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Method 1: Click date/time in menu bar                  │
+│                                                         │
+│  Method 2: Two-finger swipe left from right edge       │
+│            (on trackpad)                                │
+│                                                         │
+│  Method 3: Keyboard shortcut (if configured)            │
+│                                                         │
+│  ┌──────────────────────┐                               │
+│  │  Notification Center │                               │
+│  │  ──────────────────  │                               │
+│  │  📧 Mail        now  │                               │
+│  │  New message from... │                               │
+│  │  ──────────────────  │                               │
+│  │  📱 Messages   5m    │                               │
+│  │  Hey, are you...     │                               │
+│  │  ──────────────────  │                               │
+│  │  📅 Calendar   1h    │                               │
+│  │  Meeting in 15 min   │                               │
+│  └──────────────────────┘                               │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Run `killall NotificationCenter` |
+| Banners still long | Check if app uses Alerts instead of Banners |
+| No banners at all | Check notification permissions for app |
+| Can't interact in time | Increase bannerTime or switch app to Alerts |
+| Setting resets | May be managed by MDM profile |
+
+## Recommended Durations by Use Case
+
+| Use Case | Recommended Duration |
+|----------|---------------------|
+| Power users | 2-3 seconds |
+| General use | 5 seconds (default) |
+| Accessibility | 7-10 seconds |
+| Mission-critical apps | Use Alerts instead |
+| Minimal distraction | 2 seconds |
+
+## Accessibility Note
+
+For users who need more time to read notifications:
+
+```bash
+# Extended banner time for accessibility
+defaults write com.apple.notificationcenterui bannerTime -int 10
+
+# Or switch critical apps to Alert style in:
+# System Settings → Notifications → [App] → Alert style: Alerts
+```
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion) with Notification Center
+- **Note**: Only affects Banner-style notifications
+- **Note**: Alerts always require manual dismissal
+- **Note**: May require NotificationCenter restart
+
+## Source File
+
+**File**: [`defaults/notifications/settings.sh`](../../defaults/notifications/settings.sh)
+
+```bash
+run_defaults "com.apple.notificationcenterui" "bannerTime" "-int" "3"
+```
+
+## References
+
+- [Apple Support: Change notification preferences](https://support.apple.com/guide/mac-help/change-notifications-settings-mh40583/mac)
+- [Apple Support: Use Notification Center](https://support.apple.com/guide/mac-help/notification-center-mchl2fb1258f/mac)
+- [Apple Support: Turn off notifications](https://support.apple.com/guide/mac-help/turn-notifications-on-or-off-mh40583/mac)

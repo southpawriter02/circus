@@ -1,0 +1,284 @@
+# Window Resize Animation Speed
+
+Control the speed of window resize animations.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSWindowResizeTime` |
+| **Type** | Float (seconds) |
+| **Default Value** | `0.2` |
+| **Our Setting** | `0.001` |
+
+## Description
+
+Controls the duration of the animation when windows resize, including when using the green zoom button, entering full screen, or resizing by dragging window edges. A lower value makes resizing feel more instant and responsive. Setting to a very small value (like `0.001`) effectively makes resizing instant while maintaining compatibility with macOS window management.
+
+## Values
+
+| Value | Speed | Description |
+|-------|-------|-------------|
+| `0.001` | Instant | Effectively no animation |
+| `0.05` | Very Fast | Brief flash |
+| `0.1` | Fast | Quick resize |
+| `0.2` | Normal | Default macOS speed |
+| `0.5` | Slow | Noticeable animation |
+| `1.0` | Very Slow | Dramatic effect |
+
+## Visual Demonstration
+
+### Window Resize Animation:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Window Resize Animation                                │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Default (0.2s):                                        │
+│  ─────────────────────────────────────────────────────  │
+│                                                         │
+│  ┌───────────┐     ┌─────────────────┐                  │
+│  │  Original │ ──► │                 │                  │
+│  │   Size    │     │   Intermediate  │                  │
+│  └───────────┘     │                 │                  │
+│                    └─────────────────┘                  │
+│                           ↓                             │
+│                    ┌─────────────────────────┐          │
+│                    │                         │          │
+│                    │      Final Size         │          │
+│                    │                         │          │
+│                    │                         │          │
+│                    └─────────────────────────┘          │
+│                                                         │
+│  Animation takes 200ms to complete                      │
+│                                                         │
+│  Instant (0.001s):                                      │
+│  ─────────────────────────────────────────────────────  │
+│                                                         │
+│  ┌───────────┐          ┌─────────────────────────┐     │
+│  │  Original │ ──────►  │                         │     │
+│  │   Size    │   Poof!  │      Final Size         │     │
+│  └───────────┘          │                         │     │
+│                         │                         │     │
+│                         └─────────────────────────┘     │
+│                                                         │
+│  Window snaps to new size immediately                   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Green Button Zoom:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Zoom Button Animation                                  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Before clicking green button:                          │
+│  ┌─────────────────────────────────────────────┐        │
+│  │ ● ● 🟢 │ Document.txt                      │        │
+│  ├─────────┴───────────────────────────────────┤        │
+│  │                                             │        │
+│  │           Window Content                    │        │
+│  │                                             │        │
+│  └─────────────────────────────────────────────┘        │
+│                                                         │
+│  After clicking (with fast resize):                     │
+│  ┌─────────────────────────────────────────────────────┐│
+│  │ ● ● 🟢 │ Document.txt                              ││
+│  ├─────────┴───────────────────────────────────────────┤│
+│  │                                                     ││
+│  │                                                     ││
+│  │              Window Content (zoomed)                ││
+│  │                                                     ││
+│  │                                                     ││
+│  │                                                     ││
+│  └─────────────────────────────────────────────────────┘│
+│                                                         │
+│  With 0.001s: Window snaps to zoomed size instantly     │
+│  With 0.2s: Window smoothly animates to new size        │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `0.001` — Effectively instant resize animations.
+
+### Why Use Instant Resize?
+
+1. **Responsiveness** — No waiting for animations
+2. **Productivity** — Window management feels snappy
+3. **Focus** — Less visual distraction
+4. **Performance** — Reduced GPU usage
+5. **Preference** — Many users prefer instant feedback
+
+### Why Use Default Animation?
+
+- Visual feedback of size change
+- Easier to track window transitions
+- Smoother user experience
+- Default macOS aesthetics
+- Accessibility (easier to follow)
+
+## Affects These Operations
+
+| Operation | Affected |
+|-----------|----------|
+| Green zoom button | ✓ |
+| Window edge dragging | ✓ |
+| Double-click title bar | ✓ |
+| Split View entry | ✓ |
+| Restore from minimized | Partially |
+| Full screen transition | Separate setting |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSWindowResizeTime
+
+# Set instant resize
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+
+# Set very fast
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.05
+
+# Set default speed
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.2
+
+# Set slow (if you want to see the animation)
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.5
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSWindowResizeTime
+```
+
+Changes take effect immediately for newly resized windows.
+
+## UI Location
+
+There is no GUI for this setting.
+
+Related settings available at:
+**System Settings** → **Accessibility** → **Display** → ☑ **Reduce motion**
+
+Note: "Reduce motion" affects many animations. The `defaults` command provides specific control over just window resize.
+
+## Related Animation Settings
+
+```bash
+# Window resize animation (this setting)
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+
+# Window open/close animations
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+
+# Dock animations
+defaults write com.apple.dock autohide-time-modifier -float 0
+defaults write com.apple.dock autohide-delay -float 0
+
+# Mission Control animation
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
+# Finder animations
+defaults write com.apple.finder DisableAllAnimations -bool true
+
+# Apply Dock changes
+killall Dock
+```
+
+## Full Speed Configuration
+
+For maximum responsiveness, combine settings:
+
+```bash
+# Window resize
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+
+# Window open/close
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+
+# Dock
+defaults write com.apple.dock autohide-delay -float 0
+defaults write com.apple.dock autohide-time-modifier -float 0
+defaults write com.apple.dock launchanim -bool false
+
+# Mission Control
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
+# Apply
+killall Dock
+```
+
+## Full Screen vs Window Resize
+
+| Setting | Controls |
+|---------|----------|
+| `NSWindowResizeTime` | Regular window resize (green button zoom) |
+| Separate full screen settings | Full screen transition animation |
+
+Full screen animations are controlled separately and may not be affected by this setting.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No visible change | Close and reopen app windows |
+| Full screen still animated | Uses different animation system |
+| Setting not persisting | Verify with `defaults read` |
+| Some apps ignore setting | App may use custom window management |
+
+## App-Specific Behavior
+
+Some apps have their own window animation code:
+
+| App | Respects Setting |
+|-----|------------------|
+| Finder | ✓ |
+| Safari | ✓ |
+| TextEdit | ✓ |
+| Preview | ✓ |
+| Mail | ✓ |
+| Chrome | Partially |
+| Electron apps | Varies |
+
+## Performance Consideration
+
+On older Macs or when running many applications:
+- Animation can cause brief lag
+- Instant resize reduces GPU work
+- May slightly improve battery life
+- Smoother overall experience
+
+## Accessibility Note
+
+For users who find animations disorienting:
+
+```bash
+# Combine with Reduce Motion
+defaults write com.apple.universalaccess reduceMotion -bool true
+
+# Plus instant window resize
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+```
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Takes effect immediately for new resize operations
+- **Note**: Some apps may override
+- **Note**: Full screen uses different animation
+
+## Source File
+
+**File**: [`defaults/system/animations.sh`](../../defaults/system/animations.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSWindowResizeTime" "-float" "0.001"
+```
+
+## References
+
+- [Apple Support: Change Accessibility Display preferences](https://support.apple.com/guide/mac-help/change-display-accessibility-preferences-mchlp2298/mac)
+- [Apple HIG: Motion](https://developer.apple.com/design/human-interface-guidelines/motion)

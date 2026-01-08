@@ -1,0 +1,255 @@
+# Help Viewer Window Mode
+
+Control whether Help Viewer floats above other windows.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.helpviewer` |
+| **Key** | `DevMode` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the Help Viewer window behaves like a normal window or floats above all other windows. By default, Help Viewer floats on top, which can be intrusive when following instructions. When DevMode is enabled, Help Viewer acts like a regular window that can go behind other windows, making it easier to work alongside help documentation.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Floating window** (default) — Always on top |
+| `true` | **Normal window** — Can go behind other windows |
+
+## Visual Demonstration
+
+### Floating Mode (default - DevMode false):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Help Viewer — Always On Top                            │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  System Settings                                │    │
+│  │  ──────────────────────────────────────────     │    │
+│  │                                                 │    │
+│  │  ┌───────────────────────────────────────────┐  │    │
+│  │  │                                           │  │    │
+│  │  │  Help Viewer (floating on top)            │  │    │
+│  │  │  ─────────────────────────────            │  │    │
+│  │  │                                           │  │    │
+│  │  │  How to change your password...           │  │    │
+│  │  │                                           │  │    │
+│  │  └───────────────────────────────────────────┘  │    │
+│  │                                                 │    │
+│  │  (Settings window partially obscured)           │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  😤 Help blocks the window you're trying to use!       │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Normal Window Mode (DevMode true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Help Viewer — Normal Window                            │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Side by side view:                                     │
+│  ┌─────────────────────┐ ┌─────────────────────┐        │
+│  │  Help Viewer        │ │  System Settings    │        │
+│  │  ─────────────      │ │  ────────────────   │        │
+│  │                     │ │                     │        │
+│  │  Step 1: Click...   │ │  ☑ Option A        │        │
+│  │  Step 2: Select...  │ │  ☐ Option B        │        │
+│  │  Step 3: Enter...   │ │  [  Save  ]        │        │
+│  │                     │ │                     │        │
+│  └─────────────────────┘ └─────────────────────┘        │
+│                                                         │
+│  Or Help can go behind when clicking other windows:     │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  System Settings (in focus)                     │    │
+│  │  ──────────────────────────────────────────     │    │
+│  │                                                 │    │
+│  │  ☑ Option A                                    │    │
+│  │  ☐ Option B                                    │    │
+│  │  [  Save  ]                                    │    │
+│  │                                   ┌─────────────│    │
+│  │                                   │ Help (behind│    │
+│  └───────────────────────────────────┴─────────────┘    │
+│                                                         │
+│  ✓ Work without Help blocking your view!               │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Workflow Comparison:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Following Help Instructions                            │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  FLOATING (Default):                                    │
+│  1. Open Help                                           │
+│  2. Read instruction                                    │
+│  3. Minimize/move Help to see app                       │
+│  4. Perform step                                        │
+│  5. Restore Help                                        │
+│  6. Read next instruction                               │
+│  7. Repeat... 😫                                        │
+│                                                         │
+│  NORMAL WINDOW (DevMode):                               │
+│  1. Open Help                                           │
+│  2. Position Help and app side by side                  │
+│  3. Read and perform steps                              │
+│  4. Click between windows naturally                     │
+│  5. Done! 😊                                            │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Help Viewer as normal window for better workflow.
+
+### Why Enable DevMode (Normal Window)?
+
+1. **Usability** — Work alongside help
+2. **Multitasking** — Switch windows naturally
+3. **Less intrusive** — Not always blocking
+4. **Side-by-side** — Compare help with app
+5. **Professional** — Standard window behavior
+
+### Why Keep Floating (Default)?
+
+- Help always visible for reference
+- Don't lose Help behind windows
+- Single monitor setup
+- Prefer modal help experience
+- Following step-by-step guides
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.helpviewer DevMode
+
+# Enable normal window mode (recommended)
+defaults write com.apple.helpviewer DevMode -bool true
+
+# Keep floating window (default)
+defaults write com.apple.helpviewer DevMode -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.helpviewer DevMode
+```
+
+Changes take effect immediately for new Help windows.
+
+## UI Location
+
+There is no GUI for this setting. Use the Terminal command.
+
+To open Help Viewer:
+- **Help** menu → **[App] Help**
+- Press **⌘?** in most apps
+- Spotlight search → type topic
+
+## Help Viewer Features
+
+Regardless of window mode, Help Viewer provides:
+
+| Feature | How |
+|---------|-----|
+| Search | Type in search field |
+| Topics | Browse by category |
+| Bookmarks | Bookmark pages for later |
+| Share | Share help articles |
+| Print | Print help pages |
+
+## Why "DevMode"?
+
+The key is named "DevMode" because:
+- Developers often need to reference documentation
+- Side-by-side coding and docs is common workflow
+- Floating windows are problematic for development
+- Named when Apple added the option for developers
+
+## Related Settings
+
+```bash
+# Help Viewer window mode (this setting)
+defaults write com.apple.helpviewer DevMode -bool true
+
+# General window behavior settings are in:
+# System Settings → Accessibility → Display
+```
+
+## Accessing Help Effectively
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Getting Help in macOS                                  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  1. App-specific help:                                  │
+│     Help menu → [App Name] Help                         │
+│                                                         │
+│  2. Keyboard shortcut:                                  │
+│     ⌘⇧? or ⌘?                                          │
+│                                                         │
+│  3. Search menu items:                                  │
+│     Help menu → Search field                            │
+│     (searches menus AND help topics)                    │
+│                                                         │
+│  4. Spotlight:                                          │
+│     ⌘Space → type question                              │
+│                                                         │
+│  5. Tell me (Siri in menu bar):                         │
+│     Help menu → "Search" → type question               │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Help still floats | Close and reopen Help Viewer |
+| Can't find Help behind windows | Check Mission Control (F3) |
+| Setting not working | Quit Help Viewer completely first |
+| Help opens in wrong mode | Verify setting with `defaults read` |
+
+## Help Search Tips
+
+The Help menu search is powerful:
+
+| Search For | Results |
+|------------|---------|
+| Menu command | Highlights menu item with arrow |
+| Feature name | Shows help articles |
+| How to... | Step-by-step guides |
+| Keyboard shortcut | Shows related commands |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Note**: Takes effect for new Help windows
+- **Note**: Setting persists across reboots
+- **Note**: Works for all apps using standard Help Viewer
+
+## Source File
+
+**File**: [`defaults/system/helpers.sh`](../../defaults/system/helpers.sh)
+
+```bash
+run_defaults "com.apple.helpviewer" "DevMode" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Get help on your Mac](https://support.apple.com/guide/mac-help/get-help-on-your-mac-mchlp1166/mac)
+- [Apple Support: Use the Help menu](https://support.apple.com/guide/mac-help/use-the-help-menu-mchlp1154/mac)

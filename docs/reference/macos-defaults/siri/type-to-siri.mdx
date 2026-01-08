@@ -1,0 +1,285 @@
+# Type to Siri
+
+Enable typing queries to Siri instead of speaking.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Siri` |
+| **Key** | `TypeToSiriEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether you can type queries to Siri instead of speaking them. When enabled, activating Siri (via keyboard shortcut or menu bar) shows a text input field instead of starting voice recognition. This is useful in quiet environments, public spaces, or for users who prefer typing.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Voice only** (default) — Siri listens for spoken queries |
+| `true` | **Type to Siri** — Text input field appears |
+
+## Visual Demonstration
+
+### Voice Mode (Default):
+```
++-------------------------------------------------------------+
+|  Siri - Voice Mode                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Activate Siri (keyboard shortcut or click):                 |
+|                                                              |
+|  +---------------------------+                               |
+|  |                           |                               |
+|  |      +-----------+        |                               |
+|  |      |   ))))    |        |  Microphone active            |
+|  |      |   Siri    |        |  Listening for voice...       |
+|  |      |   ))))    |        |                               |
+|  |      +-----------+        |                               |
+|  |                           |                               |
+|  |  "What can I help you     |                               |
+|  |   with?"                  |                               |
+|  |                           |                               |
+|  |  [Sound waves animating]  |                               |
+|  |                           |                               |
+|  +---------------------------+                               |
+|                                                              |
+|  Must speak query aloud                                      |
+|  Others can hear your requests                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Type to Siri Mode:
+```
++-------------------------------------------------------------+
+|  Siri - Type Mode                                            |
++-------------------------------------------------------------+
+|                                                              |
+|  Activate Siri (keyboard shortcut or click):                 |
+|                                                              |
+|  +---------------------------+                               |
+|  |                           |                               |
+|  |      +-----------+        |                               |
+|  |      |           |        |                               |
+|  |      |   Siri    |        |  Text field ready             |
+|  |      |           |        |                               |
+|  |      +-----------+        |                               |
+|  |                           |                               |
+|  |  +---------------------+  |                               |
+|  |  | Type your request   |  |  <-- Text input field        |
+|  |  | here...         [->]|  |                               |
+|  |  +---------------------+  |                               |
+|  |                           |                               |
+|  +---------------------------+                               |
+|                                                              |
+|  Type query silently                                         |
+|  Press Return to submit                                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Use Case Comparison:
+```
++-------------------------------------------------------------+
+|  When to Use Each Mode                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  VOICE MODE:                      TYPE MODE:                 |
+|  +------------------------+      +------------------------+  |
+|  |                        |      |                        |  |
+|  |  * Home alone          |      |  * Library             |  |
+|  |  * Hands busy          |      |  * Open office         |  |
+|  |  * Quick commands      |      |  * Public transit      |  |
+|  |  * Accessibility       |      |  * Meetings            |  |
+|  |  * HomeKit control     |      |  * Late at night       |  |
+|  |  * Driving (CarPlay)   |      |  * Privacy desired     |  |
+|  |                        |      |  * Complex queries     |  |
+|  +------------------------+      +------------------------+  |
+|                                                              |
+|  "Hey Siri, turn off        "schedule meeting with           |
+|   the lights"                john@company.com for            |
+|                              next Tuesday at 3pm"            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable Type to Siri for discreet queries.
+
+### Why Enable Type to Siri?
+
+1. **Privacy** — No spoken queries overheard
+2. **Quiet environments** — Libraries, offices, bedrooms
+3. **Accuracy** — Avoid voice recognition errors
+4. **Complex queries** — Easier to type long requests
+5. **Discretion** — Private searches without speaking aloud
+
+### Why Keep Voice Mode?
+
+- Hands-free operation needed
+- Quick commands preferred
+- Accessibility requirements
+- HomeKit voice control
+- Driving or cooking
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Siri TypeToSiriEnabled
+
+# Enable Type to Siri
+defaults write com.apple.Siri TypeToSiriEnabled -bool true
+
+# Disable (voice mode)
+defaults write com.apple.Siri TypeToSiriEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Siri TypeToSiriEnabled
+```
+
+Changes take effect immediately for new Siri activations.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Siri** > **Type to Siri**
+
+```
++-------------------------------------------------------------+
+|  Accessibility > Siri                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Siri                                            |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Type to Siri                                    |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | [*] Enable Type to Siri                    |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |                                                  |       |
+|  |  Instead of speaking to Siri, type your         |       |
+|  |  requests using the keyboard.                   |       |
+|  |                                                  |       |
+|  |  Siri Keyboard Shortcut                          |       |
+|  |  [Hold Command Space          v]                 |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+Also accessible via: **System Settings** > **Siri & Spotlight** > **Keyboard Shortcut** area
+
+## Related Settings
+
+```bash
+# Type to Siri (this setting)
+defaults write com.apple.Siri TypeToSiriEnabled -bool true
+
+# Master Siri toggle
+defaults write com.apple.assistant.support "Assistant Enabled" -bool true
+
+# Siri voice feedback
+defaults write com.apple.Siri VoiceFeedback -string "Off"
+
+# Siri Suggestions
+defaults write com.apple.Siri SiriSuggestionsEnabled -bool false
+```
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| Hold Cmd + Space | Activate Siri (default) |
+| Custom shortcut | Set in System Settings |
+| Press Fn twice | Alternative option |
+| Escape | Dismiss Siri |
+| Return | Submit typed query |
+
+## Type to Siri Tips
+
+```
++-------------------------------------------------------------+
+|  Tips for Type to Siri                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  Effective queries:                                          |
+|  ------------------                                          |
+|  * "Set timer for 15 minutes"                               |
+|  * "What's the weather in Tokyo"                            |
+|  * "Create reminder to call mom tomorrow at 5pm"            |
+|  * "Convert 100 USD to EUR"                                 |
+|  * "Open System Settings"                                   |
+|                                                              |
+|  Complex queries work better typed:                          |
+|  ---------------------------------                           |
+|  * Email addresses: john.smith@example.com                  |
+|  * Technical terms: "What is NVRAM"                         |
+|  * Foreign words: "Translate buenos dias"                   |
+|  * Specific dates: "Schedule for March 15, 2026"            |
+|                                                              |
+|  Pro tip: Press Tab to autocomplete suggestions             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still shows voice mode | Restart Siri: `killall Siri` |
+| Setting doesn't persist | Check if Siri is enabled first |
+| Text field not appearing | Verify setting with `defaults read` |
+| Can't find in System Settings | Located under Accessibility > Siri |
+| Want both modes | Not possible - choose one default |
+
+## Voice + Type Hybrid
+
+While you can't have both simultaneously, you can:
+
+1. Enable Type to Siri as default
+2. Use "Hey Siri" for voice (if enabled)
+3. "Hey Siri" always uses voice regardless of this setting
+
+```
++-------------------------------------------------------------+
+|  Activation Methods with Type to Siri Enabled               |
++-------------------------------------------------------------+
+|                                                              |
+|  Keyboard shortcut  -->  Type interface                     |
+|  Menu bar click     -->  Type interface                     |
+|  "Hey Siri"         -->  Voice interface (always)           |
+|                                                              |
+|  This allows flexibility: type when convenient,             |
+|  voice when hands-free is needed                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave)
+- **Note**: Requires Siri to be enabled
+- **Note**: Takes effect immediately
+- **Note**: "Hey Siri" bypasses this setting
+
+## Source File
+
+**File**: [`defaults/system/siri.sh`](../../defaults/system/siri.sh)
+
+```bash
+run_defaults "com.apple.Siri" "TypeToSiriEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Siri on your Mac](https://support.apple.com/guide/mac-help/mchl6b029310/mac)
+- [Apple Support: Type to Siri on Mac](https://support.apple.com/guide/mac-help/type-to-siri-mchl6339e87b/mac)
+- [Apple Support: Accessibility features for Siri](https://support.apple.com/guide/mac-help/accessibility-features-for-siri-mchl637e3ceb/mac)

@@ -1,0 +1,292 @@
+# Finder Spring Loading Delay
+
+Control the delay before folders open when dragging files over them.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.springing.delay` |
+| **Type** | Float (seconds) |
+| **Default Value** | `0.5` |
+| **Our Setting** | `0.3` |
+
+## Description
+
+Controls the amount of time you must hover over a folder while dragging before the folder automatically opens (springs open). This feature allows you to navigate through folder hierarchies without releasing the item you're dragging. A shorter delay makes navigation faster but may cause accidental folder openings; a longer delay is more deliberate but slower.
+
+## Values
+
+| Value | Speed | Description |
+|-------|-------|-------------|
+| `0.1` | Very Fast | Nearly instant, may cause accidents |
+| `0.3` | Fast | Quick response, good for experienced users |
+| `0.5` | Normal | Default macOS timing |
+| `0.75` | Slow | More deliberate |
+| `1.0` | Very Slow | Extra time to position |
+| `1.5` | Slowest | Maximum deliberation |
+
+## Visual Demonstration
+
+### Spring Loading Timeline:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Spring Loading Delay Visualization                     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Delay = 0.3s (Fast):                                   │
+│  ─────────────────────────────────────────────────────  │
+│  Hover starts                                           │
+│  │    │ 0.3s delay                                      │
+│  ├────┤                                                 │
+│  │    └──► Folder opens!                                │
+│  │                                                      │
+│  Timeline: ████████████████░░░░░░░░░░░░░░░░░░░░░        │
+│            0    100   200   300ms                       │
+│                              ↑ Opens here               │
+│                                                         │
+│  Delay = 0.5s (Default):                                │
+│  ─────────────────────────────────────────────────────  │
+│  Hover starts                                           │
+│  │         │ 0.5s delay                                 │
+│  ├─────────┤                                            │
+│  │         └──► Folder opens!                           │
+│  │                                                      │
+│  Timeline: ████████████████████████████░░░░░░░░░░░░░░░  │
+│            0    100   200   300   400   500ms           │
+│                                          ↑ Opens here   │
+│                                                         │
+│  Delay = 1.0s (Slow):                                   │
+│  ─────────────────────────────────────────────────────  │
+│  Hover starts                                           │
+│  │                   │ 1.0s delay                       │
+│  ├───────────────────┤                                  │
+│  │                   └──► Folder opens!                 │
+│  │                                                      │
+│  Timeline: ████████████████████████████████████████████ │
+│            0         500        1000ms                  │
+│                                 ↑ Opens here            │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Spring Loading in Action:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Dragging Through Folder Hierarchy                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Step 1: Start dragging a file                          │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  📄 Report.pdf  (dragging...)                   │    │
+│  │       ↓                                         │    │
+│  │  📁 Documents                                   │    │
+│  │  📁 Projects ← Hover here                       │    │
+│  │  📁 Archive                                     │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Step 2: After delay, folder springs open               │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  📄 Report.pdf  (still dragging...)             │    │
+│  │       ↓                                         │    │
+│  │  📂 Projects (opened!)                          │    │
+│  │  ├─ 📁 2024 ← Hover here for next folder       │    │
+│  │  ├─ 📁 2025                                     │    │
+│  │  └─ 📁 Clients                                  │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Step 3: Continue drilling down                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  📄 Report.pdf                                  │    │
+│  │       ↓                                         │    │
+│  │  📂 Projects > 📂 2024 > 📂 Q4                  │    │
+│  │  ├─ 📄 Summary.docx                             │    │
+│  │  ├─ 📄 Budget.xlsx                              │    │
+│  │  └─ (drop here!)                                │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Shorter delay = Faster navigation through hierarchy!   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `0.3` — Faster spring loading for efficient file management.
+
+### Why Use Shorter Delay?
+
+1. **Speed** — Navigate folders faster
+2. **Productivity** — Less waiting while organizing files
+3. **Flow** — Maintain momentum while dragging
+4. **Efficiency** — Move files to deep folders quickly
+5. **Power users** — Familiar with folder structure
+
+### Why Use Longer Delay?
+
+- Prevent accidental folder openings
+- More time to position cursor precisely
+- Less experienced with file navigation
+- Complex folder structures
+- Accessibility needs
+
+## Space Bar Instant Spring
+
+Regardless of delay setting, pressing **Space** while hovering opens the folder immediately:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Space Bar Shortcut                                     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Normal: Hover for [delay] seconds, then folder opens   │
+│                                                         │
+│  With Space: Press Space while hovering                 │
+│              → Folder opens IMMEDIATELY                 │
+│              → Bypasses delay entirely                  │
+│                                                         │
+│  Best of both worlds:                                   │
+│  • Set moderate delay (0.5s) to prevent accidents       │
+│  • Press Space when you know where you're going         │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Code Examples
+
+```bash
+# Read current delay
+defaults read NSGlobalDomain com.apple.springing.delay
+
+# Set fast delay (0.3 seconds)
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.3
+
+# Set default delay (0.5 seconds)
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.5
+
+# Set slow delay (1.0 second)
+defaults write NSGlobalDomain com.apple.springing.delay -float 1.0
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain com.apple.springing.delay
+```
+
+Changes take effect immediately.
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Pointer Control** → **Spring-loading delay** slider
+
+The slider provides a range from Short to Long.
+
+## Related Spring Loading Settings
+
+```bash
+# Spring loading delay (this setting)
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.3
+
+# Enable/disable spring loading entirely
+defaults write NSGlobalDomain com.apple.springing.enabled -bool true
+
+# Both together for optimal setup
+defaults write NSGlobalDomain com.apple.springing.enabled -bool true
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.3
+```
+
+## Dock Spring Loading
+
+Spring loading also works on Dock folder stacks:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Dock Folder Spring Loading                             │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Drag file over Dock folder:                            │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │     Dock                                        │    │
+│  │  ┌──────────────────────────────────────────┐   │    │
+│  │  │  🔵  📁  🌐  📧  │  📁 Downloads  │ 🗑️  │   │    │
+│  │  └──────────────────────────────────────────┘   │    │
+│  │                          ↑                      │    │
+│  │                     Hover here                  │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  After delay, stack expands showing contents:           │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │      📄 File1.pdf                               │    │
+│  │      📄 File2.doc                               │    │
+│  │      📁 Subfolder ← Continue hovering          │    │
+│  │      📄 File3.png                               │    │
+│  │  ┌──────────────────────────────────────────┐   │    │
+│  │  │  🔵  📁  🌐  📧  │  📁 Downloads  │ 🗑️  │   │    │
+│  │  └──────────────────────────────────────────┘   │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Works In Multiple Contexts
+
+| Location | Spring Loading |
+|----------|----------------|
+| Finder windows | ✓ Folders open |
+| Desktop | ✓ Folders open |
+| Dock stacks | ✓ Stacks expand |
+| Sidebar | ✓ Navigates hierarchy |
+| Open/Save dialogs | ✓ Folders open |
+| Column view | ✓ Columns expand |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Folders not opening | Check spring loading is enabled |
+| Opens too fast | Increase delay value |
+| Opens too slow | Decrease delay value |
+| Accidental openings | Increase delay or use Space shortcut |
+| Setting not applying | Value takes effect immediately |
+
+## Recommended Configurations
+
+| User Type | Delay | Reasoning |
+|-----------|-------|-----------|
+| Power user | 0.2-0.3s | Fast navigation, knows folder structure |
+| Regular user | 0.5s | Default, balanced |
+| New user | 0.7-1.0s | More time to position |
+| Accessibility | 1.0-1.5s | Deliberate, no accidents |
+
+## Disable Spring Loading
+
+If you find spring loading annoying:
+
+```bash
+# Disable spring loading entirely
+defaults write NSGlobalDomain com.apple.springing.enabled -bool false
+```
+
+Then folders only open when you drop files on them directly.
+
+## Compatibility
+
+- **macOS**: 10.0+ (original Mac OS X feature)
+- **Note**: Takes effect immediately
+- **Note**: Works system-wide
+- **Note**: Also available via System Settings slider
+
+## Source File
+
+**File**: [`defaults/finder/navigation.sh`](../../defaults/finder/navigation.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.springing.delay" "-float" "0.3"
+```
+
+## References
+
+- [Apple Support: Organize files in folders](https://support.apple.com/guide/mac-help/organize-files-in-folders-mchlp1014/mac)
+- [Apple Support: Drag and drop items](https://support.apple.com/guide/mac-help/drag-and-drop-items-mchlp1097/mac)
+- [Apple Support: Accessibility Pointer Control](https://support.apple.com/guide/mac-help/change-pointer-control-accessibility-preferences-mchlb1fb84a3/mac)

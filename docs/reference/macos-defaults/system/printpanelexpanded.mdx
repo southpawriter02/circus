@@ -1,0 +1,270 @@
+# Print Dialog Expanded State
+
+Automatically expand the print dialog to show all options.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `PMPrintingExpandedStateForPrint2` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the print dialog opens in expanded mode, showing all printing options like paper size, orientation, scaling, and printer-specific settings. By default, macOS shows a simplified print dialog that hides advanced options behind a "Show Details" button. Enabling this setting shows all options immediately.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Collapsed** (default) — Simple dialog, click to expand |
+| `true` | **Expanded** — All options visible immediately |
+
+## Visual Demonstration
+
+### Collapsed Print Dialog (default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Print Dialog — Collapsed                               │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │  Printer: [HP LaserJet Pro              ▼]     │    │
+│  │  Presets: [Default Settings             ▼]     │    │
+│  │  Copies:  [1    ]  ☐ Two-Sided                 │    │
+│  │  Pages:   ◉ All  ○ From: [  ] to: [  ]        │    │
+│  │                                                 │    │
+│  │                                                 │    │
+│  │    [Show Details]    [Cancel]    [Print]        │    │
+│  │         ↑                                       │    │
+│  │    Must click to see all options!               │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Basic options only — advanced settings hidden          │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Expanded Print Dialog:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Print Dialog — Expanded                                │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Printer: [HP LaserJet Pro              ▼]     │    │
+│  │  Presets: [Default Settings             ▼]     │    │
+│  │  Copies:  [1    ]  ☐ Two-Sided                 │    │
+│  │  Pages:   ◉ All  ○ From: [  ] to: [  ]        │    │
+│  │  ─────────────────────────────────────────────  │    │
+│  │                                                 │    │
+│  │  ┌─────────────────────┐ Paper Size:            │    │
+│  │  │                     │ [Letter (8.5 x 11) ▼] │    │
+│  │  │                     │                        │    │
+│  │  │    Preview          │ Orientation:           │    │
+│  │  │       📄            │ [Portrait] [Landscape] │    │
+│  │  │                     │                        │    │
+│  │  │                     │ Scale: [100    ] %     │    │
+│  │  └─────────────────────┘                        │    │
+│  │                                                 │    │
+│  │  [Layout              ▼]                        │    │
+│  │  Pages per Sheet: [1          ▼]               │    │
+│  │  Layout Direction: [→↓]                        │    │
+│  │  Border: [None           ▼]                    │    │
+│  │                                                 │    │
+│  │    [Hide Details]    [Cancel]    [Print]        │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  All options visible immediately!                       │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Available Print Options:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Print Options Available in Expanded Mode               │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Paper Handling:                                        │
+│  • Paper size (Letter, A4, Legal, Custom)               │
+│  • Orientation (Portrait, Landscape)                    │
+│  • Scale percentage                                     │
+│  • Print to fit                                         │
+│                                                         │
+│  Layout:                                                │
+│  • Pages per sheet (1, 2, 4, 6, 9, 16)                 │
+│  • Layout direction                                     │
+│  • Border style                                         │
+│  • Two-sided printing                                   │
+│                                                         │
+│  Color/Quality:                                         │
+│  • Color or Black & White                               │
+│  • Quality/resolution                                   │
+│  • Paper type                                           │
+│                                                         │
+│  Printer-Specific:                                      │
+│  • Stapling options                                     │
+│  • Output tray                                          │
+│  • Watermarks                                           │
+│  • Secure printing                                      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show expanded print dialog for full control.
+
+### Why Enable Expanded Dialog?
+
+1. **All options visible** — No clicking to expand
+2. **Faster workflow** — Access settings immediately
+3. **Preview** — See page preview
+4. **Professional** — Control paper size, scaling
+5. **Fewer reprints** — Set options correctly first time
+
+### Why Keep Collapsed (Default)?
+
+- Simple printing needs
+- Always use default settings
+- Faster for basic prints
+- Less overwhelming interface
+- Prefer minimal dialogs
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain PMPrintingExpandedStateForPrint2
+
+# Enable expanded print dialog
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+
+# Also set the older key (for compatibility)
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+
+# Disable (collapsed, default)
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool false
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain PMPrintingExpandedStateForPrint2
+```
+
+Changes take effect immediately for new print dialogs.
+
+## UI Location
+
+There is no system setting for this. Each print dialog has:
+- **Show Details** button to expand
+- **Hide Details** button to collapse
+
+The setting makes "Show Details" the default state.
+
+## Related Print Settings
+
+```bash
+# Expanded print dialog (this setting)
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+
+# Expanded save dialog (similar concept)
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+
+# Print dialog timeout (seconds before auto-close)
+# Varies by printer driver
+```
+
+## Print to PDF
+
+In expanded mode, easy access to PDF options:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  PDF Options (bottom-left of print dialog)              │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  [PDF ▼]                                               │
+│  ├─ Save as PDF...                                      │
+│  ├─ Save as PostScript...                               │
+│  ├─ Open PDF in Preview                                 │
+│  ├─ Mail PDF                                            │
+│  ├─ Save PDF to iCloud Drive                            │
+│  └─ Edit Menu...                                        │
+│                                                         │
+│  Quick way to create PDFs from any application!         │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Keyboard Shortcut
+
+Print dialog: **⌘P** in most applications
+
+## Print Presets
+
+Save frequently used settings:
+1. Configure all options in expanded dialog
+2. Click **Presets** dropdown
+3. Select **Save Current Settings as Preset...**
+4. Name your preset
+5. Available in all applications
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Dialog still collapsed | Setting applies to new dialogs |
+| Some apps different | App may override system setting |
+| Options missing | Depends on printer driver |
+| Preview not showing | Expand dialog, check preview pane |
+
+## App-Specific Behavior
+
+Some apps have custom print dialogs:
+- **Adobe apps** — Own print interface
+- **Chrome** — Custom print preview
+- **Office apps** — Extended options
+
+These may not respect the system setting.
+
+## Legacy Key
+
+macOS uses two preference keys:
+
+| Key | macOS Version |
+|-----|---------------|
+| `PMPrintingExpandedStateForPrint` | 10.6-10.8 |
+| `PMPrintingExpandedStateForPrint2` | 10.9+ |
+
+Set both for maximum compatibility:
+```bash
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+```
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Note**: Takes effect immediately for new print dialogs
+- **Note**: Some applications have custom print dialogs
+- **Note**: Printer-specific options depend on driver
+
+## Source File
+
+**File**: [`defaults/dialogs/print.sh`](../../defaults/dialogs/print.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "PMPrintingExpandedStateForPrint2" "-bool" "true"
+run_defaults "NSGlobalDomain" "PMPrintingExpandedStateForPrint" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Print documents](https://support.apple.com/guide/mac-help/print-documents-mh35838/mac)
+- [Apple Support: Change print settings](https://support.apple.com/guide/mac-help/change-print-settings-mh35839/mac)

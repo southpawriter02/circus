@@ -1,0 +1,267 @@
+# Finder Spring Loading for Folders
+
+Enable automatic folder opening when dragging items over folders.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.springing.enabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Spring loading allows you to hover over a folder while dragging a file, and after a brief delay, the folder automatically opens (springs open). This enables deep navigation through folder hierarchies without releasing the dragged item. Continue hovering over subfolders to drill down further, then drop the file at the desired location. The delay before folders open can be customized.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enable spring loading** (default) — Folders open when hovering |
+| `false` | **Disable spring loading** — Must manually open folders |
+
+## Visual Demonstration
+
+### Spring Loading in Action:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Spring Loading — Dragging a File                       │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Step 1: Start dragging file                            │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  📄 Document.pdf                                │    │
+│  │     ↓ dragging...                               │    │
+│  │  📁 Projects                                    │    │
+│  │  📁 Archive                                     │    │
+│  │  📁 Downloads                                   │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Step 2: Hover over folder (wait ~0.5 sec)              │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  📄 Document.pdf                                │    │
+│  │     ↓                                           │    │
+│  │  📂 Projects  ← Highlighted, loading...         │    │
+│  │  📁 Archive     ⏳ Spring loading delay         │    │
+│  │  📁 Downloads                                   │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Step 3: Folder springs open automatically              │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  📄 Document.pdf                                │    │
+│  │     ↓                                           │    │
+│  │  📂 Projects (opened)                           │    │
+│  │  ├─ 📁 2024                                     │    │
+│  │  ├─ 📁 2025  ← Continue hovering to drill down │    │
+│  │  └─ 📁 Archive                                  │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Step 4: Drop file in desired location                  │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  📂 Projects > 2025 > January                   │    │
+│  │  ├─ 📄 Report.docx                              │    │
+│  │  ├─ 📄 Notes.txt                                │    │
+│  │  └─ 📄 Document.pdf  ← Dropped here!           │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Without Spring Loading:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Without Spring Loading                                 │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Must: 1. Open destination folder first                 │
+│        2. Navigate to subfolder                         │
+│        3. Then drag file                                │
+│                                                         │
+│  Or:   1. Start dragging                                │
+│        2. Drop on folder (moves to top level only)      │
+│        3. Open folder and move again                    │
+│                                                         │
+│  Much slower for deep folder hierarchies!               │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable spring loading for efficient file organization.
+
+### Why Enable Spring Loading?
+
+1. **Efficiency** — Navigate while dragging
+2. **Deep hierarchies** — Access nested folders easily
+3. **One-handed** — Complete operation without releasing mouse
+4. **Natural** — Intuitive drag-and-drop workflow
+5. **Time-saving** — No pre-navigation required
+
+### Why Disable Spring Loading?
+
+- Accidental folder openings
+- Prefer deliberate navigation
+- Unpredictable behavior with many folders
+- Performance concerns (older Macs)
+- Prefer keyboard navigation
+
+## Spring Loading Delay
+
+Customize how long to hover before folders open:
+
+| Delay | Value | Description |
+|-------|-------|-------------|
+| Short | `0.5` | Quick response |
+| Medium | `1.0` | Default, balanced |
+| Long | `1.5` | More deliberate |
+
+```bash
+# Set spring loading delay (in seconds)
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.5
+
+# Longer delay
+defaults write NSGlobalDomain com.apple.springing.delay -float 1.5
+```
+
+## Code Examples
+
+```bash
+# Read spring loading status
+defaults read NSGlobalDomain com.apple.springing.enabled
+
+# Enable spring loading (default)
+defaults write NSGlobalDomain com.apple.springing.enabled -bool true
+
+# Disable spring loading
+defaults write NSGlobalDomain com.apple.springing.enabled -bool false
+
+# Read spring loading delay
+defaults read NSGlobalDomain com.apple.springing.delay
+
+# Set spring loading delay (0.5 seconds)
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.5
+
+# Reset to defaults
+defaults delete NSGlobalDomain com.apple.springing.enabled
+defaults delete NSGlobalDomain com.apple.springing.delay
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Pointer Control** → **Spring-loading delay** slider
+
+Note: The slider adjusts delay when spring loading is enabled. There's no direct toggle in modern macOS; use `defaults` command.
+
+## Related Settings
+
+```bash
+# Spring loading enabled
+defaults write NSGlobalDomain com.apple.springing.enabled -bool true
+
+# Spring loading delay
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.5
+
+# Show path bar in Finder (alternative navigation)
+defaults write com.apple.finder ShowPathbar -bool true
+
+# Show status bar in Finder
+defaults write com.apple.finder ShowStatusBar -bool true
+```
+
+## Works In Multiple Contexts
+
+Spring loading works in:
+
+| Context | Behavior |
+|---------|----------|
+| Finder windows | Folders spring open |
+| Desktop folders | Folders spring open |
+| Dock folders | Items in stack spring open |
+| Sidebar locations | Expands and navigates |
+| Open/Save dialogs | Folders spring open |
+
+## Tips for Effective Use
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Spring Loading Tips                                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  💡 Pause over folder — waits for delay                 │
+│  💡 Move away to cancel — folder won't open             │
+│  💡 Keep hovering — drill through nested folders        │
+│  💡 Edge of folder icon — triggers more reliably        │
+│  💡 Escape key — cancel entire drag operation           │
+│                                                         │
+│  ⚡ Faster workflow:                                     │
+│  1. Set short delay (0.3-0.5 seconds)                   │
+│  2. Practice smooth hover-pause-continue                │
+│  3. Learn folder layouts to navigate quickly            │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Keyboard Modifier
+
+Hold **Space** while hovering to immediately spring open folder (bypasses delay):
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Space Bar Quick Spring                                 │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  1. Drag file over folder                               │
+│  2. Press and hold Space bar                            │
+│  3. Folder opens immediately (no delay)                 │
+│  4. Continue to next folder                             │
+│                                                         │
+│  Useful when you know exactly where to go               │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Folders not opening | Check spring loading enabled |
+| Opens too slowly | Reduce delay value |
+| Opens too quickly | Increase delay value |
+| Wrong folder opens | Move cursor more precisely |
+| Doesn't work in dialogs | Some apps may not support |
+
+## Alternative Navigation Methods
+
+If spring loading isn't working for you:
+
+| Method | How |
+|--------|-----|
+| Path bar | Click folders in path bar while dragging |
+| Column view | Navigate columns, drop in desired column |
+| Tabs | Open destination in tab first |
+| Copy path | Copy path, use Go → Go to Folder (⌘⇧G) |
+
+## Compatibility
+
+- **macOS**: 10.0+ (original Mac OS X feature)
+- **Note**: Works system-wide in most contexts
+- **Note**: Some third-party apps may not support
+- **Note**: Delay setting available in 10.7+
+
+## Source File
+
+**File**: [`defaults/finder/navigation.sh`](../../defaults/finder/navigation.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.springing.enabled" "-bool" "true"
+run_defaults "NSGlobalDomain" "com.apple.springing.delay" "-float" "0.5"
+```
+
+## References
+
+- [Apple Support: Organize files in folders](https://support.apple.com/guide/mac-help/organize-files-in-folders-mchlp1014/mac)
+- [Apple Support: Drag and drop items](https://support.apple.com/guide/mac-help/drag-and-drop-items-mchlp1097/mac)

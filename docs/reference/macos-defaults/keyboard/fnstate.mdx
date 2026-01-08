@@ -1,0 +1,290 @@
+# Function Keys Behavior
+
+Control whether F1-F12 keys work as standard function keys or media keys.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.keyboard.fnState` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls the default behavior of the top row function keys (F1-F12) on Apple keyboards. When disabled (default), these keys perform special functions like brightness, volume, and media controls. When enabled, pressing F1-F12 sends standard function key codes, and you must hold the `fn` key to access special features. This is essential for developers, gamers, and users of applications that rely heavily on function keys.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Media keys** (default) — F1-F12 control brightness, volume, etc. |
+| `true` | **Function keys** — F1-F12 send standard function key codes |
+
+## Visual Demonstration
+
+### Default Behavior (false - Media Keys):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Apple Keyboard — Default Function Key Behavior         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐    │
+│  │ 🔅 │ 🔆 │ ⎚  │ 🔍 │ 🎤 │ 🌙 │ ⏮  │ ⏯  │ ⏭  │ 🔇 │    │
+│  │ F1 │ F2 │ F3 │ F4 │ F5 │ F6 │ F7 │ F8 │ F9 │F10│    │
+│  └────┴────┴────┴────┴────┴────┴────┴────┴────┴────┘    │
+│                                                         │
+│  Press F1     → Brightness Down (🔅)                   │
+│  Press F2     → Brightness Up (🔆)                     │
+│  Press F3     → Mission Control (⎚)                    │
+│  Press F10    → Mute (🔇)                              │
+│                                                         │
+│  fn + F1      → Standard F1 key                         │
+│  fn + F5      → Standard F5 key (refresh in browser)    │
+│                                                         │
+│  Problem: Requires fn key for common dev operations!    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With fnState Enabled (true - Function Keys):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Apple Keyboard — Standard Function Keys Enabled        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐    │
+│  │ F1 │ F2 │ F3 │ F4 │ F5 │ F6 │ F7 │ F8 │ F9 │F10│    │
+│  │ 🔅 │ 🔆 │ ⎚  │ 🔍 │ 🎤 │ 🌙 │ ⏮  │ ⏯  │ ⏭  │ 🔇 │    │
+│  └────┴────┴────┴────┴────┴────┴────┴────┴────┴────┘    │
+│                                                         │
+│  Press F1     → Standard F1 key (help in many apps)     │
+│  Press F5     → Standard F5 key (refresh/debug)         │
+│  Press F12    → Standard F12 key (dev tools)            │
+│                                                         │
+│  fn + F1      → Brightness Down (🔅)                   │
+│  fn + F10     → Mute (🔇)                              │
+│                                                         │
+│  Better for: Development, Excel, gaming, terminals      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Common Function Key Uses:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Standard Function Key Usage                            │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Development:                                           │
+│  ─────────────────────────────────────────────────────  │
+│  F5  → Debug/Run (VS Code, Xcode, IDEs)                 │
+│  F7  → Step into (debugging)                            │
+│  F8  → Step over (debugging)                            │
+│  F9  → Toggle breakpoint                                │
+│  F10 → Step out                                         │
+│  F11 → Step into                                        │
+│  F12 → Go to definition / Dev Tools (browsers)          │
+│                                                         │
+│  Productivity:                                          │
+│  ─────────────────────────────────────────────────────  │
+│  F1  → Help in most applications                        │
+│  F2  → Rename (Finder, Excel, IDEs)                     │
+│  F3  → Find next                                        │
+│  F4  → Address bar (browsers), Close window             │
+│  F5  → Refresh (browsers)                               │
+│  F6  → Move focus                                       │
+│                                                         │
+│  Gaming:                                                │
+│  ─────────────────────────────────────────────────────  │
+│  F1-F12 → Commonly mapped to game actions               │
+│           Quick save, quick load, abilities, etc.       │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Use F1-F12 as standard function keys.
+
+### Why Enable Standard Function Keys?
+
+1. **Development** — F5 to run, F12 for dev tools
+2. **Debugging** — F7-F11 for stepping through code
+3. **Excel/Sheets** — F2 to edit cells
+4. **Gaming** — Function keys for game controls
+5. **Professional** — Standard keyboard behavior
+
+### Why Keep Media Keys (Default)?
+
+- Primarily adjust brightness/volume
+- Don't use IDEs or development tools
+- Prefer single-press media controls
+- Less technical usage
+- Gaming controller for games
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain com.apple.keyboard.fnState
+
+# Enable standard function keys
+defaults write NSGlobalDomain com.apple.keyboard.fnState -bool true
+
+# Use media keys as default (Apple default)
+defaults write NSGlobalDomain com.apple.keyboard.fnState -bool false
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain com.apple.keyboard.fnState
+```
+
+Changes take effect immediately for most applications.
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Keyboard Shortcuts** → **Function Keys**
+
+Or on older macOS:
+**System Preferences** → **Keyboard** → ☑ **Use F1, F2, etc. keys as standard function keys**
+
+## Related Keyboard Settings
+
+```bash
+# Function key behavior (this setting)
+defaults write NSGlobalDomain com.apple.keyboard.fnState -bool true
+
+# Key repeat rate (faster = lower value)
+defaults write NSGlobalDomain KeyRepeat -int 2
+
+# Delay until repeat (shorter = lower value)
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
+
+# Disable press-and-hold for accents
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+
+# Enable full keyboard access
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+```
+
+## Per-Application Override
+
+You can set function key behavior for specific apps:
+
+**System Settings** → **Keyboard** → **Keyboard Shortcuts** → **Function Keys**
+
+Add specific applications where you want the opposite behavior.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Per-App Function Key Settings                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Use F1, F2, etc. as standard function keys:            │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ + App                                           │    │
+│  │ ─────────────────────────────────────────────── │    │
+│  │ Xcode                              [Remove]     │    │
+│  │ Visual Studio Code                 [Remove]     │    │
+│  │ Terminal                           [Remove]     │    │
+│  │ Parallels Desktop                  [Remove]     │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Add apps that need standard function keys              │
+│  even if system default is media keys                   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Touch Bar Macs
+
+On MacBooks with Touch Bar (2016-2020 models):
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Touch Bar Function Key Settings                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Touch Bar normally shows contextual controls:          │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ [Esc] [App controls...         ] [Siri] [🔒]   │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Hold fn key to show function keys:                     │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ [F1][F2][F3][F4][F5][F6][F7][F8][F9][F10][F11]  │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  System Settings → Keyboard → Touch Bar shows:          │
+│  • App Controls (default)                               │
+│  • Expanded Control Strip                               │
+│  • F1, F2, etc. Keys        ← Forces function keys      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## External Keyboards
+
+For non-Apple keyboards:
+
+| Keyboard | Behavior |
+|----------|----------|
+| Apple Magic Keyboard | Respects this setting |
+| Apple wired keyboards | Respects this setting |
+| Generic USB keyboards | Usually standard F-keys already |
+| Gaming keyboards | Usually standard F-keys already |
+
+## Karabiner-Elements Alternative
+
+For more complex key remapping, consider Karabiner-Elements:
+
+- Remap fn key behavior
+- Per-app function key settings
+- Complex key combinations
+- External keyboard specific settings
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting doesn't apply | Log out and back in |
+| Some apps ignore setting | Check per-app overrides |
+| Function keys still media | Verify with `defaults read` |
+| External keyboard different | May have own fn lock |
+
+## Windows Comparison
+
+For users from Windows:
+
+| Key | Windows | Mac (fnState=true) |
+|-----|---------|-------------------|
+| F1 | Help | Help |
+| F2 | Rename | Rename |
+| F5 | Refresh | Refresh |
+| F12 | Save As / Dev Tools | Dev Tools |
+
+With fnState enabled, Mac function keys behave similarly to Windows.
+
+## Compatibility
+
+- **macOS**: 10.4+ (Tiger)
+- **Note**: Applies to Apple keyboards
+- **Note**: External keyboards may behave differently
+- **Note**: Touch Bar Macs have additional settings
+
+## Source File
+
+**File**: [`defaults/keyboard/behavior.sh`](../../defaults/keyboard/behavior.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.keyboard.fnState" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change function key behavior](https://support.apple.com/guide/mac-help/change-the-behavior-of-function-keys-mchlp2446/mac)
+- [Apple Support: Use keyboard shortcuts](https://support.apple.com/guide/mac-help/keyboard-shortcuts-on-mac-mh11193/mac)
+- [Apple Support: Use function keys on MacBook Pro with Touch Bar](https://support.apple.com/guide/mac-help/use-function-keys-mchl5a63b06e/mac)

@@ -1,0 +1,287 @@
+# Safari Status Bar
+
+Show or hide the status bar at the bottom of Safari windows.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `ShowStatusBar` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Safari displays a status bar at the bottom of browser windows. The status bar shows the destination URL when hovering over links, page loading progress, and other status information. This is valuable for security-conscious users who want to verify link destinations before clicking, and for developers debugging web applications.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show status bar** — URL preview visible at bottom |
+| `false` | **Hide status bar** (default) — Cleaner interface, no URL preview |
+
+## Visual Demonstration
+
+### Without Status Bar (default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Safari — Example Website                    ⊖ ⊕ ⊗     │
+├─────────────────────────────────────────────────────────┤
+│  ◀ ▶ │ 🔒 example.com                    │ ⊕ │ ≡     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Welcome to Example Website                             │
+│                                                         │
+│  Click here for more information                        │
+│       ↑                                                 │
+│  Hovering over link... but where does it go?            │
+│  No URL preview visible!                                │
+│                                                         │
+│                                                         │
+│                                                         │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+  ↑ No status bar - can't see link destination
+```
+
+### With Status Bar Enabled:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Safari — Example Website                    ⊖ ⊕ ⊗     │
+├─────────────────────────────────────────────────────────┤
+│  ◀ ▶ │ 🔒 example.com                    │ ⊕ │ ≡     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Welcome to Example Website                             │
+│                                                         │
+│  Click here for more information                        │
+│       ↑                                                 │
+│  Hovering over link shows destination below             │
+│                                                         │
+│                                                         │
+│                                                         │
+│                                                         │
+├─────────────────────────────────────────────────────────┤
+│  https://example.com/more-info                          │
+└─────────────────────────────────────────────────────────┘
+  ↑ Status bar shows link destination!
+```
+
+### Status Bar Information:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Status Bar Content Examples                            │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Hovering over link:                                    │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ https://example.com/destination-page            │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Page loading:                                          │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ Loading https://example.com... ████████░░░ 80%  │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  JavaScript link:                                       │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ javascript:void(0)                              │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  External link to different domain:                     │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │ https://different-site.com/page  ⚠️ Different   │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Security Implications
+
+### Why Status Bar Matters for Security:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Phishing Protection                                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Email says: "Click here to verify your Apple ID"       │
+│                                                         │
+│  Link text shows:     apple.com/verify                  │
+│  Status bar shows:    https://apple-id-verify.scam.ru   │
+│                            ↑                            │
+│                       DIFFERENT DOMAIN!                 │
+│                       Status bar reveals the truth      │
+│                                                         │
+│  Without status bar, you might click the malicious link │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Common Deceptive Patterns Revealed:
+
+| Link Text | Actual URL (shown in status bar) |
+|-----------|----------------------------------|
+| amazon.com | amazon-deals.malware.com |
+| Login to Bank | http://bank.phishing.net |
+| Download PDF | javascript:runMalware() |
+| unsubscribe | tracking-pixel.ads.com |
+
+## Our Configuration
+
+**Set to**: `true` — Show status bar for link verification.
+
+### Why Show Status Bar?
+
+1. **Security** — Verify links before clicking
+2. **Phishing protection** — Spot fake URLs
+3. **Debugging** — See actual link targets
+4. **Transparency** — Know where you're going
+5. **Professional** — Standard for developers
+
+### Why Hide Status Bar?
+
+- Maximized content area
+- Cleaner interface
+- Trust link destinations
+- Use Smart Search field preview instead
+- Mobile-like experience
+
+## Smart Search Field Alternative
+
+Safari also shows link URLs in the address bar when hovering:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Smart Search Field Preview                             │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Normal state:                                          │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  🔒 example.com                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Hovering over link:                                    │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  https://example.com/destination-page  ← Shows │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  But: Requires looking up to address bar                │
+│  Status bar: More convenient, always visible            │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari ShowStatusBar
+
+# Show status bar
+defaults write com.apple.Safari ShowStatusBar -bool true
+
+# Hide status bar (default)
+defaults write com.apple.Safari ShowStatusBar -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Safari ShowStatusBar
+```
+
+Restart Safari for changes to take effect.
+
+## UI Location
+
+**Safari** → **View** → ☑ **Show Status Bar**
+
+Keyboard shortcut: **⌘/**
+
+## Related Safari Settings
+
+```bash
+# Show status bar (this setting)
+defaults write com.apple.Safari ShowStatusBar -bool true
+
+# Show full URL in address bar
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+
+# Show favorites bar
+defaults write com.apple.Safari ShowFavoritesBar-v2 -bool true
+
+# Show tab bar
+defaults write com.apple.Safari AlwaysShowTabBar -bool true
+
+# Developer menu
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+```
+
+## Web Inspector Note
+
+For web developers, also enable:
+
+```bash
+# Enable Develop menu
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+
+# Enable Web Inspector
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
+```
+
+Then **Develop** → **Show Web Inspector** (⌥⌘I) for detailed debugging.
+
+## Status Bar vs Developer Console
+
+| Feature | Status Bar | Web Inspector |
+|---------|------------|---------------|
+| Link preview | ✓ | ✓ |
+| Load progress | ✓ | ✓ Detailed |
+| Network requests | ✗ | ✓ |
+| JavaScript debugging | ✗ | ✓ |
+| Element inspection | ✗ | ✓ |
+| Always visible | ✓ | On demand |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Status bar not appearing | Restart Safari |
+| Shows wrong URL | Page may use JavaScript redirects |
+| Too much space used | Toggle with ⌘/ as needed |
+| Want persistent setting | Use defaults write command |
+
+## Other Browsers
+
+Similar settings in other browsers:
+
+| Browser | Status Bar Setting |
+|---------|-------------------|
+| Safari | View → Show Status Bar (⌘/) |
+| Chrome | No built-in status bar (shows in address bar) |
+| Firefox | View → Toolbars → Status Bar |
+| Edge | Settings → Appearance |
+
+## Compatibility
+
+- **macOS**: 10.9+ (Mavericks)
+- **Safari**: All modern versions
+- **Note**: Requires Safari restart to apply
+- **Note**: Can toggle with View menu or ⌘/
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "ShowStatusBar" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Safari browser window](https://support.apple.com/guide/safari/browser-window-ibrwa004d901/mac)
+- [Apple Support: Avoid phishing](https://support.apple.com/guide/safari/avoid-phishing-schemes-sfri40772/mac)
+- [Apple Support: Customize Safari toolbar](https://support.apple.com/guide/safari/customize-the-toolbar-sfri17138/mac)

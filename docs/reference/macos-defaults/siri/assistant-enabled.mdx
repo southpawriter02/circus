@@ -1,0 +1,262 @@
+# Siri Enable/Disable
+
+Master toggle for Siri functionality on your Mac.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.assistant.support` |
+| **Key** | `Assistant Enabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Siri is enabled on your Mac. When disabled, Siri features are completely turned off, including voice activation, keyboard shortcuts, and Siri Suggestions throughout the system. This is the master switch for all Siri functionality.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Siri enabled** (default) — Full Siri functionality |
+| `false` | **Siri disabled** — All Siri features off |
+
+## Visual Demonstration
+
+### Siri Enabled:
+```
++-------------------------------------------------------------+
+|  Siri Active                                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Menu Bar:                                                   |
+|  +------------------------------------------------------+   |
+|  | [Apple] File Edit ... |  [Siri]  [Wi-Fi] [Battery]  |   |
+|  +------------------------------------------------------+   |
+|                              ^                               |
+|                         Siri icon visible                    |
+|                                                              |
+|  +---------------------------+                               |
+|  |      +-----------+        |                               |
+|  |      |           |        |  "Hey Siri" or click icon     |
+|  |      |   Siri    |        |  to activate                  |
+|  |      |    ()     |        |                               |
+|  |      |           |        |  Keyboard: Hold Cmd + Space   |
+|  |      +-----------+        |  (or custom shortcut)         |
+|  |                           |                               |
+|  |  "What can I help you     |                               |
+|  |   with?"                  |                               |
+|  +---------------------------+                               |
+|                                                              |
+|  Features available:                                         |
+|  * Voice commands           * App control                    |
+|  * Web searches            * System settings                 |
+|  * Siri Suggestions        * Smart reminders                 |
+|  * Calendar integration    * Messages dictation              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Siri Disabled:
+```
++-------------------------------------------------------------+
+|  Siri Disabled                                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Menu Bar:                                                   |
+|  +------------------------------------------------------+   |
+|  | [Apple] File Edit ...          [Wi-Fi] [Battery]    |   |
+|  +------------------------------------------------------+   |
+|                         ^                                    |
+|                    No Siri icon                              |
+|                                                              |
+|  System Settings > Siri & Spotlight:                         |
+|  +---------------------------+                               |
+|  |                           |                               |
+|  |  Ask Siri        [OFF]    |                               |
+|  |  ----------------         |                               |
+|  |                           |                               |
+|  |  Siri is turned off.      |                               |
+|  |  Turn on Siri to use      |                               |
+|  |  voice commands.          |                               |
+|  |                           |                               |
+|  +---------------------------+                               |
+|                                                              |
+|  Disabled features:                                          |
+|  x "Hey Siri" voice trigger                                  |
+|  x Siri keyboard shortcut                                    |
+|  x Siri Suggestions in apps                                  |
+|  x Siri Suggestions in Spotlight                             |
+|  x Voice commands                                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Security & Privacy Implications
+
+### Privacy Considerations
+
+| Concern | With Siri Enabled | With Siri Disabled |
+|---------|-------------------|-------------------|
+| Voice data sent to Apple | Yes | No |
+| Usage patterns analyzed | Yes | No |
+| Location data used | Optional | No |
+| Contacts accessed | If permitted | No |
+| Always-on microphone | Optional (Hey Siri) | No |
+
+### Why Disable Siri?
+
+1. **Privacy** — No voice data sent to Apple servers
+2. **Security** — Reduce attack surface
+3. **Corporate** — Compliance requirements
+4. **Focus** — Eliminate accidental activations
+5. **Resources** — Slight reduction in background processes
+
+### Why Keep Siri Enabled?
+
+- Hands-free operation
+- Quick system control
+- Accessibility benefits
+- Integration with HomeKit
+- Convenience features
+
+## Our Configuration
+
+**Set to**: `false` — Disable Siri for privacy-focused configuration.
+
+This setting prioritizes privacy by preventing voice data from being sent to Apple servers. Users who find Siri valuable for productivity can enable it.
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.assistant.support "Assistant Enabled"
+
+# Disable Siri
+defaults write com.apple.assistant.support "Assistant Enabled" -bool false
+
+# Enable Siri
+defaults write com.apple.assistant.support "Assistant Enabled" -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.assistant.support "Assistant Enabled"
+```
+
+Changes require logout or restart to take full effect.
+
+## UI Location
+
+**System Settings** > **Siri & Spotlight** > **Ask Siri** toggle
+
+```
++-------------------------------------------------------------+
+|  System Settings                                             |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------+  +--------------------------------+    |
+|  | [ ] General      |  |  Siri & Spotlight              |    |
+|  | [ ] Appearance   |  |  ================================   |
+|  | [ ] Accessibility|  |                                |    |
+|  | [*] Siri &       |  |  Ask Siri                      |    |
+|  |     Spotlight    |  |  +------------------------+    |    |
+|  | [ ] Privacy      |  |  | [Toggle Switch]  OFF   |    |    |
+|  | [ ] Desktop &    |  |  +------------------------+    |    |
+|  |     Dock         |  |         ^                      |    |
+|  +------------------+  |    Master toggle               |    |
+|                        |                                |    |
+|                        |  Keyboard shortcut:            |    |
+|                        |  [Hold Command Space]          |    |
+|                        |                                |    |
+|                        |  Language: [English (US)]      |    |
+|                        |                                |    |
+|                        +--------------------------------+    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Master Siri toggle (this setting)
+defaults write com.apple.assistant.support "Assistant Enabled" -bool false
+
+# Siri Suggestions in apps
+defaults write com.apple.Siri SiriSuggestionsEnabled -bool false
+
+# Siri Suggestions in Spotlight
+defaults write com.apple.Siri ShowSiriSuggestionsInSpotlight -bool false
+
+# Type to Siri
+defaults write com.apple.Siri TypeToSiriEnabled -bool true
+
+# Siri voice feedback
+defaults write com.apple.Siri VoiceFeedback -string "Off"
+```
+
+## Siri Components Affected
+
+When Siri is disabled:
+
+| Component | Status |
+|-----------|--------|
+| Siri voice assistant | Disabled |
+| "Hey Siri" | Disabled |
+| Siri Shortcuts | Limited |
+| Siri Suggestions | Disabled |
+| Spotlight Siri results | Disabled |
+| Dictation | Still available separately |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Siri won't enable | Check internet connection, Apple ID signed in |
+| Changes not applying | Logout and log back in |
+| Siri still appears | Run `killall Siri` after changing |
+| "Hey Siri" not working | Enable separately in System Settings |
+| Shortcuts still work | Shortcuts app functions independently |
+
+## Dictation vs Siri
+
+Dictation remains available even when Siri is disabled:
+
+```
++-------------------------------------------------------------+
+|  Dictation (Independent of Siri)                            |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Keyboard > Dictation                      |
+|                                                              |
+|  +---------------------------+                               |
+|  |  Dictation      [ON]      |  Can be enabled even with    |
+|  |                           |  Siri disabled                |
+|  |  Language: English        |                               |
+|  |  Shortcut: Press Fn twice |  Uses on-device or Apple     |
+|  |                           |  servers for processing       |
+|  +---------------------------+                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra, when Siri was introduced to Mac)
+- **Note**: Requires logout for changes to take effect
+- **Note**: Some features may require Apple ID
+- **Note**: "Hey Siri" requires supported hardware
+
+## Source File
+
+**File**: [`defaults/system/siri.sh`](../../defaults/system/siri.sh)
+
+```bash
+run_defaults "com.apple.assistant.support" "Assistant Enabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Siri on your Mac](https://support.apple.com/guide/mac-help/mchl6b029310/mac)
+- [Apple Support: Siri & Privacy](https://support.apple.com/guide/mac-help/siri-and-privacy-mchl10bafcd0/mac)
+- [Apple Support: Siri suggestions](https://support.apple.com/guide/mac-help/mchlc88c4822/mac)

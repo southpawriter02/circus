@@ -1,0 +1,272 @@
+# Double-Click Speed Threshold
+
+Adjust the time interval recognized as a double-click.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.mouse.doubleClickThreshold` |
+| **Type** | Float (seconds) |
+| **Default Value** | `0.5` |
+| **Our Setting** | `0.5` |
+
+## Description
+
+Controls the maximum time interval between two clicks for them to be recognized as a double-click. A shorter threshold requires faster clicking, while a longer threshold allows more time between clicks. This is particularly important for accessibility, allowing users with motor control difficulties to perform double-clicks at a comfortable pace.
+
+## Values
+
+| Value | Speed | Description |
+|-------|-------|-------------|
+| `0.2` | Fast | Requires quick double-clicks |
+| `0.5` | Medium | Default, balanced |
+| `0.75` | Slow | More time between clicks |
+| `1.0` | Very Slow | Extended time for accessibility |
+| `1.5` | Slowest | Maximum time between clicks |
+
+## Visual Demonstration
+
+### Double-Click Timing:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Double-Click Threshold Visualization                   │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Threshold = 0.2s (Fast):                               │
+│  Click ──────────────────────────────────────────────>  │
+│  │     │  Must click within 0.2s                        │
+│  ├─────┤                                                │
+│  1st   2nd = Double-click ✓                             │
+│                                                         │
+│  Click ──────────────────────────────────────────────>  │
+│  │           │  Too slow (>0.2s)                        │
+│  ├───────────┤                                          │
+│  1st         2nd = Two single clicks ✗                  │
+│                                                         │
+│  Threshold = 1.0s (Slow):                               │
+│  Click ──────────────────────────────────────────────>  │
+│  │                          │  Still within 1.0s        │
+│  ├──────────────────────────┤                           │
+│  1st                        2nd = Double-click ✓        │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Speed Comparison:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Double-Click Speed Settings                            │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  UI Slider Position:                                    │
+│                                                         │
+│  Slow ◄━━━━━━━━━━━━━━●━━━━━━━━━━━━━━━► Fast             │
+│           ↑                                             │
+│       Default (0.5s)                                    │
+│                                                         │
+│  Value     Description           Best For               │
+│  ───────────────────────────────────────────────        │
+│  0.2s      Very fast             Power users            │
+│  0.5s      Normal (default)      Most users             │
+│  0.75s     Slower                General accessibility  │
+│  1.0s      Slow                  Motor impairments      │
+│  1.5s      Very slow             Severe motor issues    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### What Double-Click Does:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Common Double-Click Actions                            │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  In Finder:                                             │
+│  📁 Double-click folder    → Opens folder               │
+│  📄 Double-click file      → Opens file in default app  │
+│  📝 Double-click filename  → Rename mode                │
+│                                                         │
+│  In Text Editors:                                       │
+│  📝 Double-click word      → Selects word               │
+│  📝 Triple-click line      → Selects line/paragraph     │
+│                                                         │
+│  On Desktop:                                            │
+│  💾 Double-click drive     → Opens drive                │
+│  🗑️ Double-click Trash     → Opens Trash                │
+│                                                         │
+│  In Dock:                                               │
+│  🔲 Double-click app icon  → Already running → show     │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `0.5` — Standard double-click speed (default).
+
+### Why Use Faster Threshold?
+
+1. **Efficiency** — Quicker file access
+2. **Precision** — Reduces accidental double-clicks
+3. **Power users** — Accustomed to fast clicking
+4. **Reduces latency** — Actions execute sooner
+
+### Why Use Slower Threshold?
+
+1. **Accessibility** — Motor control difficulties
+2. **Arthritis** — Painful rapid clicking
+3. **Tremors** — Parkinson's or essential tremor
+4. **Age-related** — Slower motor response
+5. **Injury recovery** — Temporary limitation
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain com.apple.mouse.doubleClickThreshold
+
+# Set to default (0.5 seconds)
+defaults write NSGlobalDomain com.apple.mouse.doubleClickThreshold -float 0.5
+
+# Set to slow (1.0 seconds)
+defaults write NSGlobalDomain com.apple.mouse.doubleClickThreshold -float 1.0
+
+# Set to fast (0.25 seconds)
+defaults write NSGlobalDomain com.apple.mouse.doubleClickThreshold -float 0.25
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain com.apple.mouse.doubleClickThreshold
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Pointer Control** → **Double-click speed**
+
+Slider ranges from Slow to Fast.
+
+Alternative location:
+**System Settings** → **Mouse** → **Double-Click Speed** (if mouse connected)
+
+## Related Mouse Settings
+
+```bash
+# Double-click threshold (this setting)
+defaults write NSGlobalDomain com.apple.mouse.doubleClickThreshold -float 0.5
+
+# Mouse tracking speed (0.0 to 3.0)
+defaults write NSGlobalDomain com.apple.mouse.scaling -float 1.0
+
+# Mouse scroll direction (natural scrolling)
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+
+# Mouse button click behavior
+defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+
+# Spring-loading delay (for dragging over folders)
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.5
+```
+
+## Alternative: Single-Click to Open
+
+If double-clicking is difficult, consider enabling single-click to open:
+
+```bash
+# Single-click to open in Finder (like web browser links)
+# This option is available in:
+# Finder → Settings → General → ☑ "Open folders in tabs instead of new windows"
+# Combined with column view for efficient navigation
+```
+
+## Accessibility Alternatives
+
+| Feature | Purpose |
+|---------|---------|
+| Double-click threshold | More time between clicks |
+| Slow Keys | Ignore brief keystrokes |
+| Sticky Keys | One-finger modifier keys |
+| Mouse Keys | Use keyboard as mouse |
+| Dwell Control | Click by hovering |
+
+```bash
+# Enable Slow Keys (ignore brief keystrokes)
+defaults write com.apple.universalaccess slowKey -bool true
+
+# Enable Sticky Keys (modifier keys stay active)
+defaults write com.apple.universalaccess stickyKey -bool true
+```
+
+## Testing Your Settings
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Test Double-Click Speed                                │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  1. Open System Settings → Accessibility                │
+│  2. Go to Pointer Control                               │
+│  3. Adjust Double-click speed slider                    │
+│  4. Test by double-clicking the folder icon below       │
+│     the slider — it should open/close on success        │
+│                                                         │
+│  ┌──────────────────┐                                   │
+│  │                  │                                   │
+│  │       📁        │ ← Double-click me to test         │
+│  │    Test Icon    │                                   │
+│  │                  │                                   │
+│  └──────────────────┘                                   │
+│                                                         │
+│  Icon should open/close if double-click registered     │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Double-click doesn't register | Increase threshold (make slower) |
+| Accidental double-clicks | Decrease threshold (make faster) |
+| Clicks feel delayed | Threshold may be too long |
+| Setting not saving | Log out and back in |
+| Different in some apps | Some apps may override system settings |
+
+## Third-Party Mouse Software
+
+Some mice have their own software (Logitech Options, Razer Synapse) that may:
+- Override system double-click settings
+- Provide their own double-click speed control
+- Need separate configuration
+
+Check manufacturer software if system settings don't seem to apply.
+
+## Trackpad vs Mouse
+
+The double-click threshold affects:
+- ✓ External mice
+- ✓ Built-in trackpad
+- ✓ External trackpad
+
+Same setting applies to all pointing devices.
+
+## Compatibility
+
+- **macOS**: 10.0+ (original Mac OS X feature)
+- **Note**: Universal setting for all pointing devices
+- **Note**: May require logout to fully apply
+- **Note**: Works with assistive devices
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../defaults/accessibility/pointer.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.mouse.doubleClickThreshold" "-float" "0.5"
+```
+
+## References
+
+- [Apple Support: Adjust pointer and click settings](https://support.apple.com/guide/mac-help/change-accessibility-preferences-mchla7a6c0a1/mac)
+- [Apple Support: Mouse preferences](https://support.apple.com/guide/mac-help/mouse-preferences-mchlp1046/mac)
+- [Apple Accessibility: Motor](https://www.apple.com/accessibility/mac/motor/)

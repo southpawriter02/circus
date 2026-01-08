@@ -1,0 +1,264 @@
+# Mission Control Automatic Space Rearrangement
+
+Control whether Spaces automatically reorder based on recent use.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `mru-spaces` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Mission Control automatically rearranges your Spaces (virtual desktops) based on which ones you've used most recently. When enabled, frequently used Spaces move to the left. When disabled, Spaces maintain their original order, providing a consistent and predictable workspace layout.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-rearrange** (default) — Spaces reorder by recent use |
+| `false` | **Fixed order** — Spaces stay in original position |
+
+## Visual Demonstration
+
+### With MRU Spaces Enabled (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Mission Control — Automatic Reordering                 │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Initial Layout:                                        │
+│  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐               │
+│  │  1  │ │  2  │ │  3  │ │  4  │ │  5  │               │
+│  │Mail │ │Code │ │Web  │ │Chat │ │Music│               │
+│  └─────┘ └─────┘ └─────┘ └─────┘ └─────┘               │
+│                                                         │
+│  After using Space 4 (Chat) heavily:                    │
+│  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐               │
+│  │  4  │ │  1  │ │  2  │ │  3  │ │  5  │               │
+│  │Chat │ │Mail │ │Code │ │Web  │ │Music│               │
+│  └─────┘ └─────┘ └─────┘ └─────┘ └─────┘               │
+│     ↑                                                   │
+│  Moved to front (most recently used)                    │
+│                                                         │
+│  After switching to Space 3 (Web):                      │
+│  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐               │
+│  │  3  │ │  4  │ │  1  │ │  2  │ │  5  │               │
+│  │Web  │ │Chat │ │Mail │ │Code │ │Music│               │
+│  └─────┘ └─────┘ └─────┘ └─────┘ └─────┘               │
+│     ↑                                                   │
+│  Web now first, others shifted                          │
+│                                                         │
+│  ⚠️ Problem: Spaces keep moving! Hard to build          │
+│     muscle memory for ⌃1, ⌃2, ⌃3 shortcuts             │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With MRU Spaces Disabled (false):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Mission Control — Fixed Order                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Your Layout (Always):                                  │
+│  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐               │
+│  │  1  │ │  2  │ │  3  │ │  4  │ │  5  │               │
+│  │Mail │ │Code │ │Web  │ │Chat │ │Music│               │
+│  └─────┘ └─────┘ └─────┘ └─────┘ └─────┘               │
+│                                                         │
+│  No matter which Spaces you use:                        │
+│  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐               │
+│  │  1  │ │  2  │ │  3  │ │  4  │ │  5  │               │
+│  │Mail │ │Code │ │Web  │ │Chat │ │Music│               │
+│  └─────┘ └─────┘ └─────┘ └─────┘ └─────┘               │
+│                                                         │
+│  ✓ Predictable: ⌃1 always = Mail                       │
+│  ✓ Consistent: ⌃2 always = Code                        │
+│  ✓ Reliable: ⌃3 always = Web                           │
+│                                                         │
+│  Build muscle memory with fixed positions!              │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Keyboard Shortcut Impact:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Impact on Keyboard Navigation                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  WITH MRU (true):                                       │
+│  ─────────────────────────────────────────────────────  │
+│  ⌃1 = ??? (whatever was used most recently)            │
+│  ⌃2 = ??? (second most recent)                         │
+│  ⌃3 = ??? (unpredictable)                              │
+│                                                         │
+│  WITHOUT MRU (false):                                   │
+│  ─────────────────────────────────────────────────────  │
+│  ⌃1 = Space 1 (always)                                 │
+│  ⌃2 = Space 2 (always)                                 │
+│  ⌃3 = Space 3 (always)                                 │
+│                                                         │
+│  Keyboard shortcuts become reliable!                    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Keep Spaces in fixed order for predictability.
+
+### Why Disable MRU Spaces?
+
+1. **Predictability** — Always know where each Space is
+2. **Muscle memory** — ⌃1, ⌃2, ⌃3 work consistently
+3. **Organization** — Intentional workspace layout
+4. **Less confusion** — No surprise rearrangements
+5. **Professional** — Stable multi-monitor setup
+
+### Why Enable MRU Spaces?
+
+- Prefer adaptive organization
+- Don't use keyboard shortcuts for Spaces
+- Want most-used Spaces easily accessible
+- Default macOS behavior
+- Fewer Spaces to manage (2-3)
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dock mru-spaces
+
+# Disable auto-rearrangement (fixed order)
+defaults write com.apple.dock mru-spaces -bool false
+
+# Enable auto-rearrangement (default)
+defaults write com.apple.dock mru-spaces -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.dock mru-spaces
+
+# Apply changes
+killall Dock
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Mission Control** → ☐ **Automatically rearrange Spaces based on most recent use**
+
+Uncheck to disable MRU behavior.
+
+## Related Mission Control Settings
+
+```bash
+# Disable MRU Spaces (this setting)
+defaults write com.apple.dock mru-spaces -bool false
+
+# Group windows by application
+defaults write com.apple.dock expose-group-apps -bool true
+
+# Displays have separate Spaces
+defaults write com.apple.spaces spans-displays -bool false
+
+# Dashboard as Space (legacy)
+defaults write com.apple.dock dashboard-in-overlay -bool true
+
+# Hot corners for Mission Control
+# (configured via System Settings)
+
+# Apply changes
+killall Dock
+```
+
+## Keyboard Shortcuts for Spaces
+
+With fixed Space order, these become reliable:
+
+| Shortcut | Action |
+|----------|--------|
+| ⌃1 | Switch to Space 1 |
+| ⌃2 | Switch to Space 2 |
+| ⌃3 | Switch to Space 3 |
+| ⌃← | Move to left Space |
+| ⌃→ | Move to right Space |
+| ⌃↑ | Mission Control |
+| F3 | Mission Control (on some keyboards) |
+
+Enable in **System Settings** → **Keyboard** → **Keyboard Shortcuts** → **Mission Control**
+
+## Workspace Organization Strategy
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Recommended Fixed Space Layout                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Space 1: Communication                                 │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  📧 Mail  💬 Messages  📱 Slack                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Space 2: Development                                   │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  💻 VS Code  🖥️ Terminal  📁 Finder            │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Space 3: Research                                      │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  🌐 Safari  📝 Notes  📚 Preview                │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Space 4: Media/Personal                                │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  🎵 Music  📺 TV  🎮 Games                      │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  With MRU disabled: ⌃2 always = Development            │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Spaces still rearranging | Run `killall Dock` after setting |
+| Setting resets | Check for profile/MDM overrides |
+| Can't see Spaces bar | Swipe up with 3-4 fingers or press ⌃↑ |
+| Shortcuts don't work | Enable in Keyboard Shortcuts settings |
+| Space order wrong | Drag to reorder in Mission Control |
+
+## Multi-Monitor Behavior
+
+| Setting | Effect |
+|---------|--------|
+| MRU off + Separate Spaces | Each monitor has fixed Space order |
+| MRU off + Spans Displays | One set of fixed Spaces across monitors |
+| MRU on + any config | Spaces reorder on all monitors |
+
+## Compatibility
+
+- **macOS**: 10.9+ (Mavericks)
+- **Note**: Requires `killall Dock` to apply
+- **Note**: Also available via System Settings GUI
+- **Note**: Affects all connected displays
+
+## Source File
+
+**File**: [`defaults/dock/mission_control.sh`](../../defaults/dock/mission_control.sh)
+
+```bash
+run_defaults "com.apple.dock" "mru-spaces" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Mission Control](https://support.apple.com/guide/mac-help/work-in-multiple-spaces-mh14112/mac)
+- [Apple Support: Keyboard shortcuts for Spaces](https://support.apple.com/guide/mac-help/keyboard-shortcuts-for-spaces-mchlp2315/mac)
+- [Apple Support: Change Mission Control settings](https://support.apple.com/guide/mac-help/change-mission-control-settings-mh35886/mac)

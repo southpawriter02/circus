@@ -1,0 +1,281 @@
+# Button Shapes Accessibility
+
+Show button outlines and shapes for better visibility.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `showButtonShapes` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Button Shapes adds visual outlines and underlines to buttons and interactive elements throughout macOS, making it easier to identify clickable items. This is particularly helpful for users who have difficulty distinguishing buttons from static text, or for those with visual impairments who benefit from clearer visual boundaries around interactive elements.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show button shapes** — Outlines visible on buttons |
+| `false` | **Hide button shapes** (default) — Standard appearance |
+
+## Visual Demonstration
+
+### Without Button Shapes (default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Standard macOS UI                                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Dialog Box:                                            │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │  Do you want to save changes before closing?    │    │
+│  │                                                 │    │
+│  │                                                 │    │
+│  │         Don't Save     Cancel     Save          │    │
+│  │              ↑            ↑          ↑          │    │
+│  │         Just text,  appears as  normal text     │    │
+│  │         hard to identify as buttons             │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Toolbar:                                               │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Back  Forward  Share  ...                      │    │
+│  │    ↑       ↑       ↑                            │    │
+│  │  No visual indication these are clickable       │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With Button Shapes Enabled:
+```
+┌─────────────────────────────────────────────────────────┐
+│  macOS UI with Button Shapes                            │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Dialog Box:                                            │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │  Do you want to save changes before closing?    │    │
+│  │                                                 │    │
+│  │                                                 │    │
+│  │      ┌────────────┐ ┌────────┐ ┌────────┐       │    │
+│  │      │ Don't Save │ │ Cancel │ │  Save  │       │    │
+│  │      └────────────┘ └────────┘ └────────┘       │    │
+│  │           ↑                         ↑           │    │
+│  │     Clear button    Background fill indicates   │    │
+│  │     boundaries      primary/default action      │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Links in Text:                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │  Click here for more information.               │    │
+│  │        ────                                     │    │
+│  │         ↑ Underlined to show it's a link        │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### System-Wide Examples:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Button Shapes Throughout macOS                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  System Settings:                                       │
+│  ┌────────────────────────────────────────────────┐     │
+│  │  General                                       │     │
+│  │  ┌──────────────────┐                          │     │
+│  │  │  About This Mac  │ ← Shaped button          │     │
+│  │  └──────────────────┘                          │     │
+│  │  Software Update...                            │     │
+│  │  ─────────────────── ← Underlined link         │     │
+│  └────────────────────────────────────────────────┘     │
+│                                                         │
+│  Finder Toolbar:                                        │
+│  ┌────────────────────────────────────────────────┐     │
+│  │  ┌──────┐ ┌─────────┐ ┌───────┐ ┌────────────┐│     │
+│  │  │ Back │ │ Forward │ │ Share │ │   Action   ││     │
+│  │  └──────┘ └─────────┘ └───────┘ └────────────┘│     │
+│  │     ↑ All buttons clearly outlined             │     │
+│  └────────────────────────────────────────────────┘     │
+│                                                         │
+│  Safari Preferences:                                    │
+│  ┌────────────────────────────────────────────────┐     │
+│  │  Learn more about Safari features               │     │
+│  │  ───────────────────────────────                │     │
+│  │         ↑ Links are underlined                  │     │
+│  └────────────────────────────────────────────────┘     │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Standard appearance without extra button outlines.
+
+### Why Enable Button Shapes?
+
+1. **Accessibility** — Easier to identify clickable items
+2. **Visual impairments** — Clearer boundaries
+3. **Cognitive** — Reduces guessing what's interactive
+4. **Low vision** — Better contrast for controls
+5. **Consistency** — All buttons uniformly identified
+
+### Why Disable Button Shapes?
+
+- Prefer clean aesthetic
+- Familiar with macOS UI
+- No visual accessibility needs
+- Extra outlines feel cluttered
+- Default system appearance
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess showButtonShapes
+
+# Enable button shapes
+defaults write com.apple.universalaccess showButtonShapes -bool true
+
+# Disable button shapes (default)
+defaults write com.apple.universalaccess showButtonShapes -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess showButtonShapes
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Display** → ☑ **Show Button Shapes**
+
+Alternatively:
+**System Settings** → **Accessibility** → **Display** → **Content** section
+
+## Related Display Accessibility Settings
+
+```bash
+# Show button shapes (this setting)
+defaults write com.apple.universalaccess showButtonShapes -bool true
+
+# Differentiate without color
+defaults write com.apple.universalaccess differentiateWithoutColor -bool true
+
+# Increase contrast
+defaults write com.apple.universalaccess increaseContrast -bool true
+
+# Reduce transparency
+defaults write com.apple.universalaccess reduceTransparency -bool true
+
+# Reduce motion
+defaults write com.apple.universalaccess reduceMotion -bool true
+```
+
+## What Elements Are Affected
+
+| Element Type | With Button Shapes |
+|--------------|-------------------|
+| Text buttons | Outlined/underlined |
+| Toolbar buttons | Outlined |
+| Links in text | Underlined |
+| Toggle switches | More visible boundaries |
+| Segmented controls | Clearer segments |
+| Pop-up menus | Visible borders |
+
+## Doesn't Affect
+
+| Element | Reason |
+|---------|--------|
+| Already-styled buttons | Already have visible borders |
+| Images | Not interactive text |
+| Standard icons | Icon visibility unchanged |
+| Third-party apps | May not respect system settings |
+
+## Accessibility Shortcut
+
+Set up quick toggle via Accessibility Shortcut:
+
+**System Settings** → **Accessibility** → **Shortcut**
+
+Then press **⌥⌘F5** to access Accessibility options panel.
+
+Or triple-click Touch ID button (if configured).
+
+## Design Implications
+
+For developers: When Button Shapes is enabled:
+- NSButton text buttons get underlines/outlines
+- Links in NSTextView get underlines
+- Toolbar items get visible backgrounds
+- Test your app with this setting enabled
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Developer Testing                                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Test your app with Button Shapes enabled to ensure:   │
+│                                                         │
+│  ✓ All interactive elements are identifiable           │
+│  ✓ Underlines don't overlap text                       │
+│  ✓ Outlines don't break layout                         │
+│  ✓ Buttons remain visually balanced                    │
+│                                                         │
+│  Apple HIG: Don't rely solely on color to indicate     │
+│  interactive elements.                                  │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Shapes not showing | Log out and back in |
+| Some apps unaffected | Third-party apps may not support |
+| Shapes too subtle | Combine with Increase Contrast |
+| Too many outlines | Normal behavior, may disable |
+
+## Combine With Other Settings
+
+For maximum button visibility:
+
+```bash
+# Full accessibility combo for button visibility
+defaults write com.apple.universalaccess showButtonShapes -bool true
+defaults write com.apple.universalaccess increaseContrast -bool true
+defaults write com.apple.universalaccess differentiateWithoutColor -bool true
+```
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Note**: Primarily affects Apple apps
+- **Note**: Third-party app support varies
+- **Note**: May require logout to fully apply
+
+## Source File
+
+**File**: [`defaults/accessibility/display.sh`](../../defaults/accessibility/display.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "showButtonShapes" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Change Display Accessibility settings](https://support.apple.com/guide/mac-help/change-display-accessibility-preferences-mchlp2298/mac)
+- [Apple Accessibility: Vision features](https://www.apple.com/accessibility/vision/)
+- [Apple HIG: Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility)

@@ -1,0 +1,299 @@
+# Stage Manager Window Grouping Behavior
+
+Control how windows are grouped in Stage Manager.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.WindowManager` |
+| **Key** | `AppWindowGroupingBehavior` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `0` |
+
+## Description
+
+Controls how Stage Manager groups windows when organizing your desktop. By default, all windows from the same application are grouped together. Alternatively, each window can be treated as a separate item in the strip, allowing for more granular control.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **All at Once** (default) — All windows of an app grouped together |
+| `1` | **One at a Time** — Each window treated separately |
+
+## Visual Demonstration
+
+### All at Once (Value: 0):
+```
++-------------------------------------------------------------+
+|  Stage Manager - Group by App (Default)                      |
++-------------------------------------------------------------+
+|                                                              |
+|  STRIP          MAIN WORKSPACE                               |
+|  +------+      +------------------------------------------+  |
+|  |      |      |                                          |  |
+|  |Safari|      |  VS Code Window 1    VS Code Window 2    |  |
+|  | (3)  | <--  |  +---------------+  +---------------+    |  |
+|  |      |  3   |  |               |  |               |    |  |
+|  +------+ win  |  | main.js       |  | style.css     |    |  |
+|  |      |      |  |               |  |               |    |  |
+|  |Finder|      |  +---------------+  +---------------+    |  |
+|  | (2)  |      |                                          |  |
+|  |      |      |  All VS Code windows visible together    |  |
+|  +------+      +------------------------------------------+  |
+|  |      |                                                    |
+|  |Notes |      Click "Safari (3)" in strip = ALL 3 Safari   |
+|  | (1)  |      windows appear in workspace together         |
+|  |      |                                                    |
+|  +------+                                                    |
+|                                                              |
+|  Badge shows window count per app                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### One at a Time (Value: 1):
+```
++-------------------------------------------------------------+
+|  Stage Manager - Individual Windows                          |
++-------------------------------------------------------------+
+|                                                              |
+|  STRIP          MAIN WORKSPACE                               |
+|  +------+      +------------------------------------------+  |
+|  |      |      |                                          |  |
+|  |Safari|      |  VS Code - main.js                       |  |
+|  |Tab 1 |      |  +-----------------------------------+   |  |
+|  |      |      |  |                                   |   |  |
+|  +------+      |  |  function hello() {               |   |  |
+|  |      |      |  |    console.log("Hello");          |   |  |
+|  |Safari|      |  |  }                                |   |  |
+|  |Tab 2 |      |  |                                   |   |  |
+|  |      |      |  +-----------------------------------+   |  |
+|  +------+      |                                          |  |
+|  |      |      |  Only this single window visible         |  |
+|  |VSCode|      +------------------------------------------+  |
+|  |main  |                                                    |
+|  |      |      Each window is a separate strip item          |
+|  +------+                                                    |
+|  |      |      Click any item = only that ONE window        |
+|  |VSCode|      appears, not all app windows                  |
+|  |style |                                                    |
+|  +------+                                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison Workflow:
+```
++-------------------------------------------------------------+
+|  Workflow Comparison                                         |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO: Working with 3 VS Code windows + 2 Safari windows|
+|                                                              |
+|  ALL AT ONCE (0):                                           |
+|  +------+                                                    |
+|  |VSCode|  Click --> See ALL 3 VS Code windows together     |
+|  | (3)  |           Side by side or stacked                 |
+|  +------+                                                    |
+|  |Safari|  Click --> See ALL 2 Safari windows together      |
+|  | (2)  |           Both tabs visible                       |
+|  +------+                                                    |
+|  2 items in strip total                                      |
+|                                                              |
+|  ONE AT A TIME (1):                                         |
+|  +------+                                                    |
+|  |VSCode|  Click --> See only main.js                       |
+|  |main  |                                                    |
+|  +------+                                                    |
+|  |VSCode|  Click --> See only style.css                     |
+|  |style |                                                    |
+|  +------+                                                    |
+|  |VSCode|  Click --> See only index.html                    |
+|  |index |                                                    |
+|  +------+                                                    |
+|  |Safari|  Click --> See only first tab                     |
+|  |Tab 1 |                                                    |
+|  +------+                                                    |
+|  |Safari|  Click --> See only second tab                    |
+|  |Tab 2 |                                                    |
+|  +------+                                                    |
+|  5 items in strip total                                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `0` — Group all windows by application.
+
+### Why Group by App (0)?
+
+1. **Organization** — Related windows stay together
+2. **Context** — See all windows for a task
+3. **Cleaner strip** — Fewer items to navigate
+4. **Natural** — Matches how we think about apps
+5. **Efficiency** — Quick access to all app windows
+
+### Why Individual Windows (1)?
+
+- Fine-grained control
+- Work with specific windows only
+- Separate windows by project
+- Don't need all app windows at once
+- Prefer more strip items
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.WindowManager AppWindowGroupingBehavior
+
+# Group by app (all at once - default)
+defaults write com.apple.WindowManager AppWindowGroupingBehavior -int 0
+
+# Individual windows (one at a time)
+defaults write com.apple.WindowManager AppWindowGroupingBehavior -int 1
+
+# Delete (reset to default)
+defaults delete com.apple.WindowManager AppWindowGroupingBehavior
+```
+
+Changes take effect when Stage Manager is restarted.
+
+## UI Location
+
+**System Settings** > **Desktop & Dock** > **Stage Manager** > **Customize**
+
+```
++-------------------------------------------------------------+
+|  Stage Manager Customization                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Desktop & Dock > Stage Manager            |
+|                                                              |
+|  Click "Customize..." button:                                |
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Stage Manager Options                           |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Show windows from an application                |       |
+|  |                                                  |       |
+|  |  (*) All at Once                                 |       |
+|  |      Show all windows from an app together       |       |
+|  |                                                  |       |
+|  |  ( ) One at a Time                               |       |
+|  |      Show one window at a time                   |       |
+|  |                                                  |       |
+|  |  ------------------------------------------------|       |
+|  |                                                  |       |
+|  |  Desktop Items                                   |       |
+|  |  [ ] Show items on desktop                       |       |
+|  |                                                  |       |
+|  |  Recent Apps                                     |       |
+|  |  [*] Show recent apps                            |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Window grouping behavior (this setting)
+defaults write com.apple.WindowManager AppWindowGroupingBehavior -int 0
+
+# Enable Stage Manager
+defaults write com.apple.WindowManager GloballyEnabled -bool true
+
+# Show recent apps strip
+defaults write com.apple.WindowManager AutoHide -bool false
+
+# Hide desktop items
+defaults write com.apple.WindowManager HideDesktop -bool false
+
+# Hide widgets
+defaults write com.apple.WindowManager StandardHideWidgets -bool false
+```
+
+## Use Cases
+
+| Scenario | Recommended Setting |
+|----------|---------------------|
+| Development (multiple windows) | 0 (All at Once) |
+| Research (many browser tabs) | 1 (One at a Time) |
+| Creative work (multiple projects) | 1 (One at a Time) |
+| Document editing | 0 (All at Once) |
+| Video conferencing + notes | 0 (All at Once) |
+| Multi-project workflow | 1 (One at a Time) |
+
+## Creating Custom Groups
+
+Regardless of this setting, you can create custom window groups:
+
+```
++-------------------------------------------------------------+
+|  Creating Custom Groups                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Have main window visible                                 |
+|     +------------------------------------------+            |
+|     |  VS Code                                 |            |
+|     +------------------------------------------+            |
+|                                                              |
+|  2. Drag window from strip onto main workspace              |
+|                                                              |
+|     +------+    Drag Terminal                               |
+|     |      |    onto workspace                              |
+|     |Term  | ------>                                        |
+|     |      |                                                 |
+|     +------+                                                 |
+|                                                              |
+|  3. Result: Custom group created                            |
+|                                                              |
+|     +------+    +------------------------------------------+|
+|     |      |    |  VS Code        |  Terminal             ||
+|     |Safari|    |  +-----------+  |  +-----------+        ||
+|     |      |    |  |           |  |  |           |        ||
+|     +------+    |  |           |  |  |           |        ||
+|                 |  +-----------+  |  +-----------+        ||
+|                 +------------------------------------------+|
+|                                                              |
+|  Custom groups persist until you break them apart           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Restart Stage Manager (toggle off/on) |
+| Too many items in strip | Switch to All at Once (0) |
+| Can't find specific window | Switch to One at a Time (1) |
+| Custom groups not working | Drag windows onto main workspace |
+| Strip is cluttered | Use All at Once or create groups |
+
+## Compatibility
+
+- **macOS**: 13.0+ (Ventura)
+- **Note**: Only applies when Stage Manager is enabled
+- **Note**: Custom groups override this setting
+- **Note**: Changes require Stage Manager restart
+
+## Source File
+
+**File**: [`defaults/interface/stage_manager.sh`](../../defaults/interface/stage_manager.sh)
+
+```bash
+run_defaults "com.apple.WindowManager" "AppWindowGroupingBehavior" "-int" "0"
+```
+
+## References
+
+- [Apple Support: Use Stage Manager on Mac](https://support.apple.com/guide/mac-help/mchl534ba392/mac)
+- [Apple Support: Organize windows with Stage Manager](https://support.apple.com/guide/mac-help/use-stage-manager-mchl7c5f7cc3/mac)

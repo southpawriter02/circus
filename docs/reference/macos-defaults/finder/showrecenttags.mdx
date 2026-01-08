@@ -1,0 +1,291 @@
+# Finder Show Recent Tags
+
+Display recently used tags in the Finder sidebar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `ShowRecentTags` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Finder displays a "Recent Tags" section in the sidebar, showing tags you've recently applied to files. This provides quick access to recently used organizational tags without navigating to the Tags section. Tags help organize files across different folders by applying colored labels and custom text tags.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show recent tags** (default) — Recent tags in sidebar |
+| `false` | **Hide recent tags** — Cleaner sidebar |
+
+## Visual Demonstration
+
+### With Recent Tags Shown (default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Finder Sidebar                                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Favorites                                              │
+│  ├─ 🏠 Home                                            │
+│  ├─ 📁 Desktop                                         │
+│  ├─ 📁 Documents                                       │
+│  ├─ 📁 Downloads                                       │
+│  └─ 📁 Applications                                    │
+│                                                         │
+│  iCloud                                                 │
+│  ├─ ☁️ iCloud Drive                                    │
+│  └─ 📁 Shared                                          │
+│                                                         │
+│  Tags                                              ← ── │
+│  ├─ 🔴 Important                                       │
+│  ├─ 🟢 Approved                                        │
+│  ├─ 🔵 Work                                            │
+│  └─ 🟡 Review                                          │
+│                                                         │
+│  Recent Tags                                       ← ── │
+│  ├─ 🔴 Important          (used yesterday)             │
+│  ├─ 📎 Project Alpha      (used 2 days ago)            │
+│  └─ 🟣 Personal           (used 3 days ago)            │
+│                                                         │
+│  Quick access to recently applied tags!                 │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Without Recent Tags:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Finder Sidebar                                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Favorites                                              │
+│  ├─ 🏠 Home                                            │
+│  ├─ 📁 Desktop                                         │
+│  ├─ 📁 Documents                                       │
+│  ├─ 📁 Downloads                                       │
+│  └─ 📁 Applications                                    │
+│                                                         │
+│  iCloud                                                 │
+│  ├─ ☁️ iCloud Drive                                    │
+│  └─ 📁 Shared                                          │
+│                                                         │
+│  Tags                                                   │
+│  ├─ 🔴 Important                                       │
+│  ├─ 🟢 Approved                                        │
+│  ├─ 🔵 Work                                            │
+│  └─ 🟡 Review                                          │
+│                                                         │
+│                                                         │
+│  (No Recent Tags section - cleaner but less quick       │
+│   access to recently used tags)                         │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### How Tags Work:
+```
+┌─────────────────────────────────────────────────────────┐
+│  File Tagging System                                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Files can have multiple tags:                          │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  📄 Quarterly Report.pdf                        │    │
+│  │     🔴 Important  🔵 Work  📎 Q4 2024          │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Click a tag in sidebar to see all files with it:       │
+│                                                         │
+│  Clicked: 🔵 Work                                       │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Files tagged "Work":                           │    │
+│  │  ├─ 📄 Quarterly Report.pdf                     │    │
+│  │  ├─ 📊 Budget.xlsx                              │    │
+│  │  ├─ 📁 Projects/                                │    │
+│  │  └─ 📝 Meeting Notes.txt                        │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Tags work across ALL folders - find files anywhere!    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show recent tags for quick organization.
+
+### Why Show Recent Tags?
+
+1. **Quick access** — Recently used tags at fingertips
+2. **Workflow** — Continue organizing with same tags
+3. **Discovery** — Remember what tags you've used
+4. **Efficiency** — Fewer clicks to apply common tags
+5. **Organization** — Encourages tag usage
+
+### Why Hide Recent Tags?
+
+- Sidebar space is limited
+- Don't use tags frequently
+- Prefer cleaner interface
+- Tags section is sufficient
+- Use search for tags instead
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.finder ShowRecentTags
+
+# Show recent tags (default)
+defaults write com.apple.finder ShowRecentTags -bool true
+
+# Hide recent tags
+defaults write com.apple.finder ShowRecentTags -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.finder ShowRecentTags
+
+# Restart Finder to apply
+killall Finder
+```
+
+## UI Location
+
+**Finder** → **Settings** (⌘,) → **Tags** → ☑ **Show recent tags**
+
+Or right-click in sidebar → Configure Sidebar
+
+## Related Tag Settings
+
+```bash
+# Show recent tags (this setting)
+defaults write com.apple.finder ShowRecentTags -bool true
+
+# Favorite tags (comma-separated list)
+# Managed via Finder → Settings → Tags
+
+# Tags in sidebar (controlled by sidebar settings)
+defaults write com.apple.finder ShowSidebar -bool true
+
+# Show tags in Get Info
+# Always shown in File → Get Info (⌘I)
+```
+
+## Managing Tags
+
+### Creating Tags:
+1. Right-click file → Tags → New Tag
+2. File → Tags → New Tag
+3. Get Info (⌘I) → Tags field
+4. Finder Settings → Tags → + button
+
+### Applying Tags:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Ways to Apply Tags                                     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  1. Right-click → Tags → [select tag]                   │
+│                                                         │
+│  2. Drag file onto tag in sidebar                       │
+│                                                         │
+│  3. Get Info (⌘I) → Type in Tags field                 │
+│                                                         │
+│  4. Save dialog → Tags field when saving                │
+│                                                         │
+│  5. Keyboard: Select file → press tag shortcut          │
+│     (⌃1 through ⌃7 for first 7 favorite tags)          │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Tag Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌃1 | Apply first favorite tag |
+| ⌃2 | Apply second favorite tag |
+| ⌃3-7 | Apply tags 3-7 |
+| ⌃0 | Remove all tags |
+
+Configure favorite tag order in Finder Settings → Tags.
+
+## Sidebar Customization
+
+Control what appears in sidebar:
+
+```bash
+# Show sidebar
+defaults write com.apple.finder ShowSidebar -bool true
+
+# Sidebar icon size (1=small, 2=medium, 3=large)
+defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
+```
+
+In Finder Settings → Sidebar, enable/disable:
+- Favorites (AirDrop, Applications, Desktop, etc.)
+- iCloud
+- Locations (drives, computers)
+- Tags
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Recent tags not showing | Enable in Finder Settings → Tags |
+| Wrong tags in recent | Based on actual recent usage |
+| Too many recent tags | Limit controlled by system |
+| Tags not syncing | Check iCloud settings |
+| Setting not applying | Run `killall Finder` |
+
+## Tags vs Folders
+
+| Feature | Tags | Folders |
+|---------|------|---------|
+| File in multiple groups | ✓ Multiple tags | ✗ One folder |
+| Physical location | Unchanged | Moved |
+| Cross-folder organization | ✓ Yes | ✗ No |
+| Visual indicators | Colored dots | Folder icon |
+| Search integration | ✓ Yes | ✓ Yes |
+
+## Spotlight Search with Tags
+
+Search for tagged files:
+```
+tag:important
+tag:work
+tag:red
+```
+
+Combine with other criteria:
+```
+tag:important kind:pdf
+tag:work modified:this week
+```
+
+## Compatibility
+
+- **macOS**: 10.9+ (Mavericks)
+- **Note**: Requires `killall Finder` to apply
+- **Note**: Tags sync via iCloud
+- **Note**: Tags stored in extended attributes
+
+## Source File
+
+**File**: [`defaults/finder/sidebar.sh`](../../defaults/finder/sidebar.sh)
+
+```bash
+run_defaults "com.apple.finder" "ShowRecentTags" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use tags to organize files](https://support.apple.com/guide/mac-help/tag-files-and-folders-mchlp15236/mac)
+- [Apple Support: Change Finder settings](https://support.apple.com/guide/mac-help/change-finder-preferences-mchlp1715/mac)

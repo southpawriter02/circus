@@ -1,0 +1,283 @@
+# Scrollbar Click Behavior
+
+Control whether clicking in scrollbar jumps to that location or pages through content.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `AppleScrollerPagingBehavior` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls what happens when you click in the scrollbar track (the gray area, not the scroll thumb). When disabled (default), clicking pages up or down through the content one screen at a time. When enabled, clicking jumps directly to that position in the document, providing faster navigation to specific locations.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Page** (default) — Click scrolls one page at a time |
+| `true` | **Jump** — Click jumps directly to that position |
+
+## Visual Demonstration
+
+### Page Behavior (false - default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Scrollbar Page Behavior                                │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Document Window:                                       │
+│  ┌────────────────────────────────┬───┐                 │
+│  │                                │ ▲ │                 │
+│  │  Page 1 of 10                  │───│                 │
+│  │                                │███│ ← Scroll thumb  │
+│  │  Lorem ipsum dolor sit amet,   │███│   (current pos) │
+│  │  consectetur adipiscing elit.  │───│                 │
+│  │                                │   │                 │
+│  │  Click here ──────────────────►│ ○ │ ← Click in      │
+│  │                                │   │   empty area    │
+│  │                                │   │                 │
+│  │                                │ ▼ │                 │
+│  └────────────────────────────────┴───┘                 │
+│                                                         │
+│  Result: Scrolls DOWN one page (to Page 2)              │
+│                                                         │
+│  Multiple clicks needed to reach bottom of document     │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Jump Behavior (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Scrollbar Jump Behavior                                │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Document Window:                                       │
+│  ┌────────────────────────────────┬───┐                 │
+│  │                                │ ▲ │                 │
+│  │  Page 1 of 10                  │───│                 │
+│  │                                │███│ ← Current pos   │
+│  │  Lorem ipsum dolor sit amet,   │───│                 │
+│  │                                │   │                 │
+│  │  Click here ──────────────────►│ ○ │ ← Click at 70%  │
+│  │                                │   │                 │
+│  │                                │   │                 │
+│  │                                │ ▼ │                 │
+│  └────────────────────────────────┴───┘                 │
+│                                                         │
+│  Result: Jumps directly to ~Page 7 (70% position)       │
+│                                                         │
+│  ┌────────────────────────────────┬───┐                 │
+│  │                                │ ▲ │                 │
+│  │  Page 7 of 10                  │   │                 │
+│  │                                │   │                 │
+│  │  Sed do eiusmod tempor         │   │                 │
+│  │  incididunt ut labore...       │───│                 │
+│  │                                │███│ ← Jumped here!  │
+│  │                                │───│                 │
+│  │                                │ ▼ │                 │
+│  └────────────────────────────────┴───┘                 │
+│                                                         │
+│  One click to reach any position in document!           │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Modifier Key Override:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Option Key Reverses Behavior                           │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  With AppleScrollerPagingBehavior = false (Page):       │
+│  ─────────────────────────────────────────────────────  │
+│  • Normal click → Page up/down                          │
+│  • Option + click → Jump to position                    │
+│                                                         │
+│  With AppleScrollerPagingBehavior = true (Jump):        │
+│  ─────────────────────────────────────────────────────  │
+│  • Normal click → Jump to position                      │
+│  • Option + click → Page up/down                        │
+│                                                         │
+│  The Option (⌥) key always gives you the opposite      │
+│  behavior of your default setting!                      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Click scrollbar to jump directly to that position.
+
+### Why Enable Jump Behavior?
+
+1. **Speed** — Navigate long documents quickly
+2. **Precision** — Click exactly where you want to go
+3. **Fewer clicks** — One click vs. many pages
+4. **Intuitive** — Click position = document position
+5. **Productivity** — Faster document navigation
+
+### Why Keep Page Behavior (Default)?
+
+- Gradual, controlled scrolling
+- Less jarring content jumps
+- Familiar from older systems
+- Prefer keyboard/trackpad scrolling
+- Accidental clicks less disruptive
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain AppleScrollerPagingBehavior
+
+# Enable jump to position
+defaults write NSGlobalDomain AppleScrollerPagingBehavior -bool true
+
+# Enable page at a time (default)
+defaults write NSGlobalDomain AppleScrollerPagingBehavior -bool false
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain AppleScrollerPagingBehavior
+```
+
+Changes take effect immediately for most apps.
+
+## UI Location
+
+**System Settings** → **Appearance** → **Click in the scroll bar to:**
+- ○ Jump to the next page
+- ● Jump to the spot that's clicked
+
+## Related Scrolling Settings
+
+```bash
+# Scrollbar click behavior (this setting)
+defaults write NSGlobalDomain AppleScrollerPagingBehavior -bool true
+
+# Show scrollbars: Automatic, WhenScrolling, Always
+defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
+
+# Natural scrolling (reverse scroll direction)
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+
+# Scroll bar appearance in Terminal
+defaults write com.apple.Terminal ScrollbarStyle -string "Minimal"
+```
+
+## Scrollbar Visibility Settings
+
+The click behavior only matters when scrollbars are visible:
+
+| Setting | Scrollbar Visibility |
+|---------|---------------------|
+| `Automatic` | Show when scrolling, hide otherwise |
+| `WhenScrolling` | Show only during scroll |
+| `Always` | Always visible |
+
+```bash
+# Always show scrollbars (makes click behavior more usable)
+defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
+```
+
+## Scrollbar Anatomy
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Scrollbar Components                                   │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│                        ┌───┐                            │
+│  Up arrow (click) ────►│ ▲ │                            │
+│                        ├───┤                            │
+│  Track (click here) ──►│   │ ← AppleScrollerPagingBehavior│
+│                        │   │   affects clicks here      │
+│                        │───│                            │
+│  Scroll thumb ────────►│███│ ← Drag to scroll          │
+│  (drag to scroll)      │███│                            │
+│                        │───│                            │
+│  Track (click here) ──►│   │                            │
+│                        │   │                            │
+│                        ├───┤                            │
+│  Down arrow (click) ──►│ ▼ │                            │
+│                        └───┘                            │
+│                                                         │
+│  Note: Modern macOS hides arrows by default             │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## App Compatibility
+
+Works in most native macOS apps:
+
+| App | Supports Setting |
+|-----|------------------|
+| Finder | ✓ |
+| Safari | ✓ |
+| Preview | ✓ |
+| TextEdit | ✓ |
+| Notes | ✓ |
+| Mail | ✓ |
+| Xcode | ✓ |
+| Chrome | Partial (custom scrollbars) |
+| Electron apps | Varies |
+
+## Keyboard Alternatives
+
+Alternative navigation methods:
+
+| Action | Keyboard |
+|--------|----------|
+| Page Down | Page Down, Space, fn+↓ |
+| Page Up | Page Up, Shift+Space, fn+↑ |
+| Top of document | ⌘↑, Home |
+| Bottom of document | ⌘↓, End |
+| Scroll by line | ↑, ↓ |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't see scrollbars | Set AppleShowScrollBars to "Always" |
+| Setting has no effect | Try closing and reopening apps |
+| Works in some apps only | Some apps use custom scrollbars |
+| Want both behaviors | Use Option key for opposite behavior |
+
+## Trackpad/Mouse Scrolling
+
+This setting only affects clicking in the scrollbar. For scroll gesture settings:
+
+```bash
+# Natural scrolling (finger direction = content direction)
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+
+# Scroll speed (mouse)
+defaults write NSGlobalDomain com.apple.scrollwheel.scaling -float 0.5
+```
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Takes effect immediately in most apps
+- **Note**: Option key provides opposite behavior
+- **Note**: Requires visible scrollbars to use
+
+## Source File
+
+**File**: [`defaults/system/scrolling.sh`](../../defaults/system/scrolling.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "AppleScrollerPagingBehavior" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use scrollbars on Mac](https://support.apple.com/guide/mac-help/use-scroll-bars-on-mac-mh35861/mac)
+- [Apple Support: Change Appearance settings](https://support.apple.com/guide/mac-help/change-appearance-settings-mchlp1225/mac)

@@ -1,0 +1,289 @@
+# Differentiate Without Color
+
+Add shapes and labels to elements that use color alone to convey information.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `differentiateWithoutColor` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+When enabled, macOS adds shapes, icons, or other visual indicators to interface elements that otherwise rely solely on color to convey meaning. This ensures that users with color vision deficiencies (color blindness) can still understand the status or meaning of colored elements. For example, a red error indicator might also show an X icon, or a green success indicator might include a checkmark.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Add shapes/labels** — Color + shape indicators |
+| `false` | **Color only** (default) — Standard appearance |
+
+## Visual Demonstration
+
+### Without Differentiate (default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Color-Only Indicators                                  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Form Validation:                                       │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │  Email:    [user@example.com      ] 🟢          │    │
+│  │  Password: [••••••••              ] 🔴          │    │
+│  │                                                 │    │
+│  │  For color-blind users:                         │    │
+│  │  🟢 and 🔴 may look similar (both appear brown) │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Status Indicators:                                     │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │  ● Online   ● Away   ● Busy   ● Offline         │    │
+│  │  (green)    (yellow) (red)   (gray)            │    │
+│  │                                                 │    │
+│  │  Hard to distinguish with red-green blindness   │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With Differentiate Without Color Enabled:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Color + Shape Indicators                               │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Form Validation:                                       │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │  Email:    [user@example.com      ] ✓ 🟢        │    │
+│  │  Password: [••••••••              ] ✗ 🔴        │    │
+│  │                                                 │    │
+│  │  Shapes added:                                  │    │
+│  │  ✓ Checkmark = valid/success                   │    │
+│  │  ✗ X mark = error/invalid                      │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Status Indicators:                                     │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │  ✓● Online  ⏸● Away  ⛔● Busy  ○ Offline       │    │
+│  │                                                 │    │
+│  │  Shape/icon distinguishes each state            │    │
+│  │  regardless of color perception                 │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Common Color-Coded Elements:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Elements That Benefit                                  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  WITHOUT:                     WITH:                     │
+│  ─────────────────────────────────────────────────      │
+│                                                         │
+│  Calendar Events:                                       │
+│  ▓▓ Work Meeting              ▓▓■ Work Meeting          │
+│  ▓▓ Personal                  ▓▓● Personal              │
+│  ▓▓ Family                    ▓▓▲ Family                │
+│     (color only)                  (color + shape)       │
+│                                                         │
+│  File Labels in Finder:                                 │
+│  🔴 Important                 🔴● Important             │
+│  🟢 Approved                  🟢✓ Approved              │
+│  🟡 Review                    🟡◇ Review                │
+│                                                         │
+│  Charts and Graphs:                                     │
+│  ━━━━ Revenue                 ━━━━ Revenue  ●           │
+│  ━━━━ Expenses                ━━━━ Expenses ■           │
+│  ━━━━ Profit                  ━━━━ Profit   ▲           │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Standard color-based indicators.
+
+### Why Enable Differentiate Without Color?
+
+1. **Color blindness** — Essential for color vision deficiency
+2. **Accessibility** — WCAG compliance support
+3. **Clarity** — Redundant cues aid understanding
+4. **Grayscale** — Works with grayscale displays
+5. **Low light** — Colors less distinguishable in dim lighting
+
+### Why Disable?
+
+- Normal color vision
+- Prefer cleaner interface
+- Shapes add visual noise
+- Testing purposes only
+- Third-party app inconsistency
+
+## Color Vision Statistics
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Color Vision Deficiency Prevalence                     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ~8% of males have some color vision deficiency         │
+│  ~0.5% of females have color vision deficiency          │
+│                                                         │
+│  Types:                                                 │
+│  ├─ Red-Green (most common): ~6% of males               │
+│  │  ├─ Deuteranomaly (green-weak)                      │
+│  │  ├─ Deuteranopia (green-blind)                      │
+│  │  ├─ Protanomaly (red-weak)                          │
+│  │  └─ Protanopia (red-blind)                          │
+│  │                                                      │
+│  └─ Blue-Yellow (rare): <1%                            │
+│     ├─ Tritanomaly                                      │
+│     └─ Tritanopia                                       │
+│                                                         │
+│  This setting helps all types by not relying on color. │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess differentiateWithoutColor
+
+# Enable differentiate without color
+defaults write com.apple.universalaccess differentiateWithoutColor -bool true
+
+# Disable (default)
+defaults write com.apple.universalaccess differentiateWithoutColor -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess differentiateWithoutColor
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Display** → ☑ **Differentiate without color**
+
+## Related Accessibility Settings
+
+```bash
+# Differentiate without color (this setting)
+defaults write com.apple.universalaccess differentiateWithoutColor -bool true
+
+# Show button shapes
+defaults write com.apple.universalaccess showButtonShapes -bool true
+
+# Increase contrast
+defaults write com.apple.universalaccess increaseContrast -bool true
+
+# Color filters (for specific color blindness types)
+defaults write com.apple.universalaccess colorFilterEnabled -bool true
+defaults write com.apple.universalaccess colorFilterType -int 2
+
+# Grayscale (remove color entirely)
+defaults write com.apple.universalaccess grayscale -bool true
+```
+
+## App Support
+
+This setting primarily affects:
+- **Apple Apps**: Calendar, Finder, Mail, Messages, etc.
+- **System UI**: Alerts, notifications, status indicators
+- **Some third-party apps**: That read accessibility settings
+
+Apps that may not support:
+- Web content (websites control their own colors)
+- Games and media apps
+- Legacy applications
+- Apps that don't use standard UI controls
+
+## Developer Guidance
+
+For app developers:
+
+```swift
+// Check if user has enabled this setting
+if UIAccessibility.shouldDifferentiateWithoutColor {
+    // Add shapes/icons alongside color indicators
+    indicator.addSymbol(.checkmark)
+}
+```
+
+Design best practices:
+- Never rely on color alone
+- Use icons + color + text when possible
+- Test with color filters enabled
+- Follow WCAG 2.1 guidelines
+
+## Combined With Color Filters
+
+For maximum accessibility:
+
+```bash
+# Enable differentiate without color
+defaults write com.apple.universalaccess differentiateWithoutColor -bool true
+
+# PLUS add color filter for your type of color blindness
+defaults write com.apple.universalaccess colorFilterEnabled -bool true
+
+# Type 2 = Deuteranopia (most common)
+defaults write com.apple.universalaccess colorFilterType -int 2
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No change visible | Some apps don't support this |
+| Shapes look odd | Expected behavior, aids clarity |
+| Setting not persisting | Log out and back in |
+| Web pages unchanged | Websites don't honor system settings |
+
+## Testing Color Accessibility
+
+Test your perception:
+- [Coblis Color Blindness Simulator](https://www.color-blindness.com/coblis-color-blindness-simulator/)
+- [EnChroma Color Blind Test](https://enchroma.com/pages/color-blindness-test)
+
+Test as a developer:
+- Enable setting and navigate your app
+- Use Xcode's Color Blind simulator
+- Check WCAG contrast ratios
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **iOS**: Also available (Settings → Accessibility → Display)
+- **Note**: Effectiveness depends on app support
+- **Note**: Apple apps have best support
+
+## Source File
+
+**File**: [`defaults/accessibility/display.sh`](../../defaults/accessibility/display.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "differentiateWithoutColor" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Display Accessibility settings](https://support.apple.com/guide/mac-help/change-display-accessibility-preferences-mchlp2298/mac)
+- [Apple HIG: Color and Contrast](https://developer.apple.com/design/human-interface-guidelines/color)
+- [WCAG 2.1: Use of Color](https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html)
+- [Apple Developer: Supporting Accessibility](https://developer.apple.com/accessibility/)

@@ -1,0 +1,306 @@
+# Stage Manager Recent Apps Strip
+
+Control visibility of the recent apps strip in Stage Manager.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.WindowManager` |
+| **Key** | `AutoHide` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the recent apps strip on the left side of the screen is always visible or auto-hides. When set to auto-hide (true), the strip only appears when you move your mouse to the left edge of the screen. When disabled (false), the strip is always visible.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Always visible** (default) — Strip always shown |
+| `true` | **Auto-hide** — Strip hides, appears on hover |
+
+## Visual Demonstration
+
+### Always Visible (AutoHide: false - Default):
+```
++-------------------------------------------------------------+
+|  Stage Manager - Strip Always Visible                        |
++-------------------------------------------------------------+
+|                                                              |
+|  RECENT        MAIN WORKSPACE                                |
+|  APPS                                                        |
+|  +------+     +------------------------------------------+   |
+|  |      |     |                                          |   |
+|  |Safari|     |  VS Code                                 |   |
+|  | (2)  |     |                                          |   |
+|  |      |     |  function hello() {                      |   |
+|  +------+     |    console.log("Hello");                 |   |
+|  |      |     |  }                                       |   |
+|  |Finder|     |                                          |   |
+|  | (3)  |     |                                          |   |
+|  |      |     |                                          |   |
+|  +------+     |                                          |   |
+|  |      |     |                                          |   |
+|  |Mail  |     |                                          |   |
+|  | (1)  |     +------------------------------------------+   |
+|  |      |                                                    |
+|  +------+     Strip always visible for quick access          |
+|     ^                                                        |
+|  Always                                                      |
+|  visible                                                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Auto-Hide Enabled (AutoHide: true):
+```
++-------------------------------------------------------------+
+|  Stage Manager - Strip Auto-Hide                             |
++-------------------------------------------------------------+
+|                                                              |
+|  HIDDEN STATE (normal view):                                |
+|                                                              |
+|            +------------------------------------------+      |
+|            |                                          |      |
+|            |  VS Code                                 |      |
+|            |                                          |      |
+|            |  function hello() {                      |      |
+|            |    console.log("Hello");                 |      |
+|   No       |  }                                       |      |
+|   strip    |                                          |      |
+|   visible  |                                          |      |
+|            |                                          |      |
+|            |                                          |      |
+|            +------------------------------------------+      |
+|                                                              |
+|            More workspace available!                        |
+|                                                              |
++-------------------------------------------------------------+
+
++-------------------------------------------------------------+
+|  HOVER STATE (mouse at left edge):                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Mouse -->                                                   |
+|  +------+     +------------------------------------------+   |
+|  |      |     |                                          |   |
+|  |Safari|     |  VS Code                                 |   |
+|  | (2)  |     |                                          |   |
+|  |      |     |  function hello() {                      |   |
+|  +------+     |    console.log("Hello");                 |   |
+|  |      |     |  }                                       |   |
+|  |Finder|     |                                          |   |
+|  | (3)  |     |                                          |   |
+|  |      |     |                                          |   |
+|  +------+     |                                          |   |
+|  |      |     |                                          |   |
+|  |Mail  |     |                                          |   |
+|  | (1)  |     +------------------------------------------+   |
+|  |      |                                                    |
+|  +------+     Strip appears on mouse hover                   |
+|     ^                                                        |
+|  Appears on                                                  |
+|  hover                                                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Interaction Flow:
+```
++-------------------------------------------------------------+
+|  Auto-Hide Interaction                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  1. WORKING (strip hidden):                                 |
+|     +----------------------------------------------+        |
+|     |  Full-width workspace                        |        |
+|     |  Maximum focus area                          |        |
+|     +----------------------------------------------+        |
+|                                                              |
+|  2. NEED TO SWITCH (mouse to left edge):                    |
+|     Move mouse to left screen edge                          |
+|                                                              |
+|  3. STRIP APPEARS (with animation):                         |
+|     +------+  +--------------------------------------+       |
+|     |Safari|  |  Workspace shifts right             |       |
+|     +------+  |                                      |       |
+|     |Finder|  |                                      |       |
+|     +------+  +--------------------------------------+       |
+|                                                              |
+|  4. CLICK TO SWITCH:                                        |
+|     Click app in strip -> switches to that app              |
+|     Strip auto-hides after switch                           |
+|                                                              |
+|  5. MOVE AWAY (strip hides):                                |
+|     +----------------------------------------------+        |
+|     |  Back to full-width workspace                |        |
+|     +----------------------------------------------+        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Always show recent apps strip.
+
+### Why Keep Strip Visible?
+
+1. **Discoverability** — See available apps at a glance
+2. **Quick switching** — One click to switch
+3. **Visual reminder** — Know what's running
+4. **Less mouse travel** — Don't need to reach edge
+5. **Consistency** — Strip always in same place
+
+### Why Enable Auto-Hide?
+
+- Maximum workspace area
+- Cleaner appearance
+- Fewer distractions
+- Focus on current work
+- Smaller screens benefit more
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.WindowManager AutoHide
+
+# Enable auto-hide
+defaults write com.apple.WindowManager AutoHide -bool true
+
+# Disable auto-hide (always show strip)
+defaults write com.apple.WindowManager AutoHide -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.WindowManager AutoHide
+```
+
+Changes take effect immediately.
+
+## UI Location
+
+**System Settings** > **Desktop & Dock** > **Stage Manager** > **Customize**
+
+```
++-------------------------------------------------------------+
+|  Stage Manager Customization                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Desktop & Dock > Stage Manager            |
+|                                                              |
+|  Click "Customize..." button:                                |
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Stage Manager Options                           |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Show windows from an application                |       |
+|  |  (*) All at Once                                 |       |
+|  |  ( ) One at a Time                               |       |
+|  |                                                  |       |
+|  |  ------------------------------------------------|       |
+|  |                                                  |       |
+|  |  Desktop Items                                   |       |
+|  |  [*] Show items on desktop                       |       |
+|  |                                                  |       |
+|  |  Recent Apps                                     |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | [*] Show recent apps                       |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |          ^                                       |       |
+|  |     Uncheck to auto-hide                         |       |
+|  |     (Note: UI wording may differ from key)       |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+Note: The UI checkbox "Show recent apps" corresponds inversely to `AutoHide`:
+- UI checked (Show recent apps) = `AutoHide: false`
+- UI unchecked (Hide recent apps) = `AutoHide: true`
+
+## Related Settings
+
+```bash
+# Auto-hide strip (this setting)
+defaults write com.apple.WindowManager AutoHide -bool false
+
+# Enable Stage Manager
+defaults write com.apple.WindowManager GloballyEnabled -bool true
+
+# Window grouping behavior
+defaults write com.apple.WindowManager AppWindowGroupingBehavior -int 0
+
+# Hide desktop items
+defaults write com.apple.WindowManager HideDesktop -bool false
+
+# Hide widgets
+defaults write com.apple.WindowManager StandardHideWidgets -bool false
+```
+
+## Strip Features
+
+When visible, the strip shows:
+
+| Feature | Description |
+|---------|-------------|
+| App thumbnails | Preview of app windows |
+| Window count badge | Number of windows per app |
+| Active app highlight | Currently focused app |
+| Drag targets | Drag apps to create groups |
+| Right-click menu | App options |
+
+## Screen Size Considerations
+
+| Screen Size | Recommendation |
+|-------------|----------------|
+| 13" laptop | Auto-hide (maximize space) |
+| 14-16" laptop | Either works |
+| 24"+ external | Always visible |
+| Ultra-wide | Always visible |
+| Multiple monitors | Personal preference |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Strip won't appear | Move mouse fully to left edge |
+| Strip stuck visible | Restart Stage Manager (toggle) |
+| Strip slow to appear | Check for system lag |
+| Wrong setting applying | Verify with `defaults read` |
+| Strip on wrong monitor | Check display arrangement |
+
+## Keyboard Alternative
+
+Even with auto-hide, you can switch apps:
+
+| Shortcut | Action |
+|----------|--------|
+| Cmd + Tab | Standard app switcher |
+| Mission Control (F3) | See all windows |
+| Click desktop | Show all Stage Manager groups |
+
+## Compatibility
+
+- **macOS**: 13.0+ (Ventura)
+- **Note**: Only applies when Stage Manager is enabled
+- **Note**: Takes effect immediately
+- **Note**: UI label may not match key name exactly
+
+## Source File
+
+**File**: [`defaults/interface/stage_manager.sh`](../../defaults/interface/stage_manager.sh)
+
+```bash
+run_defaults "com.apple.WindowManager" "AutoHide" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Stage Manager on Mac](https://support.apple.com/guide/mac-help/mchl534ba392/mac)
+- [Apple Support: Organize windows with Stage Manager](https://support.apple.com/guide/mac-help/use-stage-manager-mchl7c5f7cc3/mac)

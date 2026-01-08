@@ -1,0 +1,269 @@
+# Trackpad Click Pressure Threshold
+
+Control how much pressure is needed to register a click on Force Touch trackpads.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `FirstClickThreshold` |
+| **Type** | Integer |
+| **Default Value** | `1` (Medium) |
+| **Our Setting** | `1` (Medium) |
+
+## Description
+
+Controls the amount of pressure required to register a primary click on Force Touch trackpads. Lower values make the trackpad more sensitive (requiring less pressure), while higher values require more deliberate pressing. This affects the haptic feedback point where the trackpad "clicks" under your finger.
+
+## Values
+
+| Value | Sensitivity | Description |
+|-------|-------------|-------------|
+| `0` | Light | Minimal pressure needed, very sensitive |
+| `1` | Medium | Default, balanced sensitivity |
+| `2` | Firm | Requires deliberate pressure |
+
+## Visual Demonstration
+
+### Click Pressure Levels:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Force Touch Trackpad Pressure Levels                   │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Pressure applied:                                      │
+│                                                         │
+│  Light (0):                                             │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│    │
+│  │████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│    │
+│  └─────────────────────────────────────────────────┘    │
+│       ↑ Click registers here (light touch)              │
+│                                                         │
+│  Medium (1 - default):                                  │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│    │
+│  │████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│    │
+│  └─────────────────────────────────────────────────┘    │
+│                    ↑ Click registers here (moderate)    │
+│                                                         │
+│  Firm (2):                                              │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│    │
+│  │██████████████████████████████░░░░░░░░░░░░░░░░░░│    │
+│  └─────────────────────────────────────────────────┘    │
+│                                  ↑ Click registers here │
+│                                    (deliberate press)   │
+│                                                         │
+│  █ = Pressure applied    ░ = Remaining travel           │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### First Click vs Force Click:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Force Touch Pressure Stages                            │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Pressure    ──────────────────────────────────────►    │
+│  None        Light        Medium       Deep             │
+│   │           │             │            │              │
+│   │           │             │            │              │
+│   ▼           ▼             ▼            ▼              │
+│  ┌──────┐  ┌──────┐     ┌──────┐     ┌──────┐          │
+│  │Touch │  │ 1st  │     │      │     │Force │          │
+│  │ only │  │Click │     │      │     │Click │          │
+│  └──────┘  └──────┘     └──────┘     └──────┘          │
+│     │         │                          │              │
+│     ↓         ↓                          ↓              │
+│  Cursor    Primary                   Quick Look         │
+│  moves     click                     Look up            │
+│                                      Preview            │
+│                                                         │
+│  FirstClickThreshold controls where "1st Click"         │
+│  happens on this pressure scale.                        │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Second Click Threshold:
+```
+┌─────────────────────────────────────────────────────────┐
+│  SecondClickThreshold (Force Click)                     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  A separate setting controls Force Click sensitivity:   │
+│                                                         │
+│  SecondClickThreshold:                                  │
+│  • 0 = Light (easy to trigger Force Click)              │
+│  • 1 = Medium (default)                                 │
+│  • 2 = Firm (deliberate deep press needed)              │
+│                                                         │
+│  These two thresholds work together:                    │
+│                                                         │
+│  Pressure: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░     │
+│            │        │                    │              │
+│            │        ↓                    ↓              │
+│            │   FirstClick           SecondClick         │
+│            │   Threshold            Threshold           │
+│            │   (regular click)      (force click)       │
+│            ↓                                            │
+│          Touch                                          │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `1` — Medium click threshold (default, balanced).
+
+### Why Use Light (0)?
+
+1. **Speed** — Faster clicking
+2. **Comfort** — Less finger fatigue
+3. **Accessibility** — Easier for limited strength
+4. **Touch-like** — More like tapping
+
+### Why Use Medium (1)?
+
+1. **Balance** — Good for most users
+2. **Default** — Familiar feel
+3. **Accuracy** — Fewer accidental clicks
+4. **Versatile** — Works for various tasks
+
+### Why Use Firm (2)?
+
+1. **Precision** — Deliberate clicks only
+2. **Typing** — Fewer accidental clicks while typing
+3. **Control** — For users who rest fingers on trackpad
+4. **Preference** — Some users prefer firmer feedback
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad FirstClickThreshold
+
+# Set light click threshold
+defaults write com.apple.AppleMultitouchTrackpad FirstClickThreshold -int 0
+
+# Set medium click threshold (default)
+defaults write com.apple.AppleMultitouchTrackpad FirstClickThreshold -int 1
+
+# Set firm click threshold
+defaults write com.apple.AppleMultitouchTrackpad FirstClickThreshold -int 2
+
+# Also set for Bluetooth trackpad
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad FirstClickThreshold -int 1
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad FirstClickThreshold
+```
+
+## UI Location
+
+**System Settings** → **Trackpad** → **Point & Click** → **Click** slider (Light to Firm)
+
+## Related Settings
+
+```bash
+# First click threshold (this setting)
+defaults write com.apple.AppleMultitouchTrackpad FirstClickThreshold -int 1
+
+# Second click (Force Click) threshold
+defaults write com.apple.AppleMultitouchTrackpad SecondClickThreshold -int 1
+
+# Enable Force Click and haptic feedback
+defaults write com.apple.AppleMultitouchTrackpad ForceSuppressed -int 0
+
+# Disable Force Click
+defaults write com.apple.AppleMultitouchTrackpad ForceSuppressed -int 1
+
+# Haptic feedback for Force Touch
+defaults write com.apple.AppleMultitouchTrackpad ActuationStrength -int 1
+
+# Tap to click (doesn't use pressure)
+defaults write com.apple.AppleMultitouchTrackpad Clicking -int 1
+```
+
+## Haptic Feedback Strength
+
+Related setting controls the tactile feedback intensity:
+
+| Key | Values | Purpose |
+|-----|--------|---------|
+| `ActuationStrength` | 0 (Silent), 1 (Normal), 2 (Strong) | Haptic click feedback |
+
+```bash
+# Normal haptic feedback
+defaults write com.apple.AppleMultitouchTrackpad ActuationStrength -int 1
+
+# Stronger haptic feedback
+defaults write com.apple.AppleMultitouchTrackpad ActuationStrength -int 2
+
+# Minimal haptic feedback
+defaults write com.apple.AppleMultitouchTrackpad ActuationStrength -int 0
+```
+
+## Force Touch Trackpad vs Non-Force Touch
+
+| Feature | Force Touch | Non-Force Touch |
+|---------|-------------|-----------------|
+| Click threshold | Adjustable (0-2) | Fixed mechanical |
+| Force Click | Yes | No |
+| Haptic feedback | Yes (configurable) | No |
+| Click anywhere | Yes (simulated) | Bottom area only |
+| Silent mode | Possible | No |
+
+This setting only applies to Force Touch trackpads (MacBook 2015+, Magic Trackpad 2+).
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Clicks too easy | Increase threshold to 2 (firm) |
+| Clicks too hard | Decrease threshold to 0 (light) |
+| No haptic feedback | Check ForceSuppressed is 0 |
+| Setting not applying | Log out and back in |
+| Force Click too easy | Adjust SecondClickThreshold |
+
+## Accessibility Use Cases
+
+| User Need | Recommended Setting |
+|-----------|---------------------|
+| Limited hand strength | Light (0) |
+| Tremors | Firm (2) |
+| General use | Medium (1) |
+| Precision work | Medium (1) or Firm (2) |
+| Accidental click prone | Firm (2) |
+
+## Combined with Tap to Click
+
+| Tap to Click | Click Threshold | Best For |
+|--------------|-----------------|----------|
+| On | Light | Maximum speed/ease |
+| On | Medium | Balanced |
+| Off | Light | Easy physical clicks |
+| Off | Firm | Deliberate clicks only |
+
+## Compatibility
+
+- **macOS**: 10.11+ (El Capitan)
+- **Hardware**: Force Touch trackpads only
+- **Note**: Non-Force Touch trackpads ignore this setting
+- **Note**: May require logout to apply
+
+## Source File
+
+**File**: [`defaults/input/trackpad.sh`](../../defaults/input/trackpad.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "FirstClickThreshold" "-int" "1"
+```
+
+## References
+
+- [Apple Support: About Force Touch trackpad](https://support.apple.com/guide/mac-help/about-force-touch-trackpad-mchl5de0f8c7/mac)
+- [Apple Support: Change trackpad settings](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1045/mac)

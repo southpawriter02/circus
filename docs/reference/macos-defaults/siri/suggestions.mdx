@@ -1,0 +1,316 @@
+# Siri Suggestions
+
+Control Siri Suggestions in apps and Spotlight.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Siri` |
+| **Key** | `SiriSuggestionsEnabled` / `ShowSiriSuggestionsInSpotlight` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Siri provides proactive suggestions based on your app usage, calendar events, messages, and browsing history. These suggestions appear in Spotlight, Safari, and throughout apps. Disabling prevents Siri from analyzing your activity patterns.
+
+## Values
+
+### SiriSuggestionsEnabled
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Suggestions enabled** (default) — Siri learns from usage |
+| `false` | **Suggestions disabled** — No activity-based suggestions |
+
+### ShowSiriSuggestionsInSpotlight
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show in Spotlight** (default) — Suggestions appear in search |
+| `false` | **Hide from Spotlight** — Only file/app results shown |
+
+## Visual Demonstration
+
+### With Siri Suggestions Enabled:
+```
++-------------------------------------------------------------+
+|  Spotlight Search with Siri Suggestions                      |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  [Search icon] meeting                               |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  SIRI SUGGESTIONS                                            |
+|  +------------------------------------------------------+   |
+|  |  [Calendar] Team Meeting - Today at 2:00 PM         |   |
+|  |             Based on your calendar                   |   |
+|  +------------------------------------------------------+   |
+|  |  [Mail] RE: Meeting Notes - John Smith              |   |
+|  |         Recent email                                 |   |
+|  +------------------------------------------------------+   |
+|  |  [Safari] Meeting Room Booking System               |   |
+|  |           Frequently visited                         |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  DOCUMENTS                                                   |
+|  +------------------------------------------------------+   |
+|  |  [Doc] Meeting_Notes_2024.docx                      |   |
+|  |  [Doc] Project_Meeting_Agenda.pdf                   |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Siri analyzes:                                              |
+|  * App usage patterns    * Email content                    |
+|  * Calendar events       * Safari history                   |
+|  * Messages             * Location data                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Siri Suggestions Disabled:
+```
++-------------------------------------------------------------+
+|  Spotlight Search without Siri Suggestions                   |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  [Search icon] meeting                               |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  DOCUMENTS                                                   |
+|  +------------------------------------------------------+   |
+|  |  [Doc] Meeting_Notes_2024.docx                      |   |
+|  |  [Doc] Project_Meeting_Agenda.pdf                   |   |
+|  |  [Doc] Meeting_Template.pages                       |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  APPLICATIONS                                                |
+|  +------------------------------------------------------+   |
+|  |  [App] Microsoft Teams                              |   |
+|  |  [App] Zoom                                         |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Only shows:                                                 |
+|  * Files matching search                                    |
+|  * Applications                                             |
+|  * System preferences                                       |
+|  * Calculator results                                       |
+|                                                              |
+|  No personalized suggestions based on behavior              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Siri Suggestions Locations:
+```
++-------------------------------------------------------------+
+|  Where Siri Suggestions Appear                               |
++-------------------------------------------------------------+
+|                                                              |
+|  1. SPOTLIGHT (Cmd + Space)                                  |
+|     +--------------------------------------------------+    |
+|     |  Suggested websites, contacts, events            |    |
+|     +--------------------------------------------------+    |
+|                                                              |
+|  2. SAFARI                                                   |
+|     +--------------------------------------------------+    |
+|     |  Start Page suggestions                          |    |
+|     |  Address bar suggestions                         |    |
+|     +--------------------------------------------------+    |
+|                                                              |
+|  3. MESSAGES                                                 |
+|     +--------------------------------------------------+    |
+|     |  Suggested responses                             |    |
+|     |  Event detection in messages                     |    |
+|     +--------------------------------------------------+    |
+|                                                              |
+|  4. MAIL                                                     |
+|     +--------------------------------------------------+    |
+|     |  Follow-up suggestions                           |    |
+|     |  Contact suggestions                             |    |
+|     +--------------------------------------------------+    |
+|                                                              |
+|  5. LOCK SCREEN                                              |
+|     +--------------------------------------------------+    |
+|     |  App suggestions based on time/location          |    |
+|     +--------------------------------------------------+    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Security & Privacy Implications
+
+### Data Siri Analyzes
+
+| Data Type | Used For |
+|-----------|----------|
+| Calendar events | Time-based suggestions |
+| Emails | Contact and follow-up suggestions |
+| Messages | Response suggestions |
+| Safari history | Website suggestions |
+| App usage | App suggestions |
+| Location | Location-based suggestions |
+| Contacts | People suggestions |
+
+### Privacy Trade-offs
+
+```
++-------------------------------------------------------------+
+|  Privacy vs Convenience                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  ENABLED:                        DISABLED:                   |
+|  +------------------------+      +------------------------+  |
+|  | + Smart suggestions    |      | + Maximum privacy      |  |
+|  | + Time-saving         |      | + No data analysis     |  |
+|  | + Context-aware       |      | + Predictable search   |  |
+|  | - Activity tracked    |      | - Manual searching     |  |
+|  | - Data processed      |      | - No smart features    |  |
+|  | - Patterns learned    |      | - More keystrokes      |  |
+|  +------------------------+      +------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable Siri Suggestions for privacy.
+
+### Why Disable Siri Suggestions?
+
+1. **Privacy** — No behavioral tracking
+2. **Data minimization** — Less data processed
+3. **Predictability** — Search results are consistent
+4. **Security** — Sensitive info not surfaced
+5. **Corporate** — Compliance requirements
+
+### Why Keep Enabled?
+
+- Time savings from smart suggestions
+- Convenience of proactive reminders
+- Better calendar integration
+- Useful for personal devices
+- Context-aware assistance
+
+## Code Examples
+
+```bash
+# Read current values
+defaults read com.apple.Siri SiriSuggestionsEnabled
+defaults read com.apple.Siri ShowSiriSuggestionsInSpotlight
+
+# Disable Siri Suggestions in apps
+defaults write com.apple.Siri SiriSuggestionsEnabled -bool false
+
+# Disable Siri Suggestions in Spotlight
+defaults write com.apple.Siri ShowSiriSuggestionsInSpotlight -bool false
+
+# Enable both (default)
+defaults write com.apple.Siri SiriSuggestionsEnabled -bool true
+defaults write com.apple.Siri ShowSiriSuggestionsInSpotlight -bool true
+
+# Delete (reset to defaults)
+defaults delete com.apple.Siri SiriSuggestionsEnabled
+defaults delete com.apple.Siri ShowSiriSuggestionsInSpotlight
+```
+
+Changes take effect immediately.
+
+## UI Location
+
+**System Settings** > **Siri & Spotlight** > **Siri Suggestions & Privacy**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Siri & Spotlight                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Siri Suggestions & Privacy                                  |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  Allow Siri Suggestions in:                          |   |
+|  |                                                      |   |
+|  |  [ ] Spotlight                                       |   |
+|  |  [ ] Safari                                          |   |
+|  |  [ ] Mail                                            |   |
+|  |  [ ] Messages                                        |   |
+|  |  [ ] Calendar                                        |   |
+|  |  [ ] Contacts                                        |   |
+|  |  [ ] Notes                                           |   |
+|  |  [ ] News                                            |   |
+|  |  [ ] Photos                                          |   |
+|  |  [ ] Reminders                                       |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Per-app control allows granular configuration              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Siri Suggestions in apps (this setting)
+defaults write com.apple.Siri SiriSuggestionsEnabled -bool false
+
+# Siri Suggestions in Spotlight (this setting)
+defaults write com.apple.Siri ShowSiriSuggestionsInSpotlight -bool false
+
+# Master Siri toggle
+defaults write com.apple.assistant.support "Assistant Enabled" -bool false
+
+# Type to Siri
+defaults write com.apple.Siri TypeToSiriEnabled -bool true
+
+# Voice feedback
+defaults write com.apple.Siri VoiceFeedback -string "Off"
+```
+
+## Per-App Siri Suggestions
+
+Control suggestions individually per app in System Settings:
+
+| App | Suggestions Include |
+|-----|---------------------|
+| Safari | Websites, search suggestions |
+| Mail | Contacts, follow-ups |
+| Messages | Responses, events |
+| Calendar | Event suggestions |
+| Maps | Location suggestions |
+| Photos | Memories, people |
+| News | Article recommendations |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Suggestions still appearing | Check per-app settings in System Settings |
+| Spotlight not updating | Rebuild index: `sudo mdutil -E /` |
+| Setting not persisting | Verify Siri is enabled first |
+| Safari still suggests | Also check Safari > Settings > Search |
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra)
+- **Note**: Takes effect immediately
+- **Note**: Per-app settings in System Settings
+- **Note**: Some apps have their own suggestion settings
+
+## Source File
+
+**File**: [`defaults/system/siri.sh`](../../defaults/system/siri.sh)
+
+```bash
+run_defaults "com.apple.Siri" "SiriSuggestionsEnabled" "-bool" "false"
+run_defaults "com.apple.Siri" "ShowSiriSuggestionsInSpotlight" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Siri Suggestions](https://support.apple.com/guide/mac-help/mchlc88c4822/mac)
+- [Apple Support: Siri & Privacy](https://support.apple.com/guide/mac-help/siri-and-privacy-mchl10bafcd0/mac)
+- [Apple Support: Search with Spotlight](https://support.apple.com/guide/mac-help/mchlp1008/mac)
