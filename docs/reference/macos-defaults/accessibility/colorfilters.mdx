@@ -1,0 +1,164 @@
+# Color Filters
+
+Enable color filters for color vision accessibility.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Keys** | `colorFilterEnabled`, `colorFilterType` |
+| **Type** | Boolean, Integer |
+| **Default Value** | `false`, `0` |
+| **Our Setting** | `false` |
+
+## Description
+
+Color Filters adjust display colors to help users with color vision deficiencies (color blindness). macOS offers filters for different types of color blindness, plus grayscale and custom tint options.
+
+## Values
+
+### Enable Filter
+
+| Value | Behavior |
+|-------|----------|
+| `true` | Color filter active |
+| `false` | Normal colors (default) |
+
+### Filter Types
+
+| Value | Type | Description |
+|-------|------|-------------|
+| `0` | Grayscale | Removes all color |
+| `1` | Red/Green (Protanopia) | For red-weak vision |
+| `2` | Green/Red (Deuteranopia) | For green-weak vision |
+| `3` | Blue/Yellow (Tritanopia) | For blue-weak vision |
+| `4` | Color Tint | Custom tint overlay |
+
+## Color Vision Types
+
+| Condition | Description | Filter |
+|-----------|-------------|--------|
+| **Protanopia** | Red-blind | Type 1 |
+| **Protanomaly** | Red-weak | Type 1 |
+| **Deuteranopia** | Green-blind | Type 2 |
+| **Deuteranomaly** | Green-weak | Type 2 |
+| **Tritanopia** | Blue-blind | Type 3 |
+| **Tritanomaly** | Blue-weak | Type 3 |
+
+## Our Configuration
+
+**Set to**: `false` — No color filter (standard colors).
+
+Enable only if needed for color vision accessibility.
+
+## Code Examples
+
+```bash
+# Read current settings
+defaults read com.apple.universalaccess colorFilterEnabled
+defaults read com.apple.universalaccess colorFilterType
+
+# Enable grayscale filter
+defaults write com.apple.universalaccess colorFilterEnabled -bool true
+defaults write com.apple.universalaccess colorFilterType -int 0
+
+# Enable Protanopia filter (red/green)
+defaults write com.apple.universalaccess colorFilterEnabled -bool true
+defaults write com.apple.universalaccess colorFilterType -int 1
+
+# Enable Deuteranopia filter (green/red)
+defaults write com.apple.universalaccess colorFilterEnabled -bool true
+defaults write com.apple.universalaccess colorFilterType -int 2
+
+# Disable color filters
+defaults write com.apple.universalaccess colorFilterEnabled -bool false
+
+# Delete (reset to defaults)
+defaults delete com.apple.universalaccess colorFilterEnabled
+defaults delete com.apple.universalaccess colorFilterType
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Display** → **Color Filters**
+
+Options:
+- Enable/disable toggle
+- Filter type dropdown
+- Intensity slider (for some filters)
+
+## Quick Toggle
+
+Set up keyboard shortcut for quick toggle:
+
+**System Settings** → **Accessibility** → **Shortcut** (bottom)
+
+Check "Color Filters" — then use **Option-Command-F5** to access.
+
+## Use Cases
+
+### Grayscale Mode
+
+Remove color distractions for:
+- Reading focus
+- Reducing phone addiction
+- Photo/design work (checking contrast)
+- Battery saving (minimal on modern displays)
+
+### Color Vision Accessibility
+
+Help users with color blindness:
+- Distinguish charts and graphs
+- Identify UI elements
+- Read color-coded information
+
+### Color Tint
+
+Apply custom tint for:
+- Reducing blue light (alternative to Night Shift)
+- Custom color preferences
+- Screen warming
+
+## Testing Color Blindness
+
+Websites to test color blindness:
+- [Color Blind Test (EnChroma)](https://enchroma.com/pages/color-blindness-test)
+- [Ishihara Test Online](https://www.color-blindness.com/ishihara-test/)
+
+## Developer Consideration
+
+When designing apps, support color vision:
+- Don't rely on color alone
+- Use patterns/shapes with colors
+- Test with color filters enabled
+
+macOS setting "Differentiate without color" adds shapes to colored UI elements.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Colors look wrong | Check colorFilterType value |
+| Filter too strong | Adjust intensity in UI |
+| Screenshots affected | Color filters don't affect screenshots |
+| External display | Filters apply to each display |
+
+## Compatibility
+
+- **macOS**: 10.12+
+- **Applies to**: All displays connected
+- **Note**: Does not affect screenshots or recordings
+
+## Source File
+
+**File**: [`defaults/accessibility/display.sh`](../../../defaults/accessibility/display.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "colorFilterEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Display Settings for accessibility](https://support.apple.com/guide/mac-help/change-display-preferences-mchlp1108/mac)
+- [Apple: Color Filters accessibility](https://www.apple.com/accessibility/vision/)

@@ -1,0 +1,135 @@
+# Increase Contrast
+
+Enable high contrast mode for better UI element visibility.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `increaseContrast` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Increase Contrast adds visible borders and backgrounds to buttons. UI elements, and text fields, making them easier to distinguish. This accessibility feature helps users with low vision or those who find the standard macOS interface too subtle.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **High contrast** — Adds borders and backgrounds to UI |
+| `false` | **Normal** (default) — Standard macOS appearance |
+
+## Visual Comparison
+
+**Normal (increaseContrast = false):**
+```
+┌─────────────────────────────────┐
+│         Button Text             │  ← Subtle appearance
+└─────────────────────────────────┘
+```
+
+**High Contrast (increaseContrast = true):**
+```
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃         Button Text             ┃  ← Clear border
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+```
+
+## Our Configuration
+
+**Set to**: `false` — Use standard macOS appearance.
+
+### Why Keep Normal Contrast?
+
+1. **Modern aesthetic** — Clean, minimal interface
+2. **Designer intent** — Apps designed for standard look
+3. **Visual consistency** — Matches default macOS
+
+### When to Enable High Contrast
+
+- Low vision accessibility needs
+- Difficulty distinguishing buttons from backgrounds
+- Bright outdoor lighting
+- Extended screen time causing eye strain
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess increaseContrast
+
+# Enable high contrast mode
+defaults write com.apple.universalaccess increaseContrast -bool true
+
+# Disable high contrast (normal)
+defaults write com.apple.universalaccess increaseContrast -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess increaseContrast
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Display** → ☑ **Increase contrast**
+
+## Related Display Settings
+
+```bash
+# Complete display accessibility configuration
+defaults write com.apple.universalaccess increaseContrast -bool false
+defaults write com.apple.universalaccess reduceTransparency -bool false
+defaults write com.apple.universalaccess reduceMotion -bool false
+defaults write com.apple.universalaccess differentiateWithoutColor -bool false
+```
+
+| Setting | Effect |
+|---------|--------|
+| `increaseContrast` | Adds borders to UI elements |
+| `reduceTransparency` | Makes windows more opaque |
+| `reduceMotion` | Reduces animations |
+| `differentiateWithoutColor` | Adds shapes to colored items |
+
+## Performance Note
+
+High contrast mode may slightly improve performance on older Macs because:
+- Simpler rendering (less transparency blending)
+- Reduced visual effects
+- Less GPU work for compositing
+
+## Accessibility Shortcut
+
+Set up quick toggle via:
+**System Settings** → **Accessibility** → **Shortcut** (bottom)
+
+Then press **Option-Command-F5** to access accessibility options quickly.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Changes not visible | Some apps need restart |
+| Too harsh appearance | Try reducing transparency instead |
+| Third-party apps unchanged | They may not support accessibility APIs |
+
+## Compatibility
+
+- **macOS**: 10.10+
+- **Applies to**: System UI and most native apps
+- **Note**: Third-party apps may vary in support
+
+## Source File
+
+**File**: [`defaults/accessibility/display.sh`](../../../defaults/accessibility/display.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "increaseContrast" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Change Display preferences for accessibility](https://support.apple.com/guide/mac-help/change-display-preferences-mchlp1108/mac)
+- [Apple Support: Accessibility features on Mac](https://support.apple.com/guide/mac-help/accessibility-features-mh35884/mac)

@@ -1,0 +1,160 @@
+# Sticky Keys
+
+Allow modifier keys to be pressed one at a time instead of simultaneously.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Keys** | `stickyKey`, `stickyKeyBeepOnModifier` |
+| **Type** | Boolean |
+| **Default Value** | `false`, `false` |
+| **Our Setting** | `false`, `false` |
+
+## Description
+
+Sticky Keys is an accessibility feature that lets you press modifier keys (Shift, Control, Option, Command) one at a time rather than holding them together. Press a modifier, release it, then press the next key—the modifier "sticks" until the combination is complete.
+
+## Values
+
+| Key | Value | Behavior |
+|-----|-------|----------|
+| `stickyKey` | `false` | Disabled (default) |
+| `stickyKey` | `true` | Enabled |
+| `stickyKeyBeepOnModifier` | `true` | Sound when modifier pressed |
+
+## How Sticky Keys Works
+
+### Without Sticky Keys (default)
+
+To copy (⌘C):
+1. Hold ⌘ Command
+2. While holding, press C
+3. Release both
+
+### With Sticky Keys
+
+To copy:
+1. Press and release ⌘ Command (it "sticks")
+2. Press C
+3. Combination executes, modifier releases
+
+### Locking Modifiers
+
+Press a modifier twice to lock it:
+- First press: Modifier active for next key
+- Second press: Modifier locked (on until pressed again)
+- Third press: Modifier released
+
+## Our Configuration
+
+**Set to**: `false` — Disabled for typical users.
+
+### Who Benefits from Sticky Keys?
+
+- Users with limited dexterity
+- People with one-handed use needs
+- Those with joint or muscle conditions
+- Users who have difficulty with simultaneous key presses
+
+## Code Examples
+
+```bash
+# Read current values
+defaults read com.apple.universalaccess stickyKey
+defaults read com.apple.universalaccess stickyKeyBeepOnModifier
+
+# Enable Sticky Keys
+defaults write com.apple.universalaccess stickyKey -bool true
+
+# Enable sound feedback
+defaults write com.apple.universalaccess stickyKeyBeepOnModifier -bool true
+
+# Disable Sticky Keys (default)
+defaults write com.apple.universalaccess stickyKey -bool false
+
+# Delete (reset to defaults)
+defaults delete com.apple.universalaccess stickyKey
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Keyboard** → **Sticky Keys**
+
+Options:
+- Enable Sticky Keys toggle
+- Beep when modifier is set
+- Show pressed keys on screen
+- Press Shift key 5 times to toggle (shortcut)
+
+## Keyboard Shortcut Toggle
+
+Enable quick toggle:
+
+**Press Shift 5 times** → Toggles Sticky Keys on/off
+
+This can be configured in:
+**System Settings** → **Accessibility** → **Keyboard** → **Press Shift key five times to toggle Sticky Keys**
+
+## Visual Indicator
+
+When Sticky Keys is active, macOS can show pressed modifiers on screen:
+
+```
+┌─────────────────────┐
+│    ◆ ⌘ Command     │
+│    ◇ ⌥ Option      │
+│    ◇ ⌃ Control     │
+│    ◇ ⇧ Shift       │
+└─────────────────────┘
+◆ = Active  ◇ = Inactive
+```
+
+Enable in Accessibility → Keyboard → Show pressed keys on screen.
+
+## Sound Feedback
+
+When `stickyKeyBeepOnModifier` is enabled:
+- **First press**: One beep (modifier active)
+- **Second press**: Higher beep (modifier locked)
+- **Release**: Low beep (modifier released)
+
+## Related Settings
+
+### Slow Keys
+
+Adds delay before key registers (prevents accidental presses):
+
+```bash
+defaults write com.apple.universalaccess slowKey -bool false
+defaults write com.apple.universalaccess slowKeyDelay -float 0.25
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't use key combos normally | Disable Sticky Keys |
+| Modifiers not sticking | Ensure stickyKey is true |
+| No sound feedback | Enable stickyKeyBeepOnModifier |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Syncs**: Via Accessibility settings
+- **Note**: Some games/apps may not work well with Sticky Keys
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../defaults/accessibility/pointer.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "stickyKey" "-bool" "false"
+run_defaults "com.apple.universalaccess" "stickyKeyBeepOnModifier" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Sticky Keys](https://support.apple.com/guide/mac-help/change-accessibility-keyboard-settings-mchlc898a9b2/mac)
+- [Apple: Keyboard accessibility](https://www.apple.com/accessibility/mac/physical-and-motor/)

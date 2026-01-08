@@ -1,0 +1,164 @@
+# Invert Colors
+
+Invert display colors for accessibility or visual preference.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `whiteOnBlack` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Classic Invert reverses all colors on screen—white becomes black, black becomes white, and all colors shift to their opposite on the color wheel. This can help users with certain visual impairments or light sensitivity.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Invert colors** — All colors reversed |
+| `false` | **Normal colors** (default) — Standard display |
+
+## Visual Example
+
+**Normal:**
+```
+┌─────────────────────────────────┐
+│ White background                │
+│ Black text                      │
+│ Blue links                      │
+└─────────────────────────────────┘
+```
+
+**Inverted:**
+```
+┌─────────────────────────────────┐
+│ Black background                │
+│ White text                      │
+│ Yellow links                    │
+└─────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Use normal colors.
+
+### Why Keep Normal?
+
+1. **Color accuracy** — Photos, videos display correctly
+2. **Design intent** — Apps look as designed
+3. **Dark mode** — Modern alternative for low-light viewing
+
+### When to Use Invert
+
+- Light sensitivity
+- Specific vision impairments
+- Reading in dark environments
+- Personal preference
+
+## Classic Invert vs Smart Invert
+
+| Feature | Classic Invert | Smart Invert |
+|---------|----------------|--------------|
+| All colors | ✓ Inverted | Inverted except media |
+| Images | Inverted | Original |
+| Videos | Inverted | Original |
+| Dark apps | Inverted (becomes light) | Unchanged |
+
+**Smart Invert** is usually preferred as it preserves images and media.
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess whiteOnBlack
+
+# Enable classic invert
+defaults write com.apple.universalaccess whiteOnBlack -bool true
+
+# Disable (normal colors)
+defaults write com.apple.universalaccess whiteOnBlack -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess whiteOnBlack
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Display** → **Invert colors**
+
+For Smart Invert:
+**System Settings** → **Accessibility** → **Display** → **Smart Invert** (in macOS 14+)
+
+## Keyboard Shortcut
+
+Toggle Invert Colors quickly:
+
+**Control-Option-Command-8**
+
+Set up in:
+**System Settings** → **Accessibility** → **Shortcut** → Check "Invert colors"
+
+## Dark Mode Alternative
+
+Modern macOS offers Dark Mode as a better alternative:
+
+**System Settings** → **Appearance** → **Dark**
+
+Or via Terminal:
+```bash
+# Enable dark mode
+osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to true'
+
+# Disable dark mode
+osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to false'
+```
+
+## Use with Other Settings
+
+Combine with other display settings:
+
+```bash
+# Reading-optimized dark setup
+defaults write com.apple.universalaccess whiteOnBlack -bool false  # Use Dark Mode instead
+defaults write com.apple.universalaccess reduceTransparency -bool true
+defaults write com.apple.universalaccess increaseContrast -bool true
+```
+
+## Screenshots and Screen Recording
+
+Inverted colors:
+- **Do NOT affect** screenshots (captured in original colors)
+- **Do NOT affect** screen recordings
+- **Do NOT affect** external display output unless enabled separately
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Colors still inverted | Press Ctrl-Option-Cmd-8 to toggle |
+| Only some apps inverted | May be in Smart Invert mode |
+| Photos look wrong | Switch to Dark Mode instead |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Applies to**: All displays
+- **Note**: Per-display on multi-monitor setups
+
+## Source File
+
+**File**: [`defaults/accessibility/display.sh`](../../../defaults/accessibility/display.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "whiteOnBlack" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Change Display preferences for accessibility](https://support.apple.com/guide/mac-help/change-display-preferences-mchlp1108/mac)
+- [Apple: Vision Accessibility](https://www.apple.com/accessibility/vision/)

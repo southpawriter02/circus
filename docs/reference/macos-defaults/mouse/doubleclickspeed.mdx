@@ -1,0 +1,149 @@
+# Double-Click Speed
+
+Set the time interval for double-click recognition.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.mouse.doubleClickThreshold` |
+| **Type** | Float |
+| **Default Value** | `0.5` |
+| **Our Setting** | `0.5` |
+
+## Description
+
+Double-click speed determines how quickly you must click twice for macOS to recognize it as a double-click. The value is measured in seconds—a lower value requires faster clicking, while a higher value allows more time between clicks.
+
+## Values
+
+| Value | Speed Required |
+|-------|----------------|
+| `0.0` | Instant (nearly impossible) |
+| `0.25` | Very fast |
+| `0.5` | Default (moderate) |
+| `0.75` | Slower |
+| `1.0` | Very slow |
+| `1.5` | Maximum (very generous) |
+
+## Visual Representation
+
+```
+Time between clicks:
+├─ 0.0s ──────┼─ 0.5s ──────┼─ 1.0s ──────┼─ 1.5s ─→
+   │              │              │              │
+   └─ Too fast    └─ Default     └─ Slow        └─ Max
+```
+
+## Our Configuration
+
+**Set to**: `0.5` — Default moderate speed.
+
+### When to Adjust
+
+**Decrease (faster) for**:
+- Experienced users
+- Gaming
+- Speed-focused workflows
+
+**Increase (slower) for**:
+- Motor skill difficulties
+- Users with tremors
+- Children learning mouse use
+- Those who accidentally trigger double-clicks
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain com.apple.mouse.doubleClickThreshold
+
+# Set to default (0.5 seconds)
+defaults write NSGlobalDomain com.apple.mouse.doubleClickThreshold -float 0.5
+
+# Set faster double-click (0.25 seconds)
+defaults write NSGlobalDomain com.apple.mouse.doubleClickThreshold -float 0.25
+
+# Set slower double-click (1.0 seconds)
+defaults write NSGlobalDomain com.apple.mouse.doubleClickThreshold -float 1.0
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain com.apple.mouse.doubleClickThreshold
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Pointer Control** → **Double-click speed** slider
+
+Slider ranges from "Slow" to "Fast" without showing the exact value.
+
+## Testing Double-Click Speed
+
+Test with Finder:
+1. Click once on a file to select
+2. Wait briefly
+3. Click again
+4. If it opens, it registered as double-click
+5. If it starts renaming, clicks were too slow
+
+## Accidental Double-Clicks
+
+If you frequently trigger double-clicks accidentally:
+
+```bash
+# Increase the threshold (slower double-click)
+defaults write NSGlobalDomain com.apple.mouse.doubleClickThreshold -float 0.75
+```
+
+This requires more deliberate double-clicking.
+
+## Single-Click Alternatives
+
+Reduce need for double-clicking:
+
+| Action | Alternative |
+|--------|-------------|
+| Open file | ⌘O after selecting |
+| Open folder | Press Enter |
+| Rename | Press Enter after selecting |
+| Open with default app | ⌘↓ |
+
+## Effect on Triple-Click
+
+Triple-click (select paragraph) timing scales with double-click setting. Slower double-click = more time for triple-click.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Double-clicks not registering | Decrease threshold value |
+| Accidental double-clicks | Increase threshold value |
+| Inconsistent behavior | Check mouse hardware |
+
+## Mouse Hardware
+
+Some mice have:
+- Double-click buttons (single press = double-click)
+- Debounce settings in driver
+- Programmable click speed
+
+These may interact with system settings.
+
+## Compatibility
+
+- **macOS**: All versions
+- **Applies to**: All mouse and trackpad clicks
+- **Note**: Some apps may override with custom handling
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../defaults/accessibility/pointer.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.mouse.doubleClickThreshold" "-float" "0.5"
+```
+
+## References
+
+- [Apple Support: Change Pointer Control preferences](https://support.apple.com/guide/mac-help/change-pointer-control-preferences-accessibility-mchlc897c394/mac)

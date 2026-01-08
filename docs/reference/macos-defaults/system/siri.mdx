@@ -1,0 +1,138 @@
+# Siri Settings
+
+Control Siri assistant, suggestions, and voice feedback.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.assistant.support`, `com.apple.Siri` |
+| **Keys** | `Assistant Enabled`, `SiriSuggestionsEnabled`, etc. |
+| **Type** | Boolean, String |
+| **Default Value** | `true`, `true` |
+| **Our Setting** | `false`, `false` |
+
+## Description
+
+Siri is Apple's voice-activated assistant. These settings control whether Siri is enabled, how it provides suggestions across the system, and whether it responds with voice feedback. For privacy-focused users, Siri can be completely disabled.
+
+## Key Settings
+
+| Key | Domain | Purpose |
+|-----|--------|---------|
+| `Assistant Enabled` | `com.apple.assistant.support` | Master Siri toggle |
+| `SiriSuggestionsEnabled` | `com.apple.Siri` | App-based suggestions |
+| `ShowSiriSuggestionsInSpotlight` | `com.apple.Siri` | Spotlight suggestions |
+| `VoiceFeedback` | `com.apple.Siri` | Spoken responses |
+| `TypeToSiriEnabled` | `com.apple.Siri` | Keyboard input to Siri |
+
+## Our Configuration
+
+### Disable Siri (Privacy-Focused)
+
+```bash
+# Disable Siri completely
+defaults write com.apple.assistant.support "Assistant Enabled" -bool false
+
+# Disable Siri suggestions in apps
+defaults write com.apple.Siri SiriSuggestionsEnabled -bool false
+
+# Disable Siri in Spotlight
+defaults write com.apple.Siri ShowSiriSuggestionsInSpotlight -bool false
+```
+
+### Enable Type to Siri
+
+```bash
+# Allow typing queries (instead of voice)
+defaults write com.apple.Siri TypeToSiriEnabled -bool true
+```
+
+### Set Voice Feedback
+
+```bash
+# Disable voice responses (text only)
+defaults write com.apple.Siri VoiceFeedback -string "Off"
+
+# Enable voice responses
+defaults write com.apple.Siri VoiceFeedback -string "On"
+```
+
+## Code Examples
+
+```bash
+# Read current Siri status
+defaults read com.apple.assistant.support "Assistant Enabled"
+
+# Complete privacy-focused Siri configuration
+defaults write com.apple.assistant.support "Assistant Enabled" -bool false
+defaults write com.apple.Siri SiriSuggestionsEnabled -bool false
+defaults write com.apple.Siri ShowSiriSuggestionsInSpotlight -bool false
+
+# Reset to defaults
+defaults delete com.apple.assistant.support "Assistant Enabled"
+defaults delete com.apple.Siri SiriSuggestionsEnabled
+```
+
+## UI Location
+
+**System Settings** → **Siri & Spotlight**
+
+Options:
+- Ask Siri toggle
+- Listen for "Hey Siri"
+- Keyboard shortcut
+- Language and voice
+- Siri Suggestions in apps
+
+## Privacy Considerations
+
+When Siri is enabled:
+- Voice recordings may be sent to Apple
+- Search queries are processed on Apple servers
+- Suggestions are based on your usage patterns
+
+When Siri is disabled:
+- No voice data sent to Apple
+- No Siri suggestions
+- Hey Siri won't work
+- Dictation may still work (separate setting)
+
+## Siri vs Dictation
+
+Siri and Dictation are separate features:
+- **Siri**: Voice assistant for commands and queries
+- **Dictation**: Speech-to-text for typing (System Settings → Keyboard → Dictation)
+
+Disabling Siri doesn't disable Dictation.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Siri not responding | Check "Ask Siri" is enabled |
+| Suggestions still appearing | Disable SiriSuggestionsEnabled |
+| Hey Siri not working | Enable in Siri settings |
+| Changes not applying | Log out and back in |
+
+## Compatibility
+
+- **macOS**: 10.12 (Sierra)+
+- **Hardware**: All Macs support Siri
+- **Note**: Logout may be required for changes to take effect
+
+## Source File
+
+**File**: [`defaults/system/siri.sh`](../../../defaults/system/siri.sh)
+
+```bash
+run_defaults "com.apple.assistant.support" "Assistant Enabled" "-bool" "false"
+run_defaults "com.apple.Siri" "SiriSuggestionsEnabled" "-bool" "false"
+run_defaults "com.apple.Siri" "ShowSiriSuggestionsInSpotlight" "-bool" "false"
+run_defaults "com.apple.Siri" "TypeToSiriEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Siri on your Mac](https://support.apple.com/guide/mac-help/mchl6b029310/mac)
+- [Apple Support: Ask Siri](https://support.apple.com/siri)

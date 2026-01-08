@@ -1,0 +1,167 @@
+# Spotify Configuration
+
+Documentation for Spotify audio quality and playback settings.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.spotify.client` |
+| **Configuration** | In-app settings |
+| **Preferences File** | `~/Library/Application Support/Spotify/prefs` |
+| **Our Focus** | Audio quality optimization |
+
+## Description
+
+Spotify stores most preferences in its own format, not macOS defaults. Settings are configured within the Spotify app and sync with your Spotify account. Premium subscribers have access to higher audio quality options.
+
+## Audio Quality Settings
+
+### Streaming Quality (Premium Only)
+
+| Quality | Bitrate | Data Usage |
+|---------|---------|------------|
+| Low | ~24 kbps | ~0.5 MB/min |
+| Normal | ~96 kbps | ~1.5 MB/min |
+| High | ~160 kbps | ~2.5 MB/min |
+| Very High | ~320 kbps | ~5 MB/min |
+
+### Download Quality (Premium Only)
+
+Same options as streaming. Downloaded songs use selected quality permanently.
+
+## Recommended Settings
+
+| Setting | Recommended | Why |
+|---------|-------------|-----|
+| Streaming quality | Very High | Best audio experience |
+| Download quality | Very High | Best offline quality |
+| Normalize volume | On | Even volume across tracks |
+| Gapless playback | On | Seamless album transitions |
+| Crossfade | 0 seconds | For albums; set higher for playlists |
+
+## In-App Configuration
+
+**Spotify** → **Settings** (⌘,)
+
+### Audio Quality Section
+
+- Streaming quality
+- Download quality
+- Auto adjust quality (adapts to network)
+- Normalize volume
+
+### Playback Section
+
+- Crossfade (0-12 seconds)
+- Gapless playback
+- Automix (for playlists)
+
+### Startup Section
+
+- Open Spotify automatically on login
+  - Yes / No / Minimized
+- Close button minimizes (keeps running)
+
+## macOS Defaults (Limited)
+
+Spotify has minimal defaults support:
+
+```bash
+# Check Spotify preferences
+defaults read com.spotify.client
+
+# Expanded print dialog (for lyrics printing)
+defaults write com.spotify.client PMPrintingExpandedStateForPrint2 -bool true
+```
+
+## Login Item Management
+
+Control auto-start:
+
+```bash
+# System Settings → General → Login Items
+# Remove Spotify if you don't want it starting automatically
+```
+
+Or in Spotify Settings → Startup → "Open Spotify automatically"
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| Space | Play/Pause |
+| ⌘↑ | Volume up |
+| ⌘↓ | Volume down |
+| ⌘→ | Next track |
+| ⌘← | Previous track |
+| ⌘L | Show current song |
+| ⌘F | Search |
+
+## Local Files
+
+Play local music files through Spotify:
+
+1. **Settings** → **Local Files**
+2. Enable "Show Local Files"
+3. Add source folders
+4. Local files appear in Your Library
+
+Supported formats: .mp3, .m4p, .mp4
+
+## Equalizer
+
+**Settings** → **Playback** → **Equalizer**
+
+Presets or manual adjustment for different audio profiles.
+
+## Cache Management
+
+Spotify caches music for faster playback:
+
+```bash
+# Cache location
+~/Library/Caches/com.spotify.client/
+
+# Clear cache (may need to re-download offline content)
+rm -rf ~/Library/Caches/com.spotify.client/*
+```
+
+Or in Spotify: **Settings** → **Storage** → **Clear cache**
+
+## Connect & Devices
+
+Control playback on other devices (Spotify Connect):
+- Click device icon in playback bar
+- Select speakers, TVs, or other devices
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Poor audio quality | Set to "Very High" (Premium) |
+| Stuttering playback | Enable "Auto adjust quality" |
+| High data usage | Lower streaming quality |
+| Can't play local files | Check folder permissions |
+
+## Compatibility
+
+- **macOS**: 10.13+
+- **Premium**: Required for high quality and downloads
+- **Sync**: Settings sync via Spotify account
+
+## Source File
+
+**File**: [`defaults/applications/spotify.sh`](../../../../defaults/applications/spotify.sh)
+
+```bash
+# Spotify settings are configured in-app:
+# Open Spotify → Settings (Cmd+,)
+# Recommended: Very High quality, Normalize volume, Gapless playback
+```
+
+## References
+
+- [Spotify: Audio settings](https://support.spotify.com/us/article/audio-settings/)
+- [Spotify: Desktop settings](https://support.spotify.com/us/article/desktop-settings/)
+- [Spotify: Keyboard shortcuts](https://support.spotify.com/us/article/keyboard-shortcuts/)

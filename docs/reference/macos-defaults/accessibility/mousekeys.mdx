@@ -1,0 +1,174 @@
+# Mouse Keys
+
+Control the mouse pointer using the keyboard numpad.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `mouseKeysEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Mouse Keys lets you move the mouse pointer and perform clicks using the keyboard's numeric keypad. This is essential for users who cannot use a mouse or trackpad, and serves as a backup when pointing devices fail.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Mouse Keys enabled** — Numpad controls cursor |
+| `false` | **Disabled** (default) — Normal numpad function |
+
+## Numpad Controls
+
+```
+┌─────┬─────┬─────┐
+│  7  │  8  │  9  │   ↖  ↑  ↗
+│     │     │     │
+├─────┼─────┼─────┤
+│  4  │  5  │  6  │   ←  •  →
+│     │Click│     │
+├─────┼─────┼─────┤
+│  1  │  2  │  3  │   ↙  ↓  ↘
+│     │     │     │
+├─────┴─────┼─────┤
+│     0     │  .  │   Hold   Release
+│   Lock    │     │   (drag)
+└───────────┴─────┘
+```
+
+| Key | Action |
+|-----|--------|
+| 7 | Move up-left |
+| 8 | Move up |
+| 9 | Move up-right |
+| 4 | Move left |
+| 5 | Click |
+| 6 | Move right |
+| 1 | Move down-left |
+| 2 | Move down |
+| 3 | Move down-right |
+| 0 | Press and hold (for dragging) |
+| . | Release (end drag) |
+
+## Our Configuration
+
+**Set to**: `false` — Disabled (numpad for numbers).
+
+### When to Enable
+
+- Mouse or trackpad broken
+- Motor skill difficulties
+- Precise cursor positioning needed
+- Accessibility requirements
+- Emergency backup input
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess mouseKeysEnabled
+
+# Enable Mouse Keys
+defaults write com.apple.universalaccess mouseKeysEnabled -bool true
+
+# Disable Mouse Keys (default)
+defaults write com.apple.universalaccess mouseKeysEnabled -bool false
+
+# Delete (reset)
+defaults delete com.apple.universalaccess mouseKeysEnabled
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Pointer Control** → **Alternate Control Methods** → **Mouse Keys**
+
+Options:
+- Enable Mouse Keys toggle
+- Initial Delay slider
+- Maximum Speed slider
+- Ignore built-in trackpad when Mouse Keys is on
+
+## Keyboard Shortcut Toggle
+
+Enable quick toggle:
+
+**Press Option 5 times** → Toggles Mouse Keys on/off
+
+Configure in:
+**System Settings** → **Accessibility** → **Pointer Control** → **Press Option key five times to toggle Mouse Keys**
+
+## Adjusting Speed
+
+### Initial Delay
+
+Time before pointer starts moving when key is held:
+- Shorter = immediate movement
+- Longer = prevents accidental moves
+
+### Maximum Speed
+
+How fast pointer moves:
+- Lower = fine control, precision
+- Higher = faster navigation
+
+```bash
+# These are configured via UI slider
+# Stored in com.apple.universalaccess plist
+```
+
+## On Laptops (No Numpad)
+
+On MacBooks without numpad, use with Fn key:
+- Enable "Use keyboard for Mouse Keys"
+- Use letter keys that map to numpad positions
+
+Check **System Settings** → **Accessibility** → **Mouse Keys** for key mapping.
+
+## Precision Mode
+
+For fine control:
+- Hold **Control** while pressing Mouse Keys
+- Cursor moves in smaller increments
+- Useful for pixel-perfect positioning
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Numbers typing instead | Enable Mouse Keys |
+| Cursor not moving | Check Mouse Keys is enabled |
+| Too slow | Increase Maximum Speed |
+| Accidental activation | Use Option×5 toggle |
+
+## Use Case: Mouse Broke
+
+Emergency procedure when mouse fails:
+1. Press Option 5 times (enable Mouse Keys)
+2. Use numpad 8 to move up
+3. Use numpad 5 to click
+4. Navigate to System Settings
+5. Configure new mouse or troubleshoot
+
+## Compatibility
+
+- **macOS**: All versions
+- **Hardware**: Any keyboard with numpad (external for MacBooks)
+- **Note**: Disables numpad number entry when active
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../defaults/accessibility/pointer.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "mouseKeysEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Control the pointer using Mouse Keys](https://support.apple.com/guide/mac-help/control-the-pointer-using-mouse-keys-mh27469/mac)
+- [Apple: Physical and Motor accessibility](https://www.apple.com/accessibility/mac/physical-and-motor/)

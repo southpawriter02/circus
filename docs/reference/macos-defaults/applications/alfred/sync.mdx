@@ -1,0 +1,180 @@
+# Alfred Sync Settings
+
+Configure Alfred to sync preferences from a custom directory.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.runningwithcrayons.Alfred-Preferences` |
+| **Key** | `syncfolder` |
+| **Type** | String |
+| **Default Value** | `""` (none) |
+| **Our Setting** | `$DOTFILES_DIR/etc/alfred` |
+
+## Description
+
+Alfred is a powerful launcher and productivity app for macOS. By default, settings are stored in `~/Library/Application Support/Alfred`. This setting enables syncing Alfred's preferences, workflows, and themes from a custom directory—ideal for version control and multi-machine sync.
+
+## What Gets Synced
+
+When you set a sync folder, Alfred stores:
+
+| Item | Description |
+|------|-------------|
+| **Preferences** | General settings, appearance |
+| **Workflows** | Automation scripts (Powerpack) |
+| **Themes** | Visual customizations |
+| **Snippets** | Text expansion (Powerpack) |
+| **Clipboard history** | Settings (not actual history) |
+| **Remote** | Alfred Remote configuration |
+
+## Our Configuration
+
+**Set to**: `$DOTFILES_DIR/etc/alfred` — Sync from dotfiles repository.
+
+### Why Sync Alfred?
+
+1. **Version control** — Track changes to workflows
+2. **Multi-machine** — Same setup everywhere
+3. **Backup** — Never lose custom workflows
+4. **Team sharing** — Share workflows with colleagues
+
+## Code Examples
+
+```bash
+# Read current sync folder
+defaults read com.runningwithcrayons.Alfred-Preferences syncfolder
+
+# Set sync folder to dotfiles
+defaults write com.runningwithcrayons.Alfred-Preferences syncfolder -string "$HOME/dotfiles/alfred"
+
+# Set to Dropbox
+defaults write com.runningwithcrayons.Alfred-Preferences syncfolder -string "$HOME/Dropbox/Alfred"
+
+# Set to iCloud
+defaults write com.runningwithcrayons.Alfred-Preferences syncfolder -string "$HOME/Library/Mobile Documents/com~apple~CloudDocs/Alfred"
+
+# Clear sync folder (use default location)
+defaults write com.runningwithcrayons.Alfred-Preferences syncfolder -string ""
+```
+
+## UI Location
+
+**Alfred Preferences** (⌘,) → **Advanced** → **Set preferences folder...**
+
+Steps:
+1. Open Alfred Preferences
+2. Go to Advanced tab
+3. Click "Set preferences folder..."
+4. Navigate to your sync folder
+5. Alfred copies current preferences to the new location
+
+## Setup Steps
+
+### Initial Setup (First Machine)
+
+1. Launch Alfred and configure to your liking
+2. Create sync folder: `mkdir -p ~/dotfiles/alfred`
+3. Open Alfred Preferences → Advanced
+4. Click "Set preferences folder..."
+5. Select `~/dotfiles/alfred`
+6. Alfred copies settings to the folder
+
+### New Machine Setup
+
+1. Clone/sync your dotfiles repository
+2. Install Alfred
+3. Run:
+```bash
+defaults write com.runningwithcrayons.Alfred-Preferences syncfolder -string "$HOME/dotfiles/alfred"
+```
+4. Restart Alfred
+
+## Powerpack Requirement
+
+Some features require Alfred Powerpack (paid):
+- Workflows ✓
+- Snippets ✓
+- Clipboard history ✓
+- 1Password integration ✓
+
+Basic Alfred features work without Powerpack.
+
+## Version Control
+
+For Git-based sync:
+
+```bash
+cd ~/dotfiles
+git add alfred/
+git commit -m "Update Alfred preferences"
+```
+
+### Ignoring Sensitive Data
+
+Create `.gitignore` in alfred folder:
+```
+# Ignore sensitive workflow data
+workflows/*/prefs.plist
+# Ignore cache
+caches/
+# Ignore usage data
+usage.data
+```
+
+## Recommended Workflows
+
+Popular Alfred workflows to include:
+
+| Workflow | Purpose |
+|----------|---------|
+| **Dash** | Documentation search |
+| **GitHub** | Repo search and actions |
+| **Kill Process** | Force quit apps |
+| **Terminal Finder** | Open terminal at location |
+| **Emoji Search** | Quick emoji picker |
+| **Colors** | Color format converter |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Settings not syncing | Check folder path exists |
+| Workflows missing | Verify Powerpack license |
+| Conflicts between machines | Don't run Alfred simultaneously on different Macs |
+| Permissions error | Check folder permissions |
+
+## Sync Folder Structure
+
+```
+alfred/
+├── Alfred.alfredpreferences/
+│   ├── preferences/
+│   │   └── preferences.plist
+│   ├── workflows/
+│   │   ├── user.workflow.xxx/
+│   │   └── ...
+│   ├── themes/
+│   └── snippets/
+```
+
+## Compatibility
+
+- **Alfred**: 4.0+
+- **Requires**: macOS 10.11+
+- **Powerpack**: Required for workflows, snippets
+
+## Source File
+
+**File**: [`defaults/applications/alfred.sh`](../../../../defaults/applications/alfred.sh)
+
+```bash
+defaults write com.runningwithcrayons.Alfred-Preferences syncfolder -string "$DOTFILES_DIR/etc/alfred"
+```
+
+## References
+
+- [Alfred Knowledge Base](https://www.alfredapp.com/help/)
+- [Alfred Sync Documentation](https://www.alfredapp.com/help/advanced/sync/)
+- [Alfred Workflows](https://www.alfredapp.com/workflows/)

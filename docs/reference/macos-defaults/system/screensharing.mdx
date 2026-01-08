@@ -1,0 +1,164 @@
+# Screen Sharing VNC Settings
+
+Control Screen Sharing and legacy VNC connection settings.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.ScreenSharing` |
+| **Key** | `VNCLegacyConnectionsEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+macOS Screen Sharing allows remote control of your Mac. By default, it uses Apple Remote Desktop (ARD) protocol, which is more secure. The VNC legacy mode allows older VNC clients to connect, but with reduced security.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Allow VNC** — Legacy VNC clients can connect |
+| `false` | **ARD only** (default) — Only Apple Remote Desktop clients |
+
+## Our Configuration
+
+**Set to**: `false` — Use secure ARD protocol only.
+
+### Why Disable Legacy VNC?
+
+1. **Security** — ARD has stronger encryption
+2. **Authentication** — Better password handling
+3. **Features** — ARD supports more capabilities
+4. **Modern** — VNC is outdated for macOS
+
+### When to Enable VNC
+
+- Connecting from non-Apple devices
+- Using third-party VNC clients (RealVNC, TightVNC)
+- Cross-platform remote access
+- Legacy system compatibility
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.ScreenSharing VNCLegacyConnectionsEnabled
+
+# Disable legacy VNC (more secure)
+defaults write com.apple.ScreenSharing VNCLegacyConnectionsEnabled -bool false
+
+# Enable legacy VNC connections
+defaults write com.apple.ScreenSharing VNCLegacyConnectionsEnabled -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.ScreenSharing VNCLegacyConnectionsEnabled
+```
+
+## Enabling Screen Sharing
+
+First, enable Screen Sharing in System Settings:
+
+```bash
+# Check status (requires sudo)
+sudo launchctl list | grep screensharing
+
+# Enable via UI is recommended:
+# System Settings → General → Sharing → Screen Sharing
+```
+
+## UI Location
+
+**System Settings** → **General** → **Sharing** → **Screen Sharing**
+
+Click ℹ️ next to Screen Sharing for options:
+- Computer Settings (VNC settings)
+- Allow access for specific users
+
+## Client Applications
+
+| Client | Platform | Notes |
+|--------|----------|-------|
+| **Screen Sharing.app** | macOS | Built-in, uses ARD |
+| **Apple Remote Desktop** | macOS | Full ARD features |
+| **RealVNC** | Cross-platform | Requires VNC enabled |
+| **jump Desktop** | macOS/iOS | Supports both protocols |
+
+## Connecting to Your Mac
+
+### From Another Mac
+
+```bash
+# Open Screen Sharing app
+open vnc://hostname.local
+
+# Or use Finder
+# Go → Connect to Server → vnc://hostname.local
+```
+
+### From Non-Apple Device
+
+1. Enable VNC legacy mode
+2. Set VNC password in Computer Settings
+3. Connect using VNC client to: `vnc://your-mac-ip:5900`
+
+## Security Best Practices
+
+### If Enabling Screen Sharing
+
+1. **Limit users** — Only allow specific accounts
+2. **Strong password** — Use complex VNC password
+3. **Firewall** — Only allow from trusted networks
+4. **VPN** — Use VPN for remote access
+
+### Network Considerations
+
+```bash
+# Screen Sharing uses port 5900
+# Ensure firewall allows if needed
+
+# Check firewall status
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --listapps
+```
+
+## Remote Login (SSH) Alternative
+
+For terminal access without GUI:
+
+```bash
+# Enable SSH
+sudo systemsetup -setremotelogin on
+
+# Connect
+ssh user@hostname.local
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't connect | Check Screen Sharing is enabled |
+| VNC client fails | Enable VNCLegacyConnectionsEnabled |
+| Authentication fails | Check user permissions |
+| Firewall blocking | Add exception for Screen Sharing |
+
+## Compatibility
+
+- **macOS**: All versions
+- **ARD**: More secure, macOS-to-macOS
+- **VNC**: Cross-platform, less secure
+
+## Source File
+
+**File**: [`defaults/system/sharing.sh`](../../../defaults/system/sharing.sh)
+
+```bash
+run_defaults "com.apple.ScreenSharing" "VNCLegacyConnectionsEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Set up file sharing](https://support.apple.com/guide/mac-help/set-up-file-sharing-mh17131/mac)
+- [Apple Support: Share the screen of another Mac](https://support.apple.com/guide/mac-help/screen-mh14066/mac)

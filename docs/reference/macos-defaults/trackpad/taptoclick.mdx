@@ -1,0 +1,153 @@
+# Tap to Click
+
+Enable tapping the trackpad to click without pressing.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `Clicking` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether a light tap on the trackpad registers as a click. By default, macOS requires physically pressing the trackpad until it clicks. With Tap to Click enabled, a gentle tap is sufficient—similar to mobile devices.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Tap to click** — Light tap registers as click |
+| `false` | **Press to click** (default) — Physical press required |
+
+## Our Configuration
+
+**Set to**: `true` — Enable tap to click.
+
+### Why Enable Tap to Click?
+
+1. **Convenience** — Faster, lighter interaction
+2. **Ergonomics** — Less finger strain
+3. **Quieter** — No clicking sound
+4. **Mobile familiarity** — Like iOS/touch devices
+5. **Speed** — Quick selections and actions
+
+### Why Keep Press to Click?
+
+- Prevent accidental clicks
+- More deliberate interaction
+- Traditional feel preference
+- Touch sensitivity issues
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad Clicking
+
+# Enable tap to click (recommended)
+defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+
+# Disable (press to click - Apple default)
+defaults write com.apple.AppleMultitouchTrackpad Clicking -bool false
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad Clicking
+```
+
+## Why Two Domains?
+
+- `com.apple.AppleMultitouchTrackpad` — Built-in trackpad
+- `com.apple.driver.AppleBluetoothMultitouch.trackpad` — Magic Trackpad (Bluetooth)
+
+Set both for consistent behavior across all trackpads.
+
+## UI Location
+
+**System Settings** → **Trackpad** → **Point & Click** → ☑ **Tap to click**
+
+## Related Trackpad Settings
+
+### Two-Finger Tap (Right-Click)
+
+```bash
+# Enable two-finger tap for right-click
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool true
+```
+
+### Click Pressure
+
+```bash
+# Click pressure: 0=Light, 1=Medium, 2=Firm
+defaults write com.apple.AppleMultitouchTrackpad FirstClickThreshold -int 1
+defaults write com.apple.AppleMultitouchTrackpad SecondClickThreshold -int 1
+```
+
+### Force Click (Look Up)
+
+```bash
+# Enable Force Click and haptic feedback
+defaults write com.apple.AppleMultitouchTrackpad ActuateDetents -bool true
+```
+
+## Complete Trackpad Configuration
+
+```bash
+# Ergonomic trackpad setup
+defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool true
+defaults write com.apple.AppleMultitouchTrackpad ActuateDetents -bool true
+defaults write com.apple.AppleMultitouchTrackpad FirstClickThreshold -int 1
+
+# For Bluetooth Magic Trackpad
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+```
+
+## Gesture Types with Tap to Click
+
+| Gesture | Action |
+|---------|--------|
+| Single finger tap | Primary click |
+| Two finger tap | Secondary click (right-click) |
+| Single finger press | Primary click (always works) |
+| Force click (press hard) | Look up, Quick Look |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Taps not registering | Check both domains are set |
+| Accidental clicks | Disable or adjust sensitivity |
+| Not working after update | Reset and reconfigure |
+
+### Reset Trackpad Settings
+
+```bash
+defaults delete com.apple.AppleMultitouchTrackpad
+defaults delete com.apple.driver.AppleBluetoothMultitouch.trackpad
+```
+
+## Compatibility
+
+- **macOS**: All versions with multitouch trackpad
+- **Devices**: MacBook trackpads, Magic Trackpad
+- **Note**: Settings may need update after macOS upgrades
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../defaults/accessibility/pointer.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "Clicking" "-bool" "true"
+run_defaults "com.apple.driver.AppleBluetoothMultitouch.trackpad" "Clicking" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use trackpad on Mac](https://support.apple.com/guide/mac-help/use-trackpad-gestures-mchlp1290/mac)
+- [Apple Support: Change Trackpad preferences](https://support.apple.com/guide/mac-help/change-trackpad-preferences-mchlp1226/mac)

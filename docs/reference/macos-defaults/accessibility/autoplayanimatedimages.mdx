@@ -1,0 +1,132 @@
+# Auto-play Animated Images
+
+Control automatic playback of GIFs and animated images.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `AutoPlayAnimatedImages` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether animated images (GIFs, animated PNGs, WebP animations) play automatically in Safari and other apps. When disabled, animations are paused and must be manually started. This helps reduce distractions and can prevent motion sickness for sensitive users.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-play** (default) — Animations play automatically |
+| `false` | **Paused** — Animations require manual start |
+
+## Our Configuration
+
+**Set to**: `true` — Allow automatic animation playback.
+
+### Why Enable Auto-play?
+
+1. **Expected behavior** — GIFs should animate
+2. **Content experience** — See animations as intended
+3. **Web browsing** — Normal website experience
+
+### Why Disable Auto-play?
+
+- Motion sensitivity or vestibular disorders
+- Reduce distractions while working
+- Conserve battery/CPU
+- Focus mode during reading
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess AutoPlayAnimatedImages
+
+# Enable auto-play (default)
+defaults write com.apple.universalaccess AutoPlayAnimatedImages -bool true
+
+# Disable auto-play (pause animations)
+defaults write com.apple.universalaccess AutoPlayAnimatedImages -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess AutoPlayAnimatedImages
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Display** → ☑ **Auto-play animated images**
+
+## Safari-Specific Control
+
+Safari also has page-level controls:
+- **Safari** → **Settings** → **Websites** → **Auto-Play**
+
+This controls video auto-play but not GIF animations.
+
+## How to Play Paused Animations
+
+When auto-play is disabled:
+1. **Safari**: Right-click → Play (if available)
+2. **Preview**: Images are static
+3. **Quick Look**: Press Space on file
+
+## Related Settings
+
+```bash
+# Complete motion reduction setup
+defaults write com.apple.universalaccess AutoPlayAnimatedImages -bool false
+defaults write com.apple.universalaccess reduceMotion -bool true
+```
+
+| Setting | Effect |
+|---------|--------|
+| `AutoPlayAnimatedImages` | Controls GIF/animation playback |
+| `reduceMotion` | Reduces UI animations and parallax |
+
+## Web Browser Extensions
+
+For finer control, consider browser extensions:
+- **GIF Scrubber** — Control GIF playback
+- **Disable HTML5 Autoplay** — Stop video autoplay
+- **uBlock Origin** — Can block animated elements
+
+## Performance Impact
+
+Animated GIFs can:
+- Increase CPU usage
+- Drain battery faster
+- Use more memory
+- Slow down page rendering
+
+Disabling auto-play improves performance on image-heavy pages.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| GIFs still playing | Restart browser |
+| Can't start animation | Some apps don't support manual play |
+| Videos still auto-playing | Separate setting (Safari preferences) |
+
+## Compatibility
+
+- **macOS**: 10.14+
+- **Affects**: Safari, Preview, Quick Look, most apps
+- **Note**: Third-party apps may ignore this setting
+
+## Source File
+
+**File**: [`defaults/accessibility/display.sh`](../../../defaults/accessibility/display.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "AutoPlayAnimatedImages" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change Display preferences for accessibility](https://support.apple.com/guide/mac-help/change-display-preferences-mchlp1108/mac)
+- [Web Content Accessibility Guidelines: Animation from Interactions](https://www.w3.org/WAI/WCAG21/Understanding/animation-from-interactions)

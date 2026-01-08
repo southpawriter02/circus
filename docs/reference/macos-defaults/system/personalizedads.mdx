@@ -1,0 +1,149 @@
+# Personalized Ads
+
+Control Apple's personalized advertising based on your data.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AdLib` |
+| **Keys** | `allowApplePersonalizedAdvertising`, `forceLimitAdTracking` |
+| **Type** | Boolean |
+| **Default Value** | `true`, `false` |
+| **Our Setting** | `false`, `true` |
+
+## Description
+
+Apple uses your data to deliver personalized advertisements in Apple apps and services like the App Store, Apple News, and Stocks. These settings let you disable personalized ads while still seeing non-targeted advertisements.
+
+## Key Settings
+
+| Key | Purpose | Our Setting |
+|-----|---------|-------------|
+| `allowApplePersonalizedAdvertising` | Personalized ads in Apple apps | `false` |
+| `forceLimitAdTracking` | Limit cross-app ad tracking | `true` |
+| `allowIdentifierForAdvertising` | Allow advertising identifier | `false` |
+
+## Our Configuration
+
+**All disabled** — Maximum privacy for advertising.
+
+### What Changes When Disabled?
+
+| Feature | Enabled | Disabled |
+|---------|---------|----------|
+| Apple ads | Personalized | Generic/random |
+| App Store suggestions | Based on history | Based on charts |
+| Apple News ads | Interest-based | Non-targeted |
+| Advertising ID | Active | Limited |
+
+### You Still See Ads
+
+Disabling personalized ads doesn't remove ads—you'll still see advertisements, but they won't be based on your interests, app usage, or demographics.
+
+## Code Examples
+
+```bash
+# Read current values
+defaults read com.apple.AdLib
+
+# Disable personalized advertising (recommended)
+defaults write com.apple.AdLib allowApplePersonalizedAdvertising -bool false
+
+# Force limit ad tracking
+defaults write com.apple.AdLib forceLimitAdTracking -bool true
+
+# Disable advertising identifier
+defaults write com.apple.AdLib allowIdentifierForAdvertising -bool false
+
+# Complete privacy configuration
+defaults write com.apple.AdLib allowApplePersonalizedAdvertising -bool false
+defaults write com.apple.AdLib forceLimitAdTracking -bool true
+defaults write com.apple.AdLib allowIdentifierForAdvertising -bool false
+
+# Reset to defaults (personalized ads enabled)
+defaults delete com.apple.AdLib
+```
+
+## UI Location
+
+**System Settings** → **Privacy & Security** → **Apple Advertising**
+
+Options:
+- Personalized Ads toggle
+- View Ad Targeting Information link
+
+## What Data Apple Uses
+
+When personalized ads are enabled, Apple may use:
+
+| Data Type | Examples |
+|-----------|----------|
+| **Demographics** | Age, gender |
+| **Device** | iPhone, Mac model |
+| **App Store** | Purchase/download history |
+| **Apple News** | Reading preferences |
+| **Stocks** | Stocks you follow |
+| **Apple Music** | Listening history |
+
+Apple states they don't track you across third-party apps.
+
+## View Ad Targeting Info
+
+See what Apple knows about you:
+
+1. **System Settings** → **Privacy & Security** → **Apple Advertising**
+2. Click **View Ad Targeting Information**
+3. See segments Apple has assigned to you
+
+## Difference from Third-Party Tracking
+
+| Apple Ads | Third-Party Tracking |
+|-----------|---------------------|
+| Within Apple ecosystem | Across websites/apps |
+| Disabled via these settings | Use App Tracking Transparency |
+| Limited data types | Often extensive data collection |
+
+## App Tracking Transparency
+
+For third-party app tracking (iOS concept now on macOS):
+
+**System Settings** → **Privacy & Security** → **Tracking**
+
+Controls whether apps can request to track you across other companies' apps and websites.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still seeing personalized ads | May take time to update |
+| Setting keeps reverting | Check for MDM profiles |
+| Apps still tracking | Check App Tracking Transparency |
+
+## Privacy Considerations
+
+> 🔒 **Privacy Tip**: For maximum privacy, also disable:
+> - Siri Suggestions
+> - Location Services for Apple Advertising
+> - Analytics sharing with Apple
+
+## Compatibility
+
+- **macOS**: 10.15+
+- **iOS equivalent**: Settings → Privacy → Apple Advertising
+- **Syncs**: Yes, via Apple ID
+
+## Source File
+
+**File**: [`defaults/system/privacy.sh`](../../../defaults/system/privacy.sh)
+
+```bash
+run_defaults "com.apple.AdLib" "allowApplePersonalizedAdvertising" "-bool" "false"
+run_defaults "com.apple.AdLib" "forceLimitAdTracking" "-bool" "true"
+run_defaults "com.apple.AdLib" "allowIdentifierForAdvertising" "-bool" "false"
+```
+
+## References
+
+- [Apple: About Apple Advertising & Privacy](https://support.apple.com/en-us/HT205223)
+- [Apple: Apple Advertising Platform](https://searchads.apple.com/privacy)

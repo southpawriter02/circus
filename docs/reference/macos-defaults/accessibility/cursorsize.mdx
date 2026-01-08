@@ -1,0 +1,140 @@
+# Cursor Size
+
+Adjust the mouse pointer size for visibility.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `mouseDriverCursorSize` |
+| **Type** | Float |
+| **Default Value** | `1.0` |
+| **Our Setting** | `1.0` |
+
+## Description
+
+Controls the size of the mouse cursor. The default size of 1.0 is suitable for most users, but those with vision difficulties or using high-resolution displays may benefit from a larger cursor. The maximum size is 4.0 (four times normal).
+
+## Values
+
+| Value | Size |
+|-------|------|
+| `1.0` | Normal (default) |
+| `1.5` | 150% (slightly larger) |
+| `2.0` | 200% (double size) |
+| `3.0` | 300% (large) |
+| `4.0` | 400% (maximum) |
+
+## Visual Example
+
+```
+Normal (1.0):  ↖
+               
+Larger (2.0):  ↖↖
+               ↖↖
+
+Maximum (4.0): ↖↖↖↖
+               ↖↖↖↖
+               ↖↖↖↖
+               ↖↖↖↖
+```
+
+## Our Configuration
+
+**Set to**: `1.0` — Normal cursor size.
+
+### Why Normal Size?
+
+1. **Precision** — Smaller cursor for accuracy
+2. **Screen space** — Less visual obstruction
+3. **Standard** — Expected appearance
+
+### When to Increase Size
+
+- Vision impairments
+- High-resolution (5K/6K) displays
+- Presentations (audience visibility)
+- Users who frequently lose the cursor
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess mouseDriverCursorSize
+
+# Set to normal size
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 1.0
+
+# Set to larger size
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 1.5
+
+# Set to maximum size
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 4.0
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess mouseDriverCursorSize
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Display** → **Pointer** section → **Pointer size** slider
+
+## Related Pointer Settings
+
+### Shake to Locate
+
+macOS can temporarily enlarge the cursor when you shake the mouse:
+
+**System Settings** → **Accessibility** → **Display** → **Pointer** → ☑ **Shake mouse pointer to locate**
+
+### Pointer Outline
+
+Add a colored outline around the cursor:
+
+**System Settings** → **Accessibility** → **Display** → **Pointer** → **Pointer outline**
+
+### Pointer Fill Color
+
+Change the cursor fill color:
+
+**System Settings** → **Accessibility** → **Display** → **Pointer** → **Pointer fill color**
+
+## Presentation Mode
+
+For presentations, temporarily increase cursor size:
+
+```bash
+# Before presentation
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 2.5
+
+# After presentation
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 1.0
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Size not changing | Try logging out and back in |
+| Cursor too large | Reduce value (minimum 1.0) |
+| Some apps show different size | App may use custom cursor |
+
+## Compatibility
+
+- **macOS**: 10.8+
+- **Applies to**: System-wide
+- **Note**: Some apps with custom cursors may not respect this
+
+## Source File
+
+**File**: [`defaults/accessibility/display.sh`](../../../defaults/accessibility/display.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "mouseDriverCursorSize" "-float" "1.0"
+```
+
+## References
+
+- [Apple Support: Change Pointer preferences](https://support.apple.com/guide/mac-help/change-pointer-preferences-mchlb26826f/mac)
+- [Apple Support: Accessibility features on Mac](https://support.apple.com/guide/mac-help/accessibility-features-mh35884/mac)

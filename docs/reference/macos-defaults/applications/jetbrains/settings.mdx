@@ -1,0 +1,197 @@
+# JetBrains IDE Configuration
+
+Documentation for configuring JetBrains IDEs (IntelliJ, PyCharm, WebStorm, etc.).
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Configuration** | XML files |
+| **Location** | `~/Library/Application Support/JetBrains/` |
+| **Sync** | JetBrains Account or Settings Repository |
+| **Our Approach** | JetBrains Account sync |
+
+## Description
+
+JetBrains IDEs (IntelliJ IDEA, PyCharm, WebStorm, GoLand, etc.) use XML configuration files rather than macOS defaults. Configuration is managed through the IDE settings interface or by syncing via JetBrains Account.
+
+## Configuration Locations
+
+### Settings Directory (macOS)
+
+```
+~/Library/Application Support/JetBrains/
+└── <Product><Version>/           # e.g., IntelliJIdea2024.1
+    ├── codestyles/               # Code formatting
+    ├── colors/                   # Color schemes
+    ├── fileTemplates/            # File templates
+    ├── inspection/               # Inspection profiles
+    ├── keymaps/                  # Keyboard shortcuts
+    ├── options/                  # General settings
+    ├── scratches/               # Scratch files
+    └── templates/                # Live templates
+```
+
+### Cache Directory
+
+```
+~/Library/Caches/JetBrains/<Product><Version>/
+```
+
+### Log Directory
+
+```
+~/Library/Logs/JetBrains/<Product><Version>/
+```
+
+## Sync Options
+
+### Option 1: JetBrains Account (Recommended)
+
+1. Open IDE Settings (⌘,)
+2. Go to **Settings Sync**
+3. Enable sync with JetBrains account
+4. Select what to sync (Settings, Keymaps, Plugins)
+
+### Option 2: Settings Repository
+
+Sync via Git repository:
+
+1. Open IDE Settings
+2. Go to **Settings Repository**
+3. Configure Git repository URL
+4. Push/pull settings
+
+### Option 3: Export/Import
+
+Manual settings transfer:
+
+1. **File** → **Manage IDE Settings** → **Export Settings**
+2. Creates a ZIP file
+3. Import on another machine
+
+## Recommended Settings
+
+### Editor Settings
+
+| Setting | Location | Recommended |
+|---------|----------|-------------|
+| Font | Editor → Font | JetBrains Mono, 14pt |
+| Line numbers | Editor → General → Appearance | ✓ Show |
+| Whitespace | Editor → General → Appearance | ✓ Show |
+| Line feed at EOF | Editor → General | ✓ Ensure |
+| Strip trailing spaces | Editor → General | On Save |
+
+### Version Control
+
+| Setting | Location | Recommended |
+|---------|----------|-------------|
+| Update method | Version Control → Git | Rebase |
+| Auto-update on reject | Version Control → Git | ✓ Enabled |
+| Commit message template | Version Control → Commit | Conventional commits |
+
+## Command Line Launchers
+
+Create CLI commands to open projects:
+
+**Tools** → **Create Command-line Launcher**
+
+| IDE | Command |
+|-----|---------|
+| IntelliJ IDEA | `idea` |
+| PyCharm | `pycharm` |
+| WebStorm | `webstorm` |
+| GoLand | `goland` |
+| PhpStorm | `phpstorm` |
+
+Usage:
+```bash
+idea .                    # Open current directory
+idea ~/projects/myapp    # Open specific project
+```
+
+## Recommended Plugins
+
+### Productivity
+
+- **Key Promoter X** — Learn keyboard shortcuts
+- **Presentation Assistant** — Show shortcuts in presentations
+- **Rainbow Brackets** — Color-code bracket pairs
+- **String Manipulation** — Text transformation tools
+
+### Git
+
+- **GitToolBox** — Enhanced Git status
+- **Conventional Commit** — Commit message helper
+
+### UI
+
+- **Atom Material Icons** — Better file icons
+- **One Dark Theme** — Popular dark theme
+- **Material Theme UI** — Material design
+
+## Troubleshooting
+
+### Reset to Defaults
+
+```bash
+# Remove settings (backup first!)
+rm -rf ~/Library/Application\ Support/JetBrains/<Product><Version>
+
+# Or use IDE:
+# Help → Find Action → "Restore Default Settings"
+```
+
+### Clear Caches
+
+```bash
+# Clear cache directory
+rm -rf ~/Library/Caches/JetBrains/<Product><Version>
+
+# Or use IDE:
+# File → Invalidate Caches → Invalidate and Restart
+```
+
+### View Logs
+
+```bash
+# Open logs directory
+open ~/Library/Logs/JetBrains/
+
+# Or use IDE:
+# Help → Show Log in Finder
+```
+
+## Memory Configuration
+
+Edit VM options for better performance:
+
+**Help** → **Edit Custom VM Options**
+
+```
+-Xms2048m
+-Xmx4096m
+-XX:ReservedCodeCacheSize=1024m
+```
+
+## Compatibility
+
+- **macOS**: 10.13+
+- **Products**: All JetBrains IDEs
+- **Note**: Settings are per-IDE, not shared between different products
+
+## Source File
+
+**File**: [`defaults/applications/jetbrains.sh`](../../../../defaults/applications/jetbrains.sh)
+
+```bash
+# JetBrains uses XML configuration files
+# Configure through IDE: Settings (Cmd+,)
+# Sync via JetBrains Account: Settings > Settings Sync
+```
+
+## References
+
+- [JetBrains: IDE Settings](https://www.jetbrains.com/help/idea/settings-preferences-dialog.html)
+- [JetBrains: Settings Sync](https://www.jetbrains.com/help/idea/sharing-your-ide-settings.html)
+- [JetBrains: Directories used by IDE](https://www.jetbrains.com/help/idea/directories-used-by-the-ide-to-store-settings-caches-plugins-and-logs.html)

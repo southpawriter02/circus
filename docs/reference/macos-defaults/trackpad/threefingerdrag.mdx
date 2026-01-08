@@ -1,0 +1,157 @@
+# Three Finger Drag
+
+Enable dragging items by using three fingers on the trackpad.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `TrackpadThreeFingerDrag` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Three Finger Drag is an alternative dragging method that lets you move windows, select text, and drag items using three fingers on the trackpad instead of clicking and holding. Once enabled, you simply touch with three fingers and move to drag.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Three finger drag** — Drag with three fingers |
+| `false` | **Disabled** (default) — Use click-drag or tap-drag |
+
+## Dragging Methods Comparison
+
+| Method | How It Works | Pros | Cons |
+|--------|--------------|------|------|
+| **Click and drag** | Press and hold while moving | Precise | Finger fatigue |
+| **Tap and drag** | Double-tap, hold second tap | Quick | Learning curve |
+| **Three finger drag** | Three fingers together | Ergonomic | Uses gestures |
+
+## Our Configuration
+
+**Set to**: `false` — Use standard dragging.
+
+### Why Three Finger Drag?
+
+1. **Ergonomics** — No clicking pressure required
+2. **Large moves** — Easy to drag across screen
+3. **Text selection** — Natural selection gesture
+4. **Window moving** — Comfortable window repositioning
+5. **No finger strain** — Light touch sufficient
+
+### Why Keep Disabled?
+
+- Three-finger gestures used for Mission Control/Expose
+- Personal preference for click-drag
+- May conflict with other gesture workflows
+
+## Gesture Conflict
+
+When Three Finger Drag is enabled, these gestures change:
+
+| Gesture | Default | With 3-Finger Drag |
+|---------|---------|-------------------|
+| 3-finger swipe up | Mission Control | Drag (use 4 fingers for MC) |
+| 3-finger swipe sideways | Switch Spaces | Drag (use 4 fingers) |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag
+
+# Enable three finger drag
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true
+
+# Disable (default)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool false
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool false
+
+# Delete (reset)
+defaults delete com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Pointer Control** → **Trackpad Options** → **Dragging style**
+
+Options:
+- None
+- With Drag Lock
+- Three Finger Drag ← Our topic
+
+## How to Use Three Finger Drag
+
+1. **Start drag**: Touch trackpad with three fingers
+2. **Move**: Slide fingers in direction to drag
+3. **Continue**: Lift and replace fingers to keep dragging
+4. **Release**: Lift all fingers to drop
+
+The "drift" after lifting continues movement briefly for ergonomics.
+
+## Adjusting Other Gestures
+
+When enabling 3-finger drag, update these to 4 fingers:
+
+```bash
+# Mission Control with 4 fingers
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerVertSwipeGesture -int 2
+
+# Switch spaces with 4 fingers
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerHorizSwipeGesture -int 2
+```
+
+## Alternative: Drag Lock
+
+Another option in Accessibility → Trackpad Options:
+
+- **Drag Lock**: Double-tap to start, single-tap to release
+- Works with single finger after activation
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Three finger drag not working | Check Accessibility settings directly |
+| Mission Control not working | Switch to 4-finger swipe |
+| Accidentally dragging | Consider disabling |
+
+## Use Cases
+
+### Best For
+
+- Graphic design work
+- Text editing with lots of selection
+- Window arrangement
+- Users with RSI or joint issues
+
+### Not Ideal For
+
+- Heavy gesture users
+- Those reliant on 3-finger Space switching
+- Users satisfied with click-drag
+
+## Compatibility
+
+- **macOS**: 10.11+
+- **TrackPads**: MacBook, Magic Trackpad
+- **Note**: Setting is in Accessibility, not Trackpad preferences
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../defaults/accessibility/pointer.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "TrackpadThreeFingerDrag" "-bool" "false"
+run_defaults "com.apple.driver.AppleBluetoothMultitouch.trackpad" "TrackpadThreeFingerDrag" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use trackpad gestures on Mac](https://support.apple.com/guide/mac-help/use-trackpad-gestures-mchlp1290/mac)
+- [Apple Support: Change Pointer Control preferences](https://support.apple.com/guide/mac-help/change-pointer-control-preferences-mchlc897c394/mac)

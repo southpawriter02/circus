@@ -1,0 +1,155 @@
+# Expand Print Panel by Default
+
+Show all print options when opening the Print dialog.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Keys** | `PMPrintingExpandedStateForPrint`, `PMPrintingExpandedStateForPrint2` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the Print dialog shows all options by default or starts in a condensed view. When expanded, you have immediate access to paper size, orientation, scaling, pages per sheet, and application-specific print settings.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Expanded** — All print options visible |
+| `false` | **Condensed** (default) — Minimal options, click "Show Details" to expand |
+
+## Visual Comparison
+
+**Condensed (false):**
+```
+┌────────────────────────────────┐
+│ Printer: [HP LaserJet Pro v]   │
+│ Copies: [ 1 ]  Pages: [All v]  │
+│                                │
+│ [Show Details] [Cancel] [Print]│
+└────────────────────────────────┘
+```
+
+**Expanded (true):**
+```
+┌─────────────────────────────────────────────┐
+│ Printer: [HP LaserJet Pro          v]       │
+│ Presets: [Default Settings         v]       │
+├─────────────────────────────────────────────┤
+│ Copies: [ 1 ]  ☑ Two-Sided                  │
+│ Pages:  [All]  Paper Size: [US Letter v]    │
+│         Scale: [100%  ]                     │
+│ [Layout    v]                               │
+│ • Pages per Sheet: [1  v]                   │
+│ • Layout Direction: [→↓ v]                  │
+│ • Border: [None v]                          │
+│ • Two-Sided: [Off  v]                       │
+├─────────────────────────────────────────────┤
+│ [Hide Details]              [Cancel] [Print]│
+└─────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — See all print options immediately.
+
+### Why Expand by Default?
+
+1. **Full control** — Access all options without extra clicks
+2. **Orientation** — Change portrait/landscape easily
+3. **Scaling** — Adjust print size immediately
+4. **Paper size** — Select correct size upfront
+5. **Layout** — Pages per sheet, borders visible
+
+### Print Options Available (Expanded)
+
+| Option | Purpose |
+|--------|---------|
+| Paper Size | Letter, A4, Legal, custom |
+| Orientation | Portrait, Landscape |
+| Scale | Percentage of original size |
+| Pages per Sheet | Print multiple pages on one sheet |
+| Two-Sided | Duplex printing |
+| Presets | Save common settings |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain PMPrintingExpandedStateForPrint
+defaults read NSGlobalDomain PMPrintingExpandedStateForPrint2
+
+# Enable expanded print panel (recommended)
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+
+# Disable (condensed default)
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool false
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool false
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain PMPrintingExpandedStateForPrint
+defaults delete NSGlobalDomain PMPrintingExpandedStateForPrint2
+```
+
+## UI Location
+
+**File** → **Print** (⌘P) in any application
+
+The state toggles between "Show Details" and "Hide Details" at the bottom of the dialog.
+
+## Why Two Keys?
+
+Both keys exist for macOS version compatibility:
+- `PMPrintingExpandedStateForPrint` — Older macOS versions
+- `PMPrintingExpandedStateForPrint2` — Newer macOS versions
+
+Set both for universal compatibility.
+
+## Print Presets
+
+Create custom presets for frequent print jobs:
+
+1. Configure your preferred settings
+2. Click **Presets** dropdown → **Save Current Settings as Preset**
+3. Name your preset (e.g., "Draft - 2-up double-sided")
+
+## Print to PDF
+
+macOS can print anything to PDF:
+1. Open Print dialog (⌘P)
+2. Click **PDF** dropdown (bottom-left)
+3. Select **Save as PDF**
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still shows condensed | Restart application |
+| Some apps don't expand | App may have custom print dialog |
+| Options missing | Click application dropdown for more |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Applies to**: All applications using standard print dialog
+- **Note**: Some apps have custom print interfaces
+
+## Source File
+
+**File**: [`defaults/interface/ui_ux.sh`](../../../defaults/interface/ui_ux.sh)
+
+```bash
+run_defaults "PMPrintingExpandedStateForPrint" "-bool" "true"
+run_defaults "PMPrintingExpandedStateForPrint2" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Print documents](https://support.apple.com/guide/mac-help/print-documents-mchlp1037/mac)
+- [Apple Support: Create printing presets](https://support.apple.com/guide/mac-help/create-printing-presets-mchlp3066/mac)

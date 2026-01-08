@@ -1,0 +1,163 @@
+# Mouse Tracking Speed
+
+Control how fast the cursor moves relative to mouse movement.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.mouse.scaling` |
+| **Type** | Float |
+| **Default Value** | `3` |
+| **Our Setting** | `3` |
+
+## Description
+
+Tracking speed determines how far the cursor moves relative to physical mouse movement. Higher values mean the cursor moves farther for the same physical distance. Setting to -1 disables acceleration entirely (linear movement).
+
+## Values
+
+| Value | Effect |
+|-------|--------|
+| `0.0` | Slowest (low sensitivity) |
+| `1.5` | Moderate |
+| `3.0` | Default (balanced) |
+| `-1` | No acceleration (linear) |
+
+## Understanding Acceleration
+
+### With Acceleration (normal)
+
+- Slow mouse movement = precise cursor
+- Fast mouse movement = faster cursor (amplified)
+- Adapts to your intent
+
+### Without Acceleration (value = -1)
+
+- Consistent 1:1 movement ratio
+- Same physical distance = same cursor distance
+- Preferred by some gamers and designers
+
+## Our Configuration
+
+**Set to**: `3` — Default balanced tracking.
+
+### When to Adjust
+
+**Increase speed for**:
+- Large displays (4K, 5K)
+- Multi-monitor setups
+- Faster navigation preference
+
+**Decrease speed for**:
+- Precision work
+- Users new to mice
+- Small screens
+
+**Disable acceleration for**:
+- Gaming (muscle memory consistency)
+- Graphic design
+- CAD work
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain com.apple.mouse.scaling
+
+# Set to default speed
+defaults write NSGlobalDomain com.apple.mouse.scaling -float 3
+
+# Set faster tracking
+defaults write NSGlobalDomain com.apple.mouse.scaling -float 4
+
+# Set slower tracking
+defaults write NSGlobalDomain com.apple.mouse.scaling -float 1.5
+
+# Disable mouse acceleration (linear/gaming mode)
+defaults write NSGlobalDomain com.apple.mouse.scaling -float -1
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain com.apple.mouse.scaling
+```
+
+## UI Location
+
+**System Settings** → **Mouse** → **Tracking speed** slider
+
+The slider doesn't show the exact value—Terminal provides precise control.
+
+## Related: Trackpad Speed
+
+For trackpad, use a different key:
+
+```bash
+# Trackpad tracking speed
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 3
+```
+
+## Gaming Mode
+
+For consistent aiming in games:
+
+```bash
+# Disable acceleration completely
+defaults write NSGlobalDomain com.apple.mouse.scaling -float -1
+
+# May also need per-game settings for some titles
+```
+
+Some games override system settings, so check game preferences too.
+
+## DPI vs Tracking Speed
+
+| DPI (hardware) | Tracking Speed (software) |
+|----------------|---------------------------|
+| Set on mouse | Set in macOS |
+| Physical sensitivity | Software multiplier |
+| Often 800-3200 | 0.0 to -1 |
+
+For gaming, higher DPI + lower tracking often preferred.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Cursor too fast | Lower the value |
+| Cursor too slow | Increase the value |
+| Inconsistent speed | Set to -1 for linear |
+| Changed after update | Reconfigure via Terminal |
+
+## Apple Mouse vs Third-Party
+
+Different mice may feel different at same setting:
+- Apple Magic Mouse has built-in gestures
+- Third-party mice may have their own drivers
+- Some gaming mice have dedicated software
+
+## Checking Current Value
+
+```bash
+# See all mouse settings
+defaults read NSGlobalDomain | grep -i mouse
+```
+
+## Compatibility
+
+- **macOS**: All versions
+- **Mice**: All USB and Bluetooth mice
+- **DPI**: 400-16000+ depending on mouse hardware
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../defaults/accessibility/pointer.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.mouse.scaling" "-float" "3"
+```
+
+## References
+
+- [Apple Support: Change Mouse preferences](https://support.apple.com/guide/mac-help/change-mouse-preferences-mchlp1203/mac)
+- [Apple Support: About Magic Mouse](https://support.apple.com/magic-mouse)

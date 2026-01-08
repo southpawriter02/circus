@@ -1,0 +1,156 @@
+# Spring-Loading for Folders
+
+Enable automatic folder opening when hovering with dragged items.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Keys** | `com.apple.springing.enabled`, `com.apple.springing.delay` |
+| **Type** | Boolean, Float |
+| **Default Value** | `true`, `0.5` |
+| **Our Setting** | `true`, `0.5` |
+
+## Description
+
+Spring-loading automatically opens a folder when you hover over it while dragging a file. After a brief delay, the folder "springs" open, letting you navigate to nested folders without dropping the dragged item. Release the file at any level to drop it there.
+
+## Values
+
+### Enable Spring-Loading
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enabled** (default) — Folders open when hovering |
+| `false` | **Disabled** — Must drop first, then move |
+
+### Spring-Loading Delay (seconds)
+
+| Value | Speed |
+|-------|-------|
+| `0.0` | Instant (no delay) |
+| `0.25` | Very fast |
+| `0.5` | Default |
+| `1.0` | Slow |
+| `2.0` | Very slow |
+
+## Visual Example
+
+```
+1. Start drag:     📄 → [Folder A]
+                        ↓
+2. Hover (0.5s):   📄 → [Folder A] → opens!
+                            ↓
+3. Navigate:       📄 → [Folder A/Subfolder] → opens!
+                                  ↓
+4. Drop:           📄 drops into Subfolder
+```
+
+## Our Configuration
+
+**Enabled**: `true` — Spring-loading active
+**Delay**: `0.5` seconds — Quick but not instant
+
+### Why Enable Spring-Loading?
+
+1. **Deep navigation** — Access nested folders while dragging
+2. **Efficiency** — No need to pre-open folders
+3. **Discovery** — Explore folder structure with dragged item
+4. **Time saving** — Single drag operation
+
+### Adjusting Delay
+
+- **Shorter delay (0.25)**: Fast workflow, experienced users
+- **Default (0.5)**: Good balance
+- **Longer delay (1.0+)**: Prevent accidental opening
+
+## Code Examples
+
+```bash
+# Read current values
+defaults read NSGlobalDomain com.apple.springing.enabled
+defaults read NSGlobalDomain com.apple.springing.delay
+
+# Enable spring-loading (default)
+defaults write NSGlobalDomain com.apple.springing.enabled -bool true
+
+# Set faster delay (0.25 seconds)
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.25
+
+# Set default delay
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.5
+
+# Disable spring-loading
+defaults write NSGlobalDomain com.apple.springing.enabled -bool false
+
+# Delete (reset to defaults)
+defaults delete NSGlobalDomain com.apple.springing.enabled
+defaults delete NSGlobalDomain com.apple.springing.delay
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Pointer Control** → **Spring-loading delay** slider
+
+Note: The enable/disable toggle may be in older macOS versions or accessed via Terminal.
+
+## How to Use
+
+1. **Start dragging** a file
+2. **Hover over** a folder (don't release)
+3. **Wait** for the delay (folder highlights/pulses)
+4. **Folder opens** — navigate inside
+5. **Continue** to deeper folders as needed
+6. **Release** to drop file at current location
+
+## Spring-Loading Works On
+
+- Finder folders
+- Dock folders
+- Sidebar folders
+- Desktop folders
+- Open/Save dialogs
+
+## Escape to Cancel
+
+While spring-loading:
+- Press **Escape** to close opened folders
+- Drag away without releasing cancels navigation
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Folders not opening | Check `com.apple.springing.enabled` |
+| Opens too slowly | Decrease delay value |
+| Opens accidentally | Increase delay value |
+| Inconsistent behavior | Restart Finder |
+
+## Related Settings
+
+### Finder Drag and Drop
+
+```bash
+# Show toolbar in Finder (useful for spring-loading path)
+defaults write com.apple.finder ShowPathbar -bool true
+```
+
+## Compatibility
+
+- **macOS**: All versions
+- **Works in**: Finder, dialogs, Dock
+- **Note**: Behavior consistent across system
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../defaults/accessibility/pointer.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.springing.enabled" "-bool" "true"
+run_defaults "NSGlobalDomain" "com.apple.springing.delay" "-float" "0.5"
+```
+
+## References
+
+- [Apple Support: Drag and drop items on Mac](https://support.apple.com/guide/mac-help/drag-and-drop-items-mchlp1403/mac)

@@ -1,0 +1,140 @@
+# Shake Mouse Pointer to Locate
+
+Enlarge the cursor temporarily when you shake the mouse.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `CGDisableCursorLocationMagnification` |
+| **Type** | Boolean |
+| **Default Value** | `false` (feature enabled) |
+| **Our Setting** | `false` (keep enabled) |
+
+## Description
+
+When you rapidly shake or wiggle your mouse, macOS temporarily enlarges the cursor to help you locate it on screen. This is especially useful on large displays, multi-monitor setups, or for users who frequently lose track of the cursor.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Shake to locate enabled** (default) — Cursor enlarges when shaken |
+| `true` | **Shake to locate disabled** — Cursor stays constant size |
+
+> **Note**: This key *disables* the feature when `true`. Set to `false` to enable.
+
+## Visual Example
+
+**Normal cursor:**
+```
+       ↖
+```
+
+**Shaken (temporarily enlarged):**
+```
+    ↖↖↖↖
+    ↖↖↖↖
+    ↖↖↖↖
+    ↖↖↖↖
+```
+
+The cursor returns to normal size after ~1 second.
+
+## Our Configuration
+
+**Set to**: `false` — Keep shake to locate enabled.
+
+### Why Keep Enabled?
+
+1. **Large displays** — Finding cursor on 27"+ screens
+2. **Multi-monitor** — Quickly spot cursor across displays
+3. **Presentations** — Point with enlarged cursor
+4. **Accessibility** — Help users with vision difficulties
+
+### Why Disable?
+
+- Precision work where shake might be interpreted
+- Gaming (may interfere with rapid movements)
+- Personal preference
+- Presentation software conflicts
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain CGDisableCursorLocationMagnification
+
+# Enable shake to locate (false = feature ON)
+defaults write NSGlobalDomain CGDisableCursorLocationMagnification -bool false
+
+# Disable shake to locate (true = feature OFF)
+defaults write NSGlobalDomain CGDisableCursorLocationMagnification -bool true
+
+# Delete (reset to default - enabled)
+defaults delete NSGlobalDomain CGDisableCursorLocationMagnification
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Display** → **Pointer** → ☑ **Shake mouse pointer to locate**
+
+## How It Works
+
+The shake detection is based on:
+- Rapid back-and-forth mouse movement
+- Movement speed threshold
+- Duration of shake gesture
+
+A casual movement won't trigger it—you need intentional shaking.
+
+## Combined with Cursor Size
+
+Works alongside cursor size setting:
+
+```bash
+# Larger cursor plus shake to locate
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 1.5
+defaults write NSGlobalDomain CGDisableCursorLocationMagnification -bool false
+```
+
+## Presentation Tips
+
+For presentations:
+1. Enable shake to locate
+2. Consider increasing cursor size
+3. Shake when pointing to specific content
+
+## Alternative Methods
+
+Other ways to find cursor:
+- **Hot Corners** — Move to corner for specific action
+- **Keyboard** — Press Ctrl to locate (different feature)
+- **Mouse Keys** — Use numpad to move cursor precisely
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Cursor not enlarging | Check setting value, must be `false` |
+| Triggering accidentally | Consider disabling if too sensitive |
+| Not working in some apps | Full-screen apps may block it |
+
+## Compatibility
+
+- **macOS**: 10.11+
+- **Displays**: Works on all connected displays
+- **Input devices**: Works with mouse and trackpad
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../defaults/accessibility/pointer.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "CGDisableCursorLocationMagnification" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Change Pointer preferences for accessibility](https://support.apple.com/guide/mac-help/change-pointer-preferences-accessibility-mchlc897c394/mac)
