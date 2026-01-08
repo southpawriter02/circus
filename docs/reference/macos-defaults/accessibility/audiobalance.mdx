@@ -1,0 +1,307 @@
+# Audio Balance
+
+Adjust left/right audio balance for hearing accessibility.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `audioBalance` |
+| **Type** | Float |
+| **Default Value** | `0.0` |
+| **Our Setting** | `0.0` |
+
+## Description
+
+Controls the left/right audio balance for all system audio output. This accessibility feature allows users with hearing differences between ears to adjust the balance so audio is comfortable and evenly perceived. The value ranges from -1.0 (full left) through 0.0 (centered) to 1.0 (full right).
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `-1.0` | **Full left** — All audio from left channel only |
+| `-0.5` | **Mostly left** — Louder in left, quieter in right |
+| `0.0` | **Centered** (default) — Equal left and right |
+| `0.5` | **Mostly right** — Louder in right, quieter in left |
+| `1.0` | **Full right** — All audio from right channel only |
+
+## Visual Demonstration
+
+### Audio Balance Slider:
+```
++-------------------------------------------------------------+
+|  Audio Balance Control                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  Balance Slider:                                             |
+|                                                              |
+|  Full Left        Centered         Full Right               |
+|  (-1.0)            (0.0)            (1.0)                   |
+|     |               |               |                        |
+|     v               v               v                        |
+|  L [================O================] R                     |
+|                     ^                                        |
+|                  Default                                     |
+|                                                              |
+|  Example positions:                                          |
+|                                                              |
+|  L [O================================] R  = -1.0 (Full L)   |
+|  L [========O========================] R  = -0.5 (Mostly L) |
+|  L [================O================] R  =  0.0 (Center)   |
+|  L [========================O========] R  =  0.5 (Mostly R) |
+|  L [================================O] R  =  1.0 (Full R)   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Audio Output Visualization:
+```
++-------------------------------------------------------------+
+|  How Balance Affects Audio Output                            |
++-------------------------------------------------------------+
+|                                                              |
+|  CENTERED (0.0) - Default:                                   |
+|  +------------------------------------------------------+   |
+|  |  Left Speaker        Right Speaker                   |   |
+|  |  ████████████        ████████████                    |   |
+|  |  Volume: 100%        Volume: 100%                    |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  SHIFTED LEFT (-0.5):                                        |
+|  +------------------------------------------------------+   |
+|  |  Left Speaker        Right Speaker                   |   |
+|  |  ████████████        ██████                          |   |
+|  |  Volume: 100%        Volume: 50%                     |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  FULL LEFT (-1.0):                                           |
+|  +------------------------------------------------------+   |
+|  |  Left Speaker        Right Speaker                   |   |
+|  |  ████████████        (silent)                        |   |
+|  |  Volume: 100%        Volume: 0%                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Use Case - Hearing Compensation:
+```
++-------------------------------------------------------------+
+|  Compensating for Hearing Differences                        |
++-------------------------------------------------------------+
+|                                                              |
+|  Scenario: User has reduced hearing in right ear            |
+|                                                              |
+|  Without adjustment:                                         |
+|  +------------------------------------------------------+   |
+|  |  Left Ear (normal)    Right Ear (impaired)           |   |
+|  |  Perceives: 100%      Perceives: 40%                 |   |
+|  |                                                      |   |
+|  |  Result: Audio sounds unbalanced, left-heavy         |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  With balance shifted right (+0.4):                         |
+|  +------------------------------------------------------+   |
+|  |  Left Ear Output      Right Ear Output               |   |
+|  |  Volume: 60%          Volume: 100%                   |   |
+|  |                                                      |   |
+|  |  Left Ear Perceives   Right Ear Perceives            |   |
+|  |  60%                  40%                            |   |
+|  |                                                      |   |
+|  |  Result: Audio sounds more balanced to user          |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Balance vs Mono:
+```
++-------------------------------------------------------------+
+|  Balance vs Stereo as Mono                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  AUDIO BALANCE:                                              |
+|  +------------------------------------------------------+   |
+|  |  * Adjusts volume between left and right             |   |
+|  |  * Maintains stereo separation                       |   |
+|  |  * Left channel stays left, right stays right        |   |
+|  |  * Good for: partial hearing differences             |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  STEREO AS MONO:                                            |
+|  +------------------------------------------------------+   |
+|  |  * Combines left and right channels                  |   |
+|  |  * Same audio in both ears                           |   |
+|  |  * No stereo separation                              |   |
+|  |  * Good for: complete hearing loss in one ear        |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Can use both together for maximum flexibility              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `0.0` — Centered audio balance (default).
+
+### Why Adjust Balance?
+
+1. **Hearing compensation** — Balance audio for hearing differences
+2. **Speaker positioning** — Compensate for off-center speakers
+3. **Headphone issues** — Fix imbalanced headphones
+4. **Accessibility** — Ensure comfortable listening
+5. **Personal preference** — Customize audio experience
+
+### Why Keep Centered?
+
+- Normal hearing in both ears
+- Properly positioned speakers
+- Working headphones
+- No accessibility needs
+- Prefer standard audio
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess audioBalance
+
+# Set centered (default)
+defaults write com.apple.universalaccess audioBalance -float 0.0
+
+# Shift balance left
+defaults write com.apple.universalaccess audioBalance -float -0.5
+
+# Shift balance right
+defaults write com.apple.universalaccess audioBalance -float 0.5
+
+# Full left
+defaults write com.apple.universalaccess audioBalance -float -1.0
+
+# Full right
+defaults write com.apple.universalaccess audioBalance -float 1.0
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess audioBalance
+```
+
+Changes take effect immediately.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Audio**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Audio                     |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Audio                                           |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Flash the screen when an alert sound occurs    |       |
+|  |  [ ] Enable                                      |       |
+|  |                                                  |       |
+|  |  Play stereo audio as mono                       |       |
+|  |  [ ] Enable                                      |       |
+|  |                                                  |       |
+|  |  Audio balance                                   |       |
+|  |  L [================O================] R         |       |
+|  |      ^-- This setting (drag to adjust)           |       |
+|  |                                                  |       |
+|  |  Headphone Accommodations                        |       |
+|  |  [Headphone Accommodations...]                   |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Audio balance (this setting)
+defaults write com.apple.universalaccess audioBalance -float 0.0
+
+# Stereo as mono
+defaults write com.apple.universalaccess stereoAsMono -bool false
+
+# Flash screen for alerts
+defaults write com.apple.universalaccess flashScreen -bool false
+
+# Hearing aid mode
+defaults write com.apple.universalaccess HearingAidMode -bool false
+```
+
+## Precise Balance Values
+
+| Scenario | Recommended Value |
+|----------|-------------------|
+| Normal hearing | `0.0` |
+| Slight left reduction | `0.1` to `0.2` |
+| Moderate left reduction | `0.3` to `0.5` |
+| Significant left reduction | `0.6` to `0.8` |
+| Deaf in left ear | `1.0` (or use mono) |
+| Slight right reduction | `-0.1` to `-0.2` |
+| Moderate right reduction | `-0.3` to `-0.5` |
+| Significant right reduction | `-0.6` to `-0.8` |
+| Deaf in right ear | `-1.0` (or use mono) |
+
+## Testing Your Balance Setting
+
+```
++-------------------------------------------------------------+
+|  How to Test Audio Balance                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Play audio with stereo content (music with panning)     |
+|                                                              |
+|  2. Adjust balance slider until audio feels centered        |
+|                                                              |
+|  3. Test with different content:                            |
+|     * Music                                                  |
+|     * Podcasts/speech                                        |
+|     * Video                                                  |
+|     * System sounds                                          |
+|                                                              |
+|  4. Fine-tune if needed                                      |
+|                                                              |
+|  Tip: Have someone else listen to confirm it sounds         |
+|       balanced from their perspective                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Balance not changing | Ensure using system audio output |
+| One side completely silent | Check speaker/headphone connection |
+| Balance resets | Setting should persist; check for MDM |
+| Sounds uneven at centered | May need non-zero value for your hearing |
+| Different in headphones vs speakers | Balance applies to selected output |
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Note**: Takes effect immediately
+- **Note**: Applies to all audio output
+- **Note**: Works with headphones and speakers
+- **Note**: Per-app volume not affected (only L/R balance)
+
+## Source File
+
+**File**: [`defaults/accessibility/audio.sh`](../../defaults/accessibility/audio.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "audioBalance" "-float" "0.0"
+```
+
+## References
+
+- [Apple Support: Change Audio accessibility settings](https://support.apple.com/guide/mac-help/change-audio-accessibility-settings-mh18127/mac)
+- [Apple Support: Accessibility features on Mac](https://support.apple.com/guide/mac-help/accessibility-features-mh35884/mac)

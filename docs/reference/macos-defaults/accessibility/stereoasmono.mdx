@@ -1,0 +1,347 @@
+# Stereo as Mono
+
+Combine left and right audio channels into mono output.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `stereoAsMono` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Plays stereo audio as mono, combining the left and right channels so the same audio is heard in both ears. This accessibility feature ensures users with hearing loss in one ear don't miss audio content that's panned to one side. It's also useful when using a single earbud or speaker.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Stereo** (default) — Left and right channels separate |
+| `true` | **Mono** — Left and right channels combined |
+
+## Visual Demonstration
+
+### Stereo Audio (Default):
+```
++-------------------------------------------------------------+
+|  Stereo Audio - Separate Channels                            |
++-------------------------------------------------------------+
+|                                                              |
+|  Audio source (music, video, etc.):                         |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  LEFT CHANNEL            RIGHT CHANNEL              |   |
+|  |  +---------------+       +---------------+          |   |
+|  |  | Guitar        |       | Piano         |          |   |
+|  |  | Vocals (L)    |       | Vocals (R)    |          |   |
+|  |  | Bass          |       | Drums         |          |   |
+|  |  +---------------+       +---------------+          |   |
+|  |         |                       |                   |   |
+|  |         v                       v                   |   |
+|  |     +-------+               +-------+               |   |
+|  |     |  (L)  |               |  (R)  |               |   |
+|  |     +-------+               +-------+               |   |
+|  |    Left ear                Right ear                |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Full stereo separation                                   |
+|  * Spatial audio experience                                 |
+|  * Some content only in one ear                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Mono Audio (Stereo as Mono Enabled):
+```
++-------------------------------------------------------------+
+|  Mono Audio - Combined Channels                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Audio source (music, video, etc.):                         |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  LEFT CHANNEL            RIGHT CHANNEL              |   |
+|  |  +---------------+       +---------------+          |   |
+|  |  | Guitar        |       | Piano         |          |   |
+|  |  | Vocals (L)    |       | Vocals (R)    |          |   |
+|  |  | Bass          |       | Drums         |          |   |
+|  |  +------+--------+       +--------+------+          |   |
+|  |         |                         |                 |   |
+|  |         +----------+   +----------+                 |   |
+|  |                    |   |                            |   |
+|  |                    v   v                            |   |
+|  |                  +---------+                        |   |
+|  |                  | COMBINE |                        |   |
+|  |                  +---------+                        |   |
+|  |                       |                             |   |
+|  |              +--------+--------+                    |   |
+|  |              |                 |                    |   |
+|  |              v                 v                    |   |
+|  |          +-------+         +-------+                |   |
+|  |          | MONO  |         | MONO  |                |   |
+|  |          +-------+         +-------+                |   |
+|  |         Left ear          Right ear                 |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * All audio in both ears                                   |
+|  * No content missed                                        |
+|  * Flat spatial image                                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Why Mono Matters for Accessibility:
+```
++-------------------------------------------------------------+
+|  Hearing Loss Scenario                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  User with hearing loss in right ear:                       |
+|                                                              |
+|  STEREO MODE:                                               |
+|  +------------------------------------------------------+   |
+|  |  +---------+     +---------+                         |   |
+|  |  | Guitar  |     | Piano   |                         |   |
+|  |  | playing |     | playing |                         |   |
+|  |  +---------+     +---------+                         |   |
+|  |       |               |                              |   |
+|  |       v               v                              |   |
+|  |   +-------+       +-------+                          |   |
+|  |   |  (L)  |       |  (R)  |                          |   |
+|  |   |HEARS! |       | DEAF  |                          |   |
+|  |   +-------+       +-------+                          |   |
+|  |                                                      |   |
+|  |   Result: Piano is MISSED entirely!                  |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  MONO MODE:                                                 |
+|  +------------------------------------------------------+   |
+|  |  +--------------------+                              |   |
+|  |  | Guitar + Piano     |                              |   |
+|  |  | (combined)         |                              |   |
+|  |  +--------------------+                              |   |
+|  |       |           |                                  |   |
+|  |       v           v                                  |   |
+|  |   +-------+   +-------+                              |   |
+|  |   |  (L)  |   |  (R)  |                              |   |
+|  |   |HEARS! |   | DEAF  |                              |   |
+|  |   +-------+   +-------+                              |   |
+|  |                                                      |   |
+|  |   Result: ALL audio heard through left ear!          |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Single Earbud Use Case:
+```
++-------------------------------------------------------------+
+|  Single Earbud Scenario                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Using only left AirPod (phone call, walking, etc.):       |
+|                                                              |
+|  STEREO:                        MONO:                       |
+|  +---------------------+       +---------------------+      |
+|  |  Left ear only      |       |  Left ear only      |      |
+|  |                     |       |                     |      |
+|  |  Hears: 50% audio   |       |  Hears: 100% audio  |      |
+|  |  (left channel)     |       |  (combined L+R)     |      |
+|  |                     |       |                     |      |
+|  |  Missing:           |       |  Missing:           |      |
+|  |  * Right-panned     |       |  * Nothing!         |      |
+|  |    instruments      |       |                     |      |
+|  |  * Effects          |       |                     |      |
+|  |  * Dialogue         |       |                     |      |
+|  +---------------------+       +---------------------+      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Stereo audio for full spatial experience.
+
+### Why Enable Mono Audio?
+
+1. **Hearing loss** — Single-sided deafness or hearing impairment
+2. **Single earbud** — Using one AirPod/earbud
+3. **Shared listening** — Two people sharing one pair of earbuds
+4. **Accessibility** — Ensure no audio content is missed
+5. **Mono speakers** — Single speaker setup
+
+### Why Keep Stereo?
+
+- Normal hearing in both ears
+- Full spatial audio experience
+- Music production/mixing
+- Immersive gaming
+- Movie surround effects
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess stereoAsMono
+
+# Enable mono audio (combine L+R)
+defaults write com.apple.universalaccess stereoAsMono -bool true
+
+# Disable mono audio (default stereo)
+defaults write com.apple.universalaccess stereoAsMono -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess stereoAsMono
+```
+
+Changes take effect immediately for most audio.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Audio**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Audio                     |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Audio                                           |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Flash the screen when an alert sound occurs    |       |
+|  |  [ ] Enable                                      |       |
+|  |                                                  |       |
+|  |  Play stereo audio as mono                       |       |
+|  |  [*] Enable                                      |       |
+|  |      ^-- This setting                            |       |
+|  |                                                  |       |
+|  |  Audio balance                                   |       |
+|  |  L [===========O===========] R                   |       |
+|  |                                                  |       |
+|  |  Headphone Accommodations                        |       |
+|  |  Customize audio for your hearing needs.         |       |
+|  |  [Headphone Accommodations...]                   |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Stereo as mono (this setting)
+defaults write com.apple.universalaccess stereoAsMono -bool false
+
+# Flash screen for alerts
+defaults write com.apple.universalaccess flashScreen -bool false
+
+# Audio balance (-1.0 left to 1.0 right)
+defaults write com.apple.universalaccess audioBalance -float 0.0
+
+# Hearing aid mode
+defaults write com.apple.universalaccess HearingAidMode -bool false
+```
+
+## Audio Balance vs Mono
+
+| Feature | Audio Balance | Stereo as Mono |
+|---------|---------------|----------------|
+| Effect | Shifts audio L/R | Combines L+R |
+| Use case | Partial hearing loss | Complete loss one side |
+| Maintains stereo | Yes | No |
+| Spatial audio | Preserved (shifted) | Lost |
+
+### Audio Balance Slider:
+```
++-------------------------------------------------------------+
+|  Audio Balance Adjustment                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Balance: Shifts stereo image left or right                 |
+|                                                              |
+|  L [=======O=============] R  (Centered - default)          |
+|                                                              |
+|  L [O=====================] R  (Full left)                  |
+|  * Louder in left ear, quieter in right                    |
+|  * Still stereo, just shifted                               |
+|                                                              |
+|  Combined with Mono:                                        |
+|  * Balance has no effect when mono is enabled              |
+|  * Both ears receive same combined signal                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Headphone Accommodations
+
+For more advanced audio customization:
+
+```
++-------------------------------------------------------------+
+|  Headphone Accommodations                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Accessibility > Audio >                  |
+|  Headphone Accommodations                                   |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  Tune Audio For:                                     |   |
+|  |  ( ) Balanced Tone                                   |   |
+|  |  ( ) Vocal Range                                     |   |
+|  |  ( ) Brightness                                      |   |
+|  |                                                      |   |
+|  |  Soft Sounds:                                        |   |
+|  |  [*] Boost soft sounds                               |   |
+|  |                                                      |   |
+|  |  Custom Audio Setup:                                 |   |
+|  |  [Use audiogram data from Health app]                |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Works with AirPods, Beats, and Apple headphones         |
+|  * Personalized audio tuning                               |
+|  * Based on hearing test results                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Audio still stereo | Check setting is enabled, restart audio app |
+| Mono sounds weird | Normal - spatial effects lost |
+| Only affects some apps | Some apps handle audio independently |
+| Balance not working | Balance has no effect in mono mode |
+| Setting not saving | Check for MDM restrictions |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave)
+- **Note**: Takes effect immediately for most audio
+- **Note**: Some professional audio apps may override
+- **Note**: Works with all audio output (speakers, headphones)
+- **Note**: Affects system-wide audio
+
+## Source File
+
+**File**: [`defaults/accessibility/audio.sh`](../../defaults/accessibility/audio.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "stereoAsMono" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Change Audio accessibility settings](https://support.apple.com/guide/mac-help/change-audio-accessibility-settings-mh18127/mac)
+- [Apple Support: Accessibility features on Mac](https://support.apple.com/guide/mac-help/accessibility-features-mh35884/mac)
+- [Apple Support: Use headphone accommodations](https://support.apple.com/guide/mac-help/use-headphone-accommodations-mchla7e8f3f7/mac)

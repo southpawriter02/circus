@@ -6,26 +6,55 @@ Last Updated: January 8, 2026
 
 | Metric | Count |
 |--------|-------|
-| **Total documentation files (.mdx)** | ~344 |
+| **Total documentation files (.mdx)** | ~364 |
 | **Total unique settings in defaults scripts** | ~400 |
-| **Documented settings** | ~232 (58%) |
-| **Undocumented settings** | ~168 (42%) |
+| **Documented settings** | ~252 (63%) |
+| **Undocumented settings** | ~148 (37%) |
 
 ## Recent Documentation Added (January 8, 2026)
 
-### Siri Settings (NEW - 4 files)
+### Accessibility Settings (NEW - 9 files)
+- [hovertext.mdx](accessibility/hovertext.mdx) - Magnify text under pointer with Command key
+- [zoommode.mdx](accessibility/zoommode.mdx) - Zoom style (full screen, split, picture-in-picture)
+- [slowkeys.mdx](accessibility/slowkeys.mdx) - Require key hold duration before registering
+- [stereoasmono.mdx](accessibility/stereoasmono.mdx) - Combine stereo channels for hearing accessibility
+- [zoomsmoothimages.mdx](accessibility/zoomsmoothimages.mdx) - Anti-alias images when zoomed
+- [zoomhotkeys.mdx](accessibility/zoomhotkeys.mdx) - Keyboard shortcuts for zoom control
+- [hearingaidmode.mdx](accessibility/hearingaidmode.mdx) - MFi hearing aid support
+- [audiobalance.mdx](accessibility/audiobalance.mdx) - Left/right audio balance adjustment
+
+### Trackpad Settings (NEW - 6 files)
+- [pinchtozoom.mdx](trackpad/pinchtozoom.mdx) - Pinch gesture to zoom in/out
+- [rotate.mdx](trackpad/rotate.mdx) - Two-finger rotation gesture
+- [smartzoom.mdx](trackpad/smartzoom.mdx) - Two-finger double-tap to zoom
+- [fourfingerhorizswipe.mdx](trackpad/fourfingerhorizswipe.mdx) - Switch between Spaces
+- [fourfingervertswipe.mdx](trackpad/fourfingervertswipe.mdx) - Mission Control and App Exposé
+- [fivefingerpinch.mdx](trackpad/fivefingerpinch.mdx) - Launchpad and Show Desktop
+
+### Safari Settings (NEW - 1 file)
+- [autofillcreditcard.mdx](applications/safari/autofillcreditcard.mdx) - Credit card AutoFill security
+
+### Siri Settings (NEW - 2 files)
+- [voicetrigger.mdx](siri/voicetrigger.mdx) - "Hey Siri" voice activation
+- [statusmenuvisible.mdx](siri/statusmenuvisible.mdx) - Show Siri in menu bar
+
+### Dock Settings (NEW - 2 files)
+- [springloading.mdx](dock/springloading.mdx) - Spring-load folders/apps when dragging
+- [scrolltoopen.mdx](dock/scrolltoopen.mdx) - Scroll to open folder stacks
+
+### Siri Settings (4 files)
 - [assistant-enabled.mdx](siri/assistant-enabled.mdx) - Master Siri toggle
 - [type-to-siri.mdx](siri/type-to-siri.mdx) - Type queries instead of speaking
 - [suggestions.mdx](siri/suggestions.mdx) - Siri Suggestions in apps/Spotlight
 - [voice-feedback.mdx](siri/voice-feedback.mdx) - Silent vs spoken responses
 
-### Stage Manager Settings (NEW - 4 files)
+### Stage Manager Settings (4 files)
 - [globally-enabled.mdx](stage-manager/globally-enabled.mdx) - Enable/disable Stage Manager
 - [app-window-grouping.mdx](stage-manager/app-window-grouping.mdx) - Window grouping behavior
 - [hide-desktop.mdx](stage-manager/hide-desktop.mdx) - Desktop icons visibility
 - [autohide.mdx](stage-manager/autohide.mdx) - Recent apps strip visibility
 
-### Podcasts Settings (NEW - 2 files)
+### Podcasts Settings (2 files)
 - [autodownload.mdx](applications/podcasts/autodownload.mdx) - Automatic episode downloads
 - [playback.mdx](applications/podcasts/playback.mdx) - Skip times and continuous playback
 
@@ -33,18 +62,18 @@ Last Updated: January 8, 2026
 
 | Category | Documented | Undocumented | Total | Coverage |
 |----------|------------|--------------|-------|----------|
-| Accessibility | 12 | 19 | 31 | 39% |
-| Applications/Safari | 12 | 14 | 26 | 46% |
-| Input/Trackpad | 7 | 11 | 18 | 39% |
-| **System/Siri** | **4** | **6** | **10** | **40%** |
+| **Accessibility** | **20** | **11** | **31** | **65%** |
+| **Applications/Safari** | **13** | **13** | **26** | **50%** |
+| **Input/Trackpad** | **13** | **5** | **18** | **72%** |
+| **System/Siri** | **7** | **4** | **11** | **64%** |
 | System/Global | 32 | 8 | 40 | 80% |
-| Interface/Dock | 10 | 8 | 18 | 56% |
-| **Applications/Podcasts** | **3** | **6** | **9** | **33%** |
+| **Interface/Dock** | **13** | **5** | **18** | **72%** |
+| Applications/Podcasts | 3 | 6 | 9 | 33% |
 | Applications/Mail | 8 | 8 | 16 | 50% |
 | Applications/Calendar | 5 | 8 | 13 | 38% |
 | Applications/Xcode | 5 | 7 | 12 | 42% |
 | Applications/Books | 2 | 7 | 9 | 22% |
-| **Interface/WindowManager** | **4** | **2** | **6** | **67%** |
+| Interface/WindowManager | 4 | 2 | 6 | 67% |
 | Applications/Numbers | 1 | 5 | 6 | 17% |
 | Applications/Pages | 1 | 5 | 6 | 17% |
 | Interface/Notifications | 1 | 3 | 4 | 25% |
@@ -53,35 +82,28 @@ Last Updated: January 8, 2026
 
 ## Undocumented Settings
 
-### Accessibility (19 settings)
+### Accessibility (11 settings remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
-| `com.apple.universalaccess` | `HearingAidMode` | int | accessibility/audio.sh |
-| `com.apple.universalaccess` | `audioBalance` | float | accessibility/audio.sh |
-| `com.apple.universalaccess` | `stereoAsMono` | bool | accessibility/audio.sh |
 | `com.apple.universalaccess` | `closeViewZoomFollowsFocus` | int | accessibility/zoom.sh |
 | `com.apple.universalaccess` | `closeViewScrollWheelModifiersInt` | int | accessibility/zoom.sh |
-| `com.apple.universalaccess` | `closeViewZoomMode` | int | accessibility/zoom.sh |
-| `com.apple.universalaccess` | `closeViewSmoothImages` | bool | accessibility/zoom.sh |
 | `com.apple.universalaccess` | `closeViewMaxZoom` | float | accessibility/zoom.sh |
 | `com.apple.universalaccess` | `closeViewMinZoom` | float | accessibility/zoom.sh |
-| `com.apple.universalaccess` | `closeViewHotKeysEnabled` | bool | accessibility/zoom.sh |
-| `com.apple.universalaccess` | `hoverTextEnabled` | bool | accessibility/display.sh |
 | `com.apple.universalaccess` | `hoverTextFontSize` | int | accessibility/display.sh |
 | `com.apple.universalaccess` | `hoverTextFontName` | string | accessibility/display.sh |
-| `com.apple.universalaccess` | `slowKey` | bool | accessibility/keyboard.sh |
 | `com.apple.universalaccess` | `slowKeyDelay` | float | accessibility/keyboard.sh |
 | `com.apple.universalaccess` | `stickyKeyShowWindow` | bool | accessibility/keyboard.sh |
 | `com.apple.universalaccess` | `mouseDriverCursorSize` | float | accessibility/pointer.sh |
 | `com.apple.universalaccess` | `mouseDriver` | bool | accessibility/pointer.sh |
 | `com.apple.universalaccess` | `voiceOverOnOrOff` | bool | accessibility/voiceover.sh |
 
-### Applications/Safari (14 settings)
+**Documented**: `hoverTextEnabled`, `closeViewZoomMode`, `slowKey`, `stereoAsMono`, `closeViewSmoothImages`, `closeViewHotKeysEnabled`, `HearingAidMode`, `audioBalance`
+
+### Applications/Safari (13 settings remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
-| `com.apple.Safari` | `AutoFillCreditCardData` | bool | applications/safari.sh |
 | `com.apple.Safari` | `AutoFillFromAddressBook` | bool | applications/safari.sh |
 | `com.apple.Safari` | `AutoFillMiscellaneousForms` | bool | applications/safari.sh |
 | `com.apple.Safari` | `BlockStoragePolicy` | int | applications/safari.sh |
@@ -96,7 +118,9 @@ Last Updated: January 8, 2026
 | `com.apple.Safari` | `WarnAboutFraudulentWebsites` | bool | applications/safari.sh |
 | `com.apple.Safari` | `WebContinuousSpellCheckingEnabled` | bool | applications/safari.sh |
 
-### Input/Trackpad (11 settings)
+**Documented**: `AutoFillCreditCardData`
+
+### Input/Trackpad (5 settings remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
@@ -104,39 +128,32 @@ Last Updated: January 8, 2026
 | `com.apple.AppleMultitouchTrackpad` | `SecondClickThreshold` | int | input/trackpad.sh |
 | `com.apple.AppleMultitouchTrackpad` | `Dragging` | int | input/trackpad.sh |
 | `com.apple.AppleMultitouchTrackpad` | `DragLock` | int | input/trackpad.sh |
-| `com.apple.AppleMultitouchTrackpad` | `TrackpadPinchToZoom` | int | input/trackpad.sh |
-| `com.apple.AppleMultitouchTrackpad` | `TrackpadRotate` | int | input/trackpad.sh |
-| `com.apple.AppleMultitouchTrackpad` | `TrackpadTwoFingerDoubleTapGesture` | int | input/trackpad.sh |
 | `com.apple.AppleMultitouchTrackpad` | `TrackpadTwoFingerFromRightEdgeSwipeGesture` | int | input/trackpad.sh |
-| `com.apple.AppleMultitouchTrackpad` | `TrackpadFourFingerVertSwipeGesture` | int | input/trackpad.sh |
-| `com.apple.AppleMultitouchTrackpad` | `TrackpadFourFingerHorizSwipeGesture` | int | input/trackpad.sh |
-| `com.apple.AppleMultitouchTrackpad` | `TrackpadFiveFingerPinchGesture` | int | input/trackpad.sh |
 
-### System/Siri (6 settings remaining)
+**Documented**: `TrackpadPinchToZoom`, `TrackpadRotate`, `TrackpadTwoFingerDoubleTapGesture`, `TrackpadFourFingerHorizSwipeGesture`, `TrackpadFourFingerVertSwipeGesture`, `TrackpadFiveFingerPinchGesture`
+
+### System/Siri (4 settings remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
-| `com.apple.Siri` | `StatusMenuVisible` | bool | system/siri.sh |
 | `com.apple.Siri` | `UserHasDeclinedEnable` | bool | system/siri.sh |
-| `com.apple.Siri` | `VoiceTriggerUserEnabled` | bool | system/siri.sh |
 | `com.apple.Siri` | `HotkeyTag` | int | system/siri.sh |
 | `com.apple.Siri` | `LockscreenEnabled` | bool | system/siri.sh |
 | `com.apple.assistant.backedup` | `Cloud Sync Enabled` | bool | system/siri.sh |
 
-**Documented**: `Assistant Enabled`, `TypeToSiriEnabled`, `SiriSuggestionsEnabled`, `ShowSiriSuggestionsInSpotlight`, `VoiceFeedback`
+**Documented**: `Assistant Enabled`, `TypeToSiriEnabled`, `SiriSuggestionsEnabled`, `ShowSiriSuggestionsInSpotlight`, `VoiceFeedback`, `VoiceTriggerUserEnabled`, `StatusMenuVisible`
 
-### Interface/Dock (8 settings)
+### Interface/Dock (5 settings remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
-| `com.apple.dock` | `mineffect` | string | interface/dock.sh |
 | `com.apple.dock` | `minimize-to-application` | bool | interface/dock.sh |
-| `com.apple.dock` | `enable-spring-load-actions-on-all-items` | bool | interface/dock.sh |
 | `com.apple.dock` | `expose-group-apps` | bool | interface/dock.sh |
 | `com.apple.dock` | `showAppExposeGestureEnabled` | bool | interface/dock.sh |
-| `com.apple.dock` | `scroll-to-open` | bool | interface/dock.sh |
 | `com.apple.dock` | `dashboard-in-overlay` | bool | interface/dock.sh |
 | `com.apple.dock` | `wvous-*` (hot corners) | int | interface/dock.sh |
+
+**Documented**: `enable-spring-load-actions-on-all-items`, `scroll-to-open`, `mineffect`
 
 ### Applications/Podcasts (6 settings remaining)
 

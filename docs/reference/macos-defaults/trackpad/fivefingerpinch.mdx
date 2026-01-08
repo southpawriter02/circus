@@ -1,0 +1,338 @@
+# Trackpad Five-Finger Pinch
+
+Pinch with five fingers to open Launchpad.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `TrackpadFiveFingerPinchGesture` |
+| **Type** | Integer |
+| **Default Value** | `2` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls the five-finger pinch gesture on the trackpad. Pinching five fingers together opens Launchpad (iOS-style app launcher), while spreading five fingers apart shows the desktop by moving all windows aside. This provides quick access to app launching and desktop viewing.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Disabled** — Five-finger pinch does nothing |
+| `2` | **Launchpad / Show Desktop** (default) — Pinch in for Launchpad, spread for desktop |
+
+## Visual Demonstration
+
+### Five-Finger Pinch Gesture:
+```
++-------------------------------------------------------------+
+|  Five-Finger Pinch Gestures                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  PINCH IN - Launchpad:                                       |
+|                                                              |
+|     +-+     +-+     +-+                                      |
+|     |.|     |.|     |.|                                      |
+|     +-+     +-+     +-+                                      |
+|       \      |      /                                        |
+|        \     |     /                                         |
+|         \    |    /    <-- Fingers come together            |
+|          +---+---+                                           |
+|          | thumb |                                           |
+|          +---+---+                                           |
+|           /     \                                            |
+|        +-+       +-+                                         |
+|        |.|       |.|                                         |
+|        +-+       +-+                                         |
+|                                                              |
+|  SPREAD OUT - Show Desktop:                                  |
+|                                                              |
+|          +-------+                                           |
+|          |       |                                           |
+|          +-------+                                           |
+|           /  |  \                                            |
+|          /   |   \                                           |
+|         /    |    \    <-- Fingers spread apart             |
+|     +-+     +-+     +-+                                      |
+|     |.|     |.|     |.|                                      |
+|     +-+     +-+     +-+                                      |
+|    /                   \                                     |
+| +-+                     +-+                                  |
+| |.|                     |.|                                  |
+| +-+                     +-+                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Launchpad (Pinch In):
+```
++-------------------------------------------------------------+
+|  Launchpad View                                              |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  +------+  +------+  +------+  +------+  +------+   |   |
+|  |  |Safari|  |Mail  |  |Photos|  |Music |  |Notes |   |   |
+|  |  +------+  +------+  +------+  +------+  +------+   |   |
+|  |                                                      |   |
+|  |  +------+  +------+  +------+  +------+  +------+   |   |
+|  |  | Maps |  |FaceT.|  |Calend|  |Remind|  | News |   |   |
+|  |  +------+  +------+  +------+  +------+  +------+   |   |
+|  |                                                      |   |
+|  |  +------+  +------+  +------+  +------+  +------+   |   |
+|  |  | Pages|  |Number|  |Keynte|  |Preview| |TextEd|   |   |
+|  |  +------+  +------+  +------+  +------+  +------+   |   |
+|  |                                                      |   |
+|  |  +------+  +------+  +------+  +------+  +------+   |   |
+|  |  |VSCode|  |Termnl|  |Finder|  |SysPrf|  | Xcode|   |   |
+|  |  +------+  +------+  +------+  +------+  +------+   |   |
+|  |                                                      |   |
+|  |                    • • • •                           |   |
+|  |                  (page dots)                         |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * iOS-style app grid                                       |
+|  * Search bar at top                                        |
+|  * Swipe left/right for more pages                         |
+|  * Click app to launch                                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Show Desktop (Spread Out):
+```
++-------------------------------------------------------------+
+|  Show Desktop - Before                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  +--------------+   +-------------------+            |   |
+|  |  |   Safari     |   |      Finder       |            |   |
+|  |  |   Window     |   |      Window       |            |   |
+|  |  |              |   |                   |            |   |
+|  |  |  +-----------|---|------+            |            |   |
+|  |  |  |           |   |      |            |            |   |
+|  |  +--|  VS Code  |---+      |------------+            |   |
+|  |     |  Window   |          |                         |   |
+|  |     |           |     Desktop icons hidden           |   |
+|  |     +-----------+     behind windows                 |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+
++-------------------------------------------------------------+
+|  Show Desktop - After (Spread Gesture)                       |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |     [Doc1]  [Doc2]  [Folder]  [Image]               |   |
+|  |                                                      |   |
+|  |     [File]  [Notes]  [Archive]                      |   |
+|  |                                                      |   |
+|  |                                                      |   |
+|  |              Desktop icons visible!                  |   |
+|  |              Windows moved to edges                  |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * All windows slide to screen edges                        |
+|  * Desktop and icons fully visible                          |
+|  * Pinch again (or click window) to restore                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Alternative: Four-Finger Spread:
+```
++-------------------------------------------------------------+
+|  Four-Finger Alternative                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  If five fingers is difficult, macOS also supports:         |
+|                                                              |
+|  Four fingers + thumb spread:                               |
+|                                                              |
+|     +-+ +-+ +-+ +-+                                         |
+|     |.| |.| |.| |.|    <-- Four fingers + thumb spread     |
+|     +-+ +-+ +-+ +-+                                         |
+|      |   |   |   |                                          |
+|      +---+---+---+                                          |
+|          +---+                                               |
+|          |   |    <-- Thumb                                 |
+|          +---+                                               |
+|                                                              |
+|  Same effect as five-finger gestures                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `2` — Five-finger pinch for Launchpad and Show Desktop.
+
+### Why Enable This Gesture?
+
+1. **Quick app access** — Launch apps without Dock or Spotlight
+2. **Desktop access** — See desktop files instantly
+3. **iOS familiarity** — Similar to iPad gesture
+4. **Workflow** — One gesture to start apps
+5. **Natural** — Intuitive pinch/spread motion
+
+### Why Disable?
+
+- Prefer Spotlight for launching (Cmd + Space)
+- Accidental triggers with large hand movements
+- Don't use Launchpad
+- Prefer keyboard shortcuts
+- F11 for Show Desktop is sufficient
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad TrackpadFiveFingerPinchGesture
+
+# Enable five-finger pinch (default)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFiveFingerPinchGesture -int 2
+
+# Also set for Bluetooth trackpad
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFiveFingerPinchGesture -int 2
+
+# Disable gesture
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFiveFingerPinchGesture -int 0
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFiveFingerPinchGesture -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad TrackpadFiveFingerPinchGesture
+```
+
+Log out and back in for changes to take effect.
+
+## UI Location
+
+**System Settings** > **Trackpad** > **More Gestures**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Trackpad > More Gestures                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  More Gestures                                   |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Mission Control                                 |       |
+|  |  [Swipe Up with Four Fingers                v]   |       |
+|  |                                                  |       |
+|  |  App Exposé                                      |       |
+|  |  [Swipe Down with Four Fingers              v]   |       |
+|  |                                                  |       |
+|  |  Launchpad                                       |       |
+|  |  [*] Pinch with thumb and four fingers           |       |
+|  |      ^-- This setting (pinch in)                 |       |
+|  |                                                  |       |
+|  |  Show Desktop                                    |       |
+|  |  [*] Spread with thumb and four fingers          |       |
+|  |      ^-- This setting (spread out)               |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Five-finger pinch (this setting)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFiveFingerPinchGesture -int 2
+
+# Four-finger vertical swipe (Mission Control/App Exposé)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerVertSwipeGesture -int 2
+
+# Four-finger horizontal swipe (Spaces)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerHorizSwipeGesture -int 2
+
+# Show Desktop hot corner (alternative)
+# See hot corners settings
+```
+
+## Keyboard Alternatives
+
+| Shortcut | Action |
+|----------|--------|
+| F4 | Launchpad (some keyboards) |
+| Fn + F11 | Show Desktop |
+| Cmd + Space | Spotlight (alternative to Launchpad) |
+| Fn + F4 | Launchpad |
+
+## Launchpad vs Spotlight
+
+| Feature | Launchpad | Spotlight |
+|---------|-----------|-----------|
+| Interface | Visual grid | Search field |
+| Best for | Browsing apps | Finding specific app |
+| Discovery | Good (see all apps) | Poor (must know name) |
+| Speed | Medium | Fast (type and Enter) |
+| Organization | Folders, pages | Recent apps shown |
+
+## Customizing Launchpad
+
+### Organizing Apps:
+```
++-------------------------------------------------------------+
+|  Launchpad Organization                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Create folders:                                             |
+|  1. Drag app icon onto another app icon                     |
+|  2. Folder created automatically                             |
+|  3. Name the folder                                          |
+|                                                              |
+|  Rearrange apps:                                             |
+|  1. Click and hold on app icon                              |
+|  2. Drag to new position                                     |
+|  3. Release to place                                         |
+|                                                              |
+|  Delete apps (App Store apps only):                         |
+|  1. Click and hold on app icon                              |
+|  2. Click X when icons jiggle                               |
+|  3. Confirm deletion                                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Gesture not responding | Ensure all five fingers touch trackpad |
+| Launchpad not opening | Check gesture is enabled in settings |
+| Desktop not showing | May be disabled; check settings |
+| Gesture too sensitive | Try more deliberate pinch/spread |
+| Works inconsistently | Clean trackpad surface |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Hardware**: All Multi-Touch trackpads
+- **Note**: Requires logout for changes to apply
+- **Note**: Works with Magic Trackpad as well
+- **Note**: Launchpad introduced in Lion (10.7)
+
+## Source File
+
+**File**: [`defaults/input/trackpad_mouse.sh`](../../defaults/input/trackpad_mouse.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "TrackpadFiveFingerPinchGesture" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Open apps with Launchpad](https://support.apple.com/guide/mac-help/open-apps-with-launchpad-mh35840/mac)
+- [Apple Support: Multi-Touch gestures](https://support.apple.com/guide/mac-help/multi-touch-gestures-mchlb2a0e46d/mac)
+- [Apple Support: Show or hide the desktop](https://support.apple.com/guide/mac-help/show-or-hide-the-desktop-mchld7d6aa48/mac)

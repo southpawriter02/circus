@@ -1,0 +1,280 @@
+# Accessibility Zoom Style
+
+Control how zoomed content is displayed on screen.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `closeViewZoomMode` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `0` |
+
+## Description
+
+Controls the visual style used when the accessibility zoom feature is active. macOS offers three zoom styles: full screen (the entire screen magnifies), split screen (a portion of the screen shows magnified content), and picture-in-picture (a floating window shows the magnified area). Each style suits different workflows and preferences.
+
+## Values
+
+| Value | Zoom Style |
+|-------|------------|
+| `0` | **Full screen** (default) — Entire screen zooms |
+| `1` | **Split screen** — Magnified area in a fixed region |
+| `2` | **Picture-in-picture** — Floating magnification window |
+
+## Visual Demonstration
+
+### Full Screen Zoom (Value: 0):
+```
++-------------------------------------------------------------+
+|  Full Screen Zoom Mode                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  NORMAL VIEW:                    ZOOMED (2x):                |
+|  +------------------------+      +------------------------+  |
+|  | [Menu Bar............] |      |                        |  |
+|  | +--------------------+ |      | [  Menu  ]             |  |
+|  | |                    | |  ->  | +------------------+   |  |
+|  | |    Document        | |      | |                  |   |  |
+|  | |    Content         | |      | |    Doc           |   |  |
+|  | |    Here            | |      | |    Con           |   |  |
+|  | +--------------------+ |      | +------------------+   |  |
+|  +------------------------+      +------------------------+  |
+|                                                              |
+|  * Entire screen is magnified                               |
+|  * Pan by moving mouse to edges                             |
+|  * Most immersive experience                                |
+|  * Pointer stays in center (screen moves)                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Split Screen Zoom (Value: 1):
+```
++-------------------------------------------------------------+
+|  Split Screen Zoom Mode                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Screen divided into normal and magnified regions:           |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  | [Menu Bar...........................................]  |   |
+|  |------------------------------------------------------|   |
+|  |  NORMAL VIEW           |  MAGNIFIED VIEW             |   |
+|  |  (full screen)         |  (zoomed region)            |   |
+|  |                        |                             |   |
+|  |  +----------------+    |  +-------------------+      |   |
+|  |  | Document       |    |  |                   |      |   |
+|  |  | Content        |    |  |    Document       |      |   |
+|  |  | Text text      |    |  |       Co          |      |   |
+|  |  | More text      |    |  |                   |      |   |
+|  |  +----------------+    |  +-------------------+      |   |
+|  |                        |                             |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * See normal and zoomed simultaneously                     |
+|  * Magnified area follows pointer                           |
+|  * Split can be top/bottom or left/right                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Picture-in-Picture Zoom (Value: 2):
+```
++-------------------------------------------------------------+
+|  Picture-in-Picture Zoom Mode                                |
++-------------------------------------------------------------+
+|                                                              |
+|  Floating magnification window over normal screen:           |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  | [Menu Bar...........................................]  |   |
+|  |                                                      |   |
+|  |  +------------------+     +------------------+        |   |
+|  |  | Document         |     | MAGNIFIED WINDOW |        |   |
+|  |  | Content here     |     | +------------+   |        |   |
+|  |  | with text and    |     | |            |   |        |   |
+|  |  | more text [ptr]--|---->| |  text and  |   |        |   |
+|  |  | continues...     |     | |  more text |   |        |   |
+|  |  +------------------+     | +------------+   |        |   |
+|  |                           +------------------+        |   |
+|  |                                 ^                     |   |
+|  |                           Floating panel              |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Small window shows magnified area                        |
+|  * Window follows pointer position                          |
+|  * Least disruptive to overall view                         |
+|  * Can be resized and positioned                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `0` — Full screen zoom for complete magnification.
+
+### When to Use Each Style
+
+| Style | Best For |
+|-------|----------|
+| Full screen | Immersive reading, detailed image work |
+| Split screen | Reference and work simultaneously |
+| Picture-in-picture | Occasional quick magnification |
+
+### Why Full Screen (0)?
+
+1. **Simplest** — One unified zoomed view
+2. **Immersive** — Full focus on magnified content
+3. **Consistent** — Same experience throughout
+4. **Familiar** — Similar to mobile zoom
+
+### Why Split Screen (1)?
+
+- Need reference and magnified views
+- Don't want to lose context
+- Working between zoomed/normal areas
+- Prefer fixed magnified region
+
+### Why Picture-in-Picture (2)?
+
+- Occasional magnification needs
+- Minimal disruption
+- Quick reference checks
+- Prefer floating window
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess closeViewZoomMode
+
+# Set to full screen zoom
+defaults write com.apple.universalaccess closeViewZoomMode -int 0
+
+# Set to split screen zoom
+defaults write com.apple.universalaccess closeViewZoomMode -int 1
+
+# Set to picture-in-picture zoom
+defaults write com.apple.universalaccess closeViewZoomMode -int 2
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess closeViewZoomMode
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Zoom** > **Zoom style**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Zoom                      |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Zoom                                            |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Use keyboard shortcuts to zoom                  |       |
+|  |  [*] Enable                                      |       |
+|  |                                                  |       |
+|  |  Use scroll gesture with modifier keys to zoom   |       |
+|  |  [*] Enable    [Control        v]                |       |
+|  |                                                  |       |
+|  |  Zoom style                                      |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | (*) Full screen                            |  |       |
+|  |  | ( ) Split screen                           |  |       |
+|  |  | ( ) Picture-in-picture                     |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |                                                  |       |
+|  |  [Options...] for additional settings            |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Zoom style (this setting)
+defaults write com.apple.universalaccess closeViewZoomMode -int 0
+
+# Enable scroll wheel zoom
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+# Scroll wheel modifier key
+defaults write com.apple.universalaccess closeViewScrollWheelModifiersInt -int 262144
+
+# Smooth zoomed images
+defaults write com.apple.universalaccess closeViewSmoothImages -bool true
+
+# Zoom follows keyboard focus
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+
+# Maximum zoom level
+defaults write com.apple.universalaccess closeViewFarPoint -int 20
+
+# Enable keyboard shortcuts
+defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool true
+```
+
+## Zoom Keyboard Shortcuts
+
+When zoom is enabled:
+
+| Shortcut | Action |
+|----------|--------|
+| Option + Cmd + 8 | Toggle zoom on/off |
+| Option + Cmd + = | Zoom in |
+| Option + Cmd + - | Zoom out |
+| Option + Cmd + / | Toggle image smoothing |
+| Control + Scroll | Zoom with trackpad/mouse |
+
+## Zoom Options Button
+
+Additional options available via Options button:
+
+| Option | Description |
+|--------|-------------|
+| Maximum zoom | How far you can zoom in |
+| Minimum zoom | Starting zoom level |
+| Show preview rectangle | Visual indicator on main screen |
+| Smooth images | Anti-alias zoomed content |
+| Flash on zoom | Visual feedback when toggling |
+| Follow keyboard focus | Zoom follows text cursor |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Zoom won't activate | Enable zoom first in System Settings |
+| Wrong style showing | Check closeViewZoomMode value |
+| Split screen wrong position | Adjust in Zoom options |
+| PiP window won't move | Drag by edges |
+| Zoom too slow/fast | Adjust max/min zoom levels |
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion)
+- **Note**: All styles work with keyboard and scroll zoom
+- **Note**: May require logout for changes
+- **Note**: Works with all displays including external
+
+## Source File
+
+**File**: [`defaults/accessibility/zoom.sh`](../../defaults/accessibility/zoom.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "closeViewZoomMode" "-int" "0"
+```
+
+## References
+
+- [Apple Support: Zoom in on the Mac screen](https://support.apple.com/guide/mac-help/zoom-in-on-the-mac-screen-mh35715/mac)
+- [Apple Support: Change Zoom preferences](https://support.apple.com/guide/mac-help/change-zoom-preferences-mchl70c97e7f/mac)

@@ -1,0 +1,260 @@
+# Safari AutoFill Credit Card
+
+Automatically fill credit card information on web forms.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `AutoFillCreditCardData` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Safari automatically fills credit card numbers, expiration dates, and security codes on payment forms. When enabled, Safari can insert saved card details from your iCloud Keychain or Safari's own storage. While convenient for online shopping, this poses security risks if your Mac is compromised or shared.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** — No credit card autofill (more secure) |
+| `true` | **Enabled** (default) — Credit cards auto-filled on forms |
+
+## Visual Demonstration
+
+### AutoFill Credit Card Enabled (Default):
+```
++-------------------------------------------------------------+
+|  Online Checkout - AutoFill Enabled                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Payment Information:                                        |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  Card Number                                         |   |
+|  |  +------------------------------------------------+  |   |
+|  |  | 4532 **** **** 1234                        [v] |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |         ^                                            |   |
+|  |    Click dropdown shows saved cards                  |   |
+|  |                                                      |   |
+|  |  +----------------------+  +----------------------+  |   |
+|  |  | Expiration: 12/26    |  | CVV: ***             |  |   |
+|  |  +----------------------+  +----------------------+  |   |
+|  |         ^                          ^                 |   |
+|  |    Auto-filled               Auto-filled            |   |
+|  |                                                      |   |
+|  |  Safari AutoFill dropdown:                          |   |
+|  |  +------------------------------------------------+  |   |
+|  |  | [Card icon] Visa ending in 1234                |  |   |
+|  |  | [Card icon] Mastercard ending in 5678          |  |   |
+|  |  | [Manage Cards...]                              |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### AutoFill Credit Card Disabled (Recommended):
+```
++-------------------------------------------------------------+
+|  Online Checkout - AutoFill Disabled                         |
++-------------------------------------------------------------+
+|                                                              |
+|  Payment Information:                                        |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  Card Number                                         |   |
+|  |  +------------------------------------------------+  |   |
+|  |  |                                                |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |         ^                                            |   |
+|  |    Must enter manually                               |   |
+|  |                                                      |   |
+|  |  +----------------------+  +----------------------+  |   |
+|  |  | Expiration: MM/YY    |  | CVV:                 |  |   |
+|  |  +----------------------+  +----------------------+  |   |
+|  |         ^                          ^                 |   |
+|  |    Manual entry              Manual entry           |   |
+|  |                                                      |   |
+|  |  No AutoFill dropdown appears                       |   |
+|  |  Credit cards stay secure                           |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Benefits:                                                   |
+|  * Card data not stored in Safari                           |
+|  * Protected from browser vulnerabilities                   |
+|  * Safe on shared computers                                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Security Comparison:
+```
++-------------------------------------------------------------+
+|  AutoFill Security Considerations                            |
++-------------------------------------------------------------+
+|                                                              |
+|  ENABLED:                        DISABLED:                   |
+|  +------------------------+     +------------------------+  |
+|  |  Safari stores:        |     |  Safari stores:        |  |
+|  |  * Card numbers        |     |  * (Nothing)           |  |
+|  |  * Expiration dates    |     |                        |  |
+|  |  * CVV codes           |     |  Cards retrieved from: |  |
+|  |                        |     |  * Manual entry        |  |
+|  |  Vulnerable to:        |     |  * Password manager    |  |
+|  |  * Browser exploits    |     |  * Physical wallet     |  |
+|  |  * Shoulder surfing    |     |                        |  |
+|  |  * Shared Mac access   |     |  More secure:          |  |
+|  |  * Phishing sites      |     |  * No stored data      |  |
+|  +------------------------+     |  * Deliberate entry    |  |
+|                                 +------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Credit card AutoFill disabled for security.
+
+### Why Disable Credit Card AutoFill?
+
+1. **Security** — Reduces attack surface if browser is compromised
+2. **Shared computers** — Prevents accidental exposure
+3. **Phishing protection** — Forces verification of payment sites
+4. **Privacy** — Financial data not stored in browser
+5. **Best practice** — Use dedicated password manager instead
+
+### Why Keep Enabled?
+
+- Frequent online shopping
+- Using iCloud Keychain integration
+- Convenience outweighs security concerns
+- Single-user Mac with strong security
+- Time savings for regular purchases
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari AutoFillCreditCardData
+
+# Disable credit card AutoFill (more secure)
+defaults write com.apple.Safari AutoFillCreditCardData -bool false
+
+# Enable credit card AutoFill (default)
+defaults write com.apple.Safari AutoFillCreditCardData -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.Safari AutoFillCreditCardData
+```
+
+Restart Safari for changes to take effect.
+
+## UI Location
+
+**Safari** > **Settings** (Cmd + ,) > **AutoFill**
+
+```
++-------------------------------------------------------------+
+|  Safari Settings > AutoFill                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  AutoFill                                        |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  AutoFill web forms:                             |       |
+|  |                                                  |       |
+|  |  [ ] Using information from my contacts         |       |
+|  |      [Edit...]                                   |       |
+|  |                                                  |       |
+|  |  [ ] User names and passwords                   |       |
+|  |                                                  |       |
+|  |  [ ] Credit cards                               |       |
+|  |      ^-- This setting                           |       |
+|  |      [Edit...]                                   |       |
+|  |                                                  |       |
+|  |  [ ] Other forms                                |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Credit card AutoFill (this setting)
+defaults write com.apple.Safari AutoFillCreditCardData -bool false
+
+# Contact info AutoFill
+defaults write com.apple.Safari AutoFillFromAddressBook -bool false
+
+# Password AutoFill
+defaults write com.apple.Safari AutoFillPasswords -bool false
+
+# Other forms AutoFill
+defaults write com.apple.Safari AutoFillMiscellaneousForms -bool false
+
+# Disable all AutoFill at once
+for key in AutoFillCreditCardData AutoFillFromAddressBook AutoFillPasswords AutoFillMiscellaneousForms; do
+  defaults write com.apple.Safari "$key" -bool false
+done
+```
+
+## AutoFill Types Comparison
+
+| Type | Key | Risk Level | Recommendation |
+|------|-----|------------|----------------|
+| Credit Cards | `AutoFillCreditCardData` | High | Disable |
+| Passwords | `AutoFillPasswords` | High | Use password manager |
+| Contacts | `AutoFillFromAddressBook` | Medium | Personal preference |
+| Other Forms | `AutoFillMiscellaneousForms` | Low | Personal preference |
+
+## Security Recommendations
+
+### Better Alternatives to Safari AutoFill:
+
+| Method | Pros | Cons |
+|--------|------|------|
+| Password Manager | Encrypted vault, cross-browser | Subscription cost |
+| iCloud Keychain | Native integration, free | Apple ecosystem only |
+| Apple Pay | Tokenized, very secure | Not accepted everywhere |
+| Manual Entry | No stored data | Time consuming |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Cards still appearing | Clear saved cards in Safari settings |
+| Setting not persisting | Check if managed by MDM |
+| iCloud syncing cards | Disable Safari in iCloud settings |
+| Old cards showing | Remove from Keychain Access |
+| AutoFill not working | Check if setting is enabled |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Note**: Restart Safari for changes to take effect
+- **Note**: Separate from iCloud Keychain settings
+- **Note**: Managed Macs may override this setting
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "AutoFillCreditCardData" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: AutoFill credit card info in Safari](https://support.apple.com/guide/safari/autofill-web-forms-ibrw1103/mac)
+- [Apple Support: Safari privacy settings](https://support.apple.com/guide/safari/privacy-ibrw1074/mac)
+- [Apple Support: iCloud Keychain](https://support.apple.com/guide/mac-help/set-up-icloud-keychain-mh43699/mac)

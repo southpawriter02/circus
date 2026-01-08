@@ -1,0 +1,315 @@
+# Dock Scroll to Open
+
+Use scroll gesture to open folder stacks in Dock.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `scroll-to-open` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether you can use a scroll gesture (mouse wheel or two-finger trackpad scroll) to quickly expand folder stacks in the Dock without clicking. When enabled, hovering over a folder stack and scrolling opens it immediately, providing faster access to files. This is particularly useful for power users who frequently access files from Dock stacks.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enabled** (default) — Scroll to open stacks |
+| `false` | **Disabled** — Click only to open stacks |
+
+## Visual Demonstration
+
+### Scroll to Open Enabled:
+```
++-------------------------------------------------------------+
+|  Scroll to Open - Folder Stack                               |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Hover mouse over folder stack in Dock:                  |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  | [Finder] [Safari] [Mail] [Downloads] [Trash]         |   |
+|  +------------------------------------------------------+   |
+|                              ^                               |
+|                         Mouse here                           |
+|                                                              |
+|  2. Scroll up (or down) without clicking:                   |
+|                                                              |
+|      +--+                                                    |
+|      |  | Scroll wheel                                       |
+|      |↑↑| (or two-finger scroll on trackpad)                |
+|      +--+                                                    |
+|                                                              |
+|  3. Stack opens instantly:                                   |
+|                                                              |
+|                    +---------------------------+             |
+|                    | report.pdf    image.png   |             |
+|                    | data.xlsx     notes.txt   |             |
+|                    | archive.zip   photo.jpg   |             |
+|                    +---------------------------+             |
+|                              ^                               |
+|  +------------------------------------------------------+   |
+|  | [Finder] [Safari] [Mail] [Downloads] [Trash]         |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * No click required                                        |
+|  * Faster than clicking                                     |
+|  * Natural gesture                                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Scroll to Open:
+```
++-------------------------------------------------------------+
+|  Click to Open - Traditional Method                          |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Move mouse to folder stack:                             |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  | [Finder] [Safari] [Mail] [Downloads] [Trash]         |   |
+|  +------------------------------------------------------+   |
+|                              ^                               |
+|                         Mouse here                           |
+|                                                              |
+|  2. Must CLICK to open:                                     |
+|                                                              |
+|      +------+                                                |
+|      |Click!|  <-- Required                                 |
+|      +------+                                                |
+|                                                              |
+|  3. Then stack opens:                                        |
+|                                                              |
+|                    +---------------------------+             |
+|                    | report.pdf    image.png   |             |
+|                    | data.xlsx     notes.txt   |             |
+|                    +---------------------------+             |
+|                              ^                               |
+|  +------------------------------------------------------+   |
+|  | [Finder] [Safari] [Mail] [Downloads] [Trash]         |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Extra click required                                     |
+|  * More deliberate action                                   |
+|  * No accidental opens                                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Stack View Options:
+```
++-------------------------------------------------------------+
+|  Folder Stack Display Options                                |
++-------------------------------------------------------------+
+|                                                              |
+|  FAN VIEW (default for few items):                          |
+|                                                              |
+|              file1.pdf                                       |
+|            file2.doc                                         |
+|          file3.txt                                           |
+|        file4.zip                                             |
+|      file5.jpg                                               |
+|        +------+                                              |
+|        |[📁] |                                               |
+|        +------+                                              |
+|  [================Dock================]                     |
+|                                                              |
+|  GRID VIEW (default for many items):                        |
+|                                                              |
+|  +----------------------------------+                        |
+|  | file1  file2  file3  file4      |                        |
+|  | file5  file6  file7  file8      |                        |
+|  | file9  file10 file11 file12     |                        |
+|  +----------------------------------+                        |
+|        +------+                                              |
+|        |[📁] |                                               |
+|        +------+                                              |
+|  [================Dock================]                     |
+|                                                              |
+|  LIST VIEW:                                                  |
+|                                                              |
+|  +----------------------------------+                        |
+|  | file1.pdf        12 KB  Today   |                        |
+|  | file2.doc        34 KB  Today   |                        |
+|  | file3.txt         1 KB  Yesterday|                       |
+|  +----------------------------------+                        |
+|        +------+                                              |
+|        |[📁] |                                               |
+|        +------+                                              |
+|  [================Dock================]                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Scroll Navigation in Stacks:
+```
++-------------------------------------------------------------+
+|  Scrolling Within Open Stacks                                |
++-------------------------------------------------------------+
+|                                                              |
+|  When a stack is open (in grid or list view):               |
+|                                                              |
+|  +----------------------------------+                        |
+|  | file1  file2  file3  file4      |  ^                     |
+|  | file5  file6  file7  file8      |  | Scroll up           |
+|  | file9  file10 file11 file12     |  |                     |
+|  | file13 file14 file15 file16     |  | (more files above)  |
+|  +----------------------------------+                        |
+|                                        | Scroll down         |
+|  Continue scrolling to see more files  v                     |
+|                                        (more files below)    |
+|                                                              |
+|  * Scroll to open triggers the stack                        |
+|  * Further scrolling navigates within stack                 |
+|  * Click file to open it                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Scroll to open for faster access.
+
+### Why Enable Scroll to Open?
+
+1. **Speed** — Faster than clicking
+2. **Natural** — Intuitive scroll gesture
+3. **Efficiency** — One less click
+4. **Power user** — Quick file access
+5. **Trackpad friendly** — Works well with gestures
+
+### Why Disable Scroll to Open?
+
+- Accidental openings while scrolling near Dock
+- Prefer explicit click to open
+- Precision mouse users
+- Don't use folder stacks
+- Prefer predictable behavior
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dock scroll-to-open
+
+# Enable scroll to open (default)
+defaults write com.apple.dock scroll-to-open -bool true
+
+# Disable scroll to open
+defaults write com.apple.dock scroll-to-open -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dock scroll-to-open
+
+# Restart Dock to apply changes
+killall Dock
+```
+
+## UI Location
+
+This setting is not available in System Settings GUI. It can only be configured via Terminal.
+
+```
++-------------------------------------------------------------+
+|  Terminal-Only Setting                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  This preference is hidden from the GUI.                    |
+|                                                              |
+|  To configure, use Terminal:                                |
+|                                                              |
+|  $ defaults write com.apple.dock scroll-to-open -bool true  |
+|  $ killall Dock                                             |
+|                                                              |
+|  Related GUI settings for stacks:                           |
+|                                                              |
+|  Right-click folder in Dock:                                |
+|  +--------------------------------+                          |
+|  | Sort by                       >|                          |
+|  | Display as                    >|                          |
+|  | View content as               >|                          |
+|  |   * Fan                        |                          |
+|  |   * Grid                       |                          |
+|  |   * List                       |                          |
+|  |   * Automatic                  |                          |
+|  | Options                       >|                          |
+|  +--------------------------------+                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Scroll to open (this setting)
+defaults write com.apple.dock scroll-to-open -bool true
+
+# Spring loading (hover opens folders when dragging)
+defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
+
+# Mouse-over highlight stack items
+defaults write com.apple.dock mouse-over-hilite-stack -bool true
+
+# Show recent apps in Dock
+defaults write com.apple.dock show-recents -bool false
+
+# Dock auto-hide
+defaults write com.apple.dock autohide -bool false
+```
+
+## Stack Configuration Options
+
+Right-click a folder stack to configure:
+
+| Option | Description |
+|--------|-------------|
+| Sort by | Name, Date Added, Date Modified, Date Created, Kind |
+| Display as | Stack (preview), Folder (folder icon) |
+| View content as | Fan, Grid, List, Automatic |
+
+## Fan vs Grid vs List
+
+| View | Best For |
+|------|----------|
+| Fan | Few items (<10), quick visual scan |
+| Grid | Many items, organized browsing |
+| List | Detailed info, sorted access |
+| Automatic | Let macOS decide based on count |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Scroll not opening stacks | Verify setting, `killall Dock` |
+| Opens too easily | Disable setting to require clicks |
+| Doesn't work with mouse | Check mouse scroll settings |
+| Stack shows wrong view | Right-click, set "View content as" |
+| Files not appearing | Refresh Dock, check folder contents |
+
+## Compatibility
+
+- **macOS**: 10.5+ (Leopard)
+- **Note**: Restart Dock for changes to take effect
+- **Note**: Works with mouse wheel and trackpad scroll
+- **Note**: Only applies to folder stacks, not apps
+
+## Source File
+
+**File**: [`defaults/interface/dock.sh`](../../defaults/interface/dock.sh)
+
+```bash
+run_defaults "com.apple.dock" "scroll-to-open" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use the Dock on your Mac](https://support.apple.com/guide/mac-help/open-apps-using-the-dock-mh35859/mac)
+- [Apple Support: Use stacks on Mac](https://support.apple.com/guide/mac-help/use-stacks-to-organize-files-mh35831/mac)
+- [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)

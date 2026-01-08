@@ -1,0 +1,285 @@
+# Zoom Smooth Images
+
+Smooth images when zoomed to reduce pixelation.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `closeViewSmoothImages` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether images and screen content are smoothed (anti-aliased) when using the accessibility zoom feature. When enabled, zoomed content appears smoother and less pixelated. When disabled, individual pixels are visible, which can be useful for precise pixel-level work or when you prefer sharper edges.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Smooth images** (default) — Anti-aliased, less pixelated zoom |
+| `false` | **Pixelated zoom** — Sharp pixels visible, no smoothing |
+
+## Visual Demonstration
+
+### Smooth Images Enabled (Default):
+```
++-------------------------------------------------------------+
+|  Zoomed Text - Smooth Images ON                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Original (at 1x):                                           |
+|  +-------------------------+                                 |
+|  | Hello World             |                                 |
+|  +-------------------------+                                 |
+|                                                              |
+|  Zoomed (at 4x):                                             |
+|  +--------------------------------------------------+       |
+|  |                                                  |       |
+|  |    +--+                                          |       |
+|  |   /    \    Smooth, anti-aliased edges          |       |
+|  |  |  H   |   Letters appear soft and readable    |       |
+|  |  |      |   Gradual transitions at edges        |       |
+|  |   \    /    No jagged stair-step patterns       |       |
+|  |    +--+                                          |       |
+|  |                                                  |       |
+|  |   Ideal for: Reading text at high zoom          |       |
+|  |              General accessibility use           |       |
+|  |              Comfortable extended viewing        |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Smooth Images Disabled:
+```
++-------------------------------------------------------------+
+|  Zoomed Text - Smooth Images OFF                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Original (at 1x):                                           |
+|  +-------------------------+                                 |
+|  | Hello World             |                                 |
+|  +-------------------------+                                 |
+|                                                              |
+|  Zoomed (at 4x):                                             |
+|  +--------------------------------------------------+       |
+|  |                                                  |       |
+|  |  +--+--+                                         |       |
+|  |  |██|  |    Sharp, pixelated edges              |       |
+|  |  +--+--+    Individual pixels visible           |       |
+|  |  |██|██|    Stair-step patterns on curves       |       |
+|  |  +--+--+    Each pixel is a distinct square     |       |
+|  |  |  |██|                                         |       |
+|  |  +--+--+                                         |       |
+|  |                                                  |       |
+|  |   Ideal for: Pixel art inspection               |       |
+|  |              Design/development work            |       |
+|  |              Precise pixel counting             |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison - Image Zoom:
+```
++-------------------------------------------------------------+
+|  Image Zoom Comparison                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  SMOOTH ON:                    SMOOTH OFF:                   |
+|                                                              |
+|  Circle at 4x zoom:           Circle at 4x zoom:            |
+|                                                              |
+|      ████████                  ██████████                    |
+|    ██████████████            ████      ████                  |
+|   ████████████████          ████        ████                 |
+|  ██████████████████        ████          ████                |
+|  ██████████████████        ████          ████                |
+|   ████████████████          ████        ████                 |
+|    ██████████████            ████      ████                  |
+|      ████████                  ██████████                    |
+|                                                              |
+|  Smooth gradient edges        Sharp pixel boundaries        |
+|  Looks like a circle          Looks like a pixelated shape  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Use Case Scenarios:
+```
++-------------------------------------------------------------+
+|  When to Use Each Setting                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  SMOOTH IMAGES ON (Recommended for most users):             |
+|  +------------------------------------------------------+   |
+|  |  * Reading documents at high zoom                    |   |
+|  |  * General accessibility magnification               |   |
+|  |  * Viewing photos and graphics                       |   |
+|  |  * Web browsing while zoomed                         |   |
+|  |  * Video conferencing with screen zoom               |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  SMOOTH IMAGES OFF (Specific use cases):                    |
+|  +------------------------------------------------------+   |
+|  |  * UI/UX design work (inspecting pixel alignment)    |   |
+|  |  * Pixel art creation or viewing                     |   |
+|  |  * Retro game graphics inspection                    |   |
+|  |  * Icon design at small sizes                        |   |
+|  |  * Debugging screen rendering issues                 |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Smooth images for comfortable viewing.
+
+### Why Enable Smoothing?
+
+1. **Readability** — Text remains clear at high zoom
+2. **Comfort** — Less eye strain from jagged edges
+3. **Natural** — Content looks more like the original
+4. **General use** — Best for accessibility needs
+5. **Quality** — Professional appearance when zoomed
+
+### Why Disable Smoothing?
+
+- Pixel-level design work
+- Debugging graphics rendering
+- Pixel art appreciation
+- Technical precision needs
+- Prefer seeing actual pixels
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess closeViewSmoothImages
+
+# Enable smooth images (default)
+defaults write com.apple.universalaccess closeViewSmoothImages -bool true
+
+# Disable smooth images (pixelated)
+defaults write com.apple.universalaccess closeViewSmoothImages -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess closeViewSmoothImages
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Zoom** > **Advanced**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Zoom                      |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Zoom                                            |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Use keyboard shortcuts to zoom                  |       |
+|  |  [*] Option-Command-8 to toggle zoom             |       |
+|  |                                                  |       |
+|  |  Use scroll gesture with modifier keys to zoom   |       |
+|  |  [*] Control + scroll                            |       |
+|  |                                                  |       |
+|  |  Zoom style                                      |       |
+|  |  [Full Screen                               v]   |       |
+|  |                                                  |       |
+|  |  [Advanced...]                                   |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
+|  Advanced Options:                                           |
+|  +--------------------------------------------------+       |
+|  |                                                  |       |
+|  |  [*] Smooth images                               |       |
+|  |      ^-- This setting                            |       |
+|  |                                                  |       |
+|  |  [ ] Flash screen when zoom changes              |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Smooth images (this setting)
+defaults write com.apple.universalaccess closeViewSmoothImages -bool true
+
+# Zoom mode (full screen, split, PiP)
+defaults write com.apple.universalaccess closeViewZoomMode -int 0
+
+# Enable scroll wheel zoom
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+# Enable keyboard zoom shortcuts
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+
+# Flash screen on zoom toggle
+defaults write com.apple.universalaccess closeViewFlashScreen -bool false
+```
+
+## Keyboard Shortcut for Toggle
+
+You can toggle image smoothing while zoomed using:
+
+| Shortcut | Action |
+|----------|--------|
+| Option + Cmd + / | Toggle smooth images on/off |
+| Option + Cmd + 8 | Toggle zoom on/off |
+| Option + Cmd + = | Zoom in |
+| Option + Cmd + - | Zoom out |
+
+## Performance Considerations
+
+| Setting | Performance Impact |
+|---------|-------------------|
+| Smooth ON | Slightly higher GPU usage |
+| Smooth OFF | Lower GPU usage, may be faster |
+
+For most modern Macs, the performance difference is negligible.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Images still pixelated | Verify setting is enabled, re-enable zoom |
+| Setting not persisting | May require logout to apply |
+| Smoothing looks blurry | This is expected behavior of anti-aliasing |
+| No visual difference | Effect is most visible at high zoom levels |
+| Text hard to read | Enable smoothing for text readability |
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Note**: May require logout for changes to take effect
+- **Note**: Only applies when zoom is active
+- **Note**: Works with all zoom styles
+
+## Source File
+
+**File**: [`defaults/accessibility/zoom.sh`](../../defaults/accessibility/zoom.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "closeViewSmoothImages" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Zoom in on the Mac screen](https://support.apple.com/guide/mac-help/zoom-in-on-the-mac-screen-mh35715/mac)
+- [Apple Support: Change Zoom preferences](https://support.apple.com/guide/mac-help/change-zoom-preferences-mchl70c97e7f/mac)

@@ -1,0 +1,319 @@
+# Hearing Aid Mode
+
+Enable support for Made for iPhone (MFi) hearing aids.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `HearingAidMode` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Enables Made for iPhone (MFi) hearing aid compatibility mode on your Mac. When enabled and compatible hearing aids are paired via Bluetooth, this allows the Mac to route audio directly to hearing aids, control hearing aid settings from the Mac, and optimize audio output for hearing aid users. This provides a seamless audio experience for users with hearing impairments.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** (default) — Standard audio output |
+| `true` | **Enabled** — MFi hearing aid support active |
+
+## Visual Demonstration
+
+### Hearing Aid Integration:
+```
++-------------------------------------------------------------+
+|  Made for iPhone (MFi) Hearing Aid Setup                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Pairing Process:                                            |
+|                                                              |
+|  1. Put hearing aids in pairing mode                        |
+|                                                              |
+|     +---------------+          +---------------+             |
+|     |  Left         |          |  Right        |             |
+|     |  Hearing Aid  |          |  Hearing Aid  |             |
+|     |  [Pairing...] |          |  [Pairing...] |             |
+|     +---------------+          +---------------+             |
+|              \                        /                      |
+|               \                      /                       |
+|                \                    /                        |
+|                 v                  v                         |
+|              +----------------------+                        |
+|              |     Mac              |                        |
+|              |   [Bluetooth]        |                        |
+|              +----------------------+                        |
+|                                                              |
+|  2. System Settings > Accessibility > Hearing Devices       |
+|                                                              |
+|  3. Select hearing aids from list                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Audio Routing with Hearing Aids:
+```
++-------------------------------------------------------------+
+|  Audio Routing - Hearing Aid Mode Enabled                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Audio Sources:                                              |
+|                                                              |
+|  +----------------+                                          |
+|  | System Sounds  |--+                                       |
+|  +----------------+  |                                       |
+|                      |     +--------------------+            |
+|  +----------------+  +---->|  Audio Processing  |            |
+|  | Music/Media    |------->|  (Optimized for    |            |
+|  +----------------+  +---->|   hearing aids)    |            |
+|                      |     +--------------------+            |
+|  +----------------+  |              |                        |
+|  | FaceTime Audio |--+              |                        |
+|  +----------------+                 |                        |
+|                                     v                        |
+|                      +-----------------------------+         |
+|                      |                             |         |
+|                      |    +-------+   +-------+    |         |
+|                      |    | Left  |   | Right |    |         |
+|                      |    |  HA   |   |  HA   |    |         |
+|                      |    +-------+   +-------+    |         |
+|                      |                             |         |
+|                      |  Direct Bluetooth streaming |         |
+|                      +-----------------------------+         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Hearing Device Control Panel:
+```
++-------------------------------------------------------------+
+|  Hearing Devices Control                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Accessibility > Hearing Devices:         |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  Hearing Devices                                     |   |
+|  |  ====================================================|   |
+|  |                                                      |   |
+|  |  Paired Devices:                                     |   |
+|  |  +------------------------------------------------+  |   |
+|  |  |  [HA icon] ReSound LiNX Quattro                |  |   |
+|  |  |            Left: 85%  Right: 90%               |  |   |
+|  |  |            Connected                           |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |                                                      |   |
+|  |  Volume:                                             |   |
+|  |  Left   [======O===========] Right                   |   |
+|  |                                                      |   |
+|  |  Presets:                                            |   |
+|  |  [Restaurant] [Outdoor] [Music] [Phone]              |   |
+|  |                                                      |   |
+|  |  [*] Stream audio to hearing devices                |   |
+|  |  [*] Show in Control Center                         |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Menu Bar Access:
+```
++-------------------------------------------------------------+
+|  Quick Access via Menu Bar                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Click hearing aid icon in menu bar:                        |
+|                                                              |
+|  +--------------------------------+                          |
+|  | [HA]  Hearing Devices         |                          |
+|  +--------------------------------+                          |
+|  |                                |                          |
+|  |  ReSound LiNX Quattro          |                          |
+|  |  +--------------------------+  |                          |
+|  |  | Left:  ████████░░ 80%   |  |                          |
+|  |  | Right: █████████░ 90%   |  |                          |
+|  |  +--------------------------+  |                          |
+|  |                                |                          |
+|  |  Volume                        |                          |
+|  |  [=========O===========]       |                          |
+|  |                                |                          |
+|  |  Program                       |                          |
+|  |  (*) Normal                    |                          |
+|  |  ( ) Restaurant                |                          |
+|  |  ( ) Music                     |                          |
+|  |                                |                          |
+|  |  [Hearing Device Settings...]  |                          |
+|  +--------------------------------+                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disabled unless hearing aids are used.
+
+### Why Enable Hearing Aid Mode?
+
+1. **Direct streaming** — Audio goes straight to hearing aids
+2. **Better quality** — Optimized audio processing
+3. **Control** — Adjust hearing aids from Mac
+4. **Convenience** — Unified device management
+5. **Accessibility** — Essential for hearing aid users
+
+### Why Keep Disabled?
+
+- Don't use hearing aids
+- Using standard headphones/speakers
+- Hearing aids not MFi compatible
+- Prefer other audio output
+- No Bluetooth hearing devices
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess HearingAidMode
+
+# Enable hearing aid mode
+defaults write com.apple.universalaccess HearingAidMode -bool true
+
+# Disable hearing aid mode (default)
+defaults write com.apple.universalaccess HearingAidMode -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess HearingAidMode
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Hearing Devices**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Audio                     |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Audio                                           |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Flash the screen when an alert sound occurs    |       |
+|  |  [ ] Enable                                      |       |
+|  |                                                  |       |
+|  |  Play stereo audio as mono                       |       |
+|  |  [ ] Enable                                      |       |
+|  |                                                  |       |
+|  |  Hearing Devices                                 |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | [Hearing Devices...]                       |  |       |
+|  |  |  ^-- Opens hearing device settings         |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |                                                  |       |
+|  |  Headphone Accommodations                        |       |
+|  |  [Headphone Accommodations...]                   |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Compatible Hearing Aids
+
+Made for iPhone (MFi) hearing aids that work with Mac include:
+
+| Manufacturer | Models |
+|--------------|--------|
+| ReSound | LiNX Quattro, ONE, OMNIA |
+| Phonak | Marvel, Paradise, Lumity |
+| Oticon | More, Real, Own |
+| Starkey | Livio, Evolv AI |
+| Widex | MOMENT, SmartRIC |
+| Signia | AX, IX |
+
+**Note**: Full list available on Apple's website.
+
+## Related Settings
+
+```bash
+# Hearing aid mode (this setting)
+defaults write com.apple.universalaccess HearingAidMode -bool true
+
+# Stereo as mono (for single-sided hearing)
+defaults write com.apple.universalaccess stereoAsMono -bool false
+
+# Audio balance (L/R adjustment)
+defaults write com.apple.universalaccess audioBalance -float 0.0
+
+# Flash screen for alerts (visual alerts)
+defaults write com.apple.universalaccess flashScreen -bool false
+```
+
+## FaceTime Integration
+
+When hearing aid mode is enabled with FaceTime:
+
+```
++-------------------------------------------------------------+
+|  FaceTime with Hearing Aids                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  FaceTime Call                                       |   |
+|  |                                                      |   |
+|  |        +------------------+                          |   |
+|  |        |                  |                          |   |
+|  |        |   [Caller        |                          |   |
+|  |        |    Video]        |                          |   |
+|  |        |                  |                          |   |
+|  |        +------------------+                          |   |
+|  |                                                      |   |
+|  |  Audio routing: [Hearing Aids v]                    |   |
+|  |                                                      |   |
+|  |  * Voice streams directly to hearing aids           |   |
+|  |  * Enhanced clarity for phone calls                 |   |
+|  |  * No need for speakerphone                         |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Hearing aids not detected | Put in pairing mode, check Bluetooth |
+| Audio not routing | Verify selected as output device |
+| Connection drops | Check battery level, distance to Mac |
+| Only one aid connects | Re-pair both aids |
+| Poor audio quality | Check for interference, update firmware |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave)
+- **Hardware**: Mac with Bluetooth 4.0+
+- **Hearing Aids**: MFi certified devices
+- **Note**: May require logout for changes to take effect
+- **Note**: Works best with recent hearing aid models
+
+## Source File
+
+**File**: [`defaults/accessibility/audio.sh`](../../defaults/accessibility/audio.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "HearingAidMode" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use hearing devices with Mac](https://support.apple.com/guide/mac-help/use-hearing-devices-with-mac-mchl70c97e7f/mac)
+- [Apple Support: Made for iPhone hearing devices](https://support.apple.com/HT201466)
+- [Apple Support: Hearing accessibility features](https://support.apple.com/guide/mac-help/hearing-accessibility-features-mh35884/mac)

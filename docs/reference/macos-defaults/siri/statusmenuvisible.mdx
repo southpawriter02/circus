@@ -1,0 +1,308 @@
+# Siri Status Menu Visible
+
+Show Siri icon in the menu bar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Siri` |
+| **Key** | `StatusMenuVisible` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Siri icon appears in the macOS menu bar. When visible, clicking the Siri icon activates Siri immediately. Hiding the icon declutters the menu bar while still allowing Siri access via keyboard shortcuts, the Dock, or "Hey Siri" voice activation.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Visible** (default) — Siri icon shown in menu bar |
+| `false` | **Hidden** — Siri icon removed from menu bar |
+
+## Visual Demonstration
+
+### Siri Icon Visible (Default):
+```
++-------------------------------------------------------------+
+|  Menu Bar - Siri Icon Visible                                |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  | [Apple] File Edit View ...  [WiFi][BT][Vol][Siri][⏰] |   |
+|  +------------------------------------------------------+   |
+|                                        ^                     |
+|                                   Siri icon                  |
+|                                                              |
+|  Click to activate Siri:                                    |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  | [Apple] File Edit View ...  [WiFi][BT][Vol][Siri][⏰] |   |
+|  +------------------------------------------------------+   |
+|                                        |                     |
+|                                        v                     |
+|                              +-------------------+           |
+|                              |                   |           |
+|                              |   [Siri icon]     |           |
+|                              |   What can I      |           |
+|                              |   help you with?  |           |
+|                              |                   |           |
+|                              +-------------------+           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Siri Icon Hidden:
+```
++-------------------------------------------------------------+
+|  Menu Bar - Siri Icon Hidden                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  | [Apple] File Edit View ...     [WiFi][BT][Vol][⏰]    |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  No Siri icon - cleaner menu bar                            |
+|                                                              |
+|  Alternative ways to access Siri:                           |
+|                                                              |
+|  1. Keyboard shortcut:                                       |
+|     +---+ + +---+                                            |
+|     |⌘  |   |   |    Hold Command + Space                   |
+|     +---+   +---+    (or custom shortcut)                   |
+|                                                              |
+|  2. Hey Siri voice command:                                  |
+|     "Hey Siri, what's the weather?"                         |
+|                                                              |
+|  3. Dock icon (if added):                                    |
+|     [Finder] [Safari] [Siri] [...]                          |
+|                        ^                                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Customizing Menu Bar:
+```
++-------------------------------------------------------------+
+|  Menu Bar Customization                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Minimal Menu Bar (Siri hidden):                            |
+|  +------------------------------------------------------+   |
+|  | [Apple] File Edit ...                  [WiFi][⏰]     |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Standard Menu Bar (Siri visible):                          |
+|  +------------------------------------------------------+   |
+|  | [Apple] File Edit ...   [WiFi][BT][Vol][Siri][⏰]     |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Crowded Menu Bar (might want to hide Siri):               |
+|  +------------------------------------------------------+   |
+|  | [Apple] File  [Dropbox][1Pass][Slack][WiFi][Siri][⏰] |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Tip: Hold ⌘ and drag icons to reorder or remove from      |
+|       menu bar (for some system icons)                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Control Center Alternative:
+```
++-------------------------------------------------------------+
+|  Accessing Siri via Control Center                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Even with menu bar icon hidden, Siri in Control Center:    |
+|                                                              |
+|  Click Control Center icon:                                 |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  | [Apple] File Edit ...             [Control Center][⏰] |   |
+|  +------------------------------------------------------+   |
+|                              |                               |
+|                              v                               |
+|                    +------------------+                      |
+|                    | Control Center   |                      |
+|                    |                  |                      |
+|                    | [WiFi]   [BT]    |                      |
+|                    | [Do Not] [AirDrop]                      |
+|                    | [Display][Sound] |                      |
+|                    |                  |                      |
+|                    | [Siri] <--       |                      |
+|                    |  Click here      |                      |
+|                    +------------------+                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Siri icon hidden from menu bar.
+
+### Why Hide Siri Icon?
+
+1. **Cleaner menu bar** — More space for other items
+2. **Minimalism** — Less visual clutter
+3. **Use keyboard** — Prefer shortcut activation
+4. **Use voice** — Hey Siri doesn't need icon
+5. **Rarely use** — Don't need quick access
+
+### Why Keep Visible?
+
+- Quick one-click Siri access
+- Visual reminder Siri is available
+- Prefer mouse over keyboard
+- Don't use Hey Siri
+- Training new users
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Siri StatusMenuVisible
+
+# Hide Siri from menu bar
+defaults write com.apple.Siri StatusMenuVisible -bool false
+
+# Show Siri in menu bar (default)
+defaults write com.apple.Siri StatusMenuVisible -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.Siri StatusMenuVisible
+
+# Restart menu bar (if needed)
+killall SystemUIServer
+```
+
+Changes take effect immediately or after a brief delay.
+
+## UI Location
+
+**System Settings** > **Control Center** > **Menu Bar Only** > **Siri**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Control Center                            |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Control Center                                  |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Control Center Modules                          |       |
+|  |  (These appear in Control Center)                |       |
+|  |  ...                                             |       |
+|  |                                                  |       |
+|  |  ------------------------------------------------|       |
+|  |                                                  |       |
+|  |  Menu Bar Only                                   |       |
+|  |  (These are menu bar items only)                 |       |
+|  |                                                  |       |
+|  |  Siri                                            |       |
+|  |  [Don't Show in Menu Bar                    v]   |       |
+|  |      ^-- This setting                            |       |
+|  |      Options:                                    |       |
+|  |      - Show in Menu Bar                          |       |
+|  |      - Don't Show in Menu Bar                    |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Menu bar visibility (this setting)
+defaults write com.apple.Siri StatusMenuVisible -bool false
+
+# Master Siri toggle
+defaults write com.apple.assistant.support "Assistant Enabled" -bool true
+
+# Keyboard shortcut for Siri
+defaults write com.apple.Siri HotkeyTag -int 0
+
+# Hey Siri voice activation
+defaults write com.apple.Siri VoiceTriggerUserEnabled -bool false
+```
+
+## Keyboard Shortcut Options
+
+Alternative activation when menu bar icon is hidden:
+
+| Shortcut Option | Setting Value |
+|-----------------|---------------|
+| Hold Cmd + Space | Default |
+| Press Fn + Space | Alternative |
+| Hold Option + Space | Custom |
+| Custom key combo | Configure in settings |
+
+## Adding Siri to Dock
+
+If you hide the menu bar icon, add Siri to Dock for quick access:
+
+```bash
+# Add Siri to Dock (via dockutil if installed)
+dockutil --add /System/Applications/Siri.app
+
+# Or manually:
+# Drag Siri from Applications folder to Dock
+```
+
+## Menu Bar Space Considerations
+
+```
++-------------------------------------------------------------+
+|  Menu Bar Real Estate                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  13" MacBook (limited space):                               |
+|  +------------------------------------------------------+   |
+|  | [App menus take most space] [WiFi][BT][Siri][⏰]      |   |
+|  +------------------------------------------------------+   |
+|  Consider hiding: Siri, Bluetooth, Spotlight               |
+|                                                              |
+|  27" iMac (plenty of space):                                |
+|  +------------------------------------------------------+   |
+|  | [Apple] File Edit View Go ...   [Many icons fit][⏰]  |   |
+|  +------------------------------------------------------+   |
+|  Siri icon less of a concern                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Icon won't hide | Try `killall SystemUIServer` |
+| Icon returns after restart | Verify setting persisted |
+| Can't find Siri anymore | Use keyboard shortcut or Dock |
+| Setting doesn't stick | Check for MDM restrictions |
+| Icon in wrong position | Hold ⌘ and drag to reorder |
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra)
+- **Note**: Takes effect immediately
+- **Note**: Siri functionality unaffected by hiding icon
+- **Note**: Works independently of other Siri settings
+
+## Source File
+
+**File**: [`defaults/system/siri.sh`](../../defaults/system/siri.sh)
+
+```bash
+run_defaults "com.apple.Siri" "StatusMenuVisible" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Siri on your Mac](https://support.apple.com/guide/mac-help/mchl6b029310/mac)
+- [Apple Support: Customize Control Center](https://support.apple.com/guide/mac-help/quickly-change-settings-mchl50f94f8f/mac)
+- [Apple Support: Change Siri settings](https://support.apple.com/guide/mac-help/change-siri-settings-mchl75c3f1d7/mac)

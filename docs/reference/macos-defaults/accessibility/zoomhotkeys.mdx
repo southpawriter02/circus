@@ -1,0 +1,302 @@
+# Zoom Keyboard Shortcuts
+
+Enable keyboard shortcuts for screen zoom.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `closeViewHotKeysEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables keyboard shortcuts for controlling screen zoom accessibility features. When enabled, you can toggle zoom on/off, zoom in, and zoom out using Option+Command key combinations. This provides quick keyboard-based access to magnification without needing to use the mouse or trackpad gestures.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** (default) — Zoom keyboard shortcuts inactive |
+| `true` | **Enabled** — Zoom keyboard shortcuts active |
+
+## Visual Demonstration
+
+### Available Keyboard Shortcuts:
+```
++-------------------------------------------------------------+
+|  Zoom Keyboard Shortcuts                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  When enabled (closeViewHotKeysEnabled = true):             |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  TOGGLE ZOOM ON/OFF:                                |   |
+|  |  +---+ + +---+ + +---+                               |   |
+|  |  |⌥  |   |⌘  |   | 8 |   Option + Command + 8       |   |
+|  |  +---+   +---+   +---+                               |   |
+|  |                                                      |   |
+|  |  ZOOM IN:                                           |   |
+|  |  +---+ + +---+ + +---+                               |   |
+|  |  |⌥  |   |⌘  |   | = |   Option + Command + =       |   |
+|  |  +---+   +---+   +---+   (or +)                      |   |
+|  |                                                      |   |
+|  |  ZOOM OUT:                                          |   |
+|  |  +---+ + +---+ + +---+                               |   |
+|  |  |⌥  |   |⌘  |   | - |   Option + Command + -       |   |
+|  |  +---+   +---+   +---+                               |   |
+|  |                                                      |   |
+|  |  TOGGLE SMOOTH IMAGES:                              |   |
+|  |  +---+ + +---+ + +---+                               |   |
+|  |  |⌥  |   |⌘  |   | / |   Option + Command + /       |   |
+|  |  +---+   +---+   +---+                               |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Zoom Workflow with Keyboard:
+```
++-------------------------------------------------------------+
+|  Keyboard Zoom Workflow                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Step 1: Enable zoom (⌥⌘8)                                  |
+|  +------------------------------------------------------+   |
+|  |  +------------------------------------------+        |   |
+|  |  |  Normal desktop view                     |        |   |
+|  |  |                                          |        |   |
+|  |  |  Press ⌥⌘8 to activate zoom             |        |   |
+|  |  +------------------------------------------+        |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Step 2: Zoom in (⌥⌘=)                                      |
+|  +------------------------------------------------------+   |
+|  |  +------------------------------------------+        |   |
+|  |  |                                          |        |   |
+|  |  |        ZOOMED VIEW                       |        |   |
+|  |  |                                          |        |   |
+|  |  |     Text and content larger              |        |   |
+|  |  |                                          |        |   |
+|  |  +------------------------------------------+        |   |
+|  |  Press ⌥⌘= again to zoom in more                    |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Step 3: Zoom out (⌥⌘-)                                     |
+|  +------------------------------------------------------+   |
+|  |  +------------------------------------------+        |   |
+|  |  |  Zoomed view (less magnified)            |        |   |
+|  |  |                                          |        |   |
+|  |  |  Content at reduced zoom level           |        |   |
+|  |  +------------------------------------------+        |   |
+|  |  Press ⌥⌘- again to zoom out more                   |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Step 4: Disable zoom (⌥⌘8)                                 |
+|  +------------------------------------------------------+   |
+|  |  +------------------------------------------+        |   |
+|  |  |  Back to normal view                     |        |   |
+|  |  |                                          |        |   |
+|  |  |  No zoom, 100% view                      |        |   |
+|  |  +------------------------------------------+        |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Keyboard vs Trackpad Zoom:
+```
++-------------------------------------------------------------+
+|  Zoom Method Comparison                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  KEYBOARD SHORTCUTS:              SCROLL GESTURE:           |
+|  +------------------------+      +------------------------+  |
+|  |                        |      |                        |  |
+|  |  ⌥⌘8 = Toggle         |      |  Control + Scroll      |  |
+|  |  ⌥⌘= = Zoom in        |      |  = Continuous zoom     |  |
+|  |  ⌥⌘- = Zoom out       |      |                        |  |
+|  |                        |      |  More fluid control    |  |
+|  |  Discrete steps       |      |  Follows pointer       |  |
+|  |  Consistent amounts   |      |                        |  |
+|  |                        |      |                        |  |
+|  +------------------------+      +------------------------+  |
+|                                                              |
+|  Best for:                       Best for:                  |
+|  * Specific zoom levels          * Quick magnification     |
+|  * Keyboard-centric workflow     * Following content       |
+|  * Precise control               * Dynamic zoom            |
+|  * Accessibility                 * Presentations           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Keyboard shortcuts enabled for quick zoom access.
+
+### Why Enable Keyboard Shortcuts?
+
+1. **Quick access** — Toggle zoom instantly
+2. **No mouse needed** — Keyboard-only operation
+3. **Precise control** — Consistent zoom steps
+4. **Accessibility** — Essential for some users
+5. **Presentations** — Quick magnification during demos
+
+### Why Keep Disabled?
+
+- Prefer scroll gesture zoom only
+- Avoid accidental activation
+- Key combinations conflict with other apps
+- Don't use zoom feature
+- Minimal accessibility needs
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess closeViewHotKeysEnabled
+
+# Enable zoom keyboard shortcuts
+defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool true
+
+# Disable zoom keyboard shortcuts (default)
+defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess closeViewHotKeysEnabled
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Zoom**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Zoom                      |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Zoom                                            |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Use keyboard shortcuts to zoom                  |       |
+|  |  [*] Enable                                      |       |
+|  |      ^-- This setting                            |       |
+|  |                                                  |       |
+|  |  Shortcuts:                                      |       |
+|  |  • Toggle zoom: ⌥⌘8                             |       |
+|  |  • Zoom in: ⌥⌘=                                 |       |
+|  |  • Zoom out: ⌥⌘-                                |       |
+|  |  • Toggle smoothing: ⌥⌘/                        |       |
+|  |                                                  |       |
+|  |  Use scroll gesture with modifier keys to zoom   |       |
+|  |  [ ] Enable                                      |       |
+|  |                                                  |       |
+|  |  Zoom style                                      |       |
+|  |  [Full Screen                               v]   |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Complete Keyboard Shortcut Reference
+
+| Shortcut | Action | When Available |
+|----------|--------|----------------|
+| ⌥⌘8 | Toggle zoom on/off | When hotkeys enabled |
+| ⌥⌘= | Zoom in | When zoom is active |
+| ⌥⌘+ | Zoom in (alternative) | When zoom is active |
+| ⌥⌘- | Zoom out | When zoom is active |
+| ⌥⌘/ | Toggle smooth images | When zoom is active |
+| ⌥⌘\ | Toggle image inversion | Advanced setting |
+
+## Related Settings
+
+```bash
+# Keyboard shortcuts (this setting)
+defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool true
+
+# Scroll gesture zoom
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+# Scroll wheel modifier key (Control = 262144)
+defaults write com.apple.universalaccess closeViewScrollWheelModifiersInt -int 262144
+
+# Zoom style (0=full, 1=split, 2=PiP)
+defaults write com.apple.universalaccess closeViewZoomMode -int 0
+
+# Smooth images
+defaults write com.apple.universalaccess closeViewSmoothImages -bool true
+
+# Zoom follows keyboard focus
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+```
+
+## Using Both Methods Together
+
+```
++-------------------------------------------------------------+
+|  Combined Zoom Control                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  For maximum flexibility, enable both:                      |
+|                                                              |
+|  1. Keyboard shortcuts (⌥⌘ combinations)                   |
+|  2. Scroll gesture (Control + scroll)                       |
+|                                                              |
+|  Workflow example:                                           |
+|  +------------------------------------------------------+   |
+|  |  1. ⌥⌘8 to quickly enable zoom                       |   |
+|  |  2. Control + scroll for fine adjustment             |   |
+|  |  3. ⌥⌘8 to quickly disable                           |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Or:                                                         |
+|  +------------------------------------------------------+   |
+|  |  1. Control + scroll to start zooming               |   |
+|  |  2. ⌥⌘= or ⌥⌘- for precise steps                   |   |
+|  |  3. ⌥⌘8 to reset to normal                          |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Shortcuts not working | Verify setting is enabled, logout/login |
+| Conflicts with other apps | Some apps may override these shortcuts |
+| Zoom not activating | Check zoom feature is enabled overall |
+| Wrong zoom level on toggle | Zoom remembers last level used |
+| Can't zoom out further | May have reached minimum zoom level |
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Note**: May require logout for changes to take effect
+- **Note**: Works in conjunction with scroll gesture zoom
+- **Note**: Some applications may capture these shortcuts
+
+## Source File
+
+**File**: [`defaults/accessibility/zoom.sh`](../../defaults/accessibility/zoom.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "closeViewHotKeysEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Zoom in on the Mac screen](https://support.apple.com/guide/mac-help/zoom-in-on-the-mac-screen-mh35715/mac)
+- [Apple Support: Mac keyboard shortcuts for accessibility](https://support.apple.com/guide/mac-help/mac-keyboard-shortcuts-for-accessibility-mh27974/mac)
+- [Apple Support: Change Zoom preferences](https://support.apple.com/guide/mac-help/change-zoom-preferences-mchl70c97e7f/mac)

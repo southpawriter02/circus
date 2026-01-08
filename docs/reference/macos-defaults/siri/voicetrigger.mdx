@@ -1,0 +1,326 @@
+# Siri Voice Trigger
+
+Enable "Hey Siri" voice activation.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Siri` |
+| **Key** | `VoiceTriggerUserEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether you can activate Siri by saying "Hey Siri" (or just "Siri" on newer Macs). When enabled, your Mac constantly listens for the wake phrase and activates Siri hands-free. This allows voice-only interaction without pressing any buttons or using keyboard shortcuts.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** (default) — Must use keyboard/click to activate Siri |
+| `true` | **Enabled** — "Hey Siri" voice activation active |
+
+## Visual Demonstration
+
+### Hey Siri Activation:
+```
++-------------------------------------------------------------+
+|  Hey Siri Activation Flow                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  With Voice Trigger ENABLED:                                 |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  User: "Hey Siri..."                                |   |
+|  |                                                      |   |
+|  |         +----------------------------+               |   |
+|  |         |      )))                   |               |   |
+|  |         |  Mac listening...          |               |   |
+|  |         |      )))                   |               |   |
+|  |         +----------------------------+               |   |
+|  |                   |                                  |   |
+|  |                   v                                  |   |
+|  |         +----------------------------+               |   |
+|  |         |                            |               |   |
+|  |         |     [Siri Icon]            |               |   |
+|  |         |     "What can I help       |               |   |
+|  |         |      you with?"            |               |   |
+|  |         |                            |               |   |
+|  |         +----------------------------+               |   |
+|  |                                                      |   |
+|  |  User: "...what's the weather today?"               |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Voice Trigger Disabled:
+```
++-------------------------------------------------------------+
+|  Manual Siri Activation                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  With Voice Trigger DISABLED:                               |
+|                                                              |
+|  Option 1: Keyboard Shortcut                                |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  Press and hold: Cmd + Space (or custom shortcut)   |   |
+|  |                                                      |   |
+|  |  +---+ + +---+                                       |   |
+|  |  |⌘  |   |   |    Hold both keys                    |   |
+|  |  +---+   +---+                                       |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Option 2: Menu Bar Click                                   |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  Click Siri icon in menu bar:                       |   |
+|  |                                                      |   |
+|  |  [WiFi] [Battery] [Siri] [Time]                     |   |
+|  |                     ^                                |   |
+|  |                Click here                            |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Option 3: Dock                                             |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  Click Siri in Dock (if added):                     |   |
+|  |                                                      |   |
+|  |  [Finder] [Safari] [Mail] [Siri]                    |   |
+|  |                            ^                         |   |
+|  |                         Click                        |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Privacy Considerations:
+```
++-------------------------------------------------------------+
+|  Voice Trigger Privacy                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  When ENABLED:                                               |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  Mac is ALWAYS listening for "Hey Siri"             |   |
+|  |                                                      |   |
+|  |  +--------------------------------------------+     |   |
+|  |  |  [Microphone Active]                       |     |   |
+|  |  |                                            |     |   |
+|  |  |  * On-device processing for wake phrase   |     |   |
+|  |  |  * Audio NOT sent to Apple until wake     |     |   |
+|  |  |  * Wake phrase detected locally           |     |   |
+|  |  +--------------------------------------------+     |   |
+|  |                                                      |   |
+|  |  After wake phrase:                                  |   |
+|  |  * Query sent to Apple servers                      |   |
+|  |  * Processed and response returned                  |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  When DISABLED:                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  Mac only activates Siri on explicit action         |   |
+|  |                                                      |   |
+|  |  [Microphone Inactive until triggered]              |   |
+|  |                                                      |   |
+|  |  * More private                                     |   |
+|  |  * No passive listening                             |   |
+|  |  * Manual activation required                       |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Hardware Requirements:
+```
++-------------------------------------------------------------+
+|  Hey Siri Hardware Support                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  FULL SUPPORT (Always-on Hey Siri):                         |
+|  +------------------------------------------------------+   |
+|  |  * MacBook Pro (2018 and later)                     |   |
+|  |  * MacBook Air (2018 and later)                     |   |
+|  |  * iMac Pro                                         |   |
+|  |  * iMac (2020 and later)                           |   |
+|  |  * Mac mini (2018 and later with Apple Silicon)     |   |
+|  |  * Mac Studio                                       |   |
+|  |  * Mac Pro (2019 and later)                        |   |
+|  |                                                      |   |
+|  |  These have dedicated "Hey Siri" processing         |   |
+|  |  hardware for low-power always-on listening         |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  LIMITED/NO SUPPORT:                                         |
+|  +------------------------------------------------------+   |
+|  |  * Older Mac models                                 |   |
+|  |  * May require Mac to be awake/active               |   |
+|  |  * Higher power consumption for listening           |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Voice trigger disabled for privacy.
+
+### Why Enable Hey Siri?
+
+1. **Hands-free** — Activate Siri without touching Mac
+2. **Accessibility** — Essential for motor impairments
+3. **Convenience** — Quick queries while working
+4. **HomeKit** — Control smart home with voice
+5. **Multitasking** — Set timers, reminders while cooking
+
+### Why Keep Disabled?
+
+- Privacy concerns about always-on microphone
+- Don't use Siri regularly
+- Prefer keyboard/click activation
+- Shared or public environment
+- Battery/power conservation
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Siri VoiceTriggerUserEnabled
+
+# Enable Hey Siri
+defaults write com.apple.Siri VoiceTriggerUserEnabled -bool true
+
+# Disable Hey Siri (default)
+defaults write com.apple.Siri VoiceTriggerUserEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Siri VoiceTriggerUserEnabled
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Siri & Spotlight**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Siri & Spotlight                          |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Siri & Spotlight                                |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Ask Siri                                        |       |
+|  |  [*] Enable                                      |       |
+|  |                                                  |       |
+|  |  Listen for                                      |       |
+|  |  (*) "Siri" or "Hey Siri"                       |       |
+|  |  ( ) "Hey Siri"                                 |       |
+|  |  ( ) Off                                         |       |
+|  |      ^-- This setting                            |       |
+|  |                                                  |       |
+|  |  Keyboard shortcut                               |       |
+|  |  [Hold Command Space                        v]   |       |
+|  |                                                  |       |
+|  |  Language                                        |       |
+|  |  [English (United States)                   v]   |       |
+|  |                                                  |       |
+|  |  Siri Voice                                      |       |
+|  |  [American (Voice 4)                        v]   |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Voice trigger (this setting)
+defaults write com.apple.Siri VoiceTriggerUserEnabled -bool false
+
+# Master Siri toggle
+defaults write com.apple.assistant.support "Assistant Enabled" -bool true
+
+# Type to Siri (alternative input method)
+defaults write com.apple.Siri TypeToSiriEnabled -bool true
+
+# Voice feedback (Siri speaks responses)
+defaults write com.apple.Siri VoiceFeedback -string "On"
+
+# Siri in menu bar
+defaults write com.apple.Siri StatusMenuVisible -bool true
+```
+
+## Hey Siri Best Practices
+
+### For Best Recognition:
+```
++-------------------------------------------------------------+
+|  Hey Siri Tips                                               |
++-------------------------------------------------------------+
+|                                                              |
+|  * Speak clearly and at normal volume                       |
+|  * Say "Hey Siri" before your request                       |
+|  * Minimize background noise                                |
+|  * Face toward your Mac                                     |
+|  * Don't speak too fast                                     |
+|                                                              |
+|  Example phrases:                                            |
+|  +------------------------------------------------------+   |
+|  |  "Hey Siri, what's the weather?"                    |   |
+|  |  "Hey Siri, set a timer for 5 minutes"              |   |
+|  |  "Hey Siri, play some jazz music"                   |   |
+|  |  "Hey Siri, turn on the living room lights"         |   |
+|  |  "Hey Siri, remind me to call Mom at 5pm"           |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Hey Siri not responding | Check if enabled, verify Mac support |
+| Activates accidentally | Retrain Siri voice recognition |
+| Only works when lid open | Normal for some models |
+| Works intermittently | Check microphone access, restart |
+| Doesn't recognize voice | Disable/re-enable to retrain |
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra)
+- **Hardware**: T2 chip or Apple Silicon for always-on
+- **Note**: May require logout for changes to take effect
+- **Note**: Older Macs need to be awake for Hey Siri
+- **Note**: Requires Siri to be enabled first
+
+## Source File
+
+**File**: [`defaults/system/siri.sh`](../../defaults/system/siri.sh)
+
+```bash
+run_defaults "com.apple.Siri" "VoiceTriggerUserEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Siri on your Mac](https://support.apple.com/guide/mac-help/mchl6b029310/mac)
+- [Apple Support: Hey Siri on Mac](https://support.apple.com/HT209014)
+- [Apple Support: Siri privacy](https://support.apple.com/en-us/HT210657)

@@ -1,0 +1,264 @@
+# Trackpad Pinch to Zoom
+
+Enable pinch gesture to zoom in supporting applications.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `TrackpadPinchToZoom` |
+| **Type** | Boolean/Integer |
+| **Default Value** | `true` (1) |
+| **Our Setting** | `true` (1) |
+
+## Description
+
+Controls the pinch-to-zoom gesture on Multi-Touch trackpads. When enabled, spreading two fingers apart zooms in, and pinching them together zooms out. This works in supported applications like Photos, Preview, Safari, Maps, and many others. This is application-level zoom, separate from the accessibility screen zoom feature.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `1` / `true` | **Enabled** (default) — Pinch gesture zooms content |
+| `0` / `false` | **Disabled** — Pinch gesture has no effect |
+
+## Visual Demonstration
+
+### Pinch to Zoom Gesture:
+```
++-------------------------------------------------------------+
+|  Pinch to Zoom on Trackpad                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  ZOOM IN (spread fingers):                                   |
+|                                                              |
+|     Before:              Gesture:             After:         |
+|  +------------+       +------------+       +------------+    |
+|  |            |       |    .  .    |       |            |    |
+|  |   [Photo]  |       |     \/     |       |  [Photo    |    |
+|  |            |       |     /\     |   ->  |   zoomed   |    |
+|  |            |       |    .  .    |       |     in]    |    |
+|  +------------+       +------------+       +------------+    |
+|                                                              |
+|  ZOOM OUT (pinch fingers):                                   |
+|                                                              |
+|     Before:              Gesture:             After:         |
+|  +------------+       +------------+       +------------+    |
+|  |   Photo    |       |    .  .    |       |            |    |
+|  |   zoomed   |       |     /\     |       |   [Photo]  |    |
+|  |     in     |   ->  |     \/     |       |            |    |
+|  |            |       |    .  .    |       |            |    |
+|  +------------+       +------------+       +------------+    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Applications Supporting Pinch to Zoom:
+```
++-------------------------------------------------------------+
+|  App Support for Pinch to Zoom                               |
++-------------------------------------------------------------+
+|                                                              |
+|  FULLY SUPPORTED:                                            |
+|  +------------------------------------------------------+   |
+|  |  [Photos]   Zoom into images                         |   |
+|  |  [Preview]  Zoom PDFs and images                     |   |
+|  |  [Safari]   Zoom web pages                           |   |
+|  |  [Maps]     Zoom map view                            |   |
+|  |  [Finder]   Zoom Quick Look previews                 |   |
+|  |  [Pages]    Zoom document view                       |   |
+|  |  [Keynote]  Zoom slide editing                       |   |
+|  |  [Numbers]  Zoom spreadsheet view                    |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  PARTIALLY SUPPORTED:                                        |
+|  +------------------------------------------------------+   |
+|  |  [Chrome]   Zoom web pages (may need enabling)       |   |
+|  |  [Figma]    Zoom canvas                              |   |
+|  |  [VSCode]   Some views only                          |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  NOT SUPPORTED (use keyboard zoom):                         |
+|  +------------------------------------------------------+   |
+|  |  [Terminal] Use Cmd +/- instead                      |   |
+|  |  [TextEdit] Use Cmd +/- instead                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Gesture Recognition:
+```
++-------------------------------------------------------------+
+|  Gesture Detection                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Trackpad Surface:                                           |
+|  +----------------------------------------------+           |
+|  |                                              |           |
+|  |     Starting Position:                       |           |
+|  |           .   .                              |           |
+|  |         (thumb)(index)                       |           |
+|  |                                              |           |
+|  |     Spread apart to zoom in:                 |           |
+|  |        .         .                           |           |
+|  |      (thumb)   (index)                       |           |
+|  |                                              |           |
+|  |     Pinch together to zoom out:              |           |
+|  |            ..                                |           |
+|  |         (together)                           |           |
+|  |                                              |           |
+|  +----------------------------------------------+           |
+|                                                              |
+|  Tips:                                                       |
+|  * Use thumb and index finger for best control              |
+|  * Smooth, steady motion works best                         |
+|  * Center gesture on trackpad                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable pinch to zoom for natural interaction.
+
+### Why Enable Pinch to Zoom?
+
+1. **Intuitive** — Natural gesture from iOS/iPhone
+2. **Precise** — Smooth, continuous zoom control
+3. **Fast** — Quicker than keyboard shortcuts
+4. **Universal** — Works across many apps
+5. **Ergonomic** — Easy finger movement
+
+### Why Disable Pinch to Zoom?
+
+- Accidental zooming during other gestures
+- Prefer keyboard zoom (Cmd +/-)
+- Conflicts with drawing applications
+- Gesture not comfortable
+- Trackpad sensitivity issues
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad TrackpadPinchToZoom
+
+# Enable pinch to zoom
+defaults write com.apple.AppleMultitouchTrackpad TrackpadPinchToZoom -bool true
+
+# Also set for Bluetooth trackpad
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadPinchToZoom -bool true
+
+# Disable pinch to zoom
+defaults write com.apple.AppleMultitouchTrackpad TrackpadPinchToZoom -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad TrackpadPinchToZoom
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Trackpad** > **Scroll & Zoom** > **Zoom in or out**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Trackpad > Scroll & Zoom                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Scroll & Zoom                                   |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Natural scrolling                               |       |
+|  |  [*] Scroll direction: natural                   |       |
+|  |                                                  |       |
+|  |  Zoom in or out                                  |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | [*] Pinch with two fingers to zoom in or   |  |       |
+|  |  |     out                                    |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |        ^                                         |       |
+|  |   Toggle this option                             |       |
+|  |                                                  |       |
+|  |  Smart zoom                                      |       |
+|  |  [*] Double-tap with two fingers to zoom         |       |
+|  |                                                  |       |
+|  |  Rotate                                          |       |
+|  |  [*] Rotate with two fingers                     |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Pinch to zoom (this setting)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadPinchToZoom -bool true
+
+# Smart zoom (double-tap two fingers)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerDoubleTapGesture -int 1
+
+# Rotate gesture
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRotate -bool true
+
+# Natural scrolling
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+
+# Tracking speed
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 2.0
+```
+
+## Pinch vs Other Zoom Methods
+
+| Method | Best For | Notes |
+|--------|----------|-------|
+| Pinch to zoom | Continuous, precise zoom | Works in most apps |
+| Smart zoom (double-tap) | Quick zoom to fit | Content-aware |
+| Cmd + / Cmd - | Fixed increment zoom | Universal |
+| Accessibility zoom | Screen-wide zoom | Modifier + scroll |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Gesture not working | Check setting is enabled, restart app |
+| Too sensitive | Adjust tracking speed |
+| Not working in app | App may not support gesture |
+| Accidental zooming | Disable or adjust gesture technique |
+| Bluetooth trackpad different | Set for both domains |
+
+## Related Gestures
+
+| Gesture | Action |
+|---------|--------|
+| Pinch (this) | Zoom in/out |
+| Two-finger rotate | Rotate content |
+| Two-finger double-tap | Smart zoom |
+| Two-finger scroll | Scroll content |
+| Spread with thumb and three fingers | Show desktop |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Hardware**: Multi-Touch trackpad (built-in or Magic Trackpad)
+- **Note**: Both built-in and Bluetooth trackpad domains should be set
+- **Note**: Application must support the gesture
+
+## Source File
+
+**File**: [`defaults/input/trackpad_mouse.sh`](../../defaults/input/trackpad_mouse.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "TrackpadPinchToZoom" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Multi-Touch gestures on your Mac](https://support.apple.com/en-us/102482)
+- [Apple Support: Change Trackpad preferences](https://support.apple.com/guide/mac-help/change-trackpad-preferences-mchlp1226/mac)

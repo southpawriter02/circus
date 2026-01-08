@@ -1,0 +1,302 @@
+# Trackpad Four-Finger Horizontal Swipe
+
+Swipe between full-screen apps and desktops with four fingers.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `TrackpadFourFingerHorizSwipeGesture` |
+| **Type** | Integer |
+| **Default Value** | `2` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls the four-finger horizontal swipe gesture on the trackpad. When enabled, swiping left or right with four fingers switches between full-screen applications and desktop Spaces. This is one of macOS's most powerful navigation gestures for managing multiple workspaces.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Disabled** — Four-finger horizontal swipe does nothing |
+| `1` | **Navigate** — Swipe to navigate (varies by context) |
+| `2` | **Switch Spaces** (default) — Swipe between full-screen apps and Spaces |
+
+## Visual Demonstration
+
+### Four-Finger Horizontal Swipe Gesture:
+```
++-------------------------------------------------------------+
+|  Four-Finger Horizontal Swipe                                |
++-------------------------------------------------------------+
+|                                                              |
+|  The gesture:                                                |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |     +-+ +-+ +-+ +-+                                  |   |
+|  |     |.| |.| |.| |.|  <-- Four fingers               |   |
+|  |     +-+ +-+ +-+ +-+                                  |   |
+|  |       \   \   \   \                                  |   |
+|  |        \   \   \   \   Swipe LEFT or RIGHT          |   |
+|  |         ============>                                |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Swipe LEFT:  Go to next Space (desktop to the right)       |
+|  Swipe RIGHT: Go to previous Space (desktop to the left)    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Switching Between Spaces:
+```
++-------------------------------------------------------------+
+|  Desktop Spaces Navigation                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Current view (Space 2):                                     |
+|                                                              |
+|  Space 1      [Space 2]     Space 3       Full-Screen App   |
+|  +------+     +------+      +------+      +------+          |
+|  |Finder|     |Safari| <--  |Code  |      |Music |          |
+|  +------+     +------+      +------+      +------+          |
+|                  ^                                           |
+|             You are here                                     |
+|                                                              |
+|  Four-finger swipe LEFT:                                     |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  [Space 2] ============> [Space 3]                  |   |
+|  |                                                      |   |
+|  |  Safari slides out      Code slides in              |   |
+|  |  to the left            from the right              |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Four-finger swipe RIGHT:                                    |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  [Space 1] <============ [Space 2]                  |   |
+|  |                                                      |   |
+|  |  Finder slides in       Safari slides out           |   |
+|  |  from the left          to the right                |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Full-Screen App Navigation:
+```
++-------------------------------------------------------------+
+|  Full-Screen Apps in Spaces                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Mission Control view (swipe up with 3/4 fingers):          |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  | [Desktop 1] [Safari FS] [Desktop 2] [Music FS]      |   |
+|  |                                                      |   |
+|  |    Normal     Full        Normal      Full          |   |
+|  |    desktop    screen      desktop     screen        |   |
+|  |               app                     app           |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Four-finger swipe navigates through ALL of these:          |
+|                                                              |
+|  Desktop 1 <--> Safari FS <--> Desktop 2 <--> Music FS     |
+|                                                              |
+|  * Seamlessly move between workspaces                       |
+|  * Full-screen apps act like separate Spaces               |
+|  * Wrap-around: Music FS --> Desktop 1 (loops)             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Three-Finger vs Four-Finger Option:
+```
++-------------------------------------------------------------+
+|  Gesture Configuration Options                               |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Trackpad > More Gestures:                |
+|                                                              |
+|  Swipe between full-screen applications:                    |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  ( ) Off                                             |   |
+|  |  ( ) Swipe Left or Right with Three Fingers         |   |
+|  |  (*) Swipe Left or Right with Four Fingers          |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  THREE FINGERS:           FOUR FINGERS:                     |
+|  +--------------------+   +--------------------+             |
+|  | Frees up 4-finger  |   | Keeps 3-finger    |             |
+|  | for other gestures |   | for other uses    |             |
+|  | (e.g., App Exposé) |   | (e.g., drag)      |             |
+|  +--------------------+   +--------------------+             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `2` — Four-finger swipe switches between Spaces.
+
+### Why Enable This Gesture?
+
+1. **Multitasking** — Quickly switch workspaces
+2. **Full-screen apps** — Navigate between maximized applications
+3. **Productivity** — Separate contexts (work, personal, research)
+4. **Natural** — Intuitive left/right navigation
+5. **Speed** — Faster than clicking or keyboard shortcuts
+
+### Why Disable?
+
+- Prefer keyboard shortcuts (Control + Left/Right)
+- Accidental triggers during use
+- Using three-finger alternative
+- Don't use multiple Spaces
+- Gaming or specific app conflicts
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad TrackpadFourFingerHorizSwipeGesture
+
+# Enable four-finger horizontal swipe for Spaces (default)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerHorizSwipeGesture -int 2
+
+# Also set for Bluetooth trackpad
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerHorizSwipeGesture -int 2
+
+# Disable gesture
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerHorizSwipeGesture -int 0
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerHorizSwipeGesture -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad TrackpadFourFingerHorizSwipeGesture
+```
+
+Log out and back in for changes to take effect.
+
+## UI Location
+
+**System Settings** > **Trackpad** > **More Gestures**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Trackpad > More Gestures                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  More Gestures                                   |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Swipe between pages                             |       |
+|  |  [Scroll Left or Right with Two Fingers      v]  |       |
+|  |                                                  |       |
+|  |  Swipe between full-screen applications          |       |
+|  |  [Swipe Left or Right with Four Fingers      v]  |       |
+|  |   ^-- This setting                               |       |
+|  |                                                  |       |
+|  |  Notification Center                             |       |
+|  |  [*] Swipe left from the right edge with two    |       |
+|  |      fingers                                     |       |
+|  |                                                  |       |
+|  |  Mission Control                                 |       |
+|  |  [Swipe Up with Four Fingers                v]   |       |
+|  |                                                  |       |
+|  |  App Exposé                                      |       |
+|  |  [Swipe Down with Four Fingers              v]   |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Four-finger horizontal swipe (this setting)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerHorizSwipeGesture -int 2
+
+# Four-finger vertical swipe (Mission Control / App Exposé)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerVertSwipeGesture -int 2
+
+# Three-finger horizontal swipe (alternative)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2
+
+# Five-finger pinch (Launchpad)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFiveFingerPinchGesture -int 2
+```
+
+## Keyboard Alternatives
+
+| Shortcut | Action |
+|----------|--------|
+| Control + Left Arrow | Move to Space on the left |
+| Control + Right Arrow | Move to Space on the right |
+| Control + Up Arrow | Mission Control |
+| Control + Down Arrow | App Exposé (windows of current app) |
+| Control + 1-9 | Jump to specific Space |
+
+## Spaces Workflow Tips
+
+### Creating Spaces:
+```
++-------------------------------------------------------------+
+|  Managing Spaces via Mission Control                         |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Swipe up with four fingers (Mission Control)            |
+|  2. Hover at top of screen to see Space bar                 |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  | [+] Desktop 1 | Desktop 2 | Safari FS | Desktop 3     |  |
+|  +------------------------------------------------------+   |
+|        ^                                                     |
+|    Click + to add new Space                                 |
+|                                                              |
+|  3. Drag windows to different Spaces                        |
+|  4. Drag window to right edge to create new Space          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Gesture not working | Check if enabled in System Settings |
+| Only see one Space | Create additional Spaces in Mission Control |
+| Swipe goes wrong direction | Spaces are ordered left-to-right |
+| Three-finger working instead | Check gesture configuration |
+| Full-screen apps not in order | Reorder in Mission Control |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Hardware**: All Multi-Touch trackpads
+- **Note**: Requires logout for changes to apply
+- **Note**: Works with Magic Trackpad as well
+- **Note**: Full-screen apps create their own Space
+
+## Source File
+
+**File**: [`defaults/input/trackpad_mouse.sh`](../../defaults/input/trackpad_mouse.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "TrackpadFourFingerHorizSwipeGesture" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Use Mission Control](https://support.apple.com/guide/mac-help/work-in-multiple-spaces-mh14112/mac)
+- [Apple Support: Multi-Touch gestures](https://support.apple.com/guide/mac-help/multi-touch-gestures-mchlb2a0e46d/mac)
+- [Apple Support: Change Trackpad preferences](https://support.apple.com/guide/mac-help/change-trackpad-preferences-mchlp1226/mac)

@@ -1,0 +1,341 @@
+# Dock Spring Loading
+
+Open folders and apps when dragging items over them.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `enable-spring-load-actions-on-all-items` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Spring loading allows you to drag a file over a folder or application in the Dock and have it automatically open after a brief hover. This enables quick file operations without manually opening applications or navigating to folders first. Holding a dragged file over a Dock item "springs" it open.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** — Dragging over Dock items does not spring-load them |
+| `true` | **Enabled** (default) — Hovering while dragging opens items |
+
+## Visual Demonstration
+
+### Spring Loading a Folder:
+```
++-------------------------------------------------------------+
+|  Spring Loading - Folders                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Step 1: Drag a file                                        |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  Desktop                                             |   |
+|  |                                                      |   |
+|  |    [document.pdf]  <-- Dragging this file           |   |
+|  |          |                                           |   |
+|  |          |                                           |   |
+|  |          v                                           |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Step 2: Hover over folder in Dock                          |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  | [Finder] [Safari] [Downloads] [Trash]               |   |
+|  |                      ^                               |   |
+|  |              Hover here with file                   |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Step 3: Folder springs open (after ~0.5 seconds)           |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  +----------------------------------+                |   |
+|  |  |  Downloads                       |                |   |
+|  |  |  +---------+ +---------+         |                |   |
+|  |  |  |file1.zip| |image.jpg|         |                |   |
+|  |  |  +---------+ +---------+         |  <-- Folder   |   |
+|  |  |  +---------+ +---------+         |      opened!  |   |
+|  |  |  |doc.pdf  | |video.mp4|         |                |   |
+|  |  |  +---------+ +---------+         |                |   |
+|  |  +----------------------------------+                |   |
+|  |                                                      |   |
+|  | [Finder] [Safari] [Downloads] [Trash]               |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Step 4: Drop file into opened folder                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Spring Loading an Application:
+```
++-------------------------------------------------------------+
+|  Spring Loading - Applications                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Drag a file over an application in the Dock:               |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |    [photo.jpg]                                       |   |
+|  |         |                                            |   |
+|  |         |  Drag over Photos app                     |   |
+|  |         v                                            |   |
+|  |  +-------------------------------------------------+ |   |
+|  |  | [Finder] [Photos] [Preview] [Mail]              | |   |
+|  |  |            ^                                    | |   |
+|  |  +-------------------------------------------------+ |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  After spring delay:                                         |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  +------------------------------------------+        |   |
+|  |  |  Photos                                  |        |   |
+|  |  |  +------------------------------------+  |        |   |
+|  |  |  |  Import "photo.jpg"?               |  |        |   |
+|  |  |  |  [Import] [Cancel]                 |  |        |   |
+|  |  |  +------------------------------------+  |        |   |
+|  |  +------------------------------------------+        |   |
+|  |                                                      |   |
+|  | [Finder] [Photos] [Preview] [Mail]                  |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Application opens and receives the file                  |
+|  * Works with any compatible app                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Spring Loading with Nested Folders:
+```
++-------------------------------------------------------------+
+|  Nested Folder Navigation                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  With spring loading, navigate deep folder structures:      |
+|                                                              |
+|  Drag file --> Hover on folder --> Springs open             |
+|            --> Hover on subfolder --> Springs open          |
+|            --> Hover on subfolder --> Springs open          |
+|            --> Drop file                                     |
+|                                                              |
+|  Example: Moving file to Projects/2024/January/Reports      |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  1. Hover on [Projects] folder in Dock              |   |
+|  |     Projects folder opens as stack/grid              |   |
+|  |                                                      |   |
+|  |  2. Continue hovering on [2024] subfolder           |   |
+|  |     2024 folder opens in Finder                      |   |
+|  |                                                      |   |
+|  |  3. Continue hovering on [January]                  |   |
+|  |     January folder opens                             |   |
+|  |                                                      |   |
+|  |  4. Drop file in [Reports]                          |   |
+|  |     File moved to final destination!                 |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  All without letting go of the file!                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Spring Loading:
+```
++-------------------------------------------------------------+
+|  Manual Approach (Spring Loading Disabled)                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Without spring loading, you must:                          |
+|                                                              |
+|  1. Open destination folder/app FIRST                       |
+|  2. Position windows side by side                           |
+|  3. THEN drag the file                                      |
+|                                                              |
+|  +------------------------+  +------------------------+     |
+|  |  Source folder         |  |  Destination folder    |     |
+|  |  +-----------------+   |  |  +-----------------+   |     |
+|  |  |  [file.pdf]     |   |  |  |                 |   |     |
+|  |  |       |---------|---|--|->|  Drop here      |   |     |
+|  |  +-----------------+   |  |  +-----------------+   |     |
+|  +------------------------+  +------------------------+     |
+|                                                              |
+|  More steps, more window management                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Spring loading enabled for efficient file management.
+
+### Why Enable Spring Loading?
+
+1. **Efficiency** — Move files without opening windows first
+2. **One-handed** — Complete operation with single drag
+3. **Deep navigation** — Access nested folders quickly
+4. **App integration** — Drop files directly into apps
+5. **Natural workflow** — Intuitive drag-and-drop behavior
+
+### Why Disable Spring Loading?
+
+- Accidental folder/app opening
+- Prefer explicit actions
+- Slower computers may lag
+- Learning curve confusion
+- Specific workflow requirements
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dock enable-spring-load-actions-on-all-items
+
+# Enable spring loading (default)
+defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
+
+# Disable spring loading
+defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool false
+
+# Adjust spring loading delay (in seconds)
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.5
+
+# Enable spring loading in Finder (related)
+defaults write NSGlobalDomain com.apple.springing.enabled -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.dock enable-spring-load-actions-on-all-items
+
+# Restart Dock to apply changes
+killall Dock
+```
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Pointer Control** > **Spring-loading delay**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Pointer Control           |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Pointer Control                                 |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Mouse & Trackpad                                |       |
+|  |  Double-click speed:                             |       |
+|  |  Slow [==========O========] Fast                 |       |
+|  |                                                  |       |
+|  |  Spring-loading delay:                           |       |
+|  |  Short [=====O============] Long                 |       |
+|  |         ^                                        |       |
+|  |    Affects how long to hover before opening     |       |
+|  |                                                  |       |
+|  |  [ ] Ignore built-in trackpad when mouse or     |       |
+|  |      wireless trackpad is present               |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Dock spring loading (this setting)
+defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
+
+# Global spring loading
+defaults write NSGlobalDomain com.apple.springing.enabled -bool true
+
+# Spring loading delay (seconds)
+defaults write NSGlobalDomain com.apple.springing.delay -float 0.5
+
+# Finder spring loading (separate setting)
+defaults write com.apple.finder SpringingEnabled -bool true
+
+# Dock icon size
+defaults write com.apple.dock tilesize -int 48
+
+# Show recent apps in Dock
+defaults write com.apple.dock show-recents -bool false
+```
+
+## Spring Loading Delay Values
+
+| Delay | Description | Best For |
+|-------|-------------|----------|
+| 0.2s | Very short | Power users, fast workflows |
+| 0.5s | Default | Most users |
+| 0.75s | Longer | Preventing accidents |
+| 1.0s+ | Very long | Careful, deliberate use |
+
+## Spring Loading in Finder
+
+Spring loading also works in Finder windows:
+
+```
++-------------------------------------------------------------+
+|  Finder Spring Loading                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  Drag file over folder in Finder:                           |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  Finder - Documents                                  |   |
+|  |  +-------------+  +-------------+  +-------------+   |   |
+|  |  |  Projects   |  |  Archive    |  |  Backups    |   |   |
+|  |  |     ^       |  |             |  |             |   |   |
+|  |  +-----|-------+  +-------------+  +-------------+   |   |
+|  |        |                                             |   |
+|  |  Hover here while dragging                          |   |
+|  |  Folder opens without clicking!                     |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Works in:                                                   |
+|  * List view                                                |
+|  * Column view                                              |
+|  * Icon view                                                |
+|  * Gallery view                                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Spring loading not working | Restart Dock (`killall Dock`) |
+| Too slow to open | Reduce spring loading delay |
+| Opens too quickly | Increase spring loading delay |
+| Doesn't work on all items | Some items may not support it |
+| Works in Dock but not Finder | Check Finder spring loading setting |
+
+## Compatibility
+
+- **macOS**: 10.0+ (all versions)
+- **Note**: Restart Dock for changes to take effect
+- **Note**: Delay setting is system-wide
+- **Note**: Works with folders and compatible applications
+
+## Source File
+
+**File**: [`defaults/interface/dock.sh`](../../defaults/interface/dock.sh)
+
+```bash
+run_defaults "com.apple.dock" "enable-spring-load-actions-on-all-items" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use the Dock on your Mac](https://support.apple.com/guide/mac-help/open-apps-using-the-dock-mh35859/mac)
+- [Apple Support: Organize files in folders](https://support.apple.com/guide/mac-help/organize-files-in-folders-mchlp2657/mac)
+- [Apple Support: Change Pointer Control settings](https://support.apple.com/guide/mac-help/change-pointer-control-settings-mchlb11f4949/mac)

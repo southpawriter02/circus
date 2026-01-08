@@ -1,0 +1,252 @@
+# Hover Text
+
+Magnify text under the pointer by holding Command.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `hoverTextEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Hover Text displays a larger, high-resolution version of text under the mouse pointer when you hold down the Command key. This accessibility feature helps users who need occasional text magnification without zooming the entire screen. Unlike full-screen zoom, Hover Text only magnifies the area directly under your pointer.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** (default) — No hover magnification |
+| `true` | **Enabled** — Hold Command to magnify text |
+
+## Visual Demonstration
+
+### Hover Text Disabled (Default):
+```
++-------------------------------------------------------------+
+|  Normal View                                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Document with small text:                                   |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  This is a paragraph with 12pt font. The quick brown |   |
+|  |  fox jumps over the lazy dog. Lorem ipsum dolor sit  |   |
+|  |  amet, consectetur adipiscing elit.                  |   |
+|  |                                                      |   |
+|  |  [pointer]                                           |   |
+|  |      ^                                               |   |
+|  |  Just a normal cursor, no magnification              |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  To read small text: manually zoom or lean closer           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Hover Text Enabled (Hold Command):
+```
++-------------------------------------------------------------+
+|  Hover Text Active                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Document with small text:                                   |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  This is a paragraph with 12pt font. The quick brown |   |
+|  |  fox jumps over +--------------------------------+   |   |
+|  |  amet, consecte |                                |   |   |
+|  |                 |  fox jumps over                |   |   |
+|  |  [pointer] +    |        the lazy                |   |   |
+|  |  (Cmd held)     |           dog                  |   |   |
+|  |                 +--------------------------------+   |   |
+|  |                     ^                               |   |
+|  |            Magnified text panel appears            |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Large, crisp text in floating panel                      |
+|  * Follows pointer position                                 |
+|  * Release Command to dismiss                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Hover Text Customization:
+```
++-------------------------------------------------------------+
+|  Hover Text Appearance Options                               |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Accessibility > Zoom > Hover Text         |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  Text size:        [========O========]               |   |
+|  |                     Small         Large              |   |
+|  |                                                      |   |
+|  |  Font:             [System Font        v]            |   |
+|  |                                                      |   |
+|  |  Text color:       [*] Auto                         |   |
+|  |                    [ ] White on black               |   |
+|  |                    [ ] Black on white               |   |
+|  |                                                      |   |
+|  |  Position:         [*] Above pointer                |   |
+|  |                    [ ] Below pointer                |   |
+|  |                                                      |   |
+|  |  Activation key:   [Command        v]                |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disabled unless needed for accessibility.
+
+### Why Enable Hover Text?
+
+1. **Selective magnification** — Only see large text when needed
+2. **Less intrusive** — No full-screen zoom
+3. **Quick access** — Just hold Command
+4. **High-resolution** — Crisp text rendering
+5. **Portable** — Works in any application
+
+### Why Keep Disabled?
+
+- Not needed for normal vision
+- Command key already has uses
+- May interfere with shortcuts
+- Full zoom preferred instead
+- Minimal use case
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess hoverTextEnabled
+
+# Enable Hover Text
+defaults write com.apple.universalaccess hoverTextEnabled -bool true
+
+# Disable Hover Text (default)
+defaults write com.apple.universalaccess hoverTextEnabled -bool false
+
+# Set Hover Text font size (points)
+defaults write com.apple.universalaccess hoverTextFontSize -int 64
+
+# Delete (reset to defaults)
+defaults delete com.apple.universalaccess hoverTextEnabled
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Zoom** > **Hover Text**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Zoom                      |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Zoom                                            |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Use keyboard shortcuts to zoom                  |       |
+|  |  [*] Enable                                      |       |
+|  |                                                  |       |
+|  |  Use scroll gesture with modifier keys to zoom   |       |
+|  |  [*] Enable    [Control        v]                |       |
+|  |                                                  |       |
+|  |  ------------------------------------------------|       |
+|  |                                                  |       |
+|  |  Hover Text                                      |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | [*] Enable Hover Text                      |  |       |
+|  |  |                                            |  |       |
+|  |  | Hold Command to show larger text under     |  |       |
+|  |  | the pointer.                               |  |       |
+|  |  |                                            |  |       |
+|  |  | [Options...]                               |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Enable Hover Text (this setting)
+defaults write com.apple.universalaccess hoverTextEnabled -bool true
+
+# Hover Text font size
+defaults write com.apple.universalaccess hoverTextFontSize -int 64
+
+# Hover Text font name
+defaults write com.apple.universalaccess hoverTextFontName -string "System Font"
+
+# Full-screen zoom (alternative)
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+# Zoom keyboard shortcuts
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+```
+
+## Hover Text vs Full Zoom
+
+| Feature | Hover Text | Full Zoom |
+|---------|------------|-----------|
+| Area magnified | Text under pointer | Entire screen |
+| Activation | Hold modifier key | Toggle on/off |
+| Intrusiveness | Low | High |
+| Use case | Quick text reading | Extended magnification |
+| Interface impact | Minimal | Significant |
+
+## Activation Key Options
+
+The default activation key is Command. Available options:
+
+| Key | Description |
+|-----|-------------|
+| Command (⌘) | Default, common modifier |
+| Control (⌃) | Less conflicts |
+| Option (⌥) | Alternative modifier |
+| Shift (⇧) | Might conflict with selection |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Hover Text not appearing | Hold key longer, check if enabled |
+| Text too small/large | Adjust font size in settings |
+| Wrong activation key | Change in Accessibility settings |
+| Panel in wrong position | Adjust position preference |
+| Not working in app | Some apps may not fully support |
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina)
+- **Note**: May require logout to take effect
+- **Note**: Works in most applications
+- **Note**: May not work with some custom UI elements
+
+## Source File
+
+**File**: [`defaults/accessibility/display.sh`](../../defaults/accessibility/display.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "hoverTextEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Zoom in on the Mac screen](https://support.apple.com/guide/mac-help/zoom-in-on-the-mac-screen-mh35715/mac)
+- [Apple Support: Hover Text preferences](https://support.apple.com/guide/mac-help/change-zoom-preferences-mchl70c97e7f/mac)

@@ -1,0 +1,280 @@
+# Slow Keys
+
+Adjust keyboard to require keys to be held before registering.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `slowKey` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Slow Keys is an accessibility feature that adds a delay between pressing a key and the keystroke being registered. This helps users who may accidentally press keys or have difficulty with precise key presses. The key must be held down for a specified duration before it registers, preventing accidental keystrokes from tremors or imprecise movements.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** (default) — Keys register immediately |
+| `true` | **Enabled** — Keys require hold duration to register |
+
+## Visual Demonstration
+
+### Normal Keyboard (Slow Keys Off):
+```
++-------------------------------------------------------------+
+|  Standard Keyboard Behavior                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Key Press Timeline:                                         |
+|                                                              |
+|  Press 'A':                                                  |
+|  +-----+                                                     |
+|  |  A  | <-- Key pressed                                    |
+|  +-----+                                                     |
+|     |                                                        |
+|     v                                                        |
+|  [Instant] --> 'a' registered immediately                    |
+|                                                              |
+|  Accidental tap:                                             |
+|  +-----+                                                     |
+|  |  A  | <-- Brief accidental touch                         |
+|  +-----+                                                     |
+|     |                                                        |
+|     v                                                        |
+|  [Instant] --> 'a' registered (unwanted!)                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Slow Keys Enabled:
+```
++-------------------------------------------------------------+
+|  Slow Keys Behavior                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Key Press Timeline (with 0.5s delay):                       |
+|                                                              |
+|  Intentional Press:                                          |
+|  +-----+                                                     |
+|  |  A  | <-- Key pressed and held                           |
+|  +-----+                                                     |
+|     |                                                        |
+|     | [0.0s] Key down detected                              |
+|     | [0.1s] ...                                             |
+|     | [0.2s] ...                                             |
+|     | [0.3s] ...                                             |
+|     | [0.4s] ...                                             |
+|     | [0.5s] --> 'a' registered!                            |
+|     |                                                        |
+|  +-----+                                                     |
+|  |     | <-- Key released                                   |
+|  +-----+                                                     |
+|                                                              |
+|  Accidental Tap:                                             |
+|  +-----+                                                     |
+|  |  A  | <-- Brief touch                                    |
+|  +-----+                                                     |
+|     |                                                        |
+|     | [0.0s] Key down                                       |
+|     | [0.1s] Key released (too short!)                      |
+|     |                                                        |
+|     v                                                        |
+|  [Nothing] --> No character registered (protected!)          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Visual Feedback:
+```
++-------------------------------------------------------------+
+|  Slow Keys Visual Feedback                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  When enabled with click sounds:                             |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  Keyboard                                            |   |
+|  |                                                      |   |
+|  |  +---+---+---+---+---+---+---+---+---+---+          |   |
+|  |  | Q | W | E | R | T | Y | U | I | O | P |          |   |
+|  |  +---+---+---+---+---+---+---+---+---+---+          |   |
+|  |    +---+---+---+---+---+---+---+---+---+            |   |
+|  |    |[A]| S | D | F | G | H | J | K | L |            |   |
+|  |    +---+---+---+---+---+---+---+---+---+            |   |
+|  |      ^ holding...                                    |   |
+|  |      |                                               |   |
+|  |      +-- Progress indicator or sound                 |   |
+|  |          [===>      ] 60% of delay                   |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Optional sounds:                                            |
+|  * Key press started: soft click                            |
+|  * Key accepted: confirmation sound                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disabled for standard keyboard response.
+
+### Why Enable Slow Keys?
+
+1. **Tremor assistance** — Prevents accidental presses
+2. **Motor control** — Helps with imprecise movements
+3. **Deliberate typing** — Each key intentional
+4. **Accessibility** — Accommodates various needs
+5. **Error reduction** — Fewer typos from mishits
+
+### Why Keep Disabled?
+
+- Standard typing ability
+- Speed typing needed
+- No motor control issues
+- Delay frustrating
+- Gaming or quick input needs
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess slowKey
+
+# Enable Slow Keys
+defaults write com.apple.universalaccess slowKey -bool true
+
+# Disable Slow Keys (default)
+defaults write com.apple.universalaccess slowKey -bool false
+
+# Set delay duration (in seconds, e.g., 0.5)
+defaults write com.apple.universalaccess slowKeyDelay -float 0.5
+
+# Delete (reset to defaults)
+defaults delete com.apple.universalaccess slowKey
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Keyboard** > **Slow Keys**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Keyboard                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Keyboard                                        |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Slow Keys                                       |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | [*] Enable Slow Keys                       |  |       |
+|  |  |                                            |  |       |
+|  |  | Acceptance Delay                           |  |       |
+|  |  | Short [======O================] Long       |  |       |
+|  |  |                                            |  |       |
+|  |  | [*] Use click key sounds                   |  |       |
+|  |  |                                            |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |                                                  |       |
+|  |  Sticky Keys                                     |       |
+|  |  [ ] Enable Sticky Keys                          |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Enable Slow Keys (this setting)
+defaults write com.apple.universalaccess slowKey -bool true
+
+# Slow Keys delay
+defaults write com.apple.universalaccess slowKeyDelay -float 0.5
+
+# Click sounds for Slow Keys
+defaults write com.apple.universalaccess slowKeyBeepOn -bool true
+
+# Sticky Keys
+defaults write com.apple.universalaccess stickyKey -bool false
+
+# Sticky Keys show window
+defaults write com.apple.universalaccess stickyKeyShowWindow -bool true
+```
+
+## Acceptance Delay Values
+
+| Delay | Description | Best For |
+|-------|-------------|----------|
+| 0.1-0.2s | Short | Mild assistance |
+| 0.3-0.5s | Medium | Moderate tremor |
+| 0.6-0.8s | Long | Significant assistance |
+| 1.0s+ | Very long | Maximum protection |
+
+## Click Key Sounds
+
+When enabled:
+- **Key press start**: Sound when delay begins
+- **Key accepted**: Confirmation sound when registered
+- Helps provide audio feedback for timing
+
+## Slow Keys vs Other Features
+
+| Feature | Function |
+|---------|----------|
+| Slow Keys | Requires key hold duration |
+| Sticky Keys | Holds modifier keys |
+| Key Repeat | Controls held key repetition |
+| Touch Typing | Virtual keyboard assistance |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Keys not registering | Hold longer, adjust delay |
+| Delay too long | Reduce acceptance delay |
+| No feedback | Enable click sounds |
+| Modifier keys affected | Slow Keys affects all keys |
+| Gaming issues | Disable for gaming |
+
+## Keyboard Shortcuts
+
+Even with Slow Keys enabled, you can quickly toggle:
+
+| Shortcut | Action |
+|----------|--------|
+| Press Shift 5 times | Toggle Slow Keys (if enabled) |
+| System Settings | Full control over settings |
+
+Note: The 5x Shift shortcut must be enabled separately.
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Note**: Affects all keyboard input
+- **Note**: May require logout for changes
+- **Note**: Works with external keyboards
+
+## Source File
+
+**File**: [`defaults/accessibility/keyboard.sh`](../../defaults/accessibility/keyboard.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "slowKey" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Slow Keys](https://support.apple.com/guide/mac-help/use-slow-keys-mchl8c05f330/mac)
+- [Apple Support: Accessibility keyboard preferences](https://support.apple.com/guide/mac-help/accessibility-keyboard-preferences-mchl5d1b8937/mac)

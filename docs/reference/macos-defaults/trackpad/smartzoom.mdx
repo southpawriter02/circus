@@ -1,0 +1,298 @@
+# Trackpad Smart Zoom
+
+Double-tap with two fingers to zoom in on content.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `TrackpadTwoFingerDoubleTapGesture` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+
+## Description
+
+Smart Zoom allows you to double-tap with two fingers on the trackpad to quickly zoom in on content like web pages, PDFs, or images. Tapping again zooms back out to the original size. This is more convenient than pinch-to-zoom for quickly toggling between normal and magnified views.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Disabled** — Two-finger double-tap does nothing |
+| `1` | **Enabled** (default) — Two-finger double-tap zooms in/out |
+
+## Visual Demonstration
+
+### Smart Zoom Gesture:
+```
++-------------------------------------------------------------+
+|  Smart Zoom Gesture                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Two-finger double-tap:                                      |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |        +--------+                                    |   |
+|  |        | +-+ +-+|   <-- Two fingers together        |   |
+|  |        | |.| |.||                                    |   |
+|  |        | +-+ +-+|                                    |   |
+|  |        +--------+                                    |   |
+|  |             |                                        |   |
+|  |             |  Tap-tap (double-tap quickly)         |   |
+|  |             v                                        |   |
+|  |         [ZOOM!]                                      |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Timing: Two quick taps within ~0.5 seconds                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Before Smart Zoom (Normal View):
+```
++-------------------------------------------------------------+
+|  Web Page - Normal View                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  Article Title                                       |   |
+|  |  -------------------------------------------         |   |
+|  |                                                      |   |
+|  |  Lorem ipsum dolor sit amet, consectetur adipiscing |   |
+|  |  elit. Sed do eiusmod tempor incididunt ut labore   |   |
+|  |  et dolore magna aliqua. Ut enim ad minim veniam,   |   |
+|  |  quis nostrud exercitation ullamco laboris nisi ut  |   |
+|  |  aliquip ex ea commodo consequat.                   |   |
+|  |                                                      |   |
+|  |  [Image: Photo] [Image: Photo] [Image: Photo]       |   |
+|  |                                                      |   |
+|  |  Duis aute irure dolor in reprehenderit in volup-   |   |
+|  |  tate velit esse cillum dolore eu fugiat nulla...   |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Double-tap with two fingers on text area...               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### After Smart Zoom (Zoomed In):
+```
++-------------------------------------------------------------+
+|  Web Page - Smart Zoom Active                                |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  Lorem ipsum dolor sit amet,                        |   |
+|  |  consectetur adipiscing elit.                       |   |
+|  |  Sed do eiusmod tempor                              |   |
+|  |  incididunt ut labore et                            |   |
+|  |  dolore magna aliqua.                               |   |
+|  |                                                      |   |
+|  |  Ut enim ad minim veniam,                           |   |
+|  |  quis nostrud exercitation                          |   |
+|  |  ullamco laboris nisi ut                            |   |
+|  |  aliquip ex ea commodo                              |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Text column fills width                                  |
+|  * Automatically centers on tapped content                  |
+|  * Double-tap again to zoom out                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Smart Zoom vs Pinch-to-Zoom:
+```
++-------------------------------------------------------------+
+|  Zoom Method Comparison                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  SMART ZOOM:                      PINCH-TO-ZOOM:            |
+|  +------------------------+      +------------------------+  |
+|  |                        |      |                        |  |
+|  |  Two-finger tap-tap    |      |  Two fingers spread    |  |
+|  |       +-+ +-+          |      |      +-+     +-+       |  |
+|  |       |.| |.|          |      |      |.|     |.|       |  |
+|  |       +-+ +-+          |      |      +-+     +-+       |  |
+|  |         |  |           |      |        \     /         |  |
+|  |         v  v           |      |         \   /          |  |
+|  |                        |      |          \ /           |  |
+|  |  [Toggles preset zoom] |      |  [Continuous zoom]     |  |
+|  |                        |      |                        |  |
+|  +------------------------+      +------------------------+  |
+|                                                              |
+|  Best for:                       Best for:                  |
+|  * Quick magnification           * Precise zoom control    |
+|  * Reading web pages             * Adjusting to exact size |
+|  * PDF documents                 * Maps and images         |
+|  * Toggle on/off                 * Fine-tuning view        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1` — Smart Zoom enabled for quick magnification.
+
+### Why Enable Smart Zoom?
+
+1. **Quick access** — Instant toggle without pinching
+2. **Reading** — Easily zoom text-heavy content
+3. **Convenience** — One gesture to zoom in/out
+4. **Web browsing** — Intelligent column zoom
+5. **Accessibility** — Easier than pinch gesture
+
+### Why Disable Smart Zoom?
+
+- Accidental triggers
+- Prefer only pinch-to-zoom
+- Conflicts with other two-finger gestures
+- Don't use zoom functionality
+- Gaming or precision work
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad TrackpadTwoFingerDoubleTapGesture
+
+# Enable Smart Zoom (default)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerDoubleTapGesture -int 1
+
+# Also set for Bluetooth trackpad
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadTwoFingerDoubleTapGesture -int 1
+
+# Disable Smart Zoom
+defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerDoubleTapGesture -int 0
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadTwoFingerDoubleTapGesture -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad TrackpadTwoFingerDoubleTapGesture
+```
+
+Log out and back in for changes to take effect.
+
+## UI Location
+
+**System Settings** > **Trackpad** > **Scroll & Zoom**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Trackpad > Scroll & Zoom                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Scroll & Zoom                                   |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Scroll direction: Natural                       |       |
+|  |  [*] Content tracks finger movement              |       |
+|  |                                                  |       |
+|  |  Zoom in or out                                  |       |
+|  |  [*] Pinch with two fingers                      |       |
+|  |                                                  |       |
+|  |  Smart zoom                                      |       |
+|  |  [*] Double-tap with two fingers                 |       |
+|  |      ^-- This setting                            |       |
+|  |                                                  |       |
+|  |  Rotate                                          |       |
+|  |  [*] Rotate with two fingers                     |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Smart Zoom (this setting)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerDoubleTapGesture -int 1
+
+# Pinch to Zoom
+defaults write com.apple.AppleMultitouchTrackpad TrackpadPinchToZoom -int 1
+
+# Rotation gesture
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRotate -int 1
+
+# Natural scrolling
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+
+# Three-finger drag
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+```
+
+## App-Specific Smart Zoom Behavior
+
+| Application | Smart Zoom Behavior |
+|-------------|---------------------|
+| Safari | Zooms to column width |
+| Preview | Fits image to window |
+| Maps | Zooms to location |
+| Photos | Toggles fit/actual size |
+| PDF Viewer | Fits page width |
+| Mail | Zooms message body |
+
+## Smart Zoom in Different Contexts
+
+### Web Pages:
+```
++-------------------------------+      +-------------------------------+
+|  Full page view               |      |  Smart zoomed                 |
+|  +-------------------------+  |      |  +-------------------------+  |
+|  |Nav| Content      |Side |  |  =>  |  |                         |  |
+|  |   |              |bar  |  |      |  |  Content fills screen   |  |
+|  |   |              |     |  |      |  |  (no nav/sidebar)       |  |
+|  +-------------------------+  |      |  +-------------------------+  |
++-------------------------------+      +-------------------------------+
+```
+
+### PDF Documents:
+```
++-------------------------------+      +-------------------------------+
+|  Fit to window                |      |  Fit to width                 |
+|  +-------------------------+  |      |  +-------------------------+  |
+|  |   |   Page    |         |  |  =>  |  |   Page fills width      |  |
+|  |   |           |         |  |      |  |   (may need scroll)     |  |
+|  +-------------------------+  |      |  +-------------------------+  |
++-------------------------------+      +-------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Gesture not working | Check if enabled in System Settings |
+| Zoom is too sensitive | Adjust double-tap timing |
+| Wrong zoom level | App determines intelligent zoom |
+| Accidental triggers | Disable if problematic |
+| Bluetooth trackpad different | Set both trackpad domains |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Hardware**: All Multi-Touch trackpads
+- **Note**: Requires logout for changes to apply
+- **Note**: Behavior varies by application
+- **Note**: Works with Magic Trackpad as well
+
+## Source File
+
+**File**: [`defaults/input/trackpad_mouse.sh`](../../defaults/input/trackpad_mouse.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "TrackpadTwoFingerDoubleTapGesture" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Multi-Touch gestures on Mac](https://support.apple.com/guide/mac-help/multi-touch-gestures-mchlb2a0e46d/mac)
+- [Apple Support: Change Trackpad preferences](https://support.apple.com/guide/mac-help/change-trackpad-preferences-mchlp1226/mac)
+- [Apple Support: Use gestures on your Mac](https://support.apple.com/HT204609)

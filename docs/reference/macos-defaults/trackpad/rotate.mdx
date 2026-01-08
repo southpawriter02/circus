@@ -1,0 +1,283 @@
+# Trackpad Rotation Gesture
+
+Enable two-finger rotation gesture to rotate content.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `TrackpadRotate` |
+| **Type** | Boolean/Integer |
+| **Default Value** | `true` (1) |
+| **Our Setting** | `true` (1) |
+
+## Description
+
+Controls the two-finger rotation gesture on Multi-Touch trackpads. When enabled, placing two fingers on the trackpad and rotating them (like turning a dial) rotates content in supported applications such as Photos, Preview, and Maps. This is useful for rotating images, adjusting angles, and orienting maps.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `1` / `true` | **Enabled** (default) — Two-finger rotate works |
+| `0` / `false` | **Disabled** — Rotation gesture ignored |
+
+## Visual Demonstration
+
+### Rotation Gesture:
+```
++-------------------------------------------------------------+
+|  Two-Finger Rotation on Trackpad                             |
++-------------------------------------------------------------+
+|                                                              |
+|  ROTATE CLOCKWISE:                                           |
+|                                                              |
+|     Starting:            Gesture:             Result:        |
+|  +------------+       +------------+       +------------+    |
+|  |            |       |     .  .   |       |            |    |
+|  |    |--|    |       |      \ \   |       |    /--|    |    |
+|  |    |  |    |   ->  |       ) )  |   ->  |   /   |    |    |
+|  |    |  |    |       |      / /   |       |  |____|    |    |
+|  +------------+       +------------+       +------------+    |
+|    (straight)         (rotating CW)        (rotated 90)     |
+|                                                              |
+|  ROTATE COUNTER-CLOCKWISE:                                   |
+|                                                              |
+|     Starting:            Gesture:             Result:        |
+|  +------------+       +------------+       +------------+    |
+|  |            |       |    .  .    |       |            |    |
+|  |    |--|    |       |    / /     |       |    |--\    |    |
+|  |    |  |    |   ->  |   ( (      |   ->  |    |   \   |    |
+|  |    |  |    |       |    \ \     |       |    |____\  |    |
+|  +------------+       +------------+       +------------+    |
+|    (straight)         (rotating CCW)       (rotated -90)    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Finger Placement:
+```
++-------------------------------------------------------------+
+|  Rotation Technique                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Trackpad Surface:                                           |
+|  +----------------------------------------------+           |
+|  |                                              |           |
+|  |     Best finger placement:                   |           |
+|  |                                              |           |
+|  |           .       .                          |           |
+|  |         (index) (middle)                     |           |
+|  |                                              |           |
+|  |     Rotate around center point:              |           |
+|  |                                              |           |
+|  |              *  <-- pivot point              |           |
+|  |            . + .                             |           |
+|  |           (  |  )                            |           |
+|  |            \ | /                             |           |
+|  |             \|/                              |           |
+|  |                                              |           |
+|  +----------------------------------------------+           |
+|                                                              |
+|  Tips:                                                       |
+|  * Keep fingers roughly equidistant from center             |
+|  * Use smooth, circular motion                              |
+|  * Thumb + index also works well                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Applications Supporting Rotation:
+```
++-------------------------------------------------------------+
+|  Rotation Gesture Support                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  PHOTOS:                                                     |
+|  +------------------------------------------------------+   |
+|  |  [Image]                                             |   |
+|  |                                                      |   |
+|  |  Rotate gesture adjusts image orientation            |   |
+|  |  Great for straightening horizons or quick edits     |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  PREVIEW:                                                    |
+|  +------------------------------------------------------+   |
+|  |  [PDF/Image]                                         |   |
+|  |                                                      |   |
+|  |  Rotate pages or images being viewed                 |   |
+|  |  Useful for scanned documents                        |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  MAPS:                                                       |
+|  +------------------------------------------------------+   |
+|  |  [Map View]                                          |   |
+|  |                                                      |   |
+|  |  Rotate map orientation (like on iPhone)             |   |
+|  |  North doesn't have to be up!                        |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  DESIGN APPS (Photoshop, Sketch, etc.):                     |
+|  +------------------------------------------------------+   |
+|  |  Rotate selected objects or canvas                   |   |
+|  |  Application-dependent implementation                 |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable rotation for natural content manipulation.
+
+### Why Enable Rotation?
+
+1. **Intuitive** — Natural gesture like turning a dial
+2. **Photo editing** — Quick image straightening
+3. **Maps** — Rotate map to match direction
+4. **Precise** — Fine-grained angle control
+5. **Efficient** — Faster than menu options
+
+### Why Disable Rotation?
+
+- Accidental rotation during other gestures
+- Not used in your workflow
+- Prefer keyboard shortcuts
+- Conflicts with design app controls
+- Finding it frustrating
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad TrackpadRotate
+
+# Enable rotation gesture
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRotate -bool true
+
+# Also set for Bluetooth trackpad
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRotate -bool true
+
+# Disable rotation gesture
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRotate -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad TrackpadRotate
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Trackpad** > **Scroll & Zoom** > **Rotate**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Trackpad > Scroll & Zoom                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Scroll & Zoom                                   |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Natural scrolling                               |       |
+|  |  [*] Scroll direction: natural                   |       |
+|  |                                                  |       |
+|  |  Zoom in or out                                  |       |
+|  |  [*] Pinch with two fingers to zoom              |       |
+|  |                                                  |       |
+|  |  Smart zoom                                      |       |
+|  |  [*] Double-tap with two fingers                 |       |
+|  |                                                  |       |
+|  |  Rotate                                          |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | [*] Rotate with two fingers                |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |        ^                                         |       |
+|  |   Toggle this option                             |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Rotation gesture (this setting)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRotate -bool true
+
+# Pinch to zoom
+defaults write com.apple.AppleMultitouchTrackpad TrackpadPinchToZoom -bool true
+
+# Smart zoom (double-tap)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerDoubleTapGesture -int 1
+
+# Natural scrolling
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+
+# Three-finger drag
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+```
+
+## Rotation in Different Apps
+
+| Application | Rotation Action |
+|-------------|-----------------|
+| Photos | Rotate image freely |
+| Preview | Rotate page/image view |
+| Maps | Rotate map orientation |
+| Keynote | Rotate selected shapes |
+| Pixelmator | Rotate canvas/selection |
+| Safari | No rotation support |
+| Finder | No rotation support |
+
+## Keyboard Alternative
+
+When rotation gesture is disabled or unavailable:
+
+| Application | Keyboard Shortcut |
+|-------------|-------------------|
+| Photos | Cmd + R (90 CW), Cmd + L (90 CCW) |
+| Preview | Cmd + R (CW), Cmd + L (CCW) |
+| Many apps | Edit > Rotate menu |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Gesture not recognized | Use smoother motion, keep fingers together |
+| Rotating when zooming | Keep fingers same distance apart |
+| App doesn't rotate | App may not support the gesture |
+| Too sensitive | Practice deliberate circular motion |
+| Only works one direction | Clean trackpad, check settings |
+
+## Gesture Comparison
+
+| Gesture | Fingers | Motion | Action |
+|---------|---------|--------|--------|
+| Rotate | 2 | Circular | Rotate content |
+| Pinch | 2 | Pinch/spread | Zoom |
+| Scroll | 2 | Linear up/down | Scroll |
+| Smart zoom | 2 | Double-tap | Zoom to fit |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Hardware**: Multi-Touch trackpad (built-in or Magic Trackpad)
+- **Note**: Application must support rotation
+- **Note**: Set both built-in and Bluetooth trackpad domains
+
+## Source File
+
+**File**: [`defaults/accessibility/zoom.sh`](../../defaults/accessibility/zoom.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "TrackpadRotate" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Multi-Touch gestures on your Mac](https://support.apple.com/en-us/102482)
+- [Apple Support: Change Trackpad preferences](https://support.apple.com/guide/mac-help/change-trackpad-preferences-mchlp1226/mac)

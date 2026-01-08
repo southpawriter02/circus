@@ -1,0 +1,332 @@
+# Trackpad Four-Finger Vertical Swipe
+
+Swipe up for Mission Control, down for App Exposé.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `TrackpadFourFingerVertSwipeGesture` |
+| **Type** | Integer |
+| **Default Value** | `2` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls the four-finger vertical swipe gesture on the trackpad. Swiping up with four fingers opens Mission Control (overview of all windows and Spaces), while swiping down shows App Exposé (all windows of the current application). This is one of macOS's most powerful productivity gestures.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Disabled** — Four-finger vertical swipe does nothing |
+| `2` | **Mission Control / App Exposé** (default) — Up for Mission Control, down for App Exposé |
+
+## Visual Demonstration
+
+### Four-Finger Vertical Swipe Gesture:
+```
++-------------------------------------------------------------+
+|  Four-Finger Vertical Swipe                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  SWIPE UP - Mission Control:                                 |
+|                                                              |
+|       ^   ^   ^   ^                                          |
+|       |   |   |   |                                          |
+|     +-+ +-+ +-+ +-+                                          |
+|     |.| |.| |.| |.|  <-- Four fingers                       |
+|     +-+ +-+ +-+ +-+                                          |
+|                                                              |
+|  SWIPE DOWN - App Exposé:                                    |
+|                                                              |
+|     +-+ +-+ +-+ +-+                                          |
+|     |.| |.| |.| |.|  <-- Four fingers                       |
+|     +-+ +-+ +-+ +-+                                          |
+|       |   |   |   |                                          |
+|       v   v   v   v                                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Mission Control (Swipe Up):
+```
++-------------------------------------------------------------+
+|  Mission Control View                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  Spaces Bar (top):                                           |
+|  +------------------------------------------------------+   |
+|  | [Desktop 1] [Desktop 2] [Safari FS] [+]              |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  All Windows (spread out):                                   |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |   +----------+    +----------+    +----------+      |   |
+|  |   |  Safari  |    |  Finder  |    |  Code    |      |   |
+|  |   |          |    |          |    |          |      |   |
+|  |   +----------+    +----------+    +----------+      |   |
+|  |                                                      |   |
+|  |       +----------+         +----------+              |   |
+|  |       |  Mail    |         | Terminal |              |   |
+|  |       |          |         |          |              |   |
+|  |       +----------+         +----------+              |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Click any window to switch to it                         |
+|  * Drag windows to different Spaces                         |
+|  * Click + to create new Space                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### App Exposé (Swipe Down):
+```
++-------------------------------------------------------------+
+|  App Exposé View (Current App: Safari)                       |
++-------------------------------------------------------------+
+|                                                              |
+|  All Safari Windows:                                         |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  +-------------+  +-------------+  +-------------+   |   |
+|  |  |  Safari     |  |  Safari     |  |  Safari     |   |   |
+|  |  |  Window 1   |  |  Window 2   |  |  Window 3   |   |   |
+|  |  |  (GitHub)   |  |  (Google)   |  |  (Apple)    |   |   |
+|  |  +-------------+  +-------------+  +-------------+   |   |
+|  |                                                      |   |
+|  |       +-------------+       +-------------+          |   |
+|  |       |  Safari     |       |  Safari     |          |   |
+|  |       |  Window 4   |       |  Window 5   |          |   |
+|  |       |  (Twitter)  |       |  (Mail)     |          |   |
+|  |       +-------------+       +-------------+          |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Shows ONLY windows from current application              |
+|  * Great for apps with many windows (browsers, Finder)      |
+|  * Click any window to bring it to front                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Three-Finger vs Four-Finger Option:
+```
++-------------------------------------------------------------+
+|  Gesture Configuration                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Trackpad > More Gestures:                |
+|                                                              |
+|  Mission Control:                                            |
+|  +------------------------------------------------------+   |
+|  |  ( ) Off                                             |   |
+|  |  ( ) Swipe Up with Three Fingers                     |   |
+|  |  (*) Swipe Up with Four Fingers                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  App Exposé:                                                 |
+|  +------------------------------------------------------+   |
+|  |  ( ) Off                                             |   |
+|  |  ( ) Swipe Down with Three Fingers                   |   |
+|  |  (*) Swipe Down with Four Fingers                    |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  THREE FINGERS:             FOUR FINGERS:                   |
+|  +--------------------+     +--------------------+          |
+|  | Reserves 4-finger  |     | Reserves 3-finger  |          |
+|  | for other gestures |     | for drag, etc.     |          |
+|  +--------------------+     +--------------------+          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `2` — Four-finger vertical swipe for Mission Control and App Exposé.
+
+### Why Enable This Gesture?
+
+1. **Window management** — See all windows at once
+2. **Space navigation** — Visual access to all desktops
+3. **App organization** — Find windows in cluttered workspace
+4. **Productivity** — Quick switching without cycling
+5. **Natural gesture** — Intuitive up/down movement
+
+### Why Disable?
+
+- Prefer keyboard shortcuts
+- Accidental triggers
+- Using three-finger alternative
+- Don't use Mission Control/App Exposé
+- Gaming conflicts
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad TrackpadFourFingerVertSwipeGesture
+
+# Enable four-finger vertical swipe (default)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerVertSwipeGesture -int 2
+
+# Also set for Bluetooth trackpad
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerVertSwipeGesture -int 2
+
+# Disable gesture
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerVertSwipeGesture -int 0
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerVertSwipeGesture -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad TrackpadFourFingerVertSwipeGesture
+```
+
+Log out and back in for changes to take effect.
+
+## UI Location
+
+**System Settings** > **Trackpad** > **More Gestures**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Trackpad > More Gestures                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  More Gestures                                   |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Swipe between pages                             |       |
+|  |  [Scroll Left or Right with Two Fingers      v]  |       |
+|  |                                                  |       |
+|  |  Swipe between full-screen applications          |       |
+|  |  [Swipe Left or Right with Four Fingers      v]  |       |
+|  |                                                  |       |
+|  |  Notification Center                             |       |
+|  |  [*] Swipe left from the right edge             |       |
+|  |                                                  |       |
+|  |  Mission Control                                 |       |
+|  |  [Swipe Up with Four Fingers                v]   |       |
+|  |   ^-- This setting (swipe up)                    |       |
+|  |                                                  |       |
+|  |  App Exposé                                      |       |
+|  |  [Swipe Down with Four Fingers              v]   |       |
+|  |   ^-- This setting (swipe down)                  |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Four-finger vertical swipe (this setting)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerVertSwipeGesture -int 2
+
+# Four-finger horizontal swipe (Spaces switching)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerHorizSwipeGesture -int 2
+
+# Three-finger vertical swipe (alternative)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -int 2
+
+# Five-finger pinch (Launchpad)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFiveFingerPinchGesture -int 2
+```
+
+## Keyboard Alternatives
+
+| Shortcut | Action |
+|----------|--------|
+| Control + Up Arrow | Mission Control |
+| Control + Down Arrow | App Exposé |
+| F3 | Mission Control (on some keyboards) |
+| Fn + F11 | Show Desktop |
+
+## Mission Control vs App Exposé
+
+| Feature | Mission Control | App Exposé |
+|---------|-----------------|------------|
+| Trigger | Swipe up | Swipe down |
+| Shows | All windows from all apps | Windows from current app only |
+| Spaces | Yes, with Space bar | No |
+| Use case | General overview | Focus on one app |
+| Window count | Can be overwhelming | Manageable |
+
+## Workflow Tips
+
+### Using Mission Control Effectively:
+```
++-------------------------------------------------------------+
+|  Mission Control Workflow                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Organize by context:                                     |
+|     Space 1: Communication (Mail, Slack, Messages)          |
+|     Space 2: Development (VS Code, Terminal)                |
+|     Space 3: Research (Safari, Notes)                       |
+|                                                              |
+|  2. Drag windows between Spaces:                            |
+|     In Mission Control, drag a window up to the Spaces      |
+|     bar and drop it on the desired Space                    |
+|                                                              |
+|  3. Create new Space:                                        |
+|     Hover in Spaces bar, click [+] on right side            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Using App Exposé Effectively:
+```
++-------------------------------------------------------------+
+|  App Exposé Workflow                                         |
++-------------------------------------------------------------+
+|                                                              |
+|  Best for:                                                   |
+|  * Browsers with many tabs/windows                          |
+|  * Finder with multiple folders open                        |
+|  * Any app with 3+ windows                                  |
+|                                                              |
+|  Quick workflow:                                             |
+|  1. Swipe down to see all windows of current app            |
+|  2. Click the window you need                               |
+|  3. Continue working                                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Gesture not working | Check if enabled in System Settings |
+| Only Mission Control works | App Exposé requires active app with windows |
+| Three-finger working instead | Check gesture configuration |
+| Laggy animation | Reduce transparency in Accessibility |
+| Windows overlap in view | System auto-arranges based on screen size |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Hardware**: All Multi-Touch trackpads
+- **Note**: Requires logout for changes to apply
+- **Note**: Works with Magic Trackpad as well
+- **Note**: App Exposé requires app to have multiple windows
+
+## Source File
+
+**File**: [`defaults/input/trackpad_mouse.sh`](../../defaults/input/trackpad_mouse.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "TrackpadFourFingerVertSwipeGesture" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Use Mission Control](https://support.apple.com/guide/mac-help/open-windows-spaces-mission-control-mh35798/mac)
+- [Apple Support: Multi-Touch gestures](https://support.apple.com/guide/mac-help/multi-touch-gestures-mchlb2a0e46d/mac)
+- [Apple Support: Change Trackpad preferences](https://support.apple.com/guide/mac-help/change-trackpad-preferences-mchlp1226/mac)
