@@ -1,0 +1,278 @@
+# Mail Calendar Invitations
+
+Automatically add meeting invitations to Calendar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `AddInvitationsToCalendar` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Mail automatically adds calendar invitations (ICS files) received via email to the Calendar app. When enabled, meeting invitations appear in Calendar immediately, showing as tentative until you respond. This provides seamless integration between email and calendar without manual importing.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-add invitations** (default) — Events appear in Calendar |
+| `false` | **Manual handling** — Must manually add to calendar |
+
+## Visual Demonstration
+
+### With Auto-Add Enabled (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  📧 Mail                                                │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  From: boss@company.com                                 │
+│  Subject: Team Meeting                                  │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ 📅 Calendar Invitation                          │   │
+│  │                                                 │   │
+│  │ Team Meeting                                    │   │
+│  │ Tuesday, Jan 14, 2026                           │   │
+│  │ 2:00 PM - 3:00 PM                               │   │
+│  │ Conference Room A                               │   │
+│  │                                                 │   │
+│  │ [ Accept ] [ Maybe ] [ Decline ]                │   │
+│  └─────────────────────────────────────────────────┘   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+                    │
+                    │ Automatically added
+                    ▼
+┌─────────────────────────────────────────────────────────┐
+│  📅 Calendar — January 14                               │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  1:00 PM  ─────────────────────────                     │
+│                                                         │
+│  2:00 PM  ┌─────────────────────────┐                   │
+│           │ 📅 Team Meeting         │ ← Shows as       │
+│           │    Conference Room A    │   tentative      │
+│  3:00 PM  └─────────────────────────┘   (striped)      │
+│                                                         │
+│  4:00 PM  ─────────────────────────                     │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Without Auto-Add (false):
+```
+┌─────────────────────────────────────────────────────────┐
+│  📧 Mail                                                │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  From: boss@company.com                                 │
+│  Subject: Team Meeting                                  │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ 📎 Attachment: meeting.ics                      │   │
+│  │                                                 │   │
+│  │ You are invited to: Team Meeting                │   │
+│  │ Tuesday, Jan 14, 2026, 2:00 PM - 3:00 PM        │   │
+│  │                                                 │   │
+│  │ ⚠️ Not automatically added to Calendar         │   │
+│  │                                                 │   │
+│  │ Double-click .ics to add manually               │   │
+│  └─────────────────────────────────────────────────┘   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+                    │
+                    │ Manual steps required
+                    ▼
+
+   1. Double-click .ics file
+   2. Choose calendar
+   3. Confirm addition
+```
+
+### Invitation Status Flow:
+```
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   Received   │────▶│   Tentative  │────▶│   Confirmed  │
+│   in Mail    │     │  in Calendar │     │   or Declined│
+└──────────────┘     └──────────────┘     └──────────────┘
+                           │
+                           ▼
+                     ┌─────────────────────────────────┐
+                     │ Event Appearance:               │
+                     │                                 │
+                     │ ▓▓▓▓ Tentative (striped)       │
+                     │ ████ Accepted (solid)           │
+                     │ ░░░░ Declined (faded/hidden)    │
+                     └─────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Automatically add invitations for convenience.
+
+### Why Enable Auto-Add?
+
+1. **Convenience** — Events appear automatically
+2. **Visibility** — See conflicts immediately
+3. **No manual steps** — Seamless workflow
+4. **Time-saving** — One less thing to manage
+5. **Standard behavior** — Expected in modern email
+
+### Why Disable Auto-Add?
+
+- Want to review before adding
+- Multiple calendar apps (conflicts)
+- Spam calendar invitations
+- Manual calendar management preference
+- Different calendar system
+
+## Security Implications
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| **Calendar spam** | Unwanted events in calendar | Events from unknown senders still require accept |
+| **Phishing** | Fake meeting invites | Review sender before accepting |
+| **Clutter** | Many tentative events | Decline promptly |
+
+### Best Practices
+
+- Review sender before accepting
+- Decline unwanted invitations promptly
+- Check meeting links carefully
+- Report calendar spam
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail AddInvitationsToCalendar
+
+# Enable auto-add (default, recommended)
+defaults write com.apple.mail AddInvitationsToCalendar -bool true
+
+# Disable auto-add
+defaults write com.apple.mail AddInvitationsToCalendar -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.mail AddInvitationsToCalendar
+```
+
+## UI Location
+
+**Mail** → **Settings** (⌘,) → **General** → ☑ **Add invitations to Calendar automatically**
+
+## Response Options
+
+When viewing an invitation in Mail:
+- **Accept** — Event confirmed, response sent
+- **Maybe/Tentative** — Event stays tentative
+- **Decline** — Event removed from calendar
+
+Response is sent back to organizer via email.
+
+## Related Mail Settings
+
+```bash
+# Auto-add invitations
+defaults write com.apple.mail AddInvitationsToCalendar -bool true
+
+# Quote original message in replies
+defaults write com.apple.mail ReplyQuotesOriginal -bool true
+
+# Increase quote level
+defaults write com.apple.mail IncreaseQuoteLevel -bool true
+
+# Send format (MIME recommended)
+defaults write com.apple.mail SendFormat -string "MIME"
+```
+
+## Calendar Integration Details
+
+| Feature | Behavior |
+|---------|----------|
+| **Which calendar** | Added to default calendar |
+| **Status** | Initially tentative |
+| **Attendees** | Shows other invitees |
+| **Organizer** | Shows who sent invite |
+| **Location** | Includes meeting location |
+| **Notes** | Includes meeting description |
+| **Attachments** | ICS-attached files accessible |
+
+## ICS File Format
+
+Calendar invitations use iCalendar format (.ics):
+```
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:20260114T140000
+DTEND:20260114T150000
+SUMMARY:Team Meeting
+LOCATION:Conference Room A
+ORGANIZER:mailto:boss@company.com
+ATTENDEE:mailto:you@company.com
+END:VEVENT
+END:VCALENDAR
+```
+
+## Multiple Calendar Accounts
+
+When you have multiple calendars:
+1. Invitation added to **default** calendar
+2. Can move to different calendar after accepting
+3. Response sent from email account that received invite
+
+## Exchange/Office 365 Integration
+
+For Exchange accounts:
+- Invitations handled by Exchange protocol
+- May bypass this Mail setting
+- Check Exchange account settings separately
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Invitations not appearing | Verify setting is enabled |
+| Wrong calendar used | Change default calendar |
+| Can't respond to invite | Check email account permissions |
+| Duplicate events | Check multiple email clients |
+| Exchange invites different | Exchange has own handling |
+
+## Calendar App Settings
+
+Related Calendar.app settings:
+```bash
+# Default calendar for new events
+# (Set in Calendar → Settings → General → Default calendar)
+
+# Default alert for timed events
+defaults write com.apple.iCal DefaultEventAlert -int 600  # 10 minutes before
+```
+
+## Compatibility
+
+- **macOS**: 10.9+ (Mavericks)
+- **Mail.app**: All modern versions
+- **Formats**: ICS/iCalendar, Exchange
+- **Note**: Requires restart of Mail to apply
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "AddInvitationsToCalendar" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Mail preferences](https://support.apple.com/guide/mail/change-general-settings-mlhlp1048/mac)
+- [Apple Support: Respond to invitations](https://support.apple.com/guide/calendar/respond-to-invitations-icl1021/mac)
+- [RFC 5545: iCalendar](https://tools.ietf.org/html/rfc5545)

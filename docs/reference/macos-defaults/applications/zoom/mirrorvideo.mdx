@@ -1,0 +1,253 @@
+# Zoom Mirror Video
+
+Control whether your self-view video is mirrored.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `us.zoom.xos` |
+| **Key** | `ZMMMirrorVideo` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether your self-view video (what you see of yourself) is horizontally flipped like a mirror. When enabled, your video appears as if you're looking in a mirror - raise your right hand and the image raises the hand on your right side. This feels natural but note that other participants always see the non-mirrored (true) version of you.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Mirror enabled** (default) — Self-view flipped like mirror |
+| `false` | **Mirror disabled** — Self-view matches what others see |
+
+## Visual Demonstration
+
+### With Mirror Enabled (true) - Default:
+```
+┌───────────────────────────────────────────────────────────┐
+│  What YOU See (Self-View)        What OTHERS See          │
+├───────────────────────────────────────────────────────────┤
+│                                                           │
+│   ┌─────────────────┐           ┌─────────────────┐       │
+│   │                 │           │                 │       │
+│   │    ← HELLO →    │           │    ← OLLEH →    │       │
+│   │   🙋 (right)    │           │   (left) 🙋     │       │
+│   │                 │           │                 │       │
+│   │  Like a mirror  │           │  True direction │       │
+│   └─────────────────┘           └─────────────────┘       │
+│                                                           │
+│   Your right hand appears        Your right hand appears  │
+│   on your right side             on their left side       │
+│   (natural/intuitive)            (actual orientation)     │
+└───────────────────────────────────────────────────────────┘
+```
+
+### With Mirror Disabled (false):
+```
+┌───────────────────────────────────────────────────────────┐
+│  What YOU See (Self-View)        What OTHERS See          │
+├───────────────────────────────────────────────────────────┤
+│                                                           │
+│   ┌─────────────────┐           ┌─────────────────┐       │
+│   │                 │           │                 │       │
+│   │    ← OLLEH →    │           │    ← OLLEH →    │       │
+│   │   (left) 🙋     │           │   (left) 🙋     │       │
+│   │                 │           │                 │       │
+│   │  True direction │           │  True direction │       │
+│   └─────────────────┘           └─────────────────┘       │
+│                                                           │
+│   WYSIWYG: What you see         Identical to your        │
+│   is what others see            self-view                │
+│   (may feel backwards)                                    │
+└───────────────────────────────────────────────────────────┘
+```
+
+### Text and Whiteboards:
+```
+Mirrored (true):                 Not Mirrored (false):
+┌──────────────────┐             ┌──────────────────┐
+│                  │             │                  │
+│   TXET SDRAWKCAB │             │   FORWARD TEXT   │
+│   (you see this) │             │   (you see this) │
+│                  │             │                  │
+│   Others see:    │             │   Others see:    │
+│   FORWARD TEXT   │             │   FORWARD TEXT   │
+│   ✓ Correct!     │             │   ✓ Correct!     │
+└──────────────────┘             └──────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Mirror self-view for natural interaction.
+
+### Why Enable Mirror (Default)?
+
+1. **Natural feel** — Like looking in a mirror
+2. **Intuitive gestures** — Point right, see right
+3. **Comfort** — Familiar self-view experience
+4. **Standard behavior** — How most video apps work
+5. **Hair/makeup check** — Works as expected
+
+### Why Disable Mirror?
+
+- Presenting slides with text
+- Screen sharing with annotations
+- Reading text on whiteboards
+- Want WYSIWYG self-view
+- Holding up documents to camera
+
+## Important: Others Always See True Video
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  IMPORTANT: Mirror setting ONLY affects YOUR self-view  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Your mirror setting: ON or OFF                         │
+│           │                                             │
+│           ▼                                             │
+│  ┌─────────────────┐                                    │
+│  │   Your Camera   │                                    │
+│  └────────┬────────┘                                    │
+│           │                                             │
+│           ├────────────────┐                            │
+│           │                │                            │
+│           ▼                ▼                            │
+│    ┌───────────┐    ┌───────────┐                       │
+│    │ Self-View │    │  Others   │                       │
+│    │ (mirror   │    │ (always   │                       │
+│    │  setting) │    │  true)    │                       │
+│    └───────────┘    └───────────┘                       │
+│                                                         │
+│  Others ALWAYS see the non-mirrored, true orientation   │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read us.zoom.xos ZMMMirrorVideo
+
+# Enable mirror (natural self-view, default)
+defaults write us.zoom.xos ZMMMirrorVideo -bool true
+
+# Disable mirror (WYSIWYG self-view)
+defaults write us.zoom.xos ZMMMirrorVideo -bool false
+
+# Delete (reset to default)
+defaults delete us.zoom.xos ZMMMirrorVideo
+```
+
+## UI Location
+
+**Zoom** → **Settings** (⌘,) → **Video** → ☑ **Mirror my video**
+
+This checkbox toggles the mirror effect on your self-view.
+
+## When to Toggle Mirror
+
+| Scenario | Mirror Setting |
+|----------|----------------|
+| Normal meetings | ✓ On (default) |
+| Presenting to camera | ✓ On |
+| Showing physical documents | ✗ Off |
+| Writing on whiteboard | ✗ Off |
+| Demonstrating hand positions | ✗ Off |
+| Reading notes to camera | ✓ On |
+
+## Related Video Settings
+
+```bash
+# HD video quality
+defaults write us.zoom.xos ZMEnableHDVideo -bool true
+
+# Touch up appearance
+defaults write us.zoom.xos ZMEnableTouchUpAppearance -bool false
+
+# Stop video when joining
+defaults write us.zoom.xos ZMEnableStopVideoWhenJoin -bool false
+
+# Original sound
+defaults write us.zoom.xos ZMEnableOriginalSound -bool false
+```
+
+## Virtual Background and Mirroring
+
+| Background Type | Mirror Behavior |
+|-----------------|-----------------|
+| No background | Normal mirroring |
+| Virtual image | Background not mirrored |
+| Virtual video | Background not mirrored |
+| Blur | Normal mirroring |
+
+Text on virtual backgrounds appears correctly to others regardless of mirror setting.
+
+## Screen Sharing with Video
+
+When screen sharing:
+- Shared screen: Not mirrored (others see correctly)
+- Your video thumbnail: Follows mirror setting
+- Others see shared content correctly
+
+## Comparison with Other Apps
+
+| App | Default Mirror | Configurable |
+|-----|----------------|--------------|
+| **Zoom** | On | Yes |
+| **FaceTime** | On | No |
+| **Google Meet** | On | No |
+| **Microsoft Teams** | On | Yes |
+| **WebEx** | On | Yes |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Text appears backwards | Disable mirror temporarily |
+| Self-view feels wrong | Enable mirror (default) |
+| Setting not saving | Restart Zoom |
+| Others see backwards text | Check what you're sharing (self-view is correct for others) |
+
+## Recording Behavior
+
+| Recording Type | What's Recorded |
+|----------------|-----------------|
+| Cloud recording | True (non-mirrored) video |
+| Local recording | True (non-mirrored) video |
+| Gallery view | True orientation |
+| Speaker view | True orientation |
+
+Recordings always show the true, non-mirrored video.
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Zoom**: All versions
+- **Note**: Change takes effect immediately
+- **Note**: Per-meeting changes possible via meeting controls
+
+## Quick Toggle During Meeting
+
+During a meeting:
+1. Click the arrow next to **Stop Video**
+2. Select **Video Settings**
+3. Toggle **Mirror my video**
+
+Changes apply immediately without restarting video.
+
+## Source File
+
+**File**: [`defaults/applications/zoom_app.sh`](../../../../defaults/applications/zoom_app.sh)
+
+```bash
+run_defaults "us.zoom.xos" "ZMMMirrorVideo" "-bool" "true"
+```
+
+## References
+
+- [Zoom Support: Mirror video](https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0060287)
+- [Zoom Support: Video settings](https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0065789)

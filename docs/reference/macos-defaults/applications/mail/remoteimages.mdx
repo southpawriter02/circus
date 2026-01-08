@@ -1,0 +1,219 @@
+# Mail Block Remote Images
+
+Block loading of remote images in emails for privacy.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `DisableURLLoading` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Mail automatically loads remote images and content embedded in emails. Remote images are often used by marketers and malicious actors to track when and where emails are opened. Blocking remote content prevents this tracking and protects your privacy, while also saving bandwidth and speeding up email loading.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Block remote images** — Images must be manually loaded |
+| `false` | **Allow remote images** (default) — Auto-load all content |
+
+## Visual Demonstration
+
+### With Remote Images Blocked (true):
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 📧 Newsletter from Marketing Company                        │
+├─────────────────────────────────────────────────────────────┤
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ ⚠️  This message contains remote images.                │ │
+│ │     [Load Remote Content]                               │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                                                             │
+│  Dear Customer,                                             │
+│                                                             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │   [Image    │  │   [Image    │  │   [Image    │         │
+│  │   Blocked]  │  │   Blocked]  │  │   Blocked]  │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│                                                             │
+│  Check out our latest products...                           │
+│                                                             │
+│  ┌──────────────────────────────────────────────┐          │
+│  │ 🔒 Tracking pixel blocked                    │          │
+│  │    1x1 image from tracker.example.com        │          │
+│  └──────────────────────────────────────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### With Remote Images Allowed (false):
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 📧 Newsletter from Marketing Company                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Dear Customer,                                             │
+│                                                             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │  🖼️ Product │  │  🖼️ Sale    │  │  🖼️ Banner  │         │
+│  │   Image     │  │   Image     │  │   Image     │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│                                                             │
+│  Check out our latest products...                           │
+│                                                             │
+│  ⚠️ Sender now knows:                                       │
+│     • Email was opened                                      │
+│     • When it was opened                                    │
+│     • Your IP address/location                              │
+│     • Device type and email client                          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Block remote images by default.
+
+### Why Block Remote Images?
+
+1. **Privacy** — Prevents email open tracking
+2. **Location hiding** — Your IP address stays private
+3. **Speed** — Emails load faster
+4. **Bandwidth** — Saves data on metered connections
+5. **Security** — Blocks potential malicious content
+6. **Phishing protection** — Reveals suspicious emails
+
+### Why Allow Remote Images?
+
+- Better email formatting
+- See product images immediately
+- Newsletters display correctly
+- Less manual interaction needed
+
+## Security Implications
+
+| Threat | Protection |
+|--------|------------|
+| **Tracking pixels** | Blocked — sender can't confirm open |
+| **IP address exposure** | Protected — no connection to sender's server |
+| **Location tracking** | Prevented — IP geolocation blocked |
+| **Malicious images** | Blocked — can't exploit image parsers |
+| **Web beacons** | Blocked — marketing analytics defeated |
+
+### How Email Tracking Works
+
+```
+Normal email loading:
+┌──────────┐     ┌──────────────┐     ┌──────────────┐
+│ You open │────▶│ Mail fetches │────▶│ Tracker logs │
+│  email   │     │ 1x1 pixel    │     │ your data    │
+└──────────┘     └──────────────┘     └──────────────┘
+                       │
+                       ▼
+              Your IP: 203.0.113.42
+              Time: 2024-01-15 14:32:01
+              Device: macOS Mail
+              Location: San Francisco, CA
+
+With blocking enabled:
+┌──────────┐     ┌──────────────┐     ┌──────────────┐
+│ You open │────▶│ Mail blocks  │  ✗  │ Tracker gets │
+│  email   │     │ remote load  │     │ nothing      │
+└──────────┘     └──────────────┘     └──────────────┘
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail DisableURLLoading
+
+# Block remote images (recommended for privacy)
+defaults write com.apple.mail DisableURLLoading -bool true
+
+# Allow remote images (default)
+defaults write com.apple.mail DisableURLLoading -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.mail DisableURLLoading
+```
+
+## UI Location
+
+**Mail** → **Settings** (⌘,) → **Privacy** → ☑ **Block All Remote Content**
+
+Or use Mail Privacy Protection:
+**Mail** → **Settings** → **Privacy** → ☑ **Protect Mail Activity**
+
+## Related Privacy Settings
+
+```bash
+# Enable Mail Privacy Protection (hides IP via Apple proxy)
+defaults write com.apple.mail ProtectMailActivityInICloud -bool true
+
+# Block remote content
+defaults write com.apple.mail DisableURLLoading -bool true
+
+# Disable inline attachment viewing
+defaults write com.apple.mail DisableInlineAttachmentViewing -bool true
+```
+
+## Mail Privacy Protection vs Block Remote Content
+
+| Feature | Block Remote Content | Mail Privacy Protection |
+|---------|---------------------|------------------------|
+| **How it works** | Blocks all remote loads | Routes through Apple proxy |
+| **Image display** | Must manually load | Images load normally |
+| **IP hidden** | Yes (nothing loads) | Yes (Apple proxy) |
+| **Open tracking** | Blocked | Pre-fetches to mask opens |
+| **Convenience** | Lower | Higher |
+
+## Per-Sender Exceptions
+
+Even with blocking enabled, you can load remote content:
+1. Click "Load Remote Content" banner in email
+2. This is per-email, not remembered
+
+For trusted senders, consider Mail Privacy Protection instead.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't see newsletter images | Click "Load Remote Content" or add sender exception |
+| Emails look broken | Remote images blocked; load selectively |
+| Setting not applying | Restart Mail app |
+| Want images but privacy | Use Mail Privacy Protection instead |
+
+## Email Types Most Affected
+
+| Email Type | Impact | Recommendation |
+|------------|--------|----------------|
+| Marketing newsletters | Heavy — many images | Keep blocked, load selectively |
+| Transactional receipts | Moderate — logos | Usually fine without images |
+| Personal email | Low — mostly text | Minimal impact |
+| HTML signatures | Moderate — headshots | May need loading |
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Mail.app**: All versions
+- **Note**: Mail Privacy Protection available macOS Monterey+
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "DisableURLLoading" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Mail Privacy Protection](https://support.apple.com/guide/mail/use-mail-privacy-protection-mlhl03be2866/mac)
+- [Apple Support: Block remote content](https://support.apple.com/guide/mail/block-remote-content-mlhlb7472f97/mac)
+- [Electronic Frontier Foundation: Email Tracking](https://www.eff.org/deeplinks/2019/01/stop-tracking-my-emails)

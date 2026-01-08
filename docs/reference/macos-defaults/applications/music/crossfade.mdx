@@ -1,0 +1,218 @@
+# Music Crossfade Playback
+
+Enable smooth crossfade transitions between songs.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Music` |
+| **Key** | `crossfadeEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Music app smoothly fades between songs instead of having abrupt transitions. When enabled, the current song gradually fades out while the next song fades in, creating a DJ-like continuous listening experience. This is popular for parties and background music but may not be desired for albums meant to be heard with their original transitions.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Crossfade enabled** — Songs blend into each other |
+| `false` | **Crossfade disabled** (default) — Songs play sequentially |
+
+## Visual Demonstration
+
+### With Crossfade Disabled (false):
+```
+Volume
+  │
+100%├────────────────┐                 ┌────────────────
+  │                │                 │
+  │    Song A      │                 │    Song B
+  │                │                 │
+  0%└────────────────┴─────────────────┴────────────────
+                    ↑
+             Abrupt transition
+             (silence or gap)
+```
+
+### With Crossfade Enabled (true):
+```
+Volume
+  │
+100%├────────────────╲               ╱────────────────
+  │                 ╲             ╱
+  │    Song A        ╲    ╳     ╱    Song B
+  │                   ╲       ╱
+  0%└──────────────────────────────────────────────────
+                      ↑
+               Smooth crossfade
+              (songs overlap)
+
+Timeline:
+├─────── Song A ──────┼── Overlap ──┼────── Song B ─────►
+                      │   3-12 sec  │
+```
+
+### Crossfade Duration Settings:
+```
+┌────────────────────────────────────────────────────┐
+│  Crossfade Duration                                │
+│                                                    │
+│  Short ○──────●──────────────────○ Long           │
+│         1s   3s    6s    9s    12s                │
+│                                                    │
+│  Shorter = More distinct songs                     │
+│  Longer = Smoother party mix feel                  │
+└────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable crossfade for original song transitions.
+
+### Why Disable Crossfade?
+
+1. **Album integrity** — Preserves artist-intended transitions
+2. **Live albums** — Maintains applause and crowd sounds
+3. **Classical music** — Movements should have clear endings
+4. **Gapless albums** — Some albums have seamless transitions
+5. **Podcasts** — Speech shouldn't overlap
+
+### Why Enable Crossfade?
+
+- Party/background music
+- Workout playlists
+- DJ-style continuous playback
+- Avoid silence between songs
+- Smoother shuffle experience
+
+## Album Examples
+
+| Album Type | Crossfade Recommendation |
+|------------|-------------------------|
+| Concept albums (Pink Floyd) | ✗ Disable |
+| Live albums | ✗ Disable |
+| Classical music | ✗ Disable |
+| Party playlists | ✓ Enable |
+| Workout mixes | ✓ Enable |
+| Shuffle play | ✓ Consider enabling |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Music crossfadeEnabled
+
+# Enable crossfade
+defaults write com.apple.Music crossfadeEnabled -bool true
+
+# Disable crossfade (default)
+defaults write com.apple.Music crossfadeEnabled -bool false
+
+# Set crossfade duration (in seconds, 1-12)
+defaults write com.apple.Music crossfadeDuration -int 6
+
+# Delete (reset to default)
+defaults delete com.apple.Music crossfadeEnabled
+```
+
+## UI Location
+
+**Music** → **Settings** (⌘,) → **Playback** → ☑ **Crossfade Songs**
+
+Slider appears when enabled to set duration (1-12 seconds).
+
+## Crossfade Duration
+
+```bash
+# Set crossfade duration (seconds)
+# Minimum: 1 second
+# Maximum: 12 seconds
+# Recommended: 3-6 seconds
+
+# Short crossfade (subtle)
+defaults write com.apple.Music crossfadeDuration -int 3
+
+# Medium crossfade (balanced)
+defaults write com.apple.Music crossfadeDuration -int 6
+
+# Long crossfade (DJ-style)
+defaults write com.apple.Music crossfadeDuration -int 12
+```
+
+## Related Audio Settings
+
+```bash
+# Sound Check (volume normalization)
+defaults write com.apple.Music normalizeVolume -bool true
+
+# Sound Enhancer (EQ boost)
+defaults write com.apple.Music soundEnhancerEnabled -bool false
+
+# Lossless audio
+defaults write com.apple.Music losslessEnabled -bool true
+
+# Dolby Atmos
+defaults write com.apple.Music dolbyAtmosEnabled -bool true
+```
+
+## Gapless Playback vs Crossfade
+
+| Feature | Gapless Playback | Crossfade |
+|---------|------------------|-----------|
+| **Purpose** | Eliminate gaps | Blend songs |
+| **Songs overlap** | No | Yes |
+| **Album integrity** | Preserved | Modified |
+| **Best for** | Albums | Playlists |
+| **Audio quality** | Unchanged | Blended |
+
+Music uses gapless playback automatically for albums encoded with it.
+Crossfade is separate and overlaps audio.
+
+## Audio Quality Considerations
+
+When crossfade is enabled:
+- Songs are mixed together during transition
+- May affect audio quality perception
+- Lossless tracks are decoded before mixing
+- Spatial audio continues through crossfade
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Crossfade not working | Verify setting is enabled |
+| Crossfade too short/long | Adjust duration slider |
+| Ruins album experience | Disable for specific albums |
+| Cuts off song endings | Reduce crossfade duration |
+
+## Smart Crossfade Behavior
+
+Music app applies crossfade intelligently:
+- **Within albums**: May preserve original transitions
+- **Between albums**: Crossfade applies
+- **Playlists**: Always crossfades (when enabled)
+- **Radio**: Usually crossfades
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina, when iTunes became Music)
+- **Music.app**: All versions
+- **Note**: Requires app restart to take effect
+
+## Source File
+
+**File**: [`defaults/applications/music.sh`](../../../../defaults/applications/music.sh)
+
+```bash
+run_defaults "com.apple.Music" "crossfadeEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Music preferences](https://support.apple.com/guide/music/change-playback-settings-mus33a1ecd41/mac)
+- [Apple Support: Music app overview](https://support.apple.com/guide/music/welcome/mac)

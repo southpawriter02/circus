@@ -1,0 +1,239 @@
+# Safari Suppress Search Suggestions
+
+Disable Safari Suggestions in the Smart Search Field.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `SuppressSearchSuggestions` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Safari shows suggestions from Apple as you type in the Smart Search Field (URL/search bar). When enabled (suggestions suppressed), Safari won't send your search queries to Apple's servers for suggestions. This improves privacy by preventing Apple from collecting your search patterns while still allowing your chosen search engine's suggestions.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Suppress suggestions** — No Apple suggestions |
+| `false` | **Show suggestions** (default) — Apple suggestions appear |
+
+## Visual Demonstration
+
+### With Search Suggestions (false - default):
+```
+┌──────────────────────────────────────────────────────────┐
+│  🔍 how to make pa                                       │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│  🔎 Google Search                                        │
+│  ├── how to make pasta                                   │
+│  ├── how to make pancakes                                │
+│  └── how to make paper airplanes                         │
+│                                                          │
+│  🍎 Siri Suggestions        ← Sent to Apple servers     │
+│  ├── 🗺️ Pasta restaurants nearby                        │
+│  ├── 📰 Pasta recipes - NYT Cooking                     │
+│  └── 🛒 Pasta - Amazon                                   │
+│                                                          │
+│  ⏱️ History                                              │
+│  └── how to make pasta carbonara (visited yesterday)    │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+         ↑
+    Your typing sent to:
+    • Google (search engine)
+    • Apple (Siri Suggestions)
+```
+
+### With Search Suggestions Suppressed (true):
+```
+┌──────────────────────────────────────────────────────────┐
+│  🔍 how to make pa                                       │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│  🔎 Google Search                                        │
+│  ├── how to make pasta                                   │
+│  ├── how to make pancakes                                │
+│  └── how to make paper airplanes                         │
+│                                                          │
+│  ⏱️ History                                              │
+│  └── how to make pasta carbonara (visited yesterday)    │
+│                                                          │
+│  📑 Bookmarks                                            │
+│  └── Pasta Recipes | Food Network                       │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+         ↑
+    Your typing sent to:
+    • Google only (search engine)
+    • Apple: Nothing
+```
+
+## Our Configuration
+
+**Set to**: `true` — Suppress Safari Suggestions for privacy.
+
+### Why Suppress Search Suggestions?
+
+1. **Privacy** — Searches not sent to Apple
+2. **Less data collection** — Reduced tracking
+3. **Cleaner results** — Only search engine suggestions
+4. **Faster** — No extra network requests
+5. **Focus** — Fewer distractions while typing
+
+### Why Allow Search Suggestions?
+
+- Discover relevant content
+- Quick access to websites
+- See news and articles
+- Maps and location integration
+- iTunes/App Store results
+
+## Security Implications
+
+| Data Sent to Apple | With Suggestions | Without |
+|-------------------|-----------------|---------|
+| Search queries | ✓ Yes | ✗ No |
+| Partial queries (as you type) | ✓ Yes | ✗ No |
+| Location (approximate) | ✓ Sometimes | ✗ No |
+| Browsing context | ✓ Some | ✗ No |
+
+### Privacy Comparison
+
+```
+Suggestions Enabled:
+┌─────────┐    Query    ┌─────────────┐    Query    ┌──────────┐
+│   You   │────────────▶│   Apple     │────────────▶│  Google  │
+│ Typing  │             │  Servers    │             │ Search   │
+└─────────┘             └─────────────┘             └──────────┘
+                              │
+                              ▼
+                    Personalized suggestions
+                    + data collection
+
+Suggestions Suppressed:
+┌─────────┐                              Query    ┌──────────┐
+│   You   │─────────────────────────────────────▶│  Google  │
+│ Typing  │                                      │ Search   │
+└─────────┘                                      └──────────┘
+                              │
+                              ▼
+                    Only search engine sees query
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari SuppressSearchSuggestions
+
+# Suppress Safari Suggestions (privacy)
+defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+
+# Allow Safari Suggestions (default)
+defaults write com.apple.Safari SuppressSearchSuggestions -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Safari SuppressSearchSuggestions
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **Search** → ☐ **Include Safari Suggestions**
+
+Unchecking this box has the same effect as setting `SuppressSearchSuggestions` to `true`.
+
+## Related Privacy Settings
+
+```bash
+# Suppress Safari Suggestions
+defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+
+# Disable preloading Top Hit
+defaults write com.apple.Safari PreloadTopHit -bool false
+
+# Don't send search queries to Apple
+defaults write com.apple.Safari UniversalSearchEnabled -bool false
+
+# Enable Do Not Track
+defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+
+# Prevent cross-site tracking
+defaults write com.apple.Safari WebKitStorageBlockingPolicy -int 1
+```
+
+## What Each Setting Controls
+
+| Setting | What It Does |
+|---------|--------------|
+| `SuppressSearchSuggestions` | Hides Siri/Safari suggestions |
+| `UniversalSearchEnabled` | Stops sending queries to Apple |
+| `PreloadTopHit` | Stops preloading predicted sites |
+| `SendDoNotTrackHTTPHeader` | Requests sites not track |
+
+For maximum privacy, disable all of these.
+
+## Search Engine Suggestions Still Work
+
+When Safari Suggestions are suppressed:
+- **Google** suggestions still appear
+- **DuckDuckGo** suggestions still appear
+- **Bing** suggestions still appear
+- **Ecosia** suggestions still appear
+
+Only Apple's suggestions layer is removed.
+
+## Spotlight vs Safari Suggestions
+
+| Feature | Safari | Spotlight |
+|---------|--------|-----------|
+| Setting location | Safari preferences | System Settings |
+| Suggestions source | Apple | Apple |
+| Privacy impact | Web browsing | System-wide |
+
+To disable Spotlight suggestions:
+```bash
+defaults write com.apple.lookup.shared LookupSuggestionsDisabled -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still seeing suggestions | Ensure setting is `true` |
+| No search suggestions at all | Check search engine settings |
+| Want some suggestions back | Enable specific search engine suggestions |
+| Setting not applying | Restart Safari |
+
+## Private Browsing Behavior
+
+In Private Browsing windows:
+- Safari Suggestions may already be limited
+- Search history not saved
+- This setting still applies
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Safari**: 8.0+
+- **Note**: Takes effect immediately, no restart needed
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "SuppressSearchSuggestions" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Safari Search settings](https://support.apple.com/guide/safari/search-settings-ibrw1053/mac)
+- [Apple Privacy: Safari](https://www.apple.com/legal/privacy/data/en/safari/)
+- [Apple Support: Safari privacy](https://support.apple.com/guide/safari/privacy-sfri35610/mac)

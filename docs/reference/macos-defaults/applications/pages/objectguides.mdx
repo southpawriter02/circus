@@ -1,0 +1,278 @@
+# Pages Object Alignment Guides
+
+Show alignment guides when moving objects.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Pages` |
+| **Key** | `TSShowsObjectEdgeGuides` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Pages displays yellow alignment guides when moving or resizing objects on a page. These guides appear dynamically to show when objects are aligned with page margins, other objects' edges, or centers. This visual feedback helps create professional, well-aligned documents without manually calculating positions.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show guides** (default) — Alignment guides visible |
+| `false` | **Hide guides** — No alignment assistance |
+
+## Visual Demonstration
+
+### With Object Alignment Guides Enabled (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Pages — Document                                       │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │              Page Content                         │  │
+│  │                                                   │  │
+│  │   ┌─────────────┐                                 │  │
+│  │   │   Image 1   │                                 │  │
+│  │   │             │                                 │  │
+│  │   └─────────────┘                                 │  │
+│  │         │                                         │  │
+│  │         │ ← Yellow alignment guide                │  │
+│  │         │   (center aligned)                      │  │
+│  │         ▼                                         │  │
+│  │   ┌─────────────┐  ← Object being moved          │  │
+│  │   │   Image 2   │                                 │  │
+│  │   │   🔄 drag   │                                 │  │
+│  │   └─────────────┘                                 │  │
+│  │                                                   │  │
+│  │   ════════════════════ ← Page center guide       │  │
+│  │                                                   │  │
+│  └───────────────────────────────────────────────────┘  │
+│                                                         │
+│  Yellow lines show alignment points while dragging      │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Guide Types:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Alignment Guide Types                                  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  EDGE ALIGNMENT:              CENTER ALIGNMENT:         │
+│  ┌───────────┐                ┌───────────┐            │
+│  │  Object 1 │                │  Object 1 │            │
+│  └───────────┘                └─────┬─────┘            │
+│  │           │                      │                   │
+│  │ Yellow    │ Yellow               │ Yellow            │
+│  │ Guide     │ Guide                │ Guide             │
+│  │           │                      │                   │
+│  └───────────┘                ┌─────┴─────┐            │
+│  │  Object 2 │                │  Object 2 │            │
+│  └───────────┘                └───────────┘            │
+│  Left edges aligned           Centers aligned           │
+│                                                         │
+│  SPACING GUIDES:              MARGIN GUIDES:            │
+│  ┌───────┐ ┌───────┐          ║ ┌───────────┐ ║        │
+│  │   1   │ │   2   │          ║ │  Object   │ ║        │
+│  └───────┘ └───────┘          ║ └───────────┘ ║        │
+│     ◄──►     ◄──►             ║    Margin    ║        │
+│      15pt    15pt             ║    guides    ║        │
+│  Equal spacing shown                                    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Without Object Alignment Guides (false):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Pages — Document                                       │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │              Page Content                         │  │
+│  │                                                   │  │
+│  │   ┌─────────────┐                                 │  │
+│  │   │   Image 1   │                                 │  │
+│  │   │             │                                 │  │
+│  │   └─────────────┘                                 │  │
+│  │                                                   │  │
+│  │                                                   │  │
+│  │     ┌─────────────┐  ← No alignment feedback     │  │
+│  │     │   Image 2   │                               │  │
+│  │     │   🔄 drag   │                               │  │
+│  │     └─────────────┘                               │  │
+│  │                                                   │  │
+│  │   Objects may end up misaligned                   │  │
+│  │                                                   │  │
+│  └───────────────────────────────────────────────────┘  │
+│                                                         │
+│  No visual cues during object movement                  │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show alignment guides for professional layouts.
+
+### Why Enable Alignment Guides?
+
+1. **Precision** — Pixel-perfect alignment
+2. **Consistency** — Objects line up properly
+3. **Speed** — No manual measurements
+4. **Professional** — Clean document layouts
+5. **Visual feedback** — See alignment in real-time
+
+### Why Disable Alignment Guides?
+
+- Experienced users who don't need hints
+- Free-form artistic layouts
+- Performance on slow systems
+- Prefer coordinate-based positioning
+- Distracting while working
+
+## What Guides Show
+
+| Guide Type | Indicates |
+|------------|-----------|
+| **Edge guides** | Objects' edges aligned |
+| **Center guides** | Objects' centers aligned |
+| **Page margin** | Object at page margin |
+| **Page center** | Object at horizontal/vertical center |
+| **Spacing** | Equal distance between objects |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Pages TSShowsObjectEdgeGuides
+
+# Show alignment guides (default, recommended)
+defaults write com.apple.iWork.Pages TSShowsObjectEdgeGuides -bool true
+
+# Hide alignment guides
+defaults write com.apple.iWork.Pages TSShowsObjectEdgeGuides -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Pages TSShowsObjectEdgeGuides
+```
+
+## UI Location
+
+**Pages** → **Settings** (⌘,) → **Rulers** → ☑ **Show guides at object edges**
+
+Or toggle via View menu:
+**View** → **Guides** → **Show Guides at Object Edges**
+
+## Related Pages Settings
+
+```bash
+# Show object edge guides
+defaults write com.apple.iWork.Pages TSShowsObjectEdgeGuides -bool true
+
+# Show size and position when moving
+defaults write com.apple.iWork.Pages TSShowSizeAndPositionWhenMoving -bool true
+
+# Use smart dashes
+defaults write com.apple.iWork.Pages TSWPUseSmartDashes -bool true
+
+# Show invisibles (formatting marks)
+defaults write com.apple.iWork.Pages TSWPShowInvisibleCharacters -bool false
+```
+
+## Size and Position Indicator
+
+Related setting shows dimensions while moving:
+
+```bash
+# Show size/position popup when moving objects
+defaults write com.apple.iWork.Pages TSShowSizeAndPositionWhenMoving -bool true
+```
+
+```
+┌─────────────────────────────────────────────┐
+│                                             │
+│      ┌─────────────┐                        │
+│      │   Object    │  ┌──────────────────┐  │
+│      │   🔄 drag   │  │ X: 2.5 in        │  │
+│      └─────────────┘  │ Y: 3.2 in        │  │
+│                       │ W: 4.0 in        │  │
+│                       │ H: 2.5 in        │  │
+│                       └──────────────────┘  │
+│                          ↑                  │
+│                       Position indicator    │
+└─────────────────────────────────────────────┘
+```
+
+## Keyboard Modifiers While Dragging
+
+| Modifier | Effect |
+|----------|--------|
+| **Shift** | Constrain to horizontal/vertical |
+| **⌥ Option** | Duplicate object while dragging |
+| **⌘ Command** | Ignore guides temporarily |
+| **Shift+⌥** | Constrain + duplicate |
+
+## Alignment Without Guides
+
+Even with guides disabled, you can align via:
+- **Format** → **Arrange** → **Align Objects**
+- Inspector panel alignment buttons
+- Precise X/Y coordinates in Format panel
+- Distribute evenly options
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Guides not showing | Check View → Guides menu |
+| Too many guides appearing | Normal - shows all alignments |
+| Can't align freely | Hold ⌘ to temporarily disable |
+| Guides wrong color | Yellow is default, not changeable |
+
+## Keynote and Numbers
+
+Same setting exists for other iWork apps:
+
+```bash
+# Keynote object guides
+defaults write com.apple.iWork.Keynote TSShowsObjectEdgeGuides -bool true
+
+# Numbers object guides
+defaults write com.apple.iWork.Numbers TSShowsObjectEdgeGuides -bool true
+```
+
+## Grid and Rulers
+
+For more precise positioning:
+
+| Feature | Purpose |
+|---------|---------|
+| **Alignment guides** | Dynamic, object-relative |
+| **Rulers** | Fixed measurement reference |
+| **Grid** | Fixed spacing pattern |
+
+Enable rulers: **View** → **Show Rulers** (⌘R)
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra)
+- **Pages**: 6.0+
+- **Note**: Also applies to Keynote/Numbers
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/applications/pages.sh`](../../../../defaults/applications/pages.sh)
+
+```bash
+run_defaults "com.apple.iWork.Pages" "TSShowsObjectEdgeGuides" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Align objects in Pages](https://support.apple.com/guide/pages/position-and-align-objects-tanbb441db45/mac)
+- [Apple Support: Use rulers and guides](https://support.apple.com/guide/pages/use-rulers-and-guides-tan40a01c77d/mac)
+- [Pages User Guide](https://support.apple.com/guide/pages/welcome/mac)

@@ -1,0 +1,253 @@
+# Numbers Tab Key Behavior
+
+Control whether Tab key inserts a tab or moves between cells.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Numbers` |
+| **Key** | `TSInsertTabInsteadOfMoving` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls the behavior of the Tab key when editing cells in Numbers. When disabled (default), Tab moves the selection to the next cell, similar to Excel behavior. When enabled, Tab inserts an actual tab character into the cell content, requiring a different method to navigate between cells.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Tab moves to next cell** (default) — Spreadsheet navigation |
+| `true` | **Tab inserts tab character** — Text formatting in cell |
+
+## Visual Demonstration
+
+### Tab Moves to Next Cell (false - default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Numbers — Spreadsheet                                  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│       │    A     │    B     │    C     │    D     │    │
+│  ─────┼──────────┼──────────┼──────────┼──────────┼    │
+│   1   │ ████████ │          │          │          │    │
+│       │ Selected │          │          │          │    │
+│  ─────┼──────────┼──────────┼──────────┼──────────┼    │
+│   2   │          │          │          │          │    │
+│  ─────┼──────────┼──────────┼──────────┼──────────┼    │
+│                                                         │
+│  Press [Tab] →                                          │
+│                                                         │
+│       │    A     │    B     │    C     │    D     │    │
+│  ─────┼──────────┼──────────┼──────────┼──────────┼    │
+│   1   │          │ ████████ │          │          │    │
+│       │          │ Selected │          │          │    │
+│  ─────┼──────────┼──────────┼──────────┼──────────┼    │
+│                                                         │
+│  Tab moves selection right to next cell                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Tab Inserts Tab Character (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Numbers — Spreadsheet                                  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│       │         A          │    B     │    C     │     │
+│  ─────┼────────────────────┼──────────┼──────────┼     │
+│   1   │ ████████████████   │          │          │     │
+│       │ "Text    here"     │          │          │     │
+│       │      ↑             │          │          │     │
+│       │   Tab character    │          │          │     │
+│  ─────┼────────────────────┼──────────┼──────────┼     │
+│                                                         │
+│  Press [Tab] while editing cell:                        │
+│                                                         │
+│       │         A          │    B     │    C     │     │
+│  ─────┼────────────────────┼──────────┼──────────┼     │
+│   1   │ "Text        here" │          │          │     │
+│       │      ↑             │          │          │     │
+│       │   Tab inserted     │          │          │     │
+│       │   Still in same    │          │          │     │
+│       │   cell!            │          │          │     │
+│  ─────┼────────────────────┼──────────┼──────────┼     │
+│                                                         │
+│  Use ⌥Tab or click to move to another cell              │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Navigation Comparison:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Keyboard Navigation Comparison                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Tab Moves (false):           Tab Inserts (true):       │
+│  ─────────────────           ──────────────────         │
+│  Tab     → Next cell         Tab     → Tab character    │
+│  Shift+Tab → Previous cell   Shift+Tab → Dedent         │
+│  Return  → Next row          Return  → New line in cell │
+│  Arrow   → Navigate          ⌥Tab    → Next cell        │
+│                                                         │
+│  Best for:                   Best for:                  │
+│  • Data entry                • Text-heavy cells         │
+│  • Quick navigation          • Formatted content        │
+│  • Excel-like workflow       • Word processor feel      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Tab moves between cells for spreadsheet workflow.
+
+### Why Tab Should Move (Default)?
+
+1. **Excel compatibility** — Familiar behavior
+2. **Data entry** — Fast cell-to-cell navigation
+3. **Standard spreadsheet** — Expected behavior
+4. **Efficiency** — Quick data input workflow
+5. **Muscle memory** — Works like other spreadsheets
+
+### Why Tab Should Insert?
+
+- Text-heavy spreadsheets
+- Formatted cell content
+- Document-like tables
+- Word processor expectations
+- Specific formatting needs
+
+## Keyboard Navigation Summary
+
+| Key | Tab Moves (false) | Tab Inserts (true) |
+|-----|-------------------|-------------------|
+| **Tab** | Next cell | Tab character |
+| **Shift+Tab** | Previous cell | Remove indent |
+| **Return** | Cell below | New line in cell |
+| **⌥Tab** | N/A | Next cell |
+| **⌥Return** | N/A | Exit cell |
+| **Arrow keys** | Navigate cells | Move cursor in cell |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Numbers TSInsertTabInsteadOfMoving
+
+# Tab moves to next cell (default, spreadsheet behavior)
+defaults write com.apple.iWork.Numbers TSInsertTabInsteadOfMoving -bool false
+
+# Tab inserts tab character (word processor behavior)
+defaults write com.apple.iWork.Numbers TSInsertTabInsteadOfMoving -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Numbers TSInsertTabInsteadOfMoving
+```
+
+## UI Location
+
+**Numbers** → **Settings** (⌘,) → **General** → ☐ **Pressing Tab inserts a tab in cells**
+
+## Related Numbers Settings
+
+```bash
+# Tab behavior
+defaults write com.apple.iWork.Numbers TSInsertTabInsteadOfMoving -bool false
+
+# Show formula warnings
+defaults write com.apple.iWork.Numbers TSShowFormulaWarnings -bool true
+
+# Warn before deleting sheets
+defaults write com.apple.iWork.Numbers TSWarnBeforeDeletingSheets -bool true
+
+# Use 1904 date system (Excel compatibility)
+defaults write com.apple.iWork.Numbers Use1904DateSystem -bool false
+```
+
+## Excel Compatibility
+
+| Feature | Numbers Default | Excel Default |
+|---------|-----------------|---------------|
+| Tab behavior | Moves to next cell | Moves to next cell |
+| Return | Next row | Next row |
+| Formula start | = or + | = |
+| Date system | 1900 | 1900 |
+
+Numbers defaults match Excel for easy transition.
+
+## Editing vs Navigation Mode
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Cell States and Tab Behavior                           │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  SELECTED (not editing):                                │
+│  ┌──────────┐                                           │
+│  │   123    │  ← Blue border                           │
+│  └──────────┘                                           │
+│  Tab ALWAYS moves to next cell                          │
+│                                                         │
+│  EDITING (cursor in cell):                              │
+│  ┌──────────┐                                           │
+│  │   123|   │  ← Cursor visible                        │
+│  └──────────┘                                           │
+│  Tab behavior depends on setting:                       │
+│  • false: Commits edit, moves to next cell              │
+│  • true: Inserts tab character                          │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Use Cases
+
+| Workflow | Recommended Setting |
+|----------|-------------------|
+| Financial data entry | false (moves) |
+| Inventory management | false (moves) |
+| Text-heavy reports | true (inserts) |
+| Quick data input | false (moves) |
+| Formatted tables | true (inserts) |
+| Excel imports | false (moves) |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Tab not moving cells | Check setting is false |
+| Can't insert tab in cell | Enable setting or use ⌥Tab |
+| Unexpected behavior | Check if cell is in edit mode |
+| Different than Excel | Verify setting matches |
+
+## Comparison with Other Apps
+
+| App | Default Tab Behavior |
+|-----|---------------------|
+| Numbers | Moves to next cell |
+| Excel | Moves to next cell |
+| Google Sheets | Moves to next cell |
+| Pages (tables) | Moves to next cell |
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra)
+- **Numbers**: 4.0+
+- **Note**: Requires app restart to apply
+- **Note**: Per-app setting, doesn't affect Pages
+
+## Source File
+
+**File**: [`defaults/applications/numbers.sh`](../../../../defaults/applications/numbers.sh)
+
+```bash
+run_defaults "com.apple.iWork.Numbers" "TSInsertTabInsteadOfMoving" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Numbers keyboard shortcuts](https://support.apple.com/guide/numbers/keyboard-shortcuts-tan23734a51/mac)
+- [Apple Support: Navigate in Numbers](https://support.apple.com/guide/numbers/move-around-a-spreadsheet-tan90be2c6ed/mac)

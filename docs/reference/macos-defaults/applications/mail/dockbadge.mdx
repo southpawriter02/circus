@@ -1,0 +1,240 @@
+# Mail Dock Unread Badge
+
+Display unread message count on the Mail Dock icon.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `ShouldShowUnreadMessagesInDockIcon` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Mail displays a red badge on its Dock icon showing the number of unread messages. This provides an at-a-glance count of unread emails without opening the app. While useful for staying aware of new messages, it can also be a source of distraction and notification anxiety for some users.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show badge** (default) — Unread count visible on Dock |
+| `false` | **Hide badge** — No count shown, cleaner Dock |
+
+## Visual Demonstration
+
+### With Dock Badge Enabled (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  macOS Dock                                             │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   ┌────┐  ┌────┐  ┌────┐  ┌────┐  ┌────┐  ┌────┐       │
+│   │    │  │    │  │📧  │  │    │  │    │  │    │       │
+│   │ 🔍 │  │ 🌐 │  │  🔴│  │ 📁 │  │ ⚙️ │  │ 🗑️ │       │
+│   │    │  │    │  │ 47 │  │    │  │    │  │    │       │
+│   └────┘  └────┘  └────┘  └────┘  └────┘  └────┘       │
+│                      ↑                                  │
+│                  Badge shows                            │
+│                  47 unread emails                       │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Without Dock Badge (false):
+```
+┌─────────────────────────────────────────────────────────┐
+│  macOS Dock                                             │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   ┌────┐  ┌────┐  ┌────┐  ┌────┐  ┌────┐  ┌────┐       │
+│   │    │  │    │  │    │  │    │  │    │  │    │       │
+│   │ 🔍 │  │ 🌐 │  │ 📧 │  │ 📁 │  │ ⚙️ │  │ 🗑️ │       │
+│   │    │  │    │  │    │  │    │  │    │  │    │       │
+│   └────┘  └────┘  └────┘  └────┘  └────┘  └────┘       │
+│                      ↑                                  │
+│                  No badge                               │
+│                  Clean, calm Dock                       │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Badge Count Examples:
+```
+Badge Display Behavior:
+
+1-9 messages:     [🔴 5 ]   ← Single digit
+10-99 messages:   [🔴47 ]   ← Double digit
+100-999 messages: [🔴247]   ← Triple digit
+1000+ messages:   [🔴999+]  ← Shows "999+"
+
+Badge updates in real-time as you read/receive emails
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show unread badge for awareness.
+
+### Why Show Dock Badge?
+
+1. **Awareness** — Know when new mail arrives
+2. **Quick glance** — Check count without opening app
+3. **Priority indicator** — High count suggests attention needed
+4. **Standard behavior** — Expected Mail app behavior
+5. **No app switching** — See count while in other apps
+
+### Why Hide Dock Badge?
+
+- Reduce notification anxiety
+- Minimize distractions during focus time
+- Cleaner Dock appearance
+- Already use notifications instead
+- Process email on schedule, not reactively
+
+## Mental Health Considerations
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Email Badge and Productivity                           │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  With Badge:                                            │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │  📧🔴247  → Constant awareness → Urge to check  │   │
+│  │            → Context switching → Reduced focus   │   │
+│  └──────────────────────────────────────────────────┘   │
+│                                                         │
+│  Without Badge:                                         │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │  📧     → Out of sight → Scheduled email time   │   │
+│  │         → Less anxiety → Better focus            │   │
+│  └──────────────────────────────────────────────────┘   │
+│                                                         │
+│  Consider hiding badge if email causes stress           │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail ShouldShowUnreadMessagesInDockIcon
+
+# Show unread badge (default)
+defaults write com.apple.mail ShouldShowUnreadMessagesInDockIcon -bool true
+
+# Hide unread badge
+defaults write com.apple.mail ShouldShowUnreadMessagesInDockIcon -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.mail ShouldShowUnreadMessagesInDockIcon
+```
+
+## UI Location
+
+**Mail** → **Settings** (⌘,) → **General** → ☑ **Show unread message count in Dock**
+
+Or via System Settings:
+**System Settings** → **Notifications** → **Mail** → **Badge app icon**
+
+## What Counts as "Unread"
+
+The badge counts:
+- New, never-opened emails
+- Emails manually marked as unread
+- Emails in all mailboxes (Inbox, folders, etc.)
+
+Not counted:
+- Emails in Junk/Spam
+- Emails in Trash
+- Drafts
+
+## Related Notification Settings
+
+```bash
+# Show unread count in Dock
+defaults write com.apple.mail ShouldShowUnreadMessagesInDockIcon -bool true
+
+# Play sound for new mail
+defaults write com.apple.mail PlayMailSounds -bool true
+
+# Bounce Dock icon for new mail
+defaults write com.apple.mail BounceMailIcon -bool false
+
+# Show notification banners
+# (Controlled via System Settings → Notifications)
+```
+
+## Alternative: Use Focus Modes
+
+Instead of permanently hiding the badge:
+
+1. **Create a Focus Mode** (Work, Personal Time, etc.)
+2. **Customize notifications** for that Focus
+3. **Hide badge during Focus** but show normally otherwise
+
+This gives you control based on context.
+
+## Badge vs Other Notifications
+
+| Notification Type | Intrusiveness | This Setting |
+|-------------------|---------------|--------------|
+| **Dock badge** | Low (passive) | Controls this |
+| **Sound** | Medium | Separate setting |
+| **Banner** | Medium-High | System Settings |
+| **Alert** | High | System Settings |
+| **Bounce icon** | Medium | Separate setting |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Badge not updating | Restart Mail app |
+| Badge stuck on old count | Rebuild mailbox |
+| Want badge for one account only | Not possible - all or nothing |
+| Badge shows wrong count | Check all mailboxes for unread |
+
+## Count Not Matching Reality?
+
+If badge count seems wrong:
+1. Check **all mailboxes** for unread messages
+2. Check **All Mail** or **Archive** folders
+3. Rebuild mailbox: **Mailbox** → **Rebuild**
+4. Check email account sync status
+
+## Inbox Zero Strategy
+
+For Inbox Zero practitioners:
+
+```
+With Badge ON:
+Goal is 📧🔴 0  (zero unread)
+Badge motivates clearing inbox
+
+With Badge OFF:
+Process email at scheduled times
+Don't know count = less stress
+Relies on discipline
+```
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Mail.app**: All versions
+- **Note**: Requires Mail restart to apply
+- **Note**: System Notifications setting can override
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "ShouldShowUnreadMessagesInDockIcon" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Mail notifications](https://support.apple.com/guide/mail/set-up-notifications-mlhlp1034/mac)
+- [Apple Support: Focus modes](https://support.apple.com/guide/mac-help/turn-a-focus-on-or-off-mchl613dc43f/mac)

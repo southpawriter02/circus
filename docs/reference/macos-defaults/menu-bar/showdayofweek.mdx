@@ -1,0 +1,267 @@
+# Menu Bar Clock Show Day of Week
+
+Display the day of the week in the menu bar clock.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.menuextra.clock` |
+| **Key** | `ShowDayOfWeek` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the menu bar clock displays the abbreviated day of the week (Mon, Tue, Wed, etc.) alongside the time. This provides quick context about what day it is without opening Calendar or checking a calendar widget. Particularly useful for people who work irregular schedules or need constant day awareness.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show day** (default) — Day abbreviation visible |
+| `false` | **Hide day** — Time only displayed |
+
+## Visual Demonstration
+
+### With Day of Week Shown (true - default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  macOS Menu Bar                                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ☐ File  Edit  View  ...      🔋 📶 🔊  Wed 2:45 PM    │
+│                                              ↑          │
+│                                         Day of week     │
+│                                         abbreviation    │
+│                                                         │
+│  Quick glance shows it's Wednesday                      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Without Day of Week (false):
+```
+┌─────────────────────────────────────────────────────────┐
+│  macOS Menu Bar                                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ☐ File  Edit  View  ...          🔋 📶 🔊  2:45 PM    │
+│                                              ↑          │
+│                                         Time only       │
+│                                                         │
+│  More compact, but no day context                       │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Day Abbreviations:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Day of Week Display                                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Sunday     →  Sun 2:45 PM                              │
+│  Monday     →  Mon 2:45 PM                              │
+│  Tuesday    →  Tue 2:45 PM                              │
+│  Wednesday  →  Wed 2:45 PM                              │
+│  Thursday   →  Thu 2:45 PM                              │
+│  Friday     →  Fri 2:45 PM                              │
+│  Saturday   →  Sat 2:45 PM                              │
+│                                                         │
+│  Abbreviation based on system language                  │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Combined Display Options:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Clock Display Combinations                             │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Day only:                Wed 2:45 PM                   │
+│  Day + Date:              Wed Jan 8  2:45 PM            │
+│  Day + Seconds:           Wed 2:45:32 PM                │
+│  Day + Date + Seconds:    Wed Jan 8  2:45:32 PM         │
+│                                                         │
+│  24-hour format:                                        │
+│  Day only:                Wed 14:45                     │
+│  Day + Date:              Wed Jan 8  14:45              │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show day of week for quick date context.
+
+### Why Show Day of Week?
+
+1. **Context** — Know what day it is instantly
+2. **Planning** — Quick schedule awareness
+3. **Work-life** — Track weekday vs weekend
+4. **Meetings** — Verify day for appointments
+5. **Default behavior** — Standard macOS experience
+
+### Why Hide Day of Week?
+
+- Maximum menu bar space
+- Already know what day it is
+- Prefer minimal clock display
+- Use other calendar tools
+- Aesthetic preference
+
+## Menu Bar Space Impact
+
+```
+Without day: [ 2:45 PM ]      (8 chars)
+With day:    [ Wed 2:45 PM ]  (12 chars)
+                     +4 chars wider
+
+With date:   [ Wed Jan 8  2:45 PM ]  (19 chars)
+             Much wider, consider 24-hour format
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.menuextra.clock ShowDayOfWeek
+
+# Show day of week (default)
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+
+# Hide day of week
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.menuextra.clock ShowDayOfWeek
+
+# Restart menu bar to apply
+killall SystemUIServer
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Clock Options...** → ☑ **Show the day of the week**
+
+Or via menu bar:
+Click the clock → **Open Date & Time Preferences**
+
+## Related Clock Settings
+
+```bash
+# Show day of week
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+
+# Show date
+defaults write com.apple.menuextra.clock ShowDate -int 1
+
+# Show seconds
+defaults write com.apple.menuextra.clock ShowSeconds -bool true
+
+# Show AM/PM indicator
+defaults write com.apple.menuextra.clock ShowAMPM -bool true
+
+# Use analog clock
+defaults write com.apple.menuextra.clock IsAnalog -bool false
+
+# Flash time separators
+defaults write com.apple.menuextra.clock FlashDateSeparators -bool false
+```
+
+## ShowDate Values
+
+The date display is controlled separately:
+
+| Value | Display |
+|-------|---------|
+| 0 | Never show date |
+| 1 | Always show date |
+| 2 | Show date when space allows |
+
+```bash
+# Always show date with day
+defaults write com.apple.menuextra.clock ShowDate -int 1
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+```
+
+## Localization
+
+Day abbreviations follow system language:
+
+| Language | Monday | Wednesday | Saturday |
+|----------|--------|-----------|----------|
+| English | Mon | Wed | Sat |
+| Spanish | lun | mié | sáb |
+| German | Mo | Mi | Sa |
+| French | lun | mer | sam |
+| Japanese | 月 | 水 | 土 |
+
+Change in **System Settings** → **General** → **Language & Region**
+
+## Custom Date Format
+
+For advanced control, use DateFormat:
+
+```bash
+# Full day name + time
+defaults write com.apple.menuextra.clock DateFormat -string "EEEE h:mm a"
+# Result: Wednesday 2:45 PM
+
+# Day + month + day + time
+defaults write com.apple.menuextra.clock DateFormat -string "EEE MMM d  h:mm a"
+# Result: Wed Jan 8  2:45 PM
+```
+
+Format codes:
+| Code | Displays | Example |
+|------|----------|---------|
+| `E` | Day, shortest | W |
+| `EE` | Day, short | We |
+| `EEE` | Day, abbreviated | Wed |
+| `EEEE` | Day, full | Wednesday |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Day not appearing | Run `killall SystemUIServer` |
+| Wrong day abbreviation | Check system language settings |
+| Clock too wide | Disable date or use 24-hour |
+| Setting not persisting | Check for MDM profiles |
+
+## Analog Clock Note
+
+When using analog clock (`IsAnalog -bool true`), the day of week setting has no effect since analog clocks only show time visually.
+
+```bash
+# Check if analog clock is enabled
+defaults read com.apple.menuextra.clock IsAnalog
+
+# Switch to digital to see day
+defaults write com.apple.menuextra.clock IsAnalog -bool false
+killall SystemUIServer
+```
+
+## Compatibility
+
+- **macOS**: 10.11+ (El Capitan)
+- **Note**: Requires `killall SystemUIServer` to apply
+- **Note**: Analog mode overrides this setting
+- **Note**: Localized based on system language
+
+## Source File
+
+**File**: [`defaults/interface/menu_bar.sh`](../../../defaults/interface/menu_bar.sh)
+
+```bash
+run_defaults "com.apple.menuextra.clock" "ShowDayOfWeek" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change Date & Time preferences](https://support.apple.com/guide/mac-help/change-date-time-preferences-mchlp2996/mac)
+- [Apple Support: Menu bar](https://support.apple.com/guide/mac-help/whats-in-the-menu-bar-mchlp1446/mac)

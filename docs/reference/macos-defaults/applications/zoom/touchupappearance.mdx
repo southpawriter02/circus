@@ -1,0 +1,248 @@
+# Zoom Touch Up Appearance
+
+Control the beauty filter for video calls.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `us.zoom.xos` |
+| **Key** | `ZMEnableTouchUpAppearance` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Zoom applies a "Touch Up My Appearance" filter to your video feed during meetings. When enabled, this feature smooths skin texture, reduces blemishes, and applies subtle softening effects similar to beauty filters in photo apps. While it can improve appearance, it processes your video in real-time and may look artificial at higher settings.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Touch up enabled** — Beauty filter applied |
+| `false` | **Touch up disabled** (default) — Natural video |
+
+## Visual Demonstration
+
+### Without Touch Up (false):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Zoom Meeting - Your Video Feed                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│         ┌─────────────────────────────────┐             │
+│         │                                 │             │
+│         │         😊                      │             │
+│         │    Natural appearance           │             │
+│         │                                 │             │
+│         │    • Skin texture visible       │             │
+│         │    • Natural lighting           │             │
+│         │    • Real-time accurate         │             │
+│         │    • No processing delay        │             │
+│         │                                 │             │
+│         └─────────────────────────────────┘             │
+│                                                         │
+│  What you see = What others see                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With Touch Up Enabled (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Zoom Meeting - Your Video Feed                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│         ┌─────────────────────────────────┐             │
+│         │      ✨ Processed ✨            │             │
+│         │                                 │             │
+│         │         😊                      │             │
+│         │    Softened appearance          │             │
+│         │                                 │             │
+│         │    • Skin smoothed              │             │
+│         │    • Soft focus effect          │             │
+│         │    • Reduced blemishes          │             │
+│         │    • Slightly artificial        │             │
+│         │                                 │             │
+│         └─────────────────────────────────┘             │
+│                                                         │
+│  ⚙️ Touch Up slider: [○────●────○] Medium              │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Touch Up Intensity Levels:
+```
+Low                    Medium                   High
+┌──────────┐          ┌──────────┐          ┌──────────┐
+│          │          │  ✨      │          │ ✨✨✨  │
+│  Subtle  │          │ Balanced │          │  Heavy   │
+│  smooth  │          │ softening│          │  filter  │
+│          │          │          │          │          │
+└──────────┘          └──────────┘          └──────────┘
+ Natural look          Most common           Noticeable
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable touch up for natural video.
+
+### Why Disable Touch Up?
+
+1. **Authenticity** — Natural appearance in meetings
+2. **Professional** — Appropriate for work calls
+3. **Performance** — Less CPU/GPU processing
+4. **Battery** — Saves power on laptops
+5. **Bandwidth** — No processing artifacts
+
+### Why Enable Touch Up?
+
+- Soften appearance for video calls
+- Reduce visibility of tiredness
+- Consistent look across calls
+- Confidence boost
+- Poor lighting compensation
+
+## What Touch Up Does
+
+| Effect | Processing |
+|--------|------------|
+| **Skin smoothing** | Reduces pores and texture |
+| **Blemish reduction** | Hides spots and marks |
+| **Soft focus** | Slight blur effect |
+| **Even skin tone** | Subtle color correction |
+| **Under-eye reduction** | Lightens dark circles (at higher levels) |
+
+## Performance Impact
+
+```
+Resource Usage Comparison:
+
+CPU Usage:
+Without Touch Up: ████░░░░░░ ~40%
+With Touch Up:    ████████░░ ~65%
+
+GPU Usage:
+Without Touch Up: ██░░░░░░░░ ~20%
+With Touch Up:    █████░░░░░ ~45%
+
+Video Latency:
+Without Touch Up: ~50ms
+With Touch Up:    ~80ms (+30ms processing)
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read us.zoom.xos ZMEnableTouchUpAppearance
+
+# Disable touch up (natural video)
+defaults write us.zoom.xos ZMEnableTouchUpAppearance -bool false
+
+# Enable touch up
+defaults write us.zoom.xos ZMEnableTouchUpAppearance -bool true
+
+# Delete (reset to default)
+defaults delete us.zoom.xos ZMEnableTouchUpAppearance
+```
+
+## UI Location
+
+**Zoom** → **Settings** (⌘,) → **Video** → ☑ **Touch up my appearance**
+
+When enabled, a slider appears to adjust intensity.
+
+## Related Video Settings
+
+```bash
+# Mirror video (flip self-view)
+defaults write us.zoom.xos ZMMMirrorVideo -bool true
+
+# HD video quality
+defaults write us.zoom.xos ZMEnableHDVideo -bool true
+
+# Original sound (for music)
+defaults write us.zoom.xos ZMEnableOriginalSound -bool false
+
+# Virtual background
+defaults write us.zoom.xos ZMEnableVirtualBackground -bool false
+```
+
+## Touch Up vs Other Video Features
+
+| Feature | Purpose | Processing |
+|---------|---------|------------|
+| **Touch Up** | Beauty filter | High |
+| **Low Light** | Brighten dark video | Medium |
+| **HD Video** | Higher resolution | Bandwidth |
+| **Virtual BG** | Replace background | Very High |
+| **Studio Effects** | Eyebrows, lips, etc. | High |
+
+## Alternative: Better Lighting
+
+Instead of touch up, consider:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Lighting Setup for Better Video                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│           💡 Key Light                                  │
+│              (in front, slightly above)                 │
+│                    │                                    │
+│                    ▼                                    │
+│    💡 ─────────  😊  ───────── 💡                      │
+│   Fill Light   (You)    Window/                        │
+│                         Backlight                       │
+│                                                         │
+│  Good lighting > Beauty filters                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Professional Meeting Considerations
+
+| Context | Recommendation |
+|---------|----------------|
+| Job interviews | Disable (authenticity matters) |
+| Client meetings | Disable or low setting |
+| Internal team calls | Personal preference |
+| Webinars/presentations | Low setting acceptable |
+| Casual calls | Personal preference |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Touch up not visible | Check slider intensity |
+| Video looks artificial | Reduce intensity |
+| Performance issues | Disable or reduce |
+| Battery draining fast | Disable during long calls |
+
+## Other Appearance Features in Zoom
+
+| Feature | Key | Default |
+|---------|-----|---------|
+| Touch Up | `ZMEnableTouchUpAppearance` | false |
+| Studio Effects | Via UI only | Off |
+| Filters | Via UI only | None |
+| Avatars | Via UI only | Off |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Zoom**: 5.0+
+- **Note**: Requires restart of Zoom to apply
+- **Note**: May require meeting restart for full effect
+
+## Source File
+
+**File**: [`defaults/applications/zoom_app.sh`](../../../../defaults/applications/zoom_app.sh)
+
+```bash
+run_defaults "us.zoom.xos" "ZMEnableTouchUpAppearance" "-bool" "false"
+```
+
+## References
+
+- [Zoom Support: Touch up my appearance](https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0060720)
+- [Zoom Support: Video settings](https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0060287)

@@ -1,0 +1,258 @@
+# Calendar Birthdays Display
+
+Show birthdays from Contacts in Calendar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iCal` |
+| **Key** | `display birthdays calendar` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Calendar displays a special "Birthdays" calendar that automatically shows birthday events for all contacts in your Contacts app that have birthday information. This creates automatic all-day events on each contact's birthday without needing to manually create calendar entries.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show Birthdays** (default) — Birthday events appear in calendar |
+| `false` | **Hide Birthdays** — No birthday events shown |
+
+## Visual Demonstration
+
+### With Birthdays Calendar Enabled (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  📅 Calendar — January 2026                             │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  CALENDARS                  │  January 2026             │
+│  ─────────────              │  ────────────────────     │
+│  ☑ Home                     │  Mon Tue Wed Thu Fri      │
+│  ☑ Work                     │                1   2   3  │
+│  ☑ Family                   │   6   7   8   9  10      │
+│                             │  13  14  15  16  17      │
+│  OTHER                      │  20  21  22  23  24      │
+│  ────────────               │  27  28  29  30  31      │
+│  ☑ 🎂 Birthdays             │                           │
+│  ☑ 🇺🇸 US Holidays          │                           │
+│                             │  ┌─────────────────────┐  │
+│                             │  │ 15 January          │  │
+│                             │  │                     │  │
+│                             │  │ 🎂 John's Birthday  │  │
+│                             │  │    All-day event    │  │
+│                             │  │                     │  │
+│                             │  └─────────────────────┘  │
+│                             │                           │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Without Birthdays Calendar (false):
+```
+┌─────────────────────────────────────────────────────────┐
+│  📅 Calendar — January 2026                             │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  CALENDARS                  │  January 2026             │
+│  ─────────────              │  ────────────────────     │
+│  ☑ Home                     │  Mon Tue Wed Thu Fri      │
+│  ☑ Work                     │                1   2   3  │
+│  ☑ Family                   │   6   7   8   9  10      │
+│                             │  13  14  15  16  17      │
+│  OTHER                      │  20  21  22  23  24      │
+│  ────────────               │  27  28  29  30  31      │
+│  ☑ 🇺🇸 US Holidays          │                           │
+│                             │  ┌─────────────────────┐  │
+│  No Birthdays calendar      │  │ 15 January          │  │
+│                             │  │                     │  │
+│                             │  │ (No birthday shown) │  │
+│                             │  │                     │  │
+│                             │  └─────────────────────┘  │
+│                             │                           │
+└─────────────────────────────────────────────────────────┘
+```
+
+### How Birthday Sync Works:
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│    Contacts     │────▶│   Calendar      │────▶│ Birthday Event  │
+│  📇 John Smith  │     │  Birthdays      │     │ 🎂 Jan 15       │
+│  Birthday: 1/15 │     │  Calendar       │     │ All-day         │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+         │                      │                       │
+         │                      │                       │
+         ▼                      ▼                       ▼
+   Enter once            Auto-generated          Shows yearly
+   in Contacts           Read-only               with age
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show birthday calendar for contact awareness.
+
+### Why Show Birthdays?
+
+1. **Never forget** — Automatic reminders
+2. **Contact awareness** — See upcoming birthdays
+3. **No manual entry** — Auto-populated from Contacts
+4. **iCloud sync** — Works across devices
+5. **Age display** — Shows how old person is turning
+
+### Why Hide Birthdays?
+
+- Calendar too cluttered
+- Use separate birthday app
+- Privacy concerns
+- Don't track birthdays
+- Work calendar only
+
+## Birthday Event Details
+
+Birthday events include:
+- Contact's name
+- Age they're turning (if birth year known)
+- All-day event format
+- Link back to contact card
+- Repeats annually
+
+```
+┌────────────────────────────────────────┐
+│ 🎂 John Smith's Birthday               │
+│                                        │
+│ Wednesday, January 15, 2026            │
+│ All-day                                │
+│                                        │
+│ Turning 35                             │
+│                                        │
+│ 📇 View Contact                        │
+└────────────────────────────────────────┘
+```
+
+## Code Examples
+
+```bash
+# Read current value (note: key has spaces)
+defaults read com.apple.iCal "display birthdays calendar"
+
+# Show birthdays calendar (default)
+defaults write com.apple.iCal "display birthdays calendar" -bool true
+
+# Hide birthdays calendar
+defaults write com.apple.iCal "display birthdays calendar" -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iCal "display birthdays calendar"
+```
+
+## UI Location
+
+**Calendar** → **Settings** (⌘,) → **General** → ☑ **Show Birthdays calendar**
+
+Or toggle visibility:
+**View** menu → ☑ **Show Birthdays Calendar**
+
+## Setting Birthday Alerts
+
+```bash
+# Default alert for all-day events (affects birthdays)
+# Value in seconds before event (negative = seconds before midnight)
+# -39600 = 9:00 AM on day of event
+
+defaults write com.apple.iCal DefaultAllDayEventAlert -int -39600
+```
+
+Common values:
+| Value | Alert Time |
+|-------|------------|
+| `-39600` | 9:00 AM day of |
+| `-64800` | Day before at 6:00 PM |
+| `-86400` | Day before at midnight |
+| `0` | No alert |
+
+## Related Calendar Settings
+
+```bash
+# Show Birthdays calendar
+defaults write com.apple.iCal "display birthdays calendar" -bool true
+
+# Show Holidays calendar
+defaults write com.apple.iCal "add holiday calendar" -bool true
+
+# Show week numbers
+defaults write com.apple.iCal "Show Week Numbers" -bool true
+
+# Week start day (0=Sunday, 1=Monday)
+defaults write com.apple.iCal "first day of week" -int 1
+```
+
+## Contacts Birthday Field
+
+To add birthdays to contacts:
+1. Open **Contacts**
+2. Edit contact
+3. Add **Birthday** field
+4. Enter date (with or without year)
+
+With year: Shows "Turning X" in Calendar
+Without year: Shows "Birthday" without age
+
+## iCloud Sync Behavior
+
+| Contacts Location | Birthdays Appear |
+|-------------------|------------------|
+| iCloud | Yes, synced everywhere |
+| On My Mac | Yes, local only |
+| Google Contacts | Yes, if synced |
+| Exchange | Yes, if birthday field synced |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Birthdays not showing | Check calendar visibility in sidebar |
+| Missing someone's birthday | Verify birthday field in Contacts |
+| Wrong age displayed | Check birth year in Contacts |
+| Duplicate birthdays | Check for duplicate contacts |
+
+## Calendar vs Reminders for Birthdays
+
+| Feature | Calendar Birthdays | Reminders |
+|---------|-------------------|-----------|
+| Auto-populated | ✓ Yes | ✗ Manual |
+| Shows in calendar view | ✓ Yes | ✗ No |
+| Custom alert times | ✓ Yes | ✓ Yes |
+| Recurring | ✓ Automatic | Must set up |
+| Task completion | ✗ No | ✓ Yes |
+
+## Privacy Considerations
+
+The Birthdays calendar:
+- Only visible on your devices
+- Not shared with shared calendars
+- Read-only (can't edit in Calendar)
+- Updates automatically from Contacts
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion)
+- **Calendar.app**: All modern versions
+- **Note**: Requires contacts with birthday data
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../defaults/applications/calendar.sh)
+
+```bash
+run_defaults "com.apple.iCal" "display birthdays calendar" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Calendar settings](https://support.apple.com/guide/calendar/change-general-settings-icl2b135a/mac)
+- [Apple Support: Add birthdays to Contacts](https://support.apple.com/guide/contacts/add-birthday-and-date-fields-adrbk1010/mac)

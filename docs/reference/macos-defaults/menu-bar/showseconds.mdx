@@ -1,0 +1,232 @@
+# Menu Bar Clock Show Seconds
+
+Display seconds in the menu bar clock.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.menuextra.clock` |
+| **Key** | `ShowSeconds` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the menu bar clock displays seconds alongside hours and minutes. When enabled, the clock updates every second, showing the precise time. This is useful for time-sensitive work, synchronization tasks, or simply for users who prefer a more detailed time display.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show seconds** — Clock displays HH:MM:SS |
+| `false` | **Hide seconds** (default) — Clock displays HH:MM |
+
+## Visual Demonstration
+
+### Without Seconds (false - default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  macOS Menu Bar                                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ☐ File  Edit  View  ...          🔋 📶 🔊  2:45 PM    │
+│                                              ↑          │
+│                                         Hours:Minutes   │
+│                                         only            │
+│                                                         │
+│  Clock updates once per minute                          │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With Seconds (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  macOS Menu Bar                                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ☐ File  Edit  View  ...       🔋 📶 🔊  2:45:32 PM    │
+│                                              ↑          │
+│                                         Hours:Minutes   │
+│                                         :Seconds        │
+│                                                         │
+│  Clock updates every second                             │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  2:45:32 → 2:45:33 → 2:45:34 → 2:45:35 → ...     │  │
+│  └───────────────────────────────────────────────────┘  │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Clock Format Combinations:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Clock Display Options                                  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  12-hour without seconds:    2:45 PM                    │
+│  12-hour with seconds:       2:45:32 PM                 │
+│                                                         │
+│  24-hour without seconds:    14:45                      │
+│  24-hour with seconds:       14:45:32                   │
+│                                                         │
+│  With day of week:           Wed 2:45:32 PM             │
+│  With date:                  Wed Jan 8  2:45:32 PM      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show seconds for precise time awareness.
+
+### Why Show Seconds?
+
+1. **Precision** — Know exact time instantly
+2. **Synchronization** — Useful for coordinated tasks
+3. **Meetings** — Join at exact start time
+4. **Development** — Timing debugging sessions
+5. **Personal preference** — Complete time display
+
+### Why Hide Seconds?
+
+- Cleaner menu bar
+- Less visual movement/distraction
+- Saves menu bar space
+- Battery (minimal impact)
+- Default macOS behavior
+
+## Resource Impact
+
+| Setting | CPU Impact | Visual Updates |
+|---------|------------|----------------|
+| Seconds OFF | Minimal | Once per minute |
+| Seconds ON | Negligible | Once per second |
+
+The impact is minimal on modern Macs.
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.menuextra.clock ShowSeconds
+
+# Show seconds in clock
+defaults write com.apple.menuextra.clock ShowSeconds -bool true
+
+# Hide seconds (default)
+defaults write com.apple.menuextra.clock ShowSeconds -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.menuextra.clock ShowSeconds
+
+# Restart menu bar to apply
+killall SystemUIServer
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Clock Options...** → ☑ **Display the time with seconds**
+
+Or via menu bar:
+Click the clock → **Open Date & Time Preferences**
+
+## Related Clock Settings
+
+```bash
+# Show seconds
+defaults write com.apple.menuextra.clock ShowSeconds -bool true
+
+# Show day of week
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+
+# Show AM/PM indicator
+defaults write com.apple.menuextra.clock ShowAMPM -bool true
+
+# Flash time separators (colons blink)
+defaults write com.apple.menuextra.clock FlashDateSeparators -bool false
+
+# Use analog clock
+defaults write com.apple.menuextra.clock IsAnalog -bool false
+
+# Custom date format
+defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM  HH:mm:ss"
+```
+
+## Custom Date Format
+
+For advanced customization, use `DateFormat`:
+
+| Code | Displays | Example |
+|------|----------|---------|
+| `HH` | 24-hour | 14 |
+| `hh` | 12-hour | 02 |
+| `mm` | Minutes | 45 |
+| `ss` | Seconds | 32 |
+| `a` | AM/PM | PM |
+| `EEE` | Day abbrev | Wed |
+| `EEEE` | Day full | Wednesday |
+| `d` | Day of month | 8 |
+| `MMM` | Month abbrev | Jan |
+| `MMMM` | Month full | January |
+
+Example:
+```bash
+# "Wed 8 Jan  14:45:32"
+defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM  HH:mm:ss"
+```
+
+## Flash Date Separators
+
+Related visual option:
+```bash
+# Make colons blink each second
+defaults write com.apple.menuextra.clock FlashDateSeparators -bool true
+```
+
+```
+With FlashDateSeparators:
+14:45:32 → 14 45 32 → 14:45:33 → 14 45 33 → ...
+    Colons alternate visible/hidden each second
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Clock not updating | Run `killall SystemUIServer` |
+| Seconds not showing | Verify setting, restart SystemUIServer |
+| Format looks wrong | Check other clock settings |
+| Too wide for menu bar | Reduce other menu bar items |
+
+## Menu Bar Space Consideration
+
+```
+Without seconds: [ 2:45 PM ]     (8 chars)
+With seconds:    [ 2:45:32 PM ]  (11 chars)
+                          +3 chars wider
+
+With 24-hour + seconds: [ 14:45:32 ]  (8 chars)
+More compact than 12-hour with seconds
+```
+
+## Compatibility
+
+- **macOS**: 10.11+ (El Capitan)
+- **Note**: Requires `killall SystemUIServer` to apply
+- **Note**: Some MDM configurations may override
+
+## Source File
+
+**File**: [`defaults/interface/menu_bar.sh`](../../../defaults/interface/menu_bar.sh)
+
+```bash
+run_defaults "com.apple.menuextra.clock" "ShowSeconds" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change Date & Time preferences](https://support.apple.com/guide/mac-help/change-date-time-preferences-mchlp2996/mac)
+- [Apple Support: Menu bar](https://support.apple.com/guide/mac-help/whats-in-the-menu-bar-mchlp1446/mac)

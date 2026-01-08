@@ -1,0 +1,277 @@
+# Chrome External Protocol Dialog
+
+Show "Always open" checkbox for external protocol handlers.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.google.Chrome` |
+| **Key** | `ExternalProtocolDialogShowAlwaysOpenCheckbox` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Chrome shows an "Always open these types of links in the associated app" checkbox in the external protocol dialog. External protocols are custom URL schemes like `slack://`, `spotify://`, `zoom://`, or `vscode://` that open other applications. Enabling this checkbox allows users to permanently skip the confirmation dialog for trusted protocols.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show checkbox** — Option to always open without asking |
+| `false` | **Hide checkbox** (default) — Always asks for confirmation |
+
+## Visual Demonstration
+
+### Without Checkbox (false - default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  External Protocol Request                              │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ⚠️  Open Slack?                                        │
+│                                                         │
+│  https://example.com wants to open this application.    │
+│                                                         │
+│  Protocol: slack://                                     │
+│                                                         │
+│                                                         │
+│                                                         │
+│       [ Cancel ]                 [ Open Slack ]         │
+│                                                         │
+│  You will see this dialog EVERY time                    │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With Checkbox Enabled (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  External Protocol Request                              │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ⚠️  Open Slack?                                        │
+│                                                         │
+│  https://example.com wants to open this application.    │
+│                                                         │
+│  Protocol: slack://                                     │
+│                                                         │
+│  ☑ Always open these types of links in Slack           │
+│     ↑                                                   │
+│     This checkbox only appears when setting is true     │
+│                                                         │
+│       [ Cancel ]                 [ Open Slack ]         │
+│                                                         │
+│  Check the box to skip this dialog in the future        │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Common External Protocols:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Common External Protocol Handlers                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Protocol         Application                           │
+│  ─────────────────────────────────────────────────────  │
+│  slack://         Slack                                 │
+│  spotify://       Spotify                               │
+│  zoom://          Zoom (zoommtg://)                     │
+│  vscode://        Visual Studio Code                    │
+│  iterm2://        iTerm2                                │
+│  x-apple-...      Apple apps                            │
+│  facetime://      FaceTime                              │
+│  tel://           Phone (via Handoff)                   │
+│  mailto://        Mail or email client                  │
+│  ssh://           Terminal/SSH client                   │
+│  github://        GitHub Desktop                        │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show checkbox to allow permanent trust.
+
+### Why Enable This Checkbox?
+
+1. **Convenience** — Skip repetitive dialogs
+2. **Workflow** — Faster app switching
+3. **Developer tools** — Quick vscode:// links
+4. **Communication** — Instant slack:// channel opening
+5. **User choice** — Decide per-protocol
+
+### Why Keep Checkbox Hidden?
+
+- Security-first environment
+- Managed/enterprise devices
+- Prevent accidental permanent permissions
+- Review each external app request
+- Shared computers
+
+## Security Implications
+
+| Scenario | Risk Level | Notes |
+|----------|------------|-------|
+| Trusted protocols (slack://) | Low | Known, installed apps |
+| Unknown protocols | Medium | Could open unexpected apps |
+| Malicious links | High | Could exploit registered handlers |
+
+### Security Best Practices
+
+```
+Safe to "Always Open":
+✓ slack://       - Trusted communication
+✓ spotify://     - Music streaming
+✓ vscode://      - Development tools
+✓ zoom://        - Video conferencing
+✓ facetime://    - Apple native
+
+Review Each Time:
+⚠ Unknown protocols
+⚠ Newly encountered handlers
+⚠ Protocols with sensitive data
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.google.Chrome ExternalProtocolDialogShowAlwaysOpenCheckbox
+
+# Show "Always open" checkbox (recommended for power users)
+defaults write com.google.Chrome ExternalProtocolDialogShowAlwaysOpenCheckbox -bool true
+
+# Hide checkbox (default, more secure)
+defaults write com.google.Chrome ExternalProtocolDialogShowAlwaysOpenCheckbox -bool false
+
+# Delete (reset to default)
+defaults delete com.google.Chrome ExternalProtocolDialogShowAlwaysOpenCheckbox
+```
+
+## UI Location
+
+This setting is **not available in Chrome's UI**. It can only be configured via:
+- `defaults` command (macOS)
+- Chrome enterprise policies
+- Registry (Windows)
+
+## Resetting Protocol Permissions
+
+If you've allowed a protocol and want to reset:
+
+1. **Chrome Settings** → **Privacy and security** → **Site settings**
+2. Scroll to **Additional permissions** → **Protocol handlers**
+3. Remove specific handlers
+
+Or clear all via:
+```bash
+# This removes all site permissions (nuclear option)
+# Use Chrome UI for selective removal
+```
+
+## Related Chrome Settings
+
+```bash
+# Confirm before quitting Chrome (Cmd+Q)
+defaults write com.google.Chrome confirmBeforeQuitting -bool true
+
+# Use native print dialog
+defaults write com.google.Chrome DisablePrintPreview -bool true
+
+# Expand print dialog by default
+defaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true
+
+# Disable swipe navigation
+defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false
+```
+
+## Enterprise/Managed Environments
+
+For enterprise deployment, use Chrome policies:
+
+```json
+{
+  "ExternalProtocolDialogShowAlwaysOpenCheckbox": true,
+  "AutoOpenAllowedForURLs": [
+    "slack://",
+    "spotify://",
+    "zoom://"
+  ]
+}
+```
+
+Deploy via MDM or `/Library/Managed Preferences/com.google.Chrome.plist`.
+
+## Protocol Handler Registration
+
+Applications register protocol handlers via:
+- **Info.plist** (macOS apps)
+- **Launch Services** database
+- **Chrome settings** (web-based handlers)
+
+View registered handlers:
+```bash
+# List all registered URL schemes
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -dump | grep -E "bindings:.*:"
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Checkbox not appearing | Verify setting is true, restart Chrome |
+| Can't undo "Always open" | Reset in Site settings |
+| Wrong app opens | Check registered handler in System Settings |
+| Dialog still appears | May need Chrome restart |
+
+## Interaction with System Permissions
+
+```
+Protocol Flow:
+┌────────────┐     ┌─────────────────┐     ┌──────────────┐
+│  Web Link  │────▶│  Chrome Dialog  │────▶│  Target App  │
+│ slack://x  │     │  (if enabled)   │     │    Slack     │
+└────────────┘     └─────────────────┘     └──────────────┘
+                          │
+                          ▼
+                   macOS may also
+                   show security
+                   prompt first time
+```
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Chrome**: 70+
+- **Note**: Requires Chrome restart to apply
+- **Note**: Also works with Chromium-based browsers (adjust domain)
+
+## Other Chromium Browsers
+
+Similar settings for other browsers:
+```bash
+# Brave
+defaults write com.brave.Browser ExternalProtocolDialogShowAlwaysOpenCheckbox -bool true
+
+# Microsoft Edge
+defaults write com.microsoft.Edge ExternalProtocolDialogShowAlwaysOpenCheckbox -bool true
+
+# Vivaldi
+defaults write com.vivaldi.Vivaldi ExternalProtocolDialogShowAlwaysOpenCheckbox -bool true
+```
+
+## Source File
+
+**File**: [`defaults/applications/chrome.sh`](../../../../defaults/applications/chrome.sh)
+
+```bash
+run_defaults "com.google.Chrome" "ExternalProtocolDialogShowAlwaysOpenCheckbox" "-bool" "true"
+```
+
+## References
+
+- [Chromium External Protocol Handler](https://www.chromium.org/developers/design-documents/register-protocol-handler/)
+- [Chrome Enterprise Policies](https://chromeenterprise.google/policies/)
+- [Apple URL Schemes](https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app)

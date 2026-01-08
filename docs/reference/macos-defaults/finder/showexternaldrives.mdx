@@ -1,0 +1,311 @@
+# Finder Show External Hard Drives on Desktop
+
+Display external hard drives as icons on the desktop.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `ShowExternalHardDrivesOnDesktop` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether external hard drives, USB drives, and other removable storage devices appear as icons on the macOS desktop. When enabled, connecting an external drive creates a visible desktop icon for quick access. When disabled, external drives are only accessible through Finder windows, keeping the desktop cleaner but requiring extra navigation to access connected storage.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show on desktop** (default) — External drives visible on desktop |
+| `false` | **Hide from desktop** — Access via Finder sidebar only |
+
+## Visual Demonstration
+
+### With External Drives on Desktop (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  macOS Desktop                                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│                              ┌─────────┐ ┌─────────┐    │
+│                              │   💾    │ │   💿    │    │
+│                              │ Backup  │ │  USB    │    │
+│                              │  Drive  │ │  Stick  │    │
+│                              └─────────┘ └─────────┘    │
+│                                                         │
+│                              ┌─────────┐                │
+│                              │   📀    │                │
+│                              │ External│                │
+│                              │   SSD   │                │
+│                              └─────────┘                │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │            Desktop Files & Folders              │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  External drives immediately accessible                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Without External Drives on Desktop (false):
+```
+┌─────────────────────────────────────────────────────────┐
+│  macOS Desktop                                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│                                          (clean corner) │
+│                                                         │
+│                                                         │
+│                                                         │
+│                                                         │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │            Desktop Files & Folders              │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Clean desktop, access drives via Finder:               │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Finder Sidebar            │ Main Window        │    │
+│  │  ─────────────────         │                    │    │
+│  │  Locations                 │                    │    │
+│  │  ├─ 💾 Backup Drive        │                    │    │
+│  │  ├─ 💿 USB Stick           │                    │    │
+│  │  └─ 📀 External SSD        │                    │    │
+│  └─────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Desktop Icon Types:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Desktop Icon Settings                                  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Setting                          Icon Example          │
+│  ─────────────────────────────────────────────────      │
+│                                                         │
+│  ShowHardDrivesOnDesktop          💻 Macintosh HD      │
+│  (Internal drives)                                      │
+│                                                         │
+│  ShowExternalHardDrivesOnDesktop  💾 Backup Drive      │
+│  (External drives - THIS SETTING) 📀 External SSD      │
+│                                                         │
+│  ShowRemovableMediaOnDesktop      💿 USB Stick         │
+│  (USB drives, SD cards)           💽 SD Card           │
+│                                                         │
+│  ShowMountedServersOnDesktop      🖥️ File Server       │
+│  (Network drives)                 ☁️ Cloud Share        │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show external drives on desktop for easy access.
+
+### Why Show External Drives?
+
+1. **Quick access** — One-click to open drive
+2. **Visual feedback** — See when drives connect
+3. **Easy ejection** — Drag to trash or right-click
+4. **File transfers** — Drag files directly to drive
+5. **Status awareness** — Know what's connected
+
+### Why Hide External Drives?
+
+- Clean desktop aesthetic
+- Security (hide connected drives)
+- Prevent accidental interactions
+- Prefer Finder sidebar navigation
+- Many drives connected frequently
+
+## Safe Ejection Reminder
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Always Eject Before Disconnecting                      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  From Desktop:                                          │
+│  ┌─────────┐                                            │
+│  │   💾    │  Right-click → "Eject [Drive Name]"       │
+│  │ Backup  │  Or drag to Trash (becomes ⏏)             │
+│  │  Drive  │                                            │
+│  └─────────┘                                            │
+│                                                         │
+│  From Finder Sidebar:                                   │
+│  ├─ 💾 Backup Drive  [⏏]  ← Click eject button         │
+│                                                         │
+│  Keyboard: Select drive, press ⌘E                       │
+│                                                         │
+│  ⚠️ Ejecting prevents data corruption!                  │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.finder ShowExternalHardDrivesOnDesktop
+
+# Show external drives on desktop (default)
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+
+# Hide external drives from desktop
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.finder ShowExternalHardDrivesOnDesktop
+
+# Restart Finder to apply
+killall Finder
+```
+
+## UI Location
+
+**Finder** → **Settings** (⌘,) → **General** → ☑ **External disks**
+
+Under "Show these items on the desktop:"
+
+## Related Desktop Icon Settings
+
+```bash
+# Show external hard drives on desktop (this setting)
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+
+# Show internal hard drives on desktop
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
+
+# Show removable media (USB sticks, SD cards)
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+
+# Show mounted network servers
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool false
+
+# Apply changes
+killall Finder
+```
+
+## Complete Desktop Configuration
+
+```bash
+# Minimalist: Hide all drive icons
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool false
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool false
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool false
+killall Finder
+
+# Full visibility: Show all drive icons
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
+killall Finder
+
+# Recommended: External and removable only
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool false
+killall Finder
+```
+
+## What Counts as "External"?
+
+| Device Type | Setting |
+|-------------|---------|
+| USB hard drives | ShowExternalHardDrivesOnDesktop |
+| Thunderbolt drives | ShowExternalHardDrivesOnDesktop |
+| External SSDs | ShowExternalHardDrivesOnDesktop |
+| USB flash drives | ShowRemovableMediaOnDesktop |
+| SD cards | ShowRemovableMediaOnDesktop |
+| Network shares | ShowMountedServersOnDesktop |
+| Disk images (.dmg) | ShowRemovableMediaOnDesktop |
+| Internal drives | ShowHardDrivesOnDesktop |
+
+## Finder Sidebar Alternative
+
+Even with desktop icons disabled, access drives via Finder sidebar:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Finder — Sidebar Locations                             │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Finder → Settings → Sidebar → Show these items:        │
+│                                                         │
+│  Locations                                              │
+│  ☑ [Your Mac Name]                                      │
+│  ☑ Hard disks                                           │
+│  ☑ External disks        ← Ensures sidebar access       │
+│  ☑ CDs, DVDs, and iOS Devices                          │
+│  ☑ Cloud Storage                                        │
+│  ☑ Bonjour computers                                    │
+│  ☑ Connected servers                                    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Drive not appearing | Check if mounted in Disk Utility |
+| Icon appears then disappears | Drive may be auto-ejecting (check Console) |
+| Can't eject drive | Close apps using the drive, try `diskutil eject` |
+| Wrong icon showing | macOS caches icons; restart Finder |
+| Desktop icons disabled | Check System Settings → Desktop & Dock |
+
+## Security Considerations
+
+| Scenario | Recommendation |
+|----------|----------------|
+| Shared workspace | Hide (false) - prevents casual browsing |
+| Personal Mac | Show (true) - convenience |
+| Sensitive data | Hide (false) - less obvious |
+| Quick transfers | Show (true) - easier drag-drop |
+
+## Command Line Drive Access
+
+Even without desktop icons:
+
+```bash
+# List all mounted volumes
+ls /Volumes/
+
+# Open specific drive in Finder
+open /Volumes/Backup\ Drive/
+
+# Eject drive
+diskutil eject /Volumes/Backup\ Drive
+
+# Show disk info
+diskutil info /Volumes/Backup\ Drive
+```
+
+## Compatibility
+
+- **macOS**: 10.4+ (Tiger)
+- **Note**: Requires `killall Finder` to apply
+- **Note**: Per-user setting
+- **Note**: Does not affect sidebar visibility
+
+## Source File
+
+**File**: [`defaults/finder/desktop.sh`](../../../defaults/finder/desktop.sh)
+
+```bash
+run_defaults "com.apple.finder" "ShowExternalHardDrivesOnDesktop" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change Finder settings](https://support.apple.com/guide/mac-help/change-finder-preferences-mchlp1715/mac)
+- [Apple Support: Eject disks](https://support.apple.com/guide/mac-help/eject-disks-and-storage-devices-mchlp1090/mac)
+- [Apple Support: Finder sidebar](https://support.apple.com/guide/mac-help/customize-the-finder-sidebar-mchlp1195/mac)

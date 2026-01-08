@@ -1,0 +1,264 @@
+# GitHub Desktop Usage Tracking
+
+Opt out of anonymous usage data collection.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.github.GitHubClient` |
+| **Key** | `optOutOfUsageTracking` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether GitHub Desktop collects anonymous usage statistics and sends them to GitHub. This telemetry data helps GitHub improve the application by understanding which features are used and how. Opting out prevents any usage data from being collected or transmitted, which may be preferred for privacy reasons or in corporate environments.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Opt out** — No usage data collected |
+| `false` | **Opt in** (default) — Anonymous telemetry sent |
+
+## Visual Demonstration
+
+### With Usage Tracking Enabled (false - default):
+```
+┌─────────────────────────────────────────────────────────┐
+│  GitHub Desktop — Activity                              │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Your Usage (Anonymized):                               │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │  📊 Daily Commits: 15                           │   │
+│  │  🔀 Pull Requests Opened: 3                     │   │
+│  │  📁 Repositories: 12                            │   │
+│  │  ⏱️ Session Duration: 45 min                    │   │
+│  └─────────────────────────────────────────────────┘   │
+│                    │                                    │
+│                    │ Periodically sent                  │
+│                    ▼                                    │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │  🌐 GitHub Telemetry Server                     │   │
+│  │                                                 │   │
+│  │  Receives:                                      │   │
+│  │  • App version                                  │   │
+│  │  • OS version                                   │   │
+│  │  • Feature usage counts                         │   │
+│  │  • Error reports                                │   │
+│  │  • Performance metrics                          │   │
+│  │                                                 │   │
+│  │  Does NOT receive:                              │   │
+│  │  • Code content                                 │   │
+│  │  • Repository names                             │   │
+│  │  • Personal information                         │   │
+│  └─────────────────────────────────────────────────┘   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With Usage Tracking Disabled (true - opt out):
+```
+┌─────────────────────────────────────────────────────────┐
+│  GitHub Desktop — Activity                              │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Your Usage:                                            │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │  📊 Daily Commits: 15                           │   │
+│  │  🔀 Pull Requests Opened: 3                     │   │
+│  │  📁 Repositories: 12                            │   │
+│  │  ⏱️ Session Duration: 45 min                    │   │
+│  └─────────────────────────────────────────────────┘   │
+│                    │                                    │
+│                    ✗ Nothing sent                       │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │  🔒 Privacy Mode                                │   │
+│  │                                                 │   │
+│  │  ✓ No telemetry collected                       │   │
+│  │  ✓ No data transmitted                          │   │
+│  │  ✓ Full functionality retained                  │   │
+│  │                                                 │   │
+│  │  Note: Crash reports may still be sent          │   │
+│  │  separately if enabled                          │   │
+│  └─────────────────────────────────────────────────┘   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Opt out of usage tracking for privacy.
+
+### Why Opt Out?
+
+1. **Privacy** — No usage data leaves your machine
+2. **Corporate policy** — May be required in some workplaces
+3. **Bandwidth** — No background data transmission
+4. **Minimal footprint** — Leaner application behavior
+5. **Personal preference** — Don't contribute telemetry
+
+### Why Stay Opted In?
+
+- Help improve GitHub Desktop
+- Support open source development
+- Data is anonymized
+- Minimal performance impact
+- Default behavior
+
+## What Data Is Collected (When Opted In)
+
+| Data Type | Collected | Purpose |
+|-----------|-----------|---------|
+| App version | ✓ | Feature targeting |
+| OS version | ✓ | Compatibility |
+| Feature usage | ✓ | Product decisions |
+| Error frequency | ✓ | Bug prioritization |
+| Session duration | ✓ | UX improvements |
+| Repository names | ✗ | Never collected |
+| Code content | ✗ | Never collected |
+| Commit messages | ✗ | Never collected |
+| Personal info | ✗ | Never collected |
+
+## Security Implications
+
+| Aspect | With Tracking | Without Tracking |
+|--------|---------------|------------------|
+| **Data transmitted** | Anonymous metrics | None |
+| **Network requests** | Periodic telemetry | Git operations only |
+| **Local storage** | May cache metrics | No metric storage |
+| **Privacy** | GitHub receives usage | Complete privacy |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.github.GitHubClient optOutOfUsageTracking
+
+# Opt out of usage tracking (privacy)
+defaults write com.github.GitHubClient optOutOfUsageTracking -bool true
+
+# Opt in to usage tracking (default)
+defaults write com.github.GitHubClient optOutOfUsageTracking -bool false
+
+# Delete (reset to default - opted in)
+defaults delete com.github.GitHubClient optOutOfUsageTracking
+```
+
+## UI Location
+
+**GitHub Desktop** → **Preferences** (⌘,) → **Advanced** → ☐ **Help GitHub Desktop improve by submitting usage stats**
+
+Unchecking this box has the same effect as setting `optOutOfUsageTracking` to `true`.
+
+## Related Settings
+
+```bash
+# Opt out of usage tracking
+defaults write com.github.GitHubClient optOutOfUsageTracking -bool true
+
+# Shell integration (optional)
+defaults write com.github.GitHubClient installTerminalShell -bool true
+
+# Confirm before discarding changes
+defaults write com.github.GitHubClient confirmDiscardChanges -bool true
+```
+
+## Open Source Transparency
+
+GitHub Desktop is open source. The telemetry implementation is public:
+- [GitHub Desktop Repository](https://github.com/desktop/desktop)
+- Telemetry code is auditable
+- Community can verify data collection
+
+## Comparison with Other Git Clients
+
+| Client | Telemetry | Opt-Out Available |
+|--------|-----------|-------------------|
+| GitHub Desktop | Optional | ✓ Yes |
+| GitKraken | Yes | ✓ Yes |
+| Sourcetree | Yes | ✓ Yes |
+| Tower | Minimal | N/A |
+| Command-line git | None | N/A |
+
+## Corporate/Enterprise Considerations
+
+For enterprise deployments:
+- Can set via MDM/Configuration Profile
+- Respect corporate privacy policies
+- Consider organization-wide defaults
+- May be required by compliance
+
+MDM Configuration:
+```xml
+<key>optOutOfUsageTracking</key>
+<true/>
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Restart GitHub Desktop |
+| Still seeing network activity | May be git sync, not telemetry |
+| Want to verify opt-out | Check Preferences → Advanced |
+| Corporate policy requires opt-out | Set via defaults or MDM |
+
+## Crash Reports vs Usage Stats
+
+| Type | Controlled by This Setting |
+|------|---------------------------|
+| Usage statistics | ✓ Yes |
+| Feature metrics | ✓ Yes |
+| Crash reports | ✗ Separate setting |
+| Error diagnostics | ✗ Separate setting |
+
+Crash reports may have their own opt-out setting.
+
+## Network Behavior
+
+```
+Opted In:
+┌──────────────┐      Telemetry      ┌──────────────┐
+│ GitHub       │─────────────────────▶│ GitHub       │
+│ Desktop      │      (periodic)      │ Analytics    │
+└──────────────┘                      └──────────────┘
+
+Opted Out:
+┌──────────────┐                      ┌──────────────┐
+│ GitHub       │        ✗ None        │ GitHub       │
+│ Desktop      │                      │ Analytics    │
+└──────────────┘                      └──────────────┘
+                    │
+                    │ Only Git operations
+                    ▼
+               ┌──────────────┐
+               │ GitHub API   │
+               │ (for sync)   │
+               └──────────────┘
+```
+
+## Compatibility
+
+- **macOS**: 10.13+ (High Sierra)
+- **GitHub Desktop**: 2.0+
+- **Note**: Requires app restart to fully apply
+- **Note**: Does not affect GitHub.com tracking
+
+## Source File
+
+**File**: [`defaults/applications/github_desktop.sh`](../../../../defaults/applications/github_desktop.sh)
+
+```bash
+run_defaults "com.github.GitHubClient" "optOutOfUsageTracking" "-bool" "true"
+```
+
+## References
+
+- [GitHub Desktop Privacy](https://docs.github.com/en/desktop/installing-and-configuring-github-desktop/configuring-and-customizing-github-desktop/about-github-desktop-telemetry)
+- [GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement)
+- [GitHub Desktop Source Code](https://github.com/desktop/desktop)

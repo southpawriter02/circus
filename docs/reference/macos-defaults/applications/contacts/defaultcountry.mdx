@@ -1,0 +1,251 @@
+# Contacts Default Country
+
+Set the default country for new contact addresses.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AddressBook` |
+| **Key** | `ABDefaultAddressCountryCode` |
+| **Type** | String (ISO 3166-1 alpha-2) |
+| **Default Value** | Based on system region |
+| **Our Setting** | `us` |
+
+## Description
+
+Sets the default country for the address field when creating new contacts or adding addresses to existing contacts. This saves time by pre-selecting the most commonly used country, so you only need to enter street, city, state, and zip code. The value uses ISO 3166-1 alpha-2 country codes (two-letter codes like "us", "gb", "de").
+
+## Values
+
+| Code | Country |
+|------|---------|
+| `us` | United States |
+| `ca` | Canada |
+| `gb` | United Kingdom |
+| `au` | Australia |
+| `de` | Germany |
+| `fr` | France |
+| `jp` | Japan |
+| `cn` | China |
+| (etc.) | Any ISO 3166-1 code |
+
+## Visual Demonstration
+
+### Without Default Country Set:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Contacts — New Contact                                 │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  First: [John              ]                            │
+│  Last:  [Smith             ]                            │
+│                                                         │
+│  + add address                                          │
+│                                                         │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  Street: [                                      ] │  │
+│  │  City:   [                                      ] │  │
+│  │  State:  [                                      ] │  │
+│  │  ZIP:    [                                      ] │  │
+│  │  Country:[  Please select...              ▼    ] │  │
+│  │          │ Afghanistan                        │  │  │
+│  │          │ Albania                            │  │  │
+│  │          │ Algeria                            │  │  │
+│  │          │ ...                                │  │  │
+│  │          │ (scroll through 200+ countries)    │  │  │
+│  └───────────────────────────────────────────────────┘  │
+│                                                         │
+│  Must manually select country each time                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With Default Country Set (us):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Contacts — New Contact                                 │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  First: [John              ]                            │
+│  Last:  [Smith             ]                            │
+│                                                         │
+│  + add address                                          │
+│                                                         │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  Street: [123 Main Street                       ] │  │
+│  │  City:   [San Francisco                         ] │  │
+│  │  State:  [CA                                    ] │  │
+│  │  ZIP:    [94102                                 ] │  │
+│  │  Country:[  United States              ▼       ] │  │
+│  │          ↑                                       │  │
+│  │          Pre-selected! Just enter address        │  │
+│  └───────────────────────────────────────────────────┘  │
+│                                                         │
+│  Country automatically set, saves clicks                │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Address Format by Country:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Address Format Varies by Country                       │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  United States (us):        United Kingdom (gb):        │
+│  ┌─────────────────────┐    ┌─────────────────────┐    │
+│  │ Street              │    │ Street              │    │
+│  │ City, State ZIP     │    │ City                │    │
+│  │ Country             │    │ Post Town           │    │
+│  └─────────────────────┘    │ Postcode            │    │
+│                             │ Country             │    │
+│  Japan (jp):                └─────────────────────┘    │
+│  ┌─────────────────────┐                               │
+│  │ Postal Code         │    Germany (de):              │
+│  │ Prefecture          │    ┌─────────────────────┐    │
+│  │ City                │    │ Street              │    │
+│  │ Street              │    │ PLZ City            │    │
+│  │ Country             │    │ Country             │    │
+│  └─────────────────────┘    └─────────────────────┘    │
+│                                                         │
+│  Contacts adapts form fields to country format          │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `us` — Default to United States addresses.
+
+### Why Set a Default Country?
+
+1. **Time-saving** — Skip country selection
+2. **Consistency** — Most contacts share location
+3. **Efficiency** — Faster data entry
+4. **Format** — Correct address fields shown
+5. **Reduces errors** — Less manual selection
+
+### When to Change Default
+
+- Relocating to another country
+- International business focus
+- Different contact demographics
+- Multi-region workflows
+
+## Common Country Codes
+
+| Code | Country | Format Notes |
+|------|---------|--------------|
+| `us` | United States | Street, City, State ZIP |
+| `ca` | Canada | Street, City, Province Postal |
+| `gb` | United Kingdom | Street, City, Post Town, Postcode |
+| `au` | Australia | Street, City, State Postcode |
+| `de` | Germany | Street, PLZ City |
+| `fr` | France | Street, Code Postal City |
+| `jp` | Japan | Reversed order, Prefecture first |
+| `mx` | Mexico | Street, Colonia, CP City, State |
+| `br` | Brazil | Street, City, State CEP |
+| `in` | India | Street, City, State PIN |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AddressBook ABDefaultAddressCountryCode
+
+# Set to United States
+defaults write com.apple.AddressBook ABDefaultAddressCountryCode -string "us"
+
+# Set to United Kingdom
+defaults write com.apple.AddressBook ABDefaultAddressCountryCode -string "gb"
+
+# Set to Germany
+defaults write com.apple.AddressBook ABDefaultAddressCountryCode -string "de"
+
+# Set to Japan
+defaults write com.apple.AddressBook ABDefaultAddressCountryCode -string "jp"
+
+# Delete (reset to system region)
+defaults delete com.apple.AddressBook ABDefaultAddressCountryCode
+```
+
+## UI Location
+
+**Contacts** → **Settings** (⌘,) → **General** → **Address Format:**
+
+The dropdown shows "Default" which uses this setting, or you can choose a specific country.
+
+## Related Contacts Settings
+
+```bash
+# Default country for addresses
+defaults write com.apple.AddressBook ABDefaultAddressCountryCode -string "us"
+
+# Name sort order (first name first vs last name first)
+defaults write com.apple.AddressBook ABNameSortingFormat -int 0
+
+# Show nickname in contact list
+defaults write com.apple.AddressBook ABShowNickname -bool true
+
+# Include photos in vCards
+defaults write com.apple.AddressBook ABIncludePhotosInVCards -bool true
+
+# Show company as last name
+defaults write com.apple.AddressBook ABShowCompanyAsLastName -bool true
+```
+
+## iCloud Sync Behavior
+
+This setting is:
+- **Local only** — Does not sync via iCloud
+- **Per-device** — Set on each Mac separately
+- **Does not affect** existing addresses
+- **Only affects** new address creation
+
+## Address Validation
+
+Contacts does not validate addresses. The country code:
+- Sets default form fields
+- Formats display appropriately
+- Does not verify address exists
+- Does not lookup ZIP/postal codes
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Wrong country showing | Verify code is correct (lowercase) |
+| No change visible | Create new address to see default |
+| Existing addresses unchanged | Only affects new addresses |
+| Country dropdown empty | Check system region settings |
+
+## ISO 3166-1 Reference
+
+Find your country code:
+- [ISO 3166-1 on Wikipedia](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+- Use **lowercase** two-letter code
+- Examples: `us`, `gb` (not UK), `de`, `jp`
+
+Common mistakes:
+- `UK` → Use `gb` (Great Britain)
+- `EN` → Use `gb` or specific nation
+- Uppercase → Use lowercase
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion)
+- **Contacts.app**: All modern versions
+- **Note**: Only affects new address creation
+- **Note**: Lowercase codes required
+
+## Source File
+
+**File**: [`defaults/applications/contacts.sh`](../../../../defaults/applications/contacts.sh)
+
+```bash
+run_defaults "com.apple.AddressBook" "ABDefaultAddressCountryCode" "-string" "us"
+```
+
+## References
+
+- [Apple Support: Contacts preferences](https://support.apple.com/guide/contacts/change-settings-adrbk25621/mac)
+- [ISO 3166-1 Country Codes](https://www.iso.org/iso-3166-country-codes.html)
+- [Wikipedia: ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)

@@ -1,0 +1,251 @@
+# Terminal Bold Fonts
+
+Control how Terminal renders bold text.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Terminal` |
+| **Key** | `UseBoldFonts` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Terminal.app renders bold text using actual bold font weight or displays it using bright/intense colors instead. When enabled, bold text appears thicker and heavier. When disabled, bold text appears in brighter versions of the standard colors, which is the traditional terminal behavior and may be preferred for certain color schemes.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Use bold fonts** (default) — Bold text rendered with heavier weight |
+| `false` | **Use bright colors** — Bold text shown as bright/intense colors |
+
+## Visual Demonstration
+
+### With Bold Fonts Enabled (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Terminal — bash                                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  $ ls -la                                               │
+│  drwxr-xr-x  12 user  staff   384 Jan  8 10:00 .       │
+│  drwxr-xr-x   5 user  staff   160 Jan  8 09:00 ..      │
+│  -rw-r--r--   1 user  staff  1024 Jan  8 10:00 file.txt│
+│                                                         │
+│  Bold text appearance:                                  │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  Normal text     𝗕𝗼𝗹𝗱 𝘁𝗲𝘅𝘁 (heavier weight)     │  │
+│  │  Same color      Same color, thicker strokes      │  │
+│  └───────────────────────────────────────────────────┘  │
+│                                                         │
+│  $ echo -e "\033[1mThis is bold\033[0m"                │
+│  𝗧𝗵𝗶𝘀 𝗶𝘀 𝗯𝗼𝗹𝗱 ← Actual bold font weight              │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With Bold Fonts Disabled (false):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Terminal — bash                                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  $ ls -la                                               │
+│  drwxr-xr-x  12 user  staff   384 Jan  8 10:00 .       │
+│  drwxr-xr-x   5 user  staff   160 Jan  8 09:00 ..      │
+│  -rw-r--r--   1 user  staff  1024 Jan  8 10:00 file.txt│
+│                                                         │
+│  Bold text appearance:                                  │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  Normal text     BOLD TEXT (brighter color)       │  │
+│  │  Dim gray        Bright white (same weight)       │  │
+│  └───────────────────────────────────────────────────┘  │
+│                                                         │
+│  $ echo -e "\033[1mThis is bold\033[0m"                │
+│  This is bold ← Same weight, brighter color            │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Color Comparison:
+```
+Bold Fonts ON (true):          Bold Fonts OFF (false):
+┌─────────────────────┐        ┌─────────────────────┐
+│ Normal: Hello World │        │ Normal: Hello World │
+│ Bold:   𝗛𝗲𝗹𝗹𝗼 𝗪𝗼𝗿𝗹𝗱 │        │ Bold:   Hello World │
+│         ↑ heavier   │        │         ↑ brighter  │
+└─────────────────────┘        └─────────────────────┘
+
+ANSI Colors with Bold:
+┌─────────────────────────────────────────────────────┐
+│ Bold ON:  Red → 𝗥𝗲𝗱 (bold red, same hue)          │
+│ Bold OFF: Red → Red (bright red, lighter hue)      │
+└─────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Use actual bold fonts for clearer distinction.
+
+### Why Enable Bold Fonts?
+
+1. **Clearer distinction** — Bold is obviously different from normal
+2. **Modern look** — Takes advantage of font weights
+3. **Readability** — Important text stands out
+4. **Consistent** — Works well with any color scheme
+5. **Semantic** — Bold means bold, not bright
+
+### Why Disable Bold Fonts?
+
+- Traditional terminal behavior
+- Color scheme designed for bright-as-bold
+- Font doesn't have good bold weight
+- Prefer color distinction over weight
+- Retro terminal aesthetic
+
+## How ANSI Bold Works
+
+```
+ANSI Escape Sequence: \033[1m
+
+Bold Fonts ON:
+┌───────────────┐
+│ \033[1mText   │ → Renders with bold font weight
+└───────────────┘
+
+Bold Fonts OFF:
+┌───────────────┐
+│ \033[1mText   │ → Renders with bright color (index +8)
+└───────────────┘
+
+Color Index Mapping (Bold OFF):
+Normal colors: 0-7   (black, red, green, yellow, blue, magenta, cyan, white)
+Bright colors: 8-15  (bright versions of above)
+
+Bold text uses bright colors:
+  Red (1) + Bold → Bright Red (9)
+  Blue (4) + Bold → Bright Blue (12)
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Terminal UseBoldFonts
+
+# Enable bold fonts (recommended)
+defaults write com.apple.Terminal UseBoldFonts -bool true
+
+# Disable bold fonts (use bright colors)
+defaults write com.apple.Terminal UseBoldFonts -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Terminal UseBoldFonts
+```
+
+## UI Location
+
+**Terminal** → **Settings** (⌘,) → **Profiles** → [Select Profile] → **Text** → ☑ **Use bold fonts**
+
+This is a per-profile setting in the UI but can be set globally via defaults.
+
+## Testing Bold Text
+
+```bash
+# Test bold rendering in Terminal
+echo -e "Normal text \033[1mBold text\033[0m Normal again"
+
+# Test with colors
+echo -e "\033[31mRed\033[0m \033[1;31mBold Red\033[0m"
+echo -e "\033[32mGreen\033[0m \033[1;32mBold Green\033[0m"
+echo -e "\033[34mBlue\033[0m \033[1;34mBold Blue\033[0m"
+
+# Show all combinations
+for i in {0..7}; do
+  echo -e "\033[3${i}mColor $i\033[0m \033[1;3${i}mBold $i\033[0m"
+done
+```
+
+## Related Terminal Settings
+
+```bash
+# Font anti-aliasing
+defaults write com.apple.Terminal AppleFontSmoothing -int 1
+
+# Secure keyboard entry
+defaults write com.apple.Terminal SecureKeyboardEntry -bool true
+
+# Focus follows mouse
+defaults write com.apple.Terminal FocusFollowsMouse -bool false
+
+# UTF-8 encoding
+defaults write com.apple.Terminal StringEncodings -array 4
+```
+
+## Font Considerations
+
+For best bold rendering:
+- Use fonts with dedicated bold weights (SF Mono, Menlo, Monaco)
+- Monospace fonts designed for terminals
+- Avoid fonts without bold variants
+
+| Font | Bold Support |
+|------|--------------|
+| SF Mono | Excellent |
+| Menlo | Excellent |
+| Monaco | Good |
+| Courier | Fair |
+| System fonts | Varies |
+
+## Shell Prompt Impact
+
+If your PS1/prompt uses bold:
+```bash
+# Bash prompt with bold
+PS1='\[\033[1;32m\]\u@\h\[\033[0m\]:\[\033[1;34m\]\w\[\033[0m\]\$ '
+
+# Bold ON:  username appears in bold green
+# Bold OFF: username appears in bright green (may look washed out)
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Bold looks the same as normal | Check if font has bold variant |
+| Colors look wrong with bold | May need to adjust color scheme |
+| Bold too heavy | Try different font or disable |
+| Setting not applying | Close and reopen Terminal |
+
+## Comparison with iTerm2
+
+| Terminal | Setting | Location |
+|----------|---------|----------|
+| Terminal.app | UseBoldFonts | Profiles → Text |
+| iTerm2 | "Draw bold text in bold font" | Profiles → Text |
+| VS Code Terminal | `terminal.integrated.fontWeightBold` | Settings |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Terminal.app**: All modern versions
+- **Note**: Per-profile setting, defaults affects all profiles
+- **Note**: Immediate effect, no restart needed
+
+## Source File
+
+**File**: [`defaults/applications/terminal.sh`](../../../../defaults/applications/terminal.sh)
+
+```bash
+run_defaults "com.apple.Terminal" "UseBoldFonts" "-bool" "true"
+```
+
+## References
+
+- [Apple Terminal User Guide](https://support.apple.com/guide/terminal/welcome/mac)
+- [ANSI Escape Codes](https://en.wikipedia.org/wiki/ANSI_escape_code)
+- [Terminal Colors](https://unix.stackexchange.com/questions/124407/what-color-codes-can-i-use-in-my-ps1-prompt)

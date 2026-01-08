@@ -1,0 +1,242 @@
+# Music Sound Enhancer
+
+Apply audio processing to add depth and presence.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Music` |
+| **Key** | `soundEnhancerEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Music app applies digital signal processing to enhance audio playback. The Sound Enhancer adds perceived depth and widens the stereo image, making music sound more spacious and immersive through speakers or headphones. However, it modifies the original audio and may not be desired by audiophiles seeking accurate reproduction.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Sound Enhancer on** — Audio processing applied |
+| `false` | **Sound Enhancer off** (default) — Original audio preserved |
+
+## Visual Demonstration
+
+### Without Sound Enhancer (false):
+```
+Audio Signal (Original)
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│    Left      ┌──────────────────┐      Right       │
+│   Speaker    │   Stereo Field   │     Speaker      │
+│     🔊 ◄─────│      Normal      │─────► 🔊         │
+│              │    ┌────────┐    │                  │
+│              │    │ Source │    │                  │
+│              │    └────────┘    │                  │
+│              └──────────────────┘                  │
+│                                                     │
+│   Accurate reproduction of original mix             │
+└─────────────────────────────────────────────────────┘
+```
+
+### With Sound Enhancer (true):
+```
+Audio Signal (Enhanced)
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│  Left     ┌────────────────────────────┐    Right  │
+│ Speaker   │    Expanded Stereo Field   │   Speaker │
+│   🔊 ◄════│══════════════════════════│════► 🔊    │
+│           │    ┌────────────────┐      │           │
+│           │    │     Source     │      │           │
+│           │    │   + Reverb     │      │           │
+│           │    │   + Width      │      │           │
+│           │    └────────────────┘      │           │
+│           └────────────────────────────┘           │
+│                                                     │
+│   Wider, more spacious sound with added depth       │
+└─────────────────────────────────────────────────────┘
+```
+
+### Enhancement Intensity Slider:
+```
+┌────────────────────────────────────────────────────┐
+│  Sound Enhancer                                    │
+│                                                    │
+│  Low ○────────●────────────────○ High             │
+│       Subtle     Moderate     Pronounced          │
+│                                                    │
+│  Low: Gentle widening                              │
+│  High: Dramatic spatial effect                     │
+└────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable Sound Enhancer for accurate playback.
+
+### Why Disable Sound Enhancer?
+
+1. **Audio fidelity** — Preserves original mix
+2. **Audiophile preference** — No coloration
+3. **Lossless audio** — Don't process hi-res files
+4. **Professional use** — Reference listening
+5. **Headphone accuracy** — Natural soundstage
+
+### Why Enable Sound Enhancer?
+
+- Built-in speakers benefit most
+- Makes music feel more immersive
+- Laptop speakers sound fuller
+- Casual listening enhancement
+- Party/ambient background music
+
+## What Sound Enhancer Does
+
+| Processing | Effect |
+|------------|--------|
+| **Stereo widening** | Expands perceived soundstage |
+| **Low-frequency enhancement** | Subtle bass presence boost |
+| **Psychoacoustic processing** | Perceived depth increase |
+| **Phase manipulation** | Creates spacious effect |
+
+## Audio Quality Impact
+
+```
+Original Audio Quality
+        │
+        ▼
+┌───────────────────┐     ┌───────────────────┐
+│   No Enhancer     │     │   With Enhancer   │
+│                   │     │                   │
+│  • Bit-perfect    │     │  • DSP processed  │
+│  • Flat response  │     │  • Colored sound  │
+│  • Original mix   │     │  • Wider stereo   │
+│  • No latency     │     │  • Slight latency │
+└───────────────────┘     └───────────────────┘
+        │                         │
+        ▼                         ▼
+   Reference              Immersive
+   Listening              Experience
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Music soundEnhancerEnabled
+
+# Enable Sound Enhancer
+defaults write com.apple.Music soundEnhancerEnabled -bool true
+
+# Disable Sound Enhancer (default, recommended for quality)
+defaults write com.apple.Music soundEnhancerEnabled -bool false
+
+# Set enhancement intensity (0.0 to 1.0)
+defaults write com.apple.Music soundEnhancerIntensity -float 0.5
+
+# Delete (reset to default)
+defaults delete com.apple.Music soundEnhancerEnabled
+```
+
+## UI Location
+
+**Music** → **Settings** (⌘,) → **Playback** → ☑ **Sound Enhancer**
+
+When enabled, a slider appears to adjust intensity (Low to High).
+
+## Enhancement Intensity
+
+```bash
+# Intensity range: 0.0 (low) to 1.0 (high)
+
+# Subtle enhancement
+defaults write com.apple.Music soundEnhancerIntensity -float 0.25
+
+# Moderate enhancement (recommended if using)
+defaults write com.apple.Music soundEnhancerIntensity -float 0.5
+
+# Maximum enhancement
+defaults write com.apple.Music soundEnhancerIntensity -float 1.0
+```
+
+## Related Audio Settings
+
+```bash
+# Equalizer (separate from Sound Enhancer)
+defaults write com.apple.Music EQEnabled -bool true
+
+# Sound Check (volume normalization)
+defaults write com.apple.Music normalizeVolume -bool true
+
+# Lossless audio
+defaults write com.apple.Music losslessEnabled -bool true
+
+# Dolby Atmos (spatial audio)
+defaults write com.apple.Music dolbyAtmosEnabled -bool true
+```
+
+## Sound Enhancer vs Other Features
+
+| Feature | Purpose | Modifies Audio |
+|---------|---------|----------------|
+| **Sound Enhancer** | Add spatial depth | Yes (DSP) |
+| **Equalizer** | Frequency adjustment | Yes (EQ) |
+| **Sound Check** | Volume normalization | Yes (gain) |
+| **Dolby Atmos** | Spatial audio | Renders mix |
+| **Lossless** | Quality format | No |
+
+## When to Use Sound Enhancer
+
+| Scenario | Recommendation |
+|----------|----------------|
+| MacBook built-in speakers | ✓ Consider enabling |
+| External speakers | ○ Test both options |
+| Quality headphones | ✗ Disable |
+| Audiophile system | ✗ Disable |
+| Casual background music | ✓ Can enhance |
+| Critical listening | ✗ Disable |
+| Lossless hi-res files | ✗ Disable |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Sound too processed | Reduce intensity slider |
+| Effect not noticeable | Increase intensity |
+| Audio sounds artificial | Disable enhancer |
+| Latency issues | Disable enhancer |
+
+## Interaction with Audio Hardware
+
+| Output | Sound Enhancer Effect |
+|--------|----------------------|
+| Built-in speakers | Most noticeable |
+| Basic headphones | Noticeable |
+| Studio monitors | May introduce coloration |
+| DAC + Headphones | Not recommended |
+| AirPods | Works but has own DSP |
+| HomePod | Has own enhancement |
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina, with Music app)
+- **Music.app**: All versions
+- **Note**: Real-time processing, no restart needed
+- **Note**: Does not affect AirPlay output
+
+## Source File
+
+**File**: [`defaults/applications/music.sh`](../../../../defaults/applications/music.sh)
+
+```bash
+run_defaults "com.apple.Music" "soundEnhancerEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Music playback settings](https://support.apple.com/guide/music/change-playback-settings-mus33a1ecd41/mac)
+- [Apple Support: Use the equalizer](https://support.apple.com/guide/music/use-the-equalizer-musadd12ca5/mac)

@@ -1,0 +1,243 @@
+# Photos Delete After Import
+
+Automatically delete photos from device after importing.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Photos` |
+| **Key** | `IPXDefaultsDeleteAfterImport` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Photos automatically deletes photos and videos from a connected device (iPhone, iPad, camera, SD card) after successfully importing them to your Mac. This can help manage storage on your devices but carries risk of data loss if the import fails or if you need the originals on the device.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Delete after import** — Remove from source device |
+| `false` | **Keep originals** (default) — Photos remain on device |
+
+## Visual Demonstration
+
+### With Delete After Import Disabled (false):
+```
+┌──────────────────────────────────────────────────────────┐
+│  📱 iPhone Connected                                     │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│  Import to: [Photos Library           ▼]                 │
+│                                                          │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │  📷 IMG_0001.jpg    ☑    ✓ Imported                │  │
+│  │  📷 IMG_0002.jpg    ☑    ✓ Imported                │  │
+│  │  📷 IMG_0003.jpg    ☑    ✓ Imported                │  │
+│  │  🎬 MOV_0004.mov    ☑    ✓ Imported                │  │
+│  └────────────────────────────────────────────────────┘  │
+│                                                          │
+│  Status: 4 items imported                                │
+│                                                          │
+│  ┌─────────────────────────────────────────────────────┐ │
+│  │ ✓ Photos remain on iPhone                           │ │
+│  │   Delete manually when ready                        │ │
+│  └─────────────────────────────────────────────────────┘ │
+│                                                          │
+│          [Import All New Items]                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+### With Delete After Import Enabled (true):
+```
+┌──────────────────────────────────────────────────────────┐
+│  📱 iPhone Connected                                     │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│  Import to: [Photos Library           ▼]                 │
+│                                                          │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │  📷 IMG_0001.jpg    ☑    ✓ Imported → 🗑️ Deleted   │  │
+│  │  📷 IMG_0002.jpg    ☑    ✓ Imported → 🗑️ Deleted   │  │
+│  │  📷 IMG_0003.jpg    ☑    ✓ Imported → 🗑️ Deleted   │  │
+│  │  🎬 MOV_0004.mov    ☑    ✓ Imported → 🗑️ Deleted   │  │
+│  └────────────────────────────────────────────────────┘  │
+│                                                          │
+│  ⚠️  Status: 4 items imported and DELETED from device   │
+│                                                          │
+│  ┌─────────────────────────────────────────────────────┐ │
+│  │ ⚠️ Delete After Import is ON                        │ │
+│  │   Photos will be removed from iPhone after import   │ │
+│  └─────────────────────────────────────────────────────┘ │
+│                                                          │
+│          [Import All New Items]                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Keep originals on device after import.
+
+### Why Keep Originals (Disable)?
+
+1. **Data safety** — Backup before deleting
+2. **Import verification** — Check photos imported correctly
+3. **Multiple backups** — Keep copies in multiple places
+4. **Selective deletion** — Choose what to delete manually
+5. **Avoid accidents** — Prevent unintended data loss
+
+### Why Delete After Import?
+
+- Free up device storage immediately
+- Automated workflow
+- Trust import process
+- Device storage is limited
+- Regular import routine
+
+## Security Implications
+
+| Risk | Mitigation |
+|------|------------|
+| **Failed import** | Photos deleted but not imported properly |
+| **Corrupted files** | Originals lost if corruption during transfer |
+| **Wrong library** | Photos may go to unexpected location |
+| **No device backup** | Only copy may be on device |
+
+### Safe Import Workflow
+
+```
+Recommended Process (Delete After Import OFF):
+
+1. Connect Device
+       │
+       ▼
+2. Import to Photos
+       │
+       ▼
+3. Verify Import ←── Check all photos visible
+       │
+       ▼
+4. Backup Photos Library ←── Time Machine / iCloud
+       │
+       ▼
+5. Manually Delete from Device ←── Only after verification
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Photos IPXDefaultsDeleteAfterImport
+
+# Disable delete after import (safe, recommended)
+defaults write com.apple.Photos IPXDefaultsDeleteAfterImport -bool false
+
+# Enable delete after import (use with caution)
+defaults write com.apple.Photos IPXDefaultsDeleteAfterImport -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.Photos IPXDefaultsDeleteAfterImport
+```
+
+## UI Location
+
+**Photos** → **Settings** (⌘,) → **General** → ☑ **Delete items after import**
+
+This checkbox appears in the import preferences section.
+
+## Import Workflow Options
+
+```bash
+# Don't auto-open Photos when device connects
+defaults write com.apple.Photos IPXDefaultsOpenPhotosForRDevice -bool false
+
+# Don't delete after import
+defaults write com.apple.Photos IPXDefaultsDeleteAfterImport -bool false
+
+# Show hidden album
+defaults write com.apple.Photos IPXShowHiddenAlbum -bool true
+```
+
+## Related Settings
+
+```bash
+# Disable auto-open Photos when camera/device connects
+defaults write com.apple.Photos IPXDefaultsOpenPhotosForRDevice -bool false
+
+# Image Capture: Set import destination
+# (Alternative to Photos app for imports)
+defaults write com.apple.ImageCapture disableHotPlug -bool true
+```
+
+## Device Types Affected
+
+| Device | Delete After Import Applies |
+|--------|----------------------------|
+| iPhone | ✓ Yes |
+| iPad | ✓ Yes |
+| Digital cameras | ✓ Yes |
+| SD cards | ✓ Yes |
+| USB drives | ✓ Yes |
+| Android devices | Varies by connection type |
+
+## iCloud Photos Interaction
+
+| Photos Setting | Delete Behavior |
+|----------------|-----------------|
+| iCloud Photos ON | Device photos likely in iCloud anyway |
+| iCloud Photos OFF | Deleting removes only local copy |
+| Optimize Storage | Full-res may only be on device |
+
+When iCloud Photos is enabled, this setting is less risky since photos sync to iCloud before import.
+
+## Alternative: Image Capture
+
+For more control over imports:
+1. Open **Image Capture** (in /Applications/Utilities)
+2. Connect device
+3. Import selected photos
+4. Choose whether to delete manually
+
+Image Capture doesn't use this Photos preference.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Photos missing after import | Check Photos library, Recently Deleted |
+| Setting not working | Ensure Photos is set as import app |
+| Want to undo deletion | Check device's Recently Deleted album |
+| Import failed but deleted | Recover from device Recently Deleted |
+
+## Recovery Options
+
+If photos were deleted unexpectedly:
+
+1. **iPhone/iPad Recently Deleted**: Photos app → Albums → Recently Deleted (30 days)
+2. **iCloud Photos**: Photos should sync back
+3. **Time Machine**: Restore Photos library
+4. **Device backup**: Restore from iCloud/iTunes backup
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite, with Photos app)
+- **Photos.app**: All versions
+- **Devices**: iOS 8+, digital cameras, SD cards
+- **Note**: Takes effect on next import
+
+## Source File
+
+**File**: [`defaults/applications/photos.sh`](../../../../defaults/applications/photos.sh)
+
+```bash
+run_defaults "com.apple.Photos" "IPXDefaultsDeleteAfterImport" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Import photos](https://support.apple.com/guide/photos/import-photos-and-videos-pht6d60d10f/mac)
+- [Apple Support: Delete photos from device](https://support.apple.com/guide/photos/delete-photos-and-videos-pht6d60b524/mac)
+- [Apple Support: iCloud Photos](https://support.apple.com/en-us/HT204264)

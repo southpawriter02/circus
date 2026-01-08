@@ -1,0 +1,263 @@
+# Xcode Simulator Device Bezels
+
+Show device frame around iOS Simulator windows.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `ShowDeviceBezels` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the iOS Simulator displays a realistic device frame (bezel) around the simulated screen, making the simulator window look like an actual iPhone or iPad. While visually appealing, bezels increase window size and consume more screen space. Disabling bezels shows just the device screen, which is more practical for development.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show bezels** (default) — Device frame visible |
+| `false` | **Hide bezels** — Screen only, no frame |
+
+## Visual Demonstration
+
+### With Device Bezels Enabled (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  iOS Simulator — iPhone 15 Pro                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│      ╭─────────────────────────────────────╮            │
+│      │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │ ← Notch    │
+│      │ ▓┌───────────────────────────────┐▓ │            │
+│      │ ▓│                               │▓ │            │
+│      │ ▓│                               │▓ │            │
+│      │ ▓│        App Content            │▓ │            │
+│      │ ▓│                               │▓ │ ← Bezels   │
+│      │ ▓│                               │▓ │   (frame)  │
+│      │ ▓│                               │▓ │            │
+│      │ ▓│                               │▓ │            │
+│      │ ▓└───────────────────────────────┘▓ │            │
+│      │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │            │
+│      │ ▓▓▓▓▓▓▓▓▓ ───── ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │ ← Home bar │
+│      ╰─────────────────────────────────────╯            │
+│                                                         │
+│  Large window, realistic device appearance              │
+│  Takes more screen space                                │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Without Device Bezels (false):
+```
+┌─────────────────────────────────────────────────────────┐
+│  iOS Simulator — iPhone 15 Pro                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│      ┌───────────────────────────────────┐              │
+│      │                                   │              │
+│      │                                   │              │
+│      │                                   │              │
+│      │         App Content               │              │
+│      │                                   │              │
+│      │                                   │              │
+│      │                                   │              │
+│      │                                   │              │
+│      │                                   │              │
+│      │                                   │              │
+│      │ ─────────────────────────────── │ ← Home bar   │
+│      └───────────────────────────────────┘              │
+│                                                         │
+│  Compact window, screen content only                    │
+│  More efficient use of screen space                     │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Screen Space Comparison:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Developer Workspace with Xcode + Simulator             │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  WITH BEZELS:                                           │
+│  ┌────────────────────┬──────────────────────────────┐  │
+│  │                    │  ╭─────────────────────╮     │  │
+│  │                    │  │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │     │  │
+│  │   Xcode Editor     │  │ ▓┌───────────────┐▓ │     │  │
+│  │   (limited width)  │  │ ▓│   App        │▓ │     │  │
+│  │                    │  │ ▓└───────────────┘▓ │     │  │
+│  │                    │  │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │     │  │
+│  │                    │  ╰─────────────────────╯     │  │
+│  └────────────────────┴──────────────────────────────┘  │
+│                                                         │
+│  WITHOUT BEZELS:                                        │
+│  ┌───────────────────────────────┬───────────────────┐  │
+│  │                               │ ┌───────────────┐ │  │
+│  │                               │ │               │ │  │
+│  │   Xcode Editor                │ │    App        │ │  │
+│  │   (more room!)                │ │               │ │  │
+│  │                               │ └───────────────┘ │  │
+│  │                               │                   │  │
+│  └───────────────────────────────┴───────────────────┘  │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Hide bezels for more efficient workspace.
+
+### Why Hide Bezels?
+
+1. **Screen space** — Compact simulator window
+2. **Development focus** — Content matters, not device shape
+3. **Multi-device testing** — Fit more simulators on screen
+4. **Performance** — Slightly lighter rendering
+5. **Professional** — Clean development environment
+
+### Why Show Bezels?
+
+- Client demos/presentations
+- Screenshot for marketing
+- Testing device-specific UI (notch, Dynamic Island)
+- Realistic user experience preview
+- App Store screenshot creation
+
+## Bezel-Aware Development
+
+Even with bezels hidden, consider:
+- **Safe areas** — Still respected in app
+- **Notch/Dynamic Island** — Status bar adapts
+- **Home indicator** — Bottom padding maintained
+- **Device corners** — Rounded in SwiftUI
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dt.Xcode ShowDeviceBezels
+
+# Hide bezels (compact simulator)
+defaults write com.apple.dt.Xcode ShowDeviceBezels -bool false
+
+# Show bezels (realistic device appearance)
+defaults write com.apple.dt.Xcode ShowDeviceBezels -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.dt.Xcode ShowDeviceBezels
+```
+
+## UI Location
+
+**Simulator** → **Window** → ☐ **Show Device Bezels**
+
+Or use keyboard shortcut: **⌘⇧B** (in Simulator)
+
+This toggles bezels for the current simulator. The defaults setting affects new simulators.
+
+## Related Xcode/Simulator Settings
+
+```bash
+# Show device bezels
+defaults write com.apple.dt.Xcode ShowDeviceBezels -bool false
+
+# Show build duration in toolbar
+defaults write com.apple.dt.Xcode ShowBuildOperationDuration -bool true
+
+# Show line numbers
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool true
+
+# Trim trailing whitespace
+defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool true
+
+# Continue building after errors
+defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool true
+```
+
+## Simulator Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘⇧B | Toggle bezels |
+| ⌘1/2/3 | Scale simulator (50%/100%/Fit) |
+| ⌘⇧H | Home button |
+| ⌘L | Lock device |
+| ⌘K | Toggle keyboard |
+| ⌘⇧K | Toggle software keyboard |
+
+## Multiple Simulators
+
+With bezels hidden, you can:
+```
+┌────────────────────────────────────────────────────────┐
+│  Testing Multiple Devices                              │
+├────────────────────────────────────────────────────────┤
+│                                                        │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐      │
+│  │ iPhone  │ │ iPhone  │ │ iPhone  │ │ iPad    │      │
+│  │ SE      │ │ 15      │ │ 15 Pro  │ │ mini    │      │
+│  │         │ │         │ │ Max     │ │         │      │
+│  │         │ │         │ │         │ │         │      │
+│  └─────────┘ └─────────┘ └─────────┘ └─────────┘      │
+│                                                        │
+│  Four simulators fit comfortably without bezels        │
+└────────────────────────────────────────────────────────┘
+```
+
+## Screenshots Consideration
+
+| Purpose | Bezel Recommendation |
+|---------|---------------------|
+| Development/debugging | Off (save space) |
+| App Store screenshots | Off (add device in marketing) |
+| Client presentations | On (realistic preview) |
+| Documentation | Depends on context |
+
+For App Store, Apple recommends using Screenshot tools that add device frames rather than simulator bezels.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Bezels still showing | Toggle via Window menu or ⌘⇧B |
+| Setting not persisting | Check if set at Xcode or Simulator level |
+| Different per simulator | Setting is per-simulator instance |
+| Want bezels for one device | Toggle individually via menu |
+
+## Physical Accuracy
+
+Bezels show:
+- Device color/finish
+- Physical buttons (side, Face ID sensors)
+- Notch/Dynamic Island shape
+- Rounded corners
+- Home indicator area
+
+Hidden bezels still respect:
+- Screen resolution
+- Safe areas
+- Status bar space
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina)
+- **Xcode**: 11.0+
+- **Simulator**: Included with Xcode
+- **Note**: Per-simulator toggle also available
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../defaults/applications/xcode.sh)
+
+```bash
+run_defaults "com.apple.dt.Xcode" "ShowDeviceBezels" "-bool" "false"
+```
+
+## References
+
+- [Apple Developer: Simulator Help](https://help.apple.com/simulator/mac/current/)
+- [Apple Developer: Running Your App in Simulator](https://developer.apple.com/documentation/xcode/running-your-app-in-simulator)
+- [Apple Human Interface Guidelines: Device Screens](https://developer.apple.com/design/human-interface-guidelines/layout)

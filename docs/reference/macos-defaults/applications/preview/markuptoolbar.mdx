@@ -1,0 +1,255 @@
+# Preview Markup Toolbar Auto-Show
+
+Automatically display the Markup toolbar when opening documents.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Preview` |
+| **Key** | `PVShowMarkupToolbarForNewDocuments` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Preview automatically shows the Markup toolbar when opening images or PDFs. The Markup toolbar provides quick access to annotation tools like shapes, text, signatures, and highlighting. When disabled, you access the toolbar via View menu or ⌘⇧A when needed.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show toolbar automatically** — Markup tools always visible |
+| `false` | **Hide toolbar** (default) — Clean view, show on demand |
+
+## Visual Demonstration
+
+### Without Auto-Show Markup Toolbar (false):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Preview — document.pdf                    ⊖ ⊕ ⊗        │
+├─────────────────────────────────────────────────────────┤
+│  ◀ ▶  │  Page 1 of 5  │  [  🔍  ]  │  □ ⊞              │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│                                                         │
+│                                                         │
+│           ┌─────────────────────────────┐               │
+│           │                             │               │
+│           │     Document Content        │               │
+│           │                             │               │
+│           │     Clean, uncluttered      │               │
+│           │     viewing experience      │               │
+│           │                             │               │
+│           └─────────────────────────────┘               │
+│                                                         │
+│                                                         │
+│  Maximum document viewing space                         │
+│  Press ⌘⇧A to show Markup when needed                  │
+└─────────────────────────────────────────────────────────┘
+```
+
+### With Auto-Show Markup Toolbar (true):
+```
+┌─────────────────────────────────────────────────────────┐
+│  Preview — document.pdf                    ⊖ ⊕ ⊗        │
+├─────────────────────────────────────────────────────────┤
+│  ◀ ▶  │  Page 1 of 5  │  [  🔍  ]  │  □ ⊞              │
+├─────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────┐│
+│  │ ✏️ │ T │ ▢ │ ○ │ → │ ✓ │ ⬚ │ 🎨│ ⁝ │ Markup Toolbar ││
+│  │ Draw│Text│Shape│  │Line│Sign│Crop│Color│More│        ││
+│  └─────────────────────────────────────────────────────┘│
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│           ┌─────────────────────────────┐               │
+│           │                             │               │
+│           │     Document Content        │               │
+│           │                             │               │
+│           │     Slightly less space     │               │
+│           │     but tools ready         │               │
+│           │                             │               │
+│           └─────────────────────────────┘               │
+│                                                         │
+│  Annotation tools immediately accessible                │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Markup Toolbar Tools:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Markup Toolbar                                         │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌────┬────┬────┬────┬────┬────┬────┬────┬────┐        │
+│  │ ✏️ │ T  │ ▢  │ ○  │ →  │ ✓  │ ⬚  │ 🎨 │ ⋮  │        │
+│  └────┴────┴────┴────┴────┴────┴────┴────┴────┘        │
+│    │    │    │    │    │    │    │    │                 │
+│    │    │    │    │    │    │    │    └─ More options   │
+│    │    │    │    │    │    │    └───── Color picker    │
+│    │    │    │    │    │    └────────── Crop tool       │
+│    │    │    │    │    └─────────────── Signature       │
+│    │    │    │    └──────────────────── Line/Arrow      │
+│    │    │    └───────────────────────── Shapes          │
+│    │    └────────────────────────────── Text box        │
+│    └─────────────────────────────────── Sketch/Draw     │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Show Markup toolbar only when needed.
+
+### Why Hide Markup Toolbar (Default)?
+
+1. **Clean view** — Maximum reading space
+2. **On-demand** — Show only when annotating
+3. **Distraction-free** — Focus on content
+4. **Quick access** — ⌘⇧A when needed
+5. **Professional** — Clean document viewing
+
+### Why Show Markup Toolbar?
+
+- Frequent annotation work
+- PDF review/markup workflow
+- Form filling regularly
+- Image editing tasks
+- One-click tool access
+
+## Markup Tools Available
+
+| Tool | Purpose | Shortcut |
+|------|---------|----------|
+| Sketch | Freehand drawing | Click and drag |
+| Text | Add text boxes | T |
+| Shapes | Rectangle, oval, etc. | Various |
+| Arrow/Line | Point to elements | Click and drag |
+| Signature | Add saved signature | Click |
+| Crop | Crop images | C |
+| Color | Change annotation color | Click |
+| Highlight | Highlight text (PDFs) | ⌘⌃H |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Preview PVShowMarkupToolbarForNewDocuments
+
+# Auto-show Markup toolbar
+defaults write com.apple.Preview PVShowMarkupToolbarForNewDocuments -bool true
+
+# Hide Markup toolbar by default (default)
+defaults write com.apple.Preview PVShowMarkupToolbarForNewDocuments -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Preview PVShowMarkupToolbarForNewDocuments
+```
+
+## UI Location
+
+**View** → ☑ **Show Markup Toolbar** (toggles for current document)
+
+Or keyboard shortcut: **⌘⇧A**
+
+The setting controls whether it's shown automatically for new documents.
+
+## Related Preview Settings
+
+```bash
+# Show Markup toolbar automatically
+defaults write com.apple.Preview PVShowMarkupToolbarForNewDocuments -bool false
+
+# PDF display mode (single, continuous, etc.)
+defaults write com.apple.Preview PVPDFDisplayMode -int 2
+
+# Remember current page
+defaults write com.apple.Preview PVPDFRememberCurrentPage -bool true
+
+# Sidebar view mode
+defaults write com.apple.Preview PVSidebarViewMode -int 1
+
+# Anti-alias images
+defaults write com.apple.Preview PVAntiAliasImages -bool true
+```
+
+## Common Workflows
+
+| Workflow | Toolbar Recommendation |
+|----------|----------------------|
+| Reading PDFs | Hide (false) |
+| Reviewing documents | Show (true) |
+| Signing forms | Show (true) |
+| Viewing photos | Hide (false) |
+| Screenshot annotation | Show (true) |
+| Casual viewing | Hide (false) |
+
+## Accessing Markup Without Toolbar
+
+Even with toolbar hidden, access markup via:
+- **⌘⇧A** — Toggle Markup toolbar
+- **Tools** menu → **Annotate** submenu
+- **View** menu → **Show Markup Toolbar**
+- Right-click → Markup options
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘⇧A | Toggle Markup Toolbar |
+| ⌘⌃H | Highlight (PDFs) |
+| ⌘⌃U | Underline (PDFs) |
+| ⌘⌃S | Strikethrough (PDFs) |
+| ⌥⌘I | Inspector |
+
+## Per-Document vs Global
+
+| Level | Description |
+|-------|-------------|
+| **Global (this setting)** | Affects all new documents |
+| **Per-document** | Manual toggle affects current document only |
+
+Manually showing/hiding doesn't change the default for new documents.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Toolbar not showing | Press ⌘⇧A or check View menu |
+| Setting not applying | Close and reopen Preview |
+| Tools grayed out | Check if document supports markup |
+| Signature not available | Add signature in preferences first |
+
+## Image vs PDF Markup
+
+| Feature | Images | PDFs |
+|---------|--------|------|
+| Draw/sketch | ✓ | ✓ |
+| Text boxes | ✓ | ✓ |
+| Shapes | ✓ | ✓ |
+| Highlight text | ✗ | ✓ |
+| Underline/strike | ✗ | ✓ |
+| Notes | ✗ | ✓ |
+| Crop | ✓ | ✗ (use trim) |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Preview.app**: All modern versions
+- **Note**: Affects new document windows
+- **Note**: Takes effect immediately for new documents
+
+## Source File
+
+**File**: [`defaults/applications/preview.sh`](../../../../defaults/applications/preview.sh)
+
+```bash
+run_defaults "com.apple.Preview" "PVShowMarkupToolbarForNewDocuments" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Markup in Preview](https://support.apple.com/guide/preview/annotate-an-image-prvw1501/mac)
+- [Apple Support: Fill out PDF forms](https://support.apple.com/guide/preview/fill-out-a-pdf-form-prvw35725/mac)
+- [Apple Support: Sign documents](https://support.apple.com/guide/preview/add-your-signature-to-a-pdf-prvw35726/mac)

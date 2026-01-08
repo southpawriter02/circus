@@ -1,0 +1,285 @@
+# Accessibility Zoom with Scroll Wheel
+
+Use scroll gesture with modifier keys to zoom the screen.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `closeViewScrollWheelToggle` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables screen zooming using scroll gestures combined with a modifier key (typically Control). When enabled, holding the modifier key while scrolling magnifies the entire screen, making content larger and easier to see. This accessibility feature is useful for users with visual impairments, designers reviewing fine details, or anyone who occasionally needs to magnify screen content.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enable scroll zoom** — Hold modifier + scroll to zoom |
+| `false` | **Disable scroll zoom** (default) — Standard scrolling only |
+
+## Visual Demonstration
+
+### Normal View (No Zoom):
+```
+┌─────────────────────────────────────────────────────────┐
+│  macOS Desktop                                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Document.pdf                                   │    │
+│  │  ┌───────────────────────────────────────────┐  │    │
+│  │  │ Lorem ipsum dolor sit amet, consectetur   │  │    │
+│  │  │ adipiscing elit. Sed do eiusmod tempor    │  │    │
+│  │  │ incididunt ut labore et dolore magna      │  │    │
+│  │  │ aliqua. Ut enim ad minim veniam, quis     │  │    │
+│  │  │ nostrud exercitation ullamco laboris.     │  │    │
+│  │  └───────────────────────────────────────────┘  │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Normal 100% view - all content visible                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Zoomed View (Control + Scroll Up):
+```
+┌─────────────────────────────────────────────────────────┐
+│  macOS Desktop — ZOOMED (200%)                          │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │                                                 │    │
+│  │    Lorem ipsum dolor                            │    │
+│  │    sit amet, consect                            │    │
+│  │    etur adipiscing                              │    │
+│  │                                                 │    │
+│  │         ↑                                       │    │
+│  │    Text is larger                               │    │
+│  │    Screen shows less                            │    │
+│  │                                                 │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+│  Control + Scroll Up = Zoom In                          │
+│  Control + Scroll Down = Zoom Out                       │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Zoom Levels:
+```
+┌─────────────────────────────────────────────────────────┐
+│  Screen Zoom Levels                                     │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  100% (Normal)         200% (Zoomed)      400% (Max)   │
+│  ┌───────────────┐    ┌───────────────┐  ┌───────────┐ │
+│  │ Full desktop  │    │   Partial     │  │  Pixel    │ │
+│  │ visible       │    │   view        │  │  level    │ │
+│  │ Small text    │    │   Larger      │  │  detail   │ │
+│  │               │    │   text        │  │           │ │
+│  └───────────────┘    └───────────────┘  └───────────┘ │
+│                                                         │
+│  ⌃ + Scroll Up ──────────────────────────────────────> │
+│  <────────────────────────────────────── ⌃ + Scroll Dn │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable scroll wheel zoom for quick magnification.
+
+### Why Enable Scroll Zoom?
+
+1. **Accessibility** — Magnify content when needed
+2. **Design work** — Inspect fine details
+3. **Presentations** — Zoom for audience visibility
+4. **Eye strain** — Temporarily enlarge small text
+5. **Pixel inspection** — Check image/icon details
+
+### Why Disable Scroll Zoom?
+
+- Accidental zoom triggers
+- Conflict with other shortcuts
+- Prefer keyboard-only zoom
+- System performance concerns
+- Don't need magnification
+
+## Modifier Key Options
+
+The modifier key can be configured:
+
+| Modifier | Setting Value |
+|----------|---------------|
+| Control (⌃) | `262144` (default) |
+| Option (⌥) | `524288` |
+| Command (⌘) | `1048576` |
+| Control + Option | `786432` |
+
+```bash
+# Set modifier to Option key
+defaults write com.apple.universalaccess closeViewScrollWheelModifiersInt -int 524288
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess closeViewScrollWheelToggle
+
+# Enable scroll wheel zoom
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+# Disable scroll wheel zoom
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool false
+
+# Set modifier key (Control = 262144)
+defaults write com.apple.universalaccess closeViewScrollWheelModifiersInt -int 262144
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess closeViewScrollWheelToggle
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Zoom** → ☑ **Use scroll gesture with modifier keys to zoom**
+
+Then select modifier key from dropdown below the checkbox.
+
+## Related Zoom Settings
+
+```bash
+# Enable scroll wheel zoom (this setting)
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+# Set zoom modifier key (Control)
+defaults write com.apple.universalaccess closeViewScrollWheelModifiersInt -int 262144
+
+# Zoom style: 0=fullscreen, 1=split-screen, 2=picture-in-picture
+defaults write com.apple.universalaccess closeViewZoomMode -int 0
+
+# Smooth zooming
+defaults write com.apple.universalaccess closeViewSmoothImages -bool true
+
+# Maximum zoom level (1.0 to 40.0)
+defaults write com.apple.universalaccess closeViewMaxZoom -float 5.0
+
+# Minimum zoom level
+defaults write com.apple.universalaccess closeViewMinZoom -float 1.0
+
+# Enable keyboard shortcuts for zoom
+defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool true
+```
+
+## Zoom Styles
+
+| Style | Description | Best For |
+|-------|-------------|----------|
+| Full screen | Entire screen magnified | General use |
+| Split screen | Zoomed view in portion | Reference + detail |
+| Picture-in-picture | Small magnified window | Following cursor |
+
+```bash
+# Full screen zoom
+defaults write com.apple.universalaccess closeViewZoomMode -int 0
+
+# Split screen zoom
+defaults write com.apple.universalaccess closeViewZoomMode -int 1
+
+# Picture-in-picture zoom
+defaults write com.apple.universalaccess closeViewZoomMode -int 2
+```
+
+## Keyboard Shortcuts
+
+Even with scroll zoom enabled, keyboard shortcuts work:
+
+| Shortcut | Action |
+|----------|--------|
+| ⌥⌘= | Zoom in |
+| ⌥⌘- | Zoom out |
+| ⌥⌘8 | Toggle zoom on/off |
+| ⌥⌘\ | Toggle smooth images |
+
+Enable in: **Accessibility** → **Zoom** → **Use keyboard shortcuts to zoom**
+
+## Trackpad Gesture Alternative
+
+For trackpad users:
+
+```bash
+# Enable trackpad zoom gesture (double-tap with three fingers)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDoubleTapGesture -int 2
+
+# Or pinch to zoom (requires specific apps)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadPinchGesture -int 1
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Zoom not working | Verify setting enabled in System Settings |
+| Wrong modifier key | Check closeViewScrollWheelModifiersInt value |
+| Zoom too sensitive | Adjust scroll speed in trackpad/mouse settings |
+| Can't zoom out fully | Check closeViewMinZoom is set to 1.0 |
+| Performance issues | Disable smooth images or reduce max zoom |
+
+## Performance Considerations
+
+| Setting | Impact |
+|---------|--------|
+| Smooth images ON | Better quality, more GPU usage |
+| Smooth images OFF | Pixelated at high zoom, faster |
+| High max zoom | More memory usage |
+| Full screen mode | Higher GPU usage than PIP |
+
+## Common Use Cases
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  When to Use Screen Zoom                                │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  👁️ Visual Accessibility                                │
+│     Make small text readable without changing fonts     │
+│                                                         │
+│  🎨 Design Review                                       │
+│     Inspect pixel-level details, alignment, colors      │
+│                                                         │
+│  📊 Presentations                                       │
+│     Zoom to highlight specific content for audience     │
+│                                                         │
+│  🐛 Debugging                                           │
+│     Examine UI elements, spacing, borders               │
+│                                                         │
+│  📸 Screenshots                                         │
+│     Capture magnified detail shots                      │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion)
+- **Note**: Works with mouse scroll wheel or trackpad
+- **Note**: May require logout/restart to take effect
+- **Note**: Works alongside other accessibility features
+
+## Source File
+
+**File**: [`defaults/accessibility/zoom.sh`](../../defaults/accessibility/zoom.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "closeViewScrollWheelToggle" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Zoom in on the Mac screen](https://support.apple.com/guide/mac-help/zoom-in-on-the-screen-mh35715/mac)
+- [Apple Support: Accessibility features](https://support.apple.com/guide/mac-help/accessibility-features-mh35884/mac)
+- [Apple Accessibility: Vision](https://www.apple.com/accessibility/vision/)

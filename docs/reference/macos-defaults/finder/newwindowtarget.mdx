@@ -1,0 +1,254 @@
+# Finder New Window Target Path
+
+Set the default folder for new Finder windows.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `NewWindowTargetPath` |
+| **Type** | String (file:// URL) |
+| **Default Value** | `file:///System/Library/CoreServices/Finder.app/Contents/Resources/MyLibraries/myDocuments.cannedSearch/` |
+| **Our Setting** | `file://${HOME}/` |
+
+## Description
+
+Specifies the exact folder path that opens when you create a new Finder window (⌘N) or click the Finder icon in the Dock. This works in conjunction with `NewWindowTarget` to provide precise control over your default Finder location. Setting this to your home folder provides quick access to your personal files.
+
+## Values
+
+| Value | Location |
+|-------|----------|
+| `file://${HOME}/` | Home folder (~) |
+| `file://${HOME}/Desktop/` | Desktop |
+| `file://${HOME}/Documents/` | Documents folder |
+| `file://${HOME}/Downloads/` | Downloads folder |
+| `file:///` | Computer (root) |
+| `file:///Applications/` | Applications folder |
+| `file:///Users/` | Users folder |
+| Custom path | Any valid folder as file:// URL |
+
+## Visual Demonstration
+
+### Default Setting (Recents):
+```
+┌─────────────────────────────────────────────────────────┐
+│  ⌘N → New Finder Window                                 │
+├─────────────────────────────────────────────────────────┤
+│  ◀ ▶  Recents                           🔍 Search      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   📄 Document.pdf          Today                        │
+│   📸 Screenshot.png        Today                        │
+│   📝 Notes.txt             Yesterday                    │
+│   📦 Archive.zip           Last Week                    │
+│                                                         │
+│   Smart folder showing recently accessed files          │
+│   (May be slow with many files)                         │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Home Folder Setting:
+```
+┌─────────────────────────────────────────────────────────┐
+│  ⌘N → New Finder Window                                 │
+├─────────────────────────────────────────────────────────┤
+│  ◀ ▶  username                          🔍 Search      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   📁 Applications                                       │
+│   📁 Desktop                                            │
+│   📁 Documents                                          │
+│   📁 Downloads                                          │
+│   📁 Library                                            │
+│   📁 Movies                                             │
+│   📁 Music                                              │
+│   📁 Pictures                                           │
+│   📁 Public                                             │
+│                                                         │
+│   Direct access to all personal folders                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Developer-Friendly (Projects folder):
+```
+┌─────────────────────────────────────────────────────────┐
+│  ⌘N → New Finder Window                                 │
+├─────────────────────────────────────────────────────────┤
+│  ◀ ▶  Projects                          🔍 Search      │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   📁 client-website                                     │
+│   📁 mobile-app                                         │
+│   📁 api-server                                         │
+│   📁 dotfiles                                           │
+│   📁 scripts                                            │
+│                                                         │
+│   Instant access to development projects                │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `file://${HOME}/` — Open home folder in new windows.
+
+### Why Use Home Folder?
+
+1. **Central hub** — Access all personal folders
+2. **Fast navigation** — One click to any location
+3. **Predictable** — Always know where you start
+4. **Developer-friendly** — Quick access to dotfiles
+5. **Performance** — Faster than Recents search
+
+### Why Use Other Locations?
+
+| Location | Best For |
+|----------|----------|
+| Desktop | Quick file access, active projects |
+| Documents | Document-centric workflows |
+| Downloads | Frequent download management |
+| Projects folder | Developers |
+| Recents | Finding recent files (default) |
+
+## Related Setting: NewWindowTarget
+
+This setting works with `NewWindowTarget`:
+
+```bash
+# NewWindowTarget controls the type
+# NewWindowTargetPath specifies the exact path
+
+# For custom path:
+defaults write com.apple.finder NewWindowTarget -string "PfLo"
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
+
+# NewWindowTarget values:
+# PfCm = Computer
+# PfVo = Volume (disk)
+# PfHm = Home folder
+# PfDe = Desktop
+# PfDo = Documents
+# PfAF = All My Files
+# PfLo = Other (uses NewWindowTargetPath)
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.finder NewWindowTargetPath
+
+# Set to home folder
+defaults write com.apple.finder NewWindowTarget -string "PfLo"
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
+
+# Set to Desktop
+defaults write com.apple.finder NewWindowTarget -string "PfDe"
+
+# Set to Documents
+defaults write com.apple.finder NewWindowTarget -string "PfDo"
+
+# Set to custom folder (e.g., Projects)
+defaults write com.apple.finder NewWindowTarget -string "PfLo"
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/Projects/"
+
+# Delete (reset to default - Recents)
+defaults delete com.apple.finder NewWindowTarget
+defaults delete com.apple.finder NewWindowTargetPath
+
+# Restart Finder to apply
+killall Finder
+```
+
+## UI Location
+
+**Finder** → **Settings** (⌘,) → **General** → **New Finder windows show:**
+
+Dropdown options:
+- Recents
+- Home folder (username)
+- Desktop
+- Documents
+- iCloud Drive
+- Other... (choose custom folder)
+
+## Common Configurations
+
+```bash
+# === Home Folder ===
+defaults write com.apple.finder NewWindowTarget -string "PfHm"
+
+# === Desktop ===
+defaults write com.apple.finder NewWindowTarget -string "PfDe"
+
+# === Documents ===
+defaults write com.apple.finder NewWindowTarget -string "PfDo"
+
+# === Downloads ===
+defaults write com.apple.finder NewWindowTarget -string "PfLo"
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/Downloads/"
+
+# === iCloud Drive ===
+defaults write com.apple.finder NewWindowTarget -string "PfLo"
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/Library/Mobile%20Documents/com~apple~CloudDocs/"
+
+# === Developer Projects ===
+defaults write com.apple.finder NewWindowTarget -string "PfLo"
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/Developer/"
+```
+
+## URL Encoding
+
+For paths with spaces or special characters, use URL encoding:
+
+| Character | Encoded |
+|-----------|---------|
+| Space | `%20` |
+| & | `%26` |
+| = | `%3D` |
+
+Example:
+```bash
+# "My Projects" folder
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/My%20Projects/"
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still opens Recents | Set both NewWindowTarget and NewWindowTargetPath |
+| Path not found | Verify folder exists, check URL encoding |
+| Changes not applying | Run `killall Finder` |
+| iCloud path not working | Use full Mobile Documents path |
+
+## Finder Window vs Finder Click
+
+| Action | Behavior |
+|--------|----------|
+| **⌘N** | Opens NewWindowTargetPath |
+| **Click Finder in Dock** | Opens NewWindowTargetPath (if no windows open) |
+| **Click Finder icon (window open)** | Brings existing window forward |
+| **Double-click folder** | Opens that specific folder |
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Note**: Requires `killall Finder` to apply
+- **Note**: Works with NewWindowTarget setting
+
+## Source File
+
+**File**: [`defaults/interface/finder.sh`](../../../defaults/interface/finder.sh)
+
+```bash
+run_defaults "com.apple.finder" "NewWindowTarget" "-string" "PfLo"
+run_defaults "com.apple.finder" "NewWindowTargetPath" "-string" "file://${HOME}/"
+```
+
+## References
+
+- [Apple Support: Finder preferences](https://support.apple.com/guide/mac-help/change-finder-preferences-mchlp2369/mac)
+- [Apple Support: Finder window](https://support.apple.com/guide/mac-help/open-and-organize-files-mchlp2605/mac)
