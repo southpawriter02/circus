@@ -1,0 +1,124 @@
+# Music Sound Check (Volume Normalization)
+
+Automatically normalize volume across songs.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Music` |
+| **Key** | `normalizeVolume` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Sound Check analyzes the loudness of your music and adjusts playback volume so all songs play at roughly the same level. This prevents jarring volume changes when shuffling between quiet acoustic tracks and loud rock songs.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Normalize volume** — Consistent playback levels |
+| `false` | **Original volume** (default) — Songs at recorded levels |
+
+## Our Configuration
+
+**Set to**: `true` — Enable volume normalization.
+
+### Why Enable Sound Check?
+
+1. **Consistent listening** — No volume jumps between songs
+2. **No manual adjustment** — Don't touch volume constantly
+3. **Safe listening** — Avoid sudden loud songs damaging ears
+4. **Shuffle-friendly** — Better for mixed playlists
+
+### Why Disable?
+
+- Audiophile preferences — Hear original dynamics
+- Album listening — Albums often have intentional volume flow
+- Already-normalized library — If you've normalized files manually
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Music normalizeVolume
+
+# Enable Sound Check (recommended)
+defaults write com.apple.Music normalizeVolume -bool true
+
+# Disable (original recording levels)
+defaults write com.apple.Music normalizeVolume -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Music normalizeVolume
+```
+
+## UI Location
+
+**Music** → **Settings** (⌘,) → **Playback** → ☑ **Sound Check**
+
+## How It Works
+
+1. Music analyzes track loudness metadata
+2. Calculates adjustment to reach target level
+3. Applies volume adjustment during playback
+4. **Does not modify** the actual audio file
+
+Loudness metadata is stored, not computed live.
+
+## Loudness Wars
+
+Many modern recordings are "loudness mastered" — compressed to sound louder. Sound Check helps level these with older, more dynamic recordings.
+
+## Related Settings
+
+### Crossfade
+
+```bash
+# Enable crossfade between songs
+defaults write com.apple.Music crossfadeEnabled -bool true
+```
+
+### Sound Enhancer
+
+```bash
+# Disable sound enhancer (preserve original audio)
+defaults write com.apple.Music soundEnhancerEnabled -bool false
+```
+
+## Syncing to Devices
+
+When syncing to iPhone/iPod:
+1. Sound Check metadata is included
+2. Device can apply same normalization
+3. Enable Sound Check on device too
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Some songs still louder | May lack loudness metadata |
+| Volume too quiet | Sound Check targets safe levels |
+| Setting not working | Restart Music app |
+
+## Compatibility
+
+- **macOS**: All versions with Music app
+- **iOS**: Same feature available
+- **Apple Music**: Works with streaming
+- **Note**: Doesn't modify files, only playback
+
+## Source File
+
+**File**: [`defaults/applications/music.sh`](../../../../defaults/applications/music.sh)
+
+```bash
+run_defaults "com.apple.Music" "normalizeVolume" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Music playback preferences](https://support.apple.com/guide/music/change-playback-preferences-mus7a8b90c6/mac)

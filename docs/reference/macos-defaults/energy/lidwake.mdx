@@ -1,0 +1,162 @@
+# Lid Wake Behavior
+
+Control whether opening the MacBook lid wakes the system.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Command** | `pmset lidwake` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+| **Requires** | sudo |
+
+## Description
+
+Controls whether your MacBook automatically wakes from sleep when you open the lid. This is a fundamental interaction — most users expect the Mac to wake when opened.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `1` | **Wake on lid open** (default) — Natural behavior |
+| `0` | **Don't wake** — Requires key press or mouse click |
+
+## Our Configuration
+
+**Set to**: `1` — Wake when lid opens.
+
+### Why Enable?
+
+1. **Natural UX** — Expected behavior
+2. **Immediate use** — Ready when you are
+3. **Face ID/Touch ID** — Ready to authenticate
+4. **Standard workflow** — Open and work
+
+### Why Disable?
+
+Some edge cases:
+- External keyboard/mouse only workflow
+- Clamshell mode primarily
+- Prevent accidental wake during transport
+- Privacy concerns
+
+## Code Examples
+
+```bash
+# Check current setting
+pmset -g | grep lidwake
+
+# Enable lid wake (default)
+sudo pmset -a lidwake 1
+
+# Disable lid wake
+sudo pmset -a lidwake 0
+
+# View all power settings
+pmset -g custom
+```
+
+## UI Location
+
+No direct UI toggle. This is a `pmset` only setting.
+
+Related setting in:
+**System Settings** → **Displays** → advanced external display options
+
+## Wake Sequence
+
+When lid opens with lidwake enabled:
+```
+Lid opens → System wakes → Display on → Login screen
+                                         (or desktop if no lock)
+```
+
+Time to usable state: 1-2 seconds (Apple Silicon), 3-5 seconds (Intel).
+
+## Clamshell Mode
+
+Using MacBook with closed lid:
+1. Connect external display
+2. Connect power adapter
+3. Connect external keyboard/mouse
+4. Close lid → Mac stays awake
+
+With clamshell, lidwake affects behavior when re-opening.
+
+## Wake from Deep Sleep
+
+If Mac entered hibernation:
+- Lid open still wakes
+- Slightly longer restore time
+- Session restored from disk
+
+## Face ID (MacBook Pro 2023+)
+
+With Face ID enabled:
+- Lid open → immediate Face ID scan
+- Seamless unlock experience
+- Lidwake must be on for best experience
+
+## Touch Bar Macs
+
+On older Touch Bar MacBooks:
+- Touch ID remains active
+- Touch Bar lights up on wake
+- Fingerprint unlock available
+
+## Power Button Wake
+
+If lidwake disabled, wake with:
+- Press any key
+- Press power button
+- Click trackpad
+- External keyboard/mouse
+
+## Travel Considerations
+
+Lid wake is usually desired, but during transport:
+- Mac is already asleep
+- Opening slightly won't fully wake (needs full open)
+- Consider using sleep mode settings instead
+
+## Related Settings
+
+```bash
+# Display sleep timeout
+sudo pmset -a displaysleep 10
+
+# System sleep timeout
+sudo pmset -a sleep 10
+
+# Wake on network access
+sudo pmset -c womp 1
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Mac won't wake on lid | Check lidwake setting |
+| Mac wakes too easily | Ensure lid closure sensor works |
+| Clamshell issues | Check external display connection |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Hardware**: All MacBooks
+- **Requires**: sudo
+
+## Source File
+
+**File**: [`defaults/system/energy.sh`](../../../defaults/system/energy.sh)
+
+```bash
+sudo pmset -a lidwake 1
+```
+
+## References
+
+- man pmset
+- [Apple Support: Wake Mac from sleep](https://support.apple.com/guide/mac-help/put-your-mac-to-sleep-or-wake-it-up-mh26608/mac)

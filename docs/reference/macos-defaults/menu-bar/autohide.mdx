@@ -1,0 +1,114 @@
+# Menu Bar Auto-Hide
+
+Automatically hide the menu bar until mouse hovers.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `_HIHideMenuBar` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the menu bar automatically hides and only appears when you move the mouse to the top of the screen. Provides more screen real estate but requires mouse movement to access menus.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-hide** — Menu bar slides away |
+| `false` | **Always visible** (default) — Menu bar always shown |
+
+## Our Configuration
+
+**Set to**: `false` — Keep menu bar visible.
+
+### Why Keep Visible?
+
+1. **Accessibility** — Always available
+2. **Time/date** — Clock always visible
+3. **Status icons** — Battery, Wi-Fi visible
+4. **Familiarity** — Standard macOS experience
+
+### Why Auto-Hide?
+
+- Maximized screen space
+- Distraction-free writing
+- Full-screen workflows
+- Creative applications
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain _HIHideMenuBar
+
+# Keep menu bar visible (default)
+defaults write NSGlobalDomain _HIHideMenuBar -bool false
+
+# Auto-hide menu bar
+defaults write NSGlobalDomain _HIHideMenuBar -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain _HIHideMenuBar
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Automatically hide and show the menu bar**
+
+Options:
+- Never
+- In Full Screen Only
+- On Desktop Only
+- Always
+
+## Access When Hidden
+
+When auto-hidden:
+1. Move mouse to top edge
+2. Menu bar slides down
+3. Move mouse away to hide again
+
+## Keyboard Access
+
+Access menus without mouse:
+- **⌃F2** — Focus menu bar
+- **⌘↑** — (in some apps) Access menus
+
+## Full Screen Apps
+
+Separate behavior in full-screen:
+- Menu bar auto-hides in full-screen by default
+- Mouse to top reveals it temporarily
+
+## Related Settings
+
+```bash
+# Also hide Dock
+defaults write com.apple.dock autohide -bool true
+
+# Reduce transparency
+defaults write NSGlobalDomain AppleReduceDesktopTinting -bool false
+```
+
+## Compatibility
+
+- **macOS**: 10.10+
+- **Note**: Log out for changes to take effect
+
+## Source File
+
+**File**: [`defaults/interface/menu_bar.sh`](../../../defaults/interface/menu_bar.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "_HIHideMenuBar" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use the menu bar](https://support.apple.com/guide/mac-help/use-the-menu-bar-mchlp1446/mac)

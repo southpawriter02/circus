@@ -1,0 +1,186 @@
+# Screenshot Show Thumbnail
+
+Control the floating thumbnail after taking screenshots.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.screencapture` |
+| **Key** | `show-thumbnail` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether a floating thumbnail appears in the corner of the screen after taking a screenshot. This thumbnail allows quick annotation, sharing, or deletion before the file is saved. Introduced in macOS Mojave, it mirrors the iOS screenshot experience.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show thumbnail** (default) — Floats briefly |
+| `false` | **No thumbnail** — Save immediately |
+
+## Visual Demonstration
+
+### With Thumbnail (true):
+```
+Screenshot taken!           After ~5 seconds:
+                   
+┌────────────────────┐     ┌────────────────────┐
+│                    │     │                    │
+│                    │     │                    │
+│                    │     │                    │
+│                    │     │                    │
+│                    │     │                    │
+│          ┌──────┐  │     │                    │
+│          │ 📷   │  │     │                    │
+│          │thumb │──┼──→  │   (saved to disk)  │
+│          └──────┘  │     │                    │
+└────────────────────┘     └────────────────────┘
+     ↑                      
+  Floating thumbnail
+  - Click to annotate
+  - Drag to apps
+  - Swipe to dismiss
+  - Wait to auto-save
+```
+
+### Without Thumbnail (false):
+```
+Screenshot taken!
+    ↓
+Immediately saved to disk
+    ↓
+No preview, no delay
+
+Faster for bulk screenshots
+```
+
+## Thumbnail Interactions
+
+What you can do with the floating thumbnail:
+| Action | Result |
+|--------|--------|
+| **Wait** | Auto-saves after ~5 seconds |
+| **Click** | Opens Markup for annotation |
+| **Swipe right** | Dismiss and save immediately |
+| **Drag** | Drop into app (Messages, Mail, etc.) |
+| **⌘Delete** | Delete without saving |
+| **Right-click** | Context menu with options |
+
+## Our Configuration
+
+**Set to**: `true` — Show thumbnail.
+
+### Why Show Thumbnail?
+
+1. **Quick annotation** — Mark up immediately
+2. **Drag to apps** — Share without finding file
+3. **Review** — Verify screenshot captured correctly
+4. **Delete** — Remove bad screenshots instantly
+5. **Modern workflow** — Seamless like iOS
+
+### Why Disable Thumbnail?
+
+- Taking many screenshots quickly
+- Automation/scripting
+- Prefer immediate save
+- Find it distracting
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.screencapture show-thumbnail
+
+# Show thumbnail (default)
+defaults write com.apple.screencapture show-thumbnail -bool true
+
+# Disable thumbnail (immediate save)
+defaults write com.apple.screencapture show-thumbnail -bool false
+
+# Restart to apply
+killall SystemUIServer
+```
+
+## UI Location
+
+**⌘⇧5** (Screenshot toolbar) → **Options** → ☑/☐ **Show Floating Thumbnail**
+
+## Annotation Workflow
+
+Click the thumbnail to open Markup:
+```
+┌─────────────────────────────────────────────────┐
+│  Markup Toolbar:                                │
+│  [Shapes] [Text] [Signature] [Pen] [Crop]      │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│          Your Screenshot                        │
+│                                                 │
+│     ← Draw, highlight, annotate here            │
+│                                                 │
+├─────────────────────────────────────────────────┤
+│           [Delete]              [Done]          │
+└─────────────────────────────────────────────────┘
+```
+
+## Thumbnail Duration
+
+Thumbnail shows for approximately 5 seconds, then:
+- Auto-saves to configured location
+- Disappears from screen
+
+No way to change duration.
+
+## Quick Save/Dismiss
+
+To skip waiting:
+- **Swipe right** on thumbnail
+- Or **Control+click** → **Save to Desktop**
+- Or **Drag** to destination
+
+## Related Settings
+
+```bash
+# Screenshot location
+defaults write com.apple.screencapture location -string "~/Pictures/Screenshots"
+
+# Screenshot format
+defaults write com.apple.screencapture type -string "png"
+
+# Disable shadow
+defaults write com.apple.screencapture disable-shadow -bool true
+
+# Include date in filename
+defaults write com.apple.screencapture include-date -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Thumbnail not appearing | Check setting is true |
+| Thumbnail too fast | Can't adjust duration |
+| Blocks screen content | Move to corner during capture |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave)
+- **Note**: Feature didn't exist before Mojave
+
+## Source File
+
+**File**: [`defaults/applications/screencapture.sh`](../../../../defaults/applications/screencapture.sh)
+
+```bash
+run_defaults "com.apple.screencapture" "show-thumbnail" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Take screenshots](https://support.apple.com/en-us/102646)
+- [Apple Support: Screenshot options](https://support.apple.com/guide/mac-help/take-screenshots-mh26782/mac)

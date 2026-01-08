@@ -1,0 +1,110 @@
+# Chrome Confirm Before Quitting
+
+Require holding Cmd+Q to quit Chrome.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.google.Chrome` |
+| **Key** | `confirmBeforeQuitting` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Prevents accidentally quitting Chrome by requiring you to hold ⌘Q instead of just pressing it once. Shows a confirmation overlay when ⌘Q is pressed, and only quits when held for a moment.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Hold to quit** — Confirmation required |
+| `false` | **Instant quit** (default) — Quits immediately |
+
+## Visual Feedback
+
+When enabled, pressing ⌘Q shows:
+```
+┌─────────────────────────────────┐
+│  Hold ⌘Q to Quit                │
+│  ████████░░░░░░░░               │
+└─────────────────────────────────┘
+```
+
+Release ⌘Q before completion to cancel.
+
+## Our Configuration
+
+**Set to**: `true` — Prevent accidental quits.
+
+### Why Enable?
+
+1. **Accidental prevention** — Q is next to W (new tab), Tab
+2. **Many tabs open** — Don't lose browsing session
+3. **Work in progress** — Forms, research, etc.
+4. **Muscle memory** — Easy to hit ⌘Q by mistake
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.google.Chrome confirmBeforeQuitting
+
+# Enable confirm before quitting (recommended)
+defaults write com.google.Chrome confirmBeforeQuitting -bool true
+
+# Instant quit (default)
+defaults write com.google.Chrome confirmBeforeQuitting -bool false
+
+# Delete (reset to default)
+defaults delete com.google.Chrome confirmBeforeQuitting
+```
+
+## UI Location
+
+**Chrome** menu → ☑ **Warn Before Quitting (⌘Q)**
+
+## Similar Safari Option
+
+Safari has a similar feature:
+- **Safari** → ☑ **Quit Safari** (enabled by default)
+
+## Tab Recovery
+
+Even without confirmation, Chrome can restore tabs:
+1. Reopen Chrome
+2. **History** → **Reopen Closed Window**
+3. Or **⌘⇧T** for last closed tab
+
+Configure in chrome://settings/onStartup:
+- ☑ **Continue where you left off**
+
+## Related Settings
+
+```bash
+# Disable swipe navigation
+defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false
+
+# Use native print dialog
+defaults write com.google.Chrome DisablePrintPreview -bool true
+```
+
+## Compatibility
+
+- **Chrome**: All versions
+- **macOS**: 10.13+
+- **Note**: No restart required
+
+## Source File
+
+**File**: [`defaults/applications/chrome.sh`](../../../../defaults/applications/chrome.sh)
+
+```bash
+run_defaults "com.google.Chrome" "confirmBeforeQuitting" "-bool" "true"
+```
+
+## References
+
+- [Chrome Help: Settings](https://support.google.com/chrome/answer/114836)

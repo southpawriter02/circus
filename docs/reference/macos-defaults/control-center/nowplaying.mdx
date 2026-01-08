@@ -1,0 +1,170 @@
+# Control Center Now Playing
+
+Show media playback controls in menu bar or Control Center.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.controlcenter` |
+| **Key** | `NowPlaying` |
+| **Type** | Integer |
+| **Default Value** | `8` |
+| **Our Setting** | `8` |
+
+## Description
+
+Controls when the Now Playing widget appears in the menu bar. Now Playing shows the currently playing media with playback controls, album art, and quick access to pause, skip, and volume without switching to the music app.
+
+## Values
+
+| Value | Visibility |
+|-------|------------|
+| `0` | Hidden/Disabled |
+| `2` | Always in menu bar |
+| `8` | **Show when active** (default) — Appears during playback |
+| `18` | Control Center only |
+| `24` | Don't show anywhere |
+
+## Visual Example
+
+**NowPlaying = 8 (When media is playing):**
+```
+┌──────────────────────────────────────────────┐
+│ 📶  🔊  🎵 Song Title  🔋  Wed 3:45 PM       │
+└──────────────────────────────────────────────┘
+            ↑
+    Only visible during playback
+```
+
+**When no media is playing:**
+```
+┌──────────────────────────────────────────────┐
+│ 📶  🔊  🔋  Wed 3:45 PM  🔍                  │
+└──────────────────────────────────────────────┘
+      (Now Playing hidden)
+```
+
+## Our Configuration
+
+**Set to**: `8` — Show when media is playing.
+
+### Why "When Active"?
+
+1. **Context-aware** — Only appears when needed
+2. **Clean menu bar** — Hidden when not playing
+3. **Quick controls** — Pause/play without app switching
+4. **Universal** — Works with any audio source
+
+### Media Sources Shown
+
+Now Playing works with:
+- Apple Music
+- Spotify
+- Podcasts
+- Safari video
+- YouTube
+- Netflix
+- QuickTime
+- Any media playing on Mac
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.controlcenter NowPlaying
+
+# Show when media is playing (recommended)
+defaults write com.apple.controlcenter NowPlaying -int 8
+
+# Always show in menu bar
+defaults write com.apple.controlcenter NowPlaying -int 2
+
+# Show only in Control Center
+defaults write com.apple.controlcenter NowPlaying -int 18
+
+# Apply changes
+killall ControlCenter
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Now Playing**
+
+Options:
+- Show in Menu Bar: Always / When Active / Don't Show
+
+## Now Playing Features
+
+Click the Now Playing widget for:
+- Album artwork
+- Song/video title
+- Artist name
+- Play/Pause button
+- Previous/Next buttons
+- Timeline scrubber
+- Volume slider
+- AirPlay output selection
+
+## Keyboard Controls
+
+| Shortcut | Action |
+|----------|--------|
+| F7 / ⏮ | Previous track |
+| F8 / ⏯ | Play/Pause |
+| F9 / ⏭ | Next track |
+| Media keys | Work regardless of app |
+
+## Control from Lock Screen
+
+Now Playing controls appear on:
+- Lock screen
+- Touch Bar (if equipped)
+- Control Center
+- Menu bar (when enabled)
+
+## AirPlay Integration
+
+From Now Playing, quickly AirPlay to:
+- HomePod
+- Apple TV
+- AirPlay speakers
+- AirPods
+- Other audio devices
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Not showing during playback | Set value to 8, restart ControlCenter |
+| Wrong app showing | Media source may not report properly |
+| Controls not working | Check app is in foreground first |
+| Stuck on old media | Try playing new content |
+
+## Third-Party Apps
+
+Most audio apps support Now Playing, but some may:
+- Not show artwork
+- Have limited control support
+- Not report title correctly
+
+Native Apple apps have full support.
+
+## Compatibility
+
+- **macOS**: 11.0 (Big Sur)+
+- **Control Center**: Native feature
+- **Works with**: Most media apps via MediaPlayer framework
+
+## Source File
+
+**File**: [`defaults/interface/control_center.sh`](../../../defaults/interface/control_center.sh)
+
+```bash
+run_defaults "com.apple.controlcenter" "NowPlaying" "-int" "8"
+```
+
+## References
+
+- [Apple Support: Use Control Center on Mac](https://support.apple.com/guide/mac-help/control-center-mchl50f94f8f/mac)
+- [Apple Support: Control music playback](https://support.apple.com/guide/music/control-playback-mus6be37acbb/mac)

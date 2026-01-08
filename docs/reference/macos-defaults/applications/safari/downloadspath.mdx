@@ -1,0 +1,154 @@
+# Safari Downloads Path
+
+Configure where Safari saves downloaded files.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `DownloadsPath` |
+| **Type** | String |
+| **Default Value** | `~/Downloads` |
+| **Our Setting** | `~/Downloads` |
+
+## Description
+
+Specifies the default folder where Safari saves downloaded files. You can set this to any accessible directory, or configure Safari to ask for each download location.
+
+## Values
+
+| Value | Download Location |
+|-------|-------------------|
+| `~/Downloads` | User's Downloads folder (default) |
+| `~/Desktop` | Save directly to Desktop |
+| Custom path | Any accessible directory |
+
+## Our Configuration
+
+**Set to**: `~/Downloads` — Standard Downloads folder.
+
+### Why Downloads Folder?
+
+1. **Standard location** — Expected by other apps
+2. **Easy access** — In Finder sidebar
+3. **Stack support** — Downloads stack in Dock
+4. **Cleanup** — Easy to manage
+5. **Organized** — Keeps Desktop clean
+
+### Alternative Locations
+
+- `~/Desktop` — Immediate visibility
+- `~/Documents/Downloads` — More organized
+- External drive — Large files
+- Project folder — Context-specific
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari DownloadsPath
+
+# Set to default Downloads folder
+defaults write com.apple.Safari DownloadsPath -string "~/Downloads"
+
+# Set to Desktop
+defaults write com.apple.Safari DownloadsPath -string "~/Desktop"
+
+# Set to custom location
+defaults write com.apple.Safari DownloadsPath -string "~/Documents/Safari Downloads"
+
+# Delete (reset to default)
+defaults delete com.apple.Safari DownloadsPath
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **General** → **File download location**
+
+Options:
+- Specific folder path
+- Ask for each download
+
+## Ask for Each Download
+
+For maximum control:
+1. Open Safari Settings
+2. Go to General
+3. Set download location to "Ask for each download"
+4. Choose location for every file
+
+## Downloads Folder Stack
+
+With default location, enable stack:
+1. Right-click Dock near Trash
+2. Add Downloads folder to Dock
+3. Access recent downloads quickly
+
+## Automatic Download Organization
+
+macOS Smart Folders can auto-organize:
+- By file type
+- By date
+- By application
+
+Or use Hazel / third-party automation.
+
+## Opening Downloaded Files
+
+Downloaded files are quarantined:
+- Gatekeeper verification
+- "Are you sure?" dialog first time
+- Protects against malware
+
+## Related Settings
+
+```bash
+# Auto-open "safe" files (disable for security)
+defaults write com.apple.Safari AutoOpenSafeDownloads -bool false
+
+# Clear downloads list
+# (done in Safari UI)
+```
+
+## Per-Site Download Locations
+
+Safari can remember locations per-website:
+1. Download from site
+2. Choose "Other..."
+3. Navigate to preferred location
+4. Future downloads go there
+
+## Download Notification
+
+Safari shows download progress:
+- Activity window
+- Downloads button in toolbar
+- Notification when complete
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Downloads go wrong place | Check this setting |
+| Can't find downloads | Check ~/Downloads |
+| Path invalid | Use absolute path with ~ |
+| Permission denied | Check folder permissions |
+
+## Compatibility
+
+- **Safari**: All versions
+- **macOS**: 10.10+
+- **Note**: Restart Safari for changes
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "DownloadsPath" "-string" "~/Downloads"
+```
+
+## References
+
+- [Apple Support: Safari general settings](https://support.apple.com/guide/safari/general-ibrw1002/mac)

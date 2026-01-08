@@ -1,0 +1,131 @@
+# Menu Bar Clock Format
+
+Customize the date and time display in the menu bar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.menuextra.clock` |
+| **Key** | `DateFormat` |
+| **Type** | String |
+| **Default Value** | Locale-dependent |
+| **Our Setting** | `EEE d MMM  HH:mm:ss` |
+
+## Description
+
+Controls the format of the date and time displayed in the menu bar clock. Uses ICU (International Components for Unicode) date format patterns to customize exactly what information is shown.
+
+## Format Patterns
+
+| Pattern | Output | Example |
+|---------|--------|---------|
+| `EEE` | Day of week (short) | Mon |
+| `EEEE` | Day of week (full) | Monday |
+| `d` | Day of month | 8 |
+| `dd` | Day (2-digit) | 08 |
+| `MMM` | Month (short) | Jan |
+| `MMMM` | Month (full) | January |
+| `HH` | Hour (24-hour) | 14 |
+| `hh` | Hour (12-hour) | 02 |
+| `mm` | Minutes | 23 |
+| `ss` | Seconds | 45 |
+| `a` | AM/PM | PM |
+
+## Common Formats
+
+| Format String | Result |
+|---------------|--------|
+| `EEE d MMM  HH:mm:ss` | Mon 8 Jan  14:23:45 |
+| `EEE MMM d  h:mm a` | Mon Jan 8  2:23 PM |
+| `HH:mm` | 14:23 (time only) |
+| `EEE d  HH:mm` | Mon 8  14:23 |
+
+## Our Configuration
+
+**Format**: `EEE d MMM  HH:mm:ss` — 24-hour with seconds.
+
+### Example Output:
+```
+Mon 8 Jan  14:23:45
+```
+
+## Code Examples
+
+```bash
+# Read current format
+defaults read com.apple.menuextra.clock DateFormat
+
+# Set 24-hour with seconds (recommended)
+defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM  HH:mm:ss"
+
+# Set 12-hour with AM/PM
+defaults write com.apple.menuextra.clock DateFormat -string "EEE MMM d  h:mm a"
+
+# Apply changes
+killall SystemUIServer
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Clock** → **Clock Options...**
+
+Options:
+- Show date (always, when space allows, never)
+- Show day of the week
+- Show AM/PM (12-hour only)
+- Display time with seconds
+
+## Related Clock Settings
+
+```bash
+# Show seconds
+defaults write com.apple.menuextra.clock ShowSeconds -bool true
+
+# Show day of week
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+
+# Don't flash separators
+defaults write com.apple.menuextra.clock FlashDateSeparators -bool false
+
+# Show date
+defaults write com.apple.menuextra.clock ShowDate -int 1
+```
+
+## 24-Hour vs 12-Hour
+
+For 24-hour time:
+- Use `HH` (14:00)
+- Don't include `a` (AM/PM)
+
+For 12-hour time:
+- Use `hh` or `h` (2:00)
+- Include `a` for AM/PM
+
+## Apply Changes
+
+Menu bar clock requires restart:
+
+```bash
+killall SystemUIServer
+```
+
+Or log out and back in.
+
+## Compatibility
+
+- **macOS**: 10.15+
+- **Big Sur+**: Clock Options in Control Center settings
+
+## Source File
+
+**File**: [`defaults/interface/menu_bar.sh`](../../../defaults/interface/menu_bar.sh)
+
+```bash
+run_defaults "com.apple.menuextra.clock" "DateFormat" "-string" "EEE d MMM  HH:mm:ss"
+```
+
+## References
+
+- [Apple Support: Change Date & Time](https://support.apple.com/guide/mac-help/change-date-time-preferences-mchlp2996/mac)
+- [ICU Date Format Patterns](https://unicode-org.github.io/icu/userguide/format_parse/datetime/)

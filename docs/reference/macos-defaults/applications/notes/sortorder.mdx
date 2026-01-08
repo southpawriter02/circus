@@ -1,0 +1,109 @@
+# Notes Sort Order
+
+Control how notes are sorted in the list.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Notes` |
+| **Key** | `NotesSortOrder` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls how notes are ordered within folders in the Notes app. You can sort by when notes were last edited, when they were created, or alphabetically by title.
+
+## Values
+
+| Value | Sort Order |
+|-------|------------|
+| `1` | **Date Edited** (default) — Most recently modified first |
+| `2` | **Date Created** — Newest created first |
+| `3` | **Title** — Alphabetical order |
+
+## Our Configuration
+
+**Set to**: `1` — Sort by date edited.
+
+### Why Date Edited?
+
+1. **Active notes** — Recent work at the top
+2. **Natural flow** — Current projects visible
+3. **Quick access** — Find what you're working on
+4. **Context** — See what you touched last
+
+### When to Use Other Options
+
+- **Date Created**: Preserve original order of notes
+- **Title**: Organized reference/documentation notes
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Notes NotesSortOrder
+
+# Sort by date edited (recommended)
+defaults write com.apple.Notes NotesSortOrder -int 1
+
+# Sort by date created
+defaults write com.apple.Notes NotesSortOrder -int 2
+
+# Sort by title (alphabetical)
+defaults write com.apple.Notes NotesSortOrder -int 3
+
+# Delete (reset to default)
+defaults delete com.apple.Notes NotesSortOrder
+```
+
+## UI Location
+
+**Notes** → **Settings** (⌘,) → **Sort Notes By**
+
+Or: **View** menu → **Sort By**
+
+## Grouping by Date
+
+Related setting to group notes by time period:
+
+```bash
+# Group notes by date (Today, Yesterday, etc.)
+defaults write com.apple.Notes GroupNotesByDate -bool true
+```
+
+When enabled, notes appear under headers:
+- Today
+- Yesterday
+- Previous 7 Days
+- Previous 30 Days
+- Older
+
+## Folder Sorting
+
+Separate setting for folder order:
+
+```bash
+# Folder sort: 1=Manual, 2=Name A-Z, 3=Name Z-A
+defaults write com.apple.Notes FoldersSortOrder -int 1
+```
+
+## Compatibility
+
+- **macOS**: 10.14+
+- **iCloud**: Syncs with iOS Notes
+- **Note**: Setting applies per-device
+
+## Source File
+
+**File**: [`defaults/applications/notes.sh`](../../../../defaults/applications/notes.sh)
+
+```bash
+run_defaults "com.apple.Notes" "NotesSortOrder" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Use Notes on your Mac](https://support.apple.com/guide/notes/welcome/mac)

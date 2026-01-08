@@ -1,0 +1,118 @@
+# Calendar Work Hours
+
+Set the start and end times for work hours in Calendar views.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iCal` |
+| **Keys** | `first minute of work hours`, `last minute of work hours` |
+| **Type** | Integer |
+| **Default Value** | `480` (8 AM), `1020` (5 PM) |
+| **Our Setting** | `540` (9 AM), `1080` (6 PM) |
+
+## Description
+
+Controls the work hours displayed prominently in Calendar's day and week views. Hours outside work hours appear compressed, while work hours are expanded for easier scheduling.
+
+## Values
+
+Values are in minutes from midnight:
+
+| Minutes | Time |
+|---------|------|
+| `360` | 6:00 AM |
+| `420` | 7:00 AM |
+| `480` | 8:00 AM |
+| `540` | 9:00 AM |
+| `600` | 10:00 AM |
+| `1020` | 5:00 PM |
+| `1080` | 6:00 PM |
+| `1140` | 7:00 PM |
+
+**Formula**: `hours × 60 = minutes`
+
+## Our Configuration
+
+- **Start**: `540` (9:00 AM)
+- **End**: `1080` (6:00 PM)
+
+### Why 9 AM - 6 PM?
+
+1. **Modern work** — Later start times are common
+2. **Flexibility** — Room for early/late meetings
+3. **Focus** — Core hours prominently displayed
+
+## Code Examples
+
+```bash
+# Read current values
+defaults read com.apple.iCal "first minute of work hours"
+defaults read com.apple.iCal "last minute of work hours"
+
+# Set work hours 9 AM - 6 PM
+defaults write com.apple.iCal "first minute of work hours" -int 540
+defaults write com.apple.iCal "last minute of work hours" -int 1080
+
+# Set traditional 8 AM - 5 PM
+defaults write com.apple.iCal "first minute of work hours" -int 480
+defaults write com.apple.iCal "last minute of work hours" -int 1020
+
+# Delete (reset to defaults)
+defaults delete com.apple.iCal "first minute of work hours"
+defaults delete com.apple.iCal "last minute of work hours"
+```
+
+## UI Location
+
+**Calendar** → **Settings** (⌘,) → **General** → **Day starts at** / **Day ends at**
+
+## Visual Effect
+
+Work hours appear expanded in day/week view:
+
+```
+6 AM  ─── (compressed)
+7 AM  ─── (compressed)
+8 AM  ─── (compressed)
+─────────────────────────────
+9 AM  ███ Work Hours Start
+10 AM ███
+11 AM ███
+12 PM ███
+1 PM  ███
+2 PM  ███
+3 PM  ███
+4 PM  ███
+5 PM  ███
+6 PM  ███ Work Hours End
+─────────────────────────────
+7 PM  ─── (compressed)
+8 PM  ─── (compressed)
+```
+
+## Related Settings
+
+```bash
+# Hours visible at once (without scrolling)
+defaults write com.apple.iCal "number of hours displayed" -int 12
+```
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: Restart Calendar for changes
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../defaults/applications/calendar.sh)
+
+```bash
+run_defaults "com.apple.iCal" "first minute of work hours" "-int" "540"
+run_defaults "com.apple.iCal" "last minute of work hours" "-int" "1080"
+```
+
+## References
+
+- [Apple Support: Calendar preferences](https://support.apple.com/guide/calendar/change-general-preferences-icl1023/mac)

@@ -1,0 +1,112 @@
+# Slack Dock Icon Bounce
+
+Control whether Slack bounces in the Dock for notifications.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.tinyspeck.slackmacgap` |
+| **Key** | `SlackBounceEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Slack icon bounces in the Dock when you receive a notification. While attention-grabbing, this can be distracting during focused work.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Bounce enabled** (default) — Icon bounces on notifications |
+| `false` | **No bounce** — Icon stays still |
+
+## Our Configuration
+
+**Set to**: `false` — Disable bouncing for less distraction.
+
+### Why Disable Bounce?
+
+1. **Focus** — Less visual distraction
+2. **Concentration** — Reduces interruption
+3. **Noise reduction** — Calmer notification experience
+4. **Badge still shows** — Unread count visible
+
+### Why Enable?
+
+- Important messages — Never miss urgent notifications
+- Frequent context switching — Stay aware of messages
+- Active communication — Real-time responsiveness
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.tinyspeck.slackmacgap SlackBounceEnabled
+
+# Disable bounce (less distracting)
+defaults write com.tinyspeck.slackmacgap SlackBounceEnabled -bool false
+
+# Enable bounce (attention-grabbing)
+defaults write com.tinyspeck.slackmacgap SlackBounceEnabled -bool true
+
+# Delete (reset to default)
+defaults delete com.tinyspeck.slackmacgap SlackBounceEnabled
+```
+
+## UI Location
+
+**Slack** → **Preferences** (⌘,) → **Notifications**
+
+## Alternative Notification Methods
+
+Even with bounce disabled, you still get:
+- Badge count on Dock icon
+- System notifications (banners/alerts)
+- Sound notifications (if enabled)
+- Menu bar icon updates
+
+## Focus Mode Integration
+
+Consider combining with macOS Focus:
+1. Create "Work" Focus mode
+2. Filter Slack notifications
+3. Only urgent channels notify
+
+## Related Settings
+
+```bash
+# Auto-launch Slack on login
+defaults write com.tinyspeck.slackmacgap SlackAutoLaunch -bool true
+
+# Close to menu bar (stay running)
+defaults write com.tinyspeck.slackmacgap SlackCloseToTray -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still bouncing | Restart Slack |
+| Missing notifications | Check system Notification settings |
+| Bounce too subtle | Leave enabled, adjust other settings |
+
+## Compatibility
+
+- **Slack**: Desktop app (Mac App Store or direct)
+- **macOS**: 10.13+
+- **Note**: Restart Slack for changes
+
+## Source File
+
+**File**: [`defaults/applications/slack.sh`](../../../../defaults/applications/slack.sh)
+
+```bash
+run_defaults "com.tinyspeck.slackmacgap" "SlackBounceEnabled" "-bool" "false"
+```
+
+## References
+
+- [Slack Help: Notification preferences](https://slack.com/help/articles/201355156-Notification-preferences)

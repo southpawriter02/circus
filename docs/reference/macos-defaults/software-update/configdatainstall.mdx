@@ -1,0 +1,190 @@
+# Software Update Install System Data Files
+
+Automatically install system data file and security updates.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.SoftwareUpdate` |
+| **Key** | `ConfigDataInstall` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether macOS automatically downloads and installs system data files and security updates in the background. These updates include XProtect malware definitions, Gatekeeper updates, MRT (Malware Removal Tool) updates, and system configuration data — critical for security.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-install** (default) — Security updates applied |
+| `false` | **Manual** — Must update manually |
+
+## What Gets Updated
+
+| Update Type | Purpose |
+|-------------|---------|
+| **XProtect** | Malware signature definitions |
+| **Gatekeeper** | App validation rules |
+| **MRT** | Known malware removal |
+| **System fonts** | Font data updates |
+| **Time zone** | Timezone database |
+| **Voice data** | Siri/Dictation models |
+
+## Visual Demonstration
+
+### Auto-Install Enabled:
+```
+     ┌───────────────────────────────────────────────┐
+     │           Apple Security Server               │
+     └───────────────────────────────────────────────┘
+                         │
+                         │ New XProtect definitions
+                         ▼
+     ┌───────────────────────────────────────────────┐
+     │              Your Mac                         │
+     │   ● Background download                       │
+     │   ● Silent install                            │
+     │   ● No restart needed                         │
+     │   ● Protected automatically!                  │
+     └───────────────────────────────────────────────┘
+```
+
+### Manual Only:
+```
+     ┌───────────────────────────────────────────────┐
+     │           Apple Security Server               │
+     └───────────────────────────────────────────────┘
+                         │
+                         │ New XProtect definitions
+                         ▼
+     ┌───────────────────────────────────────────────┐
+     │              Your Mac                         │
+     │   ⚠️ Waiting for manual update               │
+     │   ⚠️ Vulnerable until you act                │
+     └───────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable automatic security updates.
+
+### Why Enable?
+
+1. **Security critical** — Malware definitions
+2. **Zero-day protection** — Fast response
+3. **Silent** — No user action required
+4. **No restart** — Updates apply seamlessly
+5. **Apple's recommendation** — Default for good reason
+
+### Why Disable?
+
+- Highly controlled environments only
+- Testing/staging machines
+- **NOT recommended for production use**
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.SoftwareUpdate ConfigDataInstall
+
+# Enable auto-install (recommended)
+defaults write com.apple.SoftwareUpdate ConfigDataInstall -bool true
+
+# Disable auto-install (not recommended)
+defaults write com.apple.SoftwareUpdate ConfigDataInstall -bool false
+
+# Check current versions
+softwareupdate --background
+```
+
+## UI Location
+
+**System Settings** → **General** → **Software Update** → **Automatic Updates** (ⓘ) → ☑ **Install system data files and security updates**
+
+## XProtect Updates
+
+XProtect is Apple's malware scanner:
+```bash
+# Check XProtect version
+defaults read /Library/Apple/System/Library/CoreServices/XProtect.bundle/Contents/version.plist
+
+# Check last update
+ls -la /Library/Apple/System/Library/CoreServices/XProtect.bundle/
+```
+
+Updates happen silently, usually within hours of Apple release.
+
+## Related Update Settings
+
+Complete update automation:
+```bash
+# Check for updates automatically
+defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
+
+# Download updates automatically
+defaults write com.apple.SoftwareUpdate AutomaticDownload -bool true
+
+# Install system data files (this setting)
+defaults write com.apple.SoftwareUpdate ConfigDataInstall -bool true
+
+# Install critical security updates
+defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
+
+# Install macOS updates automatically
+defaults write com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool true
+```
+
+## Enterprise Management
+
+In managed environments:
+- MDM profiles may override
+- JAMF/Munki may control updates
+- Settings may be locked
+
+## Checking Update History
+
+```bash
+# View recent software update history
+softwareupdate --history
+
+# Check for available updates
+softwareupdate --list
+```
+
+## No Restart Required
+
+These background updates don't require restart:
+- Apply to running system
+- Protect immediately
+- No user interruption
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Updates not installing | Check setting is true |
+| XProtect outdated | Run `softwareupdate --background` |
+| MDM blocking | Check with IT admin |
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion)
+- **Note**: Updates are silent and automatic
+
+## Source File
+
+**File**: [`defaults/system/software_update.sh`](../../../defaults/system/software_update.sh)
+
+```bash
+run_defaults "com.apple.SoftwareUpdate" "ConfigDataInstall" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Keep your Mac up to date](https://support.apple.com/en-us/102390)
+- [Apple Support: About XProtect](https://support.apple.com/guide/security/protecting-against-malware-sec1e5e3eaf5/web)

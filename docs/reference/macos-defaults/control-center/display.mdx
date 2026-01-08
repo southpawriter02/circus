@@ -1,0 +1,179 @@
+# Control Center Display Module
+
+Configure display controls in Control Center and menu bar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.controlcenter` |
+| **Key** | `Display` |
+| **Type** | Integer |
+| **Default Value** | `18` |
+| **Our Setting** | `18` |
+
+## Description
+
+Controls where the Display module appears. This module provides quick access to brightness adjustment, Night Shift, True Tone, and AirPlay display options — essential controls for managing your screen's appearance.
+
+## Visibility Values
+
+| Value | Location | Description |
+|-------|----------|-------------|
+| `0` | Disabled | Not shown anywhere |
+| `2` | Menu bar | Always visible |
+| `8` | Menu bar (when active) | Shows when display features active |
+| `18` | Control Center only | Default location |
+| `24` | Hidden | Not shown but functional |
+
+## Display Module Features
+
+When you open the Display module:
+```
+┌─────────────────────────────────┐
+│  Display                    ▼  │
+├─────────────────────────────────┤
+│  ☀️ Brightness                  │
+│  ─────────────●───────────      │
+│                                 │
+│  🌙 Night Shift         [Off]   │
+│  🎨 True Tone           [On]    │
+│                                 │
+│  📺 AirPlay Display     [Off]   │
+└─────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `18` — Control Center only.
+
+### Why Control Center Only?
+
+1. **Clean menu bar** — Brightness rarely adjusted via menu
+2. **Keyboard shortcuts** — F1/F2 for brightness
+3. **Touch Bar** — Has brightness slider (older MacBooks)
+4. **Night Shift** — Usually scheduled, not manual
+5. **Less clutter** — Reserve menu bar for essentials
+
+### When to Show in Menu Bar
+
+- External monitor without brightness keys
+- Frequent True Tone toggling
+- AirPlay presentations regularly
+- No keyboard brightness controls
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.controlcenter Display
+
+# Control Center only (default)
+defaults write com.apple.controlcenter Display -int 18
+
+# Always show in menu bar
+defaults write com.apple.controlcenter Display -int 2
+
+# Show when display feature active
+defaults write com.apple.controlcenter Display -int 8
+
+# Hide completely
+defaults write com.apple.controlcenter Display -int 24
+
+# Delete (reset to default)
+defaults delete com.apple.controlcenter Display
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Display**
+
+## Brightness Control Alternatives
+
+| Method | Description |
+|--------|-------------|
+| F1/F2 keys | Dedicated brightness keys |
+| Touch Bar | Slider on Touch Bar Macs |
+| Control Center | Display module |
+| Menu bar icon | If enabled |
+| System Settings | Display section |
+
+For most users, keyboard keys are sufficient.
+
+## Night Shift
+
+Reduces blue light in evenings:
+- **Scheduled**: Sunset to Sunrise (or custom)
+- **Manual**: Enable until tomorrow
+- **Color Temperature**: Adjust warmth
+
+Access via Control Center or:
+**System Settings** → **Displays** → **Night Shift**
+
+## True Tone
+
+Adjusts white point based on ambient light:
+- Makes display appear more natural
+- Adapts to room lighting
+- Available on some Macs only
+
+Check availability:
+```bash
+# System report includes display capabilities
+system_profiler SPDisplaysDataType
+```
+
+## AirPlay Display
+
+Wireless display to:
+- Apple TV
+- AirPlay-compatible smart TVs
+- Other Macs (can be targets)
+
+Quick access is helpful when presenting.
+
+## External Monitors
+
+For external displays:
+- Brightness may not be controllable
+- Use monitor's own controls
+- Some third-party apps add control
+
+## Related Settings
+
+```bash
+# Sound (volume controls)
+defaults write com.apple.controlcenter Sound -int 2
+
+# Now Playing
+defaults write com.apple.controlcenter NowPlaying -int 8
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Brightness not adjusting | Check display capabilities |
+| Night Shift missing | Check display support |
+| True Tone grayed out | Not supported on display |
+| AirPlay not showing devices | Check network/Bluetooth |
+
+## Compatibility
+
+- **macOS**: 11.0+ (Big Sur) for Control Center
+- **Night Shift**: 10.12.4+ (Sierra)
+- **True Tone**: Mac with True Tone display
+- **Note**: Some features require logout
+
+## Source File
+
+**File**: [`defaults/interface/control_center.sh`](../../../defaults/interface/control_center.sh)
+
+```bash
+run_defaults "com.apple.controlcenter" "Display" "-int" "18"
+```
+
+## References
+
+- [Apple Support: Control Center](https://support.apple.com/guide/mac-help/control-center-mchl50f94f8f/mac)
+- [Apple Support: Night Shift](https://support.apple.com/en-us/HT207513)

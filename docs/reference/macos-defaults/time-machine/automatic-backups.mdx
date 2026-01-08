@@ -1,0 +1,224 @@
+# Time Machine Automatic Backups
+
+Enable and configure automatic Time Machine backups.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Command** | `tmutil enable` |
+| **Type** | System Command |
+| **Default State** | Disabled until disk configured |
+| **Our Setting** | Enabled |
+| **Requires** | sudo, backup disk |
+
+## Description
+
+Time Machine is macOS's built-in backup solution that automatically backs up your entire Mac — apps, music, photos, email, documents, and system files. When enabled with a configured backup disk, it performs hourly backups while intelligently managing storage through its tiered retention policy.
+
+## Time Machine Backup Schedule
+
+```
+                    Retention Policy
+┌────────────────────────────────────────────────┐
+│                                                │
+│   Past 24 Hours: Hourly backups               │
+│   │░░░░░░░░░░░░░░░░░░░░░░░░│                  │
+│    1 2 3 4 5 6 7 ... 22 23 24 hours           │
+│                                                │
+│   Past Month: Daily backups                   │
+│   │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│           │
+│    1 2 3 4 5 6 7 ... 28 29 30 days            │
+│                                                │
+│   Previous Months: Weekly backups             │
+│   │████│████│████│████│████│████│             │
+│    Week 1  2   3   4   5   6...               │
+│                                                │
+└────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: Enabled — Automatic backups active.
+
+### Why Enable Time Machine?
+
+| Disaster | Recovery with Time Machine |
+|----------|---------------------------|
+| Accidental deletion | Restore from any snapshot |
+| File corruption | Go back to working version |
+| Malware/ransomware | Restore entire system |
+| Hardware failure | Migrate to new Mac |
+| macOS upgrade gone wrong | Restore previous system |
+
+## Code Examples
+
+```bash
+# Enable automatic backups
+sudo tmutil enable
+
+# Disable automatic backups
+sudo tmutil disable
+
+# Check Time Machine status
+tmutil status
+
+# List all backups
+tmutil listbackups
+
+# Start a backup now
+tmutil startbackup
+
+# Stop current backup
+tmutil stopbackup
+
+# View destinations
+tmutil destinationinfo
+```
+
+## UI Location
+
+**System Settings** → **General** → **Time Machine**
+
+- Add Backup Disk
+- Backup frequency options
+- Options for customization
+
+## Backup Destinations
+
+Time Machine supports:
+
+| Destination | Description |
+|-------------|-------------|
+| External HDD/SSD | Direct USB/Thunderbolt connection |
+| Network volume | SMB share or NAS |
+| Time Capsule | Apple's router with disk (discontinued) |
+| APFS share | Another Mac sharing storage |
+
+## Developer Exclusions
+
+Exclude regenerable content to save space:
+
+```bash
+# Add exclusion (survives path not existing)
+sudo tmutil addexclusion ~/node_modules
+sudo tmutil addexclusion ~/.npm
+sudo tmutil addexclusion ~/.cargo
+sudo tmutil addexclusion ~/.cache
+sudo tmutil addexclusion ~/Library/Caches
+
+# Remove exclusion
+sudo tmutil removeexclusion /path/to/folder
+
+# List exclusions
+sudo mdfind "com_apple_backup_excludeItem = 'com.apple.backupd'"
+```
+
+### Recommended Exclusions
+
+| Path | Size Savings | Regenerate With |
+|------|--------------|-----------------|
+| `node_modules` | 1-50GB+ | `npm install` |
+| `.npm` cache | 1-10GB | Auto-regenerated |
+| `.cargo` | 1-20GB | `cargo build` |
+| `.cache` | Variable | Auto-regenerated |
+| `Library/Caches` | 1-50GB | Auto-regenerated |
+| `.docker` | 10-100GB+ | Re-pull images |
+
+## Backup Frequency
+
+Default: Every hour when backup disk available
+
+Customize (macOS Ventura+):
+- Every hour
+- Every day
+- Every week
+- Manual only
+
+## Encryption
+
+Always encrypt Time Machine backups:
+1. When adding disk, check "Encrypt backups"
+2. Stores encryption key in keychain
+3. Recovery key available
+
+Without encryption, anyone with the backup disk can access all your files.
+
+## Storage Management
+
+Time Machine auto-manages space:
+```
+Disk: 2TB External
+│
+├── Latest backup: 500GB (full snapshot)
+├── Incremental changes: 200GB (deltas)
+├── Available for new backups: 1.3TB
+│
+└── When full: Oldest backups deleted automatically
+```
+
+## Verifying Backups
+
+```bash
+# Check if backup disk is available
+tmutil destinationinfo
+
+# Verify backup integrity
+tmutil verifychecksums /path/to/backup
+
+# Compare backup with current
+tmutil compare /path/to/backup
+```
+
+## Restoring from Time Machine
+
+Enter Recovery Mode (⌘R at startup):
+1. Choose "Restore from Time Machine"
+2. Select backup disk
+3. Choose snapshot to restore
+4. Restore entire system or specific files
+
+Or use Finder:
+1. Click Time Machine in menu bar
+2. "Enter Time Machine"
+3. Navigate timeline
+4. Select files to restore
+
+## Related Settings
+
+```bash
+# Show Time Machine in menu bar
+defaults write com.apple.systemuiserver menuExtras -array-add "/System/Library/CoreServices/Menu Extras/TimeMachine.menu"
+
+# Local snapshots (when backup disk not available)
+sudo tmutil enablelocal
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Backup not starting | Check disk connected, enabled |
+| Backup too slow | Check exclusions, network speed |
+| "Backup disk not available" | Reconnect disk, check mount |
+| Disk full | Delete old backups or use larger disk |
+
+## Compatibility
+
+- **macOS**: 10.5+ (Leopard)
+- **APFS snapshots**: 10.13+ (High Sierra)
+- **Requires**: sudo for configuration
+
+## Source File
+
+**File**: [`defaults/system/time_machine.sh`](../../../defaults/system/time_machine.sh)
+
+```bash
+tmutil enable
+```
+
+## References
+
+- [Apple Support: Time Machine](https://support.apple.com/en-us/104984)
+- man tmutil
+- [Apple Support: If Time Machine can't complete](https://support.apple.com/en-us/102548)

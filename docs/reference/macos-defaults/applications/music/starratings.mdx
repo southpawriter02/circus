@@ -1,0 +1,120 @@
+# Music Star Ratings
+
+Show classic 5-star rating controls for songs.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Music` |
+| **Key** | `showStarRatings` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Displays the classic 5-star rating system in the Music library view. Star ratings allow you to rate songs from 1 to 5 stars, which can be used to create smart playlists based on your preferences.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show star ratings** — Display rating column and controls |
+| `false` | **Hide ratings** (default) — Modern love/dislike only |
+
+## Our Configuration
+
+**Set to**: `true` — Show classic star ratings.
+
+### Why Show Star Ratings?
+
+1. **Granular ratings** — 5 levels vs just love/dislike
+2. **Smart playlists** — Filter by rating (e.g., 4+ stars)
+3. **Classic iTunes** — Familiar rating system
+4. **Organization** — Mark favorites more specifically
+
+### Modern Alternative
+
+Apple replaced stars with:
+- ❤️ **Love** — Influences recommendations
+- 👎 **Dislike** — Hides from suggestions
+
+Star ratings provide more nuance.
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Music showStarRatings
+
+# Show star ratings (recommended)
+defaults write com.apple.Music showStarRatings -bool true
+
+# Hide star ratings (default)
+defaults write com.apple.Music showStarRatings -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Music showStarRatings
+```
+
+## UI Location
+
+**Music** → **Settings** (⌘,) → **General** → ☑ **Show Star Ratings**
+
+## Rating Songs
+
+With star ratings enabled:
+1. Hover over song in list
+2. Click star position (1-5)
+3. Rating is saved immediately
+
+Or right-click song → **Rate** → select rating.
+
+## Smart Playlists with Ratings
+
+Create playlists based on ratings:
+
+1. **File** → **New** → **Smart Playlist**
+2. Rule: "Rating is greater than ⭐⭐⭐⭐"
+3. Live-updating playlist of top tracks
+
+Example rules:
+- Rating is 5 stars (absolute favorites)
+- Rating is greater than 3 stars (good songs)
+- Rating is not 0 (any rated songs)
+
+## Syncing Ratings
+
+- Star ratings sync via iCloud Music Library
+- Ratings transfer when syncing to devices
+- Works alongside love/dislike
+
+## Rating vs Love
+
+| Feature | Star Rating | Love |
+|---------|-------------|------|
+| Levels | 5 (1-5 stars) | 2 (love/dislike) |
+| Affects recommendations | No | Yes |
+| Smart playlists | Yes | Yes |
+| Visible in library | When enabled | Always |
+
+You can use both systems simultaneously.
+
+## Compatibility
+
+- **macOS**: All versions with Music app
+- **Legacy**: Carried over from iTunes
+- **Note**: Restart Music for changes
+
+## Source File
+
+**File**: [`defaults/applications/music.sh`](../../../../defaults/applications/music.sh)
+
+```bash
+run_defaults "com.apple.Music" "showStarRatings" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Rate songs in Music](https://support.apple.com/guide/music/rate-songs-mus4180b5a8e/mac)

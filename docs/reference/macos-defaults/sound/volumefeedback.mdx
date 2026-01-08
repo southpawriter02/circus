@@ -1,0 +1,150 @@
+# Volume Change Feedback Sound
+
+Control the "pop" sound when adjusting volume.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.sound.beep.feedback` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `0` |
+
+## Description
+
+Controls whether a "pop" sound plays each time you adjust the volume using the keyboard keys or menu bar slider. While helpful for knowing volume levels, it can be annoying in quiet environments.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `1` | **Enabled** (default) — Pop sound on volume change |
+| `0` | **Disabled** — Silent volume adjustment |
+
+## The Volume Feedback Sound
+
+When enabled:
+```
+Press Volume Up → "Pop" sound at new volume level
+Press Volume Down → "Pop" sound at new volume level
+Press Mute → No sound (muted)
+```
+
+## Our Configuration
+
+**Set to**: `0` — Disable feedback sound.
+
+### Why Disable?
+
+1. **Quiet environments** — Libraries, shared offices
+2. **Headphones** — Loud pop in ears
+3. **Night use** — Silent adjustments at night
+4. **Clean audio** — Recording/streaming
+5. **Less noise** — Minimalist preference
+
+### Why Enable?
+
+- Audio confirmation of level
+- Know when volume actually changed
+- Accessibility (audio feedback)
+- Habit from other devices
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain com.apple.sound.beep.feedback
+
+# Disable volume feedback sound (recommended)
+defaults write NSGlobalDomain com.apple.sound.beep.feedback -int 0
+
+# Enable volume feedback sound (default)
+defaults write NSGlobalDomain com.apple.sound.beep.feedback -int 1
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain com.apple.sound.beep.feedback
+```
+
+## UI Location
+
+**System Settings** → **Sound** → **Output** → ☐ **Play feedback when volume is changed**
+
+## Volume Indicator
+
+Even without sound feedback, you still see:
+```
+┌─────────────────────────────────┐
+│       🔊  ▓▓▓▓▓▓▓░░░░░░        │
+└─────────────────────────────────┘
+```
+
+Visual overlay shows current level.
+
+## Shift Key Trick
+
+Hold **Shift** while adjusting volume:
+- Temporarily inverts this setting
+- If sounds are on: silent adjustment
+- If sounds are off: plays feedback
+
+Useful for quick one-off adjustments.
+
+## Alternative: Option Key
+
+Hold **Option+Shift** + Volume keys:
+- Finer volume increments (1/4 normal)
+- Precise control
+
+## Related Audio Settings
+
+```bash
+# Alert sound volume
+defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.5
+
+# UI sound effects (trash, screenshots)
+defaults write NSGlobalDomain com.apple.sound.uiaudio.enabled -int 1
+```
+
+## Keyboard Volume Keys
+
+| Key | Action |
+|-----|--------|
+| F10 | Mute toggle |
+| F11 | Volume down |
+| F12 | Volume up |
+
+With Shift: Opposite feedback behavior.
+
+## Audio During Meetings
+
+For video calls:
+- Disable feedback to avoid interrupting
+- Adjust volume with visual indicator only
+- Prevents "pop" sounds in meetings
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still making sounds | Check this setting is 0 |
+| No visual indicator | Check display settings |
+| Volume keys not working | Check keyboard settings |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/system/sound.sh`](../../../defaults/system/sound.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.sound.beep.feedback" "-int" "0"
+```
+
+## References
+
+- [Apple Support: Adjust sound on Mac](https://support.apple.com/guide/mac-help/adjust-the-sound-on-mac-mchlp2256/mac)

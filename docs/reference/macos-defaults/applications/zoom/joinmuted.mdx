@@ -1,0 +1,105 @@
+# Zoom Join Muted
+
+Automatically mute microphone when joining meetings.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `us.zoom.xos` |
+| **Key** | `ZMEnableMuteWhenJoin` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Automatically mutes your microphone when joining Zoom meetings, preventing accidental background noise from disrupting the meeting. Unmute when you're ready to speak.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Join muted** — Microphone disabled on join |
+| `false` | **Join unmuted** (default) — Microphone active |
+
+## Our Configuration
+
+**Set to**: `true` — Join muted for meeting courtesy.
+
+### Why Join Muted?
+
+1. **Courtesy** — Don't introduce background noise
+2. **Privacy** — Control when you're heard
+3. **Professional** — No accidental audio
+4. **Large meetings** — Essential for webinars
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read us.zoom.xos ZMEnableMuteWhenJoin
+
+# Join muted (recommended)
+defaults write us.zoom.xos ZMEnableMuteWhenJoin -bool true
+
+# Join unmuted
+defaults write us.zoom.xos ZMEnableMuteWhenJoin -bool false
+
+# Delete (reset to default)
+defaults delete us.zoom.xos ZMEnableMuteWhenJoin
+```
+
+## UI Location
+
+**Zoom** → **Settings** (⌘,) → **Audio** → ☑ **Mute my microphone when joining a meeting**
+
+## Quick Unmute
+
+When joining muted:
+1. Click **Unmute** when ready to speak
+2. Or hold **Space** for push-to-talk
+3. Release to mute again
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘⇧A | Toggle mute |
+| Space | Push-to-talk (temporary unmute) |
+| ⌘⇧V | Toggle video |
+
+## Push to Talk
+
+Space bar provides temporary unmute:
+- Press and hold to speak
+- Release to mute again
+- Great for quick comments
+
+## Related Settings
+
+```bash
+# Also join with video off
+defaults write us.zoom.xos ZMEnableStopVideoWhenJoin -bool true
+
+# Auto-join computer audio
+defaults write us.zoom.xos ZMEnableAutoJoinVoip -bool true
+```
+
+## Compatibility
+
+- **Zoom**: Desktop app
+- **macOS**: 10.10+
+- **Note**: Restart Zoom for changes
+
+## Source File
+
+**File**: [`defaults/applications/zoom_app.sh`](../../../../defaults/applications/zoom_app.sh)
+
+```bash
+run_defaults "us.zoom.xos" "ZMEnableMuteWhenJoin" "-bool" "true"
+```
+
+## References
+
+- [Zoom Help: Audio settings](https://support.zoom.us/hc/en-us/articles/201362163-Desktop-client-settings)

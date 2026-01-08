@@ -1,0 +1,152 @@
+# Zoom Dual Monitor Mode
+
+Enable dual monitor support for better meeting layouts.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `us.zoom.xos` |
+| **Key** | `ZMEnableDualMonitor` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Enables dual monitor mode in Zoom meetings, which displays the gallery view on one screen and shared content on another. Ideal for users with multiple displays who want to see participants while viewing presentations.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Dual monitor mode** — Split across displays |
+| `false` | **Single monitor mode** (default) — All on one screen |
+
+## Dual Monitor Layout
+
+```
+┌─────────────────────┐    ┌─────────────────────┐
+│     Display 1       │    │     Display 2       │
+│                     │    │                     │
+│  ┌───┬───┬───┬───┐  │    │  ┌─────────────────┐│
+│  │ 👤│ 👤│ 👤│ 👤│  │    │  │                 ││
+│  ├───┼───┼───┼───┤  │    │  │   Shared        ││
+│  │ 👤│ 👤│ 👤│ 👤│  │    │  │   Content       ││
+│  └───┴───┴───┴───┘  │    │  │                 ││
+│    Gallery View     │    │  └─────────────────┘│
+└─────────────────────┘    └─────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Single monitor (most users).
+
+### Why Enable Dual Monitor?
+
+1. **Multi-display setup** — Use both monitors
+2. **See participants** — During presentations
+3. **Full-screen content** — Without losing gallery
+4. **Productivity** — No switching views
+5. **Teaching/training** — See students while sharing
+
+### Why Keep Single?
+
+- Only one monitor
+- Laptop-only use
+- Simpler experience
+- Less window management
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read us.zoom.xos ZMEnableDualMonitor
+
+# Enable dual monitor mode
+defaults write us.zoom.xos ZMEnableDualMonitor -bool true
+
+# Disable dual monitor mode (default)
+defaults write us.zoom.xos ZMEnableDualMonitor -bool false
+
+# Delete (reset to default)
+defaults delete us.zoom.xos ZMEnableDualMonitor
+```
+
+## UI Location
+
+**Zoom** → **Settings** (⌘,) → **General** → ☑ **Use dual monitors**
+
+## Requirements
+
+For dual monitor mode:
+- Two or more connected displays
+- Both displays recognized by macOS
+- Zoom meeting in progress
+
+## Without Dual Monitor Mode
+
+On single monitor, during screen share:
+- Shared content takes most of space
+- Participants in small strip
+- Switch views with buttons
+
+## Presenter View
+
+Dual monitor mode helps presenters:
+- Display 1: Notes, controls, participants
+- Display 2: Shared content (mirrored to audience)
+
+Similar to Keynote/PowerPoint presenter mode.
+
+## Meeting Window Behavior
+
+With dual monitors enabled:
+- Zoom creates two windows
+- One for gallery, one for content
+- Each can be moved/resized
+
+## Related Settings
+
+```bash
+# Full-screen when viewing share
+defaults write us.zoom.xos ZMEnterFullScreenWhenShare -bool false
+
+# HD video
+defaults write us.zoom.xos ZMEnableHDVideo -bool true
+```
+
+## Side-by-Side Alternative
+
+Without dual monitor mode, use Side-by-Side:
+1. During screen share
+2. Click "View Options"
+3. Select "Side-by-side Mode"
+
+Shows participants and share on one screen.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Second window not appearing | Ensure dual displays connected |
+| Windows on wrong monitor | Drag to preferred display |
+| Setting not working | Restart Zoom |
+
+## Compatibility
+
+- **Zoom**: All desktop versions
+- **macOS**: With external display
+- **Note**: Restart Zoom for changes
+
+## Source File
+
+**File**: [`defaults/applications/zoom_app.sh`](../../../../defaults/applications/zoom_app.sh)
+
+```bash
+run_defaults "us.zoom.xos" "ZMEnableDualMonitor" "-bool" "false"
+```
+
+## References
+
+- [Zoom Help: Dual monitor support](https://support.zoom.us/hc/en-us/articles/201362583-Using-dual-monitors-with-Zoom)

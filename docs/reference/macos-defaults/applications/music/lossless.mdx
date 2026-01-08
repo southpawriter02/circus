@@ -1,0 +1,119 @@
+# Music Lossless Audio
+
+Enable high-quality lossless audio playback.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Music` |
+| **Key** | `losslessEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables lossless audio quality for Apple Music streaming and downloads. Lossless audio uses ALAC (Apple Lossless Audio Codec) which preserves the original recording quality without compression loss. Requires Apple Music subscription.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Lossless enabled** — Up to 24-bit/192kHz quality |
+| `false` | **Standard AAC** (default) — Compressed audio |
+
+## Audio Quality Tiers
+
+| Quality | Bitrate | Description |
+|---------|---------|-------------|
+| Standard AAC | 256 kbps | Good quality, low bandwidth |
+| Lossless (ALAC) | ~1,411 kbps | CD quality (16-bit/44.1kHz) |
+| Hi-Res Lossless | ~9,000 kbps | Studio quality (24-bit/192kHz) |
+
+## Our Configuration
+
+**Set to**: `true` — Enable lossless for best quality.
+
+### Why Enable Lossless?
+
+1. **Audiophile quality** — Hear what the artist recorded
+2. **No compression artifacts** — Pure audio signal
+3. **Future-proof** — Best quality for good equipment
+4. **Archive quality** — Downloads at full resolution
+
+### Considerations
+
+- **Bandwidth**: ~3-4x more data than AAC
+- **Storage**: Downloads are larger
+- **Equipment**: Need good speakers/headphones to notice
+- **Bluetooth**: Most Bluetooth doesn't support lossless
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Music losslessEnabled
+
+# Enable lossless audio (recommended)
+defaults write com.apple.Music losslessEnabled -bool true
+
+# Disable (standard AAC)
+defaults write com.apple.Music losslessEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Music losslessEnabled
+```
+
+## UI Location
+
+**Music** → **Settings** (⌘,) → **Playback** → **Audio Quality** → ☑ **Lossless Audio**
+
+Additional options:
+- Streaming quality
+- Download quality
+
+## Dolby Atmos
+
+Related spatial audio setting:
+
+```bash
+# Enable Dolby Atmos spatial audio
+defaults write com.apple.Music dolbyAtmosEnabled -bool true
+```
+
+## Requirements
+
+- **Apple Music subscription** — Required for lossless streaming
+- **macOS 11.4+** — Lossless support added
+- **Wired headphones** — For full Hi-Res quality
+- **External DAC** — For 24-bit/192kHz (optional)
+
+## Bluetooth Limitations
+
+Most Bluetooth codecs don't support lossless:
+- AAC: Up to 256 kbps
+- aptX HD: Up to 576 kbps
+- LDAC: Up to 990 kbps
+
+For true lossless, use wired connection.
+
+## Compatibility
+
+- **macOS**: 11.4+
+- **iOS**: 14.6+
+- **Requires**: Apple Music subscription
+- **Note**: Syncs across devices
+
+## Source File
+
+**File**: [`defaults/applications/music.sh`](../../../../defaults/applications/music.sh)
+
+```bash
+run_defaults "com.apple.Music" "losslessEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Lossless Audio](https://support.apple.com/en-us/HT212183)
+- [Apple Support: Music playback preferences](https://support.apple.com/guide/music/change-playback-preferences-mus7a8b90c6/mac)

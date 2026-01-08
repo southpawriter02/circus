@@ -1,0 +1,176 @@
+# Display Sleep Timeout
+
+Configure when the display turns off during inactivity.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Command** | `pmset displaysleep` |
+| **Type** | Integer (minutes) |
+| **Default (Battery)** | `2` |
+| **Default (AC)** | `10` |
+| **Our Setting** | `5` (battery), `15` (AC) |
+| **Requires** | sudo |
+
+## Description
+
+Controls how long your Mac waits before turning off the display when idle. Separate settings exist for battery and AC power, allowing aggressive power saving on battery while maintaining convenience when plugged in.
+
+## Values
+
+| Minutes | Behavior |
+|---------|----------|
+| `0` | Never sleep display |
+| `1` | Very aggressive (1 minute) |
+| `2` | Apple default for battery |
+| `5` | Our battery setting |
+| `10` | Apple default for AC |
+| `15` | Our AC setting |
+| `30+` | Extended work sessions |
+
+## Power Source Flags
+
+| Flag | Power Source |
+|------|--------------|
+| `-a` | All sources |
+| `-b` | Battery only |
+| `-c` | Charger (AC) only |
+
+## Our Configuration
+
+- **Battery**: `5` minutes — Preserve battery while allowing brief pauses
+- **AC Power**: `15` minutes — Comfortable for desk work
+
+### Why These Values?
+
+| Scenario | Battery | AC |
+|----------|---------|-----|
+| Quick glance away | ✓ 5 min OK | ✓ 15 min OK |
+| Coffee break | May sleep | ✓ Usually OK |
+| Long meeting | Will sleep | May sleep |
+| Energy saving | ✓ Efficient | Less aggressive |
+
+## Code Examples
+
+```bash
+# View current display sleep settings
+pmset -g | grep displaysleep
+
+# Set display sleep on battery (5 minutes)
+sudo pmset -b displaysleep 5
+
+# Set display sleep on AC (15 minutes)
+sudo pmset -c displaysleep 15
+
+# Set same value for all power sources
+sudo pmset -a displaysleep 10
+
+# Never sleep display on AC (not recommended)
+sudo pmset -c displaysleep 0
+
+# View all power settings
+pmset -g custom
+```
+
+## UI Location
+
+**System Settings** → **Battery** / **Energy Saver**
+
+- **Turn display off after**: Slider for battery
+- Switch to **Power Adapter** for AC settings
+
+## Display Sleep vs System Sleep
+
+| Setting | What Sleeps | Power Saved |
+|---------|-------------|-------------|
+| `displaysleep` | Screen only | Moderate |
+| `sleep` | Entire system | Maximum |
+
+Display can sleep while system stays awake (for downloads, etc.).
+
+## Preventing Display Sleep
+
+Temporarily prevent sleep:
+```bash
+# Keep display awake while command runs
+caffeinate -d command
+
+# Keep awake for 1 hour
+caffeinate -d -t 3600
+
+# Keep awake until process exits
+caffeinate -dw $(pgrep -f "long-process")
+```
+
+Applications can also prevent sleep (video players, presentations).
+
+## Hot Corners Alternative
+
+Set hot corner to disable screen saver:
+- Prevents display sleep when cursor in corner
+- Useful during presentations
+
+## Battery Life Impact
+
+| Display Sleep | Approx. Battery Savings |
+|---------------|------------------------|
+| 2 minutes | Maximum (Apple default) |
+| 5 minutes | Good |
+| 10 minutes | Moderate |
+| 15+ minutes | Minimal |
+
+Display is often the largest power consumer.
+
+## Related Settings
+
+```bash
+# System sleep (more aggressive power saving)
+sudo pmset -b sleep 10
+sudo pmset -c sleep 0
+
+# Hard disk sleep
+sudo pmset -a disksleep 10
+
+# Dim display on battery
+sudo pmset -b lessbright 1
+```
+
+## Presentation Mode
+
+When presenting, prevent sleep:
+```bash
+# Via caffeinate (terminal stays open)
+caffeinate -d
+
+# Or in Keynote/PowerPoint: Automatic during presentation
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Display won't sleep | Check caffeinate processes |
+| Sleeps too quickly | Increase displaysleep value |
+| Setting not applying | Run with sudo |
+| Different from UI | UI and pmset may show differently |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Hardware**: All Macs
+- **Requires**: sudo for changes
+
+## Source File
+
+**File**: [`defaults/system/energy.sh`](../../../defaults/system/energy.sh)
+
+```bash
+sudo pmset -b displaysleep 5
+sudo pmset -c displaysleep 15
+```
+
+## References
+
+- [Apple Support: Power Nap](https://support.apple.com/en-us/HT204032)
+- man pmset

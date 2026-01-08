@@ -1,0 +1,199 @@
+# Full Keyboard Access
+
+Enable Tab key navigation through all UI controls.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `AppleKeyboardUIMode` |
+| **Type** | Integer |
+| **Default Value** | Varies (often `0`) |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls which UI elements can be accessed via the Tab key. When set to full access, you can Tab through all controls in dialogs and windows — buttons, dropdowns, checkboxes, and more — not just text fields. This enables a truly keyboard-driven workflow without reaching for the mouse.
+
+## Values
+
+| Value | Access Level | Tab Navigates |
+|-------|--------------|---------------|
+| `0` | Text fields only | Text inputs, lists |
+| `2` | **Full keyboard access** | All controls |
+| `3` | All controls (alternate) | Same as 2 |
+
+## Visual Demonstration
+
+### Default (value 0) — Tab moves only between text fields:
+```
+┌────────────────────────────────────────────────┐
+│  Save Document                                 │
+├────────────────────────────────────────────────┤
+│  File name: [filename.txt]    ← Tab lands here │
+│                                                │
+│  Location:  [Documents ▼]     ✗ Can't tab here │
+│                                                │
+│  ☐ Include hidden files       ✗ Can't tab here │
+│                                                │
+│         [Cancel]  [Save]      ✗ Can't tab here │
+└────────────────────────────────────────────────┘
+```
+
+### Full Access (value 2) — Tab moves through ALL controls:
+```
+┌────────────────────────────────────────────────┐
+│  Save Document                                 │
+├────────────────────────────────────────────────┤
+│  File name: [filename.txt]    ← Tab 1          │
+│                                                │
+│  Location:  [Documents ▼]     ← Tab 2          │
+│                                                │
+│  ☐ Include hidden files       ← Tab 3          │
+│                                                │
+│         [Cancel]  [Save]      ← Tab 4, 5       │
+└────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `2` — Full keyboard access.
+
+### Why Full Keyboard Access?
+
+1. **Speed** — No reaching for mouse
+2. **Dialog navigation** — Tab to buttons, press Space
+3. **Vim-like workflow** — Keep hands on keyboard
+4. **Accessibility** — Essential for some users
+5. **Efficiency** — Power user expectation
+
+### Common Use Cases
+
+| Action | Keyboard Flow |
+|--------|--------------|
+| Cancel Dialog | Tab to Cancel → Space |
+| Accept Default | Press Return (default button) |
+| Change Dropdown | Tab to dropdown → ↑↓ arrows |
+| Toggle Checkbox | Tab to checkbox → Space |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain AppleKeyboardUIMode
+
+# Enable full keyboard access (recommended)
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 2
+
+# Disable (text fields only)
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 0
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain AppleKeyboardUIMode
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → Scroll down → ☑ **Keyboard navigation**
+
+In older macOS:
+**System Preferences** → **Keyboard** → **Shortcuts** → ☑ **Use keyboard navigation to move focus between controls**
+
+## Focus Ring Indicator
+
+When tabbing, a blue focus ring shows current control:
+```
+        [ Cancel ]   [▪▪▪ Save ▪▪▪]
+                      ↑
+              Blue ring = focused
+              Press Space to activate
+```
+
+## Essential Keyboard Shortcuts
+
+With full keyboard access:
+| Shortcut | Action |
+|----------|--------|
+| **Tab** | Move to next control |
+| **⇧Tab** | Move to previous control |
+| **Space** | Activate focused button/checkbox |
+| **Return** | Activate default button |
+| **↑↓** | Navigate within menus/dropdowns |
+| **Escape** | Cancel/close dialog |
+
+## Save/Cancel Dialog Example
+
+When dialog appears:
+```
+1. Tab Tab → Focus reaches [Save] button
+2. Space    → Save is activated
+```
+
+Or:
+```
+1. Tab → Focus on [Cancel]
+2. Space → Cancel
+```
+
+## Finder Dialog Navigation
+
+In Save/Open dialogs:
+- Tab through sidebar, file list, buttons
+- Arrow keys navigate within lists
+- Return to confirm
+
+## Browser Form Navigation
+
+In web forms:
+- Tab between all form fields
+- Space for checkboxes
+- Arrow keys in dropdowns
+
+## Accessibility Foundation
+
+Full keyboard access is essential for:
+- Users who cannot use a mouse
+- Users with motor impairments
+- Users who prefer keyboard efficiency
+
+Part of macOS's comprehensive accessibility support.
+
+## Related Settings
+
+```bash
+# Key repeat rate (for holding Tab)
+defaults write NSGlobalDomain KeyRepeat -int 1
+
+# Initial key repeat delay
+defaults write NSGlobalDomain InitialKeyRepeat -int 10
+
+# Smart quotes (disable for typing)
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Tab skips some controls | Control may not be tabbable by design |
+| Focus ring not visible | Check Accessibility settings |
+| Doesn't work in some apps | Some apps don't fully conform |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+run_defaults "AppleKeyboardUIMode" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Use keyboard like a mouse](https://support.apple.com/guide/mac-help/use-your-keyboard-like-a-mouse-mh27469/mac)
+- [Apple Support: Keyboard shortcuts](https://support.apple.com/guide/mac-help/use-keyboard-shortcuts-mchlp2262/mac)

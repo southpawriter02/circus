@@ -1,0 +1,125 @@
+# Disk Utility Show All Devices
+
+Display full disk hierarchy in the sidebar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.DiskUtility` |
+| **Key** | `SidebarShowAllDevices` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Disk Utility shows all devices (containers, physical disks, and volumes) or only volumes in the sidebar. Showing all devices reveals the full disk hierarchy, essential for understanding your storage structure.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show all devices** — Full hierarchy visible |
+| `false` | **Volumes only** (default) — Simplified view |
+
+## Visual Comparison
+
+**Volumes only (false):**
+```
+Macintosh HD
+├── Macintosh HD - Data
+└── External Drive
+```
+
+**All devices (true):**
+```
+APPLE SSD (500 GB)
+└── Container disk1
+    ├── Macintosh HD
+    └── Macintosh HD - Data
+External USB (1 TB)
+└── External Drive
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show full disk hierarchy.
+
+### Why Show All Devices?
+
+1. **Understanding** — See how disks are structured
+2. **APFS containers** — View container relationships
+3. **Troubleshooting** — Diagnose disk issues
+4. **Partitioning** — See all partitions
+5. **Professional** — Power user view
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.DiskUtility SidebarShowAllDevices
+
+# Show all devices (recommended)
+defaults write com.apple.DiskUtility SidebarShowAllDevices -bool true
+
+# Show volumes only (default)
+defaults write com.apple.DiskUtility SidebarShowAllDevices -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.DiskUtility SidebarShowAllDevices
+```
+
+## UI Location
+
+**View** menu → ☑ **Show All Devices**
+
+## APFS Disk Structure
+
+Modern Macs use APFS with containers:
+
+```
+Physical Disk
+└── Container (APFS space pool)
+    ├── Volume 1 (System)
+    ├── Volume 2 (Data)
+    ├── Volume 3 (Recovery)
+    └── Volume 4 (VM)
+```
+
+Without "Show All Devices," you only see the volumes.
+
+## Related Settings
+
+```bash
+# Show APFS snapshots
+defaults write com.apple.DiskUtility DUShowAPFSSnapshots -bool true
+
+# Enable debug menu
+defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Not seeing container | Enable this setting |
+| Can't select physical disk | Use View → Show All Devices |
+| Missing partitions | Check parent container |
+
+## Compatibility
+
+- **macOS**: 10.13+ (APFS Macs)
+- **Note**: Restart Disk Utility for changes
+
+## Source File
+
+**File**: [`defaults/applications/disk_utility.sh`](../../../../defaults/applications/disk_utility.sh)
+
+```bash
+run_defaults "com.apple.DiskUtility" "SidebarShowAllDevices" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: View volumes, containers, and devices](https://support.apple.com/guide/disk-utility/view-volumes-containers-devices-dskua4e0e60f/mac)

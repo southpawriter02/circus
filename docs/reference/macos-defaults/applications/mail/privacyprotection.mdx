@@ -1,0 +1,145 @@
+# Mail Privacy Protection
+
+Protect your privacy by hiding IP and blocking tracking pixels.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `ProtectMailActivityInICloud` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Mail Privacy Protection (introduced in macOS Monterey) hides your IP address and preloads all remote content privately. This prevents senders from knowing when you open their emails, your location, and whether you're using Mail.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Protected** (default) — IP hidden, content loaded privately |
+| `false` | **Unprotected** — Senders can track email opens |
+
+## How It Works
+
+**Without Protection:**
+```
+You open email → Tracking pixel loads → Sender knows:
+• When you opened
+• Your IP address
+• Your general location
+• Device info
+```
+
+**With Protection:**
+```
+Mail preloads remotely → Content cached privately → Sender sees:
+• Random proxy IP
+• Unknown location
+• Unknown open time (or never)
+```
+
+## Our Configuration
+
+**Set to**: `true` — Maximum email privacy.
+
+### What Mail Privacy Protection Does
+
+1. **Hides IP address** — Uses Apple proxy servers
+2. **Hides location** — General region only
+3. **Hides open time** — Preloads in background
+4. **Blocks tracking pixels** — 1x1 invisible images can't track
+5. **Prevents read receipts** — Unless you explicitly respond
+
+### What It Doesn't Do
+
+- Doesn't block email content
+- Doesn't affect links you click
+- Doesn't hide your email address
+- Doesn't block all marketing
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail ProtectMailActivityInICloud
+
+# Enable Mail Privacy Protection (recommended)
+defaults write com.apple.mail ProtectMailActivityInICloud -bool true
+
+# Disable (allow tracking)
+defaults write com.apple.mail ProtectMailActivityInICloud -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.mail ProtectMailActivityInICloud
+```
+
+## UI Location
+
+**Mail** → **Settings** (⌘,) → **Privacy** → ☑ **Protect Mail Activity**
+
+Additional privacy options:
+- Hide IP Address
+- Block All Remote Content (separate setting)
+
+## Related Setting: Block Remote Content
+
+For additional privacy when not using Mail Privacy Protection:
+
+```bash
+# Block all remote content (images, etc.)
+defaults write com.apple.mail DisableURLLoading -bool true
+```
+
+| Setting | Email Experience |
+|---------|------------------|
+| Privacy Protection ON | Images load privately |
+| Block Remote Content ON | No images until you allow |
+| Both OFF | Full tracking possible |
+
+## Impact on Senders
+
+For email marketers:
+- Open rates become inaccurate
+- Location data unavailable
+- Device detection unreliable
+- Can't confirm delivery timing
+
+This is by design for your privacy.
+
+## Newsletters and Marketing
+
+You'll still receive all content. The change is:
+- **Before**: They knew you opened at 9:04 AM from Denver
+- **After**: They may not know if you opened at all
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Images not loading | Check "Block Remote Content" |
+| Need real-time content | Images are cached; may be delayed |
+| Specific sender needs tracking | No per-sender exception |
+
+## Compatibility
+
+- **macOS**: 12.0 (Monterey)+
+- **Mail.app**: Built-in feature
+- **iCloud**: Works with iCloud accounts
+- **Third-party accounts**: Works with all email providers in Mail
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "ProtectMailActivityInICloud" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Mail Privacy Protection](https://support.apple.com/guide/mail/use-mail-privacy-protection-mlhl03be2866/mac)
+- [Apple: Privacy Features](https://www.apple.com/privacy/features/)

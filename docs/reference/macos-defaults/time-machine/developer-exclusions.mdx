@@ -1,0 +1,221 @@
+# Time Machine Developer Exclusions
+
+Exclude regenerable development files from backups.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Command** | `tmutil addexclusion` |
+| **Type** | System Command |
+| **Default State** | No exclusions |
+| **Our Setting** | Development paths excluded |
+| **Requires** | sudo |
+
+## Description
+
+Time Machine exclusions prevent specific directories from being backed up. For developers, excluding package manager caches and build artifacts can dramatically reduce backup size and speed without sacrificing important data — these files are easily regenerated.
+
+## The Problem: Bloated Backups
+
+```
+Developer Mac Backup Analysis
+┌─────────────────────────────────────────────────┐
+│                                                 │
+│  Essential Data (Documents, Code)     80 GB    │
+│  ████████████████████████░░░░░░░░░░░           │
+│                                                 │
+│  node_modules (regenerable)          150 GB    │
+│  ████████████████████████████████████████████  │
+│                                                 │
+│  .cargo, .npm, caches                 50 GB    │
+│  ████████████████░░░░░░░░░░░░░░░░░░░           │
+│                                                 │
+│  Without exclusions: 280 GB backup             │
+│  With exclusions:     80 GB backup (71% less!) │
+└─────────────────────────────────────────────────┘
+```
+
+## Our Exclusions
+
+| Path | Typical Size | Regenerate With |
+|------|--------------|-----------------|
+| `~/node_modules` | 10-100+ GB | `npm install` |
+| `~/.npm` | 1-10 GB | Auto-cached |
+| `~/.yarn` | 1-5 GB | Auto-cached |
+| `~/.pnpm-store` | 5-20 GB | Auto-cached |
+| `~/.cargo` | 1-20 GB | `cargo build` |
+| `~/.go` | 1-10 GB | `go mod download` |
+| `~/.gradle` | 2-10 GB | Auto-cached |
+| `~/.m2` | 2-20 GB | Auto-cached |
+| `~/.cocoapods` | 1-5 GB | `pod install` |
+| `~/.cache` | 5-50 GB | Auto-cached |
+| `~/Library/Caches` | 5-50 GB | Auto-cached |
+| `~/.docker` | 10-100+ GB | Re-pull images |
+
+## Code Examples
+
+```bash
+# Add exclusion (idempotent - safe to run multiple times)
+sudo tmutil addexclusion ~/node_modules
+sudo tmutil addexclusion ~/.npm
+sudo tmutil addexclusion ~/.cargo
+sudo tmutil addexclusion ~/.cache
+sudo tmutil addexclusion ~/Library/Caches
+sudo tmutil addexclusion ~/.docker
+
+# Add exclusion with fixed path (survives moves)
+sudo tmutil addexclusion -p /path/to/folder
+
+# Remove an exclusion
+sudo tmutil removeexclusion ~/node_modules
+
+# Check if path is excluded
+tmutil isexcluded ~/node_modules
+
+# List all excluded paths
+sudo mdfind "com_apple_backup_excludeItem = 'com.apple.backupd'"
+```
+
+## Exclusion Types
+
+### Sticky Exclusions (Default)
+```bash
+sudo tmutil addexclusion ~/path
+```
+- Persists even if path doesn't exist
+- Recreated directories stay excluded
+- Best for development directories
+
+### Fixed-Path Exclusions
+```bash
+sudo tmutil addexclusion -p ~/path
+```
+- Tied to specific inode
+- Doesn't survive moves/recreates
+- Use for specific one-time exclusions
+
+## Safe to Exclude Decision Tree
+
+```
+┌─────────────────────────────────────────────┐
+│  Should I exclude this from Time Machine?   │
+└─────────────────┬───────────────────────────┘
+                  │
+                  ▼
+        ┌─────────────────┐
+        │ Can it be       │
+        │ regenerated?    │
+        └────────┬────────┘
+                 │
+        ┌────────┴────────┐
+        │                 │
+       YES               NO
+        │                 │
+        ▼                 ▼
+   ┌─────────┐       ┌─────────┐
+   │ EXCLUDE │       │ KEEP IT │
+   └─────────┘       └─────────┘
+```
+
+## What NOT to Exclude
+
+| Path | Why Keep |
+|------|----------|
+| `~/.ssh` | Keys are irreplaceable |
+| `~/.gnupg` | GPG keys are irreplaceable |
+| `~/.aws` | Credentials (use secrets manager ideally) |
+| `~/Documents` | Your work |
+| `~/Projects` | Your code (source, not deps) |
+| `~/.config` | App configurations |
+| `~/.zshrc`, etc. | Shell configs |
+
+## Project-Level node_modules
+
+For per-project exclusions:
+```bash
+# Exclude node_modules in all projects
+find ~/Projects -name "node_modules" -type d -exec tmutil addexclusion {} \;
+
+# Or add a .gitignore-style exclusion via xattr
+for dir in $(find ~/Projects -name "node_modules" -type d); do
+  sudo tmutil addexclusion "$dir"
+done
+```
+
+## Backup Size Comparison
+
+Before exclusions:
+```bash
+tmutil listbackups | tail -1 | xargs du -sh
+# 450 GB
+```
+
+After exclusions:
+```bash
+tmutil startbackup --block
+tmutil listbackups | tail -1 | xargs du -sh
+# 180 GB (60% reduction!)
+```
+
+## Disaster Recovery
+
+If you lose your Mac after excluding these:
+
+1. Restore from Time Machine (your code, configs, documents)
+2. Run your project setup scripts
+3. `npm install`, `cargo build`, etc. regenerate dependencies
+4. Full recovery in minutes to hours, not lost data
+
+## Related Settings
+
+```bash
+# Enable Time Machine
+sudo tmutil enable
+
+# View current backup status
+tmutil status
+
+# Start backup immediately
+tmutil startbackup
+
+# View destinations
+tmutil destinationinfo
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Exclusion not working | Verify with `tmutil isexcluded` |
+| Backup still large | Check for additional large directories |
+| Can't add exclusion | Use sudo, check path exists |
+
+## Compatibility
+
+- **macOS**: 10.5+ (Leopard)
+- **Requires**: sudo for system-level exclusions
+- **Note**: Exclusions are immediate
+
+## Source File
+
+**File**: [`defaults/system/time_machine.sh`](../../../defaults/system/time_machine.sh)
+
+```bash
+exclusions=(
+  "$HOME/node_modules"
+  "$HOME/.npm"
+  "$HOME/.cargo"
+  "$HOME/.cache"
+  "$HOME/Library/Caches"
+)
+
+for path in "${exclusions[@]}"; do
+  tmutil addexclusion "$path"
+done
+```
+
+## References
+
+- [Apple Support: Time Machine](https://support.apple.com/en-us/104984)
+- man tmutil

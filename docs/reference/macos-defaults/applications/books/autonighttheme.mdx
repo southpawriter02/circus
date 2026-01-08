@@ -1,0 +1,112 @@
+# Books Auto Night Theme
+
+Automatically switch to dark reading theme based on lighting.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iBooksX` |
+| **Key** | `BKAutoNightThemeEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Automatically switches to a dark reading theme based on ambient light conditions or time of day. This reduces eye strain when reading in low-light environments and provides a more comfortable reading experience.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto night theme** — Adapts to lighting/time |
+| `false` | **Manual control** (default) — Theme stays fixed |
+
+## Our Configuration
+
+**Set to**: `true` — Automatic theme adaptation.
+
+### Why Enable Auto Night?
+
+1. **Eye comfort** — Reduces strain in low light
+2. **Automatic** — No manual switching
+3. **Natural** — Matches reading environment
+4. **Better sleep** — Less blue light at night
+
+## Available Themes
+
+| Theme | Background | Best For |
+|-------|------------|----------|
+| White | White | Bright environments |
+| Sepia | Warm tan | Comfortable reading |
+| Gray | Medium gray | Moderate light |
+| Night | Black | Dark environments |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iBooksX BKAutoNightThemeEnabled
+
+# Enable auto night theme (recommended)
+defaults write com.apple.iBooksX BKAutoNightThemeEnabled -bool true
+
+# Disable (manual theme control)
+defaults write com.apple.iBooksX BKAutoNightThemeEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iBooksX BKAutoNightThemeEnabled
+```
+
+## UI Location
+
+**Books** → **Settings** (⌘,) → **Reading** → ☑ **Auto-Night Theme**
+
+## Manual Theme Control
+
+When not using auto:
+1. Open book
+2. Click **Aa** button in toolbar
+3. Select theme color
+
+## Related Settings
+
+### Sync Reading Position
+
+```bash
+# Continue reading on any device
+defaults write com.apple.iBooksX BKSyncReadingPosition -bool true
+```
+
+### Sync Bookmarks
+
+```bash
+# Sync highlights and bookmarks
+defaults write com.apple.iBooksX BKSyncBookmarksAndHighlights -bool true
+```
+
+## System Dark Mode
+
+Books can also follow system appearance:
+- **System Settings** → **Appearance** → **Dark**
+
+Auto Night Theme works independently of system dark mode.
+
+## Compatibility
+
+- **macOS**: 10.14+
+- **iCloud**: Theme doesn't sync (per-device)
+- **Note**: Restart Books for changes
+
+## Source File
+
+**File**: [`defaults/applications/books.sh`](../../../../defaults/applications/books.sh)
+
+```bash
+run_defaults "com.apple.iBooksX" "BKAutoNightThemeEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Books settings](https://support.apple.com/guide/books/settings-ibks1016d5f5/mac)

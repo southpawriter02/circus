@@ -1,0 +1,120 @@
+# Photos Show Hidden Album
+
+Control visibility of the Hidden album in the sidebar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Photos` |
+| **Key** | `IPXDefaultsShowHiddenAlbum` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the Hidden album appears in the Photos sidebar. The Hidden album contains photos you've hidden from your main library. When disabled, the album is invisible but hidden photos still exist.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show Hidden album** — Visible in sidebar under Utilities |
+| `false` | **Hide Hidden album** — Album not visible (but photos still hidden) |
+
+## Our Configuration
+
+**Set to**: `true` — Show Hidden album for easy access.
+
+### Why Show Hidden Album?
+
+1. **Access** — Easily review hidden photos
+2. **Management** — Unhide photos when needed
+3. **Awareness** — Know hidden photos exist
+4. **Organization** — Part of photo management workflow
+
+### Why Hide It?
+
+- Extra privacy — Hidden from casual browsing
+- Cleaner sidebar — Less visual clutter
+- Security by obscurity — Not obvious hidden photos exist
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Photos IPXDefaultsShowHiddenAlbum
+
+# Show Hidden album (default)
+defaults write com.apple.Photos IPXDefaultsShowHiddenAlbum -bool true
+
+# Hide the Hidden album
+defaults write com.apple.Photos IPXDefaultsShowHiddenAlbum -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Photos IPXDefaultsShowHiddenAlbum
+```
+
+## UI Location
+
+**View** menu → ☑ **Show Hidden Photo Album**
+
+## How to Hide Photos
+
+1. Select photos in Library
+2. Right-click → **Hide X Photos**
+3. Or **Image** → **Hide Photo** (⌘L)
+
+Hidden photos:
+- Move to Hidden album
+- Don't appear in Moments, Years, etc.
+- Don't appear in widgets
+- Still in iCloud if syncing
+
+## Accessing Hidden Photos (When Album Hidden)
+
+If you've hidden the Hidden album:
+1. **View** → **Show Hidden Photo Album**
+2. Access photos
+3. Optionally hide album again
+
+## Face ID / Touch ID Protection
+
+On macOS Sonoma+, Hidden album requires authentication:
+- Touch ID or password to view
+- Adds security layer beyond just hiding
+
+Enable in **Photos** → **Settings** → **General** → **Use Touch ID or password**
+
+## Recently Deleted
+
+Similar to Hidden, Recently Deleted also has protection:
+- 30-day retention before permanent deletion
+- Requires authentication to view
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Hidden album not showing | Check View menu setting |
+| Can't find hidden photos | Album may be hidden |
+| Photos reappearing | They may not be hidden properly |
+
+## Compatibility
+
+- **macOS**: 10.14+
+- **iCloud**: Hidden status syncs
+- **Note**: Authentication in Sonoma+ adds security
+
+## Source File
+
+**File**: [`defaults/applications/photos.sh`](../../../../defaults/applications/photos.sh)
+
+```bash
+run_defaults "com.apple.Photos" "IPXDefaultsShowHiddenAlbum" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Hide photos](https://support.apple.com/guide/photos/hide-photos-pht6e23cb45f/mac)

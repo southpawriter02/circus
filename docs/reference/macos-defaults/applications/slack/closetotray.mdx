@@ -1,0 +1,167 @@
+# Slack Close to Menu Bar
+
+Keep Slack running when window is closed.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.tinyspeck.slackmacgap` |
+| **Key** | `SlackCloseToTray` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether closing the Slack window minimizes it to the menu bar instead of quitting the application. This keeps Slack running in the background for notifications while freeing up Dock space.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Close to tray** (default) — App stays running |
+| `false` | **Quit on close** — ⌘W quits Slack |
+
+## Behavior Comparison
+
+### Close to Tray (true):
+```
+Click ✕ button → Window closes → Slack icon in menu bar
+                                 │
+                                 ├── Still receives messages ✓
+                                 ├── Shows notifications ✓
+                                 └── Click to reopen window
+```
+
+### Quit on Close (false):
+```
+Click ✕ button → Slack quits → No background process
+                               │
+                               ├── No notifications ✗
+                               ├── No messages until reopen ✗
+                               └── Disconnect from workspace
+```
+
+## Our Configuration
+
+**Set to**: `true` — Close to menu bar.
+
+### Why Close to Tray?
+
+1. **Stay connected** — Receive messages
+2. **Notifications** — Don't miss mentions
+3. **Clean desktop** — No Dock clutter
+4. **Quick access** — Click menu icon to open
+5. **Expected behavior** — Like mobile apps
+
+### Why Quit on Close?
+
+- Save memory/resources
+- Complete disconnect when not working
+- Battery saving
+- No background processes
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.tinyspeck.slackmacgap SlackCloseToTray
+
+# Close to menu bar (default)
+defaults write com.tinyspeck.slackmacgap SlackCloseToTray -bool true
+
+# Quit when window closes
+defaults write com.tinyspeck.slackmacgap SlackCloseToTray -bool false
+
+# Delete (reset to default)
+defaults delete com.tinyspeck.slackmacgap SlackCloseToTray
+```
+
+## UI Location
+
+Not directly configurable in Slack preferences.
+
+## Menu Bar Icon
+
+When minimized to tray:
+```
+Menu bar: [🔔] [📶] [🔋] [💬 Slack] [⏰]
+                        ↑
+                Click to open window
+```
+
+Shows badge for unread messages.
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘W | Close window (stays in tray) |
+| ⌘Q | Actually quit Slack |
+| ⌘M | Minimize to Dock |
+
+To truly quit Slack, use ⌘Q.
+
+## Memory Usage
+
+Slack running in background:
+- ~300-500 MB RAM typical
+- Varies by workspaces
+- Multiple workspaces = more memory
+
+Consider disabling if RAM is limited.
+
+## Related Settings
+
+```bash
+# Auto-launch on login
+defaults write com.tinyspeck.slackmacgap SlackAutoLaunch -bool true
+
+# Disable dock bounce
+defaults write com.tinyspeck.slackmacgap SlackBounceEnabled -bool false
+```
+
+## Notification Implications
+
+With close to tray:
+- Desktop notifications work ✓
+- Badge count updates ✓
+- Sound alerts (if enabled) ✓
+
+Without:
+- No notifications when Slack quit
+- Must reopen app to check messages
+
+## Focus Mode Integration
+
+Even with close to tray:
+- Focus modes can silence notifications
+- Slack still receives messages quietly
+- Check later at your convenience
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Slack fully quits on close | Check this setting |
+| No menu bar icon | Look for hidden icons |
+| Too much memory | Disable this, quit when done |
+
+## Compatibility
+
+- **Slack**: Mac desktop app
+- **macOS**: 10.13+
+- **Note**: Restart Slack for changes
+
+## Source File
+
+**File**: [`defaults/applications/slack.sh`](../../../../defaults/applications/slack.sh)
+
+```bash
+run_defaults "com.tinyspeck.slackmacgap" "SlackCloseToTray" "-bool" "true"
+```
+
+## References
+
+- [Slack Help: Manage preferences](https://slack.com/help/articles/201374536-Manage-your-preferences)

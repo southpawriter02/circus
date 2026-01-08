@@ -1,0 +1,202 @@
+# Control Center Battery with Percentage
+
+Show battery percentage in the menu bar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.controlcenter` |
+| **Key** | `Battery` |
+| **Type** | Integer |
+| **Default Value** | `18` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls where the Battery module appears and whether to show the battery percentage alongside the battery icon. For laptop users, having quick visibility of battery level is essential for planning and avoiding unexpected shutdowns.
+
+## Visibility Values
+
+| Value | Location | Percentage |
+|-------|----------|------------|
+| `0` | Disabled | No battery shown |
+| `2` | Menu bar | Always visible |
+| `8` | Menu bar (when low) | Shows when battery low |
+| `18` | Control Center only | Default |
+| `24` | Hidden | Not shown |
+
+## Battery Percentage Setting
+
+Separate setting for showing percentage:
+```bash
+defaults write com.apple.controlcenter "NSStatusItem Visible Battery" -bool true
+```
+
+## Visual Comparison
+
+### Icon Only:
+```
+Menu bar: [...] [🔋] [⏰]
+                 ↑
+           Icon shows rough level
+```
+
+### Icon + Percentage:
+```
+Menu bar: [...] [🔋 78%] [⏰]
+                    ↑
+             Exact level visible
+```
+
+## Our Configuration
+
+**Set to**: `2` — Always show in menu bar with percentage.
+
+### Why Show Percentage?
+
+1. **Precision** — Know exact remaining charge
+2. **Planning** — When to plug in
+3. **Awareness** — Avoid surprises
+4. **Quick glance** — No clicking needed
+5. **Essential info** — For mobile workers
+
+### Why Hide Percentage?
+
+- Reduces menu bar clutter
+- Battery icon suffices for desktop use
+- Less anxiety about battery level
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.controlcenter Battery
+
+# Always show in menu bar
+defaults write com.apple.controlcenter Battery -int 2
+
+# Control Center only (default)
+defaults write com.apple.controlcenter Battery -int 18
+
+# Show when low
+defaults write com.apple.controlcenter Battery -int 8
+
+# Show percentage
+defaults write com.apple.controlcenter "NSStatusItem Visible Battery" -bool true
+defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.controlcenter Battery
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Battery**
+
+Options:
+- Show in Menu Bar
+- Show Percentage
+
+## Battery Menu Details
+
+Click battery icon for:
+```
+┌─────────────────────────────────┐
+│  Battery                        │
+├─────────────────────────────────┤
+│  ████████░░  78%                │
+│  Power Source: Battery          │
+│  Time Remaining: 4:32           │
+│                                 │
+│  ─────────────────────────────  │
+│  🔋 Low Power Mode              │
+│  ⚡ Optimized Charging          │
+│                                 │
+│  Battery Settings...            │
+└─────────────────────────────────┘
+```
+
+## Low Power Mode
+
+Accessible from battery menu:
+- Reduces background activity
+- Dims display slightly
+- Optimizes performance for battery
+- Extends time remaining
+
+## Optimized Battery Charging
+
+macOS learns your routine:
+- Delays charging past 80%
+- Finishes charging when you usually unplug
+- Reduces battery wear
+- Can be disabled if needed
+
+## Battery Health
+
+Check battery condition:
+**System Settings** → **Battery** → **Battery Health**
+
+Shows:
+- Maximum Capacity (%)
+- Cycle Count
+- Condition (Normal, Service Recommended)
+
+## Command Line Battery Check
+
+```bash
+# Battery percentage
+pmset -g batt
+
+# Detailed battery info
+system_profiler SPPowerDataType
+
+# Cycle count
+system_profiler SPPowerDataType | grep "Cycle Count"
+```
+
+## Desktop Macs
+
+On Mac mini, Mac Studio, Mac Pro, iMac:
+- Battery icon not shown (no battery)
+- UPS battery may show if connected
+- This setting has no effect
+
+## Related Settings
+
+```bash
+# Sound (volume) in menu bar
+defaults write com.apple.controlcenter Sound -int 2
+
+# Bluetooth in menu bar
+defaults write com.apple.controlcenter Bluetooth -int 2
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Percentage not showing | Check separate percentage setting |
+| Wrong percentage | SMC reset may help |
+| Battery draining fast | Check Activity Monitor |
+| Service warning | Visit Apple Store |
+
+## Compatibility
+
+- **macOS**: 11.0+ (Big Sur) for Control Center
+- **Hardware**: MacBooks with battery
+- **Note**: Immediate effect
+
+## Source File
+
+**File**: [`defaults/interface/control_center.sh`](../../../defaults/interface/control_center.sh)
+
+```bash
+run_defaults "com.apple.controlcenter" "Battery" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Control Center](https://support.apple.com/guide/mac-help/control-center-mchl50f94f8f/mac)
+- [Apple Support: Battery](https://support.apple.com/guide/mac-help/monitor-your-battery-mh27271/mac)

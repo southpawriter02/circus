@@ -1,0 +1,154 @@
+# Safari Background Tabs
+
+Control how new tabs open when clicking links.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `OpenNewTabsInFront` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether new tabs opened via Command-click open in the foreground (immediately switching to them) or in the background (keeping the current page active). Background tabs allow uninterrupted browsing while queueing links for later.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Foreground** — Switch to new tab immediately |
+| `false` | **Background** (default) — Stay on current page |
+
+## Behavior Demonstration
+
+### Background Tabs (false - Default):
+```
+Page A: Reading article...
+    │
+    └── ⌘-click link → Tab B opens in background
+                        │
+                        └── You continue reading Page A
+                            Tab B waits in tab bar
+```
+
+### Foreground Tabs (true):
+```
+Page A: Reading article...
+    │
+    └── ⌘-click link → Tab B opens AND focuses
+                        │
+                        └── You're now on Tab B
+                            Page A is in background
+```
+
+## Our Configuration
+
+**Set to**: `false` — New tabs open in background.
+
+### Why Background?
+
+1. **Uninterrupted reading** — Finish current article
+2. **Queue links** — Collect tabs for later
+3. **Research flow** — Open multiple results
+4. **Control** — Switch when ready
+5. **Standard behavior** — Expected default
+
+### Why Foreground?
+
+- Want immediate link follow
+- Single-tab browsing style
+- Quick reference checking
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari OpenNewTabsInFront
+
+# Open tabs in background (default, recommended)
+defaults write com.apple.Safari OpenNewTabsInFront -bool false
+
+# Open tabs in foreground
+defaults write com.apple.Safari OpenNewTabsInFront -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.Safari OpenNewTabsInFront
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **Tabs** → ☐ **When a new tab or window opens, make it active**
+
+## Keyboard Modifiers
+
+Override default behavior on-the-fly:
+
+| Click Type | Default | Override |
+|------------|---------|----------|
+| ⌘-click | Background | + Shift = Foreground |
+| ⌘⇧-click | Foreground | (reverses setting) |
+
+## Tab Behavior Summary
+
+| Action | Result |
+|--------|--------|
+| ⌘-click link | New background tab |
+| ⌘⇧-click link | New foreground tab |
+| Middle-click | New background tab |
+| ⌘T | New empty foreground tab |
+| Link target="_blank" | Depends on setting |
+
+## Research Workflow
+
+Efficient research with background tabs:
+1. Search for topic
+2. ⌘-click all relevant results
+3. Continue reading current page
+4. Review queued tabs afterward
+
+## Tab Groups
+
+With Safari Tab Groups:
+- Background tabs add to current group
+- Organize research by topic
+- Switch between sessions
+
+## Related Settings
+
+```bash
+# Show tab bar always
+defaults write com.apple.Safari AlwaysShowTabBar -bool true
+
+# Tab previews
+defaults write com.apple.Safari PlugInFirstVisitPolicy -int 1
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Tabs keep switching | Verify setting is false |
+| ⌘-click not working | Check keyboard shortcuts |
+| Wrong behavior | Try Shift modifier |
+
+## Compatibility
+
+- **Safari**: All versions
+- **macOS**: 10.10+
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "OpenNewTabsInFront" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Safari tabs](https://support.apple.com/guide/safari/tabs-sfri28032/mac)

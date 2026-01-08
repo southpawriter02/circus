@@ -1,0 +1,158 @@
+# Control Center Wi-Fi
+
+Configure Wi-Fi visibility in Control Center and menu bar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.controlcenter` |
+| **Key** | `WiFi` |
+| **Type** | Integer |
+| **Default Value** | `2` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls where the Wi-Fi toggle and status indicator appears—in the menu bar, Control Center only, or both. Wi-Fi is essential for network connectivity and is typically shown in the menu bar for quick access.
+
+## Values
+
+| Value | Visibility |
+|-------|------------|
+| `0` | Hidden/Disabled |
+| `2` | **Always in menu bar** (default) |
+| `8` | Show in menu bar when active |
+| `18` | Control Center only |
+| `24` | Don't show anywhere |
+
+## Visual Example
+
+**WiFi = 2 (Always in menu bar):**
+```
+┌──────────────────────────────────────────────┐
+│ 📶  🔋  Wed 3:45 PM  🔍                      │
+└──────────────────────────────────────────────┘
+      ↑
+   Always visible
+```
+
+**WiFi = 18 (Control Center only):**
+```
+┌──────────────────────────────────────────────┐
+│ 🔋  Wed 3:45 PM  🔍  ⊞                       │
+└──────────────────────────────────────────────┘
+                        ↑
+              Click for Control Center
+              (Wi-Fi inside)
+```
+
+## Our Configuration
+
+**Set to**: `2` — Always show Wi-Fi in menu bar.
+
+### Why Always Show Wi-Fi?
+
+1. **Connection status** — See connectivity at a glance
+2. **Quick access** — Click for network list
+3. **Signal strength** — Monitor connection quality
+4. **Troubleshooting** — Notice when disconnected
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.controlcenter WiFi
+
+# Always show in menu bar (recommended)
+defaults write com.apple.controlcenter WiFi -int 2
+
+# Show only in Control Center
+defaults write com.apple.controlcenter WiFi -int 18
+
+# Show when active
+defaults write com.apple.controlcenter WiFi -int 8
+
+# Apply changes
+killall ControlCenter
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Wi-Fi**
+
+Options:
+- Show in Menu Bar (Always / When Active)
+- Show in Control Center
+
+## Wi-Fi Menu Bar Options
+
+Click the Wi-Fi icon for:
+- Turn Wi-Fi On/Off
+- Available networks list
+- Current network details
+- Network Preferences...
+- Create Network...
+
+Option-click for additional details:
+- IP Address
+- Router address
+- Security type
+- Channel and band
+
+## All Control Center Modules
+
+```bash
+# Complete Control Center configuration
+defaults write com.apple.controlcenter WiFi -int 2
+defaults write com.apple.controlcenter Bluetooth -int 2
+defaults write com.apple.controlcenter Sound -int 2
+defaults write com.apple.controlcenter Battery -int 2
+defaults write com.apple.controlcenter NowPlaying -int 8
+defaults write com.apple.controlcenter AirDrop -int 18
+defaults write com.apple.controlcenter Display -int 18
+defaults write com.apple.controlcenter FocusModes -int 18
+
+killall ControlCenter
+```
+
+## Value Reference
+
+| Value | When Used |
+|-------|-----------|
+| `2` | Core items: Wi-Fi, Bluetooth, Battery, Sound |
+| `8` | Contextual: Now Playing, Screen Mirroring |
+| `18` | Less frequent: AirDrop, Focus, Display |
+
+## Wi-Fi Networks Window
+
+For detailed network management:
+- **System Settings** → **Wi-Fi**
+- Or click Wi-Fi icon → **Wi-Fi Settings...**
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Wi-Fi icon missing | Set value to 2, restart ControlCenter |
+| Can't see networks | Check Wi-Fi is on in System Settings |
+| Icon won't change | Log out and back in |
+
+## Compatibility
+
+- **macOS**: 11.0 (Big Sur)+
+- **Control Center**: Introduced in Big Sur
+- **Earlier macOS**: Use menu bar extras preferences
+
+## Source File
+
+**File**: [`defaults/interface/control_center.sh`](../../../defaults/interface/control_center.sh)
+
+```bash
+run_defaults "com.apple.controlcenter" "WiFi" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Use Control Center on Mac](https://support.apple.com/guide/mac-help/control-center-mchl50f94f8f/mac)
+- [Apple Support: Connect to Wi-Fi](https://support.apple.com/guide/mac-help/connect-to-wi-fi-mchlp1180/mac)

@@ -1,0 +1,186 @@
+# Automatic Smart Dashes Substitution
+
+Disable automatic conversion of hyphens to em/en dashes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticDashSubstitutionEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether macOS automatically converts double hyphens (`--`) to en dashes (–) or em dashes (—) as you type. While typographically correct for prose, this causes issues in code, commands, and technical content where double hyphens have specific meanings.
+
+## Values
+
+| Value | Dash Handling |
+|-------|---------------|
+| `true` | **Smart dashes** (default) — Auto-convert |
+| `false` | **Literal dashes** — Type what you type |
+
+## Visual Demonstration
+
+### Smart Dashes Enabled (true):
+```
+You type:     --help
+System shows: —help (or –help)
+              ↑
+          Em/en dash — NOT valid!
+
+Command breaks:
+  ls --all  →  ls —all
+              (Invalid command-line option!)
+```
+
+### Smart Dashes Disabled (false):
+```
+You type:     --help
+System shows: --help
+              ↑↑
+          Two hyphens — Valid!
+
+Command works:
+  ls --all  →  ls --all
+              (Correct!)
+```
+
+## The Dash Family
+
+| Symbol | Name | Typed | Width |
+|--------|------|-------|-------|
+| - | Hyphen/minus | `-` | Shortest |
+| – | En dash | `--` (converted) | Medium |
+| — | Em dash | `---` (converted) | Longest |
+
+In code and commands, `--` means double hyphen, not a dash!
+
+## Our Configuration
+
+**Set to**: `false` — Disable smart dashes.
+
+### Why Disable?
+
+1. **CLI flags** — `--help`, `--version` break
+2. **YAML** — `---` document separator breaks
+3. **Markdown** — `---` horizontal rule breaks
+4. **Code** — Range operators, comments break
+5. **Consistency** — Get what you type
+
+### Why Enable?
+
+- Writing prose
+- Typography matters
+- Publishing documents
+- Non-technical use
+
+## Programming Impact
+
+Smart dashes break many languages:
+```python
+# Python range (should be --)
+for i in range(0--10):  # ERROR!
+
+# Command line
+subprocess.run(["git", "—help"])  # ERROR!
+```
+
+```yaml
+# YAML document separator (should be ---)
+—  # ERROR! Not a valid doc separator
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSAutomaticDashSubstitutionEnabled
+
+# Disable smart dashes (recommended for developers)
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Enable smart dashes (default)
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSAutomaticDashSubstitutionEnabled
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Text Input** → **Text Replacements...** → ☐ **Use smart quotes and dashes**
+
+Note: Same checkbox controls both smart quotes AND smart dashes.
+
+## Command Line Examples
+
+| Command | Without Smart Dashes | With Smart Dashes |
+|---------|---------------------|-------------------|
+| `ls --all` | ✅ Works | ❌ `ls —all` |
+| `npm --version` | ✅ Works | ❌ Breaks |
+| `git log --oneline` | ✅ Works | ❌ Breaks |
+
+## Typing Actual Em/En Dashes
+
+When you DO want typographic dashes:
+| Dash | Keyboard Shortcut |
+|------|-------------------|
+| En dash (–) | Option + Hyphen |
+| Em dash (—) | Shift + Option + Hyphen |
+
+These work regardless of the substitution setting.
+
+## Related Settings
+
+```bash
+# Smart quotes
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# Auto-capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Spelling correction
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Period with double-space
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+```
+
+## Per-App Override
+
+Some apps have their own settings:
+**Edit** menu → **Substitutions** → ☐ **Smart Dashes**
+
+Check in:
+- TextEdit
+- Notes
+- Mail
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Dashes still converting | Check per-app settings |
+| Copied text has em dashes | Source had them, search/replace |
+| Need em dash for document | Use ⌥⇧- shortcut |
+
+## Compatibility
+
+- **macOS**: 10.9+ (Mavericks)
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSAutomaticDashSubstitutionEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Text substitutions](https://support.apple.com/guide/mac-help/text-substitutions-mh35735/mac)

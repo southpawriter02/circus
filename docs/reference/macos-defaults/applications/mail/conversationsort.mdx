@@ -1,0 +1,181 @@
+# Mail Conversation View Sorting
+
+Control the sort order within email conversations.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `ConversationViewSortDescending` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether messages within a conversation thread are sorted from newest-first (descending) or oldest-first (ascending). This affects how you read through email threads — whether you see the latest reply at the top or follow the natural chronological flow.
+
+## Values
+
+| Value | Sort Order | Reading Flow |
+|-------|------------|--------------|
+| `true` | Newest first (descending) | Start at top for latest |
+| `false` | Oldest first (ascending, default) | Natural chronological flow |
+
+## Visual Comparison
+
+### Oldest First (false - Default):
+```
+┌─────────────────────────────────────────┐
+│ Subject: Project Discussion            │
+├─────────────────────────────────────────┤
+│ From: Alice (Mon 10:00 AM)             │
+│ Let's discuss the project...            │
+├─────────────────────────────────────────┤
+│ From: Bob (Mon 2:00 PM)                │
+│ Sounds good, I'll prepare...            │
+├─────────────────────────────────────────┤
+│ From: Charlie (Tue 9:00 AM) ← Latest   │
+│ Here's the update...                    │
+└─────────────────────────────────────────┘
+Read top-to-bottom for narrative flow
+```
+
+### Newest First (true):
+```
+┌─────────────────────────────────────────┐
+│ Subject: Project Discussion            │
+├─────────────────────────────────────────┤
+│ From: Charlie (Tue 9:00 AM) ← Latest   │
+│ Here's the update...                    │
+├─────────────────────────────────────────┤
+│ From: Bob (Mon 2:00 PM)                │
+│ Sounds good, I'll prepare...            │
+├─────────────────────────────────────────┤
+│ From: Alice (Mon 10:00 AM)             │
+│ Let's discuss the project...            │
+└─────────────────────────────────────────┘
+Latest at top, scroll down for history
+```
+
+## Our Configuration
+
+**Set to**: `false` — Oldest first (chronological).
+
+### Why Oldest First?
+
+1. **Natural flow** — Read like a story
+2. **Context building** — Understand progression
+3. **Original question first** — See what started thread
+4. **Less confusion** — Replies make sense in order
+5. **Default** — Most mail apps use this
+
+### Why Newest First?
+
+- Quick access to latest reply
+- Long threads where history is known
+- Catch up on updates quickly
+- Gmail-like behavior preference
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail ConversationViewSortDescending
+
+# Oldest first (chronological, recommended)
+defaults write com.apple.mail ConversationViewSortDescending -bool false
+
+# Newest first
+defaults write com.apple.mail ConversationViewSortDescending -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.mail ConversationViewSortDescending
+```
+
+## UI Location
+
+**Mail** → **View** → **Sort By** → **Date** (controls message list)
+
+For conversation internal order, use defaults or:
+**Mail** → **Settings** (⌘,) → **Viewing**
+
+## Requires Conversation View
+
+This setting only matters when conversation view is enabled:
+```bash
+# Enable conversation view
+defaults write com.apple.mail ConversationViewEnabled -bool true
+```
+
+## Message List vs Conversation
+
+Two different contexts:
+1. **Message List** — List of threads in mailbox
+2. **Conversation View** — Expanded thread showing all messages
+
+This setting affects #2 (within expanded thread).
+
+## Related Settings
+
+```bash
+# Enable conversation view
+defaults write com.apple.mail ConversationViewEnabled -bool true
+
+# Show all mailboxes in conversation 
+defaults write com.apple.mail ConversationViewAllMailboxes -bool true
+
+# Privacy protection
+defaults write com.apple.mail-shared ProtectMailActivityInICloud -bool true
+```
+
+## Reading Strategies
+
+### For Oldest First:
+1. Start at top
+2. Read through chronologically
+3. Reply at bottom with full context
+
+### For Newest First:
+1. See latest update immediately
+2. Scroll if context needed
+3. Reply at top with latest context
+
+## Thread Indicators
+
+Mail shows thread structure:
+```
+│ Original message
+├── First reply
+│   ├── Reply to reply
+│   └── Another reply
+└── Different branch
+```
+
+Sort order affects visual flow.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Sort not changing | Restart Mail |
+| Conversation view off | Enable it first |
+| Inconsistent behavior | Check per-mailbox settings |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Note**: Restart Mail for changes
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "ConversationViewSortDescending" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Mail viewing options](https://support.apple.com/guide/mail/change-viewing-options-cpmlprefview/mac)

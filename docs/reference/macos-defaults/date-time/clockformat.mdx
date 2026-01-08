@@ -1,0 +1,190 @@
+# Menu Bar Clock Format
+
+Configure the date and time display in the menu bar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.menuextra.clock` |
+| **Key** | `DateFormat` |
+| **Type** | String |
+| **Default Value** | `"EEE MMM d  h:mm a"` |
+| **Our Setting** | `"EEE d MMM  HH:mm"` |
+
+## Description
+
+Controls the format of the clock displayed in the menu bar. Uses Unicode date format patterns (ICU format) to specify exactly what date and time information appears and in what order. This offers precise control over the menu bar clock appearance.
+
+## Common Format Patterns
+
+| Pattern | Meaning | Example |
+|---------|---------|---------|
+| `EEE` | Day abbreviation | Mon, Tue |
+| `EEEE` | Full day name | Monday |
+| `d` | Day of month | 5, 15 |
+| `dd` | Day (zero-padded) | 05, 15 |
+| `MMM` | Month abbreviation | Jan, Feb |
+| `MMMM` | Full month name | January |
+| `h` | Hour (12-hour) | 1, 12 |
+| `hh` | Hour (12-hour, padded) | 01, 12 |
+| `H` | Hour (24-hour) | 0, 23 |
+| `HH` | Hour (24-hour, padded) | 00, 23 |
+| `mm` | Minutes | 00, 59 |
+| `ss` | Seconds | 00, 59 |
+| `a` | AM/PM | AM, PM |
+
+## Format Examples
+
+| Format String | Output Example |
+|---------------|----------------|
+| `"EEE MMM d  h:mm a"` | Thu Jan 2  9:30 AM |
+| `"EEE d MMM  HH:mm"` | Thu 2 Jan  14:30 |
+| `"EEEE, MMMM d, yyyy  h:mm:ss a"` | Thursday, January 2, 2025  9:30:45 AM |
+| `"HH:mm"` | 14:30 |
+| `"h:mm a"` | 2:30 PM |
+| `"d MMM  HH:mm:ss"` | 2 Jan  14:30:45 |
+
+## Visual Comparison
+
+### Default (12-hour with day):
+```
+Menu bar: [.....] Thu Jan 2  9:30 AM
+```
+
+### Our Setting (24-hour European style):
+```
+Menu bar: [.....] Thu 2 Jan  14:30
+```
+
+### Minimal (time only):
+```
+Menu bar: [.....] 14:30
+```
+
+## Our Configuration
+
+**Set to**: `"EEE d MMM  HH:mm"` — European style with 24-hour format.
+
+### Why This Format?
+
+1. **24-hour time** — No AM/PM ambiguity
+2. **Day first** — European convention (2 Jan vs Jan 2)
+3. **Concise** — Not too long
+4. **Complete** — Day of week + date + time
+5. **Professional** — Clear and unambiguous
+
+## Code Examples
+
+```bash
+# Read current format
+defaults read com.apple.menuextra.clock DateFormat
+
+# Our format (24-hour, European date)
+defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM  HH:mm"
+
+# US style with AM/PM
+defaults write com.apple.menuextra.clock DateFormat -string "EEE MMM d  h:mm a"
+
+# Minimal (just time)
+defaults write com.apple.menuextra.clock DateFormat -string "HH:mm"
+
+# With seconds
+defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM  HH:mm:ss"
+
+# Full verbose
+defaults write com.apple.menuextra.clock DateFormat -string "EEEE, MMMM d, yyyy  h:mm:ss a"
+
+# Apply changes (restart menubar)
+killall SystemUIServer
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Clock** (or **Clock Options**)
+
+Options available:
+- Show date: Never, Always, When space allows
+- Show day of the week
+- Show AM/PM (if 12-hour)
+- Time format: 12-hour or 24-hour
+
+Note: Full format string control is only via defaults.
+
+## Related Settings
+
+```bash
+# Use 24-hour time
+defaults write com.apple.menuextra.clock Show24Hour -bool true
+
+# Show seconds
+defaults write com.apple.menuextra.clock ShowSeconds -bool false
+
+# Analog vs digital
+defaults write com.apple.menuextra.clock IsAnalog -bool false
+
+# Flash separators
+defaults write com.apple.menuextra.clock FlashDateSeparators -bool false
+```
+
+## ICU Date Format Reference
+
+Full pattern reference: [ICU Date Format Patterns](https://unicode-org.github.io/icu/userguide/format_parse/datetime/)
+
+### Additional Patterns
+
+| Pattern | Meaning |
+|---------|---------|
+| `yyyy` | 4-digit year (2025) |
+| `yy` | 2-digit year (25) |
+| `w` | Week of year |
+| `z` | Time zone abbreviation (PST) |
+| `Z` | Time zone offset (-0700) |
+
+## Applying Changes
+
+Changes may not appear immediately:
+```bash
+# Restart SystemUIServer to apply
+killall SystemUIServer
+
+# Or log out and back in
+```
+
+## Menu Bar Width
+
+Longer formats take more menu bar space:
+```
+Short: "HH:mm"           →  14:30         (compact)
+Medium: "EEE HH:mm"      →  Thu 14:30     (balanced)
+Long: Full format        →  Thursday...   (wide)
+```
+
+Consider menu bar space when setting format.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Format not changing | killall SystemUIServer |
+| Wrong output | Check ICU pattern syntax |
+| Too wide | Use shorter patterns |
+| Reverts after reboot | Check spelling of key |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Note**: killall SystemUIServer to apply
+
+## Source File
+
+**File**: [`defaults/system/date_time.sh`](../../../defaults/system/date_time.sh)
+
+```bash
+run_defaults "com.apple.menuextra.clock" "DateFormat" "-string" "EEE d MMM  HH:mm"
+```
+
+## References
+
+- [Apple Support: Date and time](https://support.apple.com/guide/mac-help/mchlp2996/mac)
+- [ICU Date Formatting](https://unicode-org.github.io/icu/userguide/format_parse/datetime/)

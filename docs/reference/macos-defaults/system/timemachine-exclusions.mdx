@@ -1,0 +1,143 @@
+# Time Machine Developer Exclusions
+
+Exclude development caches and dependencies from backups.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Command** | `tmutil addexclusion` |
+| **Type** | Command-line |
+| **Requires** | Administrator privileges |
+| **Our Setting** | Exclude development caches |
+
+## Description
+
+Adds developer-focused exclusions to Time Machine backups. Excluded directories contain easily-regenerated files like npm node_modules, package caches, and build artifacts that don't need backup.
+
+## Excluded Paths
+
+| Path | Purpose |
+|------|---------|
+| `~/node_modules` | npm project dependencies |
+| `~/.npm` | npm global cache |
+| `~/.yarn` | Yarn global cache |
+| `~/.cargo` | Rust cargo cache |
+| `~/.go` | Go module cache |
+| `~/.gradle` | Gradle build cache |
+| `~/.m2` | Maven repository cache |
+| `~/.cocoapods` | CocoaPods cache |
+| `~/.cache` | XDG cache directory |
+| `~/Library/Caches` | macOS app caches |
+| `~/.docker` | Docker cache |
+
+## Benefits
+
+### Reduced Backup Size
+- node_modules alone can be 500MB+ per project
+- Caches regenerate automatically
+
+### Faster Backups
+- Less data to copy each hour
+- Faster incremental backups
+
+### Saved Storage
+- More space for actual work
+- Longer backup history
+
+## Code Examples
+
+```bash
+# Add exclusion for a path
+sudo tmutil addexclusion ~/node_modules
+
+# Add exclusion for npm cache
+sudo tmutil addexclusion ~/.npm
+
+# Add multiple exclusions
+for dir in ~/.npm ~/.yarn ~/.cargo ~/.gradle; do
+  sudo tmutil addexclusion "$dir"
+done
+
+# View current exclusions
+sudo mdfind "com_apple_backup_excludeItem = 'com.apple.backupd'" -onlyin ~
+```
+
+## UI Location
+
+**System Settings** → **General** → **Time Machine** → **Options**
+
+Use "+/-" buttons to add/remove exclusions.
+
+## Checking Exclusions
+
+```bash
+# Check if path is excluded
+tmutil isexcluded ~/node_modules
+
+# List excluded paths
+sudo mdfind "com_apple_backup_excludeItem = 'com.apple.backupd'"
+```
+
+## Removing Exclusions
+
+```bash
+# Remove an exclusion
+sudo tmutil removeexclusion ~/node_modules
+```
+
+## Project-Level node_modules
+
+For project-specific exclusions:
+
+```bash
+# Mark project node_modules as excluded
+xattr -w com.apple.metadata:com_apple_backup_excludeItem com.apple.backupd ~/Projects/myapp/node_modules
+```
+
+## What TO Backup
+
+Keep these backed up:
+- Source code
+- Configuration files
+- Documents
+- `.env` files (securely)
+- Database dumps
+
+## What NOT to Backup
+
+Safe to exclude:
+- Package caches (npm, pip, gem)
+- Build output (dist, build)
+- Virtual machines (if stored separately)
+- Docker images (can repull)
+
+## Compatibility
+
+- **macOS**: 10.5+ (Time Machine)
+- **Command**: `tmutil`
+- **Requires**: sudo for exclusions
+
+## Source File
+
+**File**: [`defaults/system/time_machine.sh`](../../../defaults/system/time_machine.sh)
+
+```bash
+exclusions=(
+  "$HOME/node_modules"
+  "$HOME/.npm"
+  "$HOME/.yarn"
+  "$HOME/.cargo"
+  "$HOME/.cache"
+  "$HOME/Library/Caches"
+)
+
+for path in "${exclusions[@]}"; do
+  tmutil addexclusion "$path"
+done
+```
+
+## References
+
+- [Apple Support: Time Machine](https://support.apple.com/en-us/104984)
+- man tmutil

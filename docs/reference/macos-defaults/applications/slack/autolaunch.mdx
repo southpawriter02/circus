@@ -1,0 +1,102 @@
+# Slack Auto Launch
+
+Start Slack automatically when you log in.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.tinyspeck.slackmacgap` |
+| **Key** | `SlackAutoLaunch` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Slack starts automatically when you log into your Mac. Useful for staying connected to your team without manually opening the app every time.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-launch** — Slack starts on login |
+| `false` | **Manual start** (default) — Open Slack yourself |
+
+## Our Configuration
+
+**Set to**: `true` — Always connected.
+
+### Why Enable Auto-Launch?
+
+1. **Stay connected** — Never miss messages while booting
+2. **Convenience** — One less app to open
+3. **Habit** — Slack is always running
+4. **Notifications** — Receive alerts immediately
+
+### Why Disable?
+
+- Battery — Save power on laptops
+- Startup speed — Faster login
+- Focus — Open only when needed
+- Resources — Slack uses memory
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.tinyspeck.slackmacgap SlackAutoLaunch
+
+# Enable auto-launch
+defaults write com.tinyspeck.slackmacgap SlackAutoLaunch -bool true
+
+# Disable auto-launch (default)
+defaults write com.tinyspeck.slackmacgap SlackAutoLaunch -bool false
+
+# Delete (reset to default)
+defaults delete com.tinyspeck.slackmacgap SlackAutoLaunch
+```
+
+## UI Location
+
+**Slack** → **Preferences** (⌘,) → **Advanced** → ☑ **Launch Slack on login**
+
+## System Login Items
+
+Auto-launch adds Slack to login items:
+- **System Settings** → **General** → **Login Items**
+- You can manage it there too
+
+## Quiet Launch
+
+Slack launches minimized if:
+- Close to tray is enabled
+- Window was closed before logout
+
+## Related Settings
+
+```bash
+# Keep running when window closed
+defaults write com.tinyspeck.slackmacgap SlackCloseToTray -bool true
+
+# Disable bounce notifications
+defaults write com.tinyspeck.slackmacgap SlackBounceEnabled -bool false
+```
+
+## Compatibility
+
+- **Slack**: Mac desktop app
+- **macOS**: 10.13+
+- **Note**: Also affects macOS Login Items
+
+## Source File
+
+**File**: [`defaults/applications/slack.sh`](../../../../defaults/applications/slack.sh)
+
+```bash
+run_defaults "com.tinyspeck.slackmacgap" "SlackAutoLaunch" "-bool" "true"
+```
+
+## References
+
+- [Slack Help: Manage preferences](https://slack.com/help/articles/201374536-Manage-your-preferences)

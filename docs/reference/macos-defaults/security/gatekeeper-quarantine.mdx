@@ -1,0 +1,188 @@
+# Gatekeeper Quarantine
+
+Control the download verification dialog for security.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.LaunchServices` |
+| **Key** | `LSQuarantine` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether macOS shows the "Are you sure you want to open this application?" dialog for apps downloaded from the internet. This quarantine system adds extended attributes to downloaded files, enabling macOS to track where files came from and verify their safety.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Quarantine enabled** (default) — Verify downloaded apps |
+| `false` | **Quarantine disabled** — Skip verification (dangerous!) |
+
+## The Quarantine Dialog
+
+When you first open a downloaded app:
+
+```
+┌─────────────────────────────────────────────────┐
+│  ⚠️  "AppName" is an app downloaded from       │
+│      the internet. Are you sure you want       │
+│      to open it?                               │
+│                                                 │
+│      Safari downloaded this file yesterday     │
+│      from developer-website.com                │
+│                                                 │
+│            [Cancel]  [Open]                    │
+└─────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Keep quarantine enabled.
+
+### ⚠️ Security Warning
+
+**NEVER disable quarantine**. It is a critical security feature that:
+
+1. **Blocks malware** — Known threats identified
+2. **Verifies signatures** — Ensures code hasn't been tampered
+3. **Shows origin** — Know where files came from
+4. **First-run protection** — One-time check for new apps
+
+## How Quarantine Works
+
+### Extended Attributes
+
+Downloaded files receive metadata:
+```bash
+# View quarantine attributes
+xattr -l /path/to/downloaded/app
+
+# Shows attributes like:
+# com.apple.quarantine: 0081;5f3de0c5;Safari;8BC23E0E-...
+```
+
+The attribute contains:
+- Flags (quarantine state)
+- Timestamp
+- Downloading application
+- Unique identifier
+
+### Verification Process
+
+```
+Download → Quarantine attribute added
+    ↓
+First launch attempt
+    ↓
+Gatekeeper checks:
+  ├── Valid developer signature?
+  ├── Notarized by Apple?
+  └── Known malware?
+    ↓
+Show dialog or block
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.LaunchServices LSQuarantine
+
+# Keep quarantine enabled (strongly recommended)
+defaults write com.apple.LaunchServices LSQuarantine -bool true
+
+# ⚠️ DANGEROUS: Disable quarantine (not recommended)
+defaults write com.apple.LaunchServices LSQuarantine -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.LaunchServices LSQuarantine
+```
+
+## Bypassing for Specific Apps
+
+If you trust an app that's being blocked:
+
+### Method 1: Right-Click Open (Safest)
+1. Right-click the app
+2. Select **Open**
+3. Click **Open** in dialog
+
+### Method 2: Remove Quarantine Attribute
+```bash
+# Remove quarantine from specific file
+xattr -d com.apple.quarantine /path/to/app
+
+# Remove from app bundle
+xattr -dr com.apple.quarantine /Applications/SomeApp.app
+```
+
+### Method 3: Allow in Security Settings
+1. **System Settings** → **Privacy & Security**
+2. Find message about blocked app
+3. Click **Open Anyway**
+
+## Gatekeeper Commands
+
+Gatekeeper (separate from quarantine) is controlled via `spctl`:
+
+```bash
+# Check Gatekeeper status
+spctl --status
+
+# Enable Gatekeeper (should always be enabled)
+sudo spctl --master-enable
+
+# Allow specific app
+sudo spctl --add /path/to/app
+```
+
+## What Gets Quarantined
+
+- Apps downloaded from browsers
+- Email attachments
+- Files from file sharing apps
+- ZIP files (and their contents)
+- DMG contents
+
+## What Doesn't Get Quarantined
+
+- Files copied from other Macs via cable
+- Git clones (usually)
+- Files from mounted network shares
+- Builds from Xcode (your own code)
+
+## UI Location
+
+No direct toggle exists. Gatekeeper options in:
+**System Settings** → **Privacy & Security** → **Security**
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| App won't open | Right-click → Open |
+| Still blocked | Check System Settings for "Open Anyway" |
+| Quarantine not applying | Verify LaunchServices setting |
+
+## Compatibility
+
+- **macOS**: 10.5+ (introduced in Leopard)
+- **Note**: Extended attributes preserved on APFS/HFS+
+
+## Source File
+
+**File**: [`defaults/system/gatekeeper.sh`](../../../defaults/system/gatekeeper.sh)
+
+```bash
+run_defaults "com.apple.LaunchServices" "LSQuarantine" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Safely open apps](https://support.apple.com/en-us/HT202491)
+- [Apple Support: Gatekeeper](https://support.apple.com/guide/security/gatekeeper-and-runtime-protection-sec5599b66df/web)

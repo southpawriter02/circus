@@ -1,0 +1,139 @@
+# Preview PDF Display Mode
+
+Set the default page layout for PDFs.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Preview` |
+| **Key** | `PVPDFDisplayMode` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls how PDF pages are displayed in Preview—single page at a time, continuous scrolling, or side-by-side two-page view. This affects the reading experience for multi-page documents.
+
+## Values
+
+| Value | Display Mode |
+|-------|--------------|
+| `0` | **Single page** — One page at a time, jump between |
+| `1` | **Single page continuous** — Scroll through pages |
+| `2` | **Two pages** — Side-by-side book view |
+| `3` | **Two pages continuous** — Scroll with two-up layout |
+
+## Visual Examples
+
+**Single page (0):**
+```
+┌─────────────────┐
+│                 │
+│    Page 3       │
+│                 │
+└─────────────────┘
+[Previous] [Next]
+```
+
+**Single page continuous (1):**
+```
+┌─────────────────┐
+│    Page 2       │
+│─────────────────│
+│    Page 3       │
+│─────────────────│
+│    Page 4       │
+└─────────────────┘
+    ↕ Scroll
+```
+
+**Two pages (2):**
+```
+┌────────┬────────┐
+│ Page 2 │ Page 3 │
+└────────┴────────┘
+```
+
+## Our Configuration
+
+**Set to**: `1` — Single page continuous.
+
+### Why Continuous Mode?
+
+1. **Natural scrolling** — Like a web page
+2. **Context** — See transitions between pages
+3. **Efficient** — No clicking to advance
+4. **Modern** — Standard for digital reading
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Preview PVPDFDisplayMode
+
+# Single page continuous (recommended)
+defaults write com.apple.Preview PVPDFDisplayMode -int 1
+
+# Single page
+defaults write com.apple.Preview PVPDFDisplayMode -int 0
+
+# Two pages (book view)
+defaults write com.apple.Preview PVPDFDisplayMode -int 2
+
+# Delete (reset to default)
+defaults delete com.apple.Preview PVPDFDisplayMode
+```
+
+## UI Location
+
+**View** menu:
+- **Single Page** (⌘1)
+- **Two Pages** (⌘2)
+- **Continuous Scroll** toggle
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘1 | Single page |
+| ⌘2 | Two pages |
+| Space | Page down |
+| Shift+Space | Page up |
+| ↓/↑ | Scroll |
+
+## Two-Page Use Cases
+
+Two-page view is ideal for:
+- Book reading (facing pages)
+- Presentations
+- Wide displays
+- Comparing pages
+
+## Related Settings
+
+```bash
+# Remember last viewed page
+defaults write com.apple.Preview PVPDFRememberCurrentPage -bool true
+
+# Scale to fit window
+defaults write com.apple.Preview PVScaleDocumentsToFit -bool true
+```
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: Applies to new documents
+
+## Source File
+
+**File**: [`defaults/applications/preview.sh`](../../../../defaults/applications/preview.sh)
+
+```bash
+run_defaults "com.apple.Preview" "PVPDFDisplayMode" "-int" "1"
+```
+
+## References
+
+- [Apple Support: View PDFs in Preview](https://support.apple.com/guide/preview/view-pdfs-prvw11794/mac)

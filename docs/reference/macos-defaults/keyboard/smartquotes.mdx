@@ -1,0 +1,183 @@
+# Automatic Smart Quotes Substitution
+
+Disable automatic conversion of straight quotes to curly quotes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticQuoteSubstitutionEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether macOS automatically converts straight quotes (`"` `'`) to typographically "smart" curly quotes (`"` `"` `'` `'`) as you type. While smart quotes look better in documents, they cause syntax errors in code and can break URLs, commands, and technical content.
+
+## Values
+
+| Value | Quote Style |
+|-------|-------------|
+| `true` | **Smart quotes** (default) — Curly "like this" |
+| `false` | **Straight quotes** — Straight "like this" |
+
+## Visual Demonstration
+
+### Smart Quotes Enabled (true):
+```
+You type:     "Hello, World!"
+System shows: "Hello, World!"
+              ↑             ↑
+           Opening       Closing
+          (curved)      (curved)
+
+Problem in code:
+  print("Hello")  ← Syntax error!
+        ↑    ↑
+     Smart quotes = Invalid Python
+```
+
+### Straight Quotes (false):
+```
+You type:     "Hello, World!"
+System shows: "Hello, World!"
+              ↑             ↑
+           Both straight quotes
+
+In code:
+  print("Hello")  ← Works perfectly!
+        ↑    ↑
+     Straight quotes = Valid Python
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable smart quotes.
+
+### Why Disable?
+
+1. **Code breaks** — Smart quotes cause syntax errors
+2. **Commands fail** — Terminal commands with quotes break
+3. **URLs break** — Can mess up query strings
+4. **Copy/paste** — Smart quotes copied into code = bugs
+5. **Developer essential** — Never want smart quotes in technical work
+
+### Why Enable?
+
+- Writing prose/documents
+- Publishing/typography
+- Non-technical use
+- Word processing
+
+## The Code Problem
+
+Smart quotes are different characters:
+
+| Quote Type | Character | Unicode |
+|------------|-----------|---------|
+| Straight double | `"` | U+0022 |
+| Left double | `"` | U+201C |
+| Right double | `"` | U+201D |
+| Straight single | `'` | U+0027 |
+| Left single | `'` | U+2018 |
+| Right single | `'` | U+2019 |
+
+Code expects U+0022 and U+0027, not the curly versions.
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled
+
+# Disable smart quotes (recommended for developers)
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# Enable smart quotes (default)
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Text Input** → **Text Replacements...** → ☐ **Use smart quotes and dashes**
+
+Or per-app:
+**Edit** menu → **Substitutions** → ☐ **Smart Quotes**
+
+## Related Smart Substitutions
+
+Disable all problematic substitutions:
+```bash
+# Disable smart quotes
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# Disable smart dashes (-- → —)
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Disable auto-capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Disable auto-correct
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Disable period with double-space
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+```
+
+## Per-App Override
+
+Some apps override the global setting:
+- TextEdit
+- Notes
+- Mail
+
+Check: **Edit** → **Substitutions** → **Smart Quotes** in each app.
+
+## Terminal Safety
+
+Terminal.app ignores smart quotes substitution, but:
+- Copying commands from websites may have smart quotes
+- Search and replace: `"` → `"` and `'` → `'`
+
+## Related Settings
+
+```bash
+# Smart dashes (-- to —)
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Auto-capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Spelling correction
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Quotes still curly in app | Check per-app Edit → Substitutions |
+| Pasted quotes are curly | Source had curly, search/replace |
+| Need smart quotes once | Type curly with Option key |
+
+## Compatibility
+
+- **macOS**: 10.9+ (Mavericks)
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSAutomaticQuoteSubstitutionEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Text substitutions](https://support.apple.com/guide/mac-help/text-substitutions-mh35735/mac)

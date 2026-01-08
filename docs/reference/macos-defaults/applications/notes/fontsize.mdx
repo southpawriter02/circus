@@ -1,0 +1,106 @@
+# Notes Default Font Size
+
+Set the default text size for new notes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Notes` |
+| **Key** | `DefaultFontSize` |
+| **Type** | Integer |
+| **Default Value** | `16` |
+| **Our Setting** | `16` |
+
+## Description
+
+Controls the default text size for new notes in the Notes app. Larger sizes are easier to read, while smaller sizes fit more content. This affects new notes only—existing notes retain their current size.
+
+## Values
+
+| Value | Size |
+|-------|------|
+| `10` | Small |
+| `12` | Medium-small |
+| `14` | Medium |
+| `16` | Default (recommended) |
+| `18` | Large |
+| `20` | Extra large |
+| `24` | Very large |
+| `36` | Maximum |
+
+## Our Configuration
+
+**Set to**: `16` — Default comfortable reading size.
+
+### Why 16pt?
+
+1. **Readability** — Clear text on modern displays
+2. **Balance** — Good text density
+3. **Standard** — Web/app default size
+4. **Accessibility** — Readable without zooming
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Notes DefaultFontSize
+
+# Set to default 16pt
+defaults write com.apple.Notes DefaultFontSize -int 16
+
+# Set larger for accessibility
+defaults write com.apple.Notes DefaultFontSize -int 20
+
+# Set smaller for more content
+defaults write com.apple.Notes DefaultFontSize -int 14
+
+# Delete (reset to default)
+defaults delete com.apple.Notes DefaultFontSize
+```
+
+## UI Location
+
+**Notes** → **Settings** (⌘,) → **Default Text Size**
+
+## Changing Existing Notes
+
+For existing notes, adjust text size with:
+- **Format** → **Font** → **Bigger** (⌘+)
+- **Format** → **Font** → **Smaller** (⌘-)
+
+Or select text and use Format menu.
+
+## Related Settings
+
+### New Note Starting Style
+
+```bash
+# Start new notes with: 0=Title, 1=Heading, 2=Subheading, 3=Body
+defaults write com.apple.Notes NewNoteBodyStyle -int 0
+```
+
+## Zoom vs Font Size
+
+- **Font Size**: Affects text rendering, exports, printing
+- **Zoom** (⌘+ in app): Visual only, doesn't change actual note
+
+For permanent larger text, use font size setting.
+
+## Compatibility
+
+- **macOS**: 10.14+
+- **iCloud**: Notes sync, but font size may vary by platform
+- **Note**: Only affects new notes
+
+## Source File
+
+**File**: [`defaults/applications/notes.sh`](../../../../defaults/applications/notes.sh)
+
+```bash
+run_defaults "com.apple.Notes" "DefaultFontSize" "-int" "16"
+```
+
+## References
+
+- [Apple Support: Use Notes on your Mac](https://support.apple.com/guide/notes/welcome/mac)

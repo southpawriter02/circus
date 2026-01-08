@@ -1,0 +1,175 @@
+# Control Center AirDrop Visibility
+
+Configure where AirDrop controls appear.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.controlcenter` |
+| **Key** | `AirDrop` |
+| **Type** | Integer |
+| **Default Value** | `18` |
+| **Our Setting** | `18` |
+
+## Description
+
+Controls where the AirDrop toggle appears — in the menu bar, Control Center only, or hidden entirely. AirDrop allows wireless file sharing between Apple devices and needs to be accessible for quick configuration of receiving settings.
+
+## Visibility Values
+
+| Value | Location | Icon Visibility |
+|-------|----------|-----------------|
+| `0` | Disabled | Not shown anywhere |
+| `2` | Menu bar | Always visible in menu bar |
+| `8` | Menu bar (when active) | Shows only during transfers |
+| `18` | Control Center only | Default, access via Control Center |
+| `24` | Hidden | Not shown (still functional) |
+
+## Visual Reference
+
+### Menu Bar (value 2):
+```
+Menu bar: [...] [📡 AirDrop] [🔊] [🔋] [⏰]
+                     ↑
+              Click to configure
+```
+
+### Control Center Only (value 18):
+```
+Click Control Center → ┌─────────────────────┐
+                       │ Wi-Fi      ●        │
+                       │ Bluetooth  ●        │
+                       │ AirDrop    📡       │ ← Here
+                       │ ...                 │
+                       └─────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `18` — Control Center only.
+
+### Why Control Center Only?
+
+1. **Clean menu bar** — Less clutter
+2. **Infrequent use** — Not needed constantly
+3. **Easy access** — One click to Control Center
+4. **Security** — Less obvious to others
+5. **Default** — Apple's recommendation
+
+### When to Show in Menu Bar
+
+- Frequently share files via AirDrop
+- Quick access to receiving settings
+- Team environments with regular sharing
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.controlcenter AirDrop
+
+# Control Center only (default, recommended)
+defaults write com.apple.controlcenter AirDrop -int 18
+
+# Always show in menu bar
+defaults write com.apple.controlcenter AirDrop -int 2
+
+# Show only when active
+defaults write com.apple.controlcenter AirDrop -int 8
+
+# Hide completely
+defaults write com.apple.controlcenter AirDrop -int 24
+
+# Delete (reset to default)
+defaults delete com.apple.controlcenter AirDrop
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **AirDrop**
+
+Options:
+- Show in Menu Bar
+- Don't Show in Menu Bar (Control Center access remains)
+
+## AirDrop Receiving Settings
+
+Regardless of visibility, AirDrop has three modes:
+
+| Mode | Receives From |
+|------|---------------|
+| Receiving Off | Nobody |
+| Contacts Only | People in your Contacts |
+| Everyone | Any nearby Apple device |
+
+⚠️ **Security**: Use "Contacts Only" or "Off" in public places.
+
+## Changing AirDrop Mode
+
+Via Control Center:
+1. Open Control Center
+2. Click AirDrop
+3. Select receiving mode
+
+Via Finder:
+1. Open Finder
+2. Go → AirDrop (⇧⌘R)
+3. Click "Allow me to be discovered by"
+
+## AirDrop Requirements
+
+For AirDrop to work:
+- Wi-Fi enabled (doesn't need network)
+- Bluetooth enabled
+- Devices within ~30 feet
+- Both devices unlocked
+
+## Security Considerations
+
+In public:
+```
+Risk: "Everyone" mode → Strangers can send files
+      └── May receive unwanted images/files
+
+Safe: "Contacts Only" → Only known people
+      └── Requires both parties in each other's Contacts
+```
+
+## Related Settings
+
+```bash
+# Bluetooth (required for AirDrop)
+defaults write com.apple.controlcenter Bluetooth -int 2
+
+# Wi-Fi (required for AirDrop)
+defaults write com.apple.controlcenter WiFi -int 2
+```
+
+## AirDrop Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Not seeing devices | Check Bluetooth and Wi-Fi on |
+| Can't receive | Check receiving mode |
+| Firewall blocking | Allow incoming in Firewall options |
+| Old device | Check device compatibility |
+
+## Compatibility
+
+- **macOS**: 11.0+ (Big Sur) for Control Center
+- **AirDrop**: 10.7+ (Lion)
+- **Note**: Requires logout for some changes
+
+## Source File
+
+**File**: [`defaults/interface/control_center.sh`](../../../defaults/interface/control_center.sh)
+
+```bash
+run_defaults "com.apple.controlcenter" "AirDrop" "-int" "18"
+```
+
+## References
+
+- [Apple Support: Use AirDrop](https://support.apple.com/en-us/HT203106)
+- [Apple Support: Control Center](https://support.apple.com/guide/mac-help/control-center-mchl50f94f8f/mac)

@@ -1,0 +1,201 @@
+# Control Center Screen Mirroring
+
+Configure AirPlay and screen mirroring menu bar visibility.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.controlcenter` |
+| **Key** | `ScreenMirroring` |
+| **Type** | Integer |
+| **Default Value** | `18` |
+| **Our Setting** | `8` |
+
+## Description
+
+Controls where the Screen Mirroring module appears. This provides quick access to AirPlay mirroring/extending your display to Apple TV, AirPlay-compatible TVs, and other Macs — essential for presentations and desk setups.
+
+## Visibility Values
+
+| Value | Location | When Visible |
+|-------|----------|--------------|
+| `0` | Disabled | Never shown |
+| `2` | Menu bar | Always visible |
+| `8` | Menu bar (when active) | Only when mirroring/extending |
+| `18` | Control Center only | Default |
+| `24` | Hidden | Never shown |
+
+## Visual Reference
+
+### When Active (value 8):
+```
+Menu bar: [...] [📺] [🔊] [🔋] [⏰]
+                 ↑
+         Shows during AirPlay (blue when active)
+```
+
+### Control Center Only (value 18):
+```
+Control Center → ┌─────────────────────┐
+                 │ ...                 │
+                 │ Screen Mirroring 📺 │ ← Access here
+                 │ ...                 │
+                 └─────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `8` — Show in menu bar when active.
+
+### Why Show When Active?
+
+1. **Aware of status** — Know you're mirroring
+2. **Quick disconnect** — End mirroring easily
+3. **No clutter** — Hidden when not in use
+4. **Presentation mode** — Access during talks
+5. **Best of both** — Visible when relevant
+
+### When to Always Show
+
+- Frequent presentations
+- Multi-display workflows
+- Classroom/meeting room setups
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.controlcenter ScreenMirroring
+
+# Show when active (recommended)
+defaults write com.apple.controlcenter ScreenMirroring -int 8
+
+# Always show in menu bar
+defaults write com.apple.controlcenter ScreenMirroring -int 2
+
+# Control Center only (default)
+defaults write com.apple.controlcenter ScreenMirroring -int 18
+
+# Hide completely
+defaults write com.apple.controlcenter ScreenMirroring -int 24
+
+# Delete (reset to default)
+defaults delete com.apple.controlcenter ScreenMirroring
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Screen Mirroring**
+
+## Screen Mirroring Options
+
+When you click the icon:
+```
+┌─────────────────────────────────┐
+│  Screen Mirroring               │
+├─────────────────────────────────┤
+│  📺 Living Room Apple TV        │
+│  📺 Conference Room TV          │
+│  💻 John's MacBook Pro          │
+│                                 │
+│  ─────────────────────────────  │
+│  🖥️ Mirror or extend display   │
+└─────────────────────────────────┘
+```
+
+## Mirror vs Extend
+
+| Mode | Description |
+|------|-------------|
+| Mirror | Same content on both displays |
+| Extend | Second display is separate workspace |
+
+Switch in **System Settings** → **Displays** → **Arrangement**
+
+## AirPlay Targets
+
+Screen Mirroring works with:
+- Apple TV (all generations with AirPlay)
+- AirPlay 2-compatible smart TVs
+- Other Macs (as AirPlay receivers)
+
+## Starting Screen Mirroring
+
+Methods to start:
+1. Click Screen Mirroring icon → Select device
+2. Control Center → Screen Mirroring
+3. **System Settings** → **Displays** → **Add Display**
+4. Keyboard: Some apps have shortcuts
+
+## Presentation Tips
+
+During presentations:
+```
+1. Connect before presentation
+2. Mirror for slides
+3. Menu bar icon shows status
+4. Click to disconnect when done
+```
+
+## Quality Settings
+
+AirPlay quality depends on:
+- Network speed (Wi-Fi or Ethernet)
+- Apple TV model
+- Mac performance
+- Display resolution
+
+For best quality: Same network, ethernet preferred.
+
+## Mac as AirPlay Receiver
+
+Other devices can AirPlay TO your Mac:
+**System Settings** → **General** → **AirDrop & Handoff** → **AirPlay Receiver**
+
+## Security
+
+AirPlay receivers may require:
+- Same Apple ID
+- Password entry
+- Trusted device approval
+
+Public AirPlay can be risky — verify target.
+
+## Related Settings
+
+```bash
+# Display brightness/Night Shift
+defaults write com.apple.controlcenter Display -int 18
+
+# AirDrop (also uses wireless)
+defaults write com.apple.controlcenter AirDrop -int 18
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Device not showing | Check same network |
+| Laggy mirroring | Improve network, reduce resolution |
+| Audio issues | Check audio routing |
+| Black screen | Restart AirPlay session |
+
+## Compatibility
+
+- **macOS**: 11.0+ (Big Sur) for Control Center
+- **AirPlay**: Older versions supported AirPlay 1
+- **Note**: Logout may be required
+
+## Source File
+
+**File**: [`defaults/interface/control_center.sh`](../../../defaults/interface/control_center.sh)
+
+```bash
+run_defaults "com.apple.controlcenter" "ScreenMirroring" "-int" "8"
+```
+
+## References
+
+- [Apple Support: AirPlay](https://support.apple.com/en-us/102613)
+- [Apple Support: Control Center](https://support.apple.com/guide/mac-help/control-center-mchl50f94f8f/mac)

@@ -1,0 +1,198 @@
+# Software Update Automatic Download
+
+Enable background downloading of system and security updates.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.SoftwareUpdate` |
+| **Key** | `AutomaticDownload` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Allows macOS to download newly available updates in the background without user intervention. When updates are available, they download automatically so they're ready to install when convenient. Downloads are intelligent — they happen during off-peak times and pause when bandwidth is needed elsewhere.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-download** (default) — Updates download in background |
+| `false` | **Manual download** — Wait for user to initiate |
+
+## The Update Flow
+
+### With Automatic Download:
+```
+Apple releases update
+        ↓
+macOS detects (automatic check)
+        ↓
+Downloads in background ← Happens without you knowing
+        ↓
+Notification: "Ready to install"
+        ↓
+You install when convenient (seconds to start)
+```
+
+### Without Automatic Download:
+```
+Apple releases update
+        ↓
+macOS detects (automatic check)
+        ↓
+Notification: "Update available"
+        ↓
+You click install
+        ↓
+Download starts NOW (wait 10+ minutes for large updates)
+        ↓
+Install begins
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable background downloads.
+
+### Why Enable?
+
+1. **Ready when you are** — No waiting for downloads
+2. **Off-peak downloads** — Happens at optimal times
+3. **Bandwidth-aware** — Pauses during heavy use
+4. **Faster security patching** — Critical fixes ready sooner
+5. **Better experience** — Click install, starts immediately
+
+### Why Disable?
+
+- Metered internet connection
+- Very limited bandwidth
+- Corporate network restrictions
+- Manual control preference
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.SoftwareUpdate AutomaticDownload
+
+# Enable automatic downloads (recommended)
+defaults write com.apple.SoftwareUpdate AutomaticDownload -bool true
+
+# Disable automatic downloads
+defaults write com.apple.SoftwareUpdate AutomaticDownload -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.SoftwareUpdate AutomaticDownload
+```
+
+## UI Location
+
+**System Settings** → **General** → **Software Update** → Click ⓘ next to "Automatic updates" → ☑ **Download new updates when available**
+
+## Update Types Downloaded
+
+| Update Type | Downloaded Automatically |
+|-------------|-------------------------|
+| macOS point releases | ✓ |
+| Security updates | ✓ |
+| Safari updates | ✓ |
+| System data files | ✓ |
+| XProtect definitions | ✓ |
+| Major macOS upgrades | Typically not (user choice) |
+
+## Bandwidth Considerations
+
+Automatic downloads are intelligent:
+- **Time of day**: Prefer off-peak hours
+- **Network type**: May pause on cellular (if applicable)
+- **Active use**: Yields to other traffic
+- **Power state**: May require AC power
+
+## Storage Requirements
+
+Ensure sufficient free space:
+- Minor updates: 1-3 GB
+- Major updates: 10-15 GB
+- macOS upgrades: 20-35 GB
+
+If space insufficient, download waits.
+
+## Network Impact
+
+Typical download sizes:
+| Update Type | Size |
+|-------------|------|
+| Security patch | 100-500 MB |
+| Point release (14.1→14.2) | 1-5 GB |
+| Safari update | 100-300 MB |
+| macOS major upgrade | 12-15 GB |
+
+## Enterprise Considerations
+
+In managed environments:
+- MDM can control this setting
+- Software Update Server can serve local updates
+- Network policies may restrict downloads
+
+## Related Settings
+
+```bash
+# Check for updates automatically
+defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
+
+# Install security updates automatically
+defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
+
+# Install macOS updates automatically
+defaults write com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool true
+
+# Install App Store updates automatically
+defaults write com.apple.commerce AutoUpdate -bool true
+```
+
+## Manual Update Command
+
+Check and install updates manually:
+```bash
+# List available updates
+softwareupdate --list
+
+# Download (not install) all updates
+softwareupdate --download --all
+
+# Install all updates
+sudo softwareupdate --install --all
+
+# Install specific update
+sudo softwareupdate --install "macOS Sonoma 14.2-..."
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Updates not downloading | Check AutomaticCheckEnabled |
+| Downloads stuck | Check disk space, restart |
+| Too much bandwidth | Disable or schedule manually |
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion)
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/system/software_update.sh`](../../../defaults/system/software_update.sh)
+
+```bash
+run_defaults "com.apple.SoftwareUpdate" "AutomaticDownload" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Keep your Mac up to date](https://support.apple.com/en-us/102582)
+- [Apple Support: How to get updates for macOS](https://support.apple.com/en-us/105313)
+- man softwareupdate

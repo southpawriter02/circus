@@ -1,0 +1,115 @@
+# Terminal New Tab Directory
+
+Open new tabs in the same directory as current tab.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Terminal` |
+| **Key** | `NewTabWorkingDirectoryBehavior` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls which directory is used when opening a new tab in Terminal. Setting this to match the current tab's directory maintains context when working on projects.
+
+## Values
+
+| Value | Directory |
+|-------|-----------|
+| `1` | **Home directory** (~) — Default |
+| `2` | **Same as current tab** — Maintains context |
+| `3` | **Custom directory** — Configured separately |
+
+## Our Configuration
+
+**Set to**: `2` — Same directory as current tab.
+
+### Why Match Current Directory?
+
+1. **Context** — Stay in project folder
+2. **Workflow** — New tabs ready to work
+3. **Efficiency** — No `cd` needed
+4. **Development** — Multiple tabs, same project
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Terminal NewTabWorkingDirectoryBehavior
+
+# Same as current tab (recommended)
+defaults write com.apple.Terminal NewTabWorkingDirectoryBehavior -int 2
+
+# Home directory (default)
+defaults write com.apple.Terminal NewTabWorkingDirectoryBehavior -int 1
+
+# Custom directory
+defaults write com.apple.Terminal NewTabWorkingDirectoryBehavior -int 3
+
+# Delete (reset to default)
+defaults delete com.apple.Terminal NewTabWorkingDirectoryBehavior
+```
+
+## UI Location
+
+**Terminal** → **Settings** (⌘,) → **General** → **New tabs open with:**
+
+Options:
+- Default login shell
+- Same working directory (option 2)
+
+## New Window Behavior
+
+Separate setting for new windows:
+
+```bash
+# New windows start in home directory
+defaults write com.apple.Terminal NewWindowWorkingDirectoryBehavior -int 1
+
+# New windows match current window
+defaults write com.apple.Terminal NewWindowWorkingDirectoryBehavior -int 2
+```
+
+## Keyboard Shortcut
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘T | New tab |
+| ⌘N | New window |
+
+## Workflow Example
+
+With option 2:
+1. `cd ~/Projects/myapp`
+2. ⌘T for new tab
+3. Already in `~/Projects/myapp`
+
+With option 1:
+1. `cd ~/Projects/myapp`
+2. ⌘T for new tab
+3. Starts in `~` (need to `cd` again)
+
+## Shell Requirement
+
+For this to work, your shell must support working directory tracking. Most modern shells (zsh, bash) do this automatically.
+
+## Compatibility
+
+- **macOS**: 10.10+
+- **Note**: Applies immediately to new tabs
+
+## Source File
+
+**File**: [`defaults/applications/terminal.sh`](../../../../defaults/applications/terminal.sh)
+
+```bash
+run_defaults "com.apple.Terminal" "NewTabWorkingDirectoryBehavior" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Terminal startup settings](https://support.apple.com/guide/terminal/change-terminal-startup-settings-trml107/mac)

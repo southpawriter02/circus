@@ -1,0 +1,114 @@
+# Preview Sidebar Mode
+
+Set the default sidebar view when opening documents.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Preview` |
+| **Key** | `PVSidebarViewModeForNewDocuments` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls which sidebar view (if any) is shown by default when opening documents in Preview. The sidebar provides navigation through multi-page PDFs and collections of images.
+
+## Values
+
+| Value | Sidebar Mode |
+|-------|--------------|
+| `0` | **Hidden** (default) — No sidebar |
+| `1` | **Thumbnails** — Page previews |
+| `2` | **Table of Contents** — Document outline |
+| `3` | **Annotations** — Notes and highlights |
+| `4` | **Bookmarks** — Saved locations |
+
+## Visual Example
+
+**Thumbnails mode (1):**
+```
+┌──────┬──────────────────────┐
+│ [1]  │                      │
+│ [2]  │    Document          │
+│ [3]  │    Content           │
+│ [4]  │                      │
+│ [5]  │                      │
+└──────┴──────────────────────┘
+  ↑ Page thumbnails
+```
+
+## Our Configuration
+
+**Set to**: `1` — Show thumbnails by default.
+
+### Why Show Thumbnails?
+
+1. **Navigation** — Jump to any page quickly
+2. **Overview** — See document structure
+3. **Multi-page** — Essential for long PDFs
+4. **Visual** — Find pages by appearance
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Preview PVSidebarViewModeForNewDocuments
+
+# Show thumbnails (recommended)
+defaults write com.apple.Preview PVSidebarViewModeForNewDocuments -int 1
+
+# Hide sidebar
+defaults write com.apple.Preview PVSidebarViewModeForNewDocuments -int 0
+
+# Show table of contents
+defaults write com.apple.Preview PVSidebarViewModeForNewDocuments -int 2
+
+# Delete (reset to default)
+defaults delete com.apple.Preview PVSidebarViewModeForNewDocuments
+```
+
+## UI Location
+
+**View** menu:
+- **Thumbnails** (⌘⌥2)
+- **Table of Contents** (⌘⌥3)
+- **Highlights and Notes** (⌘⌥4)
+- **Bookmarks** (⌘⌥5)
+- **Hide Sidebar** (⌘⌥1)
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘⌥1 | Hide sidebar |
+| ⌘⌥2 | Thumbnails |
+| ⌘⌥3 | Table of Contents |
+| ⌘⌥4 | Annotations |
+| ⌘⌥5 | Bookmarks |
+
+## Table of Contents
+
+Available when PDF has bookmarks/outline:
+- Shows document structure
+- Click to jump to sections
+- Hierarchical chapters
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: Applies to new windows only
+
+## Source File
+
+**File**: [`defaults/applications/preview.sh`](../../../../defaults/applications/preview.sh)
+
+```bash
+run_defaults "com.apple.Preview" "PVSidebarViewModeForNewDocuments" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Preview User Guide](https://support.apple.com/guide/preview/welcome/mac)

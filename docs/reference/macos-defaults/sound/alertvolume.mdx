@@ -1,0 +1,164 @@
+# Alert Sound Volume
+
+Configure the volume level for system alerts and notifications.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.sound.beep.volume` |
+| **Type** | Float |
+| **Default Value** | `1.0` |
+| **Our Setting** | `0.5` |
+
+## Description
+
+Controls the volume of system alert sounds, including notification sounds, error beeps, and application alerts. This is separate from the main system volume, allowing alerts to be quieter than media playback.
+
+## Values
+
+| Value | Volume Level |
+|-------|--------------|
+| `0.0` | Muted (silent alerts) |
+| `0.25` | Very quiet |
+| `0.5` | Moderate (our setting) |
+| `0.75` | Loud |
+| `1.0` | Full volume (default) |
+
+## Our Configuration
+
+**Set to**: `0.5` — Moderate alert volume.
+
+### Why 50%?
+
+1. **Noticeable** — Still hear alerts
+2. **Not jarring** — Won't startle
+3. **Professional** — Appropriate in offices
+4. **Balanced** — Works for most situations
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain com.apple.sound.beep.volume
+
+# Set to 50% (moderate)
+defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.5
+
+# Set to full volume (default)
+defaults write NSGlobalDomain com.apple.sound.beep.volume -float 1.0
+
+# Mute alerts completely
+defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.0
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain com.apple.sound.beep.volume
+```
+
+## UI Location
+
+**System Settings** → **Sound** → **Alert volume** slider
+
+## Alert Volume vs System Volume
+
+```
+System Volume: ████████████████░░░░░  80%  ← Music, video
+Alert Volume:  ████████░░░░░░░░░░░░░  50%  ← Notifications, beeps
+```
+
+These are independent:
+- Play music at 80%
+- Alerts play at 50%
+- Not multiplicative; alerts have their own level
+
+## Types of Alert Sounds
+
+Alert volume affects:
+- System beeps
+- Notification sounds
+- Error sounds
+- Application alerts
+- Finder sounds (empty trash)
+
+## Custom Alert Sounds
+
+Change which sound plays:
+```bash
+# Read current alert sound
+defaults read NSGlobalDomain com.apple.sound.beep.sound
+
+# Set to different sound
+defaults write NSGlobalDomain com.apple.sound.beep.sound -string "/System/Library/Sounds/Submarine.aiff"
+```
+
+### Available Sounds
+
+Built-in sounds in `/System/Library/Sounds/`:
+- Basso, Blow, Bottle
+- Frog, Funk, Glass
+- Hero, Morse, Ping
+- Pop, Purr, Sosumi
+- Submarine, Tink
+
+## Do Not Disturb
+
+For complete silence:
+- Use Focus mode (Do Not Disturb)
+- Silences notifications entirely
+- Overrides this volume setting
+
+## Accessibility: Flash Screen
+
+For hearing impaired:
+```bash
+# Flash screen on alert
+defaults write com.apple.universalaccess flashScreen -bool true
+```
+
+Flashes the entire screen when alert plays.
+
+## Per-Application Volumes
+
+Some apps have their own volume:
+- Slack notification volume
+- Discord notification settings
+- Mail alert customization
+
+These work independently of system alert volume.
+
+## Related Settings
+
+```bash
+# Volume change feedback sound
+defaults write NSGlobalDomain com.apple.sound.beep.feedback -int 0
+
+# UI sound effects (trash, screenshots)
+defaults write NSGlobalDomain com.apple.sound.uiaudio.enabled -int 1
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Alerts too quiet | Increase to 0.75 or 1.0 |
+| No alerts heard | Check it's not 0.0 |
+| Wrong sound playing | Check sound selection |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/system/sound.sh`](../../../defaults/system/sound.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.sound.beep.volume" "-float" "0.5"
+```
+
+## References
+
+- [Apple Support: Change alert sound](https://support.apple.com/guide/mac-help/change-the-alert-sound-mchlp2207/mac)
+- [Apple Support: Adjust sound](https://support.apple.com/guide/mac-help/adjust-the-sound-on-mac-mchlp2256/mac)

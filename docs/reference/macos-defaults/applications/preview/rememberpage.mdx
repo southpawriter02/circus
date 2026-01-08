@@ -1,0 +1,104 @@
+# Preview Remember PDF Page
+
+Resume reading PDFs from last viewed page.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Preview` |
+| **Key** | `PVPDFRememberCurrentPage` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+When enabled, Preview remembers the last page you were viewing and automatically returns to that position when reopening the PDF. Essential for long documents and reading over multiple sessions.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Remember position** (default) — Resume where you left off |
+| `false` | **Start at beginning** — Always open to page 1 |
+
+## Our Configuration
+
+**Set to**: `true` — Resume reading position.
+
+### Why Enable?
+
+1. **Continuity** — Pick up where you left off
+2. **Long documents** — Don't lose your place
+3. **Reference** — Return to bookmarked sections
+4. **Convenience** — No manual navigation needed
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Preview PVPDFRememberCurrentPage
+
+# Remember page position (default)
+defaults write com.apple.Preview PVPDFRememberCurrentPage -bool true
+
+# Always start at beginning
+defaults write com.apple.Preview PVPDFRememberCurrentPage -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Preview PVPDFRememberCurrentPage
+```
+
+## UI Location
+
+**Preview** → **Settings** (⌘,) → **PDF** → ☑ **Open to the last viewed page**
+
+## How It Works
+
+Preview stores page position metadata in the file's extended attributes:
+- Stored per-file
+- Survives closing/reopening
+- May not transfer with file (depends on transfer method)
+
+## Also Remembered
+
+Preview may also remember:
+- Zoom level
+- Sidebar state
+- Window position
+
+## Quick Navigation
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘G | Go to page |
+| ⌘↑ | First page |
+| ⌘↓ | Last page |
+| ⌥↑ | Previous page |
+| ⌥↓ | Next page |
+
+## Bookmarks Alternative
+
+For specific saved locations:
+1. Navigate to desired page
+2. **Bookmarks** → **Add Bookmark** (⌘D)
+3. Access via sidebar or Bookmarks menu
+
+## Compatibility
+
+- **macOS**: All versions
+- **File types**: PDFs only
+- **Note**: Position stored locally
+
+## Source File
+
+**File**: [`defaults/applications/preview.sh`](../../../../defaults/applications/preview.sh)
+
+```bash
+run_defaults "com.apple.Preview" "PVPDFRememberCurrentPage" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Preview preferences](https://support.apple.com/guide/preview/change-preferences-prvw11793/mac)

@@ -1,0 +1,182 @@
+# Firewall Enable
+
+Enable the macOS Application Level Firewall.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `/Library/Preferences/com.apple.alf` |
+| **Key** | `globalstate` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+| **Requires** | Administrator (sudo) |
+
+## Description
+
+Controls the overall state of the macOS Application Level Firewall (ALF). When enabled, macOS monitors incoming network connections and blocks unauthorized applications from receiving them. The firewall operates at the application level, controlling which apps can accept incoming connections.
+
+## Values
+
+| Value | State | Description |
+|-------|-------|-------------|
+| `0` | **Off** (default) | Firewall disabled, all incoming allowed |
+| `1` | **On** | Per-application control (recommended) |
+| `2` | **Block all** | Only essential services allowed |
+
+## Security States Explained
+
+### State 0: Off
+```
+Internet ────────────────────────────→ All Apps
+                                       ✅ No protection
+```
+
+### State 1: On (Recommended)
+```
+Internet ──┬──[Signed apps]───────────→ Allowed
+           │
+           └──[Unsigned/blocked]──────→ Blocked ❌
+```
+
+### State 2: Block All
+```
+Internet ──┬──[Essential only]────────→ DHCP, DNS
+           │
+           └──[Everything else]───────→ Blocked ❌
+```
+
+## Our Configuration
+
+**Set to**: `1` — Enabled with per-app control.
+
+### Why Enable the Firewall?
+
+1. **Public networks** — Coffee shops, airports, hotels
+2. **Defense in depth** — Additional security layer
+3. **Application control** — Block unwanted network access
+4. **Compliance** — Security requirements
+5. **Best practice** — Basic security hygiene
+
+### When Firewall is Critical
+
+- Untrusted networks
+- Shared networks
+- High-security environments
+- Handling sensitive data
+
+## Code Examples
+
+```bash
+# Read current value
+sudo defaults read /Library/Preferences/com.apple.alf globalstate
+
+# Enable firewall (recommended)
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+
+# Disable firewall (not recommended)
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 0
+
+# Block all incoming (strict mode)
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 2
+
+# Restart firewall service
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+```
+
+## UI Location
+
+**System Settings** → **Network** → **Firewall**
+
+Toggle: **Firewall** (On/Off)
+
+For options: Click **Options...** button
+
+## Firewall Options
+
+### Stealth Mode
+Makes Mac invisible to network scans:
+```bash
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 1
+```
+
+### Allow Signed Apps
+Automatically allow signed software:
+```bash
+sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -int 1
+```
+
+### Logging
+Enable firewall activity logging:
+```bash
+sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -int 1
+```
+
+## Per-Application Rules
+
+In Firewall Options:
+1. Click **+** button
+2. Select application
+3. Choose **Allow** or **Block**
+
+Applications can also be added automatically when they first request network access.
+
+## Viewing Firewall Logs
+
+```bash
+# Modern macOS (unified logging)
+log show --predicate 'subsystem == "com.apple.alf"' --last 1h
+
+# Older macOS
+cat /var/log/appfirewall.log
+```
+
+## What the Firewall Blocks
+
+- Unauthorized incoming connections
+- Apps not in the allow list
+- Probes (when stealth mode enabled)
+
+## What the Firewall Allows
+
+- Outgoing connections (always)
+- Essential services (DHCP, DNS)
+- Signed/allowed applications
+
+## Network Services Impact
+
+Enabling firewall may affect:
+- Screen Sharing (must allow)
+- File Sharing (must allow)
+- AirDrop (uses Bonjour)
+- Remote Login/SSH (must allow)
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| App can't receive connections | Add to allowed list |
+| Share screen not working | Allow in Firewall Options |
+| Network discovery broken | Check stealth mode |
+| Setting not applying | Restart firewall service |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Requires**: sudo (administrator)
+- **Restart**: Firewall service restart needed
+
+## Source File
+
+**File**: [`defaults/system/firewall.sh`](../../../defaults/system/firewall.sh)
+
+```bash
+run_sudo_defaults "/Library/Preferences/com.apple.alf" "globalstate" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Application Firewall](https://support.apple.com/en-us/102445)
+- [Apple Support: Block connections with firewall](https://support.apple.com/guide/mac-help/block-connections-to-your-mac-with-a-firewall-mh34041/mac)

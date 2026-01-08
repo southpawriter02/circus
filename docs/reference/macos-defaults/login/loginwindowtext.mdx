@@ -1,0 +1,181 @@
+# Login Window Custom Message
+
+Display a custom message on the login and lock screens.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.loginwindow` |
+| **Key** | `LoginwindowText` |
+| **Type** | String |
+| **Default Value** | Empty |
+| **Our Setting** | Contact information |
+
+## Description
+
+Displays a custom text message on the login window and lock screen. This is commonly used to show contact information for returning a lost laptop, internal IT support information, or legal notices. The message appears below the login interface.
+
+## Common Use Cases
+
+| Use Case | Example Message |
+|----------|-----------------|
+| Lost laptop recovery | "If found: (555) 123-4567" |
+| IT contact info | "IT Help: helpdesk@company.com" |
+| Legal notice | "Property of Acme Corp" |
+| User identification | "This Mac belongs to: John Doe" |
+| Asset tracking | "Asset Tag: LAP-2024-0042" |
+
+## Display Location
+
+```
+┌─────────────────────────────────────────┐
+│           🍎                            │
+│                                         │
+│    ┌───┐    ┌───┐                       │
+│    │ 👤│    │ 👤│                       │
+│    └───┘    └───┘                       │
+│    Alice    Bob                         │
+│                                         │
+│─────────────────────────────────────────│
+│  If found, please call: (555) 123-4567  │ ← Custom message
+└─────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Recommended**: Set to your contact information.
+
+### Why Set a Message?
+
+1. **Laptop recovery** — Finders can contact you
+2. **Corporate identification** — Shows ownership
+3. **IT support** — Users know who to call
+4. **Professional** — Shows organization
+5. **Deterrent** — Indicates tracking may be active
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.loginwindow LoginwindowText
+
+# Set contact message
+defaults write com.apple.loginwindow LoginwindowText -string "If found, call: (555) 123-4567"
+
+# Set email contact
+defaults write com.apple.loginwindow LoginwindowText -string "IT Support: helpdesk@company.com"
+
+# Set property notice
+defaults write com.apple.loginwindow LoginwindowText -string "Property of Acme Corp - Asset #12345"
+
+# Set multi-line message (use literal newlines)
+defaults write com.apple.loginwindow LoginwindowText -string "Property of Acme Corp
+Reward for return
+IT: (555) 123-4567"
+
+# Clear message
+defaults delete com.apple.loginwindow LoginwindowText
+```
+
+## UI Location
+
+**System Settings** → **Lock Screen** → **Show message when locked** toggle
+
+Then: "Set" button to enter message text
+
+In older macOS:
+**System Preferences** → **Security & Privacy** → **General**
+
+## Effective Messages
+
+### Good Messages
+```
+✓ "If found: email@example.com or (555) 123-4567"
+✓ "Property of: Your Name - Reward for return"
+✓ "IT Help Desk: x1234 or helpdesk@company.com"
+```
+
+### Less Effective Messages
+```
+✗ "This is my computer" (no contact info)
+✗ "Smile, you're on camera" (antagonistic)
+✗ Just a company name with no contact
+```
+
+## Privacy Considerations
+
+Message is visible to anyone who sees the lock screen:
+- Don't include sensitive information
+- Consider using general email, not personal
+- Phone number alternatives: Google Voice, work number
+
+## Multi-Line Messages
+
+Use newlines for formatting:
+```bash
+defaults write com.apple.loginwindow LoginwindowText -string "Acme Corporation
+Asset Tag: 12345
+Lost? Contact: lost-property@acme.com"
+```
+
+## Character Limits
+
+No hard limit, but:
+- Long messages may be truncated
+- Keep reasonably short for readability
+- Test appearance after setting
+
+## Enterprise Deployment
+
+For many Macs:
+- MDM profiles can set this message
+- Configuration profiles (com.apple.loginwindow)
+- Scripts via management tools
+
+## Combining with Find My
+
+For best lost laptop recovery:
+1. Set login window message with contact
+2. Enable Find My Mac
+3. Enable Guest (for network access by finder)
+4. Enable FileVault (protect data)
+
+## Related Settings
+
+```bash
+# Disable guest account
+defaults write com.apple.loginwindow GuestEnabled -bool false
+
+# Show login as name/password
+defaults write com.apple.loginwindow SHOWFULLNAME -bool true
+
+# Disable password hints
+defaults write com.apple.loginwindow RetriesUntilHint -int 0
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Message not showing | Check exact key name |
+| Truncated message | Shorten text |
+| Special characters issue | Escape or use single quotes |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: May require logout to appear
+
+## Source File
+
+**File**: [`defaults/system/login.sh`](../../../defaults/system/login.sh)
+
+```bash
+run_defaults "com.apple.loginwindow" "LoginwindowText" "-string" "If found, contact: your.email@example.com"
+```
+
+## References
+
+- [Apple Support: Login window](https://support.apple.com/guide/mac-help/change-lock-screen-settings-mchl8a3b1a59/mac)
+- [Apple Support: Find My](https://support.apple.com/find-my)

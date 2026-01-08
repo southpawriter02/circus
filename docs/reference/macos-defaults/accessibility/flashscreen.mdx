@@ -1,0 +1,164 @@
+# Flash Screen on Alert
+
+Visual alert for hearing accessibility.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `flashScreen` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+When enabled, the entire screen flashes white briefly whenever an alert sound would play. This provides a visual cue for users who are deaf or hard of hearing, or in environments where sounds can't be heard.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Flash enabled** — Screen flashes on alerts |
+| `false` | **Flash disabled** (default) — No visual flash |
+
+## Visual Demonstration
+
+When enabled:
+```
+Sound Alert → ████████████████████████
+               │ Screen flashes white │
+               ████████████████████████
+               (brief 200ms flash)
+```
+
+The flash is noticeable but brief.
+
+## Our Configuration
+
+**Set to**: `false` — Disabled (for users without accessibility needs).
+
+### Why Enable?
+
+1. **Deaf/hard of hearing** — Essential accessibility
+2. **Noisy environments** — Can't hear alerts
+3. **Headphones off** — Miss audio alerts
+4. **Night mode** — Silent but visible
+5. **Meetings** — See alerts without sound
+
+### Why Disable?
+
+- Can be distracting
+- Not needed for hearing users
+- May trigger photosensitivity
+- Interrupts focus
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess flashScreen
+
+# Enable screen flash
+defaults write com.apple.universalaccess flashScreen -bool true
+
+# Disable screen flash (default)
+defaults write com.apple.universalaccess flashScreen -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess flashScreen
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Audio** → ☑ **Flash the screen when an alert sound occurs**
+
+Or in older macOS:
+**System Preferences** → **Accessibility** → **Audio**
+
+## Triggers
+
+Screen flashes for:
+- System beeps
+- Error sounds
+- Notification sounds
+- App alerts
+- Any sound using alert system
+
+## Not Triggers
+
+Screen doesn't flash for:
+- Video/music playback
+- Voice calls
+- Third-party notification sounds (unless using system API)
+
+## LED Flash Alternative
+
+On MacBooks with camera LED:
+- Some accessibility tools flash the LED
+- Less intrusive than full screen
+- Third-party solutions available
+
+## Combined with Other Settings
+
+For complete accessibility:
+```bash
+# Reduce motion (if flash triggers issues)
+defaults write com.apple.universalaccess reduceMotion -bool true
+
+# Also lower alert volume if using flash
+defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.0
+```
+
+## Focus Considerations
+
+If you have:
+- Epilepsy or photosensitivity
+- Migraines triggered by flashing
+- Screen recording running
+
+You may want to keep this disabled.
+
+## Notification Center
+
+Modern notifications appear in Notification Center regardless of this setting. Consider:
+- Banner notifications (visual)
+- Sound + flash combined
+- VoiceOver announcements
+
+## Related Accessibility
+
+```bash
+# Mono audio (combine channels)
+defaults write com.apple.universalaccess monoAudio -bool true
+
+# VoiceOver (screen reader)
+defaults write com.apple.universalaccess voiceOverActive -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No flash visible | Verify setting is true |
+| Flash too bright | Use display accessibility settings |
+| Flash too frequent | Check apps generating alerts |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: May require logout to fully activate
+
+## Source File
+
+**File**: [`defaults/system/sound.sh`](../../../defaults/system/sound.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "flashScreen" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Audio accessibility](https://support.apple.com/guide/mac-help/change-accessibility-audio-settings-mchlc8899a11/mac)
+- [Apple Accessibility](https://www.apple.com/accessibility/mac/)

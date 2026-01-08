@@ -1,0 +1,165 @@
+# Firewall Logging
+
+Enable logging of firewall activity for security auditing.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `/Library/Preferences/com.apple.alf` |
+| **Key** | `loggingenabled` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+| **Requires** | Administrator (sudo) |
+
+## Description
+
+Enables logging of firewall activity, recording blocked connections and security events to the system log. Useful for security auditing, troubleshooting network issues, and identifying potential threats.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Logging disabled** (default) — No records |
+| `1` | **Logging enabled** — Record firewall events |
+
+## Our Configuration
+
+**Set to**: `1` — Enable logging.
+
+### Why Enable Logging?
+
+1. **Security auditing** — Track blocked attempts
+2. **Troubleshooting** — Debug connection issues
+3. **Threat detection** — Identify attack patterns
+4. **Compliance** — Security requirements
+5. **Forensics** — Historical records
+
+### Why Keep Disabled?
+
+- Privacy concerns
+- Disk space (minimal impact)
+- Performance (negligible)
+
+## What Gets Logged
+
+| Event Type | Logged |
+|------------|--------|
+| Blocked incoming connections | ✓ |
+| Allowed connections | Some |
+| App authorization requests | ✓ |
+| Stealth mode blocks | ✓ |
+| Port scan attempts | ✓ |
+
+## Code Examples
+
+```bash
+# Read current value
+sudo defaults read /Library/Preferences/com.apple.alf loggingenabled
+
+# Enable firewall logging
+sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -int 1
+
+# Disable firewall logging
+sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -int 0
+
+# Restart firewall service
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+```
+
+## Viewing Logs
+
+### Modern macOS (Unified Logging):
+```bash
+# View recent firewall logs
+log show --predicate 'subsystem == "com.apple.alf"' --last 1h
+
+# Stream live firewall events
+log stream --predicate 'subsystem == "com.apple.alf"'
+
+# Search for specific IP
+log show --predicate 'subsystem == "com.apple.alf" AND eventMessage CONTAINS "192.168"' --last 24h
+```
+
+### Older macOS:
+```bash
+# View firewall log file
+cat /var/log/appfirewall.log
+```
+
+## Log Format
+
+Typical log entry:
+```
+Deny dropbox.app connecting from 0.0.0.0:17500 to 0.0.0.0:17500
+```
+
+Fields:
+- Action (Allow/Deny)
+- Application name
+- Source address:port
+- Destination address:port
+
+## Using Console.app
+
+1. Open **Console.app**
+2. Search for "alf" or "firewall"
+3. Filter by process
+4. Save search for quick access
+
+## Log Analysis
+
+Look for:
+- Repeated blocked connections (possible attack)
+- Unexpected applications trying to connect
+- Unusual ports
+- External IP addresses accessing your Mac
+
+## Storage Considerations
+
+Unified logging manages storage automatically:
+- Logs compressed
+- Old entries purged
+- Typically minimal impact
+
+## Related Security Settings
+
+```bash
+# Enable firewall
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+
+# Enable stealth mode
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 1
+
+# Allow signed apps
+sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -int 1
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No logs appearing | Verify logging is 1, restart service |
+| Too many logs | Normal for active network |
+| Can't read logs | Use sudo for system logs |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Requires**: sudo (administrator)
+- **Restart**: Firewall service restart needed
+
+## Source File
+
+**File**: [`defaults/system/firewall.sh`](../../../defaults/system/firewall.sh)
+
+```bash
+run_sudo_defaults "/Library/Preferences/com.apple.alf" "loggingenabled" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Firewall](https://support.apple.com/en-us/102445)
+- [Apple: Unified Logging](https://developer.apple.com/documentation/os/logging)

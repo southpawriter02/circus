@@ -1,0 +1,193 @@
+# Trackpad Two-Finger Right Click
+
+Enable right-click by tapping with two fingers.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `TrackpadRightClick` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables clicking with two fingers anywhere on the trackpad to perform a secondary click (right-click). This provides quick access to context menus without needing to use corner clicking or Control+click, making right-click as intuitive as on a mouse.
+
+## Values
+
+| Value | Right-Click Method |
+|-------|-------------------|
+| `true` | **Two-finger tap/click** (default) |
+| `false` | Disabled (use corner or Control+click) |
+
+## Visual Demonstration
+
+### Two-Finger Right Click:
+```
+                    ┌───────────────────────┐
+                    │                       │
+                    │      Trackpad         │
+                    │                       │
+                    │       👆 👆           │
+                    │   Two fingers tap     │
+                    │      ANYWHERE         │
+                    └───────────────────────┘
+                              │
+                              ▼
+                       Context Menu
+                    ┌──────────────────┐
+                    │ Open             │
+                    │ Open With   →    │
+                    │ ──────────────── │
+                    │ Copy             │
+                    │ Paste            │
+                    └──────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable two-finger right click.
+
+### Why Enable?
+
+1. **Intuitive** — Natural two-finger gesture
+2. **Anywhere** — No need to find corner
+3. **Fast** — Quick context menu access
+4. **Consistent** — Works like mouse right-click
+5. **Default** — Apple's recommendation
+
+### Alternative Methods
+
+If disabled, right-click via:
+- **Control + click** (always works)
+- **Corner click** (if configured)
+
+## Code Examples
+
+```bash
+# Read current value (built-in trackpad)
+defaults read com.apple.AppleMultitouchTrackpad TrackpadRightClick
+
+# Enable two-finger right click (both trackpads)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool true
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
+
+# Disable two-finger right click
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool false
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad TrackpadRightClick
+```
+
+## UI Location
+
+**System Settings** → **Trackpad** → **Point & Click** → **Secondary click**
+
+Options:
+- Click or tap with two fingers ← Our setting
+- Click in bottom right corner
+- Click in bottom left corner
+- Off
+
+## Click vs Tap
+
+With tap-to-click enabled:
+- Two-finger **tap** = right-click
+- Two-finger **click** (press down) = right-click
+
+Both work when this is enabled.
+
+## Corner Click Alternative
+
+For corner right-click instead:
+```bash
+# Enable bottom-right corner click
+defaults write com.apple.AppleMultitouchTrackpad TrackpadCornerSecondaryClick -int 2
+
+# Corner options:
+# 0 = Off
+# 1 = Bottom-left
+# 2 = Bottom-right
+```
+
+## Both Domains Required
+
+Apply to both for all trackpads:
+```bash
+# Built-in trackpad
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool true
+
+# Bluetooth Magic Trackpad
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
+```
+
+## Related Gestures
+
+| Gesture | Fingers | Action |
+|---------|---------|--------|
+| Tap | 1 | Click (if tap-to-click on) |
+| Tap | 2 | Right-click |
+| Tap | 3 | Look up (if enabled) |
+| Swipe | 2 | Scroll |
+| Pinch | 2 | Zoom |
+
+## Context Menu Uses
+
+Right-click provides:
+- Finder: File operations, Info, Services
+- Browser: Link options, Inspect Element
+- Text: Copy, Paste, Spelling
+- Dock: App options, Quit
+- Desktop: Change wallpaper, sort
+
+## Windows User Transition
+
+For users from Windows:
+- Two-finger tap = right-click (same behavior as right mouse button)
+- Muscle memory transfers quickly
+- No need to learn macOS-specific gestures
+
+## Related Settings
+
+```bash
+# Enable tap to click
+defaults write com.apple.AppleMultitouchTrackpad Clicking -int 1
+
+# Tracking speed
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 2.0
+
+# Three-finger drag
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Two-finger tap not working | Check setting is true |
+| Only press works, not tap | Enable Tap to Click |
+| External trackpad different | Set both domains |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Hardware**: All multitouch trackpads
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/input/trackpad_mouse.sh`](../../../defaults/input/trackpad_mouse.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "TrackpadRightClick" "-bool" "true"
+run_defaults "com.apple.driver.AppleBluetoothMultitouch.trackpad" "TrackpadRightClick" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Trackpad settings](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac)
+- [Apple Support: Right-click on Mac](https://support.apple.com/guide/mac-help/right-click-mh35853/mac)

@@ -1,0 +1,184 @@
+# Power Nap
+
+Allow background updates while your Mac sleeps.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Command** | `pmset powernap` |
+| **Type** | Integer |
+| **Default (Battery)** | `0` |
+| **Default (AC)** | `1` |
+| **Our Setting** | `0` (battery), `1` (AC) |
+| **Requires** | sudo |
+
+## Description
+
+Power Nap allows your Mac to wake periodically during sleep to check email, update calendars, and sync iCloud data. This provides up-to-date information when you wake your Mac, at the cost of some power consumption.
+
+## Values
+
+| Value | State |
+|-------|-------|
+| `0` | **Disabled** — True sleep, no background activity |
+| `1` | **Enabled** — Periodic wake for updates |
+
+## What Power Nap Does
+
+During sleep, your Mac periodically wakes to:
+
+| Task | Frequency |
+|------|-----------|
+| Check new email | ~Every hour |
+| Update calendar | Periodic |
+| Sync iCloud data | When changes detected |
+| Download software updates | When available (AC only) |
+| Time Machine backup | When scheduled (AC only) |
+| Find My location | Periodic |
+
+## Our Configuration
+
+- **Battery**: `0` — Disabled (preserve battery)
+- **AC Power**: `1` — Enabled (stay updated)
+
+### Why This Split?
+
+| Power Source | Priority | Power Nap |
+|--------------|----------|-----------|
+| Battery | Battery life | Off |
+| AC Power | Convenience | On |
+
+## Code Examples
+
+```bash
+# Check current Power Nap settings
+pmset -g | grep powernap
+
+# Disable on battery (save power)
+sudo pmset -b powernap 0
+
+# Enable on AC power (stay updated)
+sudo pmset -c powernap 1
+
+# Disable everywhere
+sudo pmset -a powernap 0
+
+# Enable everywhere (less battery life)
+sudo pmset -a powernap 1
+
+# View detailed power settings
+pmset -g custom
+```
+
+## UI Location
+
+**System Settings** → **Battery** → **Options** → ☑ **Enable Power Nap**
+
+Separate toggles for "On battery" and "On power adapter".
+
+## Power Nap Requirements
+
+Not all Macs support Power Nap. Check:
+```bash
+# Check if Power Nap supported
+pmset -g cap | grep powernap
+```
+
+Supported on:
+- MacBook Pro (2012 and later)
+- MacBook Air (2010 and later)
+- Mac mini (2012 and later)
+- iMac (2012 and later)
+- Mac Pro (2013 and later)
+
+## Power Impact
+
+### On Battery
+| Setting | Approx. Impact |
+|---------|---------------|
+| Power Nap Off | Baseline |
+| Power Nap On | 1-5% per hour of sleep |
+
+Over a long day, this adds up significantly.
+
+### On AC Power
+No impact — plugged in anyway.
+
+## AC-Only Features
+
+Some Power Nap features only work on AC:
+- Software update downloads
+- Time Machine backups
+- Spotlight indexing
+
+## Find My Integration
+
+Power Nap periodically updates location:
+- Helps locate lost/stolen Mac
+- Works even when "sleeping"
+- Useful for security
+
+## Notifications During Power Nap
+
+Power Nap doesn't:
+- Make sounds
+- Show notifications on screen
+- Wake the display
+
+Data syncs silently for next wake.
+
+## Privacy Considerations
+
+Power Nap sends network traffic:
+- iCloud servers
+- Email servers
+- Apple update servers
+
+Consider this on untrusted networks.
+
+## Alternative: Scheduled Wake
+
+For specific needs, schedule wake times:
+```bash
+# Wake daily at 7 AM
+sudo pmset repeat wakeorpoweron MTWRFSU 07:00:00
+```
+
+## Related Settings
+
+```bash
+# Keep TCP connections alive (for Push)
+sudo pmset -a tcpkeepalive 1
+
+# Standby settings (when to deep sleep)
+sudo pmset -a standbydelayhigh 86400
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Battery draining in sleep | Disable Power Nap |
+| Not getting email updates | Enable Power Nap |
+| Mac waking randomly | Check wake reason: `log show --last 1d | grep "Wake reason"` |
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion)
+- **Hardware**: 2010+ Macs (varies by model)
+- **Requires**: sudo
+
+## Source File
+
+**File**: [`defaults/system/energy.sh`](../../../defaults/system/energy.sh)
+
+```bash
+sudo pmset -b powernap 0
+sudo pmset -c powernap 1
+```
+
+## References
+
+- [Apple Support: Power Nap](https://support.apple.com/en-us/HT204032)
+- man pmset

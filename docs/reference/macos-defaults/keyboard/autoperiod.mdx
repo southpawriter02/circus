@@ -1,0 +1,172 @@
+# Automatic Period Substitution
+
+Disable auto-inserting period with double space.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticPeriodSubstitutionEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether macOS automatically inserts a period followed by a space when you type two spaces in a row. This iOS-inspired feature speeds up typing prose but interferes with code indentation, Markdown formatting, and command-line work.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Period substitution** (default) — Double-space → `. ` |
+| `false` | **No substitution** — Spaces remain spaces |
+
+## Visual Demonstration
+
+### Auto-Period Enabled (true):
+```
+You type:      "Hello  World" (two spaces)
+System shows:  "Hello. World" (period + space)
+                    ↑
+              Unexpected period!
+
+Code problem:
+  const x  = 5;  →  const x. = 5;
+                        ↑
+                    Syntax error!
+```
+
+### Auto-Period Disabled (false):
+```
+You type:      "Hello  World" (two spaces)
+System shows:  "Hello  World" (two spaces)
+
+Spaces = spaces, always
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable period substitution.
+
+### Why Disable?
+
+1. **Code alignment** — Multiple spaces intended
+2. **Markdown** — Two spaces = line break
+3. **Indentation** — Space-based indentation
+4. **Commands** — Shell commands with multiple spaces
+5. **Control** — Type exactly what you mean
+
+### Why Enable?
+
+- Faster prose typing
+- iOS muscle memory
+- Reducing punctuation keystrokes
+- Casual typing
+
+## Impact on Code
+
+```python
+# Intended alignment (with spaces):
+first_var  = 10
+second     = 20
+third      = 30
+
+# With auto-period — broken:
+first_var. = 10  # Syntax error!
+```
+
+## Impact on Markdown
+
+```markdown
+# Two trailing spaces = line break in Markdown
+Line one  ← (two spaces here)
+Line two
+
+# With auto-period — broken:
+Line one. 
+^-- Unwanted period ends sentence
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled
+
+# Disable period substitution (recommended)
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+
+# Enable period substitution (default)
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Text Input** → **Text Replacements...** → ☐ **Add period with double-space**
+
+## Common Editing Issues
+
+| Scenario | Expected | With Auto-Period |
+|----------|----------|------------------|
+| Aligning code | `x  = 5` | `x. = 5` ❌ |
+| Markdown line break | `end  \n` | `end. \n` ❌ |
+| Shell escaping | `echo  hello` | `echo. hello` ❌ |
+| Table formatting | `Name  Age` | `Name. Age` ❌ |
+
+## Fast Typing Recovery
+
+If you're used to this feature from iOS:
+- Takes a few days to adjust
+- You'll naturally slow down at sentence ends
+- Period + space becomes conscious again
+
+## Related Settings
+
+Disable all auto-substitutions for clean coding:
+
+```bash
+# Period substitution
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+
+# Smart quotes
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# Smart dashes
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Auto-capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Spelling correction
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still getting periods | Check per-app settings |
+| Only happens in certain apps | App-specific setting |
+| Want it in Notes only | Set globally off, enable per-app |
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra)
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSAutomaticPeriodSubstitutionEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Text substitutions](https://support.apple.com/guide/mac-help/text-substitutions-mh35735/mac)

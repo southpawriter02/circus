@@ -1,0 +1,210 @@
+# App Store Automatic Updates
+
+Automatically update apps from the Mac App Store.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.commerce` |
+| **Key** | `AutoUpdate` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Automatically installs updates for applications purchased from the Mac App Store. Apps update in the background when new versions are available, keeping your App Store apps patched with the latest features and security fixes without manual intervention.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-update** (default) — Apps update silently |
+| `false` | **Manual update** — Notification only |
+
+## What Gets Updated
+
+| Source | Auto-Updated | Notes |
+|--------|--------------|-------|
+| Mac App Store apps | ✓ | This setting |
+| Apple apps (Safari, etc.) | ✓ | Via macOS updates |
+| Homebrew apps | ✗ | Use `brew upgrade` |
+| Direct downloads | ✗ | App-specific updaters |
+| SetApp apps | ✗ | SetApp manages |
+
+## How Auto-Update Works
+
+```
+Developer releases update to App Store
+            ↓
+App Store detects (background check)
+            ↓
+Downloads in background
+            ↓
+Installs when app is closed ← Silent, no prompt
+            ↓
+Next launch: Updated version
+```
+
+If app is running during update:
+- Download completes
+- Installation waits
+- Updates on next launch or quit/reopen
+
+## Our Configuration
+
+**Set to**: `true` — Enable auto-updates.
+
+### Why Enable?
+
+1. **Security** — Patches applied automatically
+2. **Features** — Latest improvements
+3. **Compatibility** — Works with latest macOS
+4. **Zero effort** — Set and forget
+5. **App Store standard** — Expected behavior
+
+### Why Disable?
+
+- Specific app version required
+- Testing environment
+- Bandwidth constraints
+- Review changes before updating
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.commerce AutoUpdate
+
+# Enable automatic updates (recommended)
+defaults write com.apple.commerce AutoUpdate -bool true
+
+# Disable automatic updates
+defaults write com.apple.commerce AutoUpdate -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.commerce AutoUpdate
+```
+
+## UI Location
+
+**System Settings** → **General** → **Software Update** → Click ⓘ next to "Automatic updates" → ☑ **Install App Store app updates**
+
+Or in App Store:
+**App Store** → **Settings** (⌘,) → ☑ **Automatic Updates**
+
+## App Store Badge
+
+Even with auto-updates:
+```
+[App Store icon with "3" badge]
+     │
+     └── Available updates waiting (app was open)
+```
+
+Check App Store → Updates to see pending.
+
+## Per-App Updates
+
+You cannot selectively auto-update specific apps only. It's all-or-nothing for App Store apps.
+
+For control over individual apps:
+1. Disable AutoUpdate
+2. Manually update in App Store
+3. Update specific apps only
+
+## Background App Refresh
+
+Auto-updates work best when:
+- Mac is awake or in Power Nap
+- Connected to internet
+- Sufficient disk space
+- App Store signed in
+
+## Update Frequency
+
+App Store checks for updates:
+- Periodically in background
+- When App Store app opened
+- When macOS checks for updates
+
+Typically within hours of release.
+
+## Handling Breaking Changes
+
+Occasionally, updates break workflows:
+- **Before**: Disable auto-update temporarily
+- **After**: Check release notes in App Store
+- **Rollback**: Not possible via App Store
+
+For critical apps, maintain backup of previous version.
+
+## Enterprise Considerations
+
+In managed environments:
+- MDM can control this setting
+- Can allow/block specific apps
+- Volume Purchase apps may have different behavior
+
+## iCloud Sync
+
+App purchases sync via iCloud:
+- Same apps available on all Macs
+- Updates apply to all Macs with auto-update
+- Settings sync separately
+
+## Related Settings
+
+```bash
+# macOS update check
+defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
+
+# macOS update download
+defaults write com.apple.SoftwareUpdate AutomaticDownload -bool true
+
+# macOS update install
+defaults write com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool true
+
+# Security updates
+defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
+```
+
+## Checking Update Status
+
+Via command line:
+```bash
+# List pending App Store updates
+softwareupdate --list
+
+# Note: Only shows macOS updates, not App Store apps directly
+```
+
+In App Store app: Click your avatar → Updates
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Apps not updating | Check App Store sign-in |
+| Updates stuck | Restart Mac, try manual update |
+| App broken after update | Contact developer |
+| Too much bandwidth | Disable, update manually on schedule |
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion)
+- **Note**: Only affects App Store apps
+
+## Source File
+
+**File**: [`defaults/system/software_update.sh`](../../../defaults/system/software_update.sh)
+
+```bash
+run_defaults "com.apple.commerce" "AutoUpdate" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: App Store updates](https://support.apple.com/en-us/102582)
+- [Apple Support: Update apps](https://support.apple.com/guide/app-store/update-apps-fir41c9c70e/mac)

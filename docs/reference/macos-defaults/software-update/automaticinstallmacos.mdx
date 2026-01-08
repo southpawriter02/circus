@@ -1,0 +1,191 @@
+# Software Update macOS Auto-Install
+
+Automatically install macOS updates when available.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.SoftwareUpdate` |
+| **Key** | `AutomaticallyInstallMacOSUpdates` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Automatically installs macOS updates after they've been downloaded. Minor updates (e.g., macOS 14.1 to 14.2) install automatically, while major version upgrades typically still require user confirmation. Updates requiring restart prompt the user or install overnight when the Mac is idle and connected to power.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-install** — Install updates automatically |
+| `false` | **Manual install** (default) — Notification only |
+
+## What Gets Auto-Installed
+
+| Update Type | Auto-Install | Notes |
+|-------------|--------------|-------|
+| Point releases (14.1→14.2) | ✓ | Overnight when idle |
+| Security patches | ✓ | With CriticalUpdateInstall |
+| Safari updates | ✓ | Usually no restart |
+| Major upgrades (14→15) | ✗ | Always requires consent |
+| Beta updates | ✗ | Manual enrollment |
+
+## Installation Timing
+
+Automatic installations prefer:
+```
+Optimal: 2-4 AM, Mac on power, not in use
+         │
+         ├── User warned: "Mac will restart tonight"
+         ├── Install proceeds if user doesn't postpone
+         └── Ready when you wake up
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable automatic installation.
+
+### Why Enable?
+
+1. **Security** — Patches applied faster
+2. **Convenience** — No manual intervention
+3. **Overnight installs** — No work disruption
+4. **Up-to-date** — Always current
+5. **Best practice** — Recommended by Apple
+
+### Why Disable?
+
+- Mission-critical workflows (need to test updates)
+- Compatibility concerns with specific software
+- Control timing precisely
+- Enterprise change management
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates
+
+# Enable automatic installation (recommended)
+defaults write com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool true
+
+# Disable automatic installation
+defaults write com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates
+```
+
+## UI Location
+
+**System Settings** → **General** → **Software Update** → Click ⓘ next to "Automatic updates" → ☑ **Install macOS updates**
+
+## Installation Prerequisites
+
+Auto-install requires:
+- Mac connected to power
+- Mac not in active use
+- Sufficient disk space
+- Update already downloaded
+
+If conditions not met, installation postpones.
+
+## User Notification
+
+Before overnight install:
+```
+┌─────────────────────────────────────────┐
+│  📦 macOS Update Ready                  │
+│                                         │
+│  macOS Sonoma 14.2 will be installed   │
+│  tonight at 2:00 AM if your Mac is     │
+│  connected to power.                    │
+│                                         │
+│  [Remind Me Tomorrow] [Install Tonight] │
+└─────────────────────────────────────────┘
+```
+
+User can postpone or trigger immediate install.
+
+## What Happens During Install
+
+1. **Save state** — Open apps remember state
+2. **Restart** — System reboots
+3. **Install** — Progress bar during install
+4. **Login** — Back to login screen
+5. **Resume** — Apps reopen where you left off
+
+Typical duration: 10-30 minutes for point releases.
+
+## Rollback Consideration
+
+If update causes issues:
+- Apple Silicon: Boot to Recovery, restore from snapshot
+- Intel: Time Machine restore
+- No built-in "uninstall update" feature
+
+Consider testing on non-critical Mac first if concerned.
+
+## Combining with Other Settings
+
+Complete automatic update setup:
+```bash
+# Check for updates
+defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
+
+# Download updates
+defaults write com.apple.SoftwareUpdate AutomaticDownload -bool true
+
+# Install macOS updates
+defaults write com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool true
+
+# Install security updates
+defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
+
+# Install App Store updates
+defaults write com.apple.commerce AutoUpdate -bool true
+```
+
+## Enterprise Considerations
+
+In managed environments:
+- MDM profiles can enforce this setting
+- Can defer updates for testing period
+- Software Update Server for bandwidth control
+
+## Power Requirements
+
+For notebook Macs:
+- Must be connected to power adapter
+- Battery-only install may be skipped
+- Ensures install completes successfully
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Not installing overnight | Check power connection |
+| Keeps postponing | Manually install once |
+| Install failed | Check disk space |
+| Wrong update installed | Not user-controllable per-update |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave for full support)
+- **Note**: Takes effect for future updates
+
+## Source File
+
+**File**: [`defaults/system/software_update.sh`](../../../defaults/system/software_update.sh)
+
+```bash
+run_defaults "com.apple.SoftwareUpdate" "AutomaticallyInstallMacOSUpdates" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Keep your Mac up to date](https://support.apple.com/en-us/102582)
+- [Apple Support: How to get updates](https://support.apple.com/en-us/105313)

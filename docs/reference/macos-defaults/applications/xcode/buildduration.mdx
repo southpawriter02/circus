@@ -1,0 +1,145 @@
+# Xcode Build Duration
+
+Show build duration in Xcode's activity viewer.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `ShowBuildOperationDuration` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Displays the build duration in Xcode's toolbar activity area after each build completes. This helps developers monitor build times and identify when builds are taking longer than expected—useful for optimizing build performance.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show build duration** — Time displayed after build |
+| `false` | **Hide duration** (default) — No timing shown |
+
+## Visual Example
+
+**Without ShowBuildOperationDuration:**
+```
+Build Succeeded
+```
+
+**With ShowBuildOperationDuration:**
+```
+Build Succeeded | 23.4s
+```
+
+## Our Configuration
+
+**Set to**: `true` — Monitor build performance.
+
+### Why Show Build Duration?
+
+1. **Performance monitoring** — Track build time trends
+2. **Optimization** — Identify slow builds needing attention
+3. **Benchmarking** — Compare before/after changes
+4. **CI comparison** — Compare local vs CI builds
+5. **Module analysis** — Notice when specific changes slow builds
+
+### When Builds Are Slow
+
+If builds consistently take longer than expected:
+- Check for unnecessary dependencies
+- Enable Xcode build parallelization
+- Review build phases
+- Consider modularization
+- Check derived data health
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dt.Xcode ShowBuildOperationDuration
+
+# Show build duration (recommended)
+defaults write com.apple.dt.Xcode ShowBuildOperationDuration -bool true
+
+# Hide build duration (default)
+defaults write com.apple.dt.Xcode ShowBuildOperationDuration -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dt.Xcode ShowBuildOperationDuration
+```
+
+## UI Location
+
+No direct UI toggle—must be set via Terminal.
+
+Duration appears in the toolbar after enabling.
+
+## Build Optimization Tips
+
+### Speed Up Builds
+
+1. **Enable parallelization**
+   - Build Settings → Build Options → Enable Parallel Builds
+
+2. **Use incremental builds**
+   - Don't clean unnecessarily
+
+3. **Modularize large projects**
+   - Separate into frameworks
+
+4. **Check derived data**
+   ```bash
+   # Size of derived data
+   du -sh ~/Library/Developer/Xcode/DerivedData
+   
+   # Clean derived data
+   rm -rf ~/Library/Developer/Xcode/DerivedData
+   ```
+
+### Xcode Build Timing Report
+
+For detailed timing:
+```bash
+# Enable build timing summary
+defaults write com.apple.dt.Xcode ShowBuildOperationDuration -bool true
+
+# In Xcode: Product → Perform Action → Build With Timing Summary
+```
+
+## Related Settings
+
+```bash
+# Continue building after errors (see all issues)
+defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Duration not appearing | Restart Xcode |
+| Unrealistic times | Clean and rebuild |
+| Builds always slow | Check DerivedData, dependencies |
+
+## Compatibility
+
+- **Xcode**: 9.0+
+- **macOS**: 10.12+
+- **Note**: Restart Xcode for setting to take effect
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../defaults/applications/xcode.sh)
+
+```bash
+run_defaults "com.apple.dt.Xcode" "ShowBuildOperationDuration" "-bool" "true"
+```
+
+## References
+
+- [Apple Developer: Xcode Build System](https://developer.apple.com/documentation/xcode/build-system)
+- [WWDC: Building Faster in Xcode](https://developer.apple.com/videos/play/wwdc2022/110364/)

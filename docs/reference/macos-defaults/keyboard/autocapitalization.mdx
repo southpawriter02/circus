@@ -1,0 +1,181 @@
+# Automatic Capitalization
+
+Disable automatic capitalization of first letters.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticCapitalizationEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether macOS automatically capitalizes the first letter of sentences, proper nouns, and words following periods. While convenient for prose, this interferes with code snippets, commands, file names, and technical identifiers that must remain lowercase.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-capitalize** (default) — First letters uppercased |
+| `false` | **No auto-capitalization** — Case preserved as typed |
+
+## Visual Demonstration
+
+### Auto-Capitalize Enabled (true):
+```
+After a period:
+  you type:   "file saved. let's check it"
+  becomes:    "file saved. Let's check it"
+                          ↑
+                  Auto-capitalized
+
+Command example:
+  you type:   ls -la. cd ~/projects
+  becomes:    ls -la. Cd ~/projects
+                       ↑
+              Now invalid command!
+```
+
+### Auto-Capitalize Disabled (false):
+```
+you type:   "file saved. let's check it"
+stays:      "file saved. let's check it"
+
+Everything stays exactly as you typed it
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable auto-capitalization.
+
+### Why Disable?
+
+1. **Commands** — `cd`, `ls`, `git` must be lowercase
+2. **Variables** — `myVar` not `MyVar`
+3. **File names** — Case matters on many systems
+4. **Constants** — `null`, `false`, `true`, `nil`
+5. **Identifiers** — usernames, package names
+
+### Why Enable?
+
+- Writing email
+- Note-taking
+- Documents
+- Non-technical use
+
+## Case Sensitivity Matters
+
+```python
+# In Python, case matters:
+def myFunction():  # Correct
+def MyFunction():  # Different function!
+
+# Constants are lowercase:
+value = None   # Correct
+value = NONE   # NameError!
+```
+
+```bash
+# Unix commands are lowercase:
+cd ~/Documents  # Works
+Cd ~/Documents  # Command not found!
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSAutomaticCapitalizationEnabled
+
+# Disable auto-capitalization (recommended for developers)
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Enable auto-capitalization (default)
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSAutomaticCapitalizationEnabled
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Text Input** → **Text Replacements...** → ☐ **Capitalize words automatically**
+
+## When Capitalization Triggers
+
+Auto-capitalization activates after:
+- Period followed by space (. )
+- Question mark followed by space (? )
+- Exclamation mark followed by space (! )
+- Newlines in some apps
+
+## Per-App Override
+
+Check per-app settings:
+**Edit** menu → **Substitutions** → ☐ **Capitalize Words Automatically**
+
+Works in:
+- TextEdit
+- Notes
+- Mail
+- Other Cocoa apps
+
+## Developer Impact
+
+| Context | Problem |
+|---------|---------|
+| Shell commands | `Cd` instead of `cd` |
+| Python/Ruby | Constants capitalized |
+| Variable names | Changes camelCase |
+| User input | Unexpected behavior |
+| Documentation | Commands shown incorrectly |
+
+## Related Settings
+
+Complete auto-feature disable:
+
+```bash
+# Auto-capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Auto-correction
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Smart quotes
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# Smart dashes
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Auto-period
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still capitalizing | Check per-app settings |
+| Works in some apps | Apps have own settings |
+| Want caps in email only | Set globally off, per-app on |
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra)
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSAutomaticCapitalizationEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Text substitutions](https://support.apple.com/guide/mac-help/text-substitutions-mh35735/mac)

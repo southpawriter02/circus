@@ -1,0 +1,104 @@
+# Pages Word Count Display
+
+Show word count at the bottom of documents.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Pages` |
+| **Key** | `TSWPShowWordCount` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Displays the word count at the bottom of the Pages document window. Shows real-time count as you write, useful for essays, articles, and any length-specific writing.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show word count** — Visible at bottom |
+| `false` | **Hide word count** (default) — Cleaner view |
+
+## Our Configuration
+
+**Set to**: `true` — Always show word count.
+
+### Why Show Word Count?
+
+1. **Target tracking** — Hit word count goals
+2. **Editing** — Monitor document length
+3. **Essays** — Academic requirements
+4. **Articles** — Publication guidelines
+
+## Visual Location
+
+Word count appears in bottom toolbar:
+```
+┌─────────────────────────────────────────┐
+│  Document content...                    │
+│                                         │
+├─────────────────────────────────────────┤
+│  Words: 1,234   Pages: 5   Characters: 7,891   │
+└─────────────────────────────────────────┘
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Pages TSWPShowWordCount
+
+# Show word count (recommended)
+defaults write com.apple.iWork.Pages TSWPShowWordCount -bool true
+
+# Hide word count (default)
+defaults write com.apple.iWork.Pages TSWPShowWordCount -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Pages TSWPShowWordCount
+```
+
+## UI Location
+
+**View** menu → **Show Word Count**
+
+## Detailed Statistics
+
+Click on word count for more stats:
+- Words
+- Characters (with/without spaces)
+- Paragraphs
+- Pages
+- Selection stats
+
+## Related Settings
+
+```bash
+# Show invisible characters
+defaults write com.apple.iWork.Pages TSWPShowInvisibles -bool false
+
+# Smart quotes for typography
+defaults write com.apple.iWork.Pages TSWPUseSmartQuotes -bool true
+```
+
+## Compatibility
+
+- **Pages**: All versions
+- **macOS**: 10.14+
+- **Note**: Toggle applies immediately
+
+## Source File
+
+**File**: [`defaults/applications/pages.sh`](../../../../defaults/applications/pages.sh)
+
+```bash
+run_defaults "com.apple.iWork.Pages" "TSWPShowWordCount" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Pages settings](https://support.apple.com/guide/pages/change-settings-tanf9f2cc8d6/mac)

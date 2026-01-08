@@ -1,0 +1,187 @@
+# Xcode Continue Building After Errors
+
+Allow build to continue compiling after encountering errors.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `IDEBuildingContinueBuildingAfterErrors` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Xcode continues compiling remaining files after encountering a build error. When enabled, you see all errors at once rather than fixing one, rebuilding, and discovering the next. This can significantly improve the development feedback loop.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Continue building** — Show all errors at once |
+| `false` | **Stop on first error** (default) — Build halts immediately |
+
+## The Difference
+
+### Stop on First Error (false):
+```
+Build starts → File A error → STOP
+                               │
+                               └── Only see 1 error
+                                   Fix it, rebuild
+                                   See next error
+                                   Repeat...
+```
+
+### Continue Building (true):
+```
+Build starts → File A error → Continue
+                    ↓
+               File B error → Continue
+                    ↓
+               File C error → Continue
+                    ↓
+               Build finishes with all 3 errors listed
+                    │
+                    └── Fix all at once!
+```
+
+## Our Configuration
+
+**Set to**: `true` — Continue building after errors.
+
+### Why Continue Building?
+
+1. **See all errors** — Complete picture immediately
+2. **Faster iteration** — Fix multiple issues at once
+3. **Related errors** — Understand cascading problems
+4. **Batch fixing** — More efficient workflow
+5. **Better context** — See pattern in errors
+
+### When to Stop on First Error
+
+- Very large project (saves compile time)
+- Error in foundational file (others cascade)
+- Debugging single issue intentionally
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors
+
+# Continue building after errors (recommended)
+defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool true
+
+# Stop on first error (default)
+defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors
+```
+
+## UI Location
+
+**Xcode** → **Settings** (⌘,) → **General** → ☑ **Continue building after errors**
+
+## Cascading vs Independent Errors
+
+Understanding error types:
+
+### Cascading Errors
+```swift
+// File A
+class MyClass {  // syntax error - missing brace
+
+// File B
+let obj = MyClass()  // Error: "Unknown type MyClass"
+                     // This error is caused by File A's error
+```
+
+Cascading errors will exist in both modes, but you'll see them sooner with continue-building enabled.
+
+### Independent Errors
+```swift
+// File A
+let x: Strng = ""  // Typo: Strng
+
+// File B  
+let y: Int = "hello"  // Wrong type
+
+// File C
+func foo() {}
+func foo() {}  // Duplicate declaration
+```
+
+All three are independent — continue-building shows all at once.
+
+## Error Navigator Benefits
+
+With continue-building:
+1. Open Issue Navigator (⌘5)
+2. See all errors and warnings
+3. Click to navigate to each
+4. Fix systematically
+
+## Warnings Too
+
+This setting also affects warnings:
+- More warnings visible at once
+- Better understanding of code health
+- Can prioritize which to fix
+
+## Build Performance
+
+Slight trade-off:
+- Compiles more files before stopping
+- Additional compile time if many errors
+- Usually negligible impact
+- Worth it for complete error picture
+
+## Related Settings
+
+```bash
+# Show build duration
+defaults write com.apple.dt.Xcode ShowBuildOperationDuration -bool true
+
+# Show line numbers
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool true
+
+# Trim trailing whitespace
+defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool true
+```
+
+## SwiftUI Previews
+
+Previews also benefit:
+- See all preview failures
+- Better understanding of what's broken
+- Fix multiple preview issues together
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Too many errors | Consider stopping on first |
+| Setting not working | Restart Xcode |
+| Still stops early | Check for fatal/linker errors |
+
+## Compatibility
+
+- **Xcode**: 8.0+
+- **macOS**: 10.12+
+- **Note**: Restart Xcode for changes
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../defaults/applications/xcode.sh)
+
+```bash
+run_defaults "com.apple.dt.Xcode" "IDEBuildingContinueBuildingAfterErrors" "-bool" "true"
+```
+
+## References
+
+- [Apple Developer: Xcode Workspace Settings](https://developer.apple.com/documentation/xcode/configuring-a-new-target-in-your-project)

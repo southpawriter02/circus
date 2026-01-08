@@ -1,0 +1,154 @@
+# UI Sound Effects
+
+Control system interface sounds like clicks and empty trash.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.sound.uiaudio.enabled` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls whether macOS plays interface sound effects for various system actions. These subtle audio cues provide feedback for interactions like emptying the Trash, taking screenshots, and clicking buttons.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `1` | **Enabled** (default) — Play UI sounds |
+| `0` | **Disabled** — Silent interface |
+
+## UI Sounds Affected
+
+| Action | Sound |
+|--------|-------|
+| Empty Trash | Paper crumpling |
+| Screenshot | Camera shutter |
+| Move to Trash | Whoosh |
+| File copy complete | Subtle chime |
+| Bluetooth connects | Connection tone |
+| Charging connected | Power chime |
+| Airdrop send/receive | Whoosh |
+| Send email/message | Whoosh |
+
+## Our Configuration
+
+**Set to**: `1` — Keep UI sounds enabled.
+
+### Why Enable?
+
+1. **Feedback** — Confirms action occurred
+2. **Accessibility** — Audio cues helpful
+3. **Familiarity** — Expected Mac experience
+4. **Confirmation** — Know screenshot captured
+5. **Awareness** — Trash emptied, file moved
+
+### Why Disable?
+
+- Recording audio/video
+- Library/quiet workspace
+- Minimalist preference
+- Streaming/podcasting
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain com.apple.sound.uiaudio.enabled
+
+# Enable UI sounds (default)
+defaults write NSGlobalDomain com.apple.sound.uiaudio.enabled -int 1
+
+# Disable UI sounds
+defaults write NSGlobalDomain com.apple.sound.uiaudio.enabled -int 0
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain com.apple.sound.uiaudio.enabled
+```
+
+## UI Location
+
+**System Settings** → **Sound** → ☑ **Play user interface sound effects**
+
+## Screenshot Sound Specifically
+
+The screenshot sound can be muted independently:
+- Hold **Shift** while taking screenshot
+- Or mute your Mac temporarily
+
+## Recording/Streaming
+
+When recording:
+1. Disable UI sounds
+2. Or use Focus mode
+3. Or edit sounds out in post
+
+## Startup Sound
+
+Separate from UI sounds:
+```bash
+# Check startup sound setting
+nvram -p | grep StartupMute
+
+# Disable startup sound
+sudo nvram StartupMute=%01
+
+# Enable startup sound
+sudo nvram StartupMute=%00
+```
+
+(Not applicable to all Mac models)
+
+## Related Audio Settings
+
+```bash
+# Alert volume
+defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.5
+
+# Volume change feedback
+defaults write NSGlobalDomain com.apple.sound.beep.feedback -int 0
+```
+
+## Per-Sound Control
+
+macOS doesn't offer per-sound control, but you can:
+- Disable all UI sounds (this setting)
+- Control alert sounds separately
+- Use third-party apps for granular control
+
+## Focus Mode Integration
+
+When in Focus mode:
+- Some sounds may be silenced
+- Notification sounds affected
+- UI sounds may still play
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Sounds still playing | Verify setting is 0 |
+| No screenshot sound | May already be disabled |
+| All sounds gone | Check main volume |
+
+## Compatibility
+
+- **macOS**: 10.5+
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/system/sound.sh`](../../../defaults/system/sound.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.sound.uiaudio.enabled" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Adjust sound](https://support.apple.com/guide/mac-help/adjust-the-sound-on-mac-mchlp2256/mac)

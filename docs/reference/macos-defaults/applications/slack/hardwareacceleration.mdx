@@ -1,0 +1,155 @@
+# Slack Hardware Acceleration
+
+Enable GPU-accelerated rendering for better performance.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.tinyspeck.slackmacgap` |
+| **Key** | `HardwareAccelerationEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Slack uses GPU-accelerated rendering for smoother animations, faster scrolling, and better overall performance. Uses your Mac's graphics processor instead of relying solely on the CPU.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Hardware acceleration** (default) — GPU rendering |
+| `false` | **Software rendering** — CPU only |
+
+## Performance Comparison
+
+| Aspect | GPU (true) | CPU (false) |
+|--------|------------|-------------|
+| Scrolling | Smooth | May stutter |
+| Animations | 60 fps | Lower fps |
+| CPU usage | Lower | Higher |
+| Battery | Usually better | May drain faster |
+| GPU usage | Higher | None |
+
+## Our Configuration
+
+**Set to**: `true` — Use hardware acceleration.
+
+### Why Enable?
+
+1. **Smoother experience** — Better animations
+2. **Lower CPU** — GPU handles rendering
+3. **Better performance** — Faster UI
+4. **Modern Macs** — Excellent GPU support
+5. **Default setting** — Tested and stable
+
+### Why Disable?
+
+- Older Mac with weak GPU
+- GPU driver issues
+- Screen flickering/glitches
+- Electron app conflicts
+- Debug/troubleshooting
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.tinyspeck.slackmacgap HardwareAccelerationEnabled
+
+# Enable hardware acceleration (default)
+defaults write com.tinyspeck.slackmacgap HardwareAccelerationEnabled -bool true
+
+# Disable hardware acceleration
+defaults write com.tinyspeck.slackmacgap HardwareAccelerationEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.tinyspeck.slackmacgap HardwareAccelerationEnabled
+```
+
+## UI Location
+
+Not directly accessible in Slack preferences.
+
+For troubleshooting, check:
+**Slack Help** → **Troubleshooting**
+
+## When to Disable
+
+Symptoms that may indicate GPU issues:
+- Screen flickering in Slack
+- Rendering glitches
+- High GPU usage
+- Mac getting hot
+- External display issues
+
+## Slack as Electron App
+
+Slack uses Electron (Chromium):
+- Shares GPU settings model with Chrome
+- Hardware acceleration is standard
+- Same issues as other Electron apps
+
+## Activity Monitor
+
+Check GPU usage:
+1. Open **Activity Monitor**
+2. Select **GPU** column
+3. Watch Slack's GPU usage
+
+With hardware acceleration on: Some GPU usage
+With hardware acceleration off: Minimal GPU, more CPU
+
+## Apple Silicon Macs
+
+On M1/M2+ Macs:
+- Unified memory architecture
+- Hardware acceleration very efficient
+- Rarely need to disable
+- Generally recommended to keep on
+
+## Intel Mac Considerations
+
+On Intel Macs:
+- Dedicated GPU: Keep on
+- Integrated GPU only: Usually fine
+- Older GPUs: May need to disable
+
+## Related Settings
+
+```bash
+# Launch on login
+defaults write com.tinyspeck.slackmacgap SlackAutoLaunch -bool true
+
+# Close to tray
+defaults write com.tinyspeck.slackmacgap SlackCloseToTray -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Slack UI glitching | Try disabling acceleration |
+| Slack very slow | Try enabling acceleration |
+| High GPU usage | Normal; disable if problematic |
+| Black window | Toggle acceleration |
+
+## Compatibility
+
+- **Slack**: Mac desktop app
+- **macOS**: 10.13+
+- **Note**: Restart Slack for changes
+
+## Source File
+
+**File**: [`defaults/applications/slack.sh`](../../../../defaults/applications/slack.sh)
+
+```bash
+run_defaults "com.tinyspeck.slackmacgap" "HardwareAccelerationEnabled" "-bool" "true"
+```
+
+## References
+
+- [Slack Help: Troubleshoot Slack](https://slack.com/help/articles/212681473-Troubleshoot-Slack-on-macOS)

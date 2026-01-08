@@ -1,0 +1,171 @@
+# Safari Default Page Zoom
+
+Set the default zoom level for all websites.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `DefaultPageZoom` |
+| **Type** | Float |
+| **Default Value** | `1.0` |
+| **Our Setting** | `1.0` |
+
+## Description
+
+Controls the default zoom level applied to all web pages. Increasing this value makes text and images larger, which can improve readability on high-resolution displays or for users who prefer larger content.
+
+## Values
+
+| Value | Zoom Level | Use Case |
+|-------|------------|----------|
+| `0.5` | 50% | Overview, more content |
+| `0.75` | 75% | Compact view |
+| `0.85` | 85% | Slightly smaller |
+| `1.0` | 100% | Default (normal) |
+| `1.15` | 115% | Slightly larger |
+| `1.25` | 125% | Comfortable for many |
+| `1.5` | 150% | Larger text |
+| `2.0` | 200% | Very large |
+
+## Visual Comparison
+
+### 100% (default):
+```
+┌───────────────────────────────────────────────┐
+│ Article Title                                 │
+│ This is normal sized body text that flows     │
+│ across the full width of the container and    │
+│ continues onto multiple lines as expected.    │
+└───────────────────────────────────────────────┘
+```
+
+### 125%:
+```
+┌───────────────────────────────────────────────┐
+│ Article Title                                │
+│ This is larger body text that                │
+│ takes more space but is easier               │
+│ to read for many users.                      │
+└───────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `1.0` — Default zoom.
+
+### When to Increase Zoom
+
+1. **High-DPI displays** — 4K/5K may need larger text
+2. **Vision needs** — Easier readability
+3. **Distance viewing** — Further from screen
+4. **Preference** — Personal comfort
+
+### When to Keep Default
+
+- Standard viewing distance
+- Good vision
+- Mobile-responsive sites display well
+- Prefer more content on screen
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari DefaultPageZoom
+
+# Set to 100% (default)
+defaults write com.apple.Safari DefaultPageZoom -float 1.0
+
+# Set to 125% (slightly larger)
+defaults write com.apple.Safari DefaultPageZoom -float 1.25
+
+# Set to 150% (larger)
+defaults write com.apple.Safari DefaultPageZoom -float 1.5
+
+# Delete (reset to default)
+defaults delete com.apple.Safari DefaultPageZoom
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **Websites** → **Page Zoom**
+
+Set "When visiting other websites" to desired level.
+
+## Per-Site Zoom
+
+Safari remembers zoom per website:
+1. Visit website
+2. **View** → **Zoom In/Out** (⌘+/⌘-)
+3. Setting saved for that site
+
+This overrides the default.
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘+ | Zoom in |
+| ⌘- | Zoom out |
+| ⌘0 | Reset to default zoom |
+
+## Zoom vs Text Size
+
+Two approaches to larger content:
+1. **Page Zoom** — Scales entire page (text + images)
+2. **Text Size Only** — Increases just fonts
+
+Safari's zoom is full-page zoom.
+
+## Accessibility Alternatives
+
+For severe vision needs:
+- **System Settings** → **Accessibility** → **Zoom**
+- Full-screen magnification
+- Hover zoom
+- Independent of Safari setting
+
+## Reader Mode
+
+Alternative for articles:
+1. Click **Reader** button in address bar
+2. Use **Aa** to adjust text size
+3. Separate from page zoom
+
+## Related Settings
+
+```bash
+# Show full URL
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+
+# Enable Develop menu
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Zoom too high | Reset with ⌘0 |
+| Per-site override | Check Websites settings |
+| Text blurry | Lower zoom, use accessibility |
+
+## Compatibility
+
+- **Safari**: 10+
+- **macOS**: 10.12+
+- **Note**: Restart Safari for global changes
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "DefaultPageZoom" "-float" "1"
+```
+
+## References
+
+- [Apple Support: Zoom webpages](https://support.apple.com/guide/safari/zoom-in-on-webpages-ibrw1068/mac)

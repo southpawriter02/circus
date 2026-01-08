@@ -1,0 +1,129 @@
+# Messages Save Conversation History
+
+Preserve message history when closing conversations.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.MobileSMS` |
+| **Key** | `SaveConversationsOnClose` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Messages saves your conversation history when you close a conversation window. When enabled, your full message history is preserved and synced via iCloud.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Save history** (default) — Conversations preserved |
+| `false` | **Don't save on close** — History may be lost |
+
+## Our Configuration
+
+**Set to**: `true` — Preserve all conversations.
+
+### Why Save History?
+
+1. **Reference** — Search past conversations
+2. **Continuity** — Pick up where you left off
+3. **Legal** — Some need records for work
+4. **Sync** — Access history on all devices
+5. **Attachments** — Photos/files preserved
+
+### Privacy Alternative
+
+If you want messages to disappear:
+- **Messages** → **Settings** → **General** → **Keep Messages**
+- Options: Forever, 1 Year, 30 Days
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.MobileSMS SaveConversationsOnClose
+
+# Save conversations (default)
+defaults write com.apple.MobileSMS SaveConversationsOnClose -bool true
+
+# Don't save on close
+defaults write com.apple.MobileSMS SaveConversationsOnClose -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.MobileSMS SaveConversationsOnClose
+```
+
+## UI Location
+
+**Messages** → **Settings** (⌘,) → **General**
+
+## iCloud Messages
+
+For full sync across devices:
+1. **Messages** → **Settings** → **iMessage**
+2. Enable **Enable Messages in iCloud**
+
+This stores messages in iCloud and syncs:
+- All message history
+- Attachments
+- Deletes (sync deletions too)
+
+## Message Retention
+
+Configure how long to keep messages:
+
+**Messages** → **Settings** → **General** → **Keep Messages**
+
+| Option | Behavior |
+|--------|----------|
+| Forever | Never auto-delete |
+| 1 Year | Delete after 1 year |
+| 30 Days | Delete after 30 days |
+
+## Storage Considerations
+
+Messages storage location:
+```
+~/Library/Messages/
+```
+
+Attachments can use significant space. To manage:
+1. **Storage** in System Settings shows Messages usage
+2. Review and delete old attachments
+3. Use "Keep Messages" setting to auto-clean
+
+## Privacy Notes
+
+- iMessage uses end-to-end encryption
+- Even Apple cannot read your messages
+- Backups may not be encrypted (check iCloud backup settings)
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Messages not syncing | Check iCloud Messages is enabled |
+| Missing history | Check "Keep Messages" duration |
+| Storage full | Delete old attachments |
+
+## Compatibility
+
+- **macOS**: 10.14+
+- **iCloud**: Required for sync
+- **Note**: Restart Messages for changes
+
+## Source File
+
+**File**: [`defaults/applications/messages.sh`](../../../../defaults/applications/messages.sh)
+
+```bash
+run_defaults "com.apple.MobileSMS" "SaveConversationsOnClose" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Messages on Mac](https://support.apple.com/guide/messages/welcome/mac)

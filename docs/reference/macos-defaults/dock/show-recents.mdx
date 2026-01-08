@@ -1,6 +1,6 @@
-# show-recents
+# Dock Show Suggested and Recent Apps
 
-Hide recent applications section in the Dock.
+Control recent/suggested applications section in Dock.
 
 ## Overview
 
@@ -14,18 +14,59 @@ Hide recent applications section in the Dock.
 
 ## Description
 
-Controls whether the Dock shows recently used applications in a separate section. Disabling creates a cleaner, more predictable Dock layout.
+Controls whether macOS shows a "Suggested and Recent Apps" section at the right side of the Dock. This section displays apps you've used recently that aren't permanently in the Dock, plus Handoff apps from other devices. While helpful for some, it clutters the Dock for power users.
 
 ## Values
 
-| Value | Behavior |
-|-------|----------|
-| `true` | **Show recents** (default) — Recent apps appear on right side |
-| `false` | **Hide recents** — Cleaner Dock, no transient icons |
+| Value | Display |
+|-------|---------|
+| `true` | **Show recents** (default) — Recent apps visible |
+| `false` | **Hide recents** — Only pinned apps shown |
+
+## Visual Demonstration
+
+### With Recents (true):
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│  [📱] [📧] [🌐] [📝] [📁]  │  [🎵] [📷] [⚙️]  │  [🗑️]                 │
+│   ↑─── Pinned Apps ────↑   │   ↑─ Recents ─↑  │                        │
+│                            │                   │                        │
+│                       Separator            Trash                        │
+└─────────────────────────────────────────────────────────────────────────┘
+           Your apps                Dynamic section      Always there
+```
+
+### Without Recents (false):
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│  [📱] [📧] [🌐] [📝] [📁]  │  [🗑️]                                    │
+│   ↑─── Pinned Apps ────↑   │                                           │
+│                            │                                            │
+│                       Only your                                        │
+│                       chosen apps                                       │
+└─────────────────────────────────────────────────────────────────────────┘
+```
 
 ## Our Configuration
 
-**Set to**: `false` — Clean, predictable Dock without transient icons.
+**Set to**: `false` — Hide recent apps.
+
+### Why Hide Recents?
+
+1. **Clean Dock** — Only apps you chose
+2. **Consistent** — Dock doesn't change
+3. **Privacy** — Others can't see recent apps
+4. **Control** — You decide what's in Dock
+5. **Muscle memory** — Icons stay in same positions
+
+### Why Show Recents?
+
+- Quick access to just-used apps
+- Discover apps you forgot about
+- Handoff from other Apple devices
+- App suggestions based on usage
 
 ## Code Examples
 
@@ -33,14 +74,11 @@ Controls whether the Dock shows recently used applications in a separate section
 # Read current value
 defaults read com.apple.dock show-recents
 
-# Hide recent applications
+# Hide recent apps (recommended for power users)
 defaults write com.apple.dock show-recents -bool false
 
-# Show recent applications (Apple default)
+# Show recent apps (default)
 defaults write com.apple.dock show-recents -bool true
-
-# Delete (reset to default)
-defaults delete com.apple.dock show-recents
 
 # Restart Dock to apply
 killall Dock
@@ -48,27 +86,70 @@ killall Dock
 
 ## UI Location
 
-**System Settings** → **Desktop & Dock** → **Show recent applications in Dock**
+**System Settings** → **Desktop & Dock** → ☐ **Show suggested and recent apps in Dock**
 
-## Why Hide Recents?
+## Handoff Implications
 
-- Dock stays consistent across sessions
-- No unexpected icons appearing
-- Cleaner, less cluttered appearance
-- More predictable icon positions
+With recents enabled:
+- Apps from your iPhone/iPad appear here
+- Click to open and continue work
+- Part of Apple Continuity
+
+With recents disabled:
+- Handoff still works via other methods
+- Use ⌘Tab or Spotlight to access
+- Just not shown in Dock
+
+## Dock Organization Philosophy
+
+Two schools of thought:
+
+**Minimal Dock** (recents off):
+- Pin only essentials
+- Use Spotlight (⌘Space) for rest
+- Consistent, predictable
+
+**Dynamic Dock** (recents on):
+- Pin main apps
+- Let recents suggest others
+- Adapts to workflow
+
+## Related Settings
+
+```bash
+# Dock size
+defaults write com.apple.dock tilesize -int 48
+
+# Auto-hide Dock
+defaults write com.apple.dock autohide -bool true
+
+# Show indicators for open apps
+defaults write com.apple.dock show-process-indicators -bool true
+
+# Minimize to application icon
+defaults write com.apple.dock minimize-to-application -bool true
+```
+
+## App Launching Alternatives
+
+Without Dock recents:
+- **⌘Space** — Spotlight search (fastest)
+- **Launchpad** — Full app grid (F4 or gesture)
+- **Finder** — Applications folder
+- **⌘Tab** — Switch to running apps
 
 ## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| Recents still showing | Restart Dock: `killall Dock` |
-| Setting resets after reboot | Verify with `defaults read` |
-| Want some recents | Use Launchpad or Spotlight instead |
+| Recents still showing | Restart Dock |
+| Handoff missing | Enable in System Settings |
+| Too few Dock icons | Pin more apps |
 
 ## Compatibility
 
-- **Dock**: macOS 10.14+
-- **Note**: Recents section added in Mojave
+- **macOS**: 10.14+ (Mojave, when recents were added)
+- **Note**: `killall Dock` to apply
 
 ## Source File
 
@@ -80,5 +161,5 @@ run_defaults "com.apple.dock" "show-recents" "-bool" "false"
 
 ## References
 
-- [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)
-
+- [Apple Support: Dock](https://support.apple.com/guide/mac-help/use-the-dock-mh35859/mac)
+- [Apple Support: Dock settings](https://support.apple.com/guide/mac-help/change-dock-settings-mchlp2122/mac)

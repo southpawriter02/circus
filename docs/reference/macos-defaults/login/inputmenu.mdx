@@ -1,0 +1,173 @@
+# Login Window Input Menu
+
+Show keyboard layout selector on login screen.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.loginwindow` |
+| **Key** | `showInputMenu` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the input source menu (keyboard layout selector) appears on the login window. Essential for users who type passwords in non-US keyboard layouts or switch between multiple languages like US English, German, French, Japanese, etc.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show input menu** — Keyboard selector visible |
+| `false` | **Hide input menu** (default) — No selector |
+
+## Visual Location
+
+```
+┌─────────────────────────────────────────┐
+│  [🇺🇸 ▼]                      🍎     │ ← Input menu in menu bar area
+│                                         │
+│    ┌───┐    ┌───┐                       │
+│    │ 👤│    │ 👤│                       │
+│    └───┘    └───┘                       │
+│    Alice    Bob                         │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+Click the flag/icon to switch keyboard layouts.
+
+## Our Configuration
+
+**Set to**: `true` — Show input menu.
+
+### Why Show Input Menu?
+
+1. **Password mismatch** — Wrong layout = wrong characters
+2. **Multiple languages** — Switch at login
+3. **International users** — German, French, etc.
+4. **Special characters** — Different key positions
+5. **Shared Mac** — Different preferences
+
+### The Password Problem
+
+If password was created with US layout but you're on German:
+
+| Key Pressed | US Layout | German Layout |
+|-------------|-----------|---------------|
+| Y | y | z |
+| Z | z | y |
+| - | - | / |
+| @ | @ | " |
+
+Typing `password123` on German layout produces `passwordß23` — login fails!
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.loginwindow showInputMenu
+
+# Show input menu (recommended for multilingual)
+defaults write com.apple.loginwindow showInputMenu -bool true
+
+# Hide input menu
+defaults write com.apple.loginwindow showInputMenu -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.loginwindow showInputMenu
+```
+
+## UI Location
+
+**System Settings** → **Users & Groups** → **Login Options** (unlock required)
+
+Setting: "Show Input menu in login window"
+
+## Common Keyboard Layout Issues
+
+| Language | Problem Keys | Notes |
+|----------|--------------|-------|
+| German | Y↔Z swapped | QWERTZ layout |
+| French | A↔Q, Z↔W swapped | AZERTY layout |
+| Spanish | Special chars differ | Ñ, accents |
+| Japanese | May need IME | Hiragana input |
+| Russian | Cyrillic issues | Different alphabet |
+
+## Adding Keyboard Layouts
+
+Before they appear at login:
+1. **System Settings** → **Keyboard** → **Input Sources**
+2. Click **+** to add layout
+3. Select language/layout
+4. Layout now available at login
+
+## Previewing Key Positions
+
+If unsure of layout:
+1. Click input menu at login
+2. Select "Show Keyboard Viewer"
+3. See key mapping on screen
+
+Some login screens offer this option.
+
+## FileVault Pre-Boot
+
+With FileVault:
+- Input menu at pre-boot authentication
+- Limited layouts available at pre-boot
+- May need macOS Recovery for some
+
+## Shared/Lab Computers
+
+For shared Macs with international users:
+- Enable input menu
+- Add common layouts users need
+- Post instruction signage
+
+## Related Settings
+
+```bash
+# Show user list
+defaults write com.apple.loginwindow SHOWFULLNAME -bool false
+
+# Disable guest
+defaults write com.apple.loginwindow GuestEnabled -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Layout not in menu | Add in Keyboard settings first |
+| Password still failing | Check active layout matches |
+| Menu not appearing | Verify setting is true, logout |
+| Wrong layout stuck | Use keyboard shortcut to switch |
+
+## Keyboard Shortcuts at Login
+
+If input menu not visible, try:
+- **⌃Space** — Switch input source
+- **⌃⌥Space** — Previous input source
+
+(Shortcuts may vary based on settings)
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: Requires logout to apply
+
+## Source File
+
+**File**: [`defaults/system/login.sh`](../../../defaults/system/login.sh)
+
+```bash
+run_defaults "com.apple.loginwindow" "showInputMenu" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Keyboard layouts](https://support.apple.com/guide/mac-help/change-the-keyboard-layout-mchlp1406/mac)
+- [Apple Support: Login](https://support.apple.com/guide/mac-help/log-in-to-your-mac-mh35843/mac)

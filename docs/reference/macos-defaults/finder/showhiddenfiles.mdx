@@ -1,0 +1,204 @@
+# Finder Show Hidden Files
+
+Display hidden files and folders in Finder.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `AppleShowAllFiles` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Finder displays hidden files and folders (those starting with a dot, like `.gitignore`, `.zshrc`, `.ssh`). Hidden by default to protect casual users from accidentally modifying system files, but essential for developers who work with dotfiles constantly.
+
+## Values
+
+| Value | Display |
+|-------|---------|
+| `false` | **Hide hidden files** (default) — Clean view |
+| `true` | **Show hidden files** — All files visible |
+
+## Visual Demonstration
+
+### Hidden Files Off (false):
+```
+┌──────────────────────────────────────────────────┐
+│ 📁 Home                                         │
+├──────────────────────────────────────────────────┤
+│  📁 Applications                                │
+│  📁 Desktop                                     │
+│  📁 Documents                                   │
+│  📁 Downloads                                   │
+│  📁 Library                                     │
+│  📁 Movies                                      │
+│  📁 Music                                       │
+│  📁 Pictures                                    │
+│  📁 Public                                      │
+│                                                  │
+│  8 items                                        │
+└──────────────────────────────────────────────────┘
+```
+
+### Hidden Files On (true):
+```
+┌──────────────────────────────────────────────────┐
+│ 📁 Home                                         │
+├──────────────────────────────────────────────────┤
+│  📄 .bash_history      (dimmed)                 │
+│  📄 .bash_profile      (dimmed)                 │
+│  📁 .cache             (dimmed)                 │
+│  📁 .config            (dimmed)                 │
+│  📄 .gitconfig         (dimmed)                 │
+│  📁 .ssh               (dimmed)                 │
+│  📄 .zshrc             (dimmed)                 │
+│  📁 Applications                                │
+│  📁 Desktop                                     │
+│  📁 Documents                                   │
+│  ... (many more)                                │
+│                                                  │
+│  35 items                                       │
+└──────────────────────────────────────────────────┘
+```
+
+Hidden files appear **dimmed** to distinguish them.
+
+## Our Configuration
+
+**Set to**: `true` — Show hidden files.
+
+### Why Show Hidden Files?
+
+1. **Developer essential** — Access dotfiles
+2. **Git** — See `.git`, `.gitignore`
+3. **Config files** — Edit `.zshrc`, `.vimrc`
+4. **Debugging** — Find hidden caches
+5. **Full picture** — Know what's really there
+
+### Why Hide Hidden Files?
+
+- Cleaner appearance
+- Prevent accidental modification
+- Non-technical users
+- Focused file browsing
+
+## Common Hidden Files
+
+| File/Folder | Purpose |
+|-------------|---------|
+| `.git` | Git repository data |
+| `.gitignore` | Git ignore patterns |
+| `.zshrc` | Zsh configuration |
+| `.bash_profile` | Bash configuration |
+| `.ssh` | SSH keys and config |
+| `.config` | App configurations |
+| `.npm` | npm cache |
+| `.vscode` | VS Code workspace settings |
+| `Library` | User library (partially hidden) |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.finder AppleShowAllFiles
+
+# Show hidden files (recommended for developers)
+defaults write com.apple.finder AppleShowAllFiles -bool true
+
+# Hide hidden files (default)
+defaults write com.apple.finder AppleShowAllFiles -bool false
+
+# Restart Finder to apply
+killall Finder
+```
+
+## UI Location
+
+No direct UI option. Use:
+- **Defaults command** (above)
+- **Keyboard shortcut**: ⌘⇧. (dot) to toggle
+
+## Keyboard Shortcut Toggle
+
+Quick toggle in Finder:
+```
+⌘ + ⇧ + .   (Command + Shift + Period)
+```
+
+Toggles visibility instantly, no restart needed.
+
+## Terminal Alternative
+
+View hidden files in Terminal regardless of Finder setting:
+```bash
+# List all files including hidden
+ls -la
+
+# List only hidden files
+ls -la .*
+```
+
+## Security Considerations
+
+When hidden files visible:
+- `.ssh` folder exposed (contains keys)
+- Config files with potential secrets visible
+- Be careful in screen shares/screenshots
+
+### Recommendation
+Show hidden files for work, but be aware during presentations.
+
+## The Library Folder
+
+`~/Library` is special:
+- Not a dotfile (not `.Library`)
+- Hidden by different mechanism
+- Access via Go → Go to Folder → `~/Library`
+
+This setting may not reveal Library (depends on macOS version).
+
+## Related Settings
+
+```bash
+# Show all file extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Show path bar
+defaults write com.apple.finder ShowPathbar -bool true
+
+# Show status bar
+defaults write com.apple.finder ShowStatusBar -bool true
+
+# Default view style
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Files still hidden | Restart Finder |
+| Too cluttered | Use ⌘⇧. to toggle |
+| Library not showing | Different setting/access method |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: `killall Finder` to apply (or use ⌘⇧.)
+
+## Source File
+
+**File**: [`defaults/applications/finder.sh`](../../../defaults/applications/finder.sh)
+
+```bash
+run_defaults "com.apple.finder" "AppleShowAllFiles" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Show hidden files](https://support.apple.com/guide/mac-help/show-or-hide-hidden-files-mchld7eb8a4e/mac)
+- [Apple Support: Finder preferences](https://support.apple.com/guide/mac-help/change-finder-preferences-mchlp2369/mac)

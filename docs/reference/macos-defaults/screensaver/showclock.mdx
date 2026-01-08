@@ -1,6 +1,6 @@
-# showClock
+# Screen Saver Clock Display
 
-Show clock on the screen saver.
+Show clock overlay on the screen saver and lock screen.
 
 ## Overview
 
@@ -14,18 +14,69 @@ Show clock on the screen saver.
 
 ## Description
 
-Displays a clock overlay on the screen saver, showing the current time while the screen saver is active. Useful for quickly checking the time without unlocking.
+Controls whether a clock is displayed on the screen saver and lock screen. When enabled, the current time is shown as an overlay, allowing you to check the time without unlocking your Mac. This is convenient for glancing at the time during meetings or when your Mac is on a visible desk.
 
 ## Values
 
-| Value | Behavior |
-|-------|----------|
-| `true` | **Show clock** — Time displayed on screen saver |
+| Value | Display |
+|-------|---------|
+| `true` | **Show clock** — Time visible on lock screen |
 | `false` | **Hide clock** (default) — Screen saver only |
+
+## Visual Demonstration
+
+### With Clock (true):
+```
+┌─────────────────────────────────────────────────┐
+│                                                 │
+│                                                 │
+│              ┌─────────────────┐                │
+│              │                 │                │
+│              │    14:32        │                │
+│              │  Thu 2 Jan      │                │
+│              │                 │                │
+│              └─────────────────┘                │
+│                                                 │
+│         [Screen saver animation]               │
+│                                                 │
+└─────────────────────────────────────────────────┘
+```
+
+### Without Clock (false):
+```
+┌─────────────────────────────────────────────────┐
+│                                                 │
+│                                                 │
+│                                                 │
+│                                                 │
+│                                                 │
+│         [Screen saver animation only]          │
+│                                                 │
+│                                                 │
+│                                                 │
+│                                                 │
+│                                                 │
+└─────────────────────────────────────────────────┘
+```
 
 ## Our Configuration
 
-**Set to**: `true` — Convenient time display.
+**Set to**: `true` — Show clock on screen saver.
+
+### Why Show Clock?
+
+1. **Quick time check** — No unlock needed
+2. **Meeting awareness** — Know when to wrap up
+3. **Desk visibility** — Clock visible from distance
+4. **Practical** — Useful information always available
+5. **Professional** — Display serves a purpose
+
+### Why Hide Clock?
+
+- Cleaner aesthetic
+- Screen saver art appreciation
+- Presentation displays
+- Digital signage without time
 
 ## Code Examples
 
@@ -33,10 +84,10 @@ Displays a clock overlay on the screen saver, showing the current time while the
 # Read current value
 defaults read com.apple.screensaver showClock
 
-# Show clock on screen saver
+# Show clock on screen saver/lock screen
 defaults write com.apple.screensaver showClock -bool true
 
-# Hide clock
+# Hide clock (default)
 defaults write com.apple.screensaver showClock -bool false
 
 # Delete (reset to default)
@@ -45,20 +96,92 @@ defaults delete com.apple.screensaver showClock
 
 ## UI Location
 
-**System Settings** → **Lock Screen** → **Show large clock**
+**System Settings** → **Lock Screen** → ☑ **Show large clock**
+
+In older macOS:
+**System Preferences** → **Security & Privacy** → **General** or **Screen Saver**
+
+## Clock Appearance
+
+The lock screen clock:
+- Large, readable font
+- Shows time and date
+- Follows 12/24-hour system setting
+- Positioned prominently
+- Semi-transparent or styled to match screen saver
+
+## macOS Sonoma+ Lock Screen
+
+Modern macOS includes additional lock screen customization:
+- Widgets below clock
+- Photo shuffle backgrounds
+- Astronomy/weather widgets
+
+The clock remains central and prominent.
+
+## Screen Saver vs Lock Screen
+
+| State | Clock Shown |
+|-------|-------------|
+| Screen saver (no password yet) | Yes (if enabled) |
+| Lock screen (password required) | Yes (if enabled) |
+| Login window (no user logged in) | Yes (if enabled) |
+
+## Interaction with Screen Saver Types
+
+Clock works with most screen savers:
+- Aerial (Apple TV scenes) ✓
+- Drift ✓
+- Photo slideshow ✓
+- Classic Mac ✓
+- Custom screen savers ✓
+
+Some third-party screen savers may have their own clock.
+
+## Lock Screen Message + Clock
+
+Both can be shown:
+```bash
+# Show clock
+defaults write com.apple.screensaver showClock -bool true
+
+# Show custom message
+defaults write com.apple.loginwindow LoginwindowText -string "If found, call..."
+```
+
+## Related Settings
+
+```bash
+# Require password immediately
+defaults write com.apple.screensaver askForPassword -int 1
+defaults write com.apple.screensaver askForPasswordDelay -int 0
+
+# Screen saver idle time
+defaults write com.apple.screensaver idleTime -int 600
+
+# Login window message
+defaults write com.apple.loginwindow LoginwindowText -string "Your message"
+```
+
+## Always-On Display (MacBook Pro 14"/16")
+
+On newer MacBook Pro with ProMotion:
+- Display never fully off when open
+- Clock visible even at minimum brightness
+- Uses very little power in this state
 
 ## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| Clock not showing | Verify screen saver is running, not display off |
-| Clock style wrong | Controlled by system appearance (dark/light) |
-| Clock position off | Cannot be repositioned |
+| Clock not showing | Verify setting is true |
+| Clock too small | Part of screen saver design |
+| Wrong time format | Check system 12/24hr setting |
 
 ## Compatibility
 
-- **Screensaver**: macOS 10.7+
-- **Applies to**: Lock screen and screen saver
+- **macOS**: 10.7+ (Lion)
+- **Note**: Takes effect immediately
 
 ## Source File
 
@@ -70,5 +193,5 @@ run_defaults "com.apple.screensaver" "showClock" "-bool" "true"
 
 ## References
 
-- [Apple Support: Change Lock Screen settings](https://support.apple.com/guide/mac-help/change-lock-screen-settings-mchl8a3b1a59/mac)
-
+- [Apple Support: Lock screen settings](https://support.apple.com/guide/mac-help/change-lock-screen-settings-mchl8a3b1a59/mac)
+- [Apple Support: Screen saver](https://support.apple.com/guide/mac-help/use-a-screen-saver-mchl4b68853d/mac)

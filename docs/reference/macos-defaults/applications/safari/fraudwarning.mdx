@@ -1,0 +1,167 @@
+# Safari Warn About Fraudulent Websites
+
+Enable protection against phishing and malicious sites.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `WarnAboutFraudulentWebsites` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables Safari's built-in protection against phishing attacks and known malicious websites. Safari checks visited URLs against Google's Safe Browsing database and Apple's own threat database, displaying a warning before loading dangerous sites.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Protection enabled** (default) — Block dangerous sites |
+| `false` | **Protection disabled** — Load all sites (dangerous!) |
+
+## Warning Display
+
+When visiting a dangerous site:
+```
+┌─────────────────────────────────────────────────────┐
+│  ⚠️  Deceptive Website Warning                     │
+│                                                     │
+│  This website may be impersonating "banksite.com"  │
+│  to steal your personal or financial information.  │
+│                                                     │
+│  If you believe the website is legitimate, you     │
+│  can continue anyway.                              │
+│                                                     │
+│        [Go Back (Safe)]  [Visit Anyway]            │
+└─────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Keep protection enabled.
+
+### ⚠️ Security Critical
+
+**NEVER disable this setting.** It protects against:
+
+1. **Phishing sites** — Fake login pages
+2. **Malware distribution** — Infected downloads
+3. **Social engineering** — Deceptive content
+4. **Scams** — Fake tech support, lottery
+5. **Credential theft** — Password harvesting
+
+## How It Works
+
+```
+Enter URL → Safari checks databases → Safe? → Load page
+                                   → Dangerous? → Show warning
+```
+
+### Databases Checked
+
+1. **Google Safe Browsing** — Global threat database
+2. **Apple's database** — Additional known threats
+
+Updates happen in background regularly.
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari WarnAboutFraudulentWebsites
+
+# Enable protection (strongly recommended)
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+
+# ⚠️ DANGEROUS: Disable protection (not recommended)
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Safari WarnAboutFraudulentWebsites
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **Security** → ☑ **Warn when visiting a fraudulent website**
+
+## What Gets Blocked
+
+| Threat Type | Example |
+|-------------|---------|
+| Phishing | Fake bank login pages |
+| Malware | Sites serving infected files |
+| Unwanted software | Deceptive download pages |
+| Social engineering | Fake virus warnings |
+
+## False Positives
+
+Legitimate sites occasionally blocked:
+1. Click "Visit Anyway" if confident
+2. Report false positive to Google/Apple
+3. Site owner can request review
+
+## Privacy Consideration
+
+Safari uses privacy-preserving lookups:
+- Partial URL hashes sent
+- Not full URLs
+- Protects privacy while enabling security
+
+## Related Security Settings
+
+```bash
+# Show full URL (detect phishing)
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+
+# Enable Develop menu for inspection
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+
+# Disable AutoFill for security
+defaults write com.apple.Safari AutoFillPasswords -bool false
+```
+
+## Chrome Equivalent
+
+Chrome has similar protection:
+- Called "Safe Browsing"
+- Uses same Google database
+- Enabled by default
+
+## Layered Protection
+
+Combine with:
+- macOS Gatekeeper
+- Email spam filters
+- Password managers (detect wrong site)
+- Two-factor authentication
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Legitimate site blocked | Visit anyway, report false positive |
+| Warning not appearing | Verify setting is true |
+| Protection not working | Update Safari/macOS |
+
+## Compatibility
+
+- **Safari**: All versions
+- **macOS**: 10.10+
+- **Note**: Restart Safari for changes
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "WarnAboutFraudulentWebsites" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Safari security](https://support.apple.com/guide/safari/security-ibrw1074/mac)
+- [Google Safe Browsing](https://safebrowsing.google.com/)

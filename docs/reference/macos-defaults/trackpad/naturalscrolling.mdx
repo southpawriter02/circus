@@ -1,0 +1,191 @@
+# Natural Scrolling Direction
+
+Control scroll direction for trackpad and mouse.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.swipescrolldirection` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether scrolling follows "natural" (iOS-style) direction or traditional direction. Natural scrolling moves content with your finger direction like touching paper; traditional scrolling moves the viewport like dragging a scrollbar. This is one of the most personal Mac preferences.
+
+## Values
+
+| Value | Direction | Scroll Up Gesture |
+|-------|-----------|-------------------|
+| `true` | **Natural** (default) | Content moves up (see below) |
+| `false` | **Traditional** | Content moves down (see above) |
+
+## Visual Demonstration
+
+### Natural Scrolling (true — Default):
+```
+Touch & drag UP ↑         Screen shows:
+                          ┌─────────────────┐
+                          │ Later content   │
+Your finger:              │                 │
+    ↑                     │ (scrolled down) │
+   ╱│╲                    └─────────────────┘
+                          
+Think: "Pushing paper up to see more below"
+Like: iPhone, iPad touch scrolling
+```
+
+### Traditional Scrolling (false):
+```
+Touch & drag UP ↑         Screen shows:
+                          ┌─────────────────┐
+                          │ Earlier content │
+Your finger:              │                 │
+    ↑                     │ (scrolled up)   │
+   ╱│╲                    └─────────────────┘
+                          
+Think: "Dragging the scrollbar up"
+Like: Classic Mac, Windows, scroll wheels
+```
+
+## Our Configuration
+
+**Set to**: `false` — Traditional scrolling.
+
+### Why Traditional?
+
+1. **Consistency** — Windows, Linux, older Mac behavior
+2. **External mice** — Scroll wheels never felt "natural"
+3. **Muscle memory** — Years of traditional scrolling
+4. **Developer choice** — Many prefer traditional
+
+### Why Natural?
+
+- iOS/iPad continuity
+- Touch-based thinking
+- Apple's modern default
+- Newer users prefer it
+
+## This is Highly Personal
+
+No "correct" choice exists. Pick what feels right:
+- Try each for a week
+- Consistency across devices matters
+- Muscle memory is powerful
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain com.apple.swipescrolldirection
+
+# Traditional scrolling (our choice)
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
+
+# Natural scrolling (Apple default)
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+
+# Delete (reset to natural)
+defaults delete NSGlobalDomain com.apple.swipescrolldirection
+```
+
+## UI Location
+
+**System Settings** → **Trackpad** → **Scroll & Zoom** → ☑ **Natural scrolling**
+
+For mouse:
+**System Settings** → **Mouse** → ☑ **Natural scrolling**
+
+## Affects Both Devices
+
+This setting applies to ALL input devices:
+- Built-in trackpad
+- Magic Trackpad
+- Magic Mouse
+- USB mice
+- Bluetooth mice
+- Scroll wheels
+
+No way to set different directions for different devices natively.
+
+## Split Scroll Direction (Hack)
+
+Want trackpad natural, mouse traditional? Use third-party tools:
+- **Scroll Reverser** (free)
+- **BetterTouchTool**
+- **USB Overdrive**
+
+These can set per-device scroll direction.
+
+## History
+
+| macOS Version | Default |
+|---------------|---------|
+| 10.6 and earlier | Traditional |
+| 10.7 (Lion) onward | Natural |
+
+Apple switched when iOS popularized touch scrolling.
+
+## Two-Finger Scroll Gesture
+
+On trackpad:
+```
+Traditional:              Natural:
+Two fingers DOWN          Two fingers DOWN
+     ↓↓                        ↓↓
+Content scrolls UP        Content scrolls DOWN
+(See more above)          (See more below)
+```
+
+## Cross-Platform Considerations
+
+| Platform | Default |
+|----------|---------|
+| macOS | Natural |
+| Windows | Traditional |
+| Linux | Traditional (usually) |
+| iOS/Android | Natural (only option) |
+
+Switching between platforms? Pick one direction to reduce confusion.
+
+## Related Settings
+
+```bash
+# Trackpad speed
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 2.0
+
+# Mouse speed
+defaults write NSGlobalDomain com.apple.mouse.scaling -float 2.0
+
+# Scroll wheel speed
+defaults write NSGlobalDomain com.apple.scrollwheel.scaling -float 0.5
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| External mouse wrong direction | Setting applies globally |
+| Different direction wanted per device | Use Scroll Reverser |
+| Keeps resetting | Check for MDM profiles |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/input/trackpad_mouse.sh`](../../../defaults/input/trackpad_mouse.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.swipescrolldirection" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Trackpad settings](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac)
+- [Apple Support: Mouse settings](https://support.apple.com/guide/mac-help/change-mouse-settings-mchl310c1348/mac)

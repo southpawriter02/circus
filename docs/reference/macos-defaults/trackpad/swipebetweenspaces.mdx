@@ -1,0 +1,209 @@
+# Trackpad Swipe Between Spaces
+
+Configure swipe gesture for switching between full-screen apps and spaces.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `TrackpadThreeFingerHorizSwipeGesture` |
+| **Type** | Integer |
+| **Default Value** | `2` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls the horizontal swipe gesture for switching between full-screen apps and desktop Spaces. This is a core macOS navigation gesture that enables fluid movement through your virtual desktop environment.
+
+## Values
+
+| Value | Behavior | Fingers |
+|-------|----------|---------|
+| `0` | **Disabled** | No swipe navigation |
+| `2` | **Enabled** (default) | Three fingers (or four if three-finger drag enabled) |
+
+## Visual Demonstration
+
+### Swipe Right (Next Space):
+```
+┌─────────────────────────────┐
+│                             │
+│      Three Fingers          │
+│        ───────→             │
+│      LEFT to RIGHT          │
+│                             │
+└─────────────────────────────┘
+              │
+              ▼
+    ┌─────────┐  ┌─────────┐  ┌─────────┐
+    │ Space 1 │→│ Space 2 │  │ Space 3 │
+    │         │  │ ← YOU   │  │         │
+    └─────────┘  └─────────┘  └─────────┘
+```
+
+### Swipe Left (Previous Space):
+```
+┌─────────────────────────────┐
+│                             │
+│      Three Fingers          │
+│        ←───────             │
+│      RIGHT to LEFT          │
+│                             │
+└─────────────────────────────┘
+              │
+              ▼
+    ┌─────────┐  ┌─────────┐  ┌─────────┐
+    │ Space 1 │  │ Space 2 │←│ Space 3 │
+    │ YOU →   │  │         │  │         │
+    └─────────┘  └─────────┘  └─────────┘
+```
+
+## Our Configuration
+
+**Set to**: `2` — Enable three-finger horizontal swipe.
+
+### Why Enable?
+
+1. **Fast navigation** — Switch Spaces instantly
+2. **Intuitive** — Natural swipe direction
+3. **Essential** — Core macOS navigation
+4. **Productivity** — Organize work across Spaces
+5. **Default** — Apple's design intent
+
+### Why Disable?
+
+- Prefer keyboard shortcuts only
+- Conflict with other apps
+- Accidental triggering
+
+## Interaction with Three-Finger Drag
+
+If three-finger drag is enabled:
+```
+Three-finger drag ON:
+  └── Swipe between Spaces → Requires FOUR fingers
+  
+Three-finger drag OFF:
+  └── Swipe between Spaces → Requires THREE fingers
+```
+
+Both can work, but finger count changes.
+
+## Code Examples
+
+```bash
+# Read current value (built-in trackpad)
+defaults read com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture
+
+# Enable swipe between spaces (default)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 2
+
+# Disable swipe between spaces
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 0
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture
+```
+
+## UI Location
+
+**System Settings** → **Trackpad** → **More Gestures** → **Swipe between full-screen apps**
+
+Options:
+- Off
+- Swipe left or right with three fingers
+- Swipe left or right with four fingers
+
+## Keyboard Alternatives
+
+| Shortcut | Action |
+|----------|--------|
+| **⌃←** | Move to previous Space |
+| **⌃→** | Move to next Space |
+| **⌃1-9** | Jump to specific Space |
+
+## Mission Control Integration
+
+Related gestures:
+| Gesture | Action |
+|---------|--------|
+| Three-finger up | Open Mission Control |
+| Three-finger horizontal | Switch Spaces |
+| Three-finger down | App Exposé |
+
+## Both Domains Required
+
+Set for all trackpads:
+```bash
+# Built-in trackpad
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2
+
+# Bluetooth Magic Trackpad
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 2
+```
+
+## Spaces Organization
+
+Optimal setup for this gesture:
+1. Create multiple Spaces (Mission Control → + button)
+2. Assign apps to specific Spaces
+3. Use gesture to flow between work contexts
+
+Example layout:
+```
+Space 1: Browser + Mail
+Space 2: Code Editor
+Space 3: Design Apps
+Space 4: Communication (Slack, Zoom)
+```
+
+## Full-Screen App Navigation
+
+Works seamlessly with full-screen apps:
+```
+Desktop ←→ Full-Screen Safari ←→ Full-Screen Terminal ←→ Desktop 2
+```
+
+## Related Settings
+
+```bash
+# Three-finger drag (changes this to four-finger)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+
+# Mission Control (three-finger up)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -int 2
+
+# Natural scrolling
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Gesture not working | Check setting is 2 |
+| Three fingers doesn't work | Check if three-finger drag is on |
+| Only works with four fingers | Three-finger drag is enabled |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion, when Spaces was introduced)
+- **Hardware**: All multitouch trackpads
+- **Note**: May require logout to apply
+
+## Source File
+
+**File**: [`defaults/input/trackpad_mouse.sh`](../../../defaults/input/trackpad_mouse.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "TrackpadThreeFingerHorizSwipeGesture" "-int" "2"
+run_defaults "com.apple.driver.AppleBluetoothMultitouch.trackpad" "TrackpadThreeFingerHorizSwipeGesture" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Multi-Touch gestures](https://support.apple.com/en-us/102482)
+- [Apple Support: Mission Control](https://support.apple.com/en-us/102556)

@@ -1,0 +1,179 @@
+# Mission Control Separate Spaces Per Display
+
+Control whether each display has independent virtual desktops.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.spaces` |
+| **Key** | `spans-displays` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether each connected display has its own independent set of Spaces (virtual desktops) or if a single Space spans all displays simultaneously. This setting fundamentally changes how multi-monitor setups work with virtual desktops.
+
+## Values
+
+| Value | Behavior |
+|-------|---------|
+| `true` | **Span displays** — One Space covers all monitors |
+| `false` | **Separate Spaces** (default) — Each monitor independent |
+
+## Visual Comparison
+
+### Separate Spaces (false):
+```
+┌─────────────────┐    ┌─────────────────┐
+│  Display 1      │    │  Display 2      │
+│  ┌───┬───┬───┐  │    │  ┌───┬───┬───┐  │
+│  │ 1 │ 2 │ 3 │  │    │  │ A │ B │ C │  │
+│  └───┴───┴───┘  │    │  └───┴───┴───┘  │
+│                 │    │                 │
+│  Currently: 1   │    │  Currently: B   │
+└─────────────────┘    └─────────────────┘
+
+Switch Space 1→2:          Display 2 stays on B
+```
+
+### Span Displays (true):
+```
+┌─────────────────┐    ┌─────────────────┐
+│  Display 1      │    │  Display 2      │
+│                 │    │                 │
+│  ┌───────────────────────────────────┐ │
+│  │     Space 1 (spans both)          │ │
+│  └───────────────────────────────────┘ │
+│                 │    │                 │
+└─────────────────┘    └─────────────────┘
+
+Switch Space: Both displays change together
+```
+
+## Our Configuration
+
+**Set to**: `false` — Separate Spaces per display.
+
+### Why Separate Spaces?
+
+1. **Independent work** — Different tasks per monitor
+2. **Full-screen apps** — One monitor full-screen, other normal
+3. **Reference + work** — Docs on one, code on another
+4. **Flexibility** — More Space combinations possible
+5. **macOS default** — Works well with system design
+
+### Why Span Displays?
+
+- Window spanning across monitors needed
+- Prefer unified desktop experience
+- Simpler mental model (one Space = one desktop)
+- Legacy workflow from older macOS
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.spaces spans-displays
+
+# Separate Spaces per display (recommended)
+defaults write com.apple.spaces spans-displays -bool false
+
+# Span Spaces across displays
+defaults write com.apple.spaces spans-displays -bool true
+
+# Apply changes (requires logout)
+# Changes take effect after logout/login
+
+# Delete (reset to default)
+defaults delete com.apple.spaces spans-displays
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Mission Control** → ☑ **Displays have separate Spaces**
+
+## ⚠️ Important: Logout Required
+
+This setting requires **logout and login** to take effect. Simply restarting the Dock is not sufficient.
+
+## Full-Screen App Behavior
+
+### With Separate Spaces:
+- Full-screen app on Display 1
+- Display 2 continues normally
+- Both fully usable
+
+### With Span Displays:
+- Full-screen app takes ONE display
+- Other display goes blank/gray
+- Less useful multi-monitor experience
+
+## Menu Bar Behavior
+
+### With Separate Spaces:
+- Menu bar can appear on each display
+- Each display has its own Dock option
+
+### With Span Displays:
+- Single menu bar (primary display)
+- Traditional desktop experience
+
+## Common Workflows
+
+### Developer (Separate Spaces):
+```
+Display 1                  Display 2
+├── Space 1: Browser       ├── Space A: Reference docs
+├── Space 2: Code editor   └── Space B: Terminal
+└── Space 3: Testing
+```
+
+Switch independently on each monitor.
+
+### Designer (Span Displays):
+```
+Space 1: [    Design canvas spanning both monitors    ]
+Space 2: [    Reference images | Export settings      ]
+```
+
+Large canvases benefit from spanning.
+
+## Related Settings
+
+```bash
+# Don't auto-rearrange Spaces
+defaults write com.apple.dock mru-spaces -bool false
+
+# Group windows by app in Mission Control
+defaults write com.apple.dock expose-group-apps -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Log out and back in |
+| Full-screen broken | Check this setting |
+| Menu bar missing | Check separate Spaces is on |
+
+## Compatibility
+
+- **macOS**: 10.9+ (Mavericks introduced per-display Spaces)
+- **Requires**: Logout/login to apply
+- **Hardware**: Multiple displays connected
+
+## Source File
+
+**File**: [`defaults/interface/mission_control.sh`](../../../defaults/interface/mission_control.sh)
+
+```bash
+run_defaults "com.apple.spaces" "spans-displays" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Work in multiple spaces](https://support.apple.com/guide/mac-help/work-in-multiple-spaces-mh14112/mac)
+- [Apple Support: Mission Control](https://support.apple.com/en-us/102556)

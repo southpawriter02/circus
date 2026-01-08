@@ -1,0 +1,153 @@
+# Control Center Sound
+
+Configure Sound/Volume visibility in Control Center and menu bar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.controlcenter` |
+| **Key** | `Sound` |
+| **Type** | Integer |
+| **Default Value** | `18` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls where the Sound (volume) control appears—in the menu bar, Control Center only, or both. Quick access to volume is useful for adjusting audio, switching output devices, and accessing AirPlay options.
+
+## Values
+
+| Value | Visibility |
+|-------|------------|
+| `0` | Hidden/Disabled |
+| `2` | **Always in menu bar** |
+| `8` | Show in menu bar when active |
+| `18` | Control Center only (default) |
+| `24` | Don't show anywhere |
+
+## Visual Example
+
+**Sound = 2 (Always in menu bar):**
+```
+┌──────────────────────────────────────────────┐
+│ 📶  🔊  🔋  Wed 3:45 PM  🔍                  │
+└──────────────────────────────────────────────┘
+       ↑
+   Volume control
+```
+
+## Our Configuration
+
+**Set to**: `2` — Always show Sound in menu bar.
+
+### Why Always Show Sound?
+
+1. **Quick volume adjustment** — Click and drag slider
+2. **Output device switching** — Select speakers, headphones, AirPods
+3. **AirPlay** — Quick AirPlay to other devices
+4. **Input selection** — Access to microphone settings
+5. **Visual feedback** — See current volume level
+
+### When to Keep in Control Center Only
+
+- Clean minimalist menu bar
+- Less frequently adjusting volume
+- Using keyboard volume controls primarily
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.controlcenter Sound
+
+# Always show in menu bar (recommended)
+defaults write com.apple.controlcenter Sound -int 2
+
+# Show only in Control Center
+defaults write com.apple.controlcenter Sound -int 18
+
+# Show when AirPlay active
+defaults write com.apple.controlcenter Sound -int 8
+
+# Apply changes
+killall ControlCenter
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Sound**
+
+Options:
+- Show in Menu Bar: Always / When Active / Don't Show
+- Show in Control Center: On / Off
+
+## Sound Menu Bar Features
+
+Click the Sound icon to access:
+- Volume slider
+- Output device list (speakers, headphones, AirPods)
+- AirPlay devices
+- Sound Settings link
+
+Option-click for:
+- Input device selection
+- Detailed audio routing
+
+## Quick Volume Controls
+
+| Method | Action |
+|--------|--------|
+| Click menu bar icon | Show volume slider |
+| Keyboard F10 | Mute/Unmute |
+| Keyboard F11 | Volume down |
+| Keyboard F12 | Volume up |
+| Shift+Option+F11/F12 | Fine volume adjustment |
+
+## Output Device Switching
+
+The Sound menu shows all available outputs:
+- Built-in speakers
+- Connected headphones
+- Bluetooth audio devices
+- AirPlay destinations
+- HDMI audio
+
+Click any device to switch instantly.
+
+## Related Sound Settings
+
+```bash
+# System sound effects
+# Configured in System Settings → Sound
+
+# Beep volume (Terminal)
+defaults write NSGlobalDomain "com.apple.sound.beep.volume" -float 0.5
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Sound icon missing | Set value to 2, killall ControlCenter |
+| No output devices | Check System Settings → Sound |
+| AirPods not showing | Check Bluetooth connection |
+
+## Compatibility
+
+- **macOS**: 11.0 (Big Sur)+
+- **Control Center**: Native feature
+- **Earlier macOS**: Menu bar extras handled differently
+
+## Source File
+
+**File**: [`defaults/interface/control_center.sh`](../../../defaults/interface/control_center.sh)
+
+```bash
+run_defaults "com.apple.controlcenter" "Sound" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Use Control Center on Mac](https://support.apple.com/guide/mac-help/control-center-mchl50f94f8f/mac)
+- [Apple Support: Change the sound output](https://support.apple.com/guide/mac-help/change-the-sound-output-mchlp1154/mac)

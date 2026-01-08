@@ -1,0 +1,212 @@
+# FileVault Disk Encryption
+
+Full-disk encryption for data protection.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Command** | `fdesetup` |
+| **Type** | System Utility |
+| **Default State** | On (new Macs), Off (older Macs) |
+| **Our Setting** | Enabled |
+| **Requires** | Administrator privileges |
+
+## Description
+
+FileVault provides full-disk encryption using XTS-AES-128 encryption with a 256-bit key to prevent unauthorized access to your data. If your Mac is lost or stolen, your data remains protected because the disk cannot be read without your password or recovery key.
+
+## Status Values
+
+| State | Meaning |
+|-------|---------|
+| **On** | Disk fully encrypted |
+| **Off** | Disk unencrypted (vulnerable) |
+| **Encrypting** | Encryption in progress |
+| **Decrypting** | Decryption in progress |
+
+## Why FileVault is Critical
+
+| Scenario | Without FileVault | With FileVault |
+|----------|------------------|----------------|
+| Laptop stolen | All data readable | Data encrypted, inaccessible |
+| Mac sold/donated | Need secure erase | Erase key, instant wipe |
+| Repair service | Data exposed | Data protected |
+| Disk removed | Boot from other Mac, read data | Encrypted, unreadable |
+
+## Our Configuration
+
+**Set to**: Enabled — Full disk encryption.
+
+### Who Needs FileVault?
+
+- **Everyone** with a portable Mac
+- Anyone with sensitive data
+- Business/enterprise users
+- Users traveling internationally
+- Anyone who values privacy
+
+### Performance Impact
+
+On modern Macs (T2/M1+):
+- **Negligible** — Hardware encryption
+- Always-on encryption in hardware
+- No measurable slowdown
+
+On older Macs (pre-T2):
+- Minor CPU overhead
+- Typically unnoticeable
+- Initial encryption takes hours
+
+## Code Examples
+
+```bash
+# Check FileVault status
+fdesetup status
+
+# Enable FileVault (interactive)
+sudo fdesetup enable
+
+# Enable with recovery key output
+sudo fdesetup enable -outputplist > recovery.plist
+
+# Disable FileVault (requires authentication)
+sudo fdesetup disable
+
+# List enabled users
+fdesetup list
+
+# Check if user can unlock
+fdesetup isactive
+```
+
+## UI Location
+
+**System Settings** → **Privacy & Security** → **FileVault**
+
+### Enabling via UI
+
+1. Click **Turn On FileVault**
+2. Choose recovery option:
+   - iCloud account (Apple stores key)
+   - Create a recovery key (you store key)
+3. Restart to begin encryption
+
+## Recovery Key
+
+⚠️ **Critical**: Store your recovery key securely!
+
+```
+Your recovery key is: XXXX-XXXX-XXXX-XXXX-XXXX-XXXX
+
+Store this key in:
+✓ Password manager (1Password, Bitwarden)
+✓ Secure physical location
+✓ iCloud (if using Apple's option)
+
+Do NOT:
+✗ Store only on the encrypted Mac
+✗ Email to yourself
+✗ Store in plain text file
+```
+
+## Recovery Options
+
+### Option 1: iCloud Recovery
+- Apple securely stores your key
+- Recover via Apple ID
+- Requires internet connection
+- Simpler for most users
+
+### Option 2: Recovery Key
+- You store the 24-character key
+- Full control, no Apple dependency
+- Must not lose the key
+- Enterprise preferred
+
+## Pre-Boot Authentication
+
+With FileVault:
+```
+Power on → FileVault login → macOS boots
+```
+
+Only authorized users can boot the Mac. The disk remains encrypted until valid credentials entered.
+
+## Encryption Process
+
+### Timeline
+- **Modern Macs (SSD)**: 10-30 minutes typically
+- **Older Macs (HDD)**: Several hours
+- **Large SSDs**: Proportionally longer
+
+### During Encryption
+- Mac remains fully usable
+- Restart pauses encryption
+- Progress visible in Settings
+
+## Multiple Users
+
+Each user must be enabled for FileVault:
+
+```bash
+# Add user to FileVault
+sudo fdesetup add -usertoadd username
+
+# List enabled users
+fdesetup list
+```
+
+Only FileVault-enabled users can unlock the disk at boot.
+
+## Secure Boot (Apple Silicon)
+
+On M1/M2+ Macs:
+- FileVault uses Secure Enclave
+- Hardware-bound encryption
+- Even more secure than Intel Macs
+
+## Institutional Recovery
+
+For enterprise:
+```bash
+# Enable with institutional key
+sudo fdesetup enable -keychain /path/to/cert.keychain
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't enable | Check disk format (APFS required) |
+| Lost recovery key | Use iCloud recovery if configured |
+| Forgot password | Need recovery key |
+| Encryption stuck | Restart, check disk space |
+
+## Best Practices
+
+1. ✅ Enable FileVault on all portable Macs
+2. ✅ Store recovery key in password manager
+3. ✅ Enable iCloud recovery as backup
+4. ✅ Ensure all users are FileVault-enabled
+5. ✅ Verify encryption completed
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Hardware**: All Intel and Apple Silicon Macs
+- **Disk Format**: APFS or HFS+ (APFS recommended)
+
+## Source File
+
+**File**: [`defaults/system/filevault.sh`](../../../defaults/system/filevault.sh)
+
+```bash
+# FileVault requires interactive enable via fdesetup or System Settings
+fdesetup status
+```
+
+## References
+
+- [Apple Support: Use FileVault](https://support.apple.com/guide/mac-help/mh11785/mac)
+- [Apple Security: FileVault](https://support.apple.com/guide/security/volume-encryption-with-filevault-sec4c6dc1b6e/web)

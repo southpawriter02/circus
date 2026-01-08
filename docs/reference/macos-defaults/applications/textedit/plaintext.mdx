@@ -1,0 +1,115 @@
+# TextEdit Plain Text Mode
+
+Use plain text instead of Rich Text Format by default.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.TextEdit` |
+| **Key** | `RichText` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `0` |
+
+## Description
+
+Controls whether new TextEdit documents are created as Rich Text Format (RTF) or plain text. Plain text mode is simpler, more compatible, and ideal for code snippets, configuration files, and notes.
+
+## Values
+
+| Value | Mode |
+|-------|------|
+| `0` | **Plain text** — Simple .txt files |
+| `1` | **Rich Text** (default) — .rtf with formatting |
+
+## Our Configuration
+
+**Set to**: `0` — Plain text mode.
+
+### Why Plain Text?
+
+1. **Code-friendly** — No hidden formatting
+2. **Universal** — Works everywhere
+3. **Lightweight** — Smaller file sizes
+4. **Clean paste** — No formatting conflicts
+5. **Config files** — Essential for scripts
+
+### Rich Text Use Cases
+
+- Formatted documents
+- Styled notes
+- Documents with images
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.TextEdit RichText
+
+# Plain text mode (recommended)
+defaults write com.apple.TextEdit RichText -int 0
+
+# Rich Text mode (default)
+defaults write com.apple.TextEdit RichText -int 1
+
+# Delete (reset to default)
+defaults delete com.apple.TextEdit RichText
+```
+
+## UI Location
+
+**TextEdit** → **Settings** (⌘,) → **New Document** → **Format**
+
+Options:
+- Rich text
+- Plain text
+
+## Converting Documents
+
+Convert existing documents:
+- **Format** menu → **Make Plain Text** (⇧⌘T)
+- **Format** menu → **Make Rich Text**
+
+## File Extensions
+
+| Mode | Extension |
+|------|-----------|
+| Plain text | .txt |
+| Rich Text | .rtf, .rtfd |
+
+## Related Settings
+
+```bash
+# Disable smart quotes (essential for code)
+defaults write com.apple.TextEdit SmartQuotes -bool false
+
+# Disable smart dashes
+defaults write com.apple.TextEdit SmartDashes -bool false
+```
+
+## TextEdit vs Code Editors
+
+For regular coding, use proper editors:
+- VS Code
+- Sublime Text
+- BBEdit/TextMate
+
+TextEdit is great for quick edits and notes.
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: Restart TextEdit for changes
+
+## Source File
+
+**File**: [`defaults/applications/textedit.sh`](../../../../defaults/applications/textedit.sh)
+
+```bash
+run_defaults "com.apple.TextEdit" "RichText" "-int" "0"
+```
+
+## References
+
+- [Apple Support: TextEdit plain text](https://support.apple.com/guide/textedit/work-with-plain-text-documents-txted1098/mac)

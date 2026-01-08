@@ -1,0 +1,199 @@
+# Firewall Stealth Mode
+
+Hide your Mac from network probes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `/Library/Preferences/com.apple.alf` |
+| **Key** | `stealthenabled` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+| **Requires** | sudo |
+
+## Description
+
+When stealth mode is enabled, your Mac doesn't respond to ICMP ping requests or connection attempts from closed TCP/UDP ports. This makes your Mac invisible to casual network scanning, providing an additional layer of security on untrusted networks.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Stealth mode off** (default) — Responds to pings |
+| `1` | **Stealth mode on** — Ignores probes |
+
+## Visual Demonstration
+
+### Without Stealth Mode (0):
+```
+Attacker:                       Your Mac:
+                               
+  ping 192.168.1.42            
+        ───────────────────────→
+                               
+                               "Yes, I'm here!"
+        ←───────────────────────
+                               
+  nmap -sT 192.168.1.42        
+        ───────────────────────→
+                               
+                               "Port 22 closed"
+        ←───────────────────────
+
+Attacker now knows:
+✓ IP is active
+✓ Which ports are closed
+✓ Likely macOS
+```
+
+### With Stealth Mode (1):
+```
+Attacker:                       Your Mac:
+                               
+  ping 192.168.1.42            
+        ───────────────────────→
+                               
+                               (silence)
+                               
+  nmap -sT 192.168.1.42        
+        ───────────────────────→
+                               
+                               (silence)
+
+Attacker sees:
+✗ No response
+✗ Can't determine if IP active
+✗ Appears offline
+```
+
+## Our Configuration
+
+**Set to**: `1` — Enable stealth mode.
+
+### Why Enable Stealth Mode?
+
+1. **Reduces visibility** — Harder to discover
+2. **Public networks** — Coffee shops, airports
+3. **Security in depth** — Extra protection layer
+4. **Deters scanning** — Casual attackers move on
+5. **Privacy** — Fewer network fingerprints
+
+### Why Disable Stealth Mode?
+
+- Corporate network management requires ping
+- Network diagnostics
+- Legitimate services need discoverability
+
+## Code Examples
+
+```bash
+# Read current value
+sudo defaults read /Library/Preferences/com.apple.alf stealthenabled
+
+# Enable stealth mode (recommended)
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 1
+
+# Disable stealth mode (default)
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 0
+
+# Apply changes (restart firewall)
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+```
+
+## Alternative Command
+
+Using socketfilterfw:
+```bash
+# Enable stealth mode
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+
+# Disable stealth mode
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode off
+
+# Check status
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode
+```
+
+## UI Location
+
+**System Settings** → **Network** → **Firewall** → **Options** → ☑ **Enable stealth mode**
+
+## What Stealth Mode Blocks
+
+| Probe Type | Without Stealth | With Stealth |
+|------------|-----------------|--------------|
+| ICMP ping | Responds | Silent |
+| TCP to closed port | RST packet | Silent |
+| UDP to closed port | ICMP unreachable | Silent |
+| ARP requests | Responds | Responds* |
+
+*ARP still works on local network for routing.
+
+## Open Ports Still Visible
+
+Stealth mode does NOT hide services:
+```
+With stealth on, if SSH is running:
+  nmap port 22 → "Open"  (still visible!)
+                         
+Stealth only hides CLOSED ports and ping responses.
+```
+
+## Network Diagnostics Impact
+
+With stealth enabled:
+- `ping` from other machines fails
+- Some network troubleshooting harder
+- Wake-on-LAN still works
+- Bonjour services still broadcast
+
+## Related Security Settings
+
+```bash
+# Enable firewall
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+
+# Enable logging
+sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -int 1
+
+# Allow signed apps
+sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -int 1
+```
+
+## When to Temporarily Disable
+
+You might need to disable for:
+- Network troubleshooting
+- VPN connectivity issues
+- Corporate compliance checks
+- Home network setup
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't ping own Mac | Expected with stealth on |
+| Some app can't connect | Check if firewall blocking |
+| Setting not applying | Restart firewall service |
+
+## Compatibility
+
+- **macOS**: 10.5.1+ (Leopard)
+- **Requires**: sudo
+- **Note**: Restart firewall to apply
+
+## Source File
+
+**File**: [`defaults/system/firewall.sh`](../../../defaults/system/firewall.sh)
+
+```bash
+run_sudo_defaults "/Library/Preferences/com.apple.alf" "stealthenabled" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Firewall](https://support.apple.com/en-us/102445)
+- [Apple Support: Stealth Mode](https://support.apple.com/guide/mac-help/block-connections-to-your-mac-with-a-firewall-mh34041/mac)

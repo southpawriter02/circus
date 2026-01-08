@@ -1,0 +1,121 @@
+# Pages Default Zoom Level
+
+Set the initial zoom level for new documents.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Pages` |
+| **Key** | `TSDefaultZoom` |
+| **Type** | Integer |
+| **Default Value** | `125` |
+| **Our Setting** | `100` |
+
+## Description
+
+Controls the default zoom level when opening new documents in Pages. The zoom level affects how large the document appears on screen without changing the actual document size.
+
+## Values
+
+| Value | Zoom Level |
+|-------|------------|
+| `50` | 50% — Fit more on screen |
+| `75` | 75% — Overview |
+| `100` | 100% — Actual size |
+| `125` | 125% — Default |
+| `150` | 150% — Larger |
+| `200` | 200% — Very large |
+
+Range: 25-400
+
+## Our Configuration
+
+**Set to**: `100` — Actual size (100%).
+
+### Why 100%?
+
+1. **True size** — WYSIWYG editing
+2. **Print accuracy** — Matches printed output
+3. **Standard** — Professional view
+4. **Screen space** — Good balance
+
+### When to Increase
+
+- Small text sizes
+- Detailed work
+- Accessibility needs
+- High-resolution displays
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Pages TSDefaultZoom
+
+# Set to 100% (actual size)
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 100
+
+# Set to 125% (default)
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 125
+
+# Set to 150% (enlarged)
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 150
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Pages TSDefaultZoom
+```
+
+## UI Location
+
+**View** menu → **Zoom** → select level
+
+Or use zoom controls in toolbar.
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘+ | Zoom in |
+| ⌘- | Zoom out |
+| ⌘0 | Actual size (100%) |
+| ⌘⌥0 | Fit page |
+
+## Fit Options
+
+In View → Zoom:
+- Fit Page — Entire page visible
+- Fit Width — Full width visible
+- Percentage — Custom level
+
+## Per-Document Zoom
+
+Each document remembers its zoom level. The default only affects new documents.
+
+## Related Settings
+
+```bash
+# Show word count
+defaults write com.apple.iWork.Pages TSWPShowWordCount -bool true
+
+# Object alignment guides
+defaults write com.apple.iWork.Pages TSShowsObjectCenterGuides -bool true
+```
+
+## Compatibility
+
+- **Pages**: All versions
+- **macOS**: 10.14+
+- **Note**: Applies to new documents only
+
+## Source File
+
+**File**: [`defaults/applications/pages.sh`](../../../../defaults/applications/pages.sh)
+
+```bash
+run_defaults "com.apple.iWork.Pages" "TSDefaultZoom" "-int" "100"
+```
+
+## References
+
+- [Apple Support: Pages settings](https://support.apple.com/guide/pages/change-settings-tanf9f2cc8d6/mac)

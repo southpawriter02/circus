@@ -1,0 +1,158 @@
+# Xcode Trim Trailing Whitespace
+
+Automatically remove trailing whitespace when saving files.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Keys** | `DVTTextEditorTrimTrailingWhitespace`, `DVTTextEditorTrimWhitespaceOnlyLines` |
+| **Type** | Boolean |
+| **Default Value** | `true`, `true` |
+| **Our Setting** | `true`, `true` |
+
+## Description
+
+Controls whether Xcode automatically removes trailing whitespace from lines when saving files. This includes whitespace at the end of lines with content, and lines that contain only whitespace. Keeping code clean reduces diff noise and maintains consistency.
+
+## Values
+
+| Key | Value | Behavior |
+|-----|-------|----------|
+| `DVTTextEditorTrimTrailingWhitespace` | `true` | Trim whitespace at end of lines |
+| `DVTTextEditorTrimWhitespaceOnlyLines` | `true` | Also trim lines with only whitespace |
+
+## Visual Example
+
+**Before save (trailing whitespace marked with ·):**
+```swift
+func example() {····
+    let value = 42···
+····
+    return value·
+}
+```
+
+**After save (with trimming enabled):**
+```swift
+func example() {
+    let value = 42
+
+    return value
+}
+```
+
+## Our Configuration
+
+**Set to**: `true` — Clean whitespace on save.
+
+### Why Trim Whitespace?
+
+1. **Cleaner diffs** — No whitespace-only changes in commits
+2. **Code quality** — Consistent formatting
+3. **Linting** — Many linters flag trailing whitespace
+4. **Team consistency** — Same output regardless of editor
+5. **File size** — Slightly smaller files
+
+### Git Considerations
+
+With `git diff`:
+- Green lines that appear "empty" may contain whitespace
+- This clutters PRs with non-substantive changes
+- Trimming eliminates this noise
+
+## Code Examples
+
+```bash
+# Read current values
+defaults read com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace
+defaults read com.apple.dt.Xcode DVTTextEditorTrimWhitespaceOnlyLines
+
+# Enable both (recommended)
+defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool true
+defaults write com.apple.dt.Xcode DVTTextEditorTrimWhitespaceOnlyLines -bool true
+
+# Disable (preserve whitespace)
+defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool false
+defaults write com.apple.dt.Xcode DVTTextEditorTrimWhitespaceOnlyLines -bool false
+
+# Delete (reset to defaults)
+defaults delete com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace
+```
+
+## UI Location
+
+**Xcode** → **Settings** (⌘,) → **Text Editing** → **Editing** → ☑ **Including whitespace-only lines**
+
+The parent toggle is "Trim trailing whitespace".
+
+## Editor Config Compatibility
+
+Many projects use `.editorconfig`:
+
+```ini
+# .editorconfig
+root = true
+
+[*]
+trim_trailing_whitespace = true
+insert_final_newline = true
+```
+
+Xcode respects these settings when the file is present.
+
+## Related Settings
+
+```bash
+# Complete clean code setup
+defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool true
+defaults write com.apple.dt.Xcode DVTTextEditorTrimWhitespaceOnlyLines -bool true
+defaults write com.apple.dt.Xcode DVTTextIndentWidth -int 4
+defaults write com.apple.dt.Xcode DVTTextIndentTabWidth -int 4
+```
+
+## Pre-Commit Hooks
+
+For additional safety, add a git hook:
+
+```bash
+# .git/hooks/pre-commit
+#!/bin/sh
+# Detect trailing whitespace
+git diff --check --cached
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Whitespace not trimmed | Restart Xcode |
+| Only some files trimmed | Check file type support |
+| Markdown blank lines lost | May need to adjust for Markdown |
+
+## Exception: Markdown
+
+In Markdown, two trailing spaces create a `<br>`. Consider:
+- Disable trimming for `.md` files
+- Or use explicit `<br>` tags instead
+
+## Compatibility
+
+- **Xcode**: 9.0+
+- **macOS**: 10.12+
+- **Languages**: All supported by Xcode
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../defaults/applications/xcode.sh)
+
+```bash
+run_defaults "com.apple.dt.Xcode" "DVTTextEditorTrimTrailingWhitespace" "-bool" "true"
+run_defaults "com.apple.dt.Xcode" "DVTTextEditorTrimWhitespaceOnlyLines" "-bool" "true"
+```
+
+## References
+
+- [Apple Developer: Xcode Text Editing](https://developer.apple.com/documentation/xcode)
+- [EditorConfig](https://editorconfig.org/)

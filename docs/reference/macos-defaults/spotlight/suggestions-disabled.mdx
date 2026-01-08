@@ -1,0 +1,203 @@
+# Spotlight Suggestions Disable
+
+Disable internet-based Spotlight suggestions for privacy.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.lookup.shared` |
+| **Key** | `LookupSuggestionsDisabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Spotlight sends search queries to Apple's servers to provide internet-based suggestions including Wikipedia articles, news, websites, iTunes content, and web search results. Disabling this keeps searches local and private.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Suggestions disabled** — Local search only |
+| `false` | **Suggestions enabled** (default) — Internet lookups |
+
+## What Gets Sent to Apple
+
+With suggestions enabled:
+```
+You type in Spotlight → Query sent to Apple servers
+                        │
+                        ├── Wikipedia lookup
+                        ├── Web search suggestions
+                        ├── iTunes/App Store results
+                        ├── News articles
+                        ├── Maps/locations
+                        └── Siri Knowledge
+
+Apple knows: What you're searching for, when, your IP
+```
+
+With suggestions disabled:
+```
+You type in Spotlight → Local index only
+                        │
+                        ├── Apps ✓
+                        ├── Documents ✓
+                        ├── Folders ✓
+                        ├── System Preferences ✓
+                        └── Contacts ✓
+
+Nothing sent to Apple
+```
+
+## Our Configuration
+
+**Set to**: `true` — Disable internet suggestions.
+
+### Why Disable Suggestions?
+
+1. **Privacy** — Search queries stay on device
+2. **No tracking** — Apple doesn't see searches
+3. **Faster results** — No network delay
+4. **Focused search** — Local files only
+5. **Bandwidth** — No internet lookups
+
+### Why Enable Suggestions?
+
+- Quick Wikipedia lookups
+- Web search from Spotlight
+- Siri Knowledge answers
+- App Store search
+- News integration
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.lookup.shared LookupSuggestionsDisabled
+
+# Disable internet suggestions (recommended for privacy)
+defaults write com.apple.lookup.shared LookupSuggestionsDisabled -bool true
+
+# Enable internet suggestions (default)
+defaults write com.apple.lookup.shared LookupSuggestionsDisabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.lookup.shared LookupSuggestionsDisabled
+```
+
+## UI Location
+
+**System Settings** → **Siri & Spotlight** → Scroll down → Uncheck:
+- "Siri Suggestions"
+- Specific categories you don't want
+
+Or:
+**System Settings** → **Spotlight** → Uncheck "Siri Suggestions"
+
+## What Still Works
+
+With suggestions disabled, Spotlight still finds:
+- ✅ Applications
+- ✅ Documents
+- ✅ Folders
+- ✅ Images
+- ✅ Music
+- ✅ System Preferences
+- ✅ Contacts
+- ✅ Calculator results
+- ✅ Conversion results
+
+## What Gets Disabled
+
+- ❌ Wikipedia snippets
+- ❌ Web results
+- ❌ News
+- ❌ iTunes/App Store
+- ❌ Maps results
+- ❌ Siri Knowledge
+
+## Alternative: Use Browser Search
+
+Instead of Spotlight web suggestions:
+1. Use Spotlight for local files
+2. For web: Open browser → Search
+3. More control, same functionality
+
+Or set up a web search shortcut:
+```
+Type in Spotlight: "google search term"
+→ Opens browser with search (requires workflow/Alfred)
+```
+
+## Spotlight Privacy Settings
+
+Additional privacy controls:
+
+### Reindex to Apply Changes
+```bash
+# Rebuild Spotlight index
+sudo mdutil -E /
+
+# Check Spotlight status
+mdutil -s /
+```
+
+### Disable External Volume Indexing
+```bash
+defaults write com.apple.spotlight ExternalVolumes -bool false
+```
+
+## Siri Integration
+
+Siri Suggestions uses similar data:
+```bash
+# Disable Siri suggestions in Spotlight results
+defaults write com.apple.Siri StatusMenuVisible -bool false
+```
+
+## Related Settings
+
+```bash
+# Don't index external drives
+defaults write com.apple.spotlight ExternalVolumes -bool false
+
+# Spotlight keyboard shortcut (⌘Space)
+# Configured in keyboard settings
+```
+
+## Privacy vs Convenience Matrix
+
+| Feature | Privacy | Convenience |
+|---------|---------|-------------|
+| Suggestions Off | ✅ High | ⚠️ Less |
+| Suggestions On | ❌ Low | ✅ More |
+| Use browser for web | ✅ High | ⚠️ Extra step |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Web results still appearing | Restart Spotlight process |
+| Too few results | Check Spotlight categories |
+| Slow indexing | Wait for Spotlight to re-index |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Note**: May require Spotlight restart
+
+## Source File
+
+**File**: [`defaults/system/spotlight.sh`](../../../defaults/system/spotlight.sh)
+
+```bash
+run_defaults "com.apple.lookup.shared" "LookupSuggestionsDisabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Spotlight](https://support.apple.com/guide/mac-help/spotlight-mchlp1008/mac)
+- [Apple Privacy: Siri](https://www.apple.com/privacy/features/#siri)

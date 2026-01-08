@@ -1,0 +1,169 @@
+# Control Center Focus Modes
+
+Configure Focus/Do Not Disturb visibility in Control Center.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.controlcenter` |
+| **Key** | `FocusModes` |
+| **Type** | Integer |
+| **Default Value** | `18` |
+| **Our Setting** | `18` |
+
+## Description
+
+Controls where Focus (formerly Do Not Disturb) appears—in the menu bar, Control Center, or hidden. Focus modes silence notifications and communications based on your activity (Work, Personal, Sleep, etc.).
+
+## Values
+
+| Value | Visibility |
+|-------|------------|
+| `0` | Hidden/Disabled |
+| `2` | Always in menu bar |
+| `8` | Show in menu bar when active |
+| `18` | **Control Center only** (default) |
+| `24` | Don't show anywhere |
+
+## Visual Example
+
+**FocusModes = 18 (Control Center only):**
+```
+Control Center:
+┌─────────────────────────────┐
+│ 📶 Wi-Fi                    │
+│ 📡 Bluetooth                │
+│ 🔕 Focus        [ Off    ▼] │ ← Access Focus here
+│ 📺 AirPlay                  │
+└─────────────────────────────┘
+```
+
+**FocusModes = 8 (Show when active):**
+```
+┌──────────────────────────────────────────────┐
+│ 📶  🌙 Focus  🔋  Wed 3:45 PM  🔍            │
+└──────────────────────────────────────────────┘
+       ↑
+   Shows when Focus is on
+```
+
+## Our Configuration
+
+**Set to**: `18` — Control Center only.
+
+### Why Control Center Only?
+
+1. **Clean menu bar** — One less icon
+2. **Not constant** — Focus changes are intentional
+3. **Easy access** — Still quick via Control Center
+4. **Less distraction** — Ironic to have Focus icon distracting
+
+### When to Show in Menu Bar
+
+Set to `2` or `8` if you:
+- Toggle Focus frequently
+- Need to see Focus status at a glance
+- Share your screen and want others to see Focus
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.controlcenter FocusModes
+
+# Show only in Control Center
+defaults write com.apple.controlcenter FocusModes -int 18
+
+# Always show in menu bar
+defaults write com.apple.controlcenter FocusModes -int 2
+
+# Show when Focus is active
+defaults write com.apple.controlcenter FocusModes -int 8
+
+# Apply changes
+killall ControlCenter
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Focus**
+
+Options:
+- Show in Menu Bar: Always / When Active / Don't Show
+
+## Configuring Focus Modes
+
+**System Settings** → **Focus**
+
+Create custom Focus modes for:
+- **Do Not Disturb** — Silence all notifications
+- **Work** — Allow work contacts/apps
+- **Personal** — Allow personal contacts/apps
+- **Sleep** — Silence during sleep hours
+- **Driving** — Auto-reply while driving (iOS feature)
+
+## Focus Schedules
+
+Automate Focus modes:
+- Time of day
+- Location-based
+- App-based (when opening specific apps)
+- Smart activation
+
+## Focus Status Sharing
+
+When Focus is on:
+- Messages shows "has notifications silenced"
+- Others know you may not respond
+- Can be disabled per-Focus
+
+## Keyboard Shortcut
+
+Quick toggle Focus with custom shortcut:
+1. **System Settings** → **Keyboard** → **Shortcuts**
+2. Configure shortcut for Focus modes
+
+Or use Control Center (globe/fn key in some configurations).
+
+## Related Settings
+
+```bash
+# Other Control Center items
+defaults write com.apple.controlcenter AirDrop -int 18
+defaults write com.apple.controlcenter Display -int 18
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Focus icon not showing | Set value to 2 or 8 |
+| Focus not silencing | Check Focus settings in System Settings |
+| Calls still coming through | Check "Allow Calls From" setting |
+
+## Focus vs Do Not Disturb
+
+- **Do Not Disturb** (pre-Monterey): Simple on/off
+- **Focus** (Monterey+): Multiple modes with customization
+
+Focus replaced DND with more granular control.
+
+## Compatibility
+
+- **macOS**: 12.0 (Monterey)+ for Focus
+- **Earlier macOS**: Do Not Disturb in notification settings
+- **Syncs**: Focus syncs across Apple devices
+
+## Source File
+
+**File**: [`defaults/interface/control_center.sh`](../../../defaults/interface/control_center.sh)
+
+```bash
+run_defaults "com.apple.controlcenter" "FocusModes" "-int" "18"
+```
+
+## References
+
+- [Apple Support: Turn on Focus](https://support.apple.com/guide/mac-help/turn-a-focus-on-or-off-mchl613dc43f/mac)
+- [Apple Support: Set up a Focus](https://support.apple.com/guide/mac-help/set-up-a-focus-mchl613dc43e/mac)

@@ -1,0 +1,189 @@
+# Login Window Guest Account
+
+Enable or disable the Guest User account.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.loginwindow` |
+| **Key** | `GuestEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Guest User account is available on the login screen. The Guest account provides temporary access with limited capabilities — all data is deleted when the guest logs out. While useful in some scenarios, it can pose security risks.
+
+## Values
+
+| Value | Guest Account |
+|-------|---------------|
+| `true` | **Enabled** — Guest appears on login screen |
+| `false` | **Disabled** (default) — No guest access |
+
+## Guest Account Behavior
+
+When Guest User logs in:
+```
+Start Guest Session
+        ↓
+├── Temporary home folder created
+├── Limited apps available
+├── No access to other users' data
+├── Safari Sharing limited
+└── Cannot install software
+        ↓
+Guest logs out
+        ↓
+All data DELETED (no recovery)
+```
+
+## Our Configuration
+
+**Set to**: `false` — Guest account disabled.
+
+### Why Disable Guest?
+
+1. **Security** — Prevents unauthorized access
+2. **Physical access** — One less entry point
+3. **Network access** — Guest can use network
+4. **Browser access** — Can access websites
+5. **Best practice** — Unless specifically needed
+
+### When Guest is Useful
+
+| Scenario | Benefit |
+|----------|---------|
+| Demo machine | Quick access for anyone |
+| Kiosk/display | Public information display |
+| Lost laptop | Find My works in Guest (see below) |
+| Briefly letting someone use Mac | No account creation needed |
+
+## The Find My Mac Exception
+
+⚠️ **Important**: Guest account enables Find My tracking for stolen Macs.
+
+How it works:
+1. Thief finds Mac, can't log in to your account
+2. Logs in as Guest (if enabled)
+3. Connects to network (to use Safari, etc.)
+4. Find My Mac can locate the Mac
+5. You can track and potentially recover
+
+This is the **only security argument for enabling Guest**.
+
+### Trade-off Decision
+
+| Priority | Setting |
+|----------|---------|
+| Prevent all access | Disable Guest (more secure locally) |
+| Enable location tracking | Enable Guest (helps recovery) |
+
+Many security experts recommend **disable** because:
+- FileVault prevents data access anyway
+- Guest + Find My is edge case
+- Simpler to prevent all access
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.loginwindow GuestEnabled
+
+# Disable guest account (recommended)
+defaults write com.apple.loginwindow GuestEnabled -bool false
+
+# Enable guest account
+defaults write com.apple.loginwindow GuestEnabled -bool true
+
+# Delete (reset to default - disabled)
+defaults delete com.apple.loginwindow GuestEnabled
+```
+
+## UI Location
+
+**System Settings** → **Users & Groups** → **Guest User** (click on it)
+
+Toggle: "Allow guests to log in to this computer"
+
+## Guest Restrictions
+
+Guest users cannot:
+- Access other accounts' files
+- Install software
+- Change system settings
+- Create accounts
+- Use AirDrop
+- Pair Bluetooth devices
+- Access keychain
+
+Guest users can:
+- Browse the web
+- Use built-in apps
+- Connect to network
+- Use peripherals
+
+## Safari Sharing (Guest)
+
+Separate setting for Guest Safari only:
+- Allows guest to use Safari without full login
+- Even more limited than full Guest
+
+**System Settings** → **Users & Groups** → **Guest User** → "Allow guests to connect to shared folders"
+
+## FileVault Interaction
+
+With FileVault enabled:
+- Guest cannot access encrypted disk
+- Guest mode works after disk unlock
+- If Mac is asleep with FileVault: Guest can't boot
+
+For maximum security: FileVault + No Guest
+
+## Enterprise/Education
+
+In managed environments:
+- MDM can enforce Guest policy
+- Computer labs may enable Guest
+- Kiosk configurations common
+
+## Related Settings
+
+```bash
+# Disable automatic login
+sudo defaults delete com.apple.loginwindow autoLoginUser
+
+# Show name/password instead of user list
+defaults write com.apple.loginwindow SHOWFULLNAME -bool true
+
+# Disable password hints
+defaults write com.apple.loginwindow RetriesUntilHint -int 0
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Guest still appears | Logout and log back in |
+| Can't toggle in Settings | Check for MDM profile |
+| Guest data persisting | Normal — deleted on logout |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: May require logout to apply
+
+## Source File
+
+**File**: [`defaults/system/login.sh`](../../../defaults/system/login.sh)
+
+```bash
+run_defaults "com.apple.loginwindow" "GuestEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Guest User account](https://support.apple.com/guide/mac-help/set-up-a-guest-user-mtusr003/mac)
+- [Apple Support: Find My](https://support.apple.com/find-my)

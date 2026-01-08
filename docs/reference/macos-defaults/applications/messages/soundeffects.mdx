@@ -1,0 +1,130 @@
+# Messages Sound Effects
+
+Play sounds for sent and received messages.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.MobileSMS` |
+| **Key** | `PlaySoundEffects` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Messages plays sound effects when you send or receive messages. These sounds provide audio feedback confirming message delivery and alerting you to incoming messages.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Sounds enabled** (default) — Audio feedback for messages |
+| `false` | **Silent** — No message sounds |
+
+## Sound Effects
+
+| Event | Sound |
+|-------|-------|
+| Send message | "Swoosh" |
+| Receive message | "Note" or custom |
+| Send fail | Alert sound |
+| Tapback received | Subtle tap |
+
+## Our Configuration
+
+**Set to**: `true` — Enable sound effects.
+
+### Why Enable Sounds?
+
+1. **Confirmation** — Know message was sent
+2. **Awareness** — Hear incoming messages
+3. **Feedback** — Audio cues while working
+4. **System integration** — Works with Focus modes
+
+### When to Disable
+
+- Office environment — Don't disturb others
+- Meetings — Silent operation needed
+- Headphones — Getting sounds elsewhere
+- Focus work — Minimize distractions
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.MobileSMS PlaySoundEffects
+
+# Enable sounds (default)
+defaults write com.apple.MobileSMS PlaySoundEffects -bool true
+
+# Disable sounds
+defaults write com.apple.MobileSMS PlaySoundEffects -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.MobileSMS PlaySoundEffects
+```
+
+## UI Location
+
+**Messages** → **Settings** (⌘,) → **General** → ☑ **Play sound effects**
+
+## Notification Sounds
+
+Separate from in-app sounds, notification settings control:
+- Alert sounds
+- Banner sounds
+- Lock screen sounds
+
+Configure in: **System Settings** → **Notifications** → **Messages**
+
+## Focus Mode Integration
+
+When Focus is active:
+- Message sounds may be silenced
+- Configure per-Focus in Focus settings
+- "Allowed notifications" can bypass Focus
+
+## Custom Alert Sounds
+
+To change the notification sound:
+1. **System Settings** → **Notifications** → **Messages**
+2. Click **Sound** dropdown
+3. Select from available sounds
+
+Or use **System Settings** → **Sound** → **Alert sound** for system-wide default.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No sounds | Check this setting + system volume |
+| Only some sounds | Check notification settings |
+| Too loud | Adjust alert volume in Sound settings |
+
+## Related Settings
+
+### Message Effects
+
+```bash
+# Enable bubble and screen effects
+defaults write com.apple.MobileSMS EnableMessageEffects -bool true
+```
+
+## Compatibility
+
+- **macOS**: 10.14+
+- **Note**: Restart Messages for changes
+
+## Source File
+
+**File**: [`defaults/applications/messages.sh`](../../../../defaults/applications/messages.sh)
+
+```bash
+run_defaults "com.apple.MobileSMS" "PlaySoundEffects" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Messages preferences](https://support.apple.com/guide/messages/change-messages-preferences-icht491d3b70/mac)

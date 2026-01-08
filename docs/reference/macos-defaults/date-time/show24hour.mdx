@@ -1,0 +1,191 @@
+# 24-Hour Time Display
+
+Use 24-hour format instead of 12-hour AM/PM.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.menuextra.clock` |
+| **Key** | `Show24Hour` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the system clock uses 24-hour (military/European) time format or 12-hour format with AM/PM indicators. This affects the menu bar clock and can influence other apps that follow system settings.
+
+## Values
+
+| Value | Format | Example |
+|-------|--------|---------|
+| `true` | 24-hour | 14:30, 09:15 |
+| `false` | 12-hour AM/PM (default) | 2:30 PM, 9:15 AM |
+
+## Visual Comparison
+
+### 12-Hour Format (false):
+```
+Menu bar: [.....] 9:30 AM    2:30 PM    11:45 PM
+
+Timeline:
+──────┬───────┬───────┬───────┬───────┬───────┬──────
+   12:00 AM  6:00 AM  12:00 PM  6:00 PM  11:59 PM
+   midnight           noon             almost midnight
+```
+
+### 24-Hour Format (true):
+```
+Menu bar: [.....] 09:30    14:30    23:45
+
+Timeline:
+──────┬───────┬───────┬───────┬───────┬───────┬──────
+    00:00    06:00    12:00    18:00    23:59
+    midnight           noon             almost midnight
+```
+
+## Our Configuration
+
+**Set to**: `true` — Use 24-hour format.
+
+### Why 24-Hour Format?
+
+1. **No ambiguity** — 14:00 always means 2 PM
+2. **International** — Used by most of the world
+3. **Professional** — Technical/military standard
+4. **Scheduling** — Easier time math (14:00 - 09:00 = 5 hours)
+5. **Shorter** — No AM/PM needed
+
+### Why 12-Hour Format?
+
+- US cultural familiarity
+- Some users find it more intuitive
+- Traditional preference
+
+## 24-Hour Time Quick Reference
+
+| 12-Hour | 24-Hour |
+|---------|---------|
+| 12:00 AM (midnight) | 00:00 |
+| 1:00 AM | 01:00 |
+| 6:00 AM | 06:00 |
+| 12:00 PM (noon) | 12:00 |
+| 1:00 PM | 13:00 |
+| 6:00 PM | 18:00 |
+| 11:00 PM | 23:00 |
+| 11:59 PM | 23:59 |
+
+**Conversion**: After noon, add 12 to the hour.
+- 2 PM → 2 + 12 = 14:00
+- 9 PM → 9 + 12 = 21:00
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.menuextra.clock Show24Hour
+
+# Use 24-hour format (recommended)
+defaults write com.apple.menuextra.clock Show24Hour -bool true
+
+# Use 12-hour format with AM/PM (default)
+defaults write com.apple.menuextra.clock Show24Hour -bool false
+
+# Apply changes
+killall SystemUIServer
+
+# Delete (reset to default)
+defaults delete com.apple.menuextra.clock Show24Hour
+```
+
+## UI Location
+
+**System Settings** → **General** → **Date & Time** → **24-hour time**
+
+Or:
+**System Settings** → **Control Center** → **Clock** → Time format options
+
+## System-Wide Effect
+
+This setting can affect:
+- Menu bar clock ✓
+- Calendar app (sometimes)
+- Messages timestamps (sometimes)
+- Notifications (sometimes)
+
+Individual apps may have their own time format settings.
+
+## DateFormat Override
+
+This setting interacts with `DateFormat`:
+```bash
+# If DateFormat uses "h" (12-hour), it uses 12-hour regardless
+# If DateFormat uses "H" (24-hour), it uses 24-hour
+```
+
+For full control, also set DateFormat:
+```bash
+defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM  HH:mm"
+```
+
+## Related Settings
+
+```bash
+# Full date format string
+defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM  HH:mm"
+
+# Show seconds
+defaults write com.apple.menuextra.clock ShowSeconds -bool false
+
+# Analog clock (ignores this setting)
+defaults write com.apple.menuextra.clock IsAnalog -bool false
+```
+
+## Siri and Dictation
+
+When dictating times:
+- System follows this setting
+- "Schedule meeting at 14:00" works with 24-hour
+- "Schedule meeting at 2 PM" works with 12-hour
+
+## Calendar Events
+
+Calendar typically follows system settings:
+- Events display in chosen format
+- All-day events not affected
+- Cross-timezone display follows system
+
+## Locale Defaults
+
+Many locales default to 24-hour:
+- Europe: 24-hour
+- Military: 24-hour
+- US: 12-hour
+- UK: Mixed (officially 24-hour)
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Clock still shows AM/PM | Check DateFormat string |
+| Some apps use 12-hour | App-specific settings |
+| Change not applying | killall SystemUIServer |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: killall SystemUIServer to apply
+
+## Source File
+
+**File**: [`defaults/system/date_time.sh`](../../../defaults/system/date_time.sh)
+
+```bash
+run_defaults "com.apple.menuextra.clock" "Show24Hour" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Date and Time](https://support.apple.com/guide/mac-help/mchlp2996/mac)
+- [Wikipedia: 24-hour clock](https://en.wikipedia.org/wiki/24-hour_clock)

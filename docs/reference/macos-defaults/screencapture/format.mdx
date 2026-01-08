@@ -1,0 +1,203 @@
+# Screenshot File Format
+
+Configure the default file format for screenshots.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.screencapture` |
+| **Key** | `type` |
+| **Type** | String |
+| **Default Value** | `png` |
+| **Our Setting** | `png` |
+
+## Description
+
+Controls the default file format for screenshots taken with macOS keyboard shortcuts. Different formats offer trade-offs between quality, file size, and use case. PNG is the default for lossless quality, but JPG may be preferred for smaller files.
+
+## Values
+
+| Value | Format | Quality | File Size | Use Case |
+|-------|--------|---------|-----------|----------|
+| `png` | PNG (default) | Lossless | Larger | Documentation, design |
+| `jpg` | JPEG | Lossy | Smaller | Sharing, web |
+| `gif` | GIF | Limited colors | Small | Simple graphics |
+| `pdf` | PDF | Vector-like | Variable | Print, archive |
+| `tiff` | TIFF | Lossless | Large | Professional |
+| `bmp` | Bitmap | Lossless | Very large | Legacy |
+| `psd` | Photoshop | Lossless | Large | Editing |
+| `jp2` | JPEG 2000 | Better compression | Medium | Advanced |
+| `heic` | HEIC | Efficient | Smallest | Modern Apple |
+
+## Format Comparison
+
+### File Size for Same Screenshot:
+```
+Format Comparison (1920x1080 UI screenshot):
+
+PNG:  ████████████████████████████  1.2 MB
+JPG:  █████████░░░░░░░░░░░░░░░░░░░  350 KB
+HEIC: ████████░░░░░░░░░░░░░░░░░░░░  280 KB
+GIF:  ██████████████████░░░░░░░░░░  800 KB (limited colors)
+PDF:  ██████████████████████████░░  1.0 MB
+```
+
+### Quality Comparison:
+```
+PNG:  ★★★★★  Perfect, lossless
+HEIC: ★★★★☆  Excellent, efficient
+JPG:  ★★★☆☆  Good, visible compression
+GIF:  ★★☆☆☆  Limited (256 colors max)
+```
+
+## Our Configuration
+
+**Set to**: `png` — Default, lossless quality.
+
+### Why PNG?
+
+1. **Lossless** — No quality loss
+2. **Sharp text** — Perfect for UI screenshots
+3. **Transparency** — Supports alpha channel
+4. **Universal** — Works everywhere
+5. **Standard** — Expected format
+
+### Why JPG?
+
+- Much smaller files
+- Good for photos/complex images
+- Fast sharing
+- Bandwidth savings
+
+### Why HEIC?
+
+- Best of both (quality + small)
+- Native Apple format
+- May not open on older Windows
+
+## Code Examples
+
+```bash
+# Read current format
+defaults read com.apple.screencapture type
+
+# Set to PNG (recommended, default)
+defaults write com.apple.screencapture type -string "png"
+
+# Set to JPG (smaller files)
+defaults write com.apple.screencapture type -string "jpg"
+
+# Set to HEIC (efficient)
+defaults write com.apple.screencapture type -string "heic"
+
+# Set to PDF (for documents)
+defaults write com.apple.screencapture type -string "pdf"
+
+# Restart SystemUIServer to apply
+killall SystemUIServer
+```
+
+## UI Location
+
+**⌘⇧5** (Screenshot toolbar) → **Options** → No direct format option
+
+Format must be set via defaults command.
+
+## Text and UI Screenshots
+
+For crisp text, use lossless formats:
+```
+PNG, PDF, TIFF — Text stays sharp
+JPG — Text may show compression artifacts
+```
+
+Especially important for:
+- Documentation
+- Bug reports
+- Tutorials
+- Code screenshots
+
+## Photo-Heavy Screenshots
+
+For screenshots with photos:
+```
+JPG — Good compression, acceptable quality
+HEIC — Better compression, good quality
+PNG — Unnecessarily large
+```
+
+## Sharing Considerations
+
+| Recipient | Recommended Format |
+|-----------|-------------------|
+| Anyone | PNG (universal) |
+| Email | JPG (smaller) |
+| Documentation | PNG |
+| Social media | JPG or PNG |
+| Apple ecosystem | HEIC (if supported) |
+
+## Transparency Support
+
+If screenshot includes transparency:
+```
+PNG — ✓ Supports transparency
+HEIC — ✓ Supports transparency
+JPG — ✗ No transparency (white background)
+GIF — ✓ Binary transparency (on/off)
+```
+
+Window screenshots with shadow need transparency support.
+
+## Window Shadow
+
+```bash
+# Disable shadow (affects PNG transparency)
+defaults write com.apple.screencapture disable-shadow -bool true
+```
+
+With shadow disabled, transparency matters less.
+
+## Related Settings
+
+```bash
+# Screenshot location
+defaults write com.apple.screencapture location -string "~/Pictures/Screenshots"
+
+# Disable window shadow
+defaults write com.apple.screencapture disable-shadow -bool true
+
+# Include date in filename
+defaults write com.apple.screencapture include-date -bool true
+
+# Show floating thumbnail
+defaults write com.apple.screencapture show-thumbnail -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Format not changing | Restart SystemUIServer |
+| Unknown format error | Use supported format name |
+| Files too large | Switch to jpg or heic |
+| Quality poor | Switch to png |
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **HEIC**: 10.13+ (High Sierra)
+- **Note**: `killall SystemUIServer` to apply
+
+## Source File
+
+**File**: [`defaults/applications/screencapture.sh`](../../../../defaults/applications/screencapture.sh)
+
+```bash
+run_defaults "com.apple.screencapture" "type" "-string" "png"
+```
+
+## References
+
+- [Apple Support: Take screenshots](https://support.apple.com/en-us/102646)
+- [Apple Support: Screenshot options](https://support.apple.com/guide/mac-help/take-screenshots-mh26782/mac)

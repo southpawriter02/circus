@@ -1,0 +1,120 @@
+# Zoom HD Video
+
+Enable high-definition video quality in meetings.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `us.zoom.xos` |
+| **Key** | `ZMEnableHDVideo` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables HD video quality for Zoom meetings. HD video provides clearer, more professional-looking video but requires more bandwidth. Zoom adjusts quality based on network conditions.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **HD enabled** (default) — Up to 720p/1080p |
+| `false` | **Standard def** — Lower resolution, less bandwidth |
+
+## Video Quality Tiers
+
+| Quality | Resolution | Bandwidth Req. |
+|---------|------------|----------------|
+| Standard | 360p-480p | ~0.6 Mbps |
+| HD | 720p | ~1.5 Mbps |
+| Full HD | 1080p | ~3.0 Mbps |
+
+## Our Configuration
+
+**Set to**: `true` — Full HD quality when possible.
+
+### Why Enable HD?
+
+1. **Professional** — Clearer video appearance
+2. **Details** — Readable shared content
+3. **Modern** — Expected in business meetings
+4. **Quality** — Good cameras deserve HD
+
+### When to Disable
+
+- Slow internet connection
+- Mobile hotspot usage
+- Bandwidth-limited networks
+- Battery conservation
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read us.zoom.xos ZMEnableHDVideo
+
+# Enable HD video (default)
+defaults write us.zoom.xos ZMEnableHDVideo -bool true
+
+# Disable HD (standard quality)
+defaults write us.zoom.xos ZMEnableHDVideo -bool false
+
+# Delete (reset to default)
+defaults delete us.zoom.xos ZMEnableHDVideo
+```
+
+## UI Location
+
+**Zoom** → **Settings** (⌘,) → **Video** → ☑ **HD**
+
+## Full HD (1080p)
+
+For 1080p quality:
+- Requires Pro/Business account or webinar
+- Group HD requires appropriate plan
+- Good internet connection essential
+
+## Adaptive Quality
+
+Zoom automatically adjusts:
+- Lowers quality if bandwidth drops
+- Increases when bandwidth allows
+- Prioritizes stability over resolution
+
+## Related Video Settings
+
+```bash
+# Mirror self-view
+defaults write us.zoom.xos ZMMirrorVideo -bool true
+
+# Touch up appearance
+defaults write us.zoom.xos ZMEnableTouchUpAppearance -bool false
+```
+
+## Camera Tips
+
+For best HD results:
+- Good lighting (face the window)
+- Camera at eye level
+- Stable internet connection
+- Clean camera lens
+
+## Compatibility
+
+- **Zoom**: All accounts (1080p on Pro+)
+- **macOS**: 10.10+
+- **Bandwidth**: 1.5+ Mbps recommended
+
+## Source File
+
+**File**: [`defaults/applications/zoom_app.sh`](../../../../defaults/applications/zoom_app.sh)
+
+```bash
+run_defaults "us.zoom.xos" "ZMEnableHDVideo" "-bool" "true"
+```
+
+## References
+
+- [Zoom Help: Video settings](https://support.zoom.us/hc/en-us/articles/201362163-Desktop-client-settings)

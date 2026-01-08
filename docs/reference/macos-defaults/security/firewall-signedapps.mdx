@@ -1,0 +1,202 @@
+# Firewall Allow Signed Applications
+
+Automatically allow signed and downloaded software to receive connections.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `/Library/Preferences/com.apple.alf` |
+| **Key** | `allowsignedenabled` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+| **Requires** | sudo |
+
+## Description
+
+Controls whether applications signed with a valid code signature are automatically allowed to receive incoming network connections without prompting the user. This balances security with usability — legitimate signed apps work seamlessly while unsigned apps are blocked or prompt for approval.
+
+## Values
+
+| Value | Behavior | Security | Usability |
+|-------|----------|----------|-----------|
+| `0` | Block all, ask every time | Highest | Lowest |
+| `1` | Allow signed apps (default) | High | High |
+
+## How It Works
+
+```
+Incoming Connection Request
+          │
+          ▼
+┌─────────────────────────────┐
+│  Check: Is app signed?      │
+└──────────────┬──────────────┘
+               │
+       ┌───────┴───────┐
+       │               │
+      YES              NO
+       │               │
+       ▼               ▼
+  ┌─────────┐    ┌───────────────┐
+  │ ALLOWED │    │ PROMPT or     │
+  │ (silent)│    │ BLOCKED       │
+  └─────────┘    └───────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `1` — Allow signed applications.
+
+### Why Allow Signed Apps?
+
+1. **Verified identity** — Developer is known
+2. **Unmodified** — Code hasn't been tampered with
+3. **Usability** — Less prompts for legitimate software
+4. **Apple standard** — Recommended configuration
+5. **App Store apps** — All already signed
+
+### Why Block All (value 0)?
+
+- Maximum security environments
+- Untrusted networks constantly
+- Known attack vectors via signed apps
+- High-security compliance requirements
+
+## What "Signed" Means
+
+Code signing provides:
+```
+Developer Identity → Apple Certificate → Binary Signature
+        │                   │                  │
+        └───────────────────┴──────────────────┘
+                            │
+                   Cryptographic Verification
+                            │
+         ┌──────────────────┼──────────────────┐
+         │                  │                  │
+    Developer ID       Apple notarized    Unmodified code
+```
+
+Signed apps have:
+- Known developer identity
+- Valid Apple-issued certificate
+- Intact, unmodified code
+- Often notarized by Apple
+
+## Code Examples
+
+```bash
+# Read current value
+sudo defaults read /Library/Preferences/com.apple.alf allowsignedenabled
+
+# Allow signed applications (recommended)
+sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -int 1
+
+# Block all, prompt for each app
+sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -int 0
+
+# Restart firewall to apply
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+```
+
+## UI Location
+
+**System Settings** → **Network** → **Firewall** → **Options** → ☑ **Automatically allow built-in software to receive incoming connections**
+
+And: ☑ **Automatically allow downloaded signed software to receive incoming connections**
+
+## Built-in vs Downloaded
+
+Two related settings:
+
+| Type | Examples | Default |
+|------|----------|---------|
+| Built-in | Safari, Mail, Calendar | Always allowed |
+| Downloaded signed | Chrome, Slack, VS Code | Allowed if signed |
+| Unsigned | Some dev tools, scripts | Blocked/prompted |
+
+## Firewall Alert Prompt
+
+When an unsigned app tries to receive connections:
+```
+┌─────────────────────────────────────────────────┐
+│  Do you want the application "app" to accept    │
+│  incoming network connections?                   │
+│                                                 │
+│  Clicking Deny may limit the application's      │
+│  behavior. This setting can be changed in the   │
+│  Firewall pane of Security & Privacy           │
+│  preferences.                                   │
+│                                                 │
+│           [Deny]         [Allow]                │
+└─────────────────────────────────────────────────┘
+```
+
+## Per-App Rules
+
+Even with auto-allow, you can configure per-app:
+```bash
+# List current app rules
+/usr/libexec/ApplicationFirewall/socketfilterfw --listapps
+
+# Add specific app to allow list
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add /path/to/app.app
+
+# Remove app rule
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --remove /path/to/app.app
+```
+
+## Security Considerations
+
+Signed apps are **not necessarily safe**:
+- Developer could be malicious
+- Stolen certificates exist
+- Signeds malware exists (rare)
+
+But signing provides:
+- Accountability
+- Tamper detection
+- Generally trusted
+
+## Related Security Settings
+
+```bash
+# Enable firewall
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+
+# Enable stealth mode
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 1
+
+# Enable logging
+sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -int 1
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| App keeps prompting | Add to firewall allow list manually |
+| Signed app blocked | Check certificate validity |
+| Too many prompts | Verify setting is 1 |
+
+## Compatibility
+
+- **macOS**: 10.5.1+ (Leopard)
+- **Requires**: sudo
+- **Note**: Restart firewall service to apply
+
+## Source File
+
+**File**: [`defaults/system/firewall.sh`](../../../defaults/system/firewall.sh)
+
+```bash
+run_sudo_defaults "/Library/Preferences/com.apple.alf" "allowsignedenabled" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Firewall](https://support.apple.com/en-us/102445)
+- [Apple Developer: Code Signing](https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/)

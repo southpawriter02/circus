@@ -1,0 +1,136 @@
+# Space Switch on App Activate
+
+Control Space switching when clicking Dock icons.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `AppleSpacesSwitchOnActivate` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether clicking an application in the Dock automatically switches to the Space where that app's window is located. When enabled, macOS follows the app to its Space; when disabled, it brings the app's window to the current Space.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Switch to app's Space** (default) — Follow the window |
+| `false` | **Stay on current Space** — Bring window here |
+
+## Behavior Comparison
+
+### Switch to App's Space (true):
+```
+Current: Space 1 (Browser)
+Click Slack in Dock → macOS switches to Space 3
+                      where Slack window exists
+                      
+Result: You're now on Space 3
+```
+
+### Stay on Current Space (false):
+```
+Current: Space 1 (Browser)
+Click Slack in Dock → Slack window moves to Space 1
+                      
+Result: Slack is now on Space 1 with you
+```
+
+## Our Configuration
+
+**Set to**: `true` — Switch to app's Space.
+
+### Why Switch to App?
+
+1. **Organized Spaces** — Apps stay in assigned Spaces
+2. **Context switching** — Full immersion in new task
+3. **Predictability** — Apps always in same location
+4. **Less clutter** — Spaces remain themed
+5. **macOS default** — Standard behavior
+
+### Why Stay on Current?
+
+- Don't like Space switching
+- Prefer single-Space workflow
+- Gather related windows together
+- Minimize context switches
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain AppleSpacesSwitchOnActivate
+
+# Switch to app's Space (default)
+defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool true
+
+# Stay on current Space
+defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool false
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain AppleSpacesSwitchOnActivate
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Mission Control** → ☑ **When switching to an application, switch to a Space with open windows for the application**
+
+## Assigned Spaces
+
+For consistent locations, assign apps to Spaces:
+1. Right-click app in Dock
+2. **Options** → **Assign To**
+3. Choose: All Desktops, This Desktop, None
+
+## Interaction with Other Settings
+
+| Setting | Effect |
+|---------|--------|
+| Assigned app to specific Space | App always opens there |
+| AppleSpacesSwitchOnActivate | Whether clicking follows |
+| mru-spaces | Whether Spaces reorder |
+
+## Keyboard Navigation
+
+Regardless of this setting:
+- **⌃1** through **⌃9** — Jump to specific Space
+- **⌃←** / **⌃→** — Move between adjacent Spaces
+
+## Window Focus Alternatives
+
+Instead of Dock clicking:
+- **⌘Tab** — Switch apps (respects this setting)
+- Mission Control — Visual overview
+- Exposé — See all windows
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still switching Spaces | Verify setting is false |
+| App not on expected Space | Check app's assigned Space |
+| Behavior inconsistent | Check per-app options |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/interface/mission_control.sh`](../../../defaults/interface/mission_control.sh)
+
+```bash
+defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool true
+```
+
+## References
+
+- [Apple Support: Work in multiple Spaces](https://support.apple.com/guide/mac-help/work-in-multiple-spaces-mh14112/mac)
+- [Apple Support: Mission Control](https://support.apple.com/en-us/102556)

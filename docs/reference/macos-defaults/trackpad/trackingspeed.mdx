@@ -1,0 +1,189 @@
+# Trackpad Tracking Speed
+
+Set cursor movement speed relative to finger movement.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.trackpad.scaling` |
+| **Type** | Float |
+| **Default Value** | `1.0` |
+| **Our Setting** | `2.0` |
+
+## Description
+
+Controls how fast the cursor moves relative to finger movement on the trackpad. Higher values mean faster cursor movement for less finger travel. This is a multiplier that affects cursor acceleration, making small movements precise while large movements cover more distance.
+
+## Values
+
+| Value | Speed | Use Case |
+|-------|-------|----------|
+| `0.0` | Slowest | Maximum precision, accessibility |
+| `0.5` | Slow | Careful work, small screens |
+| `1.0` | Default | Apple's balanced setting |
+| `1.5` | Fast | Everyday use |
+| `2.0` | **Our setting** | Power users, large displays |
+| `2.5` | Very fast | Multiple monitors |
+| `3.0` | Maximum | Fastest cursor travel |
+
+## Visual Demonstration
+
+### Low Speed (0.5):
+```
+Finger movement: ==========>
+Cursor movement: ------>
+                 ↑
+         Short cursor travel
+         More finger movement needed
+```
+
+### High Speed (2.0):
+```
+Finger movement: =====>
+Cursor movement: ──────────────────────>
+                 ↑
+         Long cursor travel
+         Less finger movement needed
+```
+
+## Our Configuration
+
+**Set to**: `2.0` — Moderately fast for efficient navigation.
+
+### Why Higher Speed?
+
+1. **Less finger travel** — Cover screen with small movements
+2. **Large displays** — Retina, external monitors
+3. **Multiple monitors** — Cross-screen navigation
+4. **Efficiency** — Less physical effort
+5. **Power users** — Experienced with fast cursors
+
+### Why Lower Speed?
+
+- Precision work (photo editing, design)
+- Small screens (older MacBooks)
+- Accessibility needs
+- Learning/unfamiliar users
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain com.apple.trackpad.scaling
+
+# Set moderately fast (recommended)
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 2.0
+
+# Set default speed
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 1.0
+
+# Set maximum speed
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 3.0
+
+# Set slowest
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 0.0
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain com.apple.trackpad.scaling
+```
+
+## UI Location
+
+**System Settings** → **Trackpad** → **Point & Click** → **Tracking speed** slider
+
+```
+Tracking speed:
+Slow  ──────────────●──────────────────  Fast
+                    ↑
+           Default (middle)
+```
+
+## Acceleration vs Linear
+
+macOS applies acceleration:
+- Small movements = precise (1:1 ratio)
+- Large movements = accelerated (2:1+ ratio)
+
+This is why high speed still allows precision.
+
+## Disabling Acceleration
+
+For gaming or absolute precision:
+```bash
+# Disable acceleration completely
+defaults write NSGlobalDomain com.apple.mouse.scaling -integer -1
+```
+
+Or use third-party tools like SteelSeries ExactMouse.
+
+## Per-Device Settings
+
+This affects all trackpads. For separate control:
+- Built-in vs external Magic Trackpad
+- Use third-party software
+- BetterTouchTool, etc.
+
+## Mouse vs Trackpad Speed
+
+Different keys:
+
+```bash
+# Trackpad speed
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 2.0
+
+# Mouse speed
+defaults write NSGlobalDomain com.apple.mouse.scaling -float 2.0
+```
+
+Set both if using both devices.
+
+## Finding Your Speed
+
+Test progression:
+1. Start at 1.0 (default)
+2. Increase by 0.5
+3. Test for a day
+4. Adjust until comfortable
+
+## Related Settings
+
+```bash
+# Mouse tracking speed
+defaults write NSGlobalDomain com.apple.mouse.scaling -float 2.0
+
+# Natural scrolling
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
+
+# Tap to click
+defaults write com.apple.AppleMultitouchTrackpad Clicking -int 1
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Too fast | Lower value, try 1.5 |
+| Too slow | Higher value, try 2.5 |
+| Not applying | Log out and back in |
+| External trackpad different | Check both devices |
+
+## Compatibility
+
+- **macOS**: 10.5+ (Leopard)
+- **Hardware**: All trackpads
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/input/trackpad_mouse.sh`](../../../defaults/input/trackpad_mouse.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "com.apple.trackpad.scaling" "-float" "2.0"
+```
+
+## References
+
+- [Apple Support: Mouse/trackpad speed](https://support.apple.com/guide/mac-help/change-your-mouse-or-trackpads-response-speed-mchlp1138/mac)
+- [Apple Support: Trackpad settings](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac)

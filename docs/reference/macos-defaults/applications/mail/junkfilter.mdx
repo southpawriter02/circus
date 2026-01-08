@@ -1,0 +1,161 @@
+# Mail Junk Filter
+
+Control how Mail handles suspected junk messages.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `JunkMailBehavior` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls how Apple Mail handles messages detected as junk/spam. Options range from disabled (no filtering) to automatically moving suspected junk to the Junk mailbox. Mail learns from your corrections to improve accuracy.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Disabled** — No junk mail filtering |
+| `1` | **Mark as junk** — Colorize but keep in inbox |
+| `2` | **Move to Junk** — Automatically move to Junk mailbox |
+
+## Visual Comparison
+
+**JunkMailBehavior = 1 (Mark only):**
+```
+📥 Inbox
+├── Regular email
+├── 🟫 [Junk] Suspected spam (marked brown)
+└── Another email
+```
+
+**JunkMailBehavior = 2 (Move to Junk):**
+```
+📥 Inbox
+├── Regular email
+└── Another email
+
+📂 Junk
+└── Suspected spam (moved here)
+```
+
+## Our Configuration
+
+**Set to**: `2` — Move junk to Junk mailbox.
+
+### Why Move to Junk?
+
+1. **Clean inbox** — Spam out of sight
+2. **Reviewable** — Can check Junk folder for false positives
+3. **Auto-delete** — Junk can be set to auto-delete after time
+4. **Server-side** — Works with server junk rules
+
+### Training the Filter
+
+Mail learns from your actions:
+- **Mark as Junk** (⌘⇧J) — Teaches Mail this is spam
+- **Not Junk** — Rescues false positives and trains filter
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail JunkMailBehavior
+
+# Move junk to Junk mailbox (recommended)
+defaults write com.apple.mail JunkMailBehavior -int 2
+
+# Mark as junk but keep in inbox
+defaults write com.apple.mail JunkMailBehavior -int 1
+
+# Disable junk filtering
+defaults write com.apple.mail JunkMailBehavior -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.mail JunkMailBehavior
+```
+
+## UI Location
+
+**Mail** → **Settings** (⌘,) → **Junk Mail**
+
+Options:
+- Enable junk mail filtering
+- Move junk messages to the Junk mailbox
+- Trust junk mail headers from server
+
+## Related Settings
+
+```bash
+# Trust server spam headers
+defaults write com.apple.mail TrustSpamHeaders -bool true
+```
+
+### Trust Junk Mail Headers
+
+When enabled, Mail trusts spam classification from your email server (Gmail, iCloud, etc.). These servers often have better spam detection.
+
+## Junk Mail Rules
+
+Mail's junk filter considers:
+- Sender not in Contacts
+- Message addressed using full name
+- Previous junk/not-junk markings
+- Server spam headers
+
+## Auto-Delete Junk
+
+Configure automatic deletion:
+
+**Mail** → **Settings** → **Accounts** → [Account] → **Mailbox Behaviors**
+- Erase junk messages: After one week
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Good mail going to Junk | Mark as Not Junk, add to Contacts |
+| Junk in inbox | Ensure JunkMailBehavior is 2 |
+| Too much junk | Check server-side filtering |
+| Training not working | Reset junk mail filter |
+
+### Reset Junk Mail Filter
+
+```bash
+# Clear junk mail training (start fresh)
+rm ~/Library/Mail/V*/MailData/LSMMap*
+```
+
+This removes learned junk patterns. Mail will learn from scratch.
+
+## Server vs Local Filtering
+
+| Source | Description |
+|--------|-------------|
+| **Server** | Gmail, iCloud, etc. pre-filter spam |
+| **Mail.app** | Local rules + your training |
+| **Best** | Use both layers |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Accounts**: Works with all email providers
+- **Note**: Restart Mail for changes to take effect
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "JunkMailBehavior" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Block junk mail](https://support.apple.com/guide/mail/block-senders-mlhl015b22f/mac)
+- [Apple Support: About junk mail filtering](https://support.apple.com/guide/mail/view-junk-mail-mlhl93d6ec74/mac)

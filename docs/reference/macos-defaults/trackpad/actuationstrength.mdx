@@ -1,0 +1,201 @@
+# Trackpad Haptic Feedback Strength
+
+Control click sensation intensity on Force Touch trackpads.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `ActuationStrength` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls the intensity of haptic feedback (click sensation) on Force Touch trackpads. The trackpad doesn't physically click — it uses the Taptic Engine to simulate the feeling of a click. This setting adjusts how strong that simulated click feels.
+
+## Values
+
+| Value | Intensity | Feel |
+|-------|-----------|------|
+| `0` | **Silent** | No haptic feedback |
+| `1` | **Light** (default) | Subtle, quiet click |
+| `2` | **Firm** | Strong, pronounced click |
+
+## How Force Touch Works
+
+```
+Traditional Trackpad:           Force Touch Trackpad:
+┌─────────────────────┐        ┌─────────────────────┐
+│                     │        │                     │
+│   Physical hinge    │        │   Solid glass       │
+│   ↓                 │        │   Taptic Engine ≋   │
+│   Mechanical click  │        │   Simulated click   │
+│                     │        │                     │
+│   *CLICK*          │        │   *haptic pulse*    │
+└─────────────────────┘        └─────────────────────┘
+        ↑                              ↑
+    Moves down                   Doesn't move
+    when pressed                 (vibrates instead)
+```
+
+## Our Configuration
+
+**Set to**: `1` — Light haptic feedback.
+
+### Why Light?
+
+1. **Comfortable** — Not fatiguing over time
+2. **Quiet** — Less audible click sound
+3. **Professional** — Subtle in meetings
+4. **Battery** — Less energy than firm
+5. **Default** — Apple's chosen balance
+
+### Why Firm?
+
+- Prefer strong tactile feedback
+- Miss the feel of physical clicks
+- Accessibility needs
+- Certainty that click registered
+
+### Why Silent?
+
+- Meetings/libraries (no sound at all)
+- Touch-screen like experience
+- Accessibility preference
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad ActuationStrength
+
+# Light feedback (recommended)
+defaults write com.apple.AppleMultitouchTrackpad ActuationStrength -int 1
+
+# Firm feedback
+defaults write com.apple.AppleMultitouchTrackpad ActuationStrength -int 2
+
+# Silent (no haptic feedback)
+defaults write com.apple.AppleMultitouchTrackpad ActuationStrength -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad ActuationStrength
+```
+
+## UI Location
+
+**System Settings** → **Trackpad** → **Point & Click** → **Click** slider
+
+```
+Click:
+Light  ──────●──────────────  Firm
+             ↑
+     Default (light-medium)
+```
+
+## Force Touch Capabilities
+
+Force Touch enables:
+| Pressure Level | Action |
+|----------------|--------|
+| Light click | Primary click |
+| Deep press | Force Click/Quick Look |
+
+Force Click actions:
+- Preview files in Finder
+- Look up words in apps
+- Preview links in Safari
+- Variable pressure input (some apps)
+
+## Supported Devices
+
+Force Touch trackpad included in:
+- MacBook Pro (2015 and later)
+- MacBook (2015 and later)
+- MacBook Air (2018 and later)
+- Magic Trackpad 2 and 3
+
+Older trackpads: Traditional mechanical click (setting has no effect).
+
+## Silent Mode Use Case
+
+When `0` (silent):
+- No vibration at all
+- Click still registers
+- Completely silent operation
+- Like tapping a phone screen
+
+Use for: Recording audio, library work, sleeping partner nearby.
+
+## Power Consumption
+
+Haptic feedback does use some power:
+| Setting | Battery Impact |
+|---------|---------------|
+| Silent (0) | Minimum |
+| Light (1) | Low |
+| Firm (2) | Slightly higher |
+
+Difference is minimal but exists.
+
+## Related Settings
+
+```bash
+# Tap to click (no click needed at all)
+defaults write com.apple.AppleMultitouchTrackpad Clicking -int 1
+
+# Tracking speed
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 2.0
+
+# Force Click enabled
+defaults write com.apple.AppleMultitouchTrackpad ActuateDetents -int 1
+```
+
+## Force Click Toggle
+
+Enable/disable Force Click functionality:
+```bash
+# Enable Force Click
+defaults write com.apple.AppleMultitouchTrackpad ActuateDetents -int 1
+
+# Disable Force Click
+defaults write com.apple.AppleMultitouchTrackpad ActuateDetents -int 0
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No haptic feedback | Check setting isn't 0 |
+| Trackpad doesn't click | Not Force Touch model? |
+| Too strong/weak | Adjust via UI slider |
+| Setting not applying | Restart may help |
+
+## Accessibility
+
+For users who need stronger feedback:
+**System Settings** → **Accessibility** → **Pointer Control** → **Trackpad Options**
+
+Additional options available there.
+
+## Compatibility
+
+- **macOS**: 10.11+ (El Capitan)
+- **Hardware**: Force Touch trackpads only
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/input/trackpad_mouse.sh`](../../../defaults/input/trackpad_mouse.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "ActuationStrength" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Trackpad settings](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac)
+- [Apple Support: Force Touch](https://support.apple.com/en-us/102442)

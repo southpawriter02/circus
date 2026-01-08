@@ -1,0 +1,109 @@
+# Xcode Show Line Numbers
+
+Display line numbers in the Xcode source editor.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `DVTTextShowLineNumbers` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether line numbers are displayed in the gutter (left margin) of Xcode's source editor. Line numbers are essential for navigating code, debugging, and communicating about specific lines with team members.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show line numbers** (default) — Numbers visible in gutter |
+| `false` | **Hide line numbers** — Clean editor without numbers |
+
+## Our Configuration
+
+**Set to**: `true` — Always show line numbers.
+
+### Why Show Line Numbers?
+
+1. **Navigation** — Jump to specific lines (⌘L)
+2. **Debugging** — Breakpoints reference line numbers
+3. **Code review** — Discuss specific lines
+4. **Error messages** — Compiler errors reference lines
+5. **Git blame** — See line-by-line history
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dt.Xcode DVTTextShowLineNumbers
+
+# Show line numbers (recommended)
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool true
+
+# Hide line numbers
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dt.Xcode DVTTextShowLineNumbers
+```
+
+## UI Location
+
+**Xcode** → **Settings** (⌘,) → **Text Editing** → **Display** → ☑ **Line numbers**
+
+## Related Editor Settings
+
+```bash
+# Complete Xcode editor setup
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool true
+defaults write com.apple.dt.Xcode DVTTextShowFoldingSidebar -bool true
+defaults write com.apple.dt.Xcode DVTTextShowPageGuide -bool true
+defaults write com.apple.dt.Xcode DVTTextPageGuideLocation -int 120
+```
+
+| Setting | Purpose |
+|---------|---------|
+| `DVTTextShowLineNumbers` | Line numbers in gutter |
+| `DVTTextShowFoldingSidebar` | Code folding ribbon |
+| `DVTTextShowPageGuide` | Vertical line at column |
+| `DVTTextPageGuideLocation` | Column for page guide |
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘L | Go to Line |
+| ⌃G | Jump to Definition |
+| ⌘⇧O | Open Quickly |
+| ⌘⇧J | Reveal in Project Navigator |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Line numbers not showing | Restart Xcode after setting |
+| Numbers disappear | Check setting in Xcode preferences |
+| Numbers wrong font | Check Editor theme settings |
+
+## Compatibility
+
+- **Xcode**: 10.0+
+- **macOS**: 10.14+
+- **Note**: Restart Xcode for changes to take effect
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../defaults/applications/xcode.sh)
+
+```bash
+run_defaults "com.apple.dt.Xcode" "DVTTextShowLineNumbers" "-bool" "true"
+```
+
+## References
+
+- [Apple Developer: Xcode](https://developer.apple.com/documentation/xcode)
+- [Xcode Help: Source Editor](https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/EditingSourceCode.html)

@@ -1,0 +1,131 @@
+# VS Code Extension Management
+
+Install and manage VS Code extensions from a text file.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Command** | `code --install-extension` |
+| **Type** | CLI |
+| **Requires** | VS Code CLI installed |
+| **Our Approach** | Extensions list in dotfiles |
+
+## Description
+
+Automates Visual Studio Code extension installation by reading from a curated list. Ensures consistent development environments across machines using version-controlled extension lists.
+
+## Extensions File Format
+
+Located at: `$DOTFILES_DIR/etc/vscode/extensions.txt`
+
+```text
+# Editor enhancements
+esbenp.prettier-vscode
+dbaeumer.vscode-eslint
+
+# Theme
+dracula-theme.theme-dracula
+
+# Languages
+golang.go
+ms-python.python
+```
+
+Lines starting with `#` are comments.
+
+## Installation Commands
+
+```bash
+# Install single extension
+code --install-extension esbenp.prettier-vscode
+
+# Install with force (update to latest)
+code --install-extension esbenp.prettier-vscode --force
+
+# List installed extensions
+code --list-extensions
+
+# Uninstall extension
+code --uninstall-extension extension-id
+```
+
+## Batch Installation
+
+Install all extensions from file:
+```bash
+# Read file and install each extension
+grep -v '^#' extensions.txt | grep -v '^$' | while read ext; do
+  code --install-extension "$ext" --force
+done
+```
+
+## Finding Extension IDs
+
+Extension IDs are found:
+1. On Marketplace URL: `marketplace.visualstudio.com/items?itemName=<id>`
+2. In VS Code: Right-click extension → Copy Extension ID
+3. Via CLI: `code --list-extensions`
+
+## Prerequisites
+
+Install VS Code CLI:
+1. Open VS Code
+2. **View** → **Command Palette** (⇧⌘P)
+3. Run: **Shell Command: Install 'code' command in PATH**
+
+## Settings Sync vs Dotfiles
+
+| Method | Pros | Cons |
+|--------|------|------|
+| Settings Sync | Built-in, automatic | Requires Microsoft account |
+| Dotfiles | Git-versioned, self-hosted | Manual setup |
+
+## Settings Symlinking
+
+Link settings.json to dotfiles:
+```bash
+# Backup existing
+mv ~/Library/Application\ Support/Code/User/settings.json settings.bak
+
+# Create symlink
+ln -sf $DOTFILES_DIR/etc/vscode/settings.json \
+  ~/Library/Application\ Support/Code/User/settings.json
+```
+
+## Useful Paths
+
+| Item | Path |
+|------|------|
+| Settings | `~/Library/Application Support/Code/User/settings.json` |
+| Keybindings | `~/Library/Application Support/Code/User/keybindings.json` |
+| Extensions | `~/.vscode/extensions/` |
+| Snippets | `~/Library/Application Support/Code/User/snippets/` |
+
+## Recommended Extensions
+
+Common developer extensions:
+- `esbenp.prettier-vscode` — Code formatter
+- `dbaeumer.vscode-eslint` — JavaScript linting
+- `ms-python.python` — Python support
+- `golang.go` — Go support
+- `bradlc.vscode-tailwindcss` — Tailwind CSS
+
+## Compatibility
+
+- **VS Code**: All versions
+- **CLI**: Requires manual installation
+- **Note**: `--force` updates to latest
+
+## Source File
+
+**File**: [`defaults/applications/vscode.sh`](../../../../defaults/applications/vscode.sh)
+
+```bash
+code --install-extension "$extension" --force
+```
+
+## References
+
+- [VS Code Command Line](https://code.visualstudio.com/docs/editor/command-line)
+- [VS Code Settings Sync](https://code.visualstudio.com/docs/editor/settings-sync)

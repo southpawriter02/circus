@@ -1,0 +1,118 @@
+# Disk Utility Debug Menu
+
+Enable the hidden Debug menu for advanced operations.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.DiskUtility` |
+| **Key** | `DUDebugMenuEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables a hidden Debug menu in Disk Utility that provides access to advanced disk operations and diagnostic tools. **Use with caution** as some operations can cause data loss.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show Debug menu** — Advanced options available |
+| `false` | **Hide Debug menu** (default) — Standard operations only |
+
+## ⚠️ Warning
+
+The Debug menu contains operations that can:
+- Destroy data irreversibly
+- Damage partition tables
+- Corrupt bootable volumes
+
+**Only use if you understand the operations.**
+
+## Our Configuration
+
+**Set to**: `true` — Enable for advanced users.
+
+### Why Enable Debug Menu?
+
+1. **Advanced diagnostics** — Tools not in normal menus
+2. **Troubleshooting** — Fix stubborn disk issues
+3. **Power user** — Full control over disks
+4. **Recovery** — Sometimes needed for repairs
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.DiskUtility DUDebugMenuEnabled
+
+# Enable Debug menu
+defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
+
+# Disable Debug menu (safer)
+defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.DiskUtility DUDebugMenuEnabled
+```
+
+## UI Location
+
+After enabling, **Debug** menu appears in menu bar between **Images** and **Window**.
+
+## Debug Menu Options
+
+| Option | Description |
+|--------|-------------|
+| Show Every Partition | Displays hidden system partitions |
+| Refresh All Volumes | Re-scan all connected disks |
+| Unmount Protected Volumes | Force unmount system volumes |
+| Trigger RAID Rebuild | Start RAID repair process |
+| Show Logging | Display detailed operation logs |
+
+## Safe Operations
+
+These Debug options are generally safe:
+- **Show Every Partition** — View only, no changes
+- **Refresh All Volumes** — Rescan, no data changes
+- **Show Logging** — Diagnostic information
+
+## Dangerous Operations
+
+Be careful with:
+- **Unmount Protected Volumes** — Can affect boot
+- Operations on system disk
+- Anything without clear understanding
+
+## Related Settings
+
+```bash
+# Show all devices in sidebar
+defaults write com.apple.DiskUtility SidebarShowAllDevices -bool true
+
+# Show APFS snapshots
+defaults write com.apple.DiskUtility DUShowAPFSSnapshots -bool true
+
+# Advanced image options
+defaults write com.apple.DiskUtility "advanced-image-options" -bool true
+```
+
+## Compatibility
+
+- **macOS**: All versions with Disk Utility
+- **Note**: Restart Disk Utility to see menu
+
+## Source File
+
+**File**: [`defaults/applications/disk_utility.sh`](../../../../defaults/applications/disk_utility.sh)
+
+```bash
+run_defaults "com.apple.DiskUtility" "DUDebugMenuEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Disk Utility User Guide](https://support.apple.com/guide/disk-utility/welcome/mac)

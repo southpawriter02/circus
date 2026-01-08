@@ -1,0 +1,197 @@
+# Screenshot Location
+
+Configure where macOS saves screenshots.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.screencapture` |
+| **Key** | `location` |
+| **Type** | String |
+| **Default Value** | `~/Desktop` |
+| **Our Setting** | `~/Pictures/Screenshots` |
+
+## Description
+
+Controls the default save location for screenshots taken with ⌘⇧3 (full screen), ⌘⇧4 (selection), ⌘⇧5 (screenshot toolbar), and other screenshot shortcuts. By default, screenshots clutter your Desktop — changing this keeps things organized.
+
+## Common Values
+
+| Path | Use Case |
+|------|----------|
+| `~/Desktop` | Default — immediate visibility |
+| `~/Pictures/Screenshots` | Organized — dedicated folder |
+| `~/Downloads` | Treat as temporary |
+| `~/Documents/Screenshots` | With documents |
+| Custom cloud folder | Auto-sync via Dropbox/iCloud |
+
+## Visual Impact
+
+### Default (Desktop):
+```
+Desktop:
+┌──────────────────────────────────────────────────────────────┐
+│ 📄 Screenshot 2025-01-08 at 09.30.15.png                    │
+│ 📄 Screenshot 2025-01-08 at 09.28.42.png                    │
+│ 📄 Screenshot 2025-01-08 at 09.27.33.png                    │
+│ 📄 Screenshot 2025-01-08 at 09.25.01.png                    │
+│ 📁 Important Work                                            │
+│ 📄 My Document.pdf                                           │
+└──────────────────────────────────────────────────────────────┘
+  Cluttered! Screenshots everywhere!
+```
+
+### Custom Location (Screenshots folder):
+```
+Desktop:                          Pictures/Screenshots:
+┌──────────────────────┐          ┌──────────────────────────────┐
+│ 📁 Important Work    │          │ 📄 Screenshot...09.30.15.png│
+│ 📄 My Document.pdf   │          │ 📄 Screenshot...09.28.42.png│
+│                      │          │ 📄 Screenshot...09.27.33.png│
+│     Clean!           │          │ 📄 Screenshot...09.25.01.png│
+└──────────────────────┘          └──────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `~/Pictures/Screenshots` — Organized in Pictures folder.
+
+### Why a Custom Location?
+
+1. **Clean Desktop** — No screenshot clutter
+2. **Organization** — All screenshots in one place
+3. **Easy cleanup** — Empty one folder periodically
+4. **Findable** — Know where to look
+5. **Professional** — Tidy visible Desktop
+
+### Why Keep Desktop?
+
+- Immediate visibility
+- Drag-and-drop convenience
+- Screenshots are temporary anyway
+- Simple workflow
+
+## Code Examples
+
+```bash
+# Read current location
+defaults read com.apple.screencapture location
+
+# Set to Screenshots folder (create folder first!)
+mkdir -p ~/Pictures/Screenshots
+defaults write com.apple.screencapture location -string "~/Pictures/Screenshots"
+
+# Set to Downloads
+defaults write com.apple.screencapture location -string "~/Downloads"
+
+# Set to Desktop (default)
+defaults write com.apple.screencapture location -string "~/Desktop"
+
+# Set to iCloud Drive folder
+defaults write com.apple.screencapture location -string "~/Library/Mobile Documents/com~apple~CloudDocs/Screenshots"
+
+# Restart SystemUIServer to apply
+killall SystemUIServer
+```
+
+## UI Location
+
+**⌘⇧5** (Screenshot toolbar) → **Options** → **Save to** dropdown
+
+Options include:
+- Desktop
+- Documents
+- Clipboard
+- Mail
+- Messages
+- Preview
+- Other Location...
+
+## Create Folder First
+
+The folder must exist before setting:
+```bash
+# Create the folder
+mkdir -p ~/Pictures/Screenshots
+
+# Then set the location
+defaults write com.apple.screencapture location -string "~/Pictures/Screenshots"
+```
+
+## Screenshot Types Affected
+
+All screenshot methods save to this location:
+| Shortcut | Type |
+|----------|------|
+| ⌘⇧3 | Full screen |
+| ⌘⇧4 | Selection |
+| ⌘⇧4+Space | Window |
+| ⌘⇧5 | Screenshot toolbar |
+| ⌘⇧6 | Touch Bar |
+
+## Save to Clipboard Instead
+
+For temporary screenshots, skip saving:
+```
+⌘⇧⌃3 — Full screen to clipboard
+⌘⇧⌃4 — Selection to clipboard
+```
+
+Or set default to clipboard:
+```bash
+defaults write com.apple.screencapture target -string "clipboard"
+```
+
+## Related Screenshot Settings
+
+```bash
+# Disable shadow in window screenshots
+defaults write com.apple.screencapture disable-shadow -bool true
+
+# Change file format (png, jpg, gif, pdf)
+defaults write com.apple.screencapture type -string "png"
+
+# Include date in filename
+defaults write com.apple.screencapture include-date -bool true
+
+# Show thumbnail preview (floating thumbnail)
+defaults write com.apple.screencapture show-thumbnail -bool true
+```
+
+## Cloud Sync Considerations
+
+Saving to cloud-synced folder:
+- **iCloud Drive** — Syncs across devices
+- **Dropbox** — Shared with other platforms
+- **Google Drive** — Same benefits
+
+May use bandwidth for large screenshots/recordings.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Location not changing | Folder must exist |
+| Permission denied | Check folder permissions |
+| Screenshots disappear | Check if saving to clipboard |
+| Still going to Desktop | Restart SystemUIServer |
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Note**: `killall SystemUIServer` to apply
+
+## Source File
+
+**File**: [`defaults/applications/screencapture.sh`](../../../../defaults/applications/screencapture.sh)
+
+```bash
+mkdir -p ~/Pictures/Screenshots
+run_defaults "com.apple.screencapture" "location" "-string" "~/Pictures/Screenshots"
+```
+
+## References
+
+- [Apple Support: Take screenshots](https://support.apple.com/en-us/102646)
+- [Apple Support: Screenshot options](https://support.apple.com/guide/mac-help/take-screenshots-mh26782/mac)

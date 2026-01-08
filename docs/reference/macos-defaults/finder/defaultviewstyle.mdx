@@ -1,0 +1,212 @@
+# Finder Default View Style
+
+Set the default view style for new Finder windows.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `FXPreferredViewStyle` |
+| **Type** | String |
+| **Default Value** | `icnv` |
+| **Our Setting** | `Nlsv` |
+
+## Description
+
+Controls the default view style used when opening new Finder windows. This determines how files and folders are displayed — as icons in a grid, as a detailed list, in columns, or in gallery format.
+
+## Values
+
+| Value | View Style | Description |
+|-------|------------|-------------|
+| `icnv` | **Icons** (default) | Grid of icons with names below |
+| `Nlsv` | **List** | Detailed rows with columns |
+| `clmv` | **Columns** | Hierarchical columns (NeXT-style) |
+| `glyv` | **Gallery** | Large preview with thumbnails |
+
+## Visual Demonstration
+
+### Icon View (icnv):
+```
+┌──────────────────────────────────────────────────┐
+│ ◀ ▶  📁 Documents                               │
+├──────────────────────────────────────────────────┤
+│                                                  │
+│   📄        📄        📄        📁              │
+│  File1    File2     File3    Folder1            │
+│                                                  │
+│   📁        📄        📄        📄              │
+│  Folder2   File4    File5     File6             │
+│                                                  │
+└──────────────────────────────────────────────────┘
+```
+
+### List View (Nlsv — Our Setting):
+```
+┌──────────────────────────────────────────────────┐
+│ ◀ ▶  📁 Documents                               │
+├──────────────────────────────────────────────────┤
+│ Name           Date Modified  Size    Kind      │
+│ ─────────────────────────────────────────────── │
+│ 📁 Folder1     Jan 5, 2025    --      Folder    │
+│ 📁 Folder2     Jan 3, 2025    --      Folder    │
+│ 📄 File1.pdf   Jan 8, 2025    1.2 MB  PDF       │
+│ 📄 File2.docx  Jan 7, 2025    45 KB   Word      │
+│ 📄 File3.txt   Jan 6, 2025    2 KB    Plain Text│
+└──────────────────────────────────────────────────┘
+```
+
+### Column View (clmv):
+```
+┌──────────────────────────────────────────────────┐
+│ ◀ ▶  📁 Documents                               │
+├──────────────────────────────────────────────────┤
+│  Home    │ Documents │  Work    │   Project     │
+│ ──────── │ ───────── │ ──────── │ ───────────── │
+│ Desktop  │ 📁 Work   │ 📁Project│ 📄 Final.pdf  │
+│ Documents│ 📁 Personal│ 📁Archive│ 📄 Draft.doc  │
+│ Downloads│ 📄Reports │         │               │
+└──────────────────────────────────────────────────┘
+```
+
+### Gallery View (glyv):
+```
+┌──────────────────────────────────────────────────┐
+│ ◀ ▶  📁 Photos                                  │
+├──────────────────────────────────────────────────┤
+│           ┌─────────────────────────┐            │
+│           │                         │            │
+│           │    Large Preview        │            │
+│           │                         │            │
+│           └─────────────────────────┘            │
+│  [img1] [img2] [img3] [img4] [img5] [img6]      │
+└──────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `Nlsv` — List view.
+
+### Why List View?
+
+1. **Information density** — See details at a glance
+2. **Sortable columns** — Click to sort by date, size, kind
+3. **Efficient** — Many files visible at once
+4. **Hierarchical** — Expand folders in place
+5. **Professional** — Developer/power user choice
+
+### Why Icon View?
+
+- Visual browsing (photos, design files)
+- Spatial memory (remember file positions)
+- Touch-friendly (larger targets)
+
+### Why Column View?
+
+- Deep folder navigation
+- Path visualization
+- NeXT/traditional Mac feel
+
+### Why Gallery View?
+
+- Photo/media browsing
+- Large previews
+- Presentation selection
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.finder FXPreferredViewStyle
+
+# List view (recommended)
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+
+# Icon view (default)
+defaults write com.apple.finder FXPreferredViewStyle -string "icnv"
+
+# Column view
+defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
+
+# Gallery view
+defaults write com.apple.finder FXPreferredViewStyle -string "glyv"
+
+# Restart Finder to apply
+killall Finder
+```
+
+## UI Location
+
+**Finder** → **View** menu → Choose view style
+
+Or use keyboard shortcuts in Finder:
+- **⌘1** — Icon view
+- **⌘2** — List view
+- **⌘3** — Column view
+- **⌘4** — Gallery view
+
+## Per-Folder View Settings
+
+Each folder can have its own view:
+1. Navigate to folder
+2. Set view style (⌘1-4)
+3. **View** → **Show View Options** (⌘J)
+4. Folder remembers setting
+
+This setting is the DEFAULT for new windows.
+
+## List View Columns
+
+Customize list columns:
+1. **View** → **Show View Options** (⌘J)
+2. Enable/disable columns:
+   - Date Modified
+   - Date Created
+   - Size
+   - Kind
+   - Version
+   - Comments
+   - Tags
+
+## Related Settings
+
+```bash
+# Show all file extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Show hidden files
+defaults write com.apple.finder AppleShowAllFiles -bool true
+
+# Show path bar
+defaults write com.apple.finder ShowPathbar -bool true
+
+# Show status bar
+defaults write com.apple.finder ShowStatusBar -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| View keeps changing | Per-folder settings override |
+| Not applying | Restart Finder |
+| Column widths reset | Set in View Options per folder |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: `killall Finder` to apply
+
+## Source File
+
+**File**: [`defaults/applications/finder.sh`](../../../defaults/applications/finder.sh)
+
+```bash
+run_defaults "com.apple.finder" "FXPreferredViewStyle" "-string" "Nlsv"
+```
+
+## References
+
+- [Apple Support: Change Finder views](https://support.apple.com/guide/mac-help/change-how-items-are-shown-in-the-finder-mchldaafb302/mac)
+- [Apple Support: Finder preferences](https://support.apple.com/guide/mac-help/change-finder-preferences-mchlp2369/mac)

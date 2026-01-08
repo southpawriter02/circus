@@ -1,0 +1,121 @@
+# Terminal Unlimited Scrollback
+
+Keep unlimited command history in terminal buffer.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Terminal` |
+| **Key** | `ShouldLimitScrollback` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Terminal limits the scrollback buffer. When disabled, Terminal keeps unlimited history (limited only by memory), allowing you to scroll back through entire sessions.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Limited scrollback** (default) — Fixed line count |
+| `false` | **Unlimited scrollback** — Uses available memory |
+
+## Our Configuration
+
+**Set to**: `false` — Unlimited scrollback.
+
+### Why Unlimited?
+
+1. **Full history** — Review entire session
+2. **Debugging** — See all command output
+3. **Reference** — Find earlier results
+4. **Long builds** — Scroll through logs
+
+### Trade-offs
+
+- ✅ Never lose output
+- ⚠️ Uses more memory for long sessions
+- ⚠️ Very long sessions can slow Terminal
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Terminal ShouldLimitScrollback
+
+# Unlimited scrollback (recommended)
+defaults write com.apple.Terminal ShouldLimitScrollback -bool false
+
+# Limited scrollback (default)
+defaults write com.apple.Terminal ShouldLimitScrollback -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.Terminal ShouldLimitScrollback
+```
+
+## UI Location
+
+**Terminal** → **Settings** (⌘,) → **Profiles** → [Profile] → **Window**
+
+Options:
+- ☐ Limit number of rows to: [number]
+
+Uncheck for unlimited.
+
+## Default Limit
+
+When limited, default is typically 10,000 lines.
+
+To set custom limit:
+1. Enable limit checkbox
+2. Enter number of rows
+
+## Memory Considerations
+
+Unlimited scrollback:
+- ~1KB per line (rough estimate)
+- 100,000 lines ≈ 100MB
+- Very long sessions can use significant memory
+
+For CI/builds, consider logging to file instead.
+
+## Saving Output
+
+For important output, save to file:
+```bash
+# Redirect to file
+./build.sh > build.log 2>&1
+
+# Or use script command
+script session.log
+```
+
+## Related Settings
+
+```bash
+# Show line marks for navigation
+defaults write com.apple.Terminal ShowLineMarks -bool true
+
+# Close window behavior
+defaults write com.apple.Terminal ShellExitAction -int 1
+```
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: Applies to new windows
+
+## Source File
+
+**File**: [`defaults/applications/terminal.sh`](../../../../defaults/applications/terminal.sh)
+
+```bash
+run_defaults "com.apple.Terminal" "ShouldLimitScrollback" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Terminal window settings](https://support.apple.com/guide/terminal/change-terminal-window-settings-trml107/mac)

@@ -1,0 +1,100 @@
+# Keynote Presenter Notes
+
+Show presenter notes while editing presentations.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Keynote` |
+| **Key** | `ShowPresenterNotes` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Displays the presenter notes panel in the editing view, making it easy to add and review notes while building your presentation. Notes appear below each slide.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show notes** — Notes visible while editing |
+| `false` | **Hide notes** (default) — Cleaner editing view |
+
+## Our Configuration
+
+**Set to**: `true` — Always show notes while editing.
+
+### Why Show Notes?
+
+1. **Context** — See notes with slides
+2. **Preparation** — Build talking points as you design
+3. **Reference** — Quick access during editing
+4. **Workflow** — No toggling View menu
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Keynote ShowPresenterNotes
+
+# Show presenter notes (recommended)
+defaults write com.apple.iWork.Keynote ShowPresenterNotes -bool true
+
+# Hide presenter notes (default)
+defaults write com.apple.iWork.Keynote ShowPresenterNotes -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Keynote ShowPresenterNotes
+```
+
+## UI Location
+
+**View** menu → **Show Presenter Notes**
+
+Keyboard: ⇧⌘P
+
+## Presenter Display
+
+During presentations, notes appear on presenter screen:
+1. **Play** menu → **Customize Presenter Display**
+2. Choose layout with notes
+3. Notes visible only to you
+
+## Note Features
+
+Presenter notes support:
+- Text formatting
+- Multiple paragraphs
+- Copy/paste from other apps
+- Print with slides
+
+## Related Settings
+
+```bash
+# Show pointer during presentation
+defaults write com.apple.iWork.Keynote KNShowPointerOnSlide -bool true
+
+# Enable remote control
+defaults write com.apple.iWork.Keynote KNRemoteEnabled -bool true
+```
+
+## Compatibility
+
+- **Keynote**: All versions
+- **macOS**: 10.14+
+- **Note**: Restart Keynote for changes
+
+## Source File
+
+**File**: [`defaults/applications/keynote.sh`](../../../../defaults/applications/keynote.sh)
+
+```bash
+run_defaults "com.apple.iWork.Keynote" "ShowPresenterNotes" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Keynote settings](https://support.apple.com/guide/keynote/change-settings-tanc3a3dd7c/mac)

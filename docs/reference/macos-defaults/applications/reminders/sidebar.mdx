@@ -1,0 +1,104 @@
+# Reminders Sidebar Visibility
+
+Control whether the lists sidebar is shown.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.reminders` |
+| **Key** | `SidebarShown` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the sidebar containing your reminder lists is visible in the Reminders app. The sidebar provides navigation between lists, smart lists, and folders.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show sidebar** (default) — Lists visible |
+| `false` | **Hide sidebar** — Full-width list view |
+
+## Our Configuration
+
+**Set to**: `true` — Show sidebar for navigation.
+
+### Why Show Sidebar?
+
+1. **Navigation** — Switch between lists
+2. **Organization** — See all lists at once
+3. **Smart Lists** — Access Today, Scheduled, Flagged
+4. **Tags** — View tags for filtering
+
+## Sidebar Contents
+
+The sidebar shows:
+- **Smart Lists**: Today, Scheduled, All, Flagged
+- **My Lists**: Your custom lists
+- **Groups**: Folder organization
+- **Tags**: Filter by tags
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.reminders SidebarShown
+
+# Show sidebar (default)
+defaults write com.apple.reminders SidebarShown -bool true
+
+# Hide sidebar
+defaults write com.apple.reminders SidebarShown -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.reminders SidebarShown
+```
+
+## UI Location
+
+**View** menu → **Show Sidebar** (⌘⌥S)
+
+Or click the sidebar toggle button.
+
+## Keyboard Shortcut
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘⌥S | Toggle sidebar |
+
+## Related Features
+
+### Smart Lists
+
+- **Today** — Due today and overdue
+- **Scheduled** — All with dates
+- **All** — Every reminder
+- **Flagged** — Important items
+- **Completed** — Finished tasks
+
+### List Groups
+
+Create folders to organize lists:
+1. **File** → **New Group**
+2. Drag lists into groups
+
+## Compatibility
+
+- **macOS**: 10.14+
+- **Note**: UI state only, doesn't sync
+
+## Source File
+
+**File**: [`defaults/applications/reminders.sh`](../../../../defaults/applications/reminders.sh)
+
+```bash
+run_defaults "com.apple.reminders" "SidebarShown" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Reminders on Mac](https://support.apple.com/guide/reminders/welcome/mac)

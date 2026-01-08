@@ -1,0 +1,202 @@
+# Photos Metadata Display
+
+Show photo metadata panel in the viewer.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Photos` |
+| **Key** | `IPXShowMetadataInfo` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the Info panel (metadata sidebar) is displayed when viewing photos. The Info panel shows essential details like date, time, location, camera settings, and keywords — invaluable for photographers and anyone managing a photo library.
+
+## Values
+
+| Value | Info Panel |
+|-------|------------|
+| `true` | **Visible** — Show metadata sidebar |
+| `false` | **Hidden** (default) — Clean viewing |
+
+## Info Panel Contents
+
+When visible, the Info panel shows:
+```
+┌─────────────────────┐
+│  ℹ️ Info            │
+├─────────────────────┤
+│  📅 May 15, 2024   │
+│  ⏰ 2:34 PM        │
+│                     │
+│  📍 Paris, France  │
+│     48.8566° N     │
+│     2.3522° E      │
+│                     │
+│  📷 Camera         │
+│     iPhone 15 Pro  │
+│     ƒ/1.8          │
+│     1/250 sec      │
+│     ISO 50         │
+│                     │
+│  🏷️ Keywords      │
+│     Travel, Europe │
+│                     │
+│  📝 Caption        │
+│     [Add caption]  │
+└─────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show metadata panel.
+
+### Why Show Metadata?
+
+1. **Photo details** — Date, time, location instantly
+2. **Camera settings** — Aperture, shutter, ISO
+3. **Organization** — View and add keywords
+4. **Editing info** — See if photo was edited
+5. **Photographer needs** — Essential for photo management
+
+### Why Hide Metadata?
+
+- Distraction-free viewing
+- Maximum screen for photo
+- Casual browsing
+- Small screen
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Photos IPXShowMetadataInfo
+
+# Show metadata panel
+defaults write com.apple.Photos IPXShowMetadataInfo -bool true
+
+# Hide metadata panel (default)
+defaults write com.apple.Photos IPXShowMetadataInfo -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Photos IPXShowMetadataInfo
+```
+
+## UI Location
+
+**Photos** → **View** → **Show Info** (⌘I)
+
+Or click the **ℹ️** button in the toolbar when viewing a photo.
+
+## Info Panel Sections
+
+### Date & Time
+- Capture date and time
+- Click to adjust if incorrect
+- Time zone information
+
+### Location
+- Place name (reverse geocoded)
+- GPS coordinates
+- Click to view on map
+- Can manually add location
+
+### Camera
+- Device/camera name
+- Lens information
+- Focal length
+- Exposure settings (ƒ, speed, ISO)
+
+### Keywords
+- Assigned keywords
+- Click to add new keywords
+- Used for searching
+
+### People & Pets
+- Detected faces
+- Named individuals
+- Click to add more
+
+### Caption
+- User-added description
+- Transferred to EXIF if exported
+- Searchable
+
+## EXIF Data Deeper Dive
+
+Info panel shows summary. For full EXIF:
+```bash
+# In Terminal
+mdls ~/Pictures/photo.jpg | grep kMDItem
+
+# Using exiftool (if installed)
+exiftool photo.jpg
+```
+
+## Keyboard Shortcut
+
+Toggle Info panel quickly:
+- **⌘I** — Show/Hide Info
+
+Works in photo view and library view.
+
+## Adjusting Metadata
+
+Some metadata is editable:
+- Date/Time — Adjust in Info panel
+- Location — Click to set on map
+- Keywords — Add/remove freely
+- Caption — Type directly
+- Favorite — Click heart
+
+Others are read-only (camera settings).
+
+## Privacy Considerations
+
+Photo metadata can reveal:
+- Location where taken
+- When taken
+- Device used
+
+Consider before sharing. Remove with:
+**Image** → **Location** → **Remove Location**
+
+## Related Settings
+
+```bash
+# Show hidden album
+defaults write com.apple.Photos IPXDefaultsShowHiddenAlbum -bool true
+
+# Auto-open for device import
+defaults write com.apple.Photos IPXDefaultsOpenPhotosForDevice -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No location shown | GPS not captured/enabled |
+| Wrong date | Adjust in Info panel |
+| Panel not appearing | Press ⌘I |
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina)
+- **Note**: Restart Photos for changes
+
+## Source File
+
+**File**: [`defaults/applications/photos.sh`](../../../../defaults/applications/photos.sh)
+
+```bash
+run_defaults "com.apple.Photos" "IPXShowMetadataInfo" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: View photo information](https://support.apple.com/guide/photos/view-photo-information-pht11016d6b3/mac)
+- [Apple Support: Photos app](https://support.apple.com/photos)

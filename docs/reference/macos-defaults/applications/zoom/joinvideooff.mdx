@@ -1,0 +1,104 @@
+# Zoom Join with Video Off
+
+Automatically turn off camera when joining meetings.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `us.zoom.xos` |
+| **Key** | `ZMEnableStopVideoWhenJoin` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Automatically turns off your camera when joining Zoom meetings, giving you time to prepare before being seen by other participants. Provides privacy and control over when your video is visible.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Video off** — Camera disabled when joining |
+| `false` | **Video on** (default) — Camera enabled when joining |
+
+## Our Configuration
+
+**Set to**: `true` — Join with video off.
+
+### Why Join Video Off?
+
+1. **Privacy** — Control when you're seen
+2. **Preparation** — Check appearance first
+3. **Bandwidth** — Use less until ready
+4. **Professional** — No awkward camera moments
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read us.zoom.xos ZMEnableStopVideoWhenJoin
+
+# Join with video off (recommended)
+defaults write us.zoom.xos ZMEnableStopVideoWhenJoin -bool true
+
+# Join with video on
+defaults write us.zoom.xos ZMEnableStopVideoWhenJoin -bool false
+
+# Delete (reset to default)
+defaults delete us.zoom.xos ZMEnableStopVideoWhenJoin
+```
+
+## UI Location
+
+**Zoom** → **Settings** (⌘,) → **Video** → ☑ **Turn off my video when joining a meeting**
+
+## Quick Start Video
+
+When video is off by default:
+1. Join meeting
+2. Click **Start Video** when ready
+3. Or use keyboard shortcut
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘⇧V | Toggle video |
+| ⌘⇧A | Toggle mute |
+| Space | Push-to-talk (when muted) |
+
+## Related Setting: Mute Audio
+
+Similarly mute microphone on join:
+
+```bash
+# Join with audio muted
+defaults write us.zoom.xos ZMEnableMuteWhenJoin -bool true
+```
+
+## Meeting Host Override
+
+Note: Meeting hosts can:
+- Request participants start video
+- Enable "Video on" requirement
+- Host settings may override defaults
+
+## Compatibility
+
+- **Zoom**: Desktop app
+- **macOS**: 10.10+
+- **Note**: Restart Zoom for changes
+
+## Source File
+
+**File**: [`defaults/applications/zoom_app.sh`](../../../../defaults/applications/zoom_app.sh)
+
+```bash
+run_defaults "us.zoom.xos" "ZMEnableStopVideoWhenJoin" "-bool" "true"
+```
+
+## References
+
+- [Zoom Help: Video settings](https://support.zoom.us/hc/en-us/articles/201362163-Desktop-client-settings)

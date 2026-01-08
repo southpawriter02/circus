@@ -1,0 +1,181 @@
+# Automatic Text Correction
+
+Disable automatic spelling correction while typing.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticSpellingCorrectionEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether macOS automatically corrects words it thinks are misspelled as you type. While helpful for casual writing, auto-correct can be disruptive for technical content, code, proper nouns, industry jargon, and non-English words.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-correct enabled** (default) |
+| `false` | **No auto-correction** — Words left as typed |
+
+## Visual Demonstration
+
+### Auto-Correct Enabled (true):
+```
+You type:     kubectl
+System shows: cubical  (or similar "correction")
+              ↑
+         Unwanted change!
+
+More examples:
+  nginx → eBay (real issue!)
+  yaml  → yams
+  sudo  → sushi
+  grep  → greet
+```
+
+### Auto-Correct Disabled (false):
+```
+You type:     kubectl
+System shows: kubectl
+              ↑
+         Exactly what you typed!
+
+Technical terms preserved
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable auto-correction.
+
+### Why Disable?
+
+1. **Technical terms** — kubectl, nginx, yaml, etc.
+2. **Commands** — sudo, grep, awk, sed
+3. **Code snippets** — Variable names, functions
+4. **Proper nouns** — Names, brands, products
+5. **Control** — You know what you meant
+
+### Why Enable?
+
+- Casual writing
+- Email composition
+- Non-technical use
+- Accessibility aid
+
+## Real Examples of Bad Corrections
+
+| You Type | Auto-Corrects To |
+|----------|------------------|
+| `kubectl` | cubical, cubicle |
+| `nginx` | eying, eBay |
+| `sudo` | sushi, suds |
+| `yaml` | yams, Yale |
+| `npm` | nom, nap |
+| `git` | got, get |
+| `bash` | bath, bash (might work) |
+| `zsh` | ash, zoo |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSAutomaticSpellingCorrectionEnabled
+
+# Disable auto-correction (recommended for developers)
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Enable auto-correction (default)
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSAutomaticSpellingCorrectionEnabled
+```
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Text Input** → **Text Replacements...** → ☐ **Correct spelling automatically**
+
+Or per-app:
+**Edit** menu → **Spelling and Grammar** → ☐ **Correct Spelling Automatically**
+
+## Spell Check vs Auto-Correct
+
+Two different features:
+
+| Feature | What It Does | Keep? |
+|---------|--------------|-------|
+| **Spell Check** | Red underline on misspelled words | ✓ Useful |
+| **Auto-Correct** | Automatically changes words | ✗ Disable |
+
+You can have spell check ON (visual indicator) while auto-correct is OFF (no changes).
+
+## Per-App Override
+
+Some apps have their own settings:
+- **TextEdit**: Edit → Spelling and Grammar → Correct Spelling Automatically
+- **Mail**: Same location
+- **Notes**: Same location
+
+Check each app you use frequently.
+
+## Related Settings
+
+Disable all auto-substitutions:
+
+```bash
+# Auto-correction
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Auto-capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Smart quotes
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# Smart dashes
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Period with double-space
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+```
+
+## Word List Customization
+
+If you keep auto-correct on, add technical terms:
+1. Right-click misspelled word
+2. Choose "Learn Spelling"
+3. Word won't be auto-corrected
+
+But this is tedious for many technical terms.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still auto-correcting | Check per-app settings |
+| Red underlines annoying | That's spell check, different setting |
+| Need it sometimes | Toggle per-app as needed |
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Note**: Takes effect immediately
+
+## Source File
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+run_defaults "NSGlobalDomain" "NSAutomaticSpellingCorrectionEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Spell check](https://support.apple.com/guide/mac-help/check-spelling-and-grammar-mchlp2299/mac)
+- [Apple Support: Text substitutions](https://support.apple.com/guide/mac-help/text-substitutions-mh35735/mac)

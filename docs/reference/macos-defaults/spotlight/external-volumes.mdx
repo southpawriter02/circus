@@ -1,0 +1,199 @@
+# Spotlight External Volumes Indexing
+
+Control whether external drives are indexed by Spotlight.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.spotlight` |
+| **Key** | `ExternalVolumes` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Spotlight indexes external hard drives, USB drives, and network volumes. Disabling external indexing improves performance, saves space on external drives (no `.Spotlight-V100` folder), and may improve privacy when using shared or borrowed drives.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Index externals** (default) — Full search capability |
+| `false` | **Skip externals** — Only internal drive indexed |
+
+## What Gets Indexed
+
+### With External Indexing (true):
+```
+Spotlight Index
+├── Macintosh HD (internal)
+│   └── Full index ✓
+├── External SSD (USB)
+│   └── Full index ✓ (creates .Spotlight-V100)
+├── Time Machine Drive
+│   └── Full index ✓
+└── Mounted SMB Share
+    └── Full index ✓
+```
+
+### Without External Indexing (false):
+```
+Spotlight Index
+├── Macintosh HD (internal)
+│   └── Full index ✓
+├── External SSD (USB)
+│   └── Not indexed ✗
+├── Time Machine Drive
+│   └── Not indexed ✗
+└── Mounted SMB Share
+    └── Not indexed ✗
+```
+
+## Our Configuration
+
+**Set to**: `false` — Don't index external volumes.
+
+### Why Disable External Indexing?
+
+1. **Performance** — Faster drive mounting
+2. **Space savings** — No `.Spotlight-V100` folders
+3. **Privacy** — Borrowed drives not scanned
+4. **Speed** — No background indexing
+5. **Network performance** — No indexing network shares
+
+### Why Enable External Indexing?
+
+- Need to search files on external drives
+- Media drives with many files
+- Photo libraries on external storage
+- Work drives with documents
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.spotlight ExternalVolumes
+
+# Disable external volume indexing (recommended)
+defaults write com.apple.spotlight ExternalVolumes -bool false
+
+# Enable external volume indexing (default)
+defaults write com.apple.spotlight ExternalVolumes -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.spotlight ExternalVolumes
+```
+
+## Per-Volume Control
+
+For specific volume control, use `mdutil`:
+
+```bash
+# Disable indexing on specific volume
+sudo mdutil -i off /Volumes/ExternalDrive
+
+# Enable indexing on specific volume
+sudo mdutil -i on /Volumes/ExternalDrive
+
+# Check indexing status
+mdutil -s /Volumes/ExternalDrive
+
+# Erase and rebuild index
+sudo mdutil -E /Volumes/ExternalDrive
+```
+
+## UI Location
+
+Per-volume in System Settings:
+**System Settings** → **Siri & Spotlight** → **Spotlight Privacy** → Add volume
+
+## The .Spotlight-V100 Folder
+
+When Spotlight indexes a volume:
+```
+/Volumes/ExternalDrive/
+├── .Spotlight-V100/       ← Spotlight index data
+│   ├── Store-V2/
+│   └── VolumeConfiguration.plist
+├── .fseventsd/            ← File system events
+└── Your files...
+```
+
+Size: Can be 1-10%+ of drive contents
+
+To remove:
+```bash
+# After disabling indexing
+sudo rm -rf /Volumes/ExternalDrive/.Spotlight-V100
+```
+
+## Privacy Implications
+
+Indexing external drives means:
+- File names are cataloged
+- Contents may be partially indexed
+- Metadata stored in Spotlight DB
+- Persists after drive removal (in system Spotlight DB)
+
+For sensitive drives:
+1. Disable external indexing globally
+2. Or add to Spotlight Privacy list
+3. Or use encrypted volumes
+
+## Network Volumes
+
+Network shares have additional considerations:
+- Slow indexing over network
+- Bandwidth usage
+- May conflict with server-side indexing
+- Credentials may be exposed
+
+Generally best to disable for network volumes.
+
+## Searching Externals Without Index
+
+Without indexing, you can still:
+- Use Finder's built-in search (slower)
+- Use terminal: `find /Volumes/Drive -name "*.pdf"`
+- Use `mdfind` if previously indexed
+- Use third-party search tools
+
+## Related Settings
+
+```bash
+# Disable internet suggestions
+defaults write com.apple.lookup.shared LookupSuggestionsDisabled -bool true
+
+# Reindex internal drive
+sudo mdutil -E /
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| External still indexing | Check mdutil status for that volume |
+| Can't search external | Enable indexing or use Finder search |
+| Slow drive mounting | Disable indexing for that volume |
+| .Spotlight-V100 keeps appearing | Check per-volume settings |
+
+## Compatibility
+
+- **macOS**: 10.4+ (Tiger)
+- **Note**: Affects newly mounted volumes
+
+## Source File
+
+**File**: [`defaults/system/spotlight.sh`](../../../defaults/system/spotlight.sh)
+
+```bash
+run_defaults "com.apple.spotlight" "ExternalVolumes" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Spotlight](https://support.apple.com/guide/mac-help/spotlight-mchlp1008/mac)
+- man mdutil
+- [Apple Support: Spotlight privacy](https://support.apple.com/guide/mac-help/prevent-spotlight-searches-on-mac-mh40597/mac)

@@ -1,0 +1,200 @@
+# Login Window User List Display
+
+Control whether login shows user list or name/password fields.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.loginwindow` |
+| **Key** | `SHOWFULLNAME` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the login window displays a visual list of user accounts with icons, or requires typing both username and password in text fields. This affects the login experience and has security implications for multi-user Macs.
+
+## Values
+
+| Value | Display | Security |
+|-------|---------|----------|
+| `false` | User list with icons (default) | Usernames visible |
+| `true` | Name + password text fields | Usernames hidden |
+
+## Visual Comparison
+
+### User List (false - Default):
+```
+┌─────────────────────────────────────────┐
+│           🍎                            │
+│                                         │
+│    ┌───┐    ┌───┐    ┌───┐              │
+│    │ 👤│    │ 👤│    │ 👤│              │
+│    └───┘    └───┘    └───┘              │
+│    Alice    Bob      Admin              │
+│                                         │
+│         Click user, then type password  │
+└─────────────────────────────────────────┘
+```
+
+### Name + Password Fields (true):
+```
+┌─────────────────────────────────────────┐
+│           🍎                            │
+│                                         │
+│   Name:      ┌───────────────────┐      │
+│              │                   │      │
+│              └───────────────────┘      │
+│   Password:  ┌───────────────────┐      │
+│              │ ●●●●●●●           │      │
+│              └───────────────────┘      │
+│                                         │
+│              [Login]                    │
+└─────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `false` — Show user list.
+
+### Why Show User List?
+
+1. **Single-user Mac** — Only one account anyway
+2. **Convenience** — Click and type password
+3. **Touch ID** — Works with user list
+4. **User comfort** — Less to remember
+5. **Fast login** — Fewer keystrokes
+
+### Why Hide User List (SHOWFULLNAME = true)?
+
+| Scenario | Reason |
+|----------|--------|
+| Shared/public Mac | Don't reveal usernames |
+| High-security environment | Defense in depth |
+| Many users | List becomes unwieldy |
+| Corporate policy | Compliance requirement |
+
+## Security Analysis
+
+### What User List Reveals
+
+- Valid usernames
+- Number of accounts
+- User photos (if set)
+- Account types (admin badge)
+
+For attackers:
+- Half the login credentials (username)
+- Social engineering targets
+- Account enumeration
+
+### What Text Fields Hide
+
+- Must guess username
+- No indication of valid users
+- More secure against physical access attacks
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.loginwindow SHOWFULLNAME
+
+# Show user list (default)
+defaults write com.apple.loginwindow SHOWFULLNAME -bool false
+
+# Show name/password fields (more secure)
+defaults write com.apple.loginwindow SHOWFULLNAME -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.loginwindow SHOWFULLNAME
+```
+
+## UI Location
+
+**System Settings** → **Users & Groups** → **Login Options** (unlock required)
+
+Setting: "Display login window as"
+- List of users
+- Name and password
+
+## Combining with Other Security Settings
+
+For maximum login security:
+```bash
+# Require name AND password
+defaults write com.apple.loginwindow SHOWFULLNAME -bool true
+
+# Disable password hints
+defaults write com.apple.loginwindow RetriesUntilHint -int 0
+
+# Disable guest account
+defaults write com.apple.loginwindow GuestEnabled -bool false
+
+# Disable automatic login
+sudo defaults delete com.apple.loginwindow autoLoginUser
+```
+
+## Touch ID Consideration
+
+With user list:
+- Touch ID works seamlessly
+- Finger on sensor → unlocks
+- No typing needed
+
+With name/password fields:
+- Must enter username first
+- Then Touch ID or password
+- Slightly slower
+
+## FileVault Impact
+
+With FileVault enabled:
+- Login screen shows AFTER disk unlock
+- FileVault users may differ from login window
+- Pre-boot: password always required
+
+## Remote Login
+
+SSH and screen sharing:
+- Unaffected by this setting
+- Always require username/password
+
+## Related Settings
+
+```bash
+# Show input menu (keyboard layouts)
+defaults write com.apple.loginwindow showInputMenu -bool true
+
+# Disable power button
+defaults write com.apple.loginwindow PowerOffDisabled -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not changing | Restart or logout |
+| Touch ID failing | Check Touch ID settings |
+| Cannot find setting | Unlock System Settings |
+
+## Compatibility
+
+- **macOS**: All versions (setting name may vary)
+- **Requires**: Administrator access to change
+- **Note**: Logout required for changes
+
+## Source File
+
+**File**: [`defaults/system/login.sh`](../../../defaults/system/login.sh)
+
+```bash
+run_defaults "com.apple.loginwindow" "SHOWFULLNAME" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Log in to your Mac](https://support.apple.com/guide/mac-help/log-in-to-your-mac-mh35843/mac)
+- [Apple Support: Users & Groups settings](https://support.apple.com/guide/mac-help/users-groups-settings-mtusr001/mac)

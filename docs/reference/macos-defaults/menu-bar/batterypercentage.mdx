@@ -1,0 +1,124 @@
+# Menu Bar Battery Percentage
+
+Show battery percentage in the menu bar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.menuextra.battery` |
+| **Key** | `ShowPercent` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Displays the battery percentage next to the battery icon in the menu bar. Provides precise battery level information without needing to click the battery icon.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show percentage** — e.g., "78%" |
+| `false` | **Icon only** (default) — Visual estimate |
+
+## Visual Example
+
+**With percentage (true):**
+```
+┌────────────────────────────────┐
+│ 🔋 78%  Wed  3:45 PM           │
+└────────────────────────────────┘
+```
+
+**Without percentage (false):**
+```
+┌────────────────────────────────┐
+│ 🔋  Wed  3:45 PM               │
+└────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Always show percentage.
+
+### Why Show Percentage?
+
+1. **Precision** — Know exact level
+2. **Planning** — Gauge time remaining
+3. **Awareness** — No guessing from icon
+4. **Charging** — Track progress exactly
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.menuextra.battery ShowPercent
+
+# Show percentage (recommended)
+defaults write com.apple.menuextra.battery ShowPercent -bool true
+
+# Hide percentage (icon only)
+defaults write com.apple.menuextra.battery ShowPercent -bool false
+
+# Apply changes
+killall SystemUIServer
+```
+
+## UI Location
+
+**System Settings** → **Control Center** → **Battery** → ☑ **Show Percentage**
+
+Or click battery icon → **Show Percentage**
+
+## Battery Information
+
+Click the battery icon for:
+- Current percentage
+- Power source (battery/charger)
+- Apps using significant energy
+- Time remaining (estimate)
+- Battery condition
+
+## Option-Click Details
+
+Option-click battery icon shows:
+- Battery condition
+- Cycle count (older macOS)
+- Maximum capacity (older macOS)
+
+For detailed info:
+- **Apple menu** → **About This Mac** → **System Report** → **Power**
+
+## Related Settings
+
+Battery visibility in menu bar:
+- Controlled via Control Center settings
+- Laptops show battery by default
+
+## Low Power Mode
+
+For extending battery:
+1. **System Settings** → **Battery**
+2. Enable **Low Power Mode**
+
+Or from battery menu.
+
+## Compatibility
+
+- **macOS**: All versions
+- **Hardware**: MacBooks, Macs with UPS
+- **Note**: Restart SystemUIServer for changes
+
+## Source File
+
+**File**: [`defaults/interface/menu_bar.sh`](../../../defaults/interface/menu_bar.sh)
+
+```bash
+run_defaults "com.apple.menuextra.battery" "ShowPercent" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Check battery status](https://support.apple.com/guide/mac-help/check-battery-status-mh21174/mac)

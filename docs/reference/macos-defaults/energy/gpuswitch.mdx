@@ -1,0 +1,203 @@
+# Energy Saver Auto Graphics Switching
+
+Enable automatic GPU switching for better battery life.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Command** | `pmset` |
+| **Key** | `gpuswitch` |
+| **Type** | Integer |
+| **Default Value** | `2` (automatic) |
+| **Our Setting** | `2` (automatic) |
+| **Requires** | sudo, MacBook with dual GPUs |
+
+## Description
+
+Controls automatic graphics switching on MacBook Pro models with dual GPUs (integrated and discrete). When enabled, macOS intelligently switches between the power-efficient integrated GPU for light tasks and the high-performance discrete GPU when needed, dramatically extending battery life.
+
+## Values
+
+| Value | Behavior | Battery Impact |
+|-------|----------|----------------|
+| `0` | Integrated GPU only | Best battery, limited graphics |
+| `1` | Discrete GPU only | Worst battery, maximum graphics |
+| `2` | **Automatic switching** (default) | Optimal balance |
+
+## How Auto-Switching Works
+
+```
+Task Detection → GPU Selection
+│
+├── Email, browsing, documents → Integrated GPU (power saving)
+│   └── Intel HD / Apple M1 integrated
+│
+├── Video editing, 3D rendering → Discrete GPU (high performance)
+│   └── AMD Radeon / NVIDIA (older models)
+│
+└── macOS handles switching seamlessly
+```
+
+## Visual Battery Impact
+
+```
+Battery Life Comparison (15" MacBook Pro):
+┌────────────────────────────────────────────────┐
+│                                                │
+│  Integrated Only    ████████████░░░░ 12 hrs   │
+│                                                │
+│  Auto Switching     █████████░░░░░░░ 9 hrs    │
+│  (typical use)                                 │
+│                                                │
+│  Discrete Only      █████░░░░░░░░░░░ 4-5 hrs  │
+│                                                │
+└────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `2` — Automatic switching.
+
+### Why Automatic?
+
+1. **Best of both** — Performance when needed, battery when not
+2. **Transparent** — Apps get right GPU automatically
+3. **Apple's design** — Optimized for this behavior
+4. **No user management** — Set and forget
+5. **Default** — Apple's recommended setting
+
+### When to Force Discrete
+
+- Consistent graphics performance needed
+- Benchmarking
+- Some apps have issues with switching
+
+### When to Force Integrated
+
+- Maximum battery life critical
+- Known that discrete won't be needed
+- Older discrete GPU issues
+
+## Code Examples
+
+```bash
+# Read current value
+pmset -g | grep gpuswitch
+
+# Enable automatic switching (recommended)
+sudo pmset -a gpuswitch 2
+
+# Force integrated GPU only (maximum battery)
+sudo pmset -a gpuswitch 0
+
+# Force discrete GPU only (maximum performance)
+sudo pmset -a gpuswitch 1
+
+# Set different for battery vs AC
+sudo pmset -b gpuswitch 2    # Battery: auto
+sudo pmset -c gpuswitch 1    # Charger: discrete
+```
+
+## UI Location
+
+**System Settings** → **Battery** → **Options** → ☑ **Automatic graphics switching**
+
+Note: Only appears on Macs with switchable graphics.
+
+## Detecting Current GPU
+
+```bash
+# Show current GPU
+system_profiler SPDisplaysDataType | grep "Chipset Model"
+
+# Monitor GPU switching (requires installation)
+# gfxCardStatus app provides menu bar indicator
+```
+
+## Which Macs Have Dual GPUs?
+
+| Model | Integrated | Discrete |
+|-------|------------|----------|
+| MacBook Pro 15" 2010-2019 | Intel HD | AMD/NVIDIA |
+| MacBook Pro 16" 2019-2021 | Intel UHD | AMD Radeon |
+| MacBook Pro 14"/16" 2021+ | Apple GPU only (no switching) |
+
+Apple Silicon Macs have unified memory/GPU — no switching needed.
+
+## Apps That Trigger Discrete GPU
+
+Common triggers:
+- Adobe Creative Suite
+- Final Cut Pro
+- Games
+- 3D applications
+- Some browsers with WebGL
+- External displays (older models)
+
+## External Displays
+
+On Intel Macs with dual GPUs:
+- External display → may force discrete GPU
+- Reduces battery life significantly
+- No workaround on some models
+
+## Energy Impact Monitoring
+
+Check which apps use discrete GPU:
+1. **Activity Monitor** → **Energy** tab
+2. Look at "Requires High Perf GPU" column
+3. Apps with "Yes" trigger discrete GPU
+
+## gfxCardStatus (Third-Party App)
+
+Popular utility for GPU control:
+- Menu bar indicator
+- Force specific GPU
+- See which apps trigger discrete
+- Visual notification on switch
+
+Note: May not work with all macOS versions.
+
+## Related Settings
+
+```bash
+# Display sleep timeout
+sudo pmset -b displaysleep 5
+
+# System sleep timeout
+sudo pmset -b sleep 10
+
+# Power nap
+sudo pmset -b powernap 0
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still using discrete GPU | Check apps in Activity Monitor |
+| Poor battery life | Verify auto switching enabled |
+| Graphics glitches | Try fixed GPU mode |
+| Setting not available | Mac may not have dual GPUs |
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard) for Intel+discrete
+- **Hardware**: MacBooks with dual GPU only
+- **Apple Silicon**: No switching (unified GPU)
+
+## Source File
+
+**File**: [`defaults/system/energy.sh`](../../../defaults/system/energy.sh)
+
+```bash
+# Enable automatic graphics switching
+sudo pmset -a gpuswitch 2
+```
+
+## References
+
+- [Apple Support: Battery](https://support.apple.com/guide/mac-help/monitor-your-battery-mh27271/mac)
+- man pmset
+- [gfxCardStatus](https://gfx.io/)

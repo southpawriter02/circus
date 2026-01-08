@@ -1,0 +1,184 @@
+# Hibernation Mode
+
+Control how your Mac saves state when sleeping.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Command** | `pmset hibernatemode` |
+| **Type** | Integer |
+| **Default (Laptop)** | `3` |
+| **Default (Desktop)** | `0` |
+| **Our Setting** | `3` |
+| **Requires** | sudo |
+
+## Description
+
+Controls how your Mac saves its state when entering sleep. This affects wake speed, power consumption during sleep, and data safety if power is lost. Different modes suit different use cases.
+
+## Hibernation Modes Explained
+
+| Mode | Name | RAM | Hibernate File | Wake Speed |
+|------|------|-----|----------------|------------|
+| `0` | Sleep | Powered ✓ | Not used | Instant |
+| `1` | Hibernate | Off | Used ✓ | Slow |
+| `3` | Safe Sleep | Powered ✓ | Backup ✓ | Instant |
+| `25` | Deep Sleep | Off | Delayed | Slow |
+
+## Mode Details
+
+### Mode 0: Sleep Only
+```
+Sleep → RAM powered → Instant wake
+        ↓
+        Battery dies → DATA LOST
+```
+- **Pros**: Instant wake
+- **Cons**: Data lost if battery dies
+- **Use case**: Desktops, always-plugged-in Macs
+
+### Mode 1: Hibernate Only
+```
+Sleep → RAM to disk → RAM off → Slow wake
+        ↓
+        Battery dies → Data safe ✓
+```
+- **Pros**: Maximum power saving, data safe
+- **Cons**: Slow wake (10-30 seconds)
+- **Use case**: Extended storage, rarely used
+
+### Mode 3: Safe Sleep (Default for Laptops)
+```
+Sleep → RAM powered + RAM to disk
+        ↓
+        ├── Normal: Instant wake from RAM
+        └── Battery died: Recover from disk
+```
+- **Pros**: Instant wake, data safe if battery dies
+- **Cons**: Uses disk space for sleepimage
+- **Use case**: Most laptop users (recommended)
+
+### Mode 25: Deep Sleep
+```
+Sleep → Wait (standbydelay) → RAM to disk → RAM off
+```
+- **Pros**: Power saving after long sleep
+- **Cons**: Longer wake after deep sleep
+- **Use case**: Laptops with long sleep periods
+
+## Our Configuration
+
+**Set to**: `3` — Safe Sleep (best balance).
+
+### Why Mode 3?
+
+1. **Instant wake** — Normal use is fast
+2. **Data safety** — Survives battery drain
+3. **Apple default** — Tested and reliable
+4. **Best balance** — Speed + safety
+
+## Code Examples
+
+```bash
+# Check current hibernation mode
+pmset -g | grep hibernatemode
+
+# Set to safe sleep (recommended for laptops)
+sudo pmset -a hibernatemode 3
+
+# Set to sleep only (desktops)
+sudo pmset -a hibernatemode 0
+
+# Set to hibernate only (power saving)
+sudo pmset -a hibernatemode 1
+
+# Set to deep sleep after delay
+sudo pmset -a hibernatemode 25
+
+# View hibernation file
+ls -lh /var/vm/sleepimage
+```
+
+## Hibernate File Location
+
+Safe sleep modes create a hibernation image:
+```
+/var/vm/sleepimage
+```
+
+Size equals your RAM size (8GB RAM = 8GB file).
+
+### Reclaiming Space
+
+If you use mode 0 (no hibernation):
+```bash
+# Remove sleepimage and prevent recreation
+sudo rm /var/vm/sleepimage
+sudo touch /var/vm/sleepimage
+sudo chflags uchg /var/vm/sleepimage
+```
+
+⚠️ Only do this with mode 0, otherwise data loss on battery drain.
+
+## Standby Integration
+
+Mode 25 works with standby settings:
+```bash
+# Standby delay when battery > 50%
+sudo pmset -a standbydelayhigh 86400  # 24 hours
+
+# Standby delay when battery < 50%
+sudo pmset -a standbydelaylow 10800   # 3 hours
+```
+
+After delay, switches from sleep to hibernate.
+
+## Apple Silicon Notes
+
+On M1/M2+ Macs:
+- Unified memory changes sleep behavior
+- System is very power-efficient in sleep
+- Hibernation rarely needed
+- Mode 3 still recommended for safety
+
+## Intel Mac Notes
+
+On Intel Macs:
+- Mode 0: RAM draws ~1W in sleep
+- Mode 3: RAM + hibernate file overhead
+- Mode 25: Deep sleep for travel
+
+## UI Location
+
+No direct UI control. Managed entirely via `pmset`.
+
+**System Settings** → **Battery** controls related settings but not hibernate mode directly.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Slow wake | Check if in mode 1 or 25 |
+| Lost data on sleep | Switch to mode 3 |
+| Low disk space | Consider mode 0 (if safe) |
+| Battery drain in sleep | Check mode isn't 0 |
+
+## Compatibility
+
+- **macOS**: 10.4+
+- **Hardware**: Intel (all modes), Apple Silicon (mode 3)
+- **Requires**: sudo
+
+## Source File
+
+**File**: [`defaults/system/energy.sh`](../../../defaults/system/energy.sh)
+
+```bash
+sudo pmset -a hibernatemode 3
+```
+
+## References
+
+- man pmset
+- [Apple Support: Mac sleep and wake](https://support.apple.com/guide/mac-help/put-your-mac-to-sleep-or-wake-it-up-mh26608/mac)

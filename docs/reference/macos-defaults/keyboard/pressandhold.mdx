@@ -1,0 +1,183 @@
+# Press and Hold for Character Accents
+
+Control key repeat vs. accent popup behavior.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `ApplePressAndHoldEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls what happens when you hold down a key. When enabled, holding a letter key shows an accent/character popup (like iOS). When disabled, holding a key repeats the character — essential for developers using vim navigation and other key-repeat workflows.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Character popup** (default) — Show accents: à á â ã |
+| `false` | **Key repeat** — Repeat character: aaaaaaa |
+
+## Visual Demonstration
+
+### With Press-and-Hold Popup (true):
+```
+Hold 'e' key...
+                         ┌─────────────────────────┐
+                         │  è  é  ê  ë  ē  ė  ę   │
+                         │  1  2  3  4  5  6  7   │
+                         └─────────────────────────┘
+                         
+Press 2 or arrow+enter for: é
+
+Good for: Typing accented characters
+Bad for: Vim navigation, key repeat
+```
+
+### With Key Repeat (false):
+```
+Hold 'e' key...
+
+Output: eeeeeeeeeeeeeeeeeeeeeeeeeee
+
+Good for: Vim navigation (hjkl), deleting, arrows
+This is what developers want!
+```
+
+## Our Configuration
+
+**Set to**: `false` — Enable key repeat.
+
+### Why Disable Press-and-Hold?
+
+1. **Vim navigation** — Hold j/k to move
+2. **Key repeat** — Hold backspace to delete
+3. **Arrow keys** — Hold to scroll through code
+4. **Developer workflow** — Standard expectation
+5. **Muscle memory** — Match other platforms
+
+### Why Keep Press-and-Hold?
+
+- Writing in languages with accents
+- Don't need key repeat
+- iOS-like experience
+- Casual typing
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain ApplePressAndHoldEnabled
+
+# Disable accent popup, enable key repeat (recommended)
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+
+# Enable accent popup (default, iOS-style)
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain ApplePressAndHoldEnabled
+```
+
+**Important**: Restart apps or log out/in for changes to take full effect.
+
+## UI Location
+
+**System Settings** → **Keyboard** → **Press [key] to** → Select "Repeat key"
+
+Or no direct toggle in some macOS versions — use defaults command.
+
+## Vim/Terminal Impact
+
+In vim with press-and-hold enabled:
+```
+Press and hold 'j' to go down...
+         ↓
+   Accent popup appears!
+   (Can't navigate)
+```
+
+In vim with key repeat enabled:
+```
+Press and hold 'j' to go down...
+         ↓
+   jjjjjjjjj (cursor moves down rapidly!)
+   (Proper navigation)
+```
+
+## Combine with Key Repeat Settings
+
+For best developer experience:
+```bash
+# Enable key repeat (disable accent popup)
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+
+# Fast key repeat rate
+defaults write NSGlobalDomain KeyRepeat -int 1
+
+# Short initial delay
+defaults write NSGlobalDomain InitialKeyRepeat -int 10
+```
+
+## Typing Accented Characters Without Popup
+
+When key repeat is enabled, use:
+| Method | Key Combination |
+|--------|-----------------|
+| Option + e, then e | é |
+| Option + `, then e | è |
+| Option + i, then e | ê |
+| Option + u, then e | ë |
+
+Or use the Character Viewer: **Edit** → **Emoji & Symbols** (⌃⌘Space)
+
+## Per-App Considerations
+
+Some apps may have their own settings:
+- VS Code: Has its own key repeat handling
+- iTerm2: Usually respects system setting
+- Terminal: Usually respects system setting
+
+## Related Settings
+
+```bash
+# Key repeat rate (lower = faster)
+defaults write NSGlobalDomain KeyRepeat -int 1
+
+# Initial delay before repeat (lower = shorter)
+defaults write NSGlobalDomain InitialKeyRepeat -int 10
+
+# Full keyboard access
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 2
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still showing popup | Restart app or logout/login |
+| Some apps don't repeat | App has its own setting |
+| Need accents occasionally | Use Option key combos |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion introduced this feature)
+- **Note**: Restart apps to apply
+
+## Source File
+
+**File**: [`defaults/input/keyboard.sh`](../../../defaults/input/keyboard.sh)
+
+```bash
+run_defaults "ApplePressAndHoldEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Type accent marks](https://support.apple.com/en-us/102446)
+- [Apple Support: Keyboard settings](https://support.apple.com/guide/mac-help/change-keyboard-settings-mchlp1054/mac)

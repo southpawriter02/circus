@@ -1,0 +1,111 @@
+# Slack Spell Check
+
+Enable spell checking in message composition.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.tinyspeck.slackmacgap` |
+| **Key** | `SlackSpellCheckEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables spell checking in Slack message composition. Uses macOS system spell checker to underline misspelled words in red, helping catch typos before sending messages.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Spell check enabled** (default) — Red underlines on typos |
+| `false` | **No spell check** — No spelling assistance |
+
+## Our Configuration
+
+**Set to**: `true` — Catch typos before sending.
+
+### Why Enable Spell Check?
+
+1. **Professionalism** — Correct spelling in work messages
+2. **Catch typos** — Quick fix before sending
+3. **Right-click** — Get suggestions
+4. **Learn words** — Add to dictionary
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.tinyspeck.slackmacgap SlackSpellCheckEnabled
+
+# Enable spell check (default)
+defaults write com.tinyspeck.slackmacgap SlackSpellCheckEnabled -bool true
+
+# Disable spell check
+defaults write com.tinyspeck.slackmacgap SlackSpellCheckEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.tinyspeck.slackmacgap SlackSpellCheckEnabled
+```
+
+## UI Location
+
+**Edit** menu → **Spelling and Grammar**
+
+Options:
+- Check Spelling While Typing
+- Check Grammar With Spelling
+- Correct Spelling Automatically
+
+## Using Spell Check
+
+1. Type message
+2. Red underline appears on misspellings
+3. Right-click for suggestions
+4. Select correct word
+
+## Adding Custom Words
+
+For technical terms, names, jargon:
+1. Right-click underlined word
+2. Select **Learn Spelling**
+3. Word won't be flagged again
+
+Or **Ignore Spelling** for one-time skip.
+
+## Language Settings
+
+Spell check uses system language:
+- **System Settings** → **General** → **Language & Region**
+- Multiple languages can be active
+
+## Related macOS Settings
+
+System-wide text settings:
+```bash
+# Auto-correct (system-wide)
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool true
+
+# Auto-capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool true
+```
+
+## Compatibility
+
+- **Slack**: Mac desktop app
+- **macOS**: 10.13+
+- **Languages**: Uses system dictionaries
+
+## Source File
+
+**File**: [`defaults/applications/slack.sh`](../../../../defaults/applications/slack.sh)
+
+```bash
+run_defaults "com.tinyspeck.slackmacgap" "SlackSpellCheckEnabled" "-bool" "true"
+```
+
+## References
+
+- [Slack Help: Manage preferences](https://slack.com/help/articles/201374536-Manage-your-preferences)

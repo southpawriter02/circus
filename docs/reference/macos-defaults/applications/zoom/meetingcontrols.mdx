@@ -1,0 +1,148 @@
+# Zoom Always Show Meeting Controls
+
+Keep meeting controls toolbar visible at all times.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `us.zoom.xos` |
+| **Key** | `ZMAlwaysShowMeetingControls` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the meeting control toolbar (mute, video, share, participants, etc.) remains visible at all times during Zoom meetings. By default, Zoom auto-hides controls after a few seconds to maximize the video view.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Always visible** — Controls stay on screen |
+| `false` | **Auto-hide** (default) — Controls fade after inactivity |
+
+## Meeting Controls Toolbar
+
+The toolbar includes:
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ 🎤 Mute  📹 Video  🔒 Security  👥 Participants  💬 Chat  📤 Share │
+│ 📝 Record  ✋ Reactions  ⋮ More  🔴 End                           │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+## Our Configuration
+
+**Set to**: `true` — Always show controls.
+
+### Why Always Show?
+
+1. **Quick access** — Mute/unmute instantly
+2. **No fumbling** — Controls always there
+3. **Professionalism** — No delay finding buttons
+4. **Screen sharing** — Easy to stop share
+5. **Participants** — See attendee count
+
+### Why Auto-Hide?
+
+- Larger video view
+- Less visual clutter
+- Presentation mode
+- Recording aesthetics
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read us.zoom.xos ZMAlwaysShowMeetingControls
+
+# Always show controls (recommended)
+defaults write us.zoom.xos ZMAlwaysShowMeetingControls -bool true
+
+# Auto-hide controls (default)
+defaults write us.zoom.xos ZMAlwaysShowMeetingControls -bool false
+
+# Delete (reset to default)
+defaults delete us.zoom.xos ZMAlwaysShowMeetingControls
+```
+
+## UI Location
+
+**Zoom** → **Settings** (⌘,) → **General** → ☑ **Always show meeting controls**
+
+## Showing Hidden Controls
+
+When auto-hide is on:
+- Move mouse to bottom of window
+- Controls slide up
+- Stop moving mouse → controls hide again
+
+## Keyboard Shortcuts
+
+Essential meeting controls:
+| Shortcut | Action |
+|----------|--------|
+| ⌘⇧A | Toggle mute |
+| ⌘⇧V | Toggle video |
+| ⌘⇧S | Screen share |
+| ⌘⇧H | Show/hide chat |
+| ⌘W | End meeting |
+| Space | Push-to-talk (when muted) |
+
+With keyboard shortcuts, auto-hide is less problematic.
+
+## Recording Considerations
+
+During recording:
+- Hidden controls = cleaner look
+- Visible controls appear in recording
+- Cloud recordings exclude controls
+- Local recordings include everything visible
+
+## Presentation Mode
+
+When presenting:
+- You may want controls hidden for audience
+- But available for you on presenter screen
+- Use separate presenter display settings
+
+## Related Settings
+
+```bash
+# Join with video off
+defaults write us.zoom.xos ZMEnableStopVideoWhenJoin -bool true
+
+# Join muted
+defaults write us.zoom.xos ZMEnableMuteWhenJoin -bool true
+
+# HD video
+defaults write us.zoom.xos ZMEnableHDVideo -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Controls keep hiding | Verify setting is true |
+| Controls not appearing | Move mouse to window bottom |
+| Setting not applying | Restart Zoom |
+
+## Compatibility
+
+- **Zoom**: All desktop versions
+- **macOS**: 10.10+
+- **Note**: Restart Zoom for changes
+
+## Source File
+
+**File**: [`defaults/applications/zoom_app.sh`](../../../../defaults/applications/zoom_app.sh)
+
+```bash
+run_defaults "us.zoom.xos" "ZMAlwaysShowMeetingControls" "-bool" "true"
+```
+
+## References
+
+- [Zoom Help: Meeting controls](https://support.zoom.us/hc/en-us/articles/201362163-Desktop-client-settings)

@@ -1,0 +1,184 @@
+# Screenshot Disable Shadow
+
+Remove window shadows from screenshots.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.screencapture` |
+| **Key** | `disable-shadow` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether window screenshots (⌘⇧4 then Space) include the decorative drop shadow or not. Disabling the shadow produces cleaner images that are easier to use in documentation, presentations, and design work.
+
+## Values
+
+| Value | Appearance |
+|-------|------------|
+| `false` | **Include shadow** (default) — Decorative effect |
+| `true` | **No shadow** — Clean edges |
+
+## Visual Demonstration
+
+### With Shadow (false):
+```
+    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+  ░░┌─────────────────────────────────┐░░
+ ░░░│         Window Title            │░░░
+ ░░░├─────────────────────────────────┤░░░
+ ░░░│                                 │░░░
+ ░░░│      Window Content             │░░░
+ ░░░│                                 │░░░
+ ░░░└─────────────────────────────────┘░░░
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+       ↑
+    Shadow adds ~80px padding around window
+    File size: Larger
+```
+
+### Without Shadow (true):
+```
+┌─────────────────────────────────────┐
+│         Window Title                │
+├─────────────────────────────────────┤
+│                                     │
+│      Window Content                 │
+│                                     │
+└─────────────────────────────────────┘
+
+    No extra padding
+    File size: Smaller
+    Cleaner for documentation
+```
+
+## Our Configuration
+
+**Set to**: `true` — Disable shadow.
+
+### Why Disable Shadow?
+
+1. **Cleaner images** — No fuzzy edges
+2. **Smaller files** — Less transparent padding
+3. **Documentation** — Professional appearance
+4. **Compositing** — Easier to layer images
+5. **Consistency** — Uniform screenshots
+
+### Why Keep Shadow?
+
+- Aesthetic preference
+- Marketing materials
+- Standalone images
+- Visual depth
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.screencapture disable-shadow
+
+# Disable shadow (recommended)
+defaults write com.apple.screencapture disable-shadow -bool true
+
+# Enable shadow (default)
+defaults write com.apple.screencapture disable-shadow -bool false
+
+# Restart to apply
+killall SystemUIServer
+```
+
+## UI Location
+
+No UI option. Must use defaults command.
+
+## Affected Screenshot Types
+
+This setting only affects windowed screenshots:
+| Screenshot Type | Shadow Affected |
+|-----------------|-----------------|
+| ⌘⇧3 (Full screen) | No shadow anyway |
+| ⌘⇧4 (Selection) | No shadow anyway |
+| **⌘⇧4 + Space** (Window) | ✅ **Yes** |
+| ⌘⇧5 → Window | ✅ **Yes** |
+
+## Temporary Override
+
+Hold **⌥ Option** when clicking window to toggle shadow:
+- Shadow enabled → Hold ⌥ for no shadow
+- Shadow disabled → Hold ⌥ for shadow
+
+## File Size Comparison
+
+For typical window screenshot:
+```
+With shadow:    1.8 MB  (transparent area)
+Without shadow: 1.2 MB  (compact)
+                ↓
+            33% smaller!
+```
+
+## Transparency Implications
+
+With shadow enabled:
+- PNG file with transparency
+- Shadow area is semi-transparent
+- Background visible through shadow
+
+Without shadow:
+- PNG with window only
+- No transparency padding
+- Smaller, cleaner file
+
+## Related Settings
+
+```bash
+# Screenshot location
+defaults write com.apple.screencapture location -string "~/Pictures/Screenshots"
+
+# Screenshot format
+defaults write com.apple.screencapture type -string "png"
+
+# Include date in filename
+defaults write com.apple.screencapture include-date -bool true
+
+# Show floating thumbnail
+defaults write com.apple.screencapture show-thumbnail -bool true
+```
+
+## Documentation Workflow
+
+For technical documentation:
+1. Disable shadows
+2. Set location to project folder
+3. Take window screenshots
+4. Images ready to use immediately
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still seeing shadow | Restart SystemUIServer |
+| Shadows on some captures | Hold ⌥ for individual override |
+| Full-screen has no shadow | Normal — only windows have shadow |
+
+## Compatibility
+
+- **macOS**: 10.5+ (Leopard)
+- **Note**: `killall SystemUIServer` to apply
+
+## Source File
+
+**File**: [`defaults/applications/screencapture.sh`](../../../../defaults/applications/screencapture.sh)
+
+```bash
+run_defaults "com.apple.screencapture" "disable-shadow" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Take screenshots](https://support.apple.com/en-us/102646)
+- [Apple Support: Screenshot options](https://support.apple.com/guide/mac-help/take-screenshots-mh26782/mac)

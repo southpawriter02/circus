@@ -1,0 +1,168 @@
+# Safari Develop Menu
+
+Enable the hidden Develop menu for web development tools.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `IncludeDevelopMenu` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables Safari's Develop menu, which provides access to Web Inspector, JavaScript debugging, responsive design mode, and other essential web development tools. This menu is hidden by default but is indispensable for web developers.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show Develop menu** — Full developer tools |
+| `false` | **Hide menu** (default) — Consumer experience |
+
+## Developer Tools Included
+
+| Feature | Shortcut | Purpose |
+|---------|----------|---------|
+| Web Inspector | ⌥⌘I | DOM, CSS, Network, Console |
+| JavaScript Console | ⌥⌘C | Log output, run commands |
+| Responsive Design Mode | ⌃⌘R | Test mobile layouts |
+| Empty Caches | ⌥⌘E | Clear all cached data |
+| Disable JavaScript | — | Test without JS |
+| User Agent | — | Test as other browsers |
+
+## Our Configuration
+
+**Set to**: `true` — Enable developer tools.
+
+### Why Enable?
+
+1. **Web development** — Essential debugging tools
+2. **Inspection** — Examine DOM and CSS
+3. **Performance** — Network and timeline analysis
+4. **Accessibility** — Audit tools included
+5. **Testing** — Responsive design mode
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari IncludeDevelopMenu
+
+# Enable Develop menu (recommended for developers)
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+
+# Also enable WebKit developer extras
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
+
+# Disable Develop menu
+defaults write com.apple.Safari IncludeDevelopMenu -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Safari IncludeDevelopMenu
+```
+
+## UI Location
+
+**Safari** → **Settings** (⌘,) → **Advanced** → ☑ **Show features for web developers**
+
+Or: ☑ **Show Develop menu in menu bar** (older macOS)
+
+## Web Inspector Deep Dive
+
+Web Inspector provides:
+
+### Elements Tab
+- Live DOM tree
+- CSS styles (computed and authored)
+- Box model visualization
+- Accessibility tree
+
+### Console Tab
+- JavaScript errors and logs
+- Interactive JavaScript REPL
+- Network request logging
+- Custom `console.log()` output
+
+### Network Tab
+- All HTTP requests
+- Response timing
+- Headers and bodies
+- Waterfall visualization
+
+### Sources Tab
+- JavaScript debugger
+- Breakpoints
+- Call stack
+- Variable inspection
+
+### Timelines Tab
+- Rendering performance
+- JavaScript execution
+- Layout recalculations
+- Paint events
+
+## Responsive Design Mode
+
+Test mobile layouts:
+1. **Develop** → **Enter Responsive Design Mode** (⌃⌘R)
+2. Select device preset or custom size
+3. Test touch events
+4. Simulate slow networks
+
+## User Agent Switching
+
+Test as different browsers:
+1. **Develop** → **User Agent** →
+2. Select browser (Chrome, Firefox, Safari versions)
+3. Page reloads with new user agent
+
+## Right-Click Inspect
+
+With Develop menu enabled:
+- Right-click any element → **Inspect Element**
+- Opens Web Inspector focused on that element
+
+## Related Settings
+
+```bash
+# Show full URL for security awareness
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+
+# Warn about fraudulent websites
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Menu not appearing | Restart Safari |
+| Right-click missing Inspect | Check all three keys are set |
+| Inspector not opening | Try ⌥⌘I or View menu |
+
+## Compatibility
+
+- **Safari**: All versions
+- **macOS**: 10.10+
+- **Note**: Restart Safari for changes
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "IncludeDevelopMenu" "-bool" "true"
+run_defaults "com.apple.Safari" "WebKitDeveloperExtrasEnabledPreferenceKey" "-bool" "true"
+run_defaults "com.apple.Safari" "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Developer: Safari Web Inspector](https://developer.apple.com/safari/tools/)
+- [WebKit Documentation](https://webkit.org/web-inspector/)
+- [Apple Support: Safari developer tools](https://support.apple.com/guide/safari/use-the-developer-tools-in-the-develop-menu-sfri20948/mac)

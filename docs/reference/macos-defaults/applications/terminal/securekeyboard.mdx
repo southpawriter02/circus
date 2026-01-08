@@ -1,0 +1,121 @@
+# Terminal Secure Keyboard Entry
+
+Protect terminal input from keyloggers.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Terminal` |
+| **Key** | `SecureKeyboardEntry` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables Secure Keyboard Entry mode, which prevents other applications from intercepting keystrokes typed in Terminal. Essential security for entering passwords, API keys, or other sensitive information.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Secure mode** — Blocks keystroke capture |
+| `false` | **Normal mode** (default) — Other apps can see input |
+
+## Our Configuration
+
+**Set to**: `true` — Maximum security.
+
+### Why Enable?
+
+1. **Password protection** — Blocks keyloggers
+2. **API keys** — Secure credential entry
+3. **SSH** — Protected private key passphrases
+4. **Best practice** — Minimal performance impact
+
+### How It Works
+
+When enabled, macOS routes keyboard input exclusively to Terminal, bypassing:
+- Accessibility APIs
+- Input method hooks
+- Background monitoring apps
+
+## ⚠️ Security Note
+
+This is **strongly recommended**. Keyloggers can capture:
+- Passwords
+- API tokens
+- SSH passphrases
+- Any typed credentials
+
+Secure Keyboard Entry blocks this attack vector.
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Terminal SecureKeyboardEntry
+
+# Enable secure keyboard (recommended)
+defaults write com.apple.Terminal SecureKeyboardEntry -bool true
+
+# Disable (not recommended)
+defaults write com.apple.Terminal SecureKeyboardEntry -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Terminal SecureKeyboardEntry
+```
+
+## UI Location
+
+**Terminal** menu → ☑ **Secure Keyboard Entry**
+
+Checkmark indicates enabled.
+
+## Verification
+
+Check if enabled:
+1. Open Terminal menu
+2. Look for checkmark next to "Secure Keyboard Entry"
+
+## Trade-offs
+
+When enabled:
+- ✅ Blocks keyloggers
+- ✅ Protects sensitive input
+- ⚠️ Some text expansion tools may not work
+- ⚠️ Some accessibility tools limited
+
+## iTerm2 Equivalent
+
+iTerm2 has the same feature:
+
+**iTerm2** → **Secure Keyboard Entry** (menu)
+
+Or in iTerm2 Preferences.
+
+## Related Security
+
+```bash
+# Hide Terminal from other apps reading window content
+# Consider using separate profile for sensitive work
+```
+
+## Compatibility
+
+- **macOS**: 10.10+
+- **Terminal.app**: Built-in
+- **Note**: Persists across sessions
+
+## Source File
+
+**File**: [`defaults/applications/terminal.sh`](../../../../defaults/applications/terminal.sh)
+
+```bash
+run_defaults "com.apple.Terminal" "SecureKeyboardEntry" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Secure Keyboard Entry](https://support.apple.com/guide/terminal/use-secure-keyboard-entry-trmlkeyboard/mac)

@@ -1,58 +1,74 @@
 # Mail Conversation View
 
-Group related email messages into threads.
+Group related messages into threaded conversations.
 
 ## Overview
 
 | Property | Value |
 |----------|-------|
 | **Domain** | `com.apple.mail` |
-| **Keys** | `ConversationViewEnabled`, `ConversationViewAllMailboxes`, `ConversationViewSortDescending` |
+| **Keys** | `ConversationViewEnabled`, `ConversationViewAllMailboxes` |
 | **Type** | Boolean |
-| **Default Value** | `true`, `false`, `true` |
-| **Our Setting** | `true`, `true`, `true` |
+| **Default Value** | `true`, `false` |
+| **Our Setting** | `true`, `true` |
 
 ## Description
 
-Conversation View groups related email messages into threads, making it easier to follow email discussions and keep your inbox organized.
+Conversation View groups related emails together in threads, showing all replies, forwards, and responses in a single expandable item. This makes following email discussions much easier than viewing individual messages.
 
-## The Three Conversation Settings
+## Values
 
-| Key | Purpose | Our Setting |
-|-----|---------|-------------|
-| `ConversationViewEnabled` | Enable thread grouping | `true` |
-| `ConversationViewAllMailboxes` | Include messages from all folders | `true` |
-| `ConversationViewSortDescending` | Newest messages at top | `true` |
+| Key | Value | Behavior |
+|-----|-------|----------|
+| `ConversationViewEnabled` | `true` | Group messages into conversations |
+| `ConversationViewEnabled` | `false` | Show individual messages |
+| `ConversationViewAllMailboxes` | `true` | Include related messages from all mailboxes |
+| `ConversationViewAllMailboxes` | `false` | Only messages in current mailbox |
 
-### ConversationViewEnabled
+## Visual Comparison
 
-Groups replies, forwards, and related messages together.
-
-```bash
-defaults write com.apple.mail ConversationViewEnabled -bool true
+**Without Conversation View:**
+```
+📥 Inbox
+├── Re: Project Update (Sarah)
+├── Newsletter
+├── Re: Re: Project Update (John)
+├── Project Update (You)
+├── Fwd: Project Update (Mike)
 ```
 
-### ConversationViewAllMailboxes
-
-Includes related messages even if they're in Sent, Archive, or other mailboxes.
-
-```bash
-defaults write com.apple.mail ConversationViewAllMailboxes -bool true
+**With Conversation View:**
 ```
-
-**Example**: When viewing an received email, you'll also see your sent replies inline.
-
-### ConversationViewSortDescending
-
-Shows newest messages at the top of the conversation.
-
-```bash
-defaults write com.apple.mail ConversationViewSortDescending -bool true
+📥 Inbox
+├── 💬 Project Update (5 messages)
+│   ├── You: Initial message
+│   ├── Sarah: Re: Project Update
+│   ├── John: Re: Re: Project Update
+│   └── Mike: Fwd: Project Update
+└── Newsletter
 ```
 
 ## Our Configuration
 
-All three set to `true` — Full conversation threading with newest first.
+**ConversationViewEnabled**: `true` — Group conversations
+**ConversationViewAllMailboxes**: `true` — Include from all mailboxes
+
+### Why Enable Conversation View?
+
+1. **Context** — See full discussion history
+2. **Organization** — Fewer items to scan
+3. **Efficiency** — Find related messages instantly
+4. **Archiving** — Archive entire conversations at once
+5. **Sent messages** — See your replies in context
+
+### Why Include All Mailboxes?
+
+When viewing inbox, also show:
+- Your sent replies
+- Messages you archived
+- Messages in other folders
+
+This provides complete conversation context.
 
 ## Code Examples
 
@@ -60,74 +76,79 @@ All three set to `true` — Full conversation threading with newest first.
 # Read current values
 defaults read com.apple.mail ConversationViewEnabled
 defaults read com.apple.mail ConversationViewAllMailboxes
-defaults read com.apple.mail ConversationViewSortDescending
 
-# Complete conversation view setup
+# Enable conversation view (recommended)
 defaults write com.apple.mail ConversationViewEnabled -bool true
+
+# Include messages from all mailboxes
 defaults write com.apple.mail ConversationViewAllMailboxes -bool true
-defaults write com.apple.mail ConversationViewSortDescending -bool true
+
+# Disable conversation view
+defaults write com.apple.mail ConversationViewEnabled -bool false
 
 # Delete (reset to defaults)
 defaults delete com.apple.mail ConversationViewEnabled
-defaults delete com.apple.mail ConversationViewAllMailboxes
-defaults delete com.apple.mail ConversationViewSortDescending
-
-# Restart Mail to apply
-killall Mail
 ```
 
 ## UI Location
 
-**View** menu:
-- **Organize by Conversation** (⌃⌘O) — Enables/disables threading
-- **Include Related Messages** — Shows messages from all mailboxes
-- **Sort By** → **Date (Descending)** — Newest first
+**View** menu → ☑ **Organize by Conversation**
+**View** menu → ☑ **Include Related Messages**
 
-Also in **Mail** → **Settings** (⌘,) → **Viewing**
+Or in message list header, click the Organize button.
 
-## Visual Example
-
-### Without Conversation View
-
-```
-📧 RE: Project Update - Alice
-📧 Quarterly Report - Bob  
-📧 RE: RE: Project Update - Carol
-📧 Project Update - You
-📧 RE: Project Update - Alice
-```
-
-### With Conversation View
-
-```
-📧 Project Update (4 messages)
-    └─ Carol: RE: RE: Project Update
-    └─ Alice: RE: Project Update  
-    └─ Alice: RE: Project Update
-    └─ You: Project Update
-
-📧 Quarterly Report - Bob
-```
-
-## Related Settings
+## Related View Settings
 
 ```bash
-# Don't auto-mark all messages as read when opening conversation
+# Sort with newest message on top
+defaults write com.apple.mail ConversationViewSortDescending -bool true
+
+# Mark all messages as read when opening conversation
 defaults write com.apple.mail ConversationViewMarkAllAsRead -bool false
 ```
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| ⌘K | Organize by Conversation toggle |
+| → | Expand conversation |
+| ← | Collapse conversation |
+| ⌥→ | Expand all conversations |
+| ⌥← | Collapse all conversations |
+
+## Conversation in Classic Layout
+
+In classic (three-column) layout:
+- Left column: Mailbox list
+- Middle column: Message list (conversations)
+- Right column: Message preview
+
+Conversations appear collapsed in the middle column.
 
 ## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| Messages not grouping | Enable via View → Organize by Conversation |
-| Sent messages not showing | Enable "Include Related Messages" |
-| Thread order wrong | Check View → Sort By → Date setting |
+| Conversations not grouping | Check subject lines match |
+| Missing messages in thread | Enable "Include Related Messages" |
+| Too many unrelated grouped | Disable ConversationViewAllMailboxes |
+
+## How Threading Works
+
+Mail groups by:
+- Subject line similarity
+- In-Reply-To header
+- References header
+- Message-ID relationships
+
+Different subjects = different conversations.
 
 ## Compatibility
 
-- **Mail.app**: macOS 10.7+
-- **Works with**: All email account types
+- **macOS**: All versions
+- **Mail.app**: Native feature
+- **Account types**: All email providers
 
 ## Source File
 
@@ -140,5 +161,4 @@ run_defaults "com.apple.mail" "ConversationViewAllMailboxes" "-bool" "true"
 
 ## References
 
-- [Apple Support: Organize emails by conversation](https://support.apple.com/guide/mail/organize-emails-by-conversation-mlhlcc79f5d8/mac)
-
+- [Apple Support: View email conversations](https://support.apple.com/guide/mail/view-conversations-mlhl276c9e96/mac)
