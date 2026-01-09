@@ -1,0 +1,297 @@
+# Xcode Show Minimap
+
+Display a code minimap in the editor for quick navigation.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `DVTTextShowMinimap` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Xcode displays a minimap (miniature overview) of the source code file on the right side of the editor. The minimap provides a bird's-eye view of the entire file, showing code structure, syntax highlighting, and allowing quick navigation by clicking or dragging. This is similar to minimaps found in VS Code, Sublime Text, and other modern editors. The minimap is particularly useful for navigating large files.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Minimap hidden** (default) — Traditional editor view |
+| `true` | **Minimap shown** — Code overview on right side |
+
+## Visual Demonstration
+
+### Minimap Hidden (false - Default):
+```
++-------------------------------------------------------------+
+|  Xcode Editor - No Minimap                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  File: ViewController.swift                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │   1  import UIKit                                       │|
+|  │   2                                                      │|
+|  │   3  class ViewController: UIViewController {           │|
+|  │   4                                                      │|
+|  │   5      // MARK: - Properties                          │|
+|  │   6      var items: [String] = []                       │|
+|  │   7      var isLoading = false                          │|
+|  │   8                                                      │|
+|  │   9      // MARK: - Lifecycle                           │|
+|  │  10      override func viewDidLoad() {                  │|
+|  │  11          super.viewDidLoad()                        │|
+|  │  12          setupUI()                                  │|
+|  │  13          loadData()                                 │|
+|  │  14      }                                              │|
+|  │  15                                                      │|
+|  │                                                    ░░░░░│|
+|  │                                                    ↑     │|
+|  │                                                    Scroll│|
+|  │                                                    bar   │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Maximum code width                                       |
+|  ✗ No file overview                                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Minimap Shown (true):
+```
++-------------------------------------------------------------+
+|  Xcode Editor - With Minimap                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌────────────────────────────────────────────────┬────────┐|
+|  │  File: ViewController.swift                    │▓▓▓▓▓▓▓▓│|
+|  │  ──────────────────────────────────────────    │▓import▓│|
+|  │                                                │▓▓▓▓▓▓▓▓│|
+|  │   1  import UIKit                             │▓class▓▓│|
+|  │   2                                            │▓▓▓▓▓▓▓▓│|
+|  │   3  class ViewController: UIViewController { │▓▓prop▓▓│|
+|  │   4                                            │▓▓▓▓▓▓▓▓│|
+|  │   5      // MARK: - Properties                │┌──────┐│|
+|  │   6      var items: [String] = []             ││ view ││|
+|  │   7      var isLoading = false                │└──────┘│|
+|  │   8                                            │▓▓▓▓▓▓▓▓│|
+|  │   9      // MARK: - Lifecycle                 │▓setup▓▓│|
+|  │  10      override func viewDidLoad() {        │▓▓▓▓▓▓▓▓│|
+|  │  11          super.viewDidLoad()              │▓▓▓▓▓▓▓▓│|
+|  │  12          setupUI()                        │▓load▓▓▓│|
+|  │  13          loadData()                       │▓▓▓▓▓▓▓▓│|
+|  │  14      }                                    │▓▓▓▓▓▓▓▓│|
+|  │                                                │        │|
+|  │                                                │ Minimap│|
+|  └────────────────────────────────────────────────┴────────┘|
+|                    ↑                                  ↑      |
+|              Main editor                        Minimap view|
+|                                                              |
+|  ✓ Visual file overview                                     |
+|  ✓ Quick navigation by clicking                             |
+|  ✓ See current position (highlighted box)                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Minimap Navigation:
+```
++-------------------------------------------------------------+
+|  Using the Minimap                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  CLICK NAVIGATION:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Click anywhere on minimap → Jump to that location          |
+|  Click and drag → Scroll smoothly                           |
+|                                                              |
+|  HOVER PREVIEW:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Hover over minimap → Shows line preview tooltip            |
+|                                                              |
+|  ┌──────────────────────────────────────────────────────────┐|
+|  │                                           ▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │                                           │ ┌──────────┐│|
+|  │                    ← Hover shows →        │ │ Line 245 ││|
+|  │                                           │ │ func save││|
+|  │                                           │ └──────────┘│|
+|  │                                           ▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  └──────────────────────────────────────────────────────────┘|
+|                                                              |
+|  VISUAL INDICATORS:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Syntax highlighting preserved (dimmed)                   |
+|  • Current viewport shown as highlighted rectangle          |
+|  • Search results highlighted                               |
+|  • Warnings/errors shown as colored markers                 |
+|  • MARK comments visible as section dividers                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Minimap Features in Xcode:
+```
++-------------------------------------------------------------+
+|  Xcode Minimap Capabilities                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  WHAT'S VISIBLE:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ✓ Code structure (functions, classes)                     |
+|  ✓ MARK: comments as dividers                              |
+|  ✓ Syntax highlighting (colors preserved)                  |
+|  ✓ Current viewport position                               |
+|  ✓ Search result highlights                                |
+|  ✓ Build warnings/errors                                   |
+|  ✓ Breakpoint indicators                                   |
+|                                                              |
+|  BEST FOR:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Long files (100+ lines)                                 |
+|  • Finding MARK: sections quickly                          |
+|  • Navigating to specific functions                        |
+|  • Understanding overall file structure                    |
+|  • Large view controllers or models                        |
+|                                                              |
+|  NOT NEEDED FOR:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Short files (<50 lines)                                 |
+|  • Small displays where space is limited                   |
+|  • When using Jump Bar frequently                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show minimap for better code navigation.
+
+### Why Enable?
+
+1. **Quick navigation** — Jump to any part of file instantly
+2. **File overview** — See entire file structure at a glance
+3. **Find sections** — Locate MARK: comments visually
+4. **Modern workflow** — Standard in VS Code, Sublime, etc.
+5. **Long files** — Essential for files with 100+ lines
+
+### Why Disable?
+
+- Small screen/limited horizontal space
+- Prefer traditional scrollbar
+- Find minimap distracting
+- Work with mostly short files
+- Need maximum code width
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dt.Xcode DVTTextShowMinimap
+
+# Enable minimap (recommended)
+defaults write com.apple.dt.Xcode DVTTextShowMinimap -bool true
+
+# Disable minimap
+defaults write com.apple.dt.Xcode DVTTextShowMinimap -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dt.Xcode DVTTextShowMinimap
+```
+
+## UI Location
+
+**Xcode** > **Editor** > **Minimap** (toggle)
+
+```
++-------------------------------------------------------------+
+|  Xcode - Enabling Minimap                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  METHOD 1 - Menu:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Editor > Minimap                                            |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Editor                                                  │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Show Editor Only                         ⌘↩            │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Authors                                                 │|
+|  │  ✓ Minimap                                ← Toggle      │|
+|  │  Code Folding                                            │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ...                                                     │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  METHOD 2 - Right-click in editor gutter area               |
+|  METHOD 3 - View > Editor > Minimap                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show minimap (this setting)
+defaults write com.apple.dt.Xcode DVTTextShowMinimap -bool true
+
+# Show line numbers
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool true
+
+# Show code folding ribbon
+defaults write com.apple.dt.Xcode DVTTextShowFoldingSidebar -bool true
+
+# Show page guide
+defaults write com.apple.dt.Xcode DVTTextShowPageGuide -bool true
+
+# Page guide column position
+defaults write com.apple.dt.Xcode DVTTextPageGuideLocation -int 120
+
+# Trim trailing whitespace
+defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Minimap not appearing | Check Editor > Minimap is checked; restart Xcode |
+| Minimap takes too much space | Can't resize; consider disabling |
+| Not showing syntax colors | Normal; minimap has dimmed colors |
+| Click not navigating | Ensure clicking within minimap area |
+| Performance issues | Disable for very large files (10K+ lines) |
+
+## Compatibility
+
+- **Xcode**: 11.0+ (introduced minimap feature)
+- **macOS**: 10.14.4+ (requires Xcode 11+)
+- **Note**: Restart Xcode for defaults change to take effect
+- **Note**: Toggle via menu is immediate
+- **Note**: Works with all source file types
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../../defaults/applications/xcode.sh)
+
+```bash
+# DVTTextShowMinimap is listed in undocumented settings
+# Controls the code minimap feature introduced in Xcode 11
+```
+
+## References
+
+- [Apple Developer: Xcode Overview](https://developer.apple.com/documentation/xcode)
+- [WWDC 2019: What's New in Xcode 11](https://developer.apple.com/videos/play/wwdc2019/401/)
+- [Apple Developer Forums: Xcode minimap](https://developer.apple.com/forums/tags/xcode)

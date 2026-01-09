@@ -1,0 +1,272 @@
+# Books Last Used Font Size
+
+Set the default font size for reading books in Apple Books.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iBooksX` |
+| **Key** | `BKLastUsedFontSize` |
+| **Type** | Integer |
+| **Default Value** | `4` |
+| **Our Setting** | `4` |
+
+## Description
+
+Controls the default font size used when reading books in Apple Books. This setting remembers your preferred text size and applies it to new books. Individual books may remember their own font size settings, but this sets the baseline for the reading experience. Larger sizes improve readability but show less content per page; smaller sizes fit more text but may strain eyes.
+
+## Values
+
+| Value | Size | Description |
+|-------|------|-------------|
+| `0` | **XS** | Extra Small (~10pt) |
+| `1` | **S** | Small (~12pt) |
+| `2` | **SM** | Small-Medium (~14pt) |
+| `3` | **M** | Medium (~16pt) |
+| `4` | **ML** | Medium-Large (~18pt) — Default |
+| `5` | **L** | Large (~20pt) |
+| `6` | **XL** | Extra Large (~24pt) |
+| `7` | **XXL** | Extra Extra Large (~28pt+) |
+
+## Visual Demonstration
+
+### Font Size Comparison:
+```
++-------------------------------------------------------------+
+|  Books Font Size Examples                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  SIZE 1 (Small):                                             |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  It was the best of times, it was the worst of times,   │|
+|  │  it was the age of wisdom, it was the age of            │|
+|  │  foolishness, it was the epoch of belief, it was the    │|
+|  │  epoch of incredulity, it was the season of Light, it   │|
+|  │  was the season of Darkness, it was the spring of hope, │|
+|  │  it was the winter of despair, we had everything before │|
+|  │  us, we had nothing before us, we were all going direct │|
+|  │  to Heaven, we were all going direct the other way.     │|
+|  └─────────────────────────────────────────────────────────┘|
+|  More text per page • May strain eyes • Good for skimming   |
+|                                                              |
+|  SIZE 4 (Medium-Large - Default):                            |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  It was the best of times, it was the                   │|
+|  │  worst of times, it was the age of wisdom,              │|
+|  │  it was the age of foolishness, it was the              │|
+|  │  epoch of belief, it was the epoch of                   │|
+|  │  incredulity...                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|  Balanced • Comfortable reading • Good default              |
+|                                                              |
+|  SIZE 7 (XXL):                                               |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  It was the best of times,                              │|
+|  │  it was the worst of                                     │|
+|  │  times...                                                │|
+|  └─────────────────────────────────────────────────────────┘|
+|  Large text • Easy on eyes • Less content per page          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### In-App Font Controls:
+```
++-------------------------------------------------------------+
+|  Changing Font Size While Reading                            |
++-------------------------------------------------------------+
+|                                                              |
+|  WHILE READING, TAP THE "aA" BUTTON:                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📖 Book Title                                           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │         [aA]  ← Appearance button                       │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────┐                    │|
+|  │  │  Appearance                      │                    │|
+|  │  │  ─────────────────────────────  │                    │|
+|  │  │                                  │                    │|
+|  │  │   A━━━━━━━━━━●━━━━━━━━━━A       │  ← Font size      │|
+|  │  │  smaller           larger       │    slider          │|
+|  │  │                                  │                    │|
+|  │  │  Font: [Original ▼]             │                    │|
+|  │  │                                  │                    │|
+|  │  │  Theme: ○ ○ ● ○                 │                    │|
+|  │  │         W S G N                  │                    │|
+|  │  │                                  │                    │|
+|  │  └─────────────────────────────────┘                    │|
+|  │                                                          │|
+|  │  Chapter 1                                               │|
+|  │                                                          │|
+|  │  It was the best of times...                            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Keyboard shortcuts while reading:                          |
+|  ⌘ +    Increase font size                                  |
+|  ⌘ -    Decrease font size                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Recommended Sizes:
+```
++-------------------------------------------------------------+
+|  Recommended Font Sizes by Use Case                          |
++-------------------------------------------------------------+
+|                                                              |
+|  USE CASE                           RECOMMENDED SIZE         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  General reading                    3-4 (Medium)            |
+|  Extended reading sessions          4-5 (Med-Large)         |
+|  Low-light reading                  5-6 (Large)             |
+|  Vision difficulties                6-7 (XL-XXL)            |
+|  Skimming/scanning text             1-2 (Small)             |
+|  Reference/technical books          2-3 (Small-Med)         |
+|                                                              |
+|  DISPLAY SIZE                       RECOMMENDED SIZE         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  13" MacBook                        4-5                      |
+|  15-16" MacBook                     3-4                      |
+|  24" iMac                           3-4                      |
+|  27"+ display                       2-3                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `4` — Medium-Large for comfortable default reading.
+
+### Why Use Medium-Large (4)?
+
+1. **Comfortable** — Easy on eyes for extended reading
+2. **Balanced** — Good text-per-page ratio
+3. **Accessible** — Works for most vision needs
+4. **Default** — Matches Apple's chosen default
+
+### Why Use Smaller?
+
+- Read more content per page
+- Reference books with lots of text
+- Comfortable with small text
+- Larger displays where small text is still readable
+
+### Why Use Larger?
+
+- Vision difficulties
+- Reading in low light
+- Reduce eye strain
+- Leisurely reading pace
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iBooksX BKLastUsedFontSize
+
+# Set to small (size 1)
+defaults write com.apple.iBooksX BKLastUsedFontSize -int 1
+
+# Set to medium-large (default, size 4)
+defaults write com.apple.iBooksX BKLastUsedFontSize -int 4
+
+# Set to extra large (size 6)
+defaults write com.apple.iBooksX BKLastUsedFontSize -int 6
+
+# Delete (reset to default)
+defaults delete com.apple.iBooksX BKLastUsedFontSize
+```
+
+## UI Location
+
+**While Reading** > **Appearance Menu (aA)**
+
+```
++-------------------------------------------------------------+
+|  Books - Font Size Control                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  While reading a book, access font size via:                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Tap/click the "aA" button in the toolbar                |
+|  2. Use the font size slider                                 |
+|  3. Or use ⌘+ and ⌘- keyboard shortcuts                     |
+|                                                              |
+|  The last used size becomes the default for new books       |
+|  (stored as BKLastUsedFontSize)                              |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Toolbar while reading:                                  │|
+|  │                                                          │|
+|  │  [◀ Library] [Table of Contents] [aA] [🔖] [🔍]        │|
+|  │                                    ↑                     │|
+|  │                          Font/Appearance button          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Font size (this setting)
+defaults write com.apple.iBooksX BKLastUsedFontSize -int 4
+
+# Font family used
+defaults write com.apple.iBooksX BKLastUsedFontFamilyName -string "Georgia"
+
+# Reader theme (White/Sepia/Gray/Night)
+defaults write com.apple.iBooksX BKReaderTheme -int 0
+
+# Scroll direction
+defaults write com.apple.iBooksX BKScrollDirection -int 1
+
+# Page turn animation
+defaults write com.apple.iBooksX BKAnimatePageTurn -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Font size not persisting | Quit Books before changing via defaults |
+| Different size per book | Individual books remember their settings |
+| Can't change font size | Some PDFs/fixed-layout books don't allow |
+| Text too small/large | Use ⌘+ or ⌘- to adjust while reading |
+| Setting has no visible effect | Try different value (0-7 range) |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Books app
+- **Note**: Only affects reflowable books (not fixed-layout)
+- **Note**: PDFs maintain their original formatting
+- **Note**: Individual books may override this default
+- **Note**: Syncs with iOS Books app via iCloud
+
+## Source File
+
+**File**: [`defaults/applications/books.sh`](../../../../../defaults/applications/books.sh)
+
+```bash
+# BKLastUsedFontSize controls default reading font size
+# Domain: com.apple.iBooksX
+# Values: 0-7 (XS to XXL)
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Support: Use Books on Mac](https://support.apple.com/guide/books/welcome/mac)
+- [Apple Support: Change Books settings](https://support.apple.com/guide/books/settings-ibks1016d5f5/mac)
+- [Apple Support: Read books in the Books app](https://support.apple.com/guide/books/read-books-ibks1015a09d/mac)

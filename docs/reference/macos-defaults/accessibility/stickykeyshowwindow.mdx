@@ -1,0 +1,281 @@
+# Accessibility Sticky Keys Show Window
+
+Display a visual indicator window showing the state of modifier keys when Sticky Keys is enabled.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `stickyKeyShowWindow` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether a visual indicator window appears on screen when Sticky Keys is enabled. The window shows the current state of modifier keys (Shift, Control, Option, Command), indicating whether each is off, pressed once (sticky), or locked (pressed twice). This visual feedback is essential for users who need Sticky Keys but may not remember which modifiers are currently active.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show window** (default) — Visual indicator visible |
+| `false` | **Hide window** — No visual indicator; rely on audio feedback |
+
+## Visual Demonstration
+
+### Sticky Keys Status Window:
+```
++-------------------------------------------------------------+
+|  Sticky Keys Visual Indicator                                |
++-------------------------------------------------------------+
+|                                                              |
+|  STICKY KEYS STATUS WINDOW:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌────────────────────────────────┐                         |
+|  │                                │                         |
+|  │   ⌃    ⌥    ⇧    ⌘            │   Modifier status       |
+|  │   ○    ○    ●    ○            │   window                |
+|  │                                │                         |
+|  │  off  off  on  off            │                         |
+|  │                                │                         |
+|  └────────────────────────────────┘                         |
+|                                                              |
+|  KEY STATES:                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ○ Empty circle   = Key is OFF (not pressed)                |
+|  ◐ Half-filled    = Key is STICKY (pressed once, waiting)   |
+|  ● Filled circle  = Key is LOCKED (pressed twice, held)     |
+|                                                              |
+|  EXAMPLE STATES:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  No modifiers active:                                        |
+|  ┌────────────────────────────────┐                         |
+|  │   ⌃    ⌥    ⇧    ⌘            │                         |
+|  │   ○    ○    ○    ○            │  All off                │|
+|  └────────────────────────────────┘                         |
+|                                                              |
+|  Shift pressed once (sticky):                                |
+|  ┌────────────────────────────────┐                         |
+|  │   ⌃    ⌥    ⇧    ⌘            │                         |
+|  │   ○    ○    ◐    ○            │  Shift waiting          │|
+|  └────────────────────────────────┘                         |
+|                                                              |
+|  Command locked (pressed twice):                             |
+|  ┌────────────────────────────────┐                         |
+|  │   ⌃    ⌥    ⇧    ⌘            │                         |
+|  │   ○    ○    ○    ●            │  Cmd locked             │|
+|  └────────────────────────────────┘                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### How Sticky Keys Works:
+```
++-------------------------------------------------------------+
+|  Sticky Keys Functionality                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  WITHOUT STICKY KEYS (Normal):                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  To type ⌘+C (Copy):                                        |
+|  Hold Command + Press C simultaneously                       |
+|                                                              |
+|  ┌────────┐  ┌────────┐                                     |
+|  │   ⌘    │  │   C    │   ← Both pressed together           |
+|  │  HOLD  │  │ PRESS  │                                     |
+|  └────────┘  └────────┘                                     |
+|                                                              |
+|  WITH STICKY KEYS:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  To type ⌘+C (Copy):                                        |
+|  Press Command, release, then Press C                        |
+|                                                              |
+|  Step 1:     Step 2:                                        |
+|  ┌────────┐  ┌────────┐                                     |
+|  │   ⌘    │  │   C    │   ← Press one at a time            |
+|  │ PRESS  │  │ PRESS  │                                     |
+|  │ RELEASE│  └────────┘                                     |
+|  └────────┘                                                  |
+|       ↓                                                      |
+|  ┌────────────────────────────────┐                         |
+|  │   ⌃    ⌥    ⇧    ⌘            │                         |
+|  │   ○    ○    ○    ◐            │  ← Window shows         |
+|  └────────────────────────────────┘    Cmd is "sticky"     |
+|                                                              |
+|  Then pressing C executes ⌘+C                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Window Position and Appearance:
+```
++-------------------------------------------------------------+
+|  Sticky Keys Window on Desktop                               |
++-------------------------------------------------------------+
+|                                                              |
+|  TYPICAL SCREEN LAYOUT:                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🍎 Safari  File  Edit  View  ...            🔋 Wi-Fi   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │                                  ┌──────────────┐        │|
+|  │                                  │ ⌃ ⌥ ⇧ ⌘     │ ← Status│|
+|  │                                  │ ○ ○ ○ ○     │   window│|
+|  │                                  └──────────────┘        │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │                                                      ││|
+|  │  │          Application Window                          ││|
+|  │  │                                                      ││|
+|  │  │                                                      ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Window characteristics:                                     |
+|  • Always on top (floats above other windows)               |
+|  • Semi-transparent background                               |
+|  • Can be moved by dragging                                  |
+|  • Small footprint, minimal distraction                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show visual feedback when using Sticky Keys.
+
+### Why Show Window?
+
+1. **Visual feedback** — Know which modifiers are active
+2. **Prevent mistakes** — See state before pressing keys
+3. **Essential for accessibility** — Core feature of Sticky Keys
+4. **Learning aid** — Helps learn keyboard shortcuts
+
+### Why Hide Window?
+
+- Prefer audio-only feedback
+- Screen space is very limited
+- Find window distracting
+- Already memorized modifier states
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess stickyKeyShowWindow
+
+# Show Sticky Keys status window (default when Sticky Keys enabled)
+defaults write com.apple.universalaccess stickyKeyShowWindow -bool true
+
+# Hide Sticky Keys status window
+defaults write com.apple.universalaccess stickyKeyShowWindow -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess stickyKeyShowWindow
+
+# Also need Sticky Keys enabled to see the effect
+defaults write com.apple.universalaccess stickyKey -bool true
+```
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Keyboard** > **Sticky Keys**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Accessibility - Keyboard                  |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Accessibility > Keyboard                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Keyboard                                                │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Sticky Keys                                             │|
+|  │  ────────────────────────────────────────────────────── │|
+|  │                                                          │|
+|  │  [✓] Enable Sticky Keys                                 │|
+|  │                                                          │|
+|  │  [✓] Display pressed keys on screen   ← This setting    │|
+|  │                                                          │|
+|  │  [✓] Beep when a modifier key is set                    │|
+|  │                                                          │|
+|  │  [i] Sticky Keys allows you to press modifier keys      │|
+|  │      (like Command, Shift, Option, and Control) one     │|
+|  │      at a time instead of holding them down.            │|
+|  │                                                          │|
+|  │  Slow Keys                                               │|
+|  │  ────────────────────────────────────────────────────── │|
+|  │  [ ] Enable Slow Keys                                   │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show status window (this setting)
+defaults write com.apple.universalaccess stickyKeyShowWindow -bool true
+
+# Enable Sticky Keys
+defaults write com.apple.universalaccess stickyKey -bool true
+
+# Play sound when modifier pressed
+defaults write com.apple.universalaccess stickyKeyBeepOnModifier -bool true
+
+# Slow Keys (separate feature)
+defaults write com.apple.universalaccess slowKey -bool false
+
+# Slow Keys delay
+defaults write com.apple.universalaccess slowKeyDelay -float 0.25
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Window not appearing | Ensure stickyKey is enabled |
+| Window in wrong position | Drag to reposition; position is remembered |
+| Window too distracting | Disable this setting; use audio feedback |
+| Can't see modifier states | Ensure window not hidden behind other apps |
+| Setting not taking effect | Toggle Sticky Keys off/on |
+
+## Compatibility
+
+- **macOS**: 10.0+ (all macOS versions)
+- **Note**: Only shows when Sticky Keys is enabled
+- **Note**: Window position persists across sessions
+- **Note**: Works with all applications
+- **Note**: Essential accessibility feature
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../../../defaults/accessibility/pointer.sh)
+
+```bash
+# stickyKeyShowWindow controls the visual indicator for Sticky Keys
+# Domain: com.apple.universalaccess
+# Requires stickyKey to be enabled for window to appear
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Support: Use Sticky Keys on Mac](https://support.apple.com/guide/mac-help/use-sticky-keys-accessibility-mchlc857a3e4/mac)
+- [Apple Support: Change Accessibility Keyboard settings](https://support.apple.com/guide/mac-help/change-accessibility-keyboard-settings-mchlc898a9b2/mac)
+- [Apple Support: Accessibility features in macOS](https://support.apple.com/guide/mac-help/accessibility-features-mchl45ea9c35/mac)

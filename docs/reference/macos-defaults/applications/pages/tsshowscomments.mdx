@@ -1,0 +1,301 @@
+# Pages Show Comments
+
+Control whether the comments pane is displayed in Apple Pages documents.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Pages` |
+| **Key** | `TSShowsComments` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the Comments & Changes pane is displayed in Pages documents. When enabled, comments and tracked changes appear in a sidebar, making it easy to review feedback and collaborate on documents. This is particularly useful for document review workflows, editing collaborations, and tracking revisions. Comments can be added by anyone with edit access and persist until deleted.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show comments pane** — Comments visible in sidebar |
+| `false` | **Hide comments pane** (default) — Comments hidden until opened |
+
+## Visual Demonstration
+
+### Comments Pane Shown (true):
+```
++-------------------------------------------------------------+
+|  Pages with Comments Pane                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📄 Pages - Project Proposal                            │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────┬───────────────────┐│|
+|  │  │                                  │ Comments         ││|
+|  │  │  Project Proposal                │ ───────────────  ││|
+|  │  │  ─────────────────               │                   ││|
+|  │  │                                  │ 💬 Sarah Chen     ││|
+|  │  │  Executive Summary               │    Jan 8, 2026   ││|
+|  │  │  ─────────────────               │    "Can we add   ││|
+|  │  │  This proposal outlines [1]      │    more detail   ││|
+|  │  │  our strategy for Q2...          │    here?"        ││|
+|  │  │                                  │    [Reply]       ││|
+|  │  │  Key objectives include:         │                   ││|
+|  │  │  • Revenue growth [2]            │ ─────────────────││|
+|  │  │  • Market expansion              │                   ││|
+|  │  │  • Customer retention            │ 💬 Mike Johnson  ││|
+|  │  │                                  │    Jan 8, 2026   ││|
+|  │  │  [1] Comment indicator           │    "Add Q1       ││|
+|  │  │  [2] Another comment             │    comparison    ││|
+|  │  │                                  │    data"         ││|
+|  │  │                                  │    [Reply]       ││|
+|  │  │                                  │                   ││|
+|  │  └─────────────────────────────────┴───────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comments Pane Hidden (false - Default):
+```
++-------------------------------------------------------------+
+|  Pages with Comments Pane Hidden                             |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📄 Pages - Project Proposal                            │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │                                                      ││|
+|  │  │  Project Proposal                                    ││|
+|  │  │  ─────────────────                                   ││|
+|  │  │                                                      ││|
+|  │  │  Executive Summary                                   ││|
+|  │  │  ─────────────────                                   ││|
+|  │  │  This proposal outlines our strategy for Q2...       ││|
+|  │  │                          │                           ││|
+|  │  │  Key objectives include: │                           ││|
+|  │  │  • Revenue growth        │◀─ Small comment markers   ││|
+|  │  │  • Market expansion      │   visible in margin       ││|
+|  │  │  • Customer retention                                ││|
+|  │  │                                                      ││|
+|  │  │  Full document width available                       ││|
+|  │  │  Click View > Show Comments to reveal sidebar        ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Adding Comments:
+```
++-------------------------------------------------------------+
+|  How to Add Comments in Pages                                |
++-------------------------------------------------------------+
+|                                                              |
+|  METHOD 1: SELECTION + MENU                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Select text you want to comment on                       |
+|  2. Insert > Comment (or ⌘⇧K)                               |
+|  3. Type your comment in the popup                          |
+|                                                              |
+|  METHOD 2: RIGHT-CLICK                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Select text                                              |
+|  2. Right-click > Add Comment                                |
+|  3. Type comment                                             |
+|                                                              |
+|  COMMENT INTERFACE:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  💬 Your Name                                           │|
+|  │     January 9, 2026                                     │|
+|  │  ┌───────────────────────────────────────────────────┐  │|
+|  │  │ Type your comment here...                         │  │|
+|  │  └───────────────────────────────────────────────────┘  │|
+|  │                                                          │|
+|  │  [Done]                                                 │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Collaboration Workflow:
+```
++-------------------------------------------------------------+
+|  Comments for Document Collaboration                         |
++-------------------------------------------------------------+
+|                                                              |
+|  REVIEW WORKFLOW:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Author                   Reviewer                           |
+|  ──────                   ────────                           |
+|     │                         │                              |
+|     ▼                         │                              |
+|  ┌──────────┐                 │                              |
+|  │ Draft    │  ─────────────▶ │                              |
+|  │ Document │   Share via     ▼                              |
+|  └──────────┘   iCloud    ┌──────────┐                       |
+|                           │ Reviews  │                       |
+|                           │ & Adds   │                       |
+|                           │ Comments │                       |
+|                           └────┬─────┘                       |
+|                                │                             |
+|     │  ◀──────────────────────┘                             |
+|     ▼     Synced back                                        |
+|  ┌──────────┐                                                |
+|  │ Reviews  │                                                |
+|  │ Comments │                                                |
+|  │ & Edits  │                                                |
+|  └──────────┘                                                |
+|                                                              |
+|  COMMENT THREAD:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  💬 Reviewer: "This section needs clarification"            |
+|     └─💬 Author: "I've updated the language"                |
+|        └─💬 Reviewer: "Looks good now! ✓"                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show comments for collaborative editing.
+
+### Why Show Comments?
+
+1. **Collaboration** — See all feedback at a glance
+2. **Review workflow** — Essential for document editing
+3. **Track discussions** — Follow comment threads
+4. **No missed feedback** — Comments always visible
+5. **Team coordination** — Central place for input
+
+### Why Hide Comments?
+
+- **Focus on writing** — Distraction-free composing
+- **More space** — Full width for document
+- **Final review** — When comments are resolved
+- **Personal documents** — No collaboration needed
+- **Presentation** — Cleaner view when showing document
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Pages TSShowsComments
+
+# Show comments pane
+defaults write com.apple.iWork.Pages TSShowsComments -bool true
+
+# Hide comments pane (default)
+defaults write com.apple.iWork.Pages TSShowsComments -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Pages TSShowsComments
+```
+
+## UI Location
+
+**Pages** > **View** > **Show Comments**
+
+```
++-------------------------------------------------------------+
+|  Pages View Menu                                             |
++-------------------------------------------------------------+
+|                                                              |
+|  View Menu                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Zoom                              ▶                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Show Ruler                         ⌘R                  │|
+|  │  Show Word Count                                        │|
+|  │  Show Layout                                            │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ✓ Show Comments                        ← This option  │|
+|  │    Show Invisibles                                      │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Page Thumbnails                                        │|
+|  │  Table of Contents                                      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Also accessible via toolbar comment button                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show comments pane (this setting)
+defaults write com.apple.iWork.Pages TSShowsComments -bool true
+
+# Show invisibles (formatting marks)
+defaults write com.apple.iWork.Pages TSWPShowInvisibles -bool false
+
+# Show ruler
+defaults write com.apple.iWork.Pages TSShowsRuler -bool true
+
+# Show word count
+defaults write com.apple.iWork.Pages TSWPShowWordCount -bool true
+
+# Default zoom
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 100
+
+# Auto-correction indicators
+defaults write com.apple.iWork.Pages TSShowsAutoCorrection -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Comments not showing | View > Show Comments or click comment indicator |
+| Can't add comments | Check if document is locked or read-only |
+| Comments not syncing | Verify iCloud connection and sign-in |
+| Old comments not visible | Scroll through comments pane |
+| Can't delete comment | Only comment author or document owner can delete |
+| Comments lost after export | Some formats don't preserve comments |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Pages
+- **Note**: Same key exists in Numbers and Keynote
+- **Note**: Comments sync via iCloud when sharing
+- **Note**: Restart Pages for terminal changes to apply
+- **Note**: Comments preserved in Pages and Word formats
+
+## Source File
+
+**File**: [`defaults/applications/pages.sh`](../../../../../defaults/applications/pages.sh)
+
+```bash
+# TSShowsComments controls comments pane visibility
+# Domain: com.apple.iWork.Pages
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+# Shows sidebar with all document comments
+```
+
+## References
+
+- [Apple Support: Pages User Guide](https://support.apple.com/guide/pages/welcome/mac)
+- [Apple Support: Add and print comments in Pages](https://support.apple.com/guide/pages/add-and-print-comments-tan5e76ecf3b/mac)
+- [Apple Support: Collaborate on a document in Pages](https://support.apple.com/guide/pages/collaborate-on-a-shared-document-tan3ee992e2d/mac)

@@ -1,0 +1,336 @@
+# Finder Secure Empty Trash
+
+Control whether Finder securely erases files when emptying the Trash.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `EmptyTrashSecurely` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Finder performs a secure erase when emptying the Trash. When enabled, files are overwritten with random data before deletion, making recovery with data recovery tools virtually impossible. This feature was more prominent in older macOS versions but remains available via defaults. On modern Macs with SSDs, the operating system's TRIM support and encrypted storage (FileVault) provide security benefits that reduce the need for secure erase.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Standard empty** (default) — Files deleted normally |
+| `true` | **Secure empty** — Files overwritten before deletion |
+
+## Visual Demonstration
+
+### Standard vs Secure Empty:
+```
++-------------------------------------------------------------+
+|  Trash Emptying Methods                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  STANDARD EMPTY (false - Default):                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐ |
+|  │    Trash    │      │  File System │      │    Disk     │ |
+|  │  ┌───────┐  │      │  ┌───────┐  │      │  ┌───────┐  │ |
+|  │  │ File A│  │ ───> │  │[marked│  │ ───> │  │ Data  │  │ |
+|  │  │ File B│  │      │  │deleted│  │      │  │ still │  │ |
+|  │  │ File C│  │      │  │  ]    │  │      │  │ there │  │ |
+|  │  └───────┘  │      │  └───────┘  │      │  └───────┘  │ |
+|  └─────────────┘      └─────────────┘      └─────────────┘ |
+|                                                              |
+|  • Fast operation                                            |
+|  • Files marked as deleted in file system                    |
+|  • Actual data remains until overwritten                     |
+|  • Recovery tools MAY be able to recover data                |
+|                                                              |
+|  SECURE EMPTY (true):                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐ |
+|  │    Trash    │      │  Overwrite  │      │    Disk     │ |
+|  │  ┌───────┐  │      │  ┌───────┐  │      │  ┌───────┐  │ |
+|  │  │ File A│  │ ───> │  │Random │  │ ───> │  │0x4F2D │  │ |
+|  │  │ File B│  │      │  │ Data  │  │      │  │0x9A1C │  │ |
+|  │  │ File C│  │      │  │0101...│  │      │  │0xE7B3 │  │ |
+|  │  └───────┘  │      │  └───────┘  │      │  └───────┘  │ |
+|  └─────────────┘      └─────────────┘      └─────────────┘ |
+|                                                              |
+|  • Slower operation (writes random data)                     |
+|  • Original data overwritten with random bytes               |
+|  • Then file system entry removed                            |
+|  • Recovery virtually impossible                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Security Considerations:
+```
++-------------------------------------------------------------+
+|  When Secure Empty Matters                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  MODERN SSDs (Most Current Macs):                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  SSDs handle data differently than HDDs:                     |
+|                                                              |
+|  • TRIM command marks blocks as unused                       |
+|  • Controller may remap/erase blocks independently          |
+|  • Secure erase less predictable on SSDs                     |
+|  • FileVault encryption provides better protection          |
+|                                                              |
+|  Recommendation: Use FileVault for SSD security              |
+|                                                              |
+|  TRADITIONAL HDDs (Older Macs):                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  HDDs store data in predictable locations:                   |
+|                                                              |
+|  • Data remains until physically overwritten                 |
+|  • Secure erase effectively prevents recovery                |
+|  • Multiple passes available (srm command)                   |
+|                                                              |
+|  Recommendation: Secure empty useful for sensitive files     |
+|                                                              |
+|  FILEVAULT ENCRYPTED DRIVES:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  When FileVault is enabled:                                  |
+|                                                              |
+|  • All data encrypted at rest                                |
+|  • Deleted files encrypted and unreadable                    |
+|  • Secure empty provides minimal additional benefit         |
+|  • Key deletion makes all data unrecoverable                 |
+|                                                              |
+|  Recommendation: FileVault is sufficient for most users      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Data Recovery Comparison:
+```
++-------------------------------------------------------------+
+|  Recoverability After Deletion                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Standard Delete (no FileVault):                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Time Since Deletion    Recovery Chance (HDD)                |
+|  ──────────────────────────────────────────                 |
+|  Immediately            ████████████████████ 95%+           |
+|  Hours later            ████████████████░░░░ 80%            |
+|  Days later             ████████████░░░░░░░░ 60%            |
+|  Weeks later            ████████░░░░░░░░░░░░ 40%            |
+|  Months later           ████░░░░░░░░░░░░░░░░ 20%            |
+|                                                              |
+|  * Depends on disk activity overwriting sectors              |
+|                                                              |
+|  Secure Empty:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Time Since Deletion    Recovery Chance                      |
+|  ──────────────────────────────────────────                 |
+|  Any time               ░░░░░░░░░░░░░░░░░░░░ ~0%            |
+|                                                              |
+|  * Data overwritten, not just marked deleted                 |
+|                                                              |
+|  FileVault Encrypted:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Time Since Deletion    Recovery Chance (Usable Data)        |
+|  ──────────────────────────────────────────                 |
+|  Any time               ░░░░░░░░░░░░░░░░░░░░ ~0%            |
+|                                                              |
+|  * Even if recovered, data is encrypted gibberish            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Performance Impact:
+```
++-------------------------------------------------------------+
+|  Empty Trash Performance                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  STANDARD EMPTY:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Deleting 1GB of files:                                      |
+|  ████░░░░░░░░░░░░░░░░  ~1 second                            |
+|                                                              |
+|  Only updates file system metadata, doesn't touch data.      |
+|                                                              |
+|  SECURE EMPTY:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Deleting 1GB of files:                                      |
+|  ████████████████████  ~30-60 seconds (HDD)                 |
+|  ████████████████████  ~10-20 seconds (SSD)                 |
+|                                                              |
+|  Must write random data to every byte of every file.         |
+|                                                              |
+|  Large files or many files = significant time increase       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Use standard empty trash (FileVault provides security).
+
+### Why Use Standard Empty (false)?
+
+1. **Performance** — Fast deletion without overwrite delay
+2. **SSD wear** — Reduces unnecessary write operations
+3. **FileVault** — Encryption provides adequate security
+4. **Modern protection** — macOS security features sufficient
+5. **Practicality** — Most users don't need secure erase
+
+### Why Use Secure Empty (true)?
+
+- **Sensitive data** — Extra assurance for confidential files
+- **No FileVault** — Unencrypted drives need secure delete
+- **HDD storage** — Traditional drives benefit more
+- **Compliance** — Some regulations require secure deletion
+- **Selling device** — Before wiping and selling
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.finder EmptyTrashSecurely
+
+# Enable secure empty trash
+defaults write com.apple.finder EmptyTrashSecurely -bool true
+
+# Disable secure empty trash (default)
+defaults write com.apple.finder EmptyTrashSecurely -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.finder EmptyTrashSecurely
+
+# Restart Finder to apply changes
+killall Finder
+```
+
+### Alternative: Command-Line Secure Delete
+
+```bash
+# For individual files (deprecated but may still work)
+rm -P /path/to/sensitive/file
+
+# Using srm (if installed via Homebrew)
+brew install srm
+srm -sz /path/to/sensitive/file
+
+# Secure erase free space (HDD only, very slow)
+diskutil secureErase freespace 1 /Volumes/Macintosh\ HD
+```
+
+## UI Location
+
+This setting was historically available via the Finder menu but has been removed from the GUI in recent macOS versions. Use the defaults command to enable it.
+
+```
++-------------------------------------------------------------+
+|  Historical Finder Menu (Pre-macOS 10.11 El Capitan)         |
++-------------------------------------------------------------+
+|                                                              |
+|  In older macOS versions:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Finder  File  Edit  View  Go  Window  Help            │|
+|  │  ┌──────────────────────────┐                          │|
+|  │  │  About Finder            │                          │|
+|  │  │  ─────────────────────── │                          │|
+|  │  │  Preferences...   Cmd+,  │                          │|
+|  │  │  ─────────────────────── │                          │|
+|  │  │  Empty Trash      Cmd+Del│                          │|
+|  │  │  Secure Empty Trash...   │  <-- This option removed │|
+|  │  │  ─────────────────────── │                          │|
+|  │  └──────────────────────────┘                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Modern macOS: Use defaults command or FileVault instead.    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Secure empty trash (this setting)
+defaults write com.apple.finder EmptyTrashSecurely -bool true
+
+# Warn before emptying Trash
+defaults write com.apple.finder WarnOnEmptyTrash -bool true
+
+# Show warning when changing extension
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool true
+
+# Show all file extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Show hidden files
+defaults write com.apple.finder AppleShowAllFiles -bool true
+
+# Restart Finder
+killall Finder
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Secure empty very slow | Normal - must overwrite all data; consider FileVault instead |
+| Setting not applying | Run `killall Finder` after changing |
+| Trash won't empty | Try `sudo rm -rf ~/.Trash/*` (caution!) |
+| Need to securely delete one file | Use `rm -P filename` or srm tool |
+| On SSD, is secure empty effective? | Limited; FileVault is better for SSDs |
+| Compliance requirements | Document use of FileVault + secure empty |
+
+## Security Considerations
+
+| Scenario | Recommendation |
+|----------|----------------|
+| FileVault enabled | Standard empty sufficient |
+| No FileVault, HDD | Consider secure empty |
+| No FileVault, SSD | Enable FileVault instead |
+| Selling/disposing Mac | Full disk erase in Recovery Mode |
+| Highly sensitive data | FileVault + secure empty + physical destruction |
+| Corporate compliance | Consult IT security policy |
+
+## Compatibility
+
+- **macOS**: 10.3+ (Panther) - feature available
+- **macOS 10.11+**: GUI option removed, defaults still works
+- **SSDs**: Less effective due to wear leveling
+- **Note**: Restart Finder for changes to apply
+- **Note**: FileVault recommended over secure empty for SSDs
+- **Note**: T2/M1+ Macs have hardware encryption
+
+## Source File
+
+**File**: [`defaults/interface/finder.sh`](../../../../../defaults/interface/finder.sh)
+
+```bash
+# EmptyTrashSecurely controls whether deleted files are overwritten
+# Domain: com.apple.finder
+# false = standard delete, true = secure overwrite before delete
+# Not explicitly set - defaults to false (FileVault provides security)
+```
+
+## References
+
+- [Apple Support: About Secure Empty Trash](https://support.apple.com/en-us/HT201583)
+- [Apple Support: Use FileVault to encrypt the startup disk](https://support.apple.com/guide/mac-help/protect-data-on-your-mac-with-filevault-mh11785/mac)
+- [Apple Support: Erase your Mac and reset it to factory settings](https://support.apple.com/en-us/HT212749)
+- [Apple Platform Security: Data protection](https://support.apple.com/guide/security/data-protection-overview-secb9e8c5a6/web)

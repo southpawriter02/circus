@@ -1,0 +1,327 @@
+# Dock Dashboard in Overlay
+
+Control whether Dashboard appears as an overlay or as a separate Space.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `dashboard-in-overlay` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls how Dashboard appears when activated. Dashboard was a feature in macOS that provided quick access to widgets like weather, stocks, calculator, and notes. When set to overlay mode, Dashboard appears over your current workspace as a translucent layer. When set to Space mode, Dashboard is a separate desktop space that you swipe to. Note: Dashboard was deprecated in macOS Catalina (10.15) and removed in later versions.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Overlay mode** (default) — Dashboard appears over current screen |
+| `false` | **Space mode** — Dashboard is a separate desktop space |
+
+## Visual Demonstration
+
+### Overlay Mode (true - Default):
+```
++-------------------------------------------------------------+
+|  Dashboard as Overlay                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  BEFORE (Normal desktop):                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Desktop                                                │|
+|  │  ┌───────────────────────────────────────────────────┐ │|
+|  │  │                                                    │ │|
+|  │  │              Your Active Windows                   │ │|
+|  │  │                                                    │ │|
+|  │  │       [Safari]        [Mail]        [Finder]       │ │|
+|  │  │                                                    │ │|
+|  │  └───────────────────────────────────────────────────┘ │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  AFTER (Dashboard activated - F12 or Hot Corner):            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ░░░░░░░░░░░░░ Dashboard Overlay ░░░░░░░░░░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│|
+|  │  ░░ ┌─────────┐  ┌─────────┐  ┌─────────┐ ░░░░░░░░░░░░│|
+|  │  ░░ │ Weather │  │  Stocks │  │  Clock  │ ░░░░░░░░░░░░│|
+|  │  ░░ │  72°F   │  │ AAPL ▲  │  │  2:30   │ ░░░░░░░░░░░░│|
+|  │  ░░ └─────────┘  └─────────┘  └─────────┘ ░░░░░░░░░░░░│|
+|  │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│|
+|  │  ░░░░░░░░░ (Desktop dimmed behind) ░░░░░░░░░░░░░░░░░░░│|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Click outside widgets or press Escape to dismiss.           |
+|  Desktop content visible but dimmed behind overlay.          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Space Mode (false):
+```
++-------------------------------------------------------------+
+|  Dashboard as Separate Space                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Mission Control view:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Spaces bar:                                                 |
+|  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    |
+|  │Dashboard │  │Desktop 1 │  │Desktop 2 │  │   +      │    |
+|  │ (Space)  │  │          │  │          │  │          │    |
+|  └──────────┘  └──────────┘  └──────────┘  └──────────┘    |
+|       ↑                                                      |
+|  Dashboard is its own Space, swipe to access                 |
+|                                                              |
+|  Dashboard Space:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Dashboard (Full Screen Space)                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │     ┌─────────┐  ┌─────────┐  ┌─────────┐              │|
+|  │     │ Weather │  │  Stocks │  │  Clock  │              │|
+|  │     │  72°F   │  │ AAPL ▲  │  │  2:30   │              │|
+|  │     └─────────┘  └─────────┘  └─────────┘              │|
+|  │                                                          │|
+|  │     ┌─────────┐  ┌─────────┐                           │|
+|  │     │  Notes  │  │  Calc   │                           │|
+|  │     │ ~~~~~~~ │  │   =     │                           │|
+|  │     └─────────┘  └─────────┘                           │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Swipe left/right to switch between Dashboard and desktops.  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison:
+```
++-------------------------------------------------------------+
+|  Overlay vs Space Mode                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  OVERLAY MODE (true):                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Pros:                          Cons:                        |
+|  ────                           ────                         |
+|  + Quick access                 - Covers current work        |
+|  + No space switching           - Can't see widgets while    |
+|  + Desktop visible behind         working                    |
+|  + Press Escape to dismiss      - No persistent view         |
+|  + Faster to show/hide                                       |
+|                                                              |
+|  Access: Hot Corner, F12, or keyboard shortcut               |
+|                                                              |
+|  SPACE MODE (false):                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Pros:                          Cons:                        |
+|  ────                           ────                         |
+|  + Dedicated full space         - Requires space switch      |
+|  + Can keep widgets visible     - Slower to access           |
+|  + Part of workflow             - Uses a Space slot          |
+|  + Swipe navigation             - Can't see desktop content  |
+|  + Better organization                                       |
+|                                                              |
+|  Access: Swipe left (if leftmost) or Mission Control         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Historical Context:
+```
++-------------------------------------------------------------+
+|  Dashboard History in macOS                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  TIMELINE:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  2005  Mac OS X Tiger (10.4)                                 |
+|        └── Dashboard introduced                              |
+|                                                              |
+|  2011  Mac OS X Lion (10.7)                                  |
+|        └── Dashboard can be a Space (this setting added)     |
+|                                                              |
+|  2014  OS X Yosemite (10.10)                                 |
+|        └── Dashboard disabled by default                     |
+|                                                              |
+|  2019  macOS Catalina (10.15)                                |
+|        └── Dashboard deprecated                              |
+|                                                              |
+|  2020+ macOS Big Sur (11.0) and later                        |
+|        └── Dashboard removed entirely                        |
+|                                                              |
+|  REPLACEMENTS:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Notification Center widgets                               |
+|  • Today View                                                |
+|  • macOS Sonoma Desktop Widgets                              |
+|  • Third-party apps (Übersicht, etc.)                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Dashboard as overlay (when Dashboard was available).
+
+### Why Use Overlay Mode (true)?
+
+1. **Quick access** — No space switching needed
+2. **Context preservation** — See desktop behind widgets
+3. **Fast dismiss** — Press Escape to close
+4. **Less intrusive** — Doesn't take up a Space
+5. **Original design** — How Dashboard was intended
+
+### Why Use Space Mode (false)?
+
+- **Persistent view** — Keep widgets visible while working
+- **Better organization** — Dedicated widget space
+- **Swipe workflow** — Natural gesture navigation
+- **Full screen** — More room for widgets
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dock dashboard-in-overlay
+
+# Set Dashboard as overlay (default)
+defaults write com.apple.dock dashboard-in-overlay -bool true
+
+# Set Dashboard as separate Space
+defaults write com.apple.dock dashboard-in-overlay -bool false
+
+# Completely disable Dashboard (macOS Mojave and earlier)
+defaults write com.apple.dashboard mcx-disabled -bool true
+
+# Re-enable Dashboard
+defaults write com.apple.dashboard mcx-disabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dock dashboard-in-overlay
+
+# Restart Dock to apply changes
+killall Dock
+```
+
+## UI Location
+
+**System Preferences** > **Mission Control** > **Dashboard** (macOS Mojave and earlier)
+
+```
++-------------------------------------------------------------+
+|  Mission Control Settings (macOS Mojave and earlier)         |
++-------------------------------------------------------------+
+|                                                              |
+|  System Preferences > Mission Control                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Mission Control                                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [x] Automatically rearrange Spaces based on most       │|
+|  │      recent use                                          │|
+|  │                                                          │|
+|  │  [x] When switching to an application, switch to a      │|
+|  │      Space with open windows for the application        │|
+|  │                                                          │|
+|  │  [x] Group windows by application                       │|
+|  │                                                          │|
+|  │  [x] Displays have separate Spaces                      │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Dashboard:  [As Overlay      v]    <-- This setting    │|
+|  │              ┌─────────────────┐                        │|
+|  │              │ Off             │                        │|
+|  │              │ As Space        │                        │|
+|  │              │ As Overlay      │                        │|
+|  │              └─────────────────┘                        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: Not available in macOS Catalina (10.15) and later.   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Dashboard display mode (this setting)
+defaults write com.apple.dock dashboard-in-overlay -bool true
+
+# Disable Dashboard entirely
+defaults write com.apple.dashboard mcx-disabled -bool true
+
+# Don't rearrange Spaces based on most recent use
+defaults write com.apple.dock mru-spaces -bool false
+
+# Group windows by application in Mission Control
+defaults write com.apple.dock expose-group-apps -bool true
+
+# Displays have separate Spaces
+defaults write com.apple.spaces spans-displays -bool false
+
+# Hot corner for Dashboard (bottom-left corner)
+defaults write com.apple.dock wvous-bl-corner -int 7
+
+# Apply changes
+killall Dock
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Dashboard not appearing | Dashboard removed in macOS Catalina+; use widgets instead |
+| Setting not applying | Run `killall Dock` after changing |
+| Dashboard disabled | Check `mcx-disabled` setting |
+| No Dashboard option in settings | macOS Catalina+ removed Dashboard |
+| Want widgets in newer macOS | Use Notification Center or Desktop widgets |
+| Hot corner not working | Set hot corner specifically for Dashboard |
+
+## Compatibility
+
+- **macOS 10.4-10.14**: Dashboard available
+- **macOS 10.7+**: Space mode option added (this setting)
+- **macOS 10.15 (Catalina)**: Dashboard deprecated
+- **macOS 11.0+ (Big Sur)**: Dashboard removed entirely
+- **Note**: This setting has no effect on macOS Catalina and later
+- **Note**: Use Notification Center widgets as modern replacement
+
+## Source File
+
+**File**: [`defaults/interface/dock.sh`](../../../../../defaults/interface/dock.sh)
+
+```bash
+# dashboard-in-overlay controls Dashboard display mode
+# Domain: com.apple.dock
+# true = overlay on current space, false = separate Space
+# Note: Dashboard deprecated in macOS Catalina, removed in Big Sur
+run_defaults "com.apple.dock" "dashboard-in-overlay" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Dashboard on your Mac](https://support.apple.com/en-us/HT204776) (archived)
+- [Apple Support: What's new in macOS Catalina](https://support.apple.com/en-us/HT210650)
+- [Apple Support: Use widgets on your Mac](https://support.apple.com/guide/mac-help/add-and-customize-widgets-mchl52be5da5/mac)
+- [Wikipedia: Dashboard (macOS)](https://en.wikipedia.org/wiki/Dashboard_(macOS))

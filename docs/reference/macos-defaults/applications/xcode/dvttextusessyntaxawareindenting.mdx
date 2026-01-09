@@ -1,0 +1,314 @@
+# Xcode Syntax-Aware Indenting
+
+Enable intelligent code indentation based on syntax context in Xcode editor.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `DVTTextUsesSyntaxAwareIndenting` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Xcode uses syntax-aware (smart) indentation when editing source code. When enabled, Xcode automatically adjusts indentation based on the programming language's syntax rules, such as indenting after opening braces, aligning parameters, and de-indenting closing braces. This is essential for maintaining consistent, readable code formatting.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Smart indenting** (default) — Context-aware automatic indentation |
+| `false` | **Basic indenting** — Simple indent without syntax awareness |
+
+## Visual Demonstration
+
+### Syntax-Aware Indenting Enabled (true - Default):
+```
++-------------------------------------------------------------+
+|  Xcode Editor - Smart Indentation                            |
++-------------------------------------------------------------+
+|                                                              |
+|  TYPING A SWIFT FUNCTION:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Step 1: Type function signature and opening brace          |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │   1  func calculateTotal(items: [Item]) -> Double {     │|
+|  │   2  █                                                   │|
+|  │      ↑                                                   │|
+|  │      Cursor auto-indented to correct level              │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Step 2: Type code inside function                          |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │   1  func calculateTotal(items: [Item]) -> Double {     │|
+|  │   2      var total = 0.0                                │|
+|  │   3      for item in items {                            │|
+|  │   4          █                                          │|
+|  │              ↑                                           │|
+|  │              Auto-indented for nested block             │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Step 3: Close braces - auto de-indent                      |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │   1  func calculateTotal(items: [Item]) -> Double {     │|
+|  │   2      var total = 0.0                                │|
+|  │   3      for item in items {                            │|
+|  │   4          total += item.price                        │|
+|  │   5      }█                                             │|
+|  │          ↑                                               │|
+|  │          Closing brace auto-aligned                     │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Smart Indenting Behaviors:
+```
++-------------------------------------------------------------+
+|  Syntax-Aware Indenting Examples                             |
++-------------------------------------------------------------+
+|                                                              |
+|  BLOCK INDENTATION:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  if condition {          ← Opening brace                    |
+|      // indented         ← Auto-indented 4 spaces           |
+|  }                       ← Auto de-indented                 |
+|                                                              |
+|  SWITCH STATEMENTS:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  switch value {                                              |
+|  case .one:              ← Case aligned with switch         |
+|      doSomething()       ← Case body indented               |
+|  case .two:                                                  |
+|      doOther()                                               |
+|  }                                                           |
+|                                                              |
+|  MULTI-LINE PARAMETERS:                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  func longFunction(                                          |
+|      parameter1: String, ← Aligned to opening parenthesis   |
+|      parameter2: Int,                                        |
+|      parameter3: Bool                                        |
+|  ) -> Result {                                               |
+|                                                              |
+|  CHAINED CALLS:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  array                                                       |
+|      .filter { $0 > 0 }  ← Indented for chain continuation  |
+|      .map { $0 * 2 }                                        |
+|      .sorted()                                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Basic Indenting Disabled (false):
+```
++-------------------------------------------------------------+
+|  Basic Indenting (Syntax-Aware Disabled)                     |
++-------------------------------------------------------------+
+|                                                              |
+|  WITHOUT SMART INDENTING:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │   1  func calculateTotal(items: [Item]) -> Double {     │|
+|  │   2  █                                                   │|
+|  │      ↑                                                   │|
+|  │      Cursor at column 0 (no auto-indent)                │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  PROBLEMS:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Must manually indent every line                          |
+|  • Closing braces not auto-aligned                          |
+|  • No parameter alignment                                   |
+|  • Inconsistent formatting likely                           |
+|  • More keystrokes required                                 |
+|                                                              |
+|  WHEN TO DISABLE:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Working with unusual file formats                        |
+|  • Specific formatting requirements                         |
+|  • Conflicts with external formatters                       |
+|  • Very rarely needed                                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Re-Indent Feature (Ctrl+I):
+```
++-------------------------------------------------------------+
+|  Re-Indent Selected Code                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  BEFORE (messy indentation):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │   1  func example() {                                   │|
+|  │   2  if condition {                                     │|
+|  │   3  doSomething()                                      │|
+|  │   4  }                                                  │|
+|  │   5  }                                                  │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Select all → Press Ctrl+I (Re-indent)                      |
+|                                                              |
+|  AFTER (properly indented):                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │   1  func example() {                                   │|
+|  │   2      if condition {                                 │|
+|  │   3          doSomething()                              │|
+|  │   4      }                                              │|
+|  │   5  }                                                  │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Uses syntax-aware indenting rules                        |
+|  ✓ Works on selection or entire file                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable smart indentation for efficient coding.
+
+### Why Enable?
+
+1. **Automatic formatting** — Correct indentation without manual effort
+2. **Consistency** — Uniform code style across files
+3. **Fewer keystrokes** — Focus on logic, not formatting
+4. **Language support** — Works with Swift, Objective-C, C, C++
+5. **Standard behavior** — Expected in modern IDEs
+
+### Why Disable?
+
+- Using external formatter (SwiftFormat, clang-format)
+- Specific project formatting rules conflict
+- Working with non-standard file formats
+- Personal preference for manual control
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dt.Xcode DVTTextUsesSyntaxAwareIndenting
+
+# Enable syntax-aware indenting (default)
+defaults write com.apple.dt.Xcode DVTTextUsesSyntaxAwareIndenting -bool true
+
+# Disable syntax-aware indenting
+defaults write com.apple.dt.Xcode DVTTextUsesSyntaxAwareIndenting -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dt.Xcode DVTTextUsesSyntaxAwareIndenting
+```
+
+## UI Location
+
+**Xcode** > **Settings** > **Text Editing** > **Indentation**
+
+```
++-------------------------------------------------------------+
+|  Xcode Settings - Text Editing - Indentation                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Xcode > Settings (⌘,) > Text Editing > Indentation         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [Display] [Editing] [Indentation]                      │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Prefer indent using:                                    │|
+|  │  ( ) Tabs    (•) Spaces                                 │|
+|  │                                                          │|
+|  │  Tab width:        [4    ] spaces                       │|
+|  │  Indent width:     [4    ] spaces                       │|
+|  │                                                          │|
+|  │  Tab key:                                                │|
+|  │  (•) Indents in leading whitespace                      │|
+|  │  ( ) Inserts tab character                              │|
+|  │                                                          │|
+|  │  Indentation                                             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [✓] Syntax-aware indenting      ← This setting         │|
+|  │  [✓] Automatically indent "}"                           │|
+|  │  [✓] Indent switch/case labels                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Syntax-aware indenting (this setting)
+defaults write com.apple.dt.Xcode DVTTextUsesSyntaxAwareIndenting -bool true
+
+# Tab width
+defaults write com.apple.dt.Xcode DVTTextIndentTabWidth -int 4
+
+# Indent width
+defaults write com.apple.dt.Xcode DVTTextIndentWidth -int 4
+
+# Show line numbers
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool true
+
+# Trim trailing whitespace
+defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool true
+
+# Show code minimap
+defaults write com.apple.dt.Xcode DVTTextShowMinimap -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Indentation not working | Check if enabled in Settings > Text Editing > Indentation |
+| Wrong indent level | Adjust tab/indent width in settings |
+| Conflicting with formatter | Disable one or configure to match |
+| Want to re-indent code | Select code, press Ctrl+I |
+| Indentation jumps unexpectedly | Check for syntax errors in code |
+
+## Compatibility
+
+- **Xcode**: 8.0+ (modern indentation engine)
+- **macOS**: 10.12+ (Sierra and later)
+- **Languages**: Swift, Objective-C, C, C++, and supported languages
+- **Note**: Restart Xcode for changes to take effect
+- **Note**: Per-project settings in .xcodeproj can override
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../../defaults/applications/xcode.sh)
+
+```bash
+# --- Syntax-Aware Indenting ---
+# Key:          DVTTextUsesSyntaxAwareIndenting
+# Domain:       com.apple.dt.Xcode
+# Description:  Enables intelligent indentation based on code syntax
+# Default:      true
+# Undocumented setting - controls smart indentation behavior
+```
+
+## References
+
+- [Apple Developer: Xcode Overview](https://developer.apple.com/documentation/xcode)
+- [Apple Developer: Source Editor](https://developer.apple.com/documentation/xcode/editing-source-code-in-xcode)
+- [Xcode Help: Text Editing preferences](https://help.apple.com/xcode/mac/current/#/dev21a9e5c28)

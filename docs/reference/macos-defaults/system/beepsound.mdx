@@ -1,0 +1,310 @@
+# Alert Sound Selection
+
+Configure which sound plays for system alerts and notifications.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `com.apple.sound.beep.sound` |
+| **Type** | String (path) |
+| **Default Value** | `/System/Library/Sounds/Tink.aiff` |
+| **Our Setting** | System default (Tink) |
+
+## Description
+
+Specifies the audio file that plays when macOS triggers an alert sound. Alert sounds occur for various system events such as error dialogs, invalid input, empty Trash warnings, and notification alerts. The value is a full path to an AIFF audio file. macOS includes several built-in sounds, and users can add custom sounds to their personal Sounds folder.
+
+## Values
+
+Built-in sounds are located in `/System/Library/Sounds/`:
+
+| Sound Name | File Path | Description |
+|------------|-----------|-------------|
+| Basso | `/System/Library/Sounds/Basso.aiff` | Deep, subtle bass tone |
+| Blow | `/System/Library/Sounds/Blow.aiff` | Breathy, wind-like sound |
+| Bottle | `/System/Library/Sounds/Bottle.aiff` | Hollow bottle pop |
+| Frog | `/System/Library/Sounds/Frog.aiff` | Frog croak sound |
+| Funk | `/System/Library/Sounds/Funk.aiff` | Funky electronic beep |
+| Glass | `/System/Library/Sounds/Glass.aiff` | Glass tap/ping |
+| Hero | `/System/Library/Sounds/Hero.aiff` | Heroic fanfare tone |
+| Morse | `/System/Library/Sounds/Morse.aiff` | Morse code-style beeps |
+| Ping | `/System/Library/Sounds/Ping.aiff` | Classic ping sound |
+| Pop | `/System/Library/Sounds/Pop.aiff` | Pop/bubble sound |
+| Purr | `/System/Library/Sounds/Purr.aiff` | Soft purring tone |
+| Sosumi | `/System/Library/Sounds/Sosumi.aiff` | Classic Mac "So sue me" |
+| Submarine | `/System/Library/Sounds/Submarine.aiff` | Submarine sonar ping |
+| Tink | `/System/Library/Sounds/Tink.aiff` | Light metallic tink (default) |
+
+## Visual Demonstration
+
+### System Settings UI:
+```
++-------------------------------------------------------------+
+|  System Settings - Sound                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Sound                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Sound                                                |  |
+|  |  ──────────────────────────────────────────────────  |  |
+|  |                                                       |  |
+|  |  Output                                               |  |
+|  |  ─────────────────────────────────────────────────── |  |
+|  |  Output device: MacBook Pro Speakers                  |  |
+|  |  Output volume: ████████░░░░░░░░░░░░ 60%             |  |
+|  |                                                       |  |
+|  |  Alert Sound                                          |  |
+|  |  ─────────────────────────────────────────────────── |  |
+|  |                                                       |  |
+|  |  Select an alert sound:                               |  |
+|  |  +-----------------------------------------------+   |  |
+|  |  |  ○ Basso                                      |   |  |
+|  |  |  ○ Blow                                       |   |  |
+|  |  |  ○ Bottle                                     |   |  |
+|  |  |  ○ Frog                                       |   |  |
+|  |  |  ○ Funk                                       |   |  |
+|  |  |  ○ Glass                                      |   |  |
+|  |  |  ○ Hero                                       |   |  |
+|  |  |  ○ Morse                                      |   |  |
+|  |  |  ○ Ping                                       |   |  |
+|  |  |  ○ Pop                                        |   |  |
+|  |  |  ○ Purr                                       |   |  |
+|  |  |  ○ Sosumi                                     |   |  |
+|  |  |  ○ Submarine                                  |   |  |
+|  |  |  ● Tink  ← Default                           |   |  |
+|  |  +-----------------------------------------------+   |  |
+|  |                                                       |  |
+|  |  Alert volume: ██████████░░░░░░░░░░ 50%              |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### When Alert Sounds Play:
+```
++-------------------------------------------------------------+
+|  Alert Sound Triggers                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  System alerts play for:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ERROR DIALOGS:                                              |
+|  • Application errors                                        |
+|  • Permission denied messages                                |
+|  • File not found alerts                                     |
+|                                                              |
+|  INVALID INPUT:                                              |
+|  • Typing in read-only fields                               |
+|  • Invalid keyboard shortcuts                                |
+|  • Restricted actions                                        |
+|                                                              |
+|  SYSTEM EVENTS:                                              |
+|  • Empty Trash warning                                       |
+|  • Eject disk warnings                                       |
+|  • Low battery alerts                                        |
+|                                                              |
+|  NOTIFICATIONS:                                              |
+|  • App notifications (if sound enabled)                     |
+|  • Calendar reminders                                        |
+|  • Email arrival (if configured)                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Custom Sound Location:
+```
++-------------------------------------------------------------+
+|  Using Custom Alert Sounds                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Custom sounds can be added to:                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ~/Library/Sounds/                                           |
+|  ├── MyCustomAlert.aiff                                      |
+|  ├── QuietBeep.aiff                                         |
+|  └── FunnySound.aiff                                        |
+|                                                              |
+|  REQUIREMENTS:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Format: AIFF (.aiff)                                     |
+|  • Sample rate: 44.1kHz recommended                          |
+|  • Duration: Keep short (under 3 seconds)                   |
+|  • Channels: Stereo or mono                                  |
+|                                                              |
+|  After adding custom sounds:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Log out and back in, OR                                  |
+|  2. Restart the sound preferences daemon                     |
+|  3. Custom sounds appear in Sound preferences                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: System default (Tink) — A subtle, non-intrusive alert.
+
+### Why Tink (Default)?
+
+1. **Subtle** — Not jarring or disruptive
+2. **Professional** — Appropriate for work environments
+3. **Recognizable** — Classic macOS sound
+4. **Clear** — Audible without being loud
+5. **Standard** — Expected behavior
+
+### Alternative Recommendations
+
+| Use Case | Recommended Sound | Reason |
+|----------|-------------------|--------|
+| Quiet environment | Purr or Pop | Softer sounds |
+| Hearing impaired | Funk or Hero | More distinct |
+| Fun/Personal | Frog or Sosumi | Personality |
+| Professional | Tink or Glass | Subtle |
+| Minimal | Set volume to 0 | Silent alerts |
+
+## Code Examples
+
+```bash
+# Read current alert sound
+defaults read NSGlobalDomain "com.apple.sound.beep.sound"
+
+# Set to Tink (default)
+defaults write NSGlobalDomain "com.apple.sound.beep.sound" -string "/System/Library/Sounds/Tink.aiff"
+
+# Set to Funk
+defaults write NSGlobalDomain "com.apple.sound.beep.sound" -string "/System/Library/Sounds/Funk.aiff"
+
+# Set to classic Sosumi
+defaults write NSGlobalDomain "com.apple.sound.beep.sound" -string "/System/Library/Sounds/Sosumi.aiff"
+
+# Set to custom sound
+defaults write NSGlobalDomain "com.apple.sound.beep.sound" -string "$HOME/Library/Sounds/MySound.aiff"
+
+# Delete (reset to system default)
+defaults delete NSGlobalDomain "com.apple.sound.beep.sound"
+```
+
+Changes take effect immediately.
+
+## UI Location
+
+**System Settings** > **Sound** > **Alert Sound**
+
+```
++-------------------------------------------------------------+
+|  Navigating to Alert Sound Settings                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Option 1: System Settings                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Open System Settings (⌘ + ,)                            |
+|  2. Click "Sound" in the sidebar                            |
+|  3. Scroll to "Alert Sound" section                         |
+|  4. Click on desired sound to preview and select            |
+|                                                              |
+|  Option 2: Quick Access                                      |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Hold Option and click volume icon in menu bar           |
+|  2. Select "Sound Settings..."                               |
+|  3. Navigate to Alert Sound section                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Alert sound selection (this setting)
+defaults write NSGlobalDomain "com.apple.sound.beep.sound" -string "/System/Library/Sounds/Tink.aiff"
+
+# Alert volume (0.0 to 1.0)
+defaults write NSGlobalDomain "com.apple.sound.beep.volume" -float 0.5
+
+# Flash screen for alerts (accessibility)
+defaults write com.apple.universalaccess flashScreen -bool false
+
+# UI sound effects
+defaults write NSGlobalDomain "com.apple.sound.uiaudio.enabled" -bool true
+
+# Volume feedback sound (when changing volume)
+defaults write NSGlobalDomain "com.apple.sound.beep.feedback" -int 1
+```
+
+## Creating Custom Alert Sounds
+
+### Using afconvert (built-in):
+```bash
+# Convert MP3 to AIFF
+afconvert input.mp3 output.aiff -f AIFF -d BEI16
+
+# Convert WAV to AIFF
+afconvert input.wav output.aiff -f AIFF -d BEI16
+
+# Move to Sounds folder
+mv output.aiff ~/Library/Sounds/
+```
+
+### Using ffmpeg:
+```bash
+# Convert any audio to AIFF
+ffmpeg -i input.mp3 -acodec pcm_s16be ~/Library/Sounds/CustomAlert.aiff
+```
+
+## List Available Sounds
+
+```bash
+# List system sounds
+ls /System/Library/Sounds/
+
+# List user custom sounds
+ls ~/Library/Sounds/ 2>/dev/null || echo "No custom sounds folder"
+
+# Play a sound to preview
+afplay /System/Library/Sounds/Funk.aiff
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Custom sound not appearing | Log out/in or restart |
+| Sound not playing | Check alert volume isn't zero |
+| Wrong sound playing | Verify file path in defaults |
+| Sound file not found | Check path and file exists |
+| Sound too quiet/loud | Adjust alert volume separately |
+
+## Compatibility
+
+- **macOS**: All versions
+- **Note**: Sound names and availability vary by macOS version
+- **Note**: Custom sounds must be AIFF format
+- **Note**: Changes take effect immediately
+- **Note**: Some sounds added/removed in different macOS versions
+
+## Source File
+
+**File**: [`defaults/system/sound.sh`](../../../../../defaults/system/sound.sh)
+
+```bash
+# com.apple.sound.beep.sound sets the alert sound file
+# Domain: NSGlobalDomain
+# Value: Path to AIFF file
+# Default: /System/Library/Sounds/Tink.aiff
+# Uncomment to set custom alert sound:
+# run_defaults "NSGlobalDomain" "com.apple.sound.beep.sound" "-string" "/System/Library/Sounds/Tink.aiff"
+```
+
+## References
+
+- [Apple Support: Change the alert sound on Mac](https://support.apple.com/guide/mac-help/change-the-alert-sound-mchlp2207/mac)
+- [Apple Support: Adjust sound settings on Mac](https://support.apple.com/guide/mac-help/adjust-the-volume-on-your-mac-mchlp2568/mac)
+- [Audio File Format Specifications](https://developer.apple.com/documentation/audiotoolbox/audio_file_services)

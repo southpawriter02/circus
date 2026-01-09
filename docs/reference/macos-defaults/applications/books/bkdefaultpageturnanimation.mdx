@@ -1,0 +1,302 @@
+# Books Default Page Turn Animation Style
+
+Set the default animation style for page turns in Apple Books.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iBooksX` |
+| **Key** | `BKDefaultPageTurnAnimation` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls the default animation style used when turning pages in Apple Books. This setting determines how page transitions appear when reading ebooks. The curl animation provides a realistic book-like experience, while other options offer faster or simpler transitions. This is separate from `BKAnimatePageTurn` which enables/disables animations entirely.
+
+## Values
+
+| Value | Animation Style | Description |
+|-------|----------------|-------------|
+| `0` | **None** | Instant page change, no animation |
+| `1` | **Curl** (default) | Realistic page curl effect |
+| `2` | **Slide** | Pages slide horizontally |
+
+## Visual Demonstration
+
+### Curl Animation (1 - Default):
+```
++-------------------------------------------------------------+
+|  Page Turn with Curl Animation                               |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📖 Books - "The Great Adventure"                       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌──────────────────────────────────────────────────┐   │|
+|  │  │                           ╱╲                     │   │|
+|  │  │  Chapter 5                ╱  ╲                   │   │|
+|  │  │                          ╱ C  ╲                  │   │|
+|  │  │  The sun rose over the  ╱  h   ╲                │   │|
+|  │  │  distant mountains as   ╱   a    ╲               │   │|
+|  │  │  Sarah began her       ╱    p     ╲              │   │|
+|  │  │  journey through the  ╱     t      ╲             │   │|
+|  │  │  enchanted forest.   ╱      e       ╲            │   │|
+|  │  │                     ╱       r        ╲           │   │|
+|  │  │  She had packed    ╱                  ╲          │   │|
+|  │  │  light, knowing   ╱     6              ╲         │   │|
+|  │  │  the path would  ╱─────────────────────╲        │   │|
+|  │  │  be long...      │  (Next page curling  │        │   │|
+|  │  │                  │   into view)         │        │   │|
+|  │  │                  └─────────────────────-┘        │   │|
+|  │  │                                                  │   │|
+|  │  │  Page 142                              Page 143  │   │|
+|  │  └──────────────────────────────────────────────────┘   │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Curl animation mimics a real book page turning              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Slide Animation (2):
+```
++-------------------------------------------------------------+
+|  Page Turn with Slide Animation                              |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📖 Books - "The Great Adventure"                       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌──────────────────────────────────────────────────┐   │|
+|  │  │                                                   │   │|
+|  │  │  ┌────────────────────┬─────────────────────┐   │   │|
+|  │  │  │ ◀────────────────  │                     │   │   │|
+|  │  │  │  Chapter 5         │  Chapter 6          │   │   │|
+|  │  │  │                    │                     │   │   │|
+|  │  │  │  The sun rose over │  Dawn broke as     │   │   │|
+|  │  │  │  the distant       │  Sarah continued    │   │   │|
+|  │  │  │  mountains as      │  deeper into the   │   │   │|
+|  │  │  │  Sarah began her   │  forest. The       │   │   │|
+|  │  │  │  journey through   │  trees grew        │   │   │|
+|  │  │  │  the enchanted     │  taller here...    │   │   │|
+|  │  │  │                    │                     │   │   │|
+|  │  │  │  Page 142          │  Page 143          │   │   │|
+|  │  │  └────────────────────┴─────────────────────┘   │   │|
+|  │  │     ← Pages slide horizontally                   │   │|
+|  │  │                                                   │   │|
+|  │  └──────────────────────────────────────────────────┘   │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Simple horizontal slide transition                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### No Animation (0):
+```
++-------------------------------------------------------------+
+|  Page Turn with No Animation                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  BEFORE (Page 142):                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Chapter 5                                              │|
+|  │                                                          │|
+|  │  The sun rose over the distant mountains as Sarah       │|
+|  │  began her journey through the enchanted forest.        │|
+|  │                                                          │|
+|  │  Page 142                                               │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|                          │                                   |
+|                          │  [Click/Swipe]                    |
+|                          ▼                                   |
+|                     INSTANT CHANGE                           |
+|                                                              |
+|  AFTER (Page 143):                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Chapter 6                                              │|
+|  │                                                          │|
+|  │  Dawn broke as Sarah continued deeper into the forest.  │|
+|  │  The trees grew taller here...                          │|
+|  │                                                          │|
+|  │  Page 143                                               │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Fastest reading, no visual transition                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison Chart:
+```
++-------------------------------------------------------------+
+|  Animation Style Comparison                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  STYLE          SPEED      REALISM     USE CASE              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  None (0)       ★★★★★      ★☆☆☆☆      Speed readers          |
+|                 Instant    Digital     Power users            |
+|                                                              |
+|  Curl (1)       ★★★☆☆      ★★★★★      Leisurely reading      |
+|                 Moderate   Book-like   Immersive experience   |
+|                                                              |
+|  Slide (2)      ★★★★☆      ★★☆☆☆      Balanced               |
+|                 Fast       Modern      Quick navigation       |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Recommendation:                                             |
+|  • Curl for novels and leisure reading                      |
+|  • Slide for reference materials                            |
+|  • None for technical documents or speed reading            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1` — Curl animation for realistic page turns.
+
+### Why Use Curl Animation?
+
+1. **Immersive** — Feels like reading a physical book
+2. **Visual feedback** — Clear indication of page turning
+3. **Apple default** — Polished, expected behavior
+4. **Relaxing** — Smooth animation for leisure reading
+5. **Natural** — Mimics real-world interaction
+
+### Why Use Other Animations?
+
+**Slide (2)**:
+- Faster page transitions
+- Modern, app-like feel
+- Good for skimming content
+
+**None (0)**:
+- Maximum reading speed
+- Better for reference materials
+- Reduced visual distraction
+- Lower battery usage
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iBooksX BKDefaultPageTurnAnimation
+
+# Set to no animation (instant)
+defaults write com.apple.iBooksX BKDefaultPageTurnAnimation -int 0
+
+# Set to curl animation (default)
+defaults write com.apple.iBooksX BKDefaultPageTurnAnimation -int 1
+
+# Set to slide animation
+defaults write com.apple.iBooksX BKDefaultPageTurnAnimation -int 2
+
+# Delete (reset to default)
+defaults delete com.apple.iBooksX BKDefaultPageTurnAnimation
+```
+
+## UI Location
+
+**Books** > **View** menu while reading
+
+```
++-------------------------------------------------------------+
+|  Books View Menu                                             |
++-------------------------------------------------------------+
+|                                                              |
+|  View Menu while reading in Books                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Show Table of Contents              ⌘T                 │|
+|  │  Show Notes Pane                                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Actual Size                         ⌘0                 │|
+|  │  Zoom In                             ⌘+                 │|
+|  │  Zoom Out                            ⌘-                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Page Turn Animation                 ▶ ┌───────────────┐│|
+|  │  ─────────────────────────────────────│  ✓ Curl        ││|
+|  │  Scroll Direction                   ▶│    Slide       ││|
+|  │                                      │    None        ││|
+|  │                                      └───────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: Menu options may vary by Books version               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Page turn animation style (this setting)
+defaults write com.apple.iBooksX BKDefaultPageTurnAnimation -int 1
+
+# Enable/disable page turn animation entirely
+defaults write com.apple.iBooksX BKAnimatePageTurn -bool true
+
+# Scroll direction (horizontal vs vertical)
+defaults write com.apple.iBooksX BKScrollDirection -int 1
+
+# Reader theme
+defaults write com.apple.iBooksX BKReaderTheme -int 0
+
+# Font size
+defaults write com.apple.iBooksX BKLastUsedFontSize -int 3
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Animation not changing | Quit and reopen Books app |
+| Animation feels slow | Switch to Slide or None |
+| Animation feels jarring | Use Curl for smoother effect |
+| Battery draining quickly | Use None to reduce GPU usage |
+| PDFs not animating | PDF page turns may have separate behavior |
+| Setting not persisting | Check file permissions in ~/Library/Preferences |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Books app
+- **Note**: This setting applies to ebooks (EPUB) primarily
+- **Note**: PDFs may have different animation behavior
+- **Note**: Audiobooks don't use page turn animations
+- **Note**: Restart Books for terminal changes to apply
+
+## Source File
+
+**File**: [`defaults/applications/books.sh`](../../../../../defaults/applications/books.sh)
+
+```bash
+# BKDefaultPageTurnAnimation controls page turn animation style
+# Domain: com.apple.iBooksX
+# Options: 0 = None, 1 = Curl, 2 = Slide
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Support: Read books in Books on Mac](https://support.apple.com/guide/books/read-books-ibks1a1e39c4/mac)
+- [Apple Support: Change Books settings](https://support.apple.com/guide/books/settings-ibks1016d5f5/mac)
+- [Apple Books User Guide](https://support.apple.com/guide/books/welcome/mac)

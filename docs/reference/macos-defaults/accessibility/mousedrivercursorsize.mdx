@@ -1,0 +1,317 @@
+# Accessibility Cursor Size
+
+Adjust the size of the mouse cursor for better visibility.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `mouseDriverCursorSize` |
+| **Type** | Float |
+| **Default Value** | `1.0` |
+| **Our Setting** | `1.0` |
+
+## Description
+
+Controls the size of the mouse cursor (pointer) on screen. The default size of 1.0 represents the standard cursor size. Increasing this value makes the cursor larger, which is helpful for users with visual impairments, those using high-resolution displays where the cursor may appear small, or anyone who frequently loses track of their cursor. This is a key accessibility feature for pointer visibility.
+
+## Values
+
+| Value | Size | Description |
+|-------|------|-------------|
+| `1.0` | **Normal** (default) | Standard cursor size |
+| `1.5` | **Medium** | 50% larger than normal |
+| `2.0` | **Large** | Double the normal size |
+| `3.0` | **Extra Large** | Triple the normal size |
+| `4.0` | **Maximum** | Four times normal size |
+
+## Visual Demonstration
+
+### Cursor Size Comparison:
+```
++-------------------------------------------------------------+
+|  Cursor Size Examples                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  SIZE 1.0 (Normal):                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|      ↖                                                       |
+|       \                                                      |
+|                                                              |
+|  SIZE 1.5 (Medium):                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|       ↖                                                      |
+|        \\                                                    |
+|         \                                                    |
+|                                                              |
+|  SIZE 2.0 (Large):                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|        ↖↖                                                    |
+|         \\                                                   |
+|          \\                                                  |
+|           \                                                  |
+|                                                              |
+|  SIZE 3.0 (Extra Large):                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|         ↖↖↖                                                  |
+|          \\\                                                 |
+|           \\                                                 |
+|            \\                                                |
+|             \                                                |
+|                                                              |
+|  SIZE 4.0 (Maximum):                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|          ↖↖↖↖                                                |
+|           \\\\                                               |
+|            \\\                                               |
+|             \\                                               |
+|              \\                                              |
+|               \                                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### On-Screen Appearance:
+```
++-------------------------------------------------------------+
+|  Cursor Size in Context                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  NORMAL CURSOR (1.0) ON 5K DISPLAY:                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │   ┌────────────────────────────────────────────────┐    │|
+|  │   │                                                │    │|
+|  │   │   [File]  [Edit]  [View]  [Window]  [Help]    │    │|
+|  │   │                                                │    │|
+|  │   │   ┌─────────────────────────────────────────┐ │    │|
+|  │   │   │                                         │ │    │|
+|  │   │   │   Where's my cursor?  ↖ ← Tiny!        │ │    │|
+|  │   │   │                        (hard to see)   │ │    │|
+|  │   │   │                                         │ │    │|
+|  │   │   └─────────────────────────────────────────┘ │    │|
+|  │   │                                                │    │|
+|  │   └────────────────────────────────────────────────┘    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  LARGE CURSOR (2.0) ON 5K DISPLAY:                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │   ┌────────────────────────────────────────────────┐    │|
+|  │   │                                                │    │|
+|  │   │   [File]  [Edit]  [View]  [Window]  [Help]    │    │|
+|  │   │                                                │    │|
+|  │   │   ┌─────────────────────────────────────────┐ │    │|
+|  │   │   │                    ↖↖                   │ │    │|
+|  │   │   │   Much easier!      \\                  │ │    │|
+|  │   │   │                      \\ ← Easy to see! │ │    │|
+|  │   │   │                                         │ │    │|
+|  │   │   └─────────────────────────────────────────┘ │    │|
+|  │   │                                                │    │|
+|  │   └────────────────────────────────────────────────┘    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Slider Control:
+```
++-------------------------------------------------------------+
+|  Cursor Size Setting Interface                               |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Accessibility > Display > Pointer        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Pointer                                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Pointer size:                                          │|
+|  │                                                          │|
+|  │     ↖        ◀━━━━━━━━━●━━━━━━━━━━━━━━━▶     ↖↖↖      │|
+|  │  (Normal)              │                  (Large)       │|
+|  │                        │                                 │|
+|  │                     Current: 1.5x                       │|
+|  │                                                          │|
+|  │  Preview:  ↖                                            │|
+|  │             \\                                          │|
+|  │              \                                          │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [✓] Shake mouse pointer to locate                      │|
+|  │                                                          │|
+|  │  Pointer outline color:  [●] (Black)                    │|
+|  │  Pointer fill color:     [○] (White)                    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1.0` — Normal size for standard use.
+
+### Why Use Default Size (1.0)?
+
+1. **Standard experience** — Matches Apple's designed proportions
+2. **Precise control** — Smaller cursor for accurate clicking
+3. **Clean aesthetics** — Unobtrusive pointer
+4. **Adequate on most displays** — Works well up to 4K
+
+### Why Increase Cursor Size?
+
+**Accessibility needs**:
+- Low vision or visual impairment
+- Difficulty tracking small objects
+
+**Display considerations**:
+- 5K or higher resolution displays
+- Multiple large monitors
+- Presentations and screencasting
+
+**User preference**:
+- Frequently lose cursor position
+- Prefer larger UI elements
+- Gaming or design work
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess mouseDriverCursorSize
+
+# Set to normal size (default)
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 1.0
+
+# Set to medium size
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 1.5
+
+# Set to large size
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 2.0
+
+# Set to extra large size
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 3.0
+
+# Set to maximum size
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 4.0
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess mouseDriverCursorSize
+```
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Display** > **Pointer**
+
+```
++-------------------------------------------------------------+
+|  System Settings Navigation                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Accessibility > Display                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────────┬───────────────────────────────────────────┐|
+|  │ Accessibility│   Display                                 │|
+|  │              │   ─────────────────────────────────────   │|
+|  │ ▶ Vision     │                                           │|
+|  │   VoiceOver  │   Text                                    │|
+|  │   Zoom       │   ─────────────────────────────────────   │|
+|  │ ▶ Display ← │   Text size:  [━━━━●━━━━━━━━━━━━━━━━━━]  │|
+|  │   Spoken     │                                           │|
+|  │   Content    │   Pointer                                 │|
+|  │              │   ─────────────────────────────────────   │|
+|  │ ▶ Hearing    │   Pointer size:                          │|
+|  │              │   [━━━━━━●━━━━━━━━━━━━━━━━━━━━━━━━━━━━]  │|
+|  │ ▶ Motor      │    ↖ Normal              Large ↖↖↖       │|
+|  │   Pointer    │                                           │|
+|  │   Control ← │   [✓] Shake mouse pointer to locate       │|
+|  │              │                                           │|
+|  │ ▶ General    │   Pointer colors                          │|
+|  │              │   [Configure pointer outline and fill]   │|
+|  └──────────────┴───────────────────────────────────────────┘|
+|                                                              |
+|  Note: Also accessible via Accessibility > Pointer Control  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Cursor size (this setting)
+defaults write com.apple.universalaccess mouseDriverCursorSize -float 1.0
+
+# Shake to locate cursor (magnify on shake)
+defaults write NSGlobalDomain CGDisableCursorLocationMagnification -bool false
+
+# Mouse tracking speed
+defaults write NSGlobalDomain com.apple.mouse.scaling -float 3.0
+
+# Trackpad tracking speed
+defaults write NSGlobalDomain com.apple.trackpad.scaling -float 3.0
+
+# Double-click speed
+defaults write NSGlobalDomain com.apple.mouse.doubleClickThreshold -float 0.5
+
+# Enable mouse keys (control pointer with keyboard)
+defaults write com.apple.universalaccess mouseKeysEnabled -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Cursor size not changing | Log out and log back in |
+| Cursor too large for precision | Reduce to 1.0-1.5 |
+| Still losing cursor | Enable "Shake to locate" feature |
+| Cursor blurry when large | Normal at higher sizes; try 2.0 instead |
+| Setting not persisting | Check Universal Access preferences permissions |
+| Different apps show different sizes | Restart apps after changing setting |
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion) and later
+- **Note**: Changes apply system-wide immediately
+- **Note**: Some apps may cache cursor appearance
+- **Note**: Cursor colors available in macOS Monterey 12.0+
+- **Note**: May require logout for complete effect
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../../../defaults/accessibility/pointer.sh)
+
+```bash
+# --- Cursor Size ---
+# Key:          mouseDriverCursorSize
+# Domain:       com.apple.universalaccess
+# Description:  Size multiplier for the mouse cursor.
+#               1.0 is normal size, up to 4.0 for maximum.
+# Default:      1.0
+# Options:      1.0 to 4.0 (float)
+# Set to:       1.0 (normal size)
+# UI Location:  System Settings > Accessibility > Pointer Control > Pointer size
+run_defaults "com.apple.universalaccess" "mouseDriverCursorSize" "-float" "1.0"
+```
+
+## References
+
+- [Apple Support: Change Pointer preferences for accessibility](https://support.apple.com/guide/mac-help/change-pointer-preferences-accessibility-mchlc897c394/mac)
+- [Apple Support: Make the pointer easier to see](https://support.apple.com/guide/mac-help/make-the-pointer-easier-to-see-mchlp2920/mac)
+- [Apple Accessibility: Vision features](https://www.apple.com/accessibility/vision/)

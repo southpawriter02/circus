@@ -1,0 +1,294 @@
+# Menu Bar Item Spacing
+
+Control the horizontal spacing between menu bar items.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSStatusItemSpacing` |
+| **Type** | Integer |
+| **Default Value** | System dependent (~12) |
+| **Our Setting** | Not set (system default) |
+
+## Description
+
+Controls the horizontal spacing between menu bar status items (the icons on the right side of the menu bar). Lower values create tighter spacing, allowing more icons to fit in the menu bar. Higher values provide more breathing room between icons for easier clicking and a less crowded appearance. This setting was introduced in macOS Monterey.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `6` | **Tight** — Minimal spacing, fits many icons |
+| `8` | **Compact** — Reduced spacing |
+| `12` | **Default** — Standard macOS spacing |
+| `16` | **Spacious** — More room between icons |
+| `20` | **Wide** — Maximum breathing room |
+
+## Visual Demonstration
+
+### Spacing Comparison:
+```
++-------------------------------------------------------------+
+|  Menu Bar Item Spacing Visualization                         |
++-------------------------------------------------------------+
+|                                                              |
+|  TIGHT SPACING (6):                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │  ...  [WiFi][BT][Vol][Batt][Time][Spot][CC][Siri]     │ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  • Fits more icons                                           |
+|  • Icons closer together                                     |
+|  • Harder to click precisely                                |
+|  • May look crowded                                          |
+|                                                              |
+|  COMPACT SPACING (8):                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │  ...  [WiFi] [BT] [Vol] [Batt] [Time] [Spot] [CC]     │ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  • Good balance                                              |
+|  • Still fits many icons                                     |
+|  • Easier to click than tight                               |
+|                                                              |
+|  DEFAULT SPACING (12):                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │  ...    [WiFi]  [BT]  [Vol]  [Batt]  [Time]  [CC]     │ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  • Apple's default                                           |
+|  • Balanced appearance                                       |
+|  • Easy to target with mouse                                |
+|                                                              |
+|  SPACIOUS (16):                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │  ...      [WiFi]   [BT]   [Vol]   [Batt]   [Time]     │ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  • More breathing room                                       |
+|  • Fewer icons visible                                       |
+|  • Easy clicking                                             |
+|  • Clean, minimal look                                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Practical Impact:
+```
++-------------------------------------------------------------+
+|  How Spacing Affects Your Menu Bar                           |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO: Many menu bar apps installed                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  WITH DEFAULT SPACING (12):                                  |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │ File Edit ... [1P][Drop][Rec][WiFi][Vol][Batt][Clock] │ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  Some icons hidden or pushed off!                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  WITH TIGHT SPACING (6):                                     |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │ File Edit ...[1P][Drop][Rec][Bar][BT][WiFi][Vol][Bat][C]│ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  More icons fit! Better for menu bar app users.              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Combined with Selection Padding:
+```
++-------------------------------------------------------------+
+|  Related Setting: NSStatusItemSelectionPadding               |
++-------------------------------------------------------------+
+|                                                              |
+|  NSStatusItemSpacing controls space BETWEEN icons            |
+|  NSStatusItemSelectionPadding controls clickable area        |
+|                                                              |
+|  Icon layout:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|      ←Spacing→      ←Spacing→                                |
+|  ┌──────────────┐┌──────────────┐                           |
+|  │   [Icon 1]   ││   [Icon 2]   │                           |
+|  │  ←Padding→   ││  ←Padding→   │                           |
+|  └──────────────┘└──────────────┘                           |
+|                                                              |
+|  For maximum density, reduce both values.                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Use Cases:
+```
++-------------------------------------------------------------+
+|  Choosing Your Spacing                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  TIGHT SPACING (6-8) - BEST FOR:                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Many menu bar apps (1Password, Dropbox, etc.)          |
+|  [x] Small screens / MacBook displays                        |
+|  [x] Maximizing visible icons                                |
+|  [x] Users comfortable with precise clicking                 |
+|                                                              |
+|  DEFAULT SPACING (12) - BEST FOR:                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Most users                                              |
+|  [x] Balanced appearance                                     |
+|  [x] Standard macOS experience                               |
+|  [x] When you don't have many menu bar items                |
+|                                                              |
+|  WIDE SPACING (16+) - BEST FOR:                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Accessibility (easier targeting)                        |
+|  [x] Minimal menu bar items                                  |
+|  [x] Large external displays                                 |
+|  [x] Clean, spacious aesthetic                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: Not explicitly set — Uses system default spacing.
+
+### Why Keep Default?
+
+1. **Apple's design** — Balanced for most users
+2. **Consistent** — Matches expected macOS look
+3. **Accessible** — Easy to click
+4. **Flexible** — Works for typical setups
+5. **No maintenance** — Follows OS updates
+
+### Why Use Tighter Spacing?
+
+- **Many icons** — Fit more menu bar apps
+- **Small screen** — Maximize usable space
+- **Power user** — Comfortable with dense UI
+- **Preference** — Like compact appearance
+
+### Why Use Wider Spacing?
+
+- **Few icons** — No need for density
+- **Accessibility** — Larger click targets
+- **Aesthetics** — Cleaner, less cluttered
+- **Large display** — Space is not at premium
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSStatusItemSpacing
+
+# Set tight spacing (fit more icons)
+defaults write NSGlobalDomain NSStatusItemSpacing -int 6
+
+# Set compact spacing
+defaults write NSGlobalDomain NSStatusItemSpacing -int 8
+
+# Set spacious spacing
+defaults write NSGlobalDomain NSStatusItemSpacing -int 16
+
+# Delete (reset to system default)
+defaults delete NSGlobalDomain NSStatusItemSpacing
+
+# Also consider adjusting selection padding
+defaults write NSGlobalDomain NSStatusItemSelectionPadding -int 6
+
+# Restart menu bar to apply changes
+killall SystemUIServer
+```
+
+## UI Location
+
+There is no GUI setting for this option. It must be configured via Terminal.
+
+```
++-------------------------------------------------------------+
+|  No GUI Setting Available                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  This setting cannot be changed in System Settings.          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Use Terminal commands (above) to configure.                 |
+|                                                              |
+|  Third-party apps like Bartender or Hidden Bar can help      |
+|  manage menu bar items if you have many icons.               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Menu bar item spacing (this setting)
+defaults write NSGlobalDomain NSStatusItemSpacing -int 8
+
+# Menu bar item selection padding (clickable area)
+defaults write NSGlobalDomain NSStatusItemSelectionPadding -int 6
+
+# Auto-hide menu bar
+defaults write NSGlobalDomain _HIHideMenuBar -bool false
+
+# Reduce menu bar transparency
+defaults write NSGlobalDomain AppleReduceDesktopTinting -bool false
+
+# Restart menu bar
+killall SystemUIServer
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Run `killall SystemUIServer` |
+| Icons still crowded | Try even smaller value (6) |
+| Too hard to click | Increase value or use default |
+| Third-party icons not affected | Some apps manage their own spacing |
+| Setting reverts after reboot | Re-run defaults command |
+| Pre-Monterey Mac | Setting may not be supported |
+
+## Compatibility
+
+- **macOS**: 12.0+ (Monterey and later)
+- **Note**: May not work on older macOS versions
+- **Note**: Requires `killall SystemUIServer` to apply
+- **Note**: Some third-party apps may ignore this setting
+- **Note**: System icons and third-party icons may behave differently
+
+## Source File
+
+**File**: [`defaults/interface/menu_bar.sh`](../../../../../defaults/interface/menu_bar.sh)
+
+```bash
+# NSStatusItemSpacing controls spacing between menu bar items
+# Domain: NSGlobalDomain
+# Integer value in points (6 = tight, 12 = default, 16 = spacious)
+# Not explicitly set - uses system default for compatibility
+# run_defaults "NSGlobalDomain" "NSStatusItemSpacing" "-int" "8"
+```
+
+## References
+
+- [Apple Support: Use the menu bar on Mac](https://support.apple.com/guide/mac-help/use-the-menu-bar-mchlp1446/mac)
+- [Apple Human Interface Guidelines: Menu Bar](https://developer.apple.com/design/human-interface-guidelines/components/system-experiences/the-menu-bar)
+- [OSXDaily: Reduce Menu Bar Spacing](https://osxdaily.com/2022/02/15/reduce-menu-bar-spacing-macos/)

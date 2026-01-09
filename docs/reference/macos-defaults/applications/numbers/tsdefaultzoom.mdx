@@ -1,0 +1,276 @@
+# Numbers Default Zoom
+
+Set the default zoom level for new spreadsheets in Apple Numbers.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Numbers` |
+| **Key** | `TSDefaultZoom` |
+| **Type** | Integer |
+| **Default Value** | `125` |
+| **Our Setting** | `100` |
+
+## Description
+
+Controls the default zoom level percentage for new spreadsheets in Apple Numbers. This setting determines how large or small the spreadsheet content appears when you create a new document or open Numbers. Higher values zoom in (larger content, less visible area), while lower values zoom out (smaller content, more visible area). The zoom level can always be adjusted manually for individual documents.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `25` | **25%** — Maximum zoom out, tiny content |
+| `50` | **50%** — Half size, overview mode |
+| `75` | **75%** — Slightly reduced |
+| `100` | **100%** — Actual size |
+| `125` | **125%** (default) — Slightly enlarged |
+| `150` | **150%** — Enlarged view |
+| `200` | **200%** — Double size |
+| `400` | **400%** — Maximum zoom in |
+
+## Visual Demonstration
+
+### Zoom Level Comparison:
+```
++-------------------------------------------------------------+
+|  Numbers Zoom Level Comparison                               |
++-------------------------------------------------------------+
+|                                                              |
+|  75% ZOOM (More columns visible):                            |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  A    B    C    D    E    F    G    H    I    J    K   │|
+|  │  ────────────────────────────────────────────────────  │|
+|  │  Name Sales  Q1   Q2   Q3   Q4   Total YoY  Pct  Rank  │|
+|  │  John  $50K  $12K $13K $12K $13K $50K  +5%  10%  1    │|
+|  │  Sara  $45K  $11K $11K $11K $12K $45K  +3%  9%   2    │|
+|  │  Mike  $40K  $10K $10K $10K $10K $40K  +2%  8%   3    │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  100% ZOOM (Actual size):                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │     A       B       C       D       E       F          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Name    Sales    Q1      Q2      Q3      Q4          │|
+|  │  John    $50K    $12K    $13K    $12K    $13K        │|
+|  │  Sara    $45K    $11K    $11K    $11K    $12K        │|
+|  │  Mike    $40K    $10K    $10K    $10K    $10K        │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  150% ZOOM (Larger text, fewer columns):                     |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │       A          B          C          D               │|
+|  │  ───────────────────────────────────────────────────  │|
+|  │   Name        Sales        Q1         Q2              │|
+|  │   John        $50,000      $12,000    $13,000        │|
+|  │   Sara        $45,000      $11,000    $11,000        │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Recommended Zoom by Display Size:
+```
++-------------------------------------------------------------+
+|  Recommended Zoom by Screen Size                             |
++-------------------------------------------------------------+
+|                                                              |
+|  DISPLAY SIZE           RECOMMENDED ZOOM                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  13" MacBook (1440x900)                                      |
+|  Recommended: 100-125%                                       |
+|  Balance of readability and visible content                  |
+|                                                              |
+|  15-16" MacBook (2880x1800)                                  |
+|  Recommended: 100-150%                                       |
+|  More screen real estate allows larger zoom                  |
+|                                                              |
+|  24" iMac (4480x2520)                                        |
+|  Recommended: 100%                                           |
+|  Actual size works well on larger displays                   |
+|                                                              |
+|  27" Monitor or larger                                       |
+|  Recommended: 75-100%                                        |
+|  Can fit more content; may zoom out for overview            |
+|                                                              |
+|  USER VISION                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Normal vision: 100%                                         |
+|  Slight difficulty: 125-150%                                |
+|  Vision impairment: 150-200%                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Manual Zoom Controls:
+```
++-------------------------------------------------------------+
+|  Adjusting Zoom in Numbers                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  KEYBOARD SHORTCUTS:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ⌘ +         Zoom in                                        |
+|  ⌘ -         Zoom out                                       |
+|  ⌘ 0         Actual size (100%)                             |
+|                                                              |
+|  VIEW MENU:                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  View > Zoom > [Various zoom levels]                        |
+|  View > Zoom > Fit Width                                    |
+|  View > Zoom > Fit Sheet                                    |
+|                                                              |
+|  TOOLBAR:                                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌───────────────────────────────────────────────┐          |
+|  │  [−] [  125%  ▼] [+]   ← Zoom control        │          |
+|  └───────────────────────────────────────────────┘          |
+|                                                              |
+|  Note: TSDefaultZoom sets the initial zoom for NEW          |
+|  documents; individual documents remember their zoom        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `100` — Actual size for accurate representation.
+
+### Why Use 100%?
+
+1. **Accuracy** — See content at actual print size
+2. **Consistency** — Standard baseline view
+3. **Predictability** — What you see matches output
+4. **Flexibility** — Easy to zoom from neutral point
+
+### Why Use Higher (125-150%)?
+
+- Easier to read small text
+- Working on laptop with smaller display
+- Prefer larger cell content
+- Vision accommodation needed
+
+### Why Use Lower (75%)?
+
+- Need to see more columns at once
+- Large display with plenty of space
+- Reviewing overall spreadsheet structure
+- Working with wide data tables
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Numbers TSDefaultZoom
+
+# Set to actual size (100%)
+defaults write com.apple.iWork.Numbers TSDefaultZoom -int 100
+
+# Set to default (125%)
+defaults write com.apple.iWork.Numbers TSDefaultZoom -int 125
+
+# Set to enlarged (150%)
+defaults write com.apple.iWork.Numbers TSDefaultZoom -int 150
+
+# Set to zoomed out (75%)
+defaults write com.apple.iWork.Numbers TSDefaultZoom -int 75
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Numbers TSDefaultZoom
+```
+
+## UI Location
+
+**Numbers** > **View** > **Zoom** (for current document)
+
+```
++-------------------------------------------------------------+
+|  Numbers - Setting Default Zoom                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Note: No direct UI for DEFAULT zoom. The defaults command  |
+|  sets the zoom level for new documents.                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  FOR CURRENT DOCUMENT:                                       |
+|  View > Zoom > [Select zoom level]                          |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Zoom                         ▶  25%                    │|
+|  │                                   50%                    │|
+|  │                                   75%                    │|
+|  │                                   100%   ← Actual       │|
+|  │                                 ✓ 125%   ← Default      │|
+|  │                                   150%                   │|
+|  │                                   200%                   │|
+|  │                                   ────────────          │|
+|  │                                   Fit Width             │|
+|  │                                   Fit Sheet             │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Individual document zoom is saved with the document        |
+|  TSDefaultZoom affects only NEW documents                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Default zoom (this setting)
+defaults write com.apple.iWork.Numbers TSDefaultZoom -int 100
+
+# Show formula warnings
+defaults write com.apple.iWork.Numbers TSShowFormulaWarnings -bool true
+
+# Warn before deleting sheets
+defaults write com.apple.iWork.Numbers TSWarnBeforeDeletingSheets -bool true
+
+# Show alignment guides at center
+defaults write com.apple.iWork.Numbers TSShowsObjectCenterGuides -bool true
+
+# Show alignment guides at edges
+defaults write com.apple.iWork.Numbers TSShowsObjectEdgeGuides -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Zoom not changing | Applies to NEW documents only |
+| Old documents unchanged | Individual docs remember their zoom |
+| Value rejected | Use valid integer (25-400) |
+| Want per-sheet zoom | Set manually; saved per-document |
+| Very small/large zoom | Use reasonable values (50-200) |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Numbers
+- **Note**: Setting applies to new spreadsheets only
+- **Note**: Existing documents keep their saved zoom
+- **Note**: Numbers must be quit for defaults to apply
+- **Note**: Same domain key as Pages (TSDefaultZoom)
+
+## Source File
+
+**File**: [`defaults/applications/numbers.sh`](../../../../../defaults/applications/numbers.sh)
+
+```bash
+run_defaults "com.apple.iWork.Numbers" "TSDefaultZoom" "-int" "100"
+```
+
+## References
+
+- [Apple Support: Numbers User Guide](https://support.apple.com/guide/numbers/welcome/mac)
+- [Apple Support: Change zoom level in Numbers](https://support.apple.com/guide/numbers/zoom-in-or-out-tan4987e8e80/mac)
+- [Apple Support: Numbers settings](https://support.apple.com/guide/numbers/change-settings-tan6df912ce5/mac)

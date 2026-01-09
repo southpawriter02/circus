@@ -1,0 +1,294 @@
+# Trackpad Actuate Detents
+
+Enable or disable Force Click and haptic feedback on Force Touch trackpads.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `ActuateDetents` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Force Touch trackpads provide haptic feedback (the simulated "click" sensation) when pressing. Force Touch trackpads don't physically click—they use the Taptic Engine to simulate the feeling. When disabled, the trackpad still registers clicks but provides no tactile feedback. This setting also affects Force Click (deep press) functionality on supported trackpads.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Haptic feedback enabled** (default) — Feel click sensation |
+| `false` | **Haptic feedback disabled** — Silent, no tactile click |
+
+## Visual Demonstration
+
+### Force Touch Trackpad Mechanics:
+```
++-------------------------------------------------------------+
+|  How Force Touch Trackpads Work                              |
++-------------------------------------------------------------+
+|                                                              |
+|  TRADITIONAL TRACKPAD:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ┌───────────────────────────────────────────────────┐  │|
+|  │  │                                                    │  │|
+|  │  │         Physical button mechanism                  │  │|
+|  │  │                                                    │  │|
+|  │  └───────────────────────────────────────────────────┘  │|
+|  │                      │                                   │|
+|  │                      ▼ Press down                        │|
+|  │              [Mechanical click]                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  FORCE TOUCH TRACKPAD (MacBook 2015+):                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ┌───────────────────────────────────────────────────┐  │|
+|  │  │     Force sensors detect pressure anywhere         │  │|
+|  │  │                                                    │  │|
+|  │  │  ████████████████████████████████████████████████ │  │|
+|  │  │     Taptic Engine provides haptic feedback         │  │|
+|  │  └───────────────────────────────────────────────────┘  │|
+|  │                      │                                   │|
+|  │                      ▼ Press anywhere                    │|
+|  │          [Taptic Engine simulates click]                 │|
+|  │           ActuateDetents controls this                   │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Haptic Feedback Enabled (true):
+```
++-------------------------------------------------------------+
+|  ActuateDetents = true (Default)                             |
++-------------------------------------------------------------+
+|                                                              |
+|  LIGHT PRESS:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │         ↓ Light press                                    │|
+|  │    ┌─────────────────────┐                              │|
+|  │    │  ░░░░░░░░░░░░░░░░░ │  ← First haptic "click"       │|
+|  │    │    Trackpad        │     You feel: Click!          │|
+|  │    └─────────────────────┘                              │|
+|  │                                                          │|
+|  │  Action: Regular click (select, open, etc.)              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  DEEP PRESS (Force Click):                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │         ↓↓ Deep press                                    │|
+|  │    ┌─────────────────────┐                              │|
+|  │    │  ████████████████░░ │  ← Second haptic "click"     │|
+|  │    │    Trackpad        │     You feel: Click! Click!   │|
+|  │    └─────────────────────┘                              │|
+|  │                                                          │|
+|  │  Action: Force Click (Quick Look, dictionary, etc.)      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Haptic Feedback Disabled (false):
+```
++-------------------------------------------------------------+
+|  ActuateDetents = false (Silent Mode)                        |
++-------------------------------------------------------------+
+|                                                              |
+|  PRESSING TRACKPAD:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │         ↓ Press                                          │|
+|  │    ┌─────────────────────┐                              │|
+|  │    │  ░░░░░░░░░░░░░░░░░ │  ← No haptic feedback        │|
+|  │    │    Trackpad        │     You feel: Nothing         │|
+|  │    └─────────────────────┘     Click still registers    │|
+|  │                                                          │|
+|  │  ✓ Click works normally                                  │|
+|  │  ✓ Cursor moves normally                                 │|
+|  │  ✓ Gestures work normally                                │|
+|  │  ✗ No tactile click sensation                           │|
+|  │  ✗ Force Click may not work                             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Use cases for disabling:                                    |
+|  • Completely silent operation                              |
+|  • Preference for tap-to-click only                         |
+|  • Taptic Engine sensitivity issues                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Related Click Settings:
+```
++-------------------------------------------------------------+
+|  Force Touch Trackpad Click Settings                         |
++-------------------------------------------------------------+
+|                                                              |
+|  SETTING                    CONTROLS                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ActuateDetents             Haptic feedback on/off          |
+|  (this setting)             (bool: true/false)               |
+|                                                              |
+|  ActuationStrength          Haptic feedback intensity        |
+|                             (int: 0=Light, 1=Medium, 2=Firm) |
+|                                                              |
+|  FirstClickThreshold        Pressure for regular click       |
+|                             (int: 0=Light, 1=Medium, 2=Firm) |
+|                                                              |
+|  SecondClickThreshold       Pressure for Force Click         |
+|                             (int: 0=Light, 1=Medium, 2=Firm) |
+|                                                              |
+|  ForceSuppressed            Disable Force Touch completely   |
+|                             (bool: true/false)               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Keep haptic feedback enabled for natural feel.
+
+### Why Enable?
+
+1. **Natural feel** — Simulates physical clicking
+2. **Feedback** — Know when clicks register
+3. **Force Click** — Enables Quick Look and other features
+4. **Consistency** — Expected trackpad behavior
+
+### Why Disable?
+
+- Completely silent operation needed
+- Prefer tap-to-click exclusively
+- Haptic sensation bothers you
+- Taptic Engine issues
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad ActuateDetents
+
+# Enable haptic feedback (default)
+defaults write com.apple.AppleMultitouchTrackpad ActuateDetents -bool true
+
+# Disable haptic feedback
+defaults write com.apple.AppleMultitouchTrackpad ActuateDetents -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad ActuateDetents
+```
+
+## UI Location
+
+**System Settings** > **Trackpad** > **Point & Click**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Trackpad                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Trackpad > Point & Click                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [Point & Click] [Scroll & Zoom] [More Gestures]        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Look up & data detectors                                │|
+|  │  [Force Click with one finger ▼]                        │|
+|  │                                                          │|
+|  │  Secondary click                                         │|
+|  │  [Click or tap with two fingers ▼]                      │|
+|  │                                                          │|
+|  │  Tap to click                                            │|
+|  │  [✓] Tap with one finger                                │|
+|  │                                                          │|
+|  │  Click                                                   │|
+|  │  Light ─────●───── Firm                                 │|
+|  │                                                          │|
+|  │  [✓] Force Click and haptic feedback  ← This setting    │|
+|  │                                                          │|
+|  │  Force Click: Press deeply for Quick Look, Look up,     │|
+|  │  and variable speed media controls.                      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Haptic feedback (this setting)
+defaults write com.apple.AppleMultitouchTrackpad ActuateDetents -bool true
+
+# Haptic feedback strength (0=Light, 1=Medium, 2=Firm)
+defaults write com.apple.AppleMultitouchTrackpad ActuationStrength -int 1
+
+# First click pressure threshold
+defaults write com.apple.AppleMultitouchTrackpad FirstClickThreshold -int 1
+
+# Second click (Force Click) pressure threshold
+defaults write com.apple.AppleMultitouchTrackpad SecondClickThreshold -int 1
+
+# Tap to click
+defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+
+# Three finger drag
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No click feedback | Enable ActuateDetents; check ActuationStrength |
+| Force Click not working | Enable this setting; check SecondClickThreshold |
+| Click too hard/soft | Adjust FirstClickThreshold (0, 1, or 2) |
+| Trackpad unresponsive | Restart Mac; check for hardware issues |
+| Setting not applying | Log out and back in after change |
+
+## Compatibility
+
+- **macOS**: 10.11+ (El Capitan) with Force Touch trackpad
+- **Hardware**: MacBook 2015+, MacBook Pro 2015+, Magic Trackpad 2
+- **Note**: Only applies to Force Touch trackpads with Taptic Engine
+- **Note**: Non-Force Touch trackpads ignore this setting
+- **Note**: May require logout for changes to take effect
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../../../defaults/accessibility/pointer.sh)
+
+```bash
+# --- Force Click and Haptic Feedback ---
+# Key:          ActuateDetents
+# Domain:       com.apple.AppleMultitouchTrackpad
+# Description:  Enable haptic feedback for Force Touch trackpads.
+run_defaults "com.apple.AppleMultitouchTrackpad" "ActuateDetents" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change Trackpad preferences](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac)
+- [Apple Support: Use Force Touch trackpad](https://support.apple.com/guide/mac-help/use-a-force-touch-trackpad-mchlp1218/mac)
+- [Apple Support: Multi-Touch gestures](https://support.apple.com/en-us/102482)

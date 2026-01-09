@@ -1,0 +1,293 @@
+# Keynote Show Comments
+
+Control whether the comments pane is displayed in Apple Keynote presentations.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Keynote` |
+| **Key** | `TSShowsComments` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the Comments pane is displayed in Keynote presentations. When enabled, comments appear in a sidebar, making it easy to review feedback from collaborators. This is essential for presentation development workflows where multiple people provide input on slides. Comments can be attached to specific slides or objects and include threaded replies.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show comments pane** — Comments visible in sidebar |
+| `false` | **Hide comments pane** (default) — Comments hidden until opened |
+
+## Visual Demonstration
+
+### Comments Pane Shown (true):
+```
++-------------------------------------------------------------+
+|  Keynote with Comments Pane                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🎬 Keynote - Sales Presentation                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌──────┐ ┌─────────────────────────┬──────────────────┐│|
+|  │  │Slides│ │                          │ Comments         ││|
+|  │  │      │ │   Q4 Sales Results       │ ───────────────  ││|
+|  │  │ ┌──┐ │ │   ─────────────────      │                  ││|
+|  │  │ │1 │ │ │                          │ 💬 Sarah Chen    ││|
+|  │  │ └──┘ │ │   Revenue: $12.5M [1]    │    Jan 8, 2026  ││|
+|  │  │ ┌──┐ │ │                          │    "Can we add  ││|
+|  │  │ │2 │ │ │   Growth: +23% YoY       │    the regional ││|
+|  │  │ └──┘ │ │                          │    breakdown?"  ││|
+|  │  │ ┌──┐ │ │   Top Markets: [2]       │    [Reply]      ││|
+|  │  │ │3 │ │ │   • North America        │                  ││|
+|  │  │ └──┘ │ │   • Europe               │ ─────────────── ││|
+|  │  │      │ │   • Asia Pacific         │                  ││|
+|  │  │      │ │                          │ 💬 Mike Johnson ││|
+|  │  │      │ │   [1][2] Comment markers │    Jan 8, 2026  ││|
+|  │  │      │ │                          │    "Add chart"  ││|
+|  │  │      │ │                          │    [Reply]      ││|
+|  │  │      │ │                          │                  ││|
+|  │  └──────┘ └─────────────────────────┴──────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comments Hidden (false - Default):
+```
++-------------------------------------------------------------+
+|  Keynote with Comments Hidden                                |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🎬 Keynote - Sales Presentation                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌──────┐ ┌────────────────────────────────────────────┐│|
+|  │  │Slides│ │                                             ││|
+|  │  │      │ │   Q4 Sales Results                          ││|
+|  │  │ ┌──┐ │ │   ─────────────────                         ││|
+|  │  │ │1 │ │ │                                             ││|
+|  │  │ └──┘ │ │   Revenue: $12.5M ●                         ││|
+|  │  │ ┌──┐ │ │                    └─ Small comment marker  ││|
+|  │  │ │2 │ │ │   Growth: +23% YoY                          ││|
+|  │  │ └──┘ │ │                                             ││|
+|  │  │ ┌──┐ │ │   Top Markets: ●                            ││|
+|  │  │ │3 │ │ │   • North America                           ││|
+|  │  │ └──┘ │ │   • Europe                                  ││|
+|  │  │      │ │   • Asia Pacific                            ││|
+|  │  │      │ │                                             ││|
+|  │  │      │ │   Full slide width, comments in margin     ││|
+|  │  │      │ │                                             ││|
+|  │  └──────┘ └────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Presentation Review Workflow:
+```
++-------------------------------------------------------------+
+|  Using Comments for Presentation Review                      |
++-------------------------------------------------------------+
+|                                                              |
+|  TYPICAL REVIEW CYCLE:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. AUTHOR creates presentation                              |
+|     ↓                                                        |
+|  2. Shares via iCloud with REVIEWERS                        |
+|     ↓                                                        |
+|  3. REVIEWERS add comments to specific slides               |
+|                                                              |
+|     ┌─────────────────────────────────────────────────────┐ |
+|     │  💬 "The revenue number needs to be updated"        │ |
+|     │  💬 "Can we use the new logo here?"                 │ |
+|     │  💬 "This chart is hard to read - simplify?"        │ |
+|     └─────────────────────────────────────────────────────┘ |
+|     ↓                                                        |
+|  4. AUTHOR reviews comments in pane                         |
+|     ↓                                                        |
+|  5. AUTHOR makes changes, replies to comments               |
+|     ↓                                                        |
+|  6. Resolved comments deleted, cycle continues              |
+|                                                              |
+|  COMMENT TYPES:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Slide-level   → General feedback about slide             |
+|  • Object-level  → Comment attached to specific element     |
+|  • Thread        → Reply chain for discussion               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Slide Navigator with Comments:
+```
++-------------------------------------------------------------+
+|  Slide Navigator Shows Comment Indicators                    |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌──────────────────────────────────────────────────────────┐|
+|  │  Slide Navigator                                         │|
+|  │  ─────────────────────────────────────────────────────   │|
+|  │                                                          │|
+|  │  ┌─────────────┐                                         │|
+|  │  │ Slide 1     │  (no comments)                          │|
+|  │  │ Title       │                                         │|
+|  │  └─────────────┘                                         │|
+|  │                                                          │|
+|  │  ┌─────────────┐ 💬                                      │|
+|  │  │ Slide 2     │  ← Comment indicator                    │|
+|  │  │ Overview    │    2 comments on this slide            │|
+|  │  └─────────────┘                                         │|
+|  │                                                          │|
+|  │  ┌─────────────┐ 💬                                      │|
+|  │  │ Slide 3     │  ← 1 comment                           │|
+|  │  │ Results     │                                         │|
+|  │  └─────────────┘                                         │|
+|  │                                                          │|
+|  │  ┌─────────────┐                                         │|
+|  │  │ Slide 4     │  (no comments)                          │|
+|  │  │ Next Steps  │                                         │|
+|  │  └─────────────┘                                         │|
+|  │                                                          │|
+|  │  Comment badges help navigate to slides needing review  │|
+|  │                                                          │|
+|  └──────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show comments for collaborative editing.
+
+### Why Show Comments?
+
+1. **Team collaboration** — See all feedback at once
+2. **Review workflow** — Essential for presentation development
+3. **Track discussions** — Follow comment threads
+4. **No missed feedback** — Comments always visible
+5. **Efficient editing** — Respond without context switching
+
+### Why Hide Comments?
+
+- **Focus on content** — Distraction-free editing
+- **More space** — Full width for slide
+- **Final polish** — When all comments resolved
+- **Individual work** — No collaborators involved
+- **Presenting** — Clean view when showing slides
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Keynote TSShowsComments
+
+# Show comments pane
+defaults write com.apple.iWork.Keynote TSShowsComments -bool true
+
+# Hide comments pane (default)
+defaults write com.apple.iWork.Keynote TSShowsComments -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Keynote TSShowsComments
+```
+
+## UI Location
+
+**Keynote** > **View** > **Show Comments**
+
+```
++-------------------------------------------------------------+
+|  Keynote View Menu                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  View Menu                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Zoom                              ▶                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Show Navigator                                         │|
+|  │  Show Object List                                       │|
+|  │  Show Presenter Notes                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Show Rulers                        ⌘R                  │|
+|  │  ✓ Show Comments                        ← This option  │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Light Table                                            │|
+|  │  Slideshow                                              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Also accessible from toolbar comments button               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show comments pane (this setting)
+defaults write com.apple.iWork.Keynote TSShowsComments -bool true
+
+# Show presenter notes
+defaults write com.apple.iWork.Keynote ShowPresenterNotes -bool true
+
+# Show rulers
+defaults write com.apple.iWork.Keynote TSShowsRuler -bool true
+
+# Default zoom level
+defaults write com.apple.iWork.Keynote TSDefaultZoom -int 100
+
+# Auto-correction indicators
+defaults write com.apple.iWork.Keynote TSShowsAutoCorrection -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Comments not showing | View > Show Comments or click comment indicator |
+| Can't add comments | Check if presentation is locked or read-only |
+| Comments not syncing | Verify iCloud connection and sign-in |
+| Comment on wrong object | Select object before adding comment |
+| Can't delete comment | Only comment author or owner can delete |
+| Comments lost in export | Some formats (PPT) may not preserve comments |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Keynote
+- **Note**: Same key exists in Pages and Numbers
+- **Note**: Comments sync via iCloud when sharing
+- **Note**: Restart Keynote for terminal changes to apply
+- **Note**: Comments not visible during slideshow
+
+## Source File
+
+**File**: [`defaults/applications/keynote.sh`](../../../../../defaults/applications/keynote.sh)
+
+```bash
+# TSShowsComments controls comments pane visibility
+# Domain: com.apple.iWork.Keynote
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+# Essential for presentation collaboration
+```
+
+## References
+
+- [Apple Support: Keynote User Guide](https://support.apple.com/guide/keynote/welcome/mac)
+- [Apple Support: Add and print comments in Keynote](https://support.apple.com/guide/keynote/add-and-print-comments-tan8a09d26db/mac)
+- [Apple Support: Collaborate on a presentation in Keynote](https://support.apple.com/guide/keynote/collaborate-on-a-shared-presentation-tanc15b4cff5/mac)

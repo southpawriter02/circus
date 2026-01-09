@@ -1,0 +1,276 @@
+# Safari Block Storage Policy
+
+Configure cookie and website data storage blocking for enhanced privacy.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `BlockStoragePolicy` |
+| **Type** | Integer |
+| **Default Value** | `2` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls Safari's policy for blocking cookies and website data storage. This setting determines which websites can store cookies and other data on your Mac, balancing privacy protection against website functionality. Modern privacy-focused configurations block all third-party cookies to prevent cross-site tracking while allowing first-party cookies for site functionality.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Allow all cookies** — No blocking (least private) |
+| `1` | **Block third-party cookies** — Allow from visited sites only |
+| `2` | **Block all third-party cookies** (default) — Strict blocking |
+| `3` | **Block all cookies** — Complete blocking (may break sites) |
+
+## Visual Demonstration
+
+### Cookie Blocking Levels:
+```
++-------------------------------------------------------------+
+|  Safari Cookie Storage Policy                                |
++-------------------------------------------------------------+
+|                                                              |
+|  VALUE 0 (Allow All):                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐        |
+|  │   Site A    │   │   Site B    │   │  Ad Network │        |
+|  │   🍪 ✓      │   │   🍪 ✓      │   │   🍪 ✓      │        |
+|  │  (1st party)│   │ (3rd party) │   │ (tracker)   │        |
+|  └─────────────┘   └─────────────┘   └─────────────┘        |
+|        ↓                 ↓                 ↓                 |
+|  All cookies stored   All stored     Trackers stored        |
+|                                                              |
+|  ⚠️  PRIVACY RISK: All sites and trackers can store data   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Block Third-Party (Value 2 - Recommended):
+```
++-------------------------------------------------------------+
+|  Block Third-Party Cookies (Default)                         |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐        |
+|  │   Site A    │   │   Site B    │   │  Ad Network │        |
+|  │   🍪 ✓      │   │   🍪 ✗      │   │   🍪 ✗      │        |
+|  │  (1st party)│   │ (3rd party) │   │ (tracker)   │        |
+|  └─────────────┘   └─────────────┘   └─────────────┘        |
+|        ↓                 ↓                 ↓                 |
+|    Allowed          ❌ Blocked         ❌ Blocked            |
+|                                                              |
+|  HOW IT WORKS:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  When visiting news.example.com:                            |
+|                                                              |
+|  ✓ news.example.com can set cookies (logged in, prefs)      |
+|  ✗ ads.tracker.com embedded on page → BLOCKED               |
+|  ✗ social.network.com widget → BLOCKED                      |
+|  ✗ analytics.service.com → BLOCKED                          |
+|                                                              |
+|  ✓ PRIVACY: Prevents cross-site tracking                    |
+|  ✓ FUNCTIONALITY: Sites you visit still work                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Block All Cookies (Value 3):
+```
++-------------------------------------------------------------+
+|  Block All Cookies (Most Strict)                             |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐        |
+|  │   Site A    │   │   Site B    │   │  Ad Network │        |
+|  │   🍪 ✗      │   │   🍪 ✗      │   │   🍪 ✗      │        |
+|  │  (1st party)│   │ (3rd party) │   │ (tracker)   │        |
+|  └─────────────┘   └─────────────┘   └─────────────┘        |
+|        ↓                 ↓                 ↓                 |
+|    ❌ Blocked        ❌ Blocked         ❌ Blocked            |
+|                                                              |
+|  CONSEQUENCES:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ✗ Cannot stay logged in to websites                        |
+|  ✗ Shopping carts don't persist                             |
+|  ✗ Site preferences not saved                               |
+|  ✗ Many sites will not function properly                    |
+|                                                              |
+|  ⚠️  NOT RECOMMENDED for normal browsing                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Privacy vs Functionality Trade-off:
+```
++-------------------------------------------------------------+
+|  Cookie Policy Comparison                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  PRIVACY LEVEL:                                              |
+|                                                              |
+|  Allow All (0)   █░░░░░░░░░  Least Private                  |
+|  Visited (1)     ████░░░░░░  Moderate                       |
+|  Block 3rd (2)   ███████░░░  Recommended ★                  |
+|  Block All (3)   ██████████  Most Private                   |
+|                                                              |
+|  SITE COMPATIBILITY:                                         |
+|                                                              |
+|  Allow All (0)   ██████████  Full compatibility             |
+|  Visited (1)     ████████░░  Most sites work                |
+|  Block 3rd (2)   ███████░░░  Minor issues possible ★        |
+|  Block All (3)   ███░░░░░░░  Many sites broken              |
+|                                                              |
+|  ★ = Recommended setting (best balance)                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `2` — Block all third-party cookies for strong privacy.
+
+### Why Block Third-Party Cookies?
+
+1. **Prevents tracking** — Ad networks can't follow you across sites
+2. **Privacy protection** — Limits data collection by trackers
+3. **Minimal impact** — First-party cookies still work
+4. **Safari default** — Apple's recommended setting
+5. **GDPR alignment** — Supports privacy regulations
+
+### Why Allow All?
+
+- Testing web applications
+- Compatibility with specific sites
+- Temporary need for embedded services
+
+### Why Block All?
+
+- Maximum privacy (advanced users)
+- Temporary anonymous browsing
+- Testing cookie-less experience
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari BlockStoragePolicy
+
+# Allow all cookies (0)
+defaults write com.apple.Safari BlockStoragePolicy -int 0
+
+# Block third-party from unvisited sites (1)
+defaults write com.apple.Safari BlockStoragePolicy -int 1
+
+# Block all third-party cookies (2, recommended)
+defaults write com.apple.Safari BlockStoragePolicy -int 2
+
+# Block all cookies (3)
+defaults write com.apple.Safari BlockStoragePolicy -int 3
+
+# Delete (reset to default)
+defaults delete com.apple.Safari BlockStoragePolicy
+```
+
+## UI Location
+
+**Safari** > **Settings** > **Privacy** > **Cookies and website data**
+
+```
++-------------------------------------------------------------+
+|  Safari Settings - Privacy                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Safari > Settings (⌘,) > Privacy                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Tabs] [AutoFill] [Passwords] [Search]       │|
+|  │  [Security] [Privacy] [Websites] [Extensions] [Advanced]│|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Website tracking                                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [✓] Prevent cross-site tracking      ← Related         │|
+|  │                                                          │|
+|  │  Cookies and website data                                │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [Block all cookies                    ▼]                │|
+|  │                                         ↑                │|
+|  │  Options:                              This setting      │|
+|  │  • Allow all cookies                                     │|
+|  │  • Block third-party cookies (default)                  │|
+|  │  • Block all cookies                                     │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Cookie blocking policy (this setting)
+defaults write com.apple.Safari BlockStoragePolicy -int 2
+
+# Prevent cross-site tracking
+defaults write com.apple.Safari WebKitStorageBlockingPolicy -int 1
+
+# Do Not Track header
+defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+
+# Fraudulent website warning
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+
+# Preload top hit (disable for privacy)
+defaults write com.apple.Safari PreloadTopHit -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't log into websites | Check if cookies are completely blocked; use value 2 instead of 3 |
+| Shopping cart not saving | Site may require third-party cookies; add to allowed list |
+| Social login not working | Social login uses third-party cookies; log in directly instead |
+| Site says "enable cookies" | Likely requires third-party; consider adding exception |
+| Changes not taking effect | Restart Safari; clear existing website data |
+
+## Security Implications
+
+- **Privacy**: Blocking third-party cookies significantly reduces tracking
+- **Fingerprinting**: This setting doesn't prevent browser fingerprinting
+- **Storage**: Also affects localStorage and IndexedDB for third parties
+- **ITP**: Works alongside Safari's Intelligent Tracking Prevention
+
+## Compatibility
+
+- **macOS**: 10.11+ (El Capitan and later)
+- **Safari**: 11.0+ (full third-party blocking support)
+- **Note**: Safari uses Intelligent Tracking Prevention (ITP) in addition to this setting
+- **Note**: Restart Safari for changes to take effect
+- **Note**: Some sites may prompt you to enable cookies
+
+## Source File
+
+**File**: [`defaults/profiles/privacy.sh`](../../../../../defaults/profiles/privacy.sh)
+
+```bash
+# --- Prevent Cross-Site Tracking ---
+# Key:          BlockStoragePolicy
+# Description:  Blocks websites from tracking you across the web
+run_defaults "com.apple.Safari" "BlockStoragePolicy" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Safari Privacy settings](https://support.apple.com/guide/safari/privacy-ibrw1074/mac)
+- [Apple Support: Prevent cross-site tracking](https://support.apple.com/guide/safari/prevent-cross-site-tracking-sfri40732/mac)
+- [WebKit: Intelligent Tracking Prevention](https://webkit.org/tracking-prevention/)

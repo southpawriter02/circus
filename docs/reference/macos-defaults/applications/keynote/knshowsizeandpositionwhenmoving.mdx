@@ -1,0 +1,270 @@
+# Keynote Show Size and Position When Moving
+
+Control whether a tooltip displays object dimensions and coordinates while dragging objects in Keynote.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Keynote` |
+| **Key** | `KNShowSizeAndPositionWhenMoving` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Keynote displays a real-time tooltip showing an object's size (width x height) and position (X, Y coordinates) while you drag it on the slide canvas. This information helps you precisely position and size objects without constantly checking the Format inspector.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show info** (default) — Tooltip displays during drag |
+| `false` | **Hide info** — No tooltip while moving objects |
+
+## Visual Demonstration
+
+### Size and Position Tooltip (true - Default):
+```
++-------------------------------------------------------------+
+|  Keynote Slide Canvas with Position Tooltip                  |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                                                          │|
+|  │       ┌─────────────────┐                                │|
+|  │       │                 │                                │|
+|  │       │  ☐ Moving Box   │                                │|
+|  │       │                 │                                │|
+|  │       └─────────────────┘                                │|
+|  │              │                                           │|
+|  │              └──┬──────────────────────────┐             │|
+|  │                 │  W: 200 pt  H: 120 pt    │             │|
+|  │                 │  X: 150 pt  Y: 200 pt    │             │|
+|  │                 └──────────────────────────┘             │|
+|  │                     ↑ Tooltip follows cursor             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Tooltip updates in real-time as you drag the object.        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Tooltip Information:
+```
++-------------------------------------------------------------+
+|  Understanding the Tooltip Values                            |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌──────────────────────────────┐                           |
+|  │  W: 200 pt    H: 120 pt      │  ← Object dimensions      |
+|  │  X: 150 pt    Y: 200 pt      │  ← Position on slide      |
+|  └──────────────────────────────┘                           |
+|                                                              |
+|  W (Width):   Horizontal size of the object                 |
+|  H (Height):  Vertical size of the object                   |
+|  X:           Distance from left edge of slide              |
+|  Y:           Distance from top edge of slide               |
+|                                                              |
+|  COORDINATE SYSTEM:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  (0,0) ───────────────────────────→ X increases             |
+|    │                                                         |
+|    │   ┌───────────────────────────────────────────────┐    |
+|    │   │                                               │    |
+|    │   │          Slide Canvas                         │    |
+|    │   │                                               │    |
+|    ↓   │        ┌─────────┐ (150, 200)                │    |
+|    Y   │        │  Object │                            │    |
+|   inc  │        └─────────┘                            │    |
+|        │                                               │    |
+|        └───────────────────────────────────────────────┘    |
+|                                                              |
+|  Origin (0,0) is at the top-left corner of the slide.       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Resizing vs Moving:
+```
++-------------------------------------------------------------+
+|  Tooltip Shows Different Info Based on Action                |
++-------------------------------------------------------------+
+|                                                              |
+|  WHEN MOVING (dragging object):                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|       ┌─────────┐ ←─┐                                        |
+|       │ Object  │   │  ┌────────────────────┐               |
+|       └─────────┘ ──┘  │ W: 200  H: 120     │               |
+|                        │ X: 150  Y: 200     │ ← Both shown  |
+|                        └────────────────────┘               |
+|                                                              |
+|  WHEN RESIZING (dragging handle):                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|       ┌─────────┐                                            |
+|       │ Object  ├─●←─┐  ┌────────────────────┐              |
+|       └─────────┘    │  │ W: 200  H: 120     │              |
+|           resize     │  │                    │ ← Size only  |
+|           handle ────┘  └────────────────────┘              |
+|                                                              |
+|  Size updates live as you resize the object.                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Tooltip (false):
+```
++-------------------------------------------------------------+
+|  No Position Feedback                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │       ┌─────────────────┐                                │|
+|  │       │                 │                                │|
+|  │       │  ☐ Moving Box   │  ← No tooltip shown            │|
+|  │       │                 │                                │|
+|  │       └─────────────────┘                                │|
+|  │                                                          │|
+|  │  To check position/size, must:                           │|
+|  │  1. Stop dragging                                        │|
+|  │  2. Open Format sidebar                                  │|
+|  │  3. Check Arrange tab                                    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Without the tooltip, precise positioning is slower.         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show real-time position and size information.
+
+### Why Enable This?
+
+1. **Precise positioning** — Know exact coordinates while moving
+2. **Consistent sizing** — Match object dimensions easily
+3. **Faster workflow** — No need to check Format inspector
+4. **Grid-free alignment** — Position without visible grid
+5. **Professional layouts** — Ensure exact measurements
+
+### Why Disable This?
+
+- **Cleaner canvas** — Less visual clutter during editing
+- **Approximate positioning** — Exact numbers not important
+- **Smaller displays** — Tooltip may obstruct view
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Keynote KNShowSizeAndPositionWhenMoving
+
+# Enable position/size tooltip (default, recommended)
+defaults write com.apple.iWork.Keynote KNShowSizeAndPositionWhenMoving -bool true
+
+# Disable position/size tooltip
+defaults write com.apple.iWork.Keynote KNShowSizeAndPositionWhenMoving -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Keynote KNShowSizeAndPositionWhenMoving
+```
+
+## UI Location
+
+**Keynote** > **Settings** > **Rulers** > **Show size and position when moving objects**
+
+```
++-------------------------------------------------------------+
+|  Keynote Settings - Rulers                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Keynote > Settings (Command+,) > Rulers                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Slideshow] [Rulers] [Auto-Correction]       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Ruler Units:  [Points                            v]    │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Alignment Guides                                        │|
+|  │                                                          │|
+|  │  [x] Show guides at object center                        │|
+|  │                                                          │|
+|  │  [x] Show guides at object edges                         │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [x] Show size and position when   <-- This setting     │|
+|  │      moving objects                                      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show size and position tooltip (this setting)
+defaults write com.apple.iWork.Keynote KNShowSizeAndPositionWhenMoving -bool true
+
+# Object center alignment guides
+defaults write com.apple.iWork.Keynote KNShowsObjectCenterGuides -bool true
+
+# Object edge alignment guides
+defaults write com.apple.iWork.Keynote KNShowsObjectEdgeGuides -bool true
+
+# Show rulers
+defaults write com.apple.iWork.Keynote TSShowsRuler -bool true
+
+# Default zoom level
+defaults write com.apple.iWork.Keynote TSDefaultZoom -int 100
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Tooltip not appearing | Check Settings > Rulers > Show size and position |
+| Units wrong (inches vs points) | Change Ruler Units in Settings > Rulers |
+| Tooltip blocks view | Temporarily disable or move object differently |
+| Want exact position | Use Format sidebar > Arrange for precise input |
+| Tooltip shows wrong position | Ensure you're dragging the object, not a handle |
+| Setting not persisting | Restart Keynote after changing via defaults |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Keynote
+- **Note**: Similar setting exists in Pages and Numbers
+- **Note**: Restart Keynote for terminal changes to apply
+- **Note**: Tooltip only appears during active drag operations
+- **Note**: Units match the Ruler Units setting (points, inches, cm)
+
+## Source File
+
+**File**: [`defaults/applications/keynote.sh`](../../../../../defaults/applications/keynote.sh)
+
+```bash
+# KNShowSizeAndPositionWhenMoving controls position/size tooltip
+# Domain: com.apple.iWork.Keynote
+# Displays a tooltip showing object size and position while dragging
+run_defaults "com.apple.iWork.Keynote" "KNShowSizeAndPositionWhenMoving" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Keynote User Guide](https://support.apple.com/guide/keynote/welcome/mac)
+- [Apple Support: Position and align objects in Keynote](https://support.apple.com/guide/keynote/position-and-align-objects-tanb32e7b8f4/mac)
+- [Apple Support: Resize, rotate, and flip objects in Keynote](https://support.apple.com/guide/keynote/resize-rotate-and-flip-objects-tanfb08b4cff/mac)

@@ -1,0 +1,325 @@
+# Recent Documents Limit
+
+Control the maximum number of recent documents tracked by the system.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSRecentDocumentsLimit` |
+| **Type** | Integer |
+| **Default Value** | `10` |
+| **Our Setting** | `0` |
+
+## Description
+
+Controls the maximum number of recently opened documents that macOS tracks and displays in the "Open Recent" menu within applications. This setting affects all apps that use the standard macOS recent documents API. Setting this to `0` disables recent document tracking entirely, which is useful for privacy-focused configurations where you don't want a history of accessed files.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Disabled** — No recent documents tracked |
+| `5` | Track last 5 documents |
+| `10` | **Default** — Track last 10 documents |
+| `20` | Track last 20 documents |
+| `50` | Extended history |
+
+## Visual Demonstration
+
+### Default (10 Recent Documents):
+```
++-------------------------------------------------------------+
+|  Application Menu - Open Recent                              |
++-------------------------------------------------------------+
+|                                                              |
+|  TextEdit > File > Open Recent                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Open                            Cmd+O               |  |
+|  |  Open Recent                          >              |  |
+|  |  +-------------------------------------------+       |  |
+|  |  |  Report Q4 2025.txt                       |       |  |
+|  |  |  Meeting Notes.txt                        |       |  |
+|  |  |  Project Plan.txt                         |       |  |
+|  |  |  Budget 2026.txt                          |       |  |
+|  |  |  Personal Letter.txt                      |       |  |
+|  |  |  Recipe Ideas.txt                         |       |  |
+|  |  |  Travel Itinerary.txt                     |       |  |
+|  |  |  Shopping List.txt                        |       |  |
+|  |  |  Book Notes.txt                           |       |  |
+|  |  |  Ideas.txt                                |       |  |
+|  |  |  ─────────────────────────────────────── |       |  |
+|  |  |  Clear Menu                               |       |  |
+|  |  +-------------------------------------------+       |  |
+|  |  Close                           Cmd+W               |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  Shows: Last 10 opened documents                            |
+|  Privacy: Document history visible to anyone with access     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Privacy Mode (0 - Disabled):
+```
++-------------------------------------------------------------+
+|  Application Menu - Open Recent Disabled                     |
++-------------------------------------------------------------+
+|                                                              |
+|  TextEdit > File > Open Recent                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Open                            Cmd+O               |  |
+|  |  Open Recent                          >              |  |
+|  |  +-------------------------------------------+       |  |
+|  |  |  (No Recent Items)                        |       |  |
+|  |  |                                           |       |  |
+|  |  |  Clear Menu                               |       |  |
+|  |  +-------------------------------------------+       |  |
+|  |  Close                           Cmd+W               |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  Shows: Nothing - tracking disabled                          |
+|  Privacy: No document history stored                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison:
+```
++-------------------------------------------------------------+
+|  Recent Documents Tracking Comparison                        |
++-------------------------------------------------------------+
+|                                                              |
+|  ENABLED (Default):                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Pros:                                                       |
+|  [+] Quick access to recently used files                    |
+|  [+] Convenient workflow for editing documents               |
+|  [+] Standard expected behavior                              |
+|                                                              |
+|  Cons:                                                       |
+|  [-] Reveals which files you've opened                      |
+|  [-] Privacy concern in shared environments                  |
+|  [-] Documents may contain sensitive filenames               |
+|                                                              |
+|  DISABLED (Privacy):                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Pros:                                                       |
+|  [+] No document history tracked                            |
+|  [+] Enhanced privacy                                        |
+|  [+] Nothing to clear manually                               |
+|                                                              |
+|  Cons:                                                       |
+|  [-] Must navigate to files each time                       |
+|  [-] Slower workflow for frequent files                      |
+|  [-] Non-standard behavior                                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Privacy Implications
+
+### What Gets Tracked
+
+When recent documents are enabled, the system tracks:
+
+| Tracked Item | Location | Risk |
+|--------------|----------|------|
+| File paths | App preferences | Reveals file names and locations |
+| Open times | Metadata | Shows when you accessed files |
+| Application | Per-app lists | Shows which apps opened which files |
+| Document icons | Cached | Visual preview may be stored |
+
+### Who Can See Recent Documents
+
+```
++-------------------------------------------------------------+
+|  Recent Documents Visibility                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Who can see your recent documents:                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [!] Anyone with physical access to your Mac                |
+|  [!] Anyone looking over your shoulder                       |
+|  [!] Screen sharing viewers                                  |
+|  [!] Backup software (included in backups)                  |
+|  [!] Forensic analysis tools                                 |
+|                                                              |
+|  Recent documents may reveal:                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Confidential project names                               |
+|  • Personal file topics                                      |
+|  • Financial documents                                       |
+|  • Medical records                                           |
+|  • Legal documents                                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `0` — Disable recent documents tracking for privacy.
+
+### Why Disable (0)?
+
+1. **Privacy** — No record of accessed documents
+2. **Confidentiality** — Sensitive filenames not exposed
+3. **Clean Interface** — Empty recent menu, no maintenance
+4. **Security** — Reduces information leakage
+5. **Compliance** — May be required by security policies
+
+### When to Keep Enabled
+
+- Frequent document editing workflows
+- Single-user, secure environment
+- Productivity prioritized over privacy
+- Quick access to working documents needed
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSRecentDocumentsLimit
+
+# Disable recent documents (privacy mode)
+defaults write NSGlobalDomain NSRecentDocumentsLimit -int 0
+
+# Set to default (10 documents)
+defaults write NSGlobalDomain NSRecentDocumentsLimit -int 10
+
+# Extended history (20 documents)
+defaults write NSGlobalDomain NSRecentDocumentsLimit -int 20
+
+# Delete (reset to system default)
+defaults delete NSGlobalDomain NSRecentDocumentsLimit
+```
+
+Changes take effect when applications are restarted.
+
+## UI Location
+
+There is no direct UI setting for this preference. Recent documents are managed per-application through:
+
+**Each Application** > **File** > **Open Recent** > **Clear Menu**
+
+```
++-------------------------------------------------------------+
+|  Managing Recent Documents Without This Setting              |
++-------------------------------------------------------------+
+|                                                              |
+|  Manual clearing (per app):                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Application > File > Open Recent > Clear Menu               |
+|                                                              |
+|  This must be done:                                          |
+|  • For each application separately                           |
+|  • Each time you want to clear history                       |
+|  • Repeatedly as you open new documents                      |
+|                                                              |
+|  With NSRecentDocumentsLimit = 0:                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Automatic - no documents ever tracked                    |
+|  • System-wide - affects all applications                    |
+|  • Permanent - no manual clearing needed                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Recent documents limit (this setting)
+defaults write NSGlobalDomain NSRecentDocumentsLimit -int 0
+
+# Disable recent places in Finder
+defaults write com.apple.finder ShowRecentTags -bool false
+
+# Save documents to iCloud by default
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+# Clear recent items on logout (if desired)
+# Note: This affects Apple menu recent items
+```
+
+## Application-Specific Behavior
+
+Some applications maintain their own recent documents lists:
+
+| Application | Uses System Setting | Notes |
+|-------------|---------------------|-------|
+| TextEdit | Yes | Follows NSRecentDocumentsLimit |
+| Preview | Yes | Follows NSRecentDocumentsLimit |
+| Pages/Numbers/Keynote | Yes | iWork apps respect setting |
+| Safari | No | Has own download history |
+| Terminal | No | Has shell history |
+| Finder | Partially | Recents folder is separate |
+
+## Finder Recents vs Open Recent
+
+```
++-------------------------------------------------------------+
+|  Finder Recents vs Application Recent Documents              |
++-------------------------------------------------------------+
+|                                                              |
+|  FINDER RECENTS (Sidebar):                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  • Smart folder based on modification date                   |
+|  • NOT affected by NSRecentDocumentsLimit                   |
+|  • Cannot be disabled via defaults (use sidebar prefs)      |
+|  • Shows all recently modified files                         |
+|                                                              |
+|  APPLICATION OPEN RECENT:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  • Menu of recently opened documents                         |
+|  • CONTROLLED by NSRecentDocumentsLimit                     |
+|  • Per-application tracking                                  |
+|  • Only shows files opened in that app                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Recent documents still appear | Restart the application |
+| Setting not affecting all apps | Some apps use custom implementations |
+| Finder Recents still shows files | This is separate; hide via Finder sidebar prefs |
+| Setting reverts after update | Re-apply the defaults command |
+| Want to clear existing history | Use File > Open Recent > Clear Menu first |
+
+## Compatibility
+
+- **macOS**: 10.0+ (has been available since early macOS)
+- **Note**: Requires application restart to take effect
+- **Note**: Some applications may ignore this setting
+- **Note**: Does not affect Finder's Recents smart folder
+- **Note**: iCloud recently used may still track files
+
+## Source File
+
+**File**: [`defaults/profiles/privacy.sh`](../../../../../defaults/profiles/privacy.sh)
+
+```bash
+# NSRecentDocumentsLimit controls recent documents tracking
+# Domain: NSGlobalDomain
+# 0 = disable tracking, higher numbers = more history
+run_defaults "NSGlobalDomain" "NSRecentDocumentsLimit" "-int" "0"
+```
+
+## References
+
+- [Apple Developer: NSDocumentController](https://developer.apple.com/documentation/appkit/nsdocumentcontroller)
+- [Apple Developer: Document-Based App Programming Guide](https://developer.apple.com/library/archive/documentation/DataManagement/Conceptual/DocBasedAppProgrammingGuideForOSX/)
+- [Apple Support: Open Recent in apps](https://support.apple.com/guide/mac-help/mchlp2302/mac)

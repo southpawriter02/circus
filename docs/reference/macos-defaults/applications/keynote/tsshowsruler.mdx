@@ -1,0 +1,281 @@
+# Keynote Show Ruler
+
+Control whether rulers are displayed in Apple Keynote slides.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Keynote` |
+| **Key** | `TSShowsRuler` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether horizontal and vertical rulers are displayed around the slide canvas in Keynote. The rulers show measurements, help with object alignment, and allow setting tab stops for text boxes. They display the slide dimensions and provide reference points for precise placement of elements. Rulers use the unit system configured in Keynote preferences (inches, centimeters, or points).
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show rulers** — Rulers visible around slide canvas |
+| `false` | **Hide rulers** (default) — More canvas space |
+
+## Visual Demonstration
+
+### Rulers Shown (true):
+```
++-------------------------------------------------------------+
+|  Keynote with Rulers                                         |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🎬 Keynote - My Presentation                           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │      │0  │1  │2  │3  │4  │5  │6  │7  │8  │9  │10 │      │|
+|  │  ────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴────  │|
+|  │  ─┬─ ┌────────────────────────────────────────────────┐ │|
+|  │  0│  │                                                 │ │|
+|  │  ─┼─ │                                                 │ │|
+|  │  1│  │     Quarterly Results                           │ │|
+|  │  ─┼─ │     ─────────────────                           │ │|
+|  │  2│  │                                                 │ │|
+|  │  ─┼─ │     • Revenue: $5.2M                            │ │|
+|  │  3│  │     • Growth: 15%                               │ │|
+|  │  ─┼─ │     • New customers: 450                        │ │|
+|  │  4│  │                                                 │ │|
+|  │  ─┼─ │                                                 │ │|
+|  │  5│  └────────────────────────────────────────────────┘ │|
+|  │  ─┴─                                                     │|
+|  │  ↑                                                       │|
+|  │  Vertical ruler (height in inches)                      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Rulers Hidden (false - Default):
+```
++-------------------------------------------------------------+
+|  Keynote without Rulers                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🎬 Keynote - My Presentation                           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌──────────────────────────────────────────────────────┐│|
+|  │  │                                                       ││|
+|  │  │                                                       ││|
+|  │  │     Quarterly Results                                 ││|
+|  │  │     ─────────────────                                 ││|
+|  │  │                                                       ││|
+|  │  │     • Revenue: $5.2M                                  ││|
+|  │  │     • Growth: 15%                                     ││|
+|  │  │     • New customers: 450                              ││|
+|  │  │                                                       ││|
+|  │  │                                                       ││|
+|  │  │     More canvas space visible                        ││|
+|  │  │                                                       ││|
+|  │  └──────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Ruler Features:
+```
++-------------------------------------------------------------+
+|  Understanding Keynote Rulers                                |
++-------------------------------------------------------------+
+|                                                              |
+|  RULER ANATOMY:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Horizontal Ruler (top):                                     |
+|  │0   │1   │2   │3   │4   │5   │6   │7   │8   │9   │10  │  |
+|  └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴──────┘  |
+|        ▼           ▼                                         |
+|      Tab stop    Indent marker                               |
+|                                                              |
+|  Vertical Ruler (left):                                      |
+|  ─┬─                                                         |
+|  0│                                                          |
+|  ─┼─                                                         |
+|  1│  ← Measures from top of slide                           |
+|  ─┼─                                                         |
+|  2│                                                          |
+|  ─┴─                                                         |
+|                                                              |
+|  RULER USES:                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Object placement     - Know exact positions              |
+|  2. Tab stops            - Set custom tab locations          |
+|  3. Text indents         - Control paragraph margins         |
+|  4. Size reference       - Estimate object dimensions        |
+|  5. Alignment            - Visual grid reference             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Working with Objects:
+```
++-------------------------------------------------------------+
+|  Rulers and Object Placement                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │      │0  │1  │2  │3  │4  │5  │6  │7  │8  │9  │10 │      │|
+|  │  ────┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴────  │|
+|  │  ─┬─ ┌────────────────────────────────────────────────┐ │|
+|  │  0│  │                                                 │ │|
+|  │  ─┼─ │                                                 │ │|
+|  │  1│  │  ┌─────────────────┐                            │ │|
+|  │  ─┼─ │  │                 │ ← Image at X:1", Y:1"     │ │|
+|  │  2│  │  │   📷 Image     │   Width: 3"                │ │|
+|  │  ─┼─ │  │                 │   Height: 2"              │ │|
+|  │  3│  │  └─────────────────┘                            │ │|
+|  │  ─┼─ │                                                 │ │|
+|  │                                                          │|
+|  │  Guide lines extend from rulers when dragging objects   │|
+|  │                                                          │|
+|  │  ALIGNMENT WITH RULERS:                                  │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  • Drag from ruler to create guide lines                 │|
+|  │  • Objects snap to ruler increments                      │|
+|  │  • Hold Option to show measurements while dragging      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show rulers for precise alignment.
+
+### Why Show Rulers?
+
+1. **Precise placement** — Know exact object positions
+2. **Consistent layouts** — Align elements accurately
+3. **Tab stops** — Set custom text formatting
+4. **Professional design** — Pixel-perfect slides
+5. **Quick reference** — See dimensions at a glance
+
+### Why Hide Rulers?
+
+- **More space** — Larger canvas area
+- **Cleaner view** — Less visual clutter
+- **Simple presentations** — Precision not needed
+- **Content focus** — Concentrate on messaging
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Keynote TSShowsRuler
+
+# Show rulers
+defaults write com.apple.iWork.Keynote TSShowsRuler -bool true
+
+# Hide rulers (default)
+defaults write com.apple.iWork.Keynote TSShowsRuler -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Keynote TSShowsRuler
+```
+
+## UI Location
+
+**Keynote** > **View** > **Show Rulers** (⌘R)
+
+```
++-------------------------------------------------------------+
+|  Keynote View Menu                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  View Menu                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Zoom                              ▶                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Show Navigator                                         │|
+|  │  Show Object List                                       │|
+|  │  Show Presenter Notes                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ✓ Show Rulers                      ⌘R   ← This option │|
+|  │    Show Comments                                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Light Table                                            │|
+|  │  Slideshow                                              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Checkmark indicates rulers currently visible               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show rulers (this setting)
+defaults write com.apple.iWork.Keynote TSShowsRuler -bool true
+
+# Show object center guides
+defaults write com.apple.iWork.Keynote KNShowsObjectCenterGuides -bool true
+
+# Show object edge guides
+defaults write com.apple.iWork.Keynote KNShowsObjectEdgeGuides -bool true
+
+# Show size/position when moving
+defaults write com.apple.iWork.Keynote KNShowSizeAndPositionWhenMoving -bool true
+
+# Default zoom level
+defaults write com.apple.iWork.Keynote TSDefaultZoom -int 100
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Rulers not appearing | View > Show Rulers or press ⌘R |
+| Wrong units on ruler | Change in Keynote > Settings > Rulers |
+| Can't drag guide from ruler | Click and drag on ruler edge |
+| Ruler disappears | May be hidden by View menu toggle |
+| Setting not persisting | Quit Keynote before changing via defaults |
+| Rulers show on some slides only | This is a global setting, not per-slide |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Keynote
+- **Note**: Same key exists in Pages and Numbers
+- **Note**: Ruler units follow Keynote preferences
+- **Note**: Restart Keynote for terminal changes to apply
+- **Note**: Keyboard shortcut ⌘R works regardless of default
+
+## Source File
+
+**File**: [`defaults/applications/keynote.sh`](../../../../../defaults/applications/keynote.sh)
+
+```bash
+# TSShowsRuler controls ruler visibility in Keynote
+# Domain: com.apple.iWork.Keynote
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+# Toggle with View > Show Rulers or ⌘R
+```
+
+## References
+
+- [Apple Support: Keynote User Guide](https://support.apple.com/guide/keynote/welcome/mac)
+- [Apple Support: Use rulers and guides in Keynote](https://support.apple.com/guide/keynote/use-rulers-and-alignment-guides-tanab41d3a9d/mac)
+- [Apple Support: Position and align objects in Keynote](https://support.apple.com/guide/keynote/position-and-align-objects-tanc15b4b54c/mac)

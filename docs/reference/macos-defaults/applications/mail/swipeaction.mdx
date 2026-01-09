@@ -1,0 +1,284 @@
+# Mail Swipe Action
+
+Configure the action performed when swiping on messages in Mail.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `SwipeAction` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls what action is performed when you swipe left or right on a message in the Mail message list using a trackpad or Magic Mouse. Swipe gestures provide quick message management without using menus or keyboard shortcuts. The setting determines whether swiping archives, deletes, or marks messages as read/unread.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **None** — Disable swipe actions |
+| `1` | **Archive/Delete** (default) — Swipe to archive (or delete if no archive) |
+| `2` | **Mark Read/Unread** — Swipe to toggle read status |
+| `3` | **Flag/Unflag** — Swipe to toggle flag status |
+
+## Visual Demonstration
+
+### Swipe Actions in Mail:
+```
++-------------------------------------------------------------+
+|  Mail Swipe Gesture Actions                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  SWIPE LEFT (Archive/Delete - Default):                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ● John Smith                           10:30 AM        │|
+|  │    Meeting Tomorrow   ←←←←←←←←←← Swipe                  │|
+|  │    Hi team, Just wanted to confirm...                   │|
+|  └─────────────────────────────────────────────────────────┘|
+|            ↓                                                 |
+|  ┌────────────────────────────────────┬────────────────────┐|
+|  │  ● John Smith            10:30 AM  │   🗑️ Delete       │|
+|  │    Meeting Tomorrow                 │   or 📦 Archive   │|
+|  │    Hi team, Just wa...              │   ← Revealed      │|
+|  └────────────────────────────────────┴────────────────────┘|
+|                                                              |
+|  Continue swiping or release to execute action               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Swipe Right Actions:
+```
++-------------------------------------------------------------+
+|  Swipe Right Behavior                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  SWIPE RIGHT (Mark Read/Unread):                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ● John Smith                           10:30 AM        │|
+|  │    Meeting Tomorrow   →→→→→→→→→→ Swipe                  │|
+|  │    Hi team, Just wanted to confirm...                   │|
+|  └─────────────────────────────────────────────────────────┘|
+|            ↓                                                 |
+|  ┌────────────────────┬────────────────────────────────────┐|
+|  │   ○ Mark as Read   │  John Smith            10:30 AM   │|
+|  │   ← Revealed       │  Meeting Tomorrow                  │|
+|  │                    │  Hi team, Just wa...               │|
+|  └────────────────────┴────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Different Swipe Actions Configured:
+```
++-------------------------------------------------------------+
+|  Swipe Action Configurations                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  VALUE 0 (None):                                             |
+|  ─────────────────────────────────────────────────────────  |
+|  Swipe left:   No action                                    |
+|  Swipe right:  No action                                    |
+|  Use case:     Prevent accidental deletions                 |
+|                                                              |
+|  VALUE 1 (Archive/Delete - Default):                         |
+|  ─────────────────────────────────────────────────────────  |
+|  Swipe left:   Archive (or Delete if no archive folder)     |
+|  Swipe right:  Mark as Read/Unread                          |
+|  Use case:     Quick inbox management                       |
+|                                                              |
+|  VALUE 2 (Mark Read/Unread):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  Swipe left:   Mark as Unread                               |
+|  Swipe right:  Mark as Read                                 |
+|  Use case:     Focus on read status management              |
+|                                                              |
+|  VALUE 3 (Flag/Unflag):                                      |
+|  ─────────────────────────────────────────────────────────  |
+|  Swipe left:   Remove flag                                  |
+|  Swipe right:  Add flag                                     |
+|  Use case:     Quick flagging for follow-up                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Gesture Mechanics:
+```
++-------------------------------------------------------------+
+|  How Mail Swipe Gestures Work                                |
++-------------------------------------------------------------+
+|                                                              |
+|  PARTIAL SWIPE:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────────────────────────┬──────────────────────────┐|
+|  │  Message content...          │  Action button revealed  │|
+|  └──────────────────────────────┴──────────────────────────┘|
+|                                                              |
+|  Release → Returns to normal (action not executed)          |
+|  Tap revealed button → Execute that action                  |
+|                                                              |
+|  FULL SWIPE:                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────────────────────────────────────────────────────┐|
+|  │                              Action Button (full width)  │|
+|  └──────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Release → Action executed immediately                      |
+|                                                              |
+|  UNDO:                                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  Shake to undo (if enabled) or ⌘Z immediately after        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1` — Archive/Delete for efficient inbox management.
+
+### Why Use Archive/Delete?
+
+1. **Efficiency** — Quick inbox zero workflow
+2. **Common action** — Most frequent email operation
+3. **Intuitive** — Matches iOS Mail behavior
+4. **Reversible** — Archived messages easily retrieved
+
+### Why Use Mark Read/Unread?
+
+- Don't want accidental deletions
+- Focus on reading through emails
+- Archive manually when ready
+- Track what needs attention
+
+### Why Use Flag?
+
+- Use flags for follow-up workflow
+- Don't want to delete from list view
+- Flag-based task management
+
+### Why Disable?
+
+- Prevent accidental actions
+- Prefer keyboard shortcuts
+- Find swipes unreliable
+- Use mouse instead of trackpad
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail SwipeAction
+
+# Disable swipe actions (0)
+defaults write com.apple.mail SwipeAction -int 0
+
+# Set to Archive/Delete (default, 1)
+defaults write com.apple.mail SwipeAction -int 1
+
+# Set to Mark Read/Unread (2)
+defaults write com.apple.mail SwipeAction -int 2
+
+# Set to Flag/Unflag (3)
+defaults write com.apple.mail SwipeAction -int 3
+
+# Delete (reset to default)
+defaults delete com.apple.mail SwipeAction
+```
+
+## UI Location
+
+**Mail** > **Settings** > **Viewing**
+
+```
++-------------------------------------------------------------+
+|  Mail Settings - Viewing                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Mail > Settings (⌘,) > Viewing                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Accounts] [Junk Mail] [Fonts] [Viewing] ... │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Message List                                            │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Move discarded messages into:                           │|
+|  │  [Trash ▼]                                              │|
+|  │                                                          │|
+|  │  Swipe Actions                                           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Swipe left to:                                          │|
+|  │  [Archive/Delete ▼]      ← This setting                 │|
+|  │                                                          │|
+|  │  Swipe right to:                                         │|
+|  │  [Mark as Read ▼]                                       │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Swipe action (this setting)
+defaults write com.apple.mail SwipeAction -int 1
+
+# Number of preview lines
+defaults write com.apple.mail NumberOfSnippetLines -int 2
+
+# Show unread in bold
+defaults write com.apple.mail ShouldShowUnreadMessagesInBold -bool true
+
+# Conversation view
+defaults write com.apple.mail ConversationViewEnabled -bool true
+
+# Archive mailbox name (affects archive destination)
+# Per-account setting in Account preferences
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Swipe not working | Ensure trackpad gestures enabled in System Settings |
+| Wrong action happening | Check SwipeAction value; verify account settings |
+| Can't swipe on some messages | May be server-side restrictions |
+| Swipe too sensitive | Adjust trackpad sensitivity in System Settings |
+| Action not appearing | Some accounts may not support archive |
+
+## Compatibility
+
+- **macOS**: 10.11+ (El Capitan) for swipe gestures in Mail
+- **Note**: Requires trackpad or Magic Mouse
+- **Note**: Some email providers don't support archive (use delete instead)
+- **Note**: iOS Mail has similar swipe configuration
+- **Note**: Works with all account types (iCloud, Gmail, Exchange, etc.)
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../../defaults/applications/mail.sh)
+
+```bash
+# SwipeAction is a user-configurable Mail preference
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Support: Mail settings on Mac](https://support.apple.com/guide/mail/change-viewing-preferences-mlhlc00e3f29/mac)
+- [Apple Support: Archive messages in Mail](https://support.apple.com/guide/mail/archive-messages-mlhl3d39be6d/mac)
+- [Apple Support: Use trackpad gestures on Mac](https://support.apple.com/guide/mac-help/trackpad-gestures-mchlp1108/mac)

@@ -1,0 +1,280 @@
+# Books Highlight Color Index
+
+Set the default highlight color for annotations in Apple Books.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iBooksX` |
+| **Key** | `BKHighlightColorIndex` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `0` |
+
+## Description
+
+Controls the default color used when highlighting text in Apple Books. When you select text and choose to highlight it, this color is applied automatically. You can change the color for individual highlights, but this setting determines which color is selected by default. Different colors can be used to categorize highlights (e.g., yellow for important, pink for questions, blue for definitions).
+
+## Values
+
+| Value | Color | Description |
+|-------|-------|-------------|
+| `0` | **Yellow** | Default, classic highlighter color |
+| `1` | **Green** | Secondary highlight color |
+| `2` | **Blue** | Cool-toned highlight |
+| `3` | **Pink** | Warm accent color |
+| `4` | **Purple** | Distinctive accent color |
+
+## Visual Demonstration
+
+### Highlight Colors:
+```
++-------------------------------------------------------------+
+|  Books Highlight Color Options                               |
++-------------------------------------------------------------+
+|                                                              |
+|  COLOR PALETTE:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │                                                         │ |
+|  │  ████████  ████████  ████████  ████████  ████████     │ |
+|  │   Yellow    Green     Blue      Pink     Purple       │ |
+|  │    (0)      (1)       (2)       (3)       (4)         │ |
+|  │                                                         │ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  HIGHLIGHTED TEXT EXAMPLES:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Yellow (0):  "The most important passage in the book"      |
+|               ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░        |
+|                                                              |
+|  Green (1):   "Supporting evidence and facts"               |
+|               ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░                |
+|                                                              |
+|  Blue (2):    "Definitions and key terms"                   |
+|               ░░░░░░░░░░░░░░░░░░░░░░░░░░░                   |
+|                                                              |
+|  Pink (3):    "Questions to research later"                 |
+|               ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░                |
+|                                                              |
+|  Purple (4):  "Personal insights and reflections"           |
+|               ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Creating Highlights:
+```
++-------------------------------------------------------------+
+|  How to Highlight Text in Books                              |
++-------------------------------------------------------------+
+|                                                              |
+|  STEP 1: SELECT TEXT                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Chapter 5: The Journey Begins                          │|
+|  │                                                          │|
+|  │  It was a dark and stormy night when the travelers      │|
+|  │  first set foot on the mysterious island. [The ancient  │|
+|  │  lighthouse stood as a beacon of hope] amid the         │|
+|  │                    ↑ Selected text                       │|
+|  │  turbulent seas...                                       │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  STEP 2: CHOOSE ACTION                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ┌────────────────────────────────┐                     │|
+|  │  │  ● ● ● ● ●  ← Color options    │                     │|
+|  │  │  Y G B P P                      │                     │|
+|  │  │  ────────────────────────────  │                     │|
+|  │  │  Highlight                      │  ← Creates highlight│|
+|  │  │  Add Note                       │                     │|
+|  │  │  Copy                           │                     │|
+|  │  │  Share...                       │                     │|
+|  │  │  Look Up                        │                     │|
+|  │  │  Search                         │                     │|
+|  │  └────────────────────────────────┘                     │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  The default color (BKHighlightColorIndex) is pre-selected  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Color-Coding System:
+```
++-------------------------------------------------------------+
+|  Suggested Highlight Color System                            |
++-------------------------------------------------------------+
+|                                                              |
+|  STUDY/ACADEMIC USE:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  🟨 Yellow (0)    Key concepts and main ideas               |
+|  🟩 Green (1)     Examples and evidence                      |
+|  🟦 Blue (2)      Definitions and vocabulary                |
+|  🟪 Pink (3)      Questions and unclear points              |
+|  🟣 Purple (4)    Connections to other material             |
+|                                                              |
+|  FICTION/PLEASURE READING:                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  🟨 Yellow (0)    Favorite passages                         |
+|  🟩 Green (1)     Character development                     |
+|  🟦 Blue (2)      Plot points                               |
+|  🟪 Pink (3)      Beautiful prose/quotes                    |
+|  🟣 Purple (4)    Themes and symbols                        |
+|                                                              |
+|  PROFESSIONAL/TECHNICAL:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  🟨 Yellow (0)    Action items                              |
+|  🟩 Green (1)     Best practices                            |
+|  🟦 Blue (2)      Technical details                         |
+|  🟪 Pink (3)      Warnings/cautions                         |
+|  🟣 Purple (4)    References to follow up                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `0` — Yellow as the traditional default highlight color.
+
+### Why Use Yellow (0)?
+
+1. **Traditional** — Classic highlighter color
+2. **Visible** — High contrast on white pages
+3. **Neutral** — Works with all reading themes
+4. **Familiar** — Matches physical highlighter experience
+
+### Why Use Other Colors?
+
+- **Green (1)**: Prefer cooler highlight tone
+- **Blue (2)**: Match a color-coding system
+- **Pink (3)**: Want warmer accent
+- **Purple (4)**: Distinctive personal style
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iBooksX BKHighlightColorIndex
+
+# Set to yellow (default)
+defaults write com.apple.iBooksX BKHighlightColorIndex -int 0
+
+# Set to green
+defaults write com.apple.iBooksX BKHighlightColorIndex -int 1
+
+# Set to blue
+defaults write com.apple.iBooksX BKHighlightColorIndex -int 2
+
+# Set to pink
+defaults write com.apple.iBooksX BKHighlightColorIndex -int 3
+
+# Set to purple
+defaults write com.apple.iBooksX BKHighlightColorIndex -int 4
+
+# Delete (reset to default)
+defaults delete com.apple.iBooksX BKHighlightColorIndex
+```
+
+## UI Location
+
+**While Reading** > **Select Text** > **Color Picker**
+
+```
++-------------------------------------------------------------+
+|  Books - Highlight Color Selection                           |
++-------------------------------------------------------------+
+|                                                              |
+|  While reading a book:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Select text by clicking and dragging                     |
+|  2. In the popup menu, click on a color circle              |
+|  3. The selected color becomes the new default              |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Selection popup:                                        │|
+|  │                                                          │|
+|  │  ┌──────────────────────────────────────┐               │|
+|  │  │  [●] [●] [●] [●] [●]                │               │|
+|  │  │   Y   G   B   P   P                  │               │|
+|  │  │                ↑                      │               │|
+|  │  │   Click to select default color      │               │|
+|  │  │   (sets BKHighlightColorIndex)       │               │|
+|  │  │                                       │               │|
+|  │  │  Highlight                            │               │|
+|  │  │  ...                                  │               │|
+|  │  └──────────────────────────────────────┘               │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: The last color used becomes the default              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Highlight color (this setting)
+defaults write com.apple.iBooksX BKHighlightColorIndex -int 0
+
+# Sync highlights via iCloud
+defaults write com.apple.iBooksX BKSyncBookmarksAndHighlights -bool true
+
+# Font size for reading
+defaults write com.apple.iBooksX BKLastUsedFontSize -int 4
+
+# Font family
+defaults write com.apple.iBooksX BKLastUsedFontFamilyName -string "Georgia"
+
+# Reader theme
+defaults write com.apple.iBooksX BKReaderTheme -int 0
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Wrong color applied | Select text, change color in popup; becomes new default |
+| Highlights not syncing | Check BKSyncBookmarksAndHighlights is enabled |
+| Can't highlight text | Some books may restrict highlighting (DRM) |
+| Color looks different | May vary by reading theme (Sepia, Night, etc.) |
+| Setting not persisting | Quit Books before changing via defaults |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Books app
+- **Note**: Highlights sync across devices via iCloud
+- **Note**: Color appearance varies by reading theme
+- **Note**: Some protected books may not allow highlights
+- **Note**: Works with ePub and iBooks format
+
+## Source File
+
+**File**: [`defaults/applications/books.sh`](../../../../../defaults/applications/books.sh)
+
+```bash
+# BKHighlightColorIndex controls default highlight color
+# Domain: com.apple.iBooksX
+# Values: 0=Yellow, 1=Green, 2=Blue, 3=Pink, 4=Purple
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Support: Use Books on Mac](https://support.apple.com/guide/books/welcome/mac)
+- [Apple Support: Add highlights and notes in Books](https://support.apple.com/guide/books/add-highlights-and-notes-ibks27a5a9d2/mac)
+- [Apple Support: Sync books across devices](https://support.apple.com/guide/books/sync-books-ibksf8f65b13/mac)

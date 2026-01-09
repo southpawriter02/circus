@@ -1,0 +1,293 @@
+# Books Sync Reading Position
+
+Control whether your current reading position syncs across all your Apple devices via iCloud.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iBooksX` |
+| **Key** | `BKSyncReadingPosition` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Apple Books syncs your current page or reading position across all devices signed into the same Apple ID via iCloud. When enabled, you can start reading on your Mac and seamlessly continue from the exact same spot on your iPhone, iPad, or another Mac. This creates a truly unified reading experience across the Apple ecosystem.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Sync position** (default) — Reading position syncs via iCloud |
+| `false` | **Don't sync** — Each device tracks position independently |
+
+## Visual Demonstration
+
+### Reading Position Sync (true - Default):
+```
++-------------------------------------------------------------+
+|  Seamless Reading Across Devices                             |
++-------------------------------------------------------------+
+|                                                              |
+|  EVENING ON MAC:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌───────────────────────────────────────────────────────┐  |
+|  │  MacBook Pro                                          │  |
+|  │  ─────────────────────────────────────────────────────│  |
+|  │  ┌─────────────────────────────────────────────────┐ │  |
+|  │  │                                                  │ │  |
+|  │  │  Chapter 7: The Discovery                        │ │  |
+|  │  │                                                  │ │  |
+|  │  │  The detective finally understood what had       │ │  |
+|  │  │  been hiding in plain sight all along...         │ │  |
+|  │  │                                                  │ │  |
+|  │  │  ─────────────────────────────────────────────── │ │  |
+|  │  │  Page 142 of 320                      ← 44%     │ │  |
+|  │  └─────────────────────────────────────────────────┘ │  |
+|  │  Stop reading, close Mac for the night               │  |
+|  └───────────────────────────────────────────────────────┘  |
+|                       │                                      |
+|                       │  iCloud syncs position               |
+|                       ▼                                      |
+|  MORNING ON iPHONE:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────┐                                            |
+|  │   iPhone    │                                            |
+|  │  ┌────────┐ │  "Continue reading on page 142?"           |
+|  │  │Ch.7    │ │  [Continue] [Start Over]                   |
+|  │  │        │ │                                            |
+|  │  │ p.142  │ │  ← Opens at exact same position!           |
+|  │  └────────┘ │                                            |
+|  └─────────────┘                                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Multi-Device Workflow:
+```
++-------------------------------------------------------------+
+|  Reading Across All Apple Devices                            |
++-------------------------------------------------------------+
+|                                                              |
+|       MacBook                  iPad                          |
+|      ┌────────┐              ┌────────────┐                  |
+|      │ Read   │              │    Read    │                  |
+|      │ Ch. 5  │              │    Ch. 7   │                  |
+|      │ p. 98  │              │   p. 156   │                  |
+|      └────┬───┘              └─────┬──────┘                  |
+|           │                        │                          |
+|           └────────┬───────────────┘                          |
+|                    │                                          |
+|                    ▼                                          |
+|             ┌──────────────┐                                  |
+|             │    iCloud    │                                  |
+|             │  ───────────  │                                 |
+|             │ Position: 156│  ← Most recent position wins    |
+|             │ Book: Novel  │                                  |
+|             └──────┬───────┘                                  |
+|                    │                                          |
+|           ┌────────┴────────┐                                |
+|           │                 │                                 |
+|           ▼                 ▼                                 |
+|       iPhone              Mac mini                            |
+|      ┌────────┐          ┌────────┐                          |
+|      │ Opens  │          │ Opens  │                          |
+|      │ Ch. 7  │          │ Ch. 7  │                          |
+|      │ p. 156 │          │ p. 156 │                          |
+|      └────────┘          └────────┘                          |
+|                                                              |
+|  All devices sync to the most recent reading position.       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Sync (false):
+```
++-------------------------------------------------------------+
+|  Independent Reading Positions                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Each device tracks its own position:                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐ |
+|  │   Mac    │   │   iPad   │   │  iPhone  │   │ Mac mini │ |
+|  │ ──────── │   │ ──────── │   │ ──────── │   │ ──────── │ |
+|  │          │   │          │   │          │   │          │ |
+|  │  Ch. 5   │   │  Ch. 7   │   │  Ch. 3   │   │  Ch. 1   │ |
+|  │  p. 98   │   │  p. 156  │   │  p. 45   │   │  p. 12   │ |
+|  │          │   │          │   │          │   │          │ |
+|  └──────────┘   └──────────┘   └──────────┘   └──────────┘ |
+|                                                              |
+|  PROBLEMS:                                                   |
+|  • Must remember where you stopped on each device            |
+|  • Easy to re-read sections accidentally                     |
+|  • Difficult to track overall progress                       |
+|  • No unified reading experience                             |
+|                                                              |
+|  BENEFITS:                                                   |
+|  • Privacy if sharing Apple ID (not recommended)             |
+|  • Different reading modes per device                        |
+|  • Works offline without iCloud                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### What Gets Synced:
+```
++-------------------------------------------------------------+
+|  Reading Position Sync Details                               |
++-------------------------------------------------------------+
+|                                                              |
+|  SYNCED:                                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Current page number                                     |
+|  [x] Scroll position within page                             |
+|  [x] Last read timestamp                                     |
+|  [x] Per-book position (each book tracked separately)        |
+|                                                              |
+|  NOT SYNCED BY THIS SETTING:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [ ] Bookmarks (separate setting: BKSyncBookmarksAndHighlights)
+|  [ ] Highlights (separate setting)                           |
+|  [ ] Notes (separate setting)                                |
+|  [ ] Collections (separate setting)                          |
+|  [ ] Display preferences (font size, theme)                  |
+|                                                              |
+|  For full sync, enable all Books sync settings.              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Sync reading position across all devices.
+
+### Why Enable Position Sync?
+
+1. **Seamless reading** — Continue anywhere you stopped
+2. **Multi-device use** — Read on Mac, continue on iPhone
+3. **No manual tracking** — iCloud remembers for you
+4. **Commute reading** — Switch devices effortlessly
+5. **Progress tracking** — Always know where you are
+
+### Why Disable Position Sync?
+
+- **Privacy concerns** — Multiple people using same Apple ID
+- **Offline usage** — No iCloud connectivity
+- **Different reading** — Want different positions per device
+- **Troubleshooting** — Sync causing issues
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iBooksX BKSyncReadingPosition
+
+# Enable reading position sync (default, recommended)
+defaults write com.apple.iBooksX BKSyncReadingPosition -bool true
+
+# Disable reading position sync
+defaults write com.apple.iBooksX BKSyncReadingPosition -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iBooksX BKSyncReadingPosition
+```
+
+## UI Location
+
+**Books** > **Settings** > **General** > **Sync reading position**
+
+```
++-------------------------------------------------------------+
+|  Books Settings - General                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Books > Settings (Command+,) > General                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  General                                                │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Sync                                                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [x] Sync bookmarks, highlights, and collections        │|
+|  │                                                          │|
+|  │  [x] Sync reading position         <-- This setting     │|
+|  │      across devices                                      │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Reading                                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [x] Auto-Night Theme                                   │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Sync reading position (this setting)
+defaults write com.apple.iBooksX BKSyncReadingPosition -bool true
+
+# Sync bookmarks and highlights
+defaults write com.apple.iBooksX BKSyncBookmarksAndHighlights -bool true
+
+# Sync collections
+defaults write com.apple.iBooksX BKSyncCollections -bool true
+
+# Auto night theme
+defaults write com.apple.iBooksX BKAutoNightThemeEnabled -bool true
+
+# Page turn animation
+defaults write com.apple.iBooksX BKAnimatePageTurn -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Position not syncing | Check iCloud connection and sign-in |
+| Wrong position on new device | Force quit Books, reopen; wait for sync |
+| Position keeps reverting | Check for conflicting edits on another device |
+| Sync delayed | iCloud syncs periodically, not instantly |
+| Position off by a page | Different font sizes affect pagination |
+| PDFs not syncing | Some PDFs may not support position sync |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Books
+- **iOS**: Works with iPhone and iPad Books app
+- **Note**: Requires iCloud account and internet connection
+- **Note**: Restart Books for terminal changes to apply
+- **Note**: Books must be purchased or uploaded to iCloud Books
+- **Note**: Side-loaded EPUBs may have limited sync support
+
+## Source File
+
+**File**: [`defaults/applications/books.sh`](../../../../../defaults/applications/books.sh)
+
+```bash
+# BKSyncReadingPosition controls cross-device reading position sync
+# Domain: com.apple.iBooksX
+# Syncs current reading position so you can continue on any device
+run_defaults "com.apple.iBooksX" "BKSyncReadingPosition" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Books on Mac](https://support.apple.com/guide/books/welcome/mac)
+- [Apple Support: Change Books settings](https://support.apple.com/guide/books/settings-ibks1016d5f5/mac)
+- [Apple Support: Sync books across devices](https://support.apple.com/guide/books/sync-books-across-your-devices-ibks1dab8ed1/mac)

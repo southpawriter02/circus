@@ -1,0 +1,330 @@
+# Calendar Time Zone Support
+
+Enable time zone support for scheduling events across different time zones.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iCal` |
+| **Key** | `TimeZone support enabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Calendar allows events to be associated with specific time zones. When enabled, you can set events to occur in different time zones, and Calendar will automatically adjust display times based on your current location. This is essential for remote work, international scheduling, and travel planning. Without time zone support, all events are displayed in the system's local time zone.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Time zone support enabled** — Events can have specific time zones |
+| `false` | **Time zone support disabled** (default) — All events use local time |
+
+## Visual Demonstration
+
+### Time Zone Support Enabled (true):
+```
++-------------------------------------------------------------+
+|  Calendar with Time Zone Support                             |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📅 Calendar - Thursday, January 9, 2026                │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Time zone: [Los Angeles (PST)      ▼]  ← Time zone menu│|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │   9:00 AM                                                │|
+|  │  ─────── ┌─────────────────────────────────────────────┐│|
+|  │  10:00   │ Team Standup                                ││|
+|  │          │ 📍 Video Call                               ││|
+|  │          │ 🕐 10:00 AM PST / 1:00 PM EST / 6:00 PM GMT││|
+|  │  ─────── └─────────────────────────────────────────────┘│|
+|  │  11:00                                                   │|
+|  │  ─────── ┌─────────────────────────────────────────────┐│|
+|  │  12:00   │ Client Call (Tokyo)                         ││|
+|  │          │ 🌐 Set to: Asia/Tokyo (JST)                 ││|
+|  │          │ 🕐 Shows as 12:00 PM your time              ││|
+|  │  ─────── └─────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │  Events show times converted to your current zone       │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Time Zone Disabled (false - Default):
+```
++-------------------------------------------------------------+
+|  Calendar without Time Zone Support                          |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📅 Calendar - Thursday, January 9, 2026                │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  (No time zone selector visible)                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │   9:00 AM                                                │|
+|  │  ─────── ┌─────────────────────────────────────────────┐│|
+|  │  10:00   │ Team Standup                                ││|
+|  │          │ 📍 Video Call                               ││|
+|  │          │ 🕐 10:00 AM (local time only)               ││|
+|  │  ─────── └─────────────────────────────────────────────┘│|
+|  │  11:00                                                   │|
+|  │                                                          │|
+|  │  All events use system time zone                        │|
+|  │  No way to specify different zones per event            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Event Editor with Time Zone:
+```
++-------------------------------------------------------------+
+|  Event Editor with Time Zone Support                         |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  New Event                                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Title:    [International Team Sync                   ] │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  All-day:  [ ]                                          │|
+|  │                                                          │|
+|  │  Starts:   [Jan 9, 2026]  [10:00 AM]  [PST (GMT-8)  ▼] │|
+|  │                                        └── Time zone   │|
+|  │  Ends:     [Jan 9, 2026]  [11:00 AM]  [PST (GMT-8)  ▼] │|
+|  │                                                          │|
+|  │  Time zone options:                                     │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │ ✓ Los Angeles (PST, GMT-8)                         ││|
+|  │  │   New York (EST, GMT-5)                            ││|
+|  │  │   London (GMT, GMT+0)                              ││|
+|  │  │   Tokyo (JST, GMT+9)                               ││|
+|  │  │   Sydney (AEDT, GMT+11)                            ││|
+|  │  │   ──────────────────────                           ││|
+|  │  │   Other...                                         ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │  Repeat:   [None                              ▼]        │|
+|  │                                                          │|
+|  │  Calendar: [Work                              ▼]        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Time Zone Conversion:
+```
++-------------------------------------------------------------+
+|  Understanding Time Zone Display                             |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO: Meeting at 9:00 AM Pacific Time (PST)             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  How it appears to participants in different zones:          |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Los Angeles (PST):   9:00 AM  ← Original time          │|
+|  │  Denver (MST):       10:00 AM  (+1 hour)                │|
+|  │  Chicago (CST):      11:00 AM  (+2 hours)               │|
+|  │  New York (EST):     12:00 PM  (+3 hours)               │|
+|  │  London (GMT):        5:00 PM  (+8 hours)               │|
+|  │  Berlin (CET):        6:00 PM  (+9 hours)               │|
+|  │  Tokyo (JST):         2:00 AM next day (+17 hours)      │|
+|  │  Sydney (AEDT):       4:00 AM next day (+19 hours)      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  With time zone support:                                     |
+|  • Each participant sees the event in their local time       |
+|  • Calendar handles conversions automatically               |
+|  • DST changes are accounted for                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Travel Mode:
+```
++-------------------------------------------------------------+
+|  Time Zones and Travel                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  WITHOUT TIME ZONE SUPPORT:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  You're in LA, create meeting at 10:00 AM                   |
+|  Travel to NYC, event now shows 10:00 AM (wrong!)           |
+|  You miss the meeting by 3 hours                             |
+|                                                              |
+|  WITH TIME ZONE SUPPORT:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  You're in LA:                                           │|
+|  │  Create: "Meeting at 10:00 AM Pacific"                  │|
+|  │  Shows:  10:00 AM PST                                   │|
+|  │                                                          │|
+|  │  Travel to NYC:                                          │|
+|  │  Same event now shows: 1:00 PM EST                      │|
+|  │  Still the same moment in time! ✓                       │|
+|  │                                                          │|
+|  │  Travel to London:                                       │|
+|  │  Same event shows: 6:00 PM GMT                          │|
+|  │  Still the same moment! ✓                               │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable time zone support for accurate scheduling.
+
+### Why Enable Time Zone Support?
+
+1. **Remote work** — Schedule with team members globally
+2. **Travel planning** — Events adjust when you change zones
+3. **Meeting accuracy** — Never confuse time zones again
+4. **Flight bookings** — Enter times in departure/arrival zones
+5. **International business** — Essential for global operations
+
+### Why Disable Time Zone Support?
+
+- **Local-only use** — Never schedule across time zones
+- **Simplicity** — Fewer options when creating events
+- **Avoid confusion** — Some users find it confusing
+- **Single location** — Always work from same time zone
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iCal "TimeZone support enabled"
+
+# Enable time zone support (recommended for remote work)
+defaults write com.apple.iCal "TimeZone support enabled" -bool true
+
+# Disable time zone support (default)
+defaults write com.apple.iCal "TimeZone support enabled" -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iCal "TimeZone support enabled"
+```
+
+## UI Location
+
+**Calendar** > **Settings** > **Advanced** > **Turn on time zone support**
+
+```
++-------------------------------------------------------------+
+|  Calendar Settings - Advanced                                |
++-------------------------------------------------------------+
+|                                                              |
+|  Calendar > Settings (⌘,) > Advanced                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Accounts] [Alerts] [Advanced]               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Time zone                                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [✓] Turn on time zone support    ← This setting       │|
+|  │                                                          │|
+|  │  When enabled, you can set events to occur in          │|
+|  │  a specific time zone. A time zone menu appears        │|
+|  │  in the calendar and in event editing.                 │|
+|  │                                                          │|
+|  │  Time zone: [America/Los_Angeles          ▼]           │|
+|  │             └── Default zone for new events            │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Week                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [✓] Show week numbers                                 │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Time zone support (this setting)
+defaults write com.apple.iCal "TimeZone support enabled" -bool true
+
+# Show week numbers
+defaults write com.apple.iCal "Show Week Numbers" -bool true
+
+# First day of week
+defaults write com.apple.iCal "first day of week" -int 1
+
+# Default event alert
+defaults write com.apple.iCal DefaultEventAlert -int -900
+
+# Time to Leave alerts
+defaults write com.apple.iCal TimeToLeaveEnabled -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Time zone menu not showing | Enable in Calendar > Settings > Advanced |
+| Events showing wrong time | Check event's assigned time zone |
+| Time zone selector grayed out | Restart Calendar after enabling |
+| Invited events wrong time | Check sender's time zone setting |
+| All-day events spanning days | All-day events can behave differently across zones |
+| DST changes confusing | Calendar should handle DST automatically |
+
+## Compatibility
+
+- **macOS**: 10.9+ (Mavericks) with Calendar
+- **Note**: Works with iCloud, Google, and Exchange calendars
+- **Note**: Syncs setting with iOS Calendar via iCloud
+- **Note**: Some calendar services handle time zones differently
+- **Note**: Restart Calendar for changes to take effect
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../../defaults/applications/calendar.sh)
+
+```bash
+# --- Time Zone Support ---
+# Key:          "TimeZone support enabled"
+# Domain:       com.apple.iCal
+# Description:  Enables time zone support, allowing events to be set to specific
+#               time zones. Useful for scheduling across time zones.
+# Default:      false
+# Options:      true  = Enable time zone support
+#               false = Disable time zone support
+# Set to:       true (important for remote work)
+# UI Location:  Calendar > Settings > Advanced > Turn on time zone support
+# Source:       https://support.apple.com/guide/calendar/change-advanced-preferences-icl1027/mac
+run_defaults "com.apple.iCal" "TimeZone support enabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change Calendar advanced preferences](https://support.apple.com/guide/calendar/change-advanced-preferences-icl1027/mac)
+- [Apple Support: Change time zones in Calendar](https://support.apple.com/guide/calendar/change-time-zones-icl1019/mac)
+- [Apple Support: Use Calendar on Mac](https://support.apple.com/guide/calendar/welcome/mac)

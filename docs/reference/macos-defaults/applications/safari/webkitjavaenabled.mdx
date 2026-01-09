@@ -1,0 +1,289 @@
+# Safari Java Enabled
+
+Control whether Java applets can run in Safari.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `WebKitJavaEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Java applets can run within Safari web pages. Java applets were once common for interactive web content but have been largely deprecated due to significant security vulnerabilities. Modern macOS versions no longer include Java by default, and Safari no longer supports Java plugins. This setting remains for legacy compatibility but should always be disabled for security.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Java disabled** (default) — Java applets cannot run |
+| `true` | **Java enabled** — Java applets can run (security risk) |
+
+## Visual Demonstration
+
+### Java Disabled (false - Default/Recommended):
+```
++-------------------------------------------------------------+
+|  Safari - Java Disabled (Secure)                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Web page with Java applet:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Example Banking Website                              |  |
+|  |  ────────────────────────────────────────────────────|  |
+|  |                                                       |  |
+|  |  ┌─────────────────────────────────────────────────┐ |  |
+|  |  │                                                 │ |  |
+|  |  │        Java Applet Blocked                      │ |  |
+|  |  │        ─────────────────────                    │ |  |
+|  |  │                                                 │ |  |
+|  |  │   This page contains a Java applet that         │ |  |
+|  |  │   cannot run because Java is disabled.          │ |  |
+|  |  │                                                 │ |  |
+|  |  │   For security reasons, Java applets are        │ |  |
+|  |  │   no longer supported in modern browsers.       │ |  |
+|  |  │                                                 │ |  |
+|  |  └─────────────────────────────────────────────────┘ |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  Status: SECURE - No Java execution possible                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Java Enabled (true - NOT Recommended):
+```
++-------------------------------------------------------------+
+|  Safari - Java Enabled (Security Risk!)                      |
++-------------------------------------------------------------+
+|                                                              |
+|  ⚠️  WARNING: Enabling Java is a significant security risk   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  With Java enabled:                                          |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Malicious Website                                    |  |
+|  |  ────────────────────────────────────────────────────|  |
+|  |                                                       |  |
+|  |  ┌─────────────────────────────────────────────────┐ |  |
+|  |  │                                                 │ |  |
+|  |  │      [Java Applet Running]                      │ |  |
+|  |  │                                                 │ |  |
+|  |  │   • Can access system resources                 │ |  |
+|  |  │   • May install malware                         │ |  |
+|  |  │   • Can escape browser sandbox                  │ |  |
+|  |  │   • May access local files                      │ |  |
+|  |  │                                                 │ |  |
+|  |  └─────────────────────────────────────────────────┘ |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  Status: VULNERABLE - High risk of exploitation              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Security Implications
+
+### Java Security History
+```
++-------------------------------------------------------------+
+|  Why Java is Disabled by Default                             |
++-------------------------------------------------------------+
+|                                                              |
+|  SECURITY VULNERABILITIES:                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [!] 2012-2013: Multiple zero-day exploits                  |
+|      - US Department of Homeland Security recommended        |
+|        disabling Java in all browsers                        |
+|                                                              |
+|  [!] 2014: Numerous critical vulnerabilities                |
+|      - Oracle released emergency patches monthly             |
+|                                                              |
+|  [!] 2015: Apple removed Java from OS X                      |
+|      - No longer bundled with macOS                          |
+|                                                              |
+|  [!] 2017-2018: Continued vulnerabilities                   |
+|      - Major browsers began removing Java support            |
+|                                                              |
+|  [!] 2021: Oracle ended Java browser plugin                  |
+|      - NPAPI plugins no longer supported                     |
+|                                                              |
+|  CURRENT STATUS:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • macOS does NOT include Java                              |
+|  • Safari no longer supports Java plugins                    |
+|  • This setting is legacy/deprecated                         |
+|  • Keep disabled for security                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Attack Vectors When Enabled
+
+| Risk | Description |
+|------|-------------|
+| **Drive-by downloads** | Malicious sites can install malware automatically |
+| **Sandbox escapes** | Java vulnerabilities can bypass browser security |
+| **Data theft** | Applets may access local files and credentials |
+| **System compromise** | Exploits can gain system-level access |
+| **Persistence** | Malware can install itself permanently |
+
+## Our Configuration
+
+**Set to**: `false` — Java is disabled for maximum security.
+
+### Why Always Disable Java?
+
+1. **No longer supported** — Safari doesn't support Java plugins
+2. **Security history** — Extensive vulnerability track record
+3. **Not needed** — Modern web doesn't use Java applets
+4. **Industry standard** — All major browsers have removed support
+5. **No legitimate use** — Alternative technologies exist
+
+### When Would You Ever Enable?
+
+There is essentially no legitimate reason to enable Java in Safari anymore:
+- Legacy enterprise applications should use dedicated Java clients
+- Educational applets have been replaced by HTML5/JavaScript
+- Banking sites have moved to other technologies
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari WebKitJavaEnabled
+
+# Disable Java (recommended - default)
+defaults write com.apple.Safari WebKitJavaEnabled -bool false
+
+# Also disable WebKit2 Java (complete protection)
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled" -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Safari WebKitJavaEnabled
+```
+
+Restart Safari for changes to take effect.
+
+## UI Location
+
+There is no longer a UI option for Java in Safari preferences, as the feature has been removed from modern Safari versions. This setting only exists for legacy compatibility.
+
+```
++-------------------------------------------------------------+
+|  Safari Settings - No Java Option                            |
++-------------------------------------------------------------+
+|                                                              |
+|  Safari > Settings > Security                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Security                                             |  |
+|  |  ──────────────────────────────────────────────────  |  |
+|  |                                                       |  |
+|  |  Fraudulent sites                                     |  |
+|  |  [✓] Warn when visiting a fraudulent website          |  |
+|  |                                                       |  |
+|  |  Web content                                          |  |
+|  |  [✓] Enable JavaScript                                |  |
+|  |                                                       |  |
+|  |  (No Java option - removed in modern Safari)          |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  Note: Java settings only accessible via defaults command    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Java enabled (this setting)
+defaults write com.apple.Safari WebKitJavaEnabled -bool false
+
+# WebKit2 Java (also disable)
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled" -bool false
+
+# Plugins enabled (also security-sensitive)
+defaults write com.apple.Safari WebKitPluginsEnabled -bool false
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled" -bool false
+
+# JavaScript (separate - usually kept enabled)
+defaults write com.apple.Safari WebKitJavaScriptEnabled -bool true
+```
+
+## Java vs JavaScript
+
+```
++-------------------------------------------------------------+
+|  Java is NOT JavaScript                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  JAVA:                                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  • Plugin-based technology                                   |
+|  • Runs in Java Virtual Machine                             |
+|  • Heavy security risks                                      |
+|  • SHOULD be disabled                                        |
+|  • No longer supported in browsers                           |
+|                                                              |
+|  JAVASCRIPT:                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  • Native browser scripting language                         |
+|  • Runs in browser's JavaScript engine                      |
+|  • Generally safe with modern sandboxing                     |
+|  • Required for most websites                                |
+|  • Different setting: WebKitJavaScriptEnabled                |
+|                                                              |
+|  The similar names cause confusion, but they are             |
+|  completely different technologies!                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Legacy site needs Java | Use a dedicated Java application, not browser |
+| Java applet won't load | Correct behavior - Java is deprecated |
+| Setting doesn't apply | Restart Safari completely |
+| Need Java for development | Install JDK separately; use IDE, not browser |
+| Enterprise app needs Java | Contact IT for alternative solution |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion and later)
+- **Note**: Safari no longer supports Java plugins as of Safari 12
+- **Note**: macOS does not include Java; must be installed separately
+- **Note**: Even if Java is installed, Safari will not run applets
+- **Note**: This is a legacy setting maintained for compatibility
+
+## Source File
+
+**File**: [`defaults/profiles/lockdown.sh`](../../../../../defaults/profiles/lockdown.sh)
+
+```bash
+# --- Disable Java ---
+# Java has a history of security vulnerabilities
+run_defaults "com.apple.Safari" "WebKitJavaEnabled" "-bool" "false"
+run_defaults "com.apple.Safari" "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: About Java for macOS](https://support.apple.com/en-us/102757)
+- [Oracle: Java Browser Plugin Deprecation](https://www.oracle.com/java/technologies/javase/javaclientroadmapupdate2017.html)
+- [US-CERT: Java Security Vulnerabilities](https://www.cisa.gov/news-events/alerts/2013/01/10/oracle-java-7-security-manager-bypass-vulnerability)

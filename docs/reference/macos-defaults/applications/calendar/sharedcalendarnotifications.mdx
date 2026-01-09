@@ -1,0 +1,339 @@
+# Shared Calendar Notifications
+
+Control whether shared calendar invitations and updates appear in Notification Center.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iCal` |
+| **Key** | `SharedCalendarNotificationsDisabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Calendar displays notifications in Notification Center when you receive shared calendar invitations, acceptances, declines, or updates from other users. This setting is particularly relevant for collaborative environments where multiple people share calendars. Disabling these notifications can reduce interruptions but may cause you to miss important scheduling updates from colleagues.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Notifications enabled** (default) — Show shared calendar notifications |
+| `true` | **Notifications disabled** — Hide shared calendar notifications |
+
+## Visual Demonstration
+
+### Notifications Enabled (false - Default):
+```
++-------------------------------------------------------------+
+|  Shared Calendar Notifications Active                        |
++-------------------------------------------------------------+
+|                                                              |
+|  Notification Center:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Calendar                                    just now  |  |
+|  |  +---------------------------------------------------+|  |
+|  |  |  New Invitation                                   ||  |
+|  |  |  ────────────────                                 ||  |
+|  |  |  John Smith invited you to:                       ||  |
+|  |  |  "Team Weekly Standup"                            ||  |
+|  |  |  Tomorrow at 10:00 AM                             ||  |
+|  |  |                                                   ||  |
+|  |  |  [Accept]  [Maybe]  [Decline]                     ||  |
+|  |  +---------------------------------------------------+|  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Calendar                                   2 min ago  |  |
+|  |  +---------------------------------------------------+|  |
+|  |  |  Invitation Update                                ||  |
+|  |  |  ─────────────────                                ||  |
+|  |  |  "Project Review" has been rescheduled            ||  |
+|  |  |  From: Friday 2:00 PM                             ||  |
+|  |  |  To: Friday 3:00 PM                               ||  |
+|  |  +---------------------------------------------------+|  |
+|  +-------------------------------------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Notifications Disabled (true):
+```
++-------------------------------------------------------------+
+|  Shared Calendar Notifications Disabled                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Notification Center:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |                                                       |  |
+|  |  No calendar notifications                            |  |
+|  |                                                       |  |
+|  |  Shared calendar updates are silently                |  |
+|  |  added to your calendar without notification.         |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  Calendar App - Inbox:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Inbox (3)                                            |  |
+|  |  ─────────                                            |  |
+|  |  • Team Weekly Standup (invitation)                   |  |
+|  |  • Project Review (updated)                           |  |
+|  |  • Client Call (Jane accepted)                        |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  Note: Invitations still appear in Calendar inbox,          |
+|  just no system notifications                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Types of Notifications Affected:
+```
++-------------------------------------------------------------+
+|  Shared Calendar Notification Types                          |
++-------------------------------------------------------------+
+|                                                              |
+|  WHEN ENABLED (false):                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  You'll receive notifications for:                           |
+|                                                              |
+|  [x] New event invitations                                   |
+|      "John invited you to Team Meeting"                      |
+|                                                              |
+|  [x] Event updates                                           |
+|      "Project Review has been rescheduled"                   |
+|                                                              |
+|  [x] Response notifications                                  |
+|      "Sarah accepted your invitation"                        |
+|      "Bob declined your invitation"                          |
+|                                                              |
+|  [x] Event cancellations                                     |
+|      "Team Lunch has been cancelled"                         |
+|                                                              |
+|  [x] Calendar sharing invites                                |
+|      "Anna shared 'Work Calendar' with you"                  |
+|                                                              |
+|  WHEN DISABLED (true):                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [ ] No banner notifications                                 |
+|  [ ] No sound alerts                                         |
+|  [ ] No badge updates (may still update)                    |
+|  [!] Events still sync - just silently                      |
+|  [!] Must check Calendar inbox manually                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Use Cases
+
+### When to Enable Notifications (false)
+```
++-------------------------------------------------------------+
+|  Recommended: Keep Notifications Enabled                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Good for:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Team collaboration                                      |
+|      Stay informed about meeting changes                     |
+|                                                              |
+|  [x] Client scheduling                                       |
+|      Know immediately when clients respond                   |
+|                                                              |
+|  [x] Time-sensitive invitations                              |
+|      Don't miss urgent meeting requests                      |
+|                                                              |
+|  [x] Shared family calendars                                 |
+|      Know about schedule changes quickly                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### When to Disable Notifications (true)
+```
++-------------------------------------------------------------+
+|  Consider Disabling Notifications                            |
++-------------------------------------------------------------+
+|                                                              |
+|  Good for:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] High-volume calendar sharing                            |
+|      Subscribed to many shared calendars                     |
+|                                                              |
+|  [x] Presentation/focus time                                 |
+|      Reducing all interruptions                              |
+|                                                              |
+|  [x] Public calendar subscriptions                           |
+|      Sports, holidays, conferences                           |
+|                                                              |
+|  [x] Preference for batched checking                         |
+|      Review all updates at set times                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Keep shared calendar notifications enabled.
+
+### Why Keep Enabled (false)?
+
+1. **Timely Response** — Respond to invitations promptly
+2. **Stay Synchronized** — Know about schedule changes immediately
+3. **Professional Courtesy** — Don't miss meeting requests
+4. **Collaboration** — Stay connected with team calendars
+5. **Default Behavior** — Expected standard behavior
+
+### When to Disable
+
+- Subscribed to many noisy shared calendars
+- Need focus time without interruptions
+- Prefer to check calendar inbox manually
+- Calendar notifications cause distraction
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iCal SharedCalendarNotificationsDisabled
+
+# Keep notifications enabled (default, recommended)
+defaults write com.apple.iCal SharedCalendarNotificationsDisabled -bool false
+
+# Disable shared calendar notifications
+defaults write com.apple.iCal SharedCalendarNotificationsDisabled -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.iCal SharedCalendarNotificationsDisabled
+```
+
+Restart Calendar for changes to take effect.
+
+## UI Location
+
+**Calendar** > **Settings** > **Alerts** > **Show shared calendar messages in Notification Center**
+
+```
++-------------------------------------------------------------+
+|  Calendar Settings - Alerts                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Calendar > Settings > Alerts                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Alerts                                               |  |
+|  |  ──────────────────────────────────────────────────  |  |
+|  |                                                       |  |
+|  |  Events:                                              |  |
+|  |  [15 minutes before]                                  |  |
+|  |                                                       |  |
+|  |  All-day events:                                      |  |
+|  |  [On day of event (9:00 AM)]                          |  |
+|  |                                                       |  |
+|  |  Birthdays:                                           |  |
+|  |  [On day of event (9:00 AM)]                          |  |
+|  |                                                       |  |
+|  |  Shared Calendar Messages:                            |  |
+|  |  ─────────────────────────────────────────────────── |  |
+|  |  [x] Show shared calendar messages in                 |  |
+|  |      Notification Center  <-- This setting            |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Shared calendar notifications (this setting)
+defaults write com.apple.iCal SharedCalendarNotificationsDisabled -bool false
+
+# Default event alert time
+defaults write com.apple.iCal DefaultEventAlert -int -900
+
+# Default all-day event alert
+defaults write com.apple.iCal DefaultAllDayEventAlert -int -39600
+
+# Time zone support
+defaults write com.apple.iCal "TimeZone support enabled" -bool true
+
+# Show week numbers
+defaults write com.apple.iCal "Show Week Numbers" -bool true
+```
+
+## Notification Types vs Alert Types
+
+```
++-------------------------------------------------------------+
+|  Shared Notifications vs Event Alerts                        |
++-------------------------------------------------------------+
+|                                                              |
+|  SHARED CALENDAR NOTIFICATIONS (This Setting):               |
+|  ─────────────────────────────────────────────────────────  |
+|  • Invitations from others                                   |
+|  • Updates to shared events                                  |
+|  • Response notifications (accepted/declined)                |
+|  • Calendar sharing invites                                  |
+|                                                              |
+|  EVENT ALERTS (DefaultEventAlert):                           |
+|  ─────────────────────────────────────────────────────────  |
+|  • Reminders before your events start                        |
+|  • "Meeting starts in 15 minutes"                            |
+|  • Based on time before event                                |
+|                                                              |
+|  These are INDEPENDENT settings!                             |
+|  You can disable shared notifications while keeping          |
+|  event reminder alerts enabled.                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still getting notifications | Restart Calendar app |
+| Missing invitations | Check Calendar > View > Show Inbox |
+| No notifications even when enabled | Check System Settings > Notifications > Calendar |
+| Notifications too noisy | Consider disabling, check inbox manually |
+| Can't find setting in UI | Calendar > Settings > Alerts tab |
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion and later)
+- **Note**: Requires Calendar restart for changes
+- **Note**: Works with iCloud and Exchange calendars
+- **Note**: CalDAV calendar support varies
+- **Note**: System Notification settings may also affect display
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../../../defaults/applications/calendar.sh)
+
+```bash
+# SharedCalendarNotificationsDisabled controls shared calendar notifications
+# Domain: com.apple.iCal
+# false = show notifications (default), true = hide notifications
+run_defaults "com.apple.iCal" "SharedCalendarNotificationsDisabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Calendar on Mac](https://support.apple.com/guide/calendar/welcome/mac)
+- [Apple Support: Change Calendar notification settings](https://support.apple.com/guide/calendar/change-alerts-preferences-icl1026/mac)
+- [Apple Support: Share calendars on Mac](https://support.apple.com/guide/calendar/share-calendars-icl1022/mac)

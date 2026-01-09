@@ -1,0 +1,320 @@
+# Accessibility Slow Key Delay
+
+Configure the delay duration for Slow Keys accessibility feature.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `slowKeyDelay` |
+| **Type** | Float |
+| **Default Value** | `0.25` |
+| **Our Setting** | `0.25` |
+
+## Description
+
+Sets the delay (in seconds) that a key must be held down before it registers as a keypress when Slow Keys is enabled. This accessibility feature helps users who have difficulty pressing keys briefly or who accidentally press keys while positioning their hands. The delay prevents accidental keystrokes by requiring deliberate, sustained key presses.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0.0` | **No delay** — Keys register immediately (disables effect) |
+| `0.1` | **Short delay** — 100ms hold required |
+| `0.25` | **Standard delay** (default) — 250ms hold required |
+| `0.5` | **Medium delay** — Half second hold required |
+| `1.0` | **Long delay** — Full second hold required |
+
+## Visual Demonstration
+
+### Slow Keys Timing:
+```
++-------------------------------------------------------------+
+|  Slow Keys Delay Visualization                               |
++-------------------------------------------------------------+
+|                                                              |
+|  NORMAL TYPING (Slow Keys OFF):                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Key Press: ─┬─                                             |
+|              │                                               |
+|  Registered: ─█─ (instant)                                  |
+|                                                              |
+|  Timeline:   0ms                                             |
+|                                                              |
+|  SLOW KEYS (0.25s delay):                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Key Press: ─┬─────────────────┬─                           |
+|              │  Hold 250ms     │                            |
+|              ▼                 ▼                             |
+|  Registered: ─░░░░░░░░░░░░░░░░█─ (after delay)             |
+|                                                              |
+|  Timeline:   0ms    100ms    250ms                          |
+|                               ↑                              |
+|                          Key accepted                        |
+|                                                              |
+|  SLOW KEYS (0.5s delay):                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Key Press: ─┬─────────────────────────────────┬─           |
+|              │      Hold 500ms                 │            |
+|              ▼                                 ▼             |
+|  Registered: ─░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█─            |
+|                                                              |
+|  Timeline:   0ms    250ms              500ms                |
+|                                         ↑                    |
+|                                   Key accepted               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Accidental Keypress Prevention:
+```
++-------------------------------------------------------------+
+|  How Slow Keys Prevents Accidents                            |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO: Accidental key brush (hand repositioning)        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  WITHOUT SLOW KEYS:                                          |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Typing: "Hello"                                         │|
+|  │  *accidentally brushes 'k' key*                         │|
+|  │                                                          │|
+|  │  Result: "Hellok"  ← Unwanted character                 │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  WITH SLOW KEYS (0.25s):                                     |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Typing: "Hello"                                         │|
+|  │  *accidentally brushes 'k' key* (< 250ms contact)       │|
+|  │                                                          │|
+|  │  Result: "Hello"   ← Accidental press ignored           │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  KEY REQUIREMENT:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Brief touch:  ─┬─┬─    (< delay)    → Ignored             |
+|                                                              |
+|  Held press:   ─┬──────┬─ (≥ delay)  → Registered          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Delay Duration Comparison:
+```
++-------------------------------------------------------------+
+|  Choosing the Right Delay                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  0.1 SECONDS (Short):                                        |
+|  ─────────────────────────────────────────────────────────  |
+|  Press ─┬──┬─  ✓ Registered                                 |
+|  Typing speed: Near normal                                   |
+|  Protection: Minimal                                         |
+|  Best for: Minor tremor, slight unsteadiness                |
+|                                                              |
+|  0.25 SECONDS (Standard):                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  Press ─┬─────┬─  ✓ Registered                              |
+|  Typing speed: Moderately slowed                            |
+|  Protection: Good                                            |
+|  Best for: Most users who need Slow Keys                    |
+|                                                              |
+|  0.5 SECONDS (Medium):                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  Press ─┬───────────┬─  ✓ Registered                        |
+|  Typing speed: Significantly slowed                          |
+|  Protection: Strong                                          |
+|  Best for: Significant motor control issues                 |
+|                                                              |
+|  1.0 SECOND (Long):                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  Press ─┬───────────────────────┬─  ✓ Registered            |
+|  Typing speed: Very slow                                     |
+|  Protection: Maximum                                         |
+|  Best for: Severe tremor or motor difficulties              |
+|                                                              |
+|  RECOMMENDATION:                                             |
+|  Start with 0.25s (default), adjust up or down as needed    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Audio/Visual Feedback:
+```
++-------------------------------------------------------------+
+|  Slow Keys Feedback Options                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  When Slow Keys is enabled, feedback helps track timing:    |
+|                                                              |
+|  KEY PRESS BEGINS:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─ Optional click sound ─┐                                 |
+|  │  🔊 "tick"             │  Indicates key press started   |
+|  └────────────────────────┘                                 |
+|                                                              |
+|  DELAY PERIOD:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ░░░░░░░░░░░░░░░░░░░░  Waiting for delay to complete       |
+|                                                              |
+|  KEY ACCEPTED:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─ Optional click sound ─┐                                 |
+|  │  🔊 "click"            │  Indicates key was registered  |
+|  └────────────────────────┘                                 |
+|                                                              |
+|  Configure sounds in:                                        |
+|  System Settings > Accessibility > Keyboard > Slow Keys     |
+|  [✓] Use click key sounds                                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `0.25` — Standard delay balancing protection and usability.
+
+### Why Use 0.25 Seconds?
+
+1. **Balanced timing** — Prevents accidentals without being too slow
+2. **Standard default** — Tested with accessibility users
+3. **Adjustable baseline** — Good starting point for tuning
+4. **Typing viable** — Still allows reasonable typing speed
+
+### Shorter Delays (0.1s)?
+
+- Minimal interruption to typing
+- Light protection from accidentals
+- For users with slight unsteadiness
+
+### Longer Delays (0.5s+)?
+
+- Maximum protection from accidental presses
+- For users with significant tremor
+- When precision is more important than speed
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess slowKeyDelay
+
+# Set standard delay (0.25 seconds)
+defaults write com.apple.universalaccess slowKeyDelay -float 0.25
+
+# Set short delay (0.1 seconds)
+defaults write com.apple.universalaccess slowKeyDelay -float 0.1
+
+# Set medium delay (0.5 seconds)
+defaults write com.apple.universalaccess slowKeyDelay -float 0.5
+
+# Set long delay (1.0 second)
+defaults write com.apple.universalaccess slowKeyDelay -float 1.0
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess slowKeyDelay
+```
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Keyboard** > **Slow Keys**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Accessibility - Keyboard                  |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Accessibility > Keyboard                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Slow Keys                                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [Toggle On/Off]              Enable Slow Keys          │|
+|  │                                                          │|
+|  │  Acceptance Delay                                        │|
+|  │  Short ─────────●───────────── Long                     │|
+|  │                 ↑                                        │|
+|  │         This setting (delay slider)                      │|
+|  │                                                          │|
+|  │  [✓] Use click key sounds                               │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: Slow Keys must be enabled for delay to have effect   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Slow key delay (this setting)
+defaults write com.apple.universalaccess slowKeyDelay -float 0.25
+
+# Enable/disable Slow Keys
+defaults write com.apple.universalaccess slowKey -bool true
+
+# Sticky Keys (modifier key assistance)
+defaults write com.apple.universalaccess stickyKey -bool false
+
+# Sticky Keys show window
+defaults write com.apple.universalaccess stickyKeyShowWindow -bool true
+
+# Mouse Keys (control pointer with keyboard)
+defaults write com.apple.universalaccess mouseDriver -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Delay has no effect | Enable Slow Keys first (slowKey = true) |
+| Typing too slow | Reduce delay value (try 0.1) |
+| Still getting accidentals | Increase delay value (try 0.5) |
+| No feedback sounds | Enable "Use click key sounds" in Settings |
+| Want to disable quickly | Press Shift 5 times (if enabled) or toggle in Settings |
+
+## Compatibility
+
+- **macOS**: 10.0+ (available in all modern macOS versions)
+- **Note**: Requires Slow Keys to be enabled (`slowKey` = true)
+- **Note**: Affects all keyboard input, including external keyboards
+- **Note**: Setting preserved across restarts
+- **Note**: Can be toggled via Accessibility Shortcuts (Option+Command+F5)
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../../../defaults/accessibility/pointer.sh)
+
+```bash
+# --- Slow Keys Delay ---
+# Key:          slowKeyDelay
+# Domain:       com.apple.universalaccess
+# Description:  Sets the delay (in seconds) a key must be held before it
+#               registers when Slow Keys is enabled.
+# Default:      0.25 (quarter second)
+# Options:      0.0-2.0 (float in seconds)
+run_defaults "com.apple.universalaccess" "slowKeyDelay" "-float" "0.25"
+```
+
+## References
+
+- [Apple Support: Use Slow Keys](https://support.apple.com/guide/mac-help/use-slow-keys-mchlc897f682/mac)
+- [Apple Support: Accessibility keyboard settings](https://support.apple.com/guide/mac-help/change-accessibility-keyboard-settings-mchlc898a9b2/mac)
+- [Apple Accessibility: Motor features](https://www.apple.com/accessibility/mac/)

@@ -1,0 +1,280 @@
+# Keynote Show Pointer on Slide
+
+Control whether the mouse pointer is visible on slides during presentation mode in Keynote.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Keynote` |
+| **Key** | `KNShowPointerOnSlide` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the mouse pointer (cursor) is visible on slides during presentation mode when you move the mouse. When enabled, presenters can use the cursor to point at specific elements on slides. When disabled, the cursor is hidden during the presentation for a cleaner viewing experience, and only appears when you move to use on-screen controls.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show pointer** (default) — Cursor visible when moved |
+| `false` | **Hide pointer** — Cursor hidden during presentation |
+
+## Visual Demonstration
+
+### Pointer Visible (true - Default):
+```
++-------------------------------------------------------------+
+|  Keynote Presentation Mode with Pointer                      |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │            Q4 Sales Performance                          │|
+|  │            ════════════════════                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │    Revenue Growth                                        │|
+|  │    ┌────────────────────────────────────────────┐       │|
+|  │    │                                       ▲    │       │|
+|  │    │                                  ▲   /│    │       │|
+|  │    │                             ▲   /   / │    │       │|
+|  │    │                        ▲   /   /   /  │    │       │|
+|  │    │   ▲               ▲   /   /   /   /   │    │       │|
+|  │    │  /               / ↖ /   /   /   /    │    │       │|
+|  │    │─/───────────────/───/───/───/───/─────│    │       │|
+|  │    └────────────────────────────────────────┘   │       │|
+|  │                        ↑                                 │|
+|  │                   Cursor points                          │|
+|  │                   at chart element                       │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Presenter can use cursor to direct audience attention.      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Pointer Hidden (false):
+```
++-------------------------------------------------------------+
+|  Keynote Presentation Mode without Pointer                   |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │            Q4 Sales Performance                          │|
+|  │            ════════════════════                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │    Revenue Growth                                        │|
+|  │    ┌────────────────────────────────────────────┐       │|
+|  │    │                                       ▲    │       │|
+|  │    │                                  ▲   /│    │       │|
+|  │    │                             ▲   /   / │    │       │|
+|  │    │                        ▲   /   /   /  │    │       │|
+|  │    │   ▲               ▲   /   /   /   /   │    │       │|
+|  │    │  /               /   /   /   /   /    │    │       │|
+|  │    │─/───────────────/───/───/───/───/─────│    │       │|
+|  │    └────────────────────────────────────────┘   │       │|
+|  │                                                          │|
+|  │            No cursor visible                             │|
+|  │            Clean, distraction-free view                  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Audience sees only the slide content.                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Presenter Display with Pointer:
+```
++-------------------------------------------------------------+
+|  Presenter Display (Your Screen)                             |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌───────────────────────────┬───────────────────────────┐  |
+|  │                           │                           │  |
+|  │   CURRENT SLIDE           │   NEXT SLIDE              │  |
+|  │   ┌───────────────────┐   │   ┌───────────────────┐   │  |
+|  │   │                   │   │   │                   │   │  |
+|  │   │   Q4 Sales    ↖   │   │   │   Market Share    │   │  |
+|  │   │            cursor │   │   │                   │   │  |
+|  │   │   [Chart]         │   │   │   [Pie Chart]     │   │  |
+|  │   │                   │   │   │                   │   │  |
+|  │   └───────────────────┘   │   └───────────────────┘   │  |
+|  │                           │                           │  |
+|  ├───────────────────────────┴───────────────────────────┤  |
+|  │                                                       │  |
+|  │   Presenter Notes:                                    │  |
+|  │   ─────────────────────────────────────────────────   │  |
+|  │   • Highlight Q4 revenue spike                        │  |
+|  │   • Mention regional performance differences          │  |
+|  │   • Transition: "Moving to market share..."           │  |
+|  │                                                       │  |
+|  │   Timer: 05:32   |   Slide 7 of 24                   │  |
+|  │                                                       │  |
+|  └───────────────────────────────────────────────────────┘  |
+|                                                              |
+|  Pointer helps you indicate what you're discussing.          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Use Cases:
+```
++-------------------------------------------------------------+
+|  When to Show vs Hide the Pointer                            |
++-------------------------------------------------------------+
+|                                                              |
+|  SHOW POINTER (true):                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Best for:                                                   |
+|  • Interactive presentations                                 |
+|  • Technical demonstrations                                  |
+|  • Training sessions                                         |
+|  • Pointing at specific chart elements                      |
+|  • Software walkthroughs                                     |
+|  • Classroom teaching                                        |
+|                                                              |
+|  HIDE POINTER (false):                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Best for:                                                   |
+|  • Formal presentations                                      |
+|  • Keynote addresses (pun intended)                         |
+|  • Photo/video slideshows                                    |
+|  • Automated/kiosk presentations                            |
+|  • Self-advancing presentations                              |
+|  • When using a laser pointer instead                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show pointer for interactive presentations.
+
+### Why Enable Pointer?
+
+1. **Direct attention** — Point at specific slide elements
+2. **Interactive teaching** — Guide audience through content
+3. **Technical demos** — Show exact UI locations
+4. **Natural presenting** — Use mouse like a pointer
+5. **Accessible** — Works without additional hardware
+
+### Why Disable Pointer?
+
+- **Cleaner appearance** — No distracting cursor
+- **Formal settings** — More polished look
+- **Using laser pointer** — Physical pointer preferred
+- **Automated shows** — Self-running presentations
+- **Video recording** — Cleaner exported videos
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Keynote KNShowPointerOnSlide
+
+# Show pointer during presentation (default, recommended)
+defaults write com.apple.iWork.Keynote KNShowPointerOnSlide -bool true
+
+# Hide pointer during presentation
+defaults write com.apple.iWork.Keynote KNShowPointerOnSlide -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Keynote KNShowPointerOnSlide
+```
+
+## UI Location
+
+**Play** > **Customize Presenter Display** or during slideshow setup.
+
+```
++-------------------------------------------------------------+
+|  Customize Presenter Display                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Play > Customize Presenter Display                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Presenter Display Options                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Layout:  [Current and Next Slide           v]          │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [x] Show current slide on presenter display             │|
+|  │  [x] Show next slide                                     │|
+|  │  [x] Show presenter notes                                │|
+|  │  [x] Show clock                                          │|
+|  │  [x] Show timer                                          │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [x] Show pointer when using mouse  <-- This setting    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show pointer on slide (this setting)
+defaults write com.apple.iWork.Keynote KNShowPointerOnSlide -bool true
+
+# Exit after last slide
+defaults write com.apple.iWork.Keynote KNExitAfterLastSlide -bool false
+
+# Enable remote control
+defaults write com.apple.iWork.Keynote KNRemoteEnabled -bool true
+
+# Show presenter notes during editing
+defaults write com.apple.iWork.Keynote ShowPresenterNotes -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Pointer not showing | Check Play > Customize Presenter Display settings |
+| Pointer showing when don't want | Disable in Play > Customize Presenter Display |
+| Pointer disappears during presentation | Move mouse; pointer auto-hides after inactivity |
+| Want pointer on external display only | Configure display arrangement in System Settings |
+| Pointer too small/large | Adjust cursor size in System Settings > Accessibility |
+| Setting not persisting | Restart Keynote after changing via defaults |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Keynote
+- **Note**: This is a presentation playback setting
+- **Note**: Restart Keynote for terminal changes to apply
+- **Note**: Pointer auto-hides after a few seconds of no movement
+- **Note**: Works with both built-in and external displays
+
+## Source File
+
+**File**: [`defaults/applications/keynote.sh`](../../../../../defaults/applications/keynote.sh)
+
+```bash
+# KNShowPointerOnSlide controls cursor visibility during presentations
+# Domain: com.apple.iWork.Keynote
+# Controls whether the mouse pointer is visible on slides during presentation mode
+run_defaults "com.apple.iWork.Keynote" "KNShowPointerOnSlide" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Keynote User Guide](https://support.apple.com/guide/keynote/welcome/mac)
+- [Apple Support: Present on your Mac with Keynote](https://support.apple.com/guide/keynote/present-on-your-mac-tanb7b4c7fd4/mac)
+- [Apple Support: Use a remote to control a Keynote presentation](https://support.apple.com/guide/keynote/use-a-remote-tanbe479751b/mac)

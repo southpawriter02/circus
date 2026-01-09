@@ -1,0 +1,292 @@
+# Trackpad Second Click Threshold
+
+Set the pressure required for Force Click (deep press) on Force Touch trackpads.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `SecondClickThreshold` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls how much pressure is required to trigger a Force Click (the second, deeper click) on Force Touch trackpads. Force Click enables features like Quick Look, dictionary lookups, and variable-speed media controls. A lower threshold makes Force Click easier to trigger, while a higher threshold requires more deliberate pressure. This is separate from the regular click threshold (FirstClickThreshold).
+
+## Values
+
+| Value | Pressure | Description |
+|-------|----------|-------------|
+| `0` | **Light** | Easiest Force Click; minimal additional pressure |
+| `1` | **Medium** | Balanced sensitivity (default) |
+| `2` | **Firm** | Requires deliberate deep press |
+
+## Visual Demonstration
+
+### Force Click Pressure Levels:
+```
++-------------------------------------------------------------+
+|  Second Click Threshold Comparison                           |
++-------------------------------------------------------------+
+|                                                              |
+|  PRESSURE VISUALIZATION:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  First click ─────┬─────────────── Second click         │|
+|  │  (regular)        │                (Force Click)         │|
+|  │                   │                                      │|
+|  │  Pressure:        │                                      │|
+|  │  ░░░░░░░░░░░░░░░░│████████████████████████████████     │|
+|  │  Light           ↑                                 Firm  │|
+|  │          Threshold point                                 │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  VALUE 0 (Light):                                            |
+|  ─────────────────────────────────────────────────────────  |
+|  First ──┬── Second (Force Click)                           |
+|          ↑ Low threshold                                    |
+|  ░░░░░░░░████████████████████████████████████████████████  |
+|  Easy Force Click • Quick Look activates easily             |
+|                                                              |
+|  VALUE 1 (Medium - Default):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  First ────────┬──────── Second (Force Click)               |
+|                ↑ Medium threshold                           |
+|  ░░░░░░░░░░░░░░░░░░████████████████████████████████████    |
+|  Balanced • Intentional deep press needed                   |
+|                                                              |
+|  VALUE 2 (Firm):                                             |
+|  ─────────────────────────────────────────────────────────  |
+|  First ──────────────────┬────── Second (Force Click)       |
+|                          ↑ High threshold                   |
+|  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░████████████████████        |
+|  Deliberate press required • Less accidental triggers       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Force Click Features:
+```
++-------------------------------------------------------------+
+|  What Force Click Does                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  QUICK LOOK (Files in Finder):                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📁 Finder                                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  📄 document.pdf                                         │|
+|  │       ↓ Force Click                                      │|
+|  │  ┌─────────────────────────────────┐                    │|
+|  │  │   ┌───────────────────────────┐ │                    │|
+|  │  │   │                           │ │                    │|
+|  │  │   │   PDF Preview             │ │                    │|
+|  │  │   │                           │ │  ← Quick Look      │|
+|  │  │   │   [Document content]      │ │     popup          │|
+|  │  │   │                           │ │                    │|
+|  │  │   └───────────────────────────┘ │                    │|
+|  │  └─────────────────────────────────┘                    │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  DICTIONARY LOOKUP (Text in any app):                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  "The ephemeral nature of technology..."                │|
+|  │           ↓ Force Click on word                         │|
+|  │  ┌─────────────────────────────────┐                    │|
+|  │  │  ephemeral                       │                    │|
+|  │  │  /əˈfem(ə)rəl/                  │                    │|
+|  │  │                                  │                    │|
+|  │  │  adjective                       │                    │|
+|  │  │  lasting for a very short time. │                    │|
+|  │  │  "fashions are ephemeral"        │                    │|
+|  │  └─────────────────────────────────┘                    │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  OTHER FORCE CLICK ACTIONS:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  • Addresses → Show in Maps                                 |
+|  • Dates → Add to Calendar                                  |
+|  • Links → Preview webpage                                   |
+|  • Videos → Variable-speed scrubbing                         |
+|  • Dock icons → Quick Actions menu                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Threshold Selection Guide:
+```
++-------------------------------------------------------------+
+|  Choosing the Right Threshold                                |
++-------------------------------------------------------------+
+|                                                              |
+|  LIGHT (0):                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  ✓ Good for: Heavy Force Click users                        |
+|  ✓ Good for: Quick Look frequently                          |
+|  ✓ Good for: Dictionary lookup while reading                |
+|  ✗ Risk: Accidental Force Clicks                            |
+|                                                              |
+|  MEDIUM (1) - Default:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  ✓ Good for: Most users                                     |
+|  ✓ Good for: Balance of features and control                |
+|  ✓ Good for: Occasional Force Click use                     |
+|  ✓ Default Apple experience                                  |
+|                                                              |
+|  FIRM (2):                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  ✓ Good for: Avoiding accidental triggers                   |
+|  ✓ Good for: Prefer tap-to-click style                      |
+|  ✓ Good for: Heavy trackpad users                           |
+|  ✗ Risk: Force Click feels unresponsive                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1` — Medium threshold for balanced Force Click experience.
+
+### Why Use Medium (1)?
+
+1. **Balanced** — Not too sensitive, not too hard
+2. **Default** — Apple's chosen default
+3. **Predictable** — Force Click when intended
+4. **Accessible** — Works for most users
+
+### Why Use Light (0)?
+
+- Heavy Force Click user
+- Quick Look frequently used
+- Prefer minimal pressure
+- Easier on fingers
+
+### Why Use Firm (2)?
+
+- Accidentally trigger Force Click often
+- Prefer deliberate actions only
+- Strong press style
+- Rarely use Force Click features
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad SecondClickThreshold
+
+# Set to light pressure
+defaults write com.apple.AppleMultitouchTrackpad SecondClickThreshold -int 0
+
+# Set to medium pressure (default)
+defaults write com.apple.AppleMultitouchTrackpad SecondClickThreshold -int 1
+
+# Set to firm pressure
+defaults write com.apple.AppleMultitouchTrackpad SecondClickThreshold -int 2
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad SecondClickThreshold
+```
+
+## UI Location
+
+**System Settings** > **Trackpad** > **Point & Click**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Trackpad                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Trackpad > Point & Click                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [Point & Click] [Scroll & Zoom] [More Gestures]        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Look up & data detectors                                │|
+|  │  [Force Click with one finger ▼]                        │|
+|  │                                                          │|
+|  │  Click                                                   │|
+|  │  Light ───────●─────── Firm    ← This slider controls   │|
+|  │                                   both FirstClick and    │|
+|  │                                   SecondClickThreshold   │|
+|  │                                                          │|
+|  │  [✓] Force Click and haptic feedback                    │|
+|  │                                                          │|
+|  │  Tracking speed                                          │|
+|  │  Slow ────────●──────── Fast                            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: The "Click" slider adjusts both FirstClickThreshold  |
+|  and SecondClickThreshold together in the UI. Use defaults  |
+|  command to set them independently.                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Force Click pressure (this setting)
+defaults write com.apple.AppleMultitouchTrackpad SecondClickThreshold -int 1
+
+# Regular click pressure
+defaults write com.apple.AppleMultitouchTrackpad FirstClickThreshold -int 1
+
+# Enable haptic feedback
+defaults write com.apple.AppleMultitouchTrackpad ActuateDetents -bool true
+
+# Haptic feedback strength
+defaults write com.apple.AppleMultitouchTrackpad ActuationStrength -int 1
+
+# Enable tap to click
+defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Force Click too sensitive | Increase to 2 (Firm) |
+| Force Click too hard to trigger | Decrease to 0 (Light) |
+| Force Click not working | Check ActuateDetents is enabled |
+| Feature not responding | Verify Force Click enabled in settings |
+| Inconsistent behavior | Log out/in after defaults change |
+
+## Compatibility
+
+- **macOS**: 10.11+ (El Capitan) with Force Touch trackpad
+- **Hardware**: MacBook 2015+, MacBook Pro 2015+, Magic Trackpad 2
+- **Note**: Only applies to Force Touch trackpads
+- **Note**: Traditional trackpads don't support Force Click
+- **Note**: May require logout for changes to apply
+
+## Source File
+
+**File**: [`defaults/accessibility/pointer.sh`](../../../../../defaults/accessibility/pointer.sh)
+
+```bash
+# --- Click Pressure (Force Touch trackpads) ---
+# Key:          SecondClickThreshold
+# Domain:       com.apple.AppleMultitouchTrackpad
+# Description:  Pressure required for Force Click (deep press).
+# Options:      0 = Light, 1 = Medium, 2 = Firm
+run_defaults "com.apple.AppleMultitouchTrackpad" "SecondClickThreshold" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Change Trackpad preferences](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac)
+- [Apple Support: Use Force Touch trackpad](https://support.apple.com/guide/mac-help/use-a-force-touch-trackpad-mchlp1218/mac)
+- [Apple Support: Multi-Touch gestures](https://support.apple.com/en-us/102482)

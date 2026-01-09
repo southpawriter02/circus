@@ -1,0 +1,305 @@
+# Reduce Desktop Tinting
+
+Control transparency and tinting effects in the macOS interface.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `AppleReduceDesktopTinting` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls the transparency and vibrancy effects throughout the macOS interface. When enabled, this reduces the translucency of windows, sidebars, menu bars, and other interface elements, making them more solid and opaque. This is primarily an accessibility feature that helps users who have difficulty reading text or distinguishing interface elements against transparent backgrounds. It also affects desktop tinting, where windows pick up colors from the desktop wallpaper.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Normal transparency** (default) — Full vibrancy and translucency effects |
+| `true` | **Reduced transparency** — More solid, opaque interface elements |
+
+## Visual Demonstration
+
+### Normal Transparency (false - Default):
+```
++-------------------------------------------------------------+
+|  macOS with Normal Transparency                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Desktop Wallpaper: Blue mountain scene                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Menu Bar:                                                   |
+|  +-------------------------------------------------------+  |
+|  │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│  |
+|  │ Apple  Finder  File  Edit  View     10:30 AM  [icons]│  |
+|  │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│  |
+|  +-------------------------------------------------------+  |
+|  (Menu bar is translucent - wallpaper shows through)         |
+|                                                              |
+|  Finder Window Sidebar:                                      |
+|  +-------------------------------------------------------+  |
+|  │▒▒▒▒▒▒▒▒▒│                                            │  |
+|  │▒Favorites▒                                            │  |
+|  │▒▒▒▒▒▒▒▒▒│  File list area                            │  |
+|  │ Desktop  │  (normal opacity)                          │  |
+|  │ Documents│                                            │  |
+|  │ Downloads│                                            │  |
+|  │▒▒▒▒▒▒▒▒▒│                                            │  |
+|  +-------------------------------------------------------+  |
+|  (Sidebar picks up bluish tint from wallpaper)              |
+|                                                              |
+|  Characteristics:                                            |
+|  • Translucent menu bar and sidebars                        |
+|  • Window edges may show wallpaper color                    |
+|  • Vibrancy effects on UI elements                          |
+|  • Modern macOS aesthetic                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Reduced Transparency (true):
+```
++-------------------------------------------------------------+
+|  macOS with Reduced Transparency                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Desktop Wallpaper: Blue mountain scene                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Menu Bar:                                                   |
+|  +-------------------------------------------------------+  |
+|  │███████████████████████████████████████████████████████│  |
+|  │ Apple  Finder  File  Edit  View     10:30 AM  [icons]│  |
+|  │███████████████████████████████████████████████████████│  |
+|  +-------------------------------------------------------+  |
+|  (Menu bar is solid gray - no transparency)                  |
+|                                                              |
+|  Finder Window Sidebar:                                      |
+|  +-------------------------------------------------------+  |
+|  │█████████│                                            │  |
+|  │█Favorites                                             │  |
+|  │█████████│  File list area                            │  |
+|  │ Desktop  │  (normal opacity)                          │  |
+|  │ Documents│                                            │  |
+|  │ Downloads│                                            │  |
+|  │█████████│                                            │  |
+|  +-------------------------------------------------------+  |
+|  (Sidebar is solid gray - no wallpaper tinting)             |
+|                                                              |
+|  Characteristics:                                            |
+|  • Solid opaque menu bar                                     |
+|  • Solid sidebar backgrounds                                 |
+|  • Higher contrast text                                      |
+|  • Easier readability for some users                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Side-by-Side Comparison:
+```
++-------------------------------------------------------------+
+|  Transparency Comparison                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  NORMAL (false):              REDUCED (true):                |
+|  ─────────────────           ─────────────────              |
+|                                                              |
+|  Menu Bar:                   Menu Bar:                       |
+|  [▓▓▓▓▓▓▓▓▓▓▓▓▓]           [███████████████]               |
+|  Translucent                 Solid gray                      |
+|                                                              |
+|  Sidebar:                    Sidebar:                        |
+|  [▒▒▒▒▒▒▒▒]                [████████]                       |
+|  Color from wallpaper        Solid color                     |
+|                                                              |
+|  Dock Background:            Dock Background:                |
+|  [▓▓▓▓▓▓▓▓]                [████████]                       |
+|  Translucent                 More opaque                     |
+|                                                              |
+|  Notification Center:        Notification Center:            |
+|  [▓▓▓▓▓▓▓▓▓▓]              [██████████]                     |
+|  Vibrancy effect             Solid background                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Accessibility Use Cases
+
+### When to Enable Reduced Transparency (true)
+```
++-------------------------------------------------------------+
+|  Who Benefits from Reduced Transparency                      |
++-------------------------------------------------------------+
+|                                                              |
+|  VISUAL ACCESSIBILITY:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [✓] Low vision users                                        |
+|      Solid backgrounds improve text contrast                 |
+|                                                              |
+|  [✓] Users with visual processing difficulties               |
+|      Less visual noise and distraction                       |
+|                                                              |
+|  [✓] Users sensitive to motion/visual effects                |
+|      Reduces distracting transparency changes                |
+|                                                              |
+|  [✓] Users with certain types of color blindness             |
+|      Removes confusing color bleeding from wallpaper         |
+|                                                              |
+|  SITUATIONAL USES:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [✓] High ambient light environments                         |
+|      Better visibility in bright rooms                       |
+|                                                              |
+|  [✓] Screen sharing/presentations                            |
+|      Cleaner, more professional appearance                   |
+|                                                              |
+|  [✓] Screenshots and documentation                           |
+|      Consistent appearance regardless of wallpaper           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Keep normal transparency for standard visual design.
+
+### Why Keep Normal Transparency (false)?
+
+1. **Modern aesthetic** — Intended macOS design language
+2. **Visual depth** — Transparency provides UI layering cues
+3. **Default experience** — What most users expect
+4. **Wallpaper integration** — Desktop feels cohesive
+5. **No accessibility need** — For users without visual difficulties
+
+### Why Enable Reduced Transparency (true)?
+
+- **Accessibility** — Vision difficulties require higher contrast
+- **Readability** — Text easier to read on solid backgrounds
+- **Preference** — Some users prefer solid interface
+- **Performance** — Minimal GPU benefit on older systems
+- **Screenshots** — Consistent appearance for documentation
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain AppleReduceDesktopTinting
+
+# Keep normal transparency (default)
+defaults write NSGlobalDomain AppleReduceDesktopTinting -bool false
+
+# Enable reduced transparency (accessibility)
+defaults write NSGlobalDomain AppleReduceDesktopTinting -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain AppleReduceDesktopTinting
+```
+
+Changes may require logout or restart to fully apply.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Display** > **Reduce transparency**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Accessibility - Display                   |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Accessibility > Display                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Display                                              |  |
+|  |  ──────────────────────────────────────────────────  |  |
+|  |                                                       |  |
+|  |  [✓] Increase contrast                                |  |
+|  |                                                       |  |
+|  |  [ ] Reduce transparency  <-- This setting            |  |
+|  |                                                       |  |
+|  |  [ ] Differentiate without color                      |  |
+|  |                                                       |  |
+|  |  [ ] Reduce motion                                    |  |
+|  |                                                       |  |
+|  |  Pointer                                              |  |
+|  |  ──────────────────────────────────────────────────  |  |
+|  |  Pointer size:   ○──────●─────────── (Medium)        |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Reduce desktop tinting (this setting)
+defaults write NSGlobalDomain AppleReduceDesktopTinting -bool false
+
+# Reduce motion (related accessibility)
+defaults write NSGlobalDomain NSReduceTransparency -bool false
+
+# Increase contrast
+defaults write NSGlobalDomain AppleInterfaceStyleSwitchesAutomatically -bool false
+
+# Menu bar auto-hide
+defaults write NSGlobalDomain _HIHideMenuBar -bool false
+```
+
+## Effects on Interface Elements
+
+| Element | Normal (false) | Reduced (true) |
+|---------|----------------|----------------|
+| Menu bar | Translucent, picks up wallpaper | Solid gray |
+| Finder sidebar | Translucent with tinting | Solid background |
+| Dock background | Translucent | More opaque |
+| Notification Center | Vibrancy effect | Solid background |
+| Sheets/dialogs | Translucent edges | Solid edges |
+| Spotlight search | Translucent background | Solid background |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Change not visible | Logout and log back in |
+| Menu bar still transparent | Restart SystemUIServer: `killall SystemUIServer` |
+| Only affects some apps | Some third-party apps don't respect this setting |
+| Want partial transparency | Not possible - it's all or nothing |
+| Setting reverts | Check for conflicting accessibility settings |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite, when transparency was introduced)
+- **Note**: Effect varies slightly between macOS versions
+- **Note**: May require logout for complete application
+- **Note**: Some third-party apps may not respect this setting
+- **Note**: Part of macOS accessibility framework
+
+## Source File
+
+**File**: [`defaults/interface/menu_bar.sh`](../../../../../defaults/interface/menu_bar.sh)
+
+```bash
+# --- Reduce Menu Bar Transparency ---
+# Key:          AppleReduceDesktopTinting
+# Domain:       NSGlobalDomain
+# Description:  Reduces the transparency and vibrancy of the menu bar.
+#               Also affects sidebars and other translucent UI elements.
+# Default:      false
+# Note:         This is primarily an accessibility setting
+run_defaults "NSGlobalDomain" "AppleReduceDesktopTinting" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Change Display settings for accessibility on Mac](https://support.apple.com/guide/mac-help/mchlc804b4b0/mac)
+- [Apple Human Interface Guidelines: Vibrancy](https://developer.apple.com/design/human-interface-guidelines/vibrancy)
+- [Apple Accessibility: Vision](https://www.apple.com/accessibility/vision/)

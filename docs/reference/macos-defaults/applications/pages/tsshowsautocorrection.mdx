@@ -1,0 +1,275 @@
+# Pages Show Auto-Correction
+
+Display visual indicators when text is auto-corrected in Apple Pages.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Pages` |
+| **Key** | `TSShowsAutoCorrection` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Pages displays visual feedback when auto-correction modifies your text. When enabled, a brief blue underline appears beneath auto-corrected words, alerting you to changes made automatically. This helps you catch unwanted corrections immediately and revert them if needed. The indicator disappears after a few seconds or when you continue typing.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show auto-correction indicators** (default) — Blue underline on corrected text |
+| `false` | **Hide auto-correction indicators** — Corrections happen silently |
+
+## Visual Demonstration
+
+### Auto-Correction Indicator Shown (true - Default):
+```
++-------------------------------------------------------------+
+|  Pages with Auto-Correction Indicators                       |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📄 Pages - My Document                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Dear Mr. Johnson,                                       │|
+|  │                                                          │|
+|  │  I wanted to follow up on our conversatoin about         │|
+|  │                                        ~~~~~~~~~~~~      │|
+|  │                                        conversation      │|
+|  │                                        ↑                 │|
+|  │                               Blue underline appears     │|
+|  │                               when auto-corrected        │|
+|  │                                                          │|
+|  │  the project timeline. I beleive we can deliver the     │|
+|  │                            ~~~~~~~                       │|
+|  │                            believe                       │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Blue underlines fade after a few seconds                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Auto-Correction Indicator Hidden (false):
+```
++-------------------------------------------------------------+
+|  Pages without Auto-Correction Indicators                    |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📄 Pages - My Document                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Dear Mr. Johnson,                                       │|
+|  │                                                          │|
+|  │  I wanted to follow up on our conversation about         │|
+|  │  the project timeline. I believe we can deliver the     │|
+|  │                                                          │|
+|  │  (Text corrected silently - no visual indication)       │|
+|  │                                                          │|
+|  │  ⚠️ May not notice unwanted corrections                 │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Reverting Auto-Corrections:
+```
++-------------------------------------------------------------+
+|  How to Revert Auto-Corrections                              |
++-------------------------------------------------------------+
+|                                                              |
+|  WHEN INDICATOR IS VISIBLE:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Type "teh" → Auto-corrects to "the"                     |
+|                                         ~~~                  |
+|                                         (blue underline)     |
+|                                                              |
+|  2. Click underlined word or press ⌘Z immediately           |
+|                                                              |
+|  3. Options appear:                                          |
+|     ┌─────────────────────────────────┐                     |
+|     │ the          ← Keep correction  │                     |
+|     │ teh          ← Revert to typed  │                     |
+|     └─────────────────────────────────┘                     |
+|                                                              |
+|  4. Select original to revert the correction                |
+|                                                              |
+|  WITHOUT INDICATOR (hidden):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Must use ⌘Z immediately after typing                     |
+|  • Or manually find and fix unwanted corrections            |
+|  • Less convenient and error-prone                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Auto-Correction Types:
+```
++-------------------------------------------------------------+
+|  Types of Auto-Corrections in Pages                          |
++-------------------------------------------------------------+
+|                                                              |
+|  SPELLING CORRECTIONS:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  • teh → the                                                 |
+|  • recieve → receive                                         |
+|  • seperate → separate                                       |
+|                                                              |
+|  CAPITALIZATION:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|  • i → I (standalone)                                        |
+|  • monday → Monday                                           |
+|  • usa → USA                                                 |
+|                                                              |
+|  SMART PUNCTUATION:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  • "quote" → "quote" (smart quotes)                          |
+|  • -- → — (em dash)                                          |
+|  • ... → … (ellipsis)                                        |
+|                                                              |
+|  TEXT REPLACEMENT:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|  • (c) → ©                                                   |
+|  • (tm) → ™                                                  |
+|  • Custom replacements from System Settings                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show indicators for awareness.
+
+### Why Show Auto-Correction Indicators?
+
+1. **Awareness** — Know when text is modified
+2. **Easy revert** — Click to undo unwanted corrections
+3. **Catch errors** — Auto-correct isn't always right
+4. **Learn patterns** — See what triggers corrections
+5. **Quality control** — Verify intended text
+
+### Why Hide Indicators?
+
+- **Distraction-free** — Cleaner writing experience
+- **Confidence** — Trust auto-correction fully
+- **Fewer interruptions** — No visual pauses
+- **Minimal UI** — Prefer less on-screen feedback
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Pages TSShowsAutoCorrection
+
+# Show auto-correction indicators (default)
+defaults write com.apple.iWork.Pages TSShowsAutoCorrection -bool true
+
+# Hide auto-correction indicators
+defaults write com.apple.iWork.Pages TSShowsAutoCorrection -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Pages TSShowsAutoCorrection
+```
+
+## UI Location
+
+**Pages** > **Settings** > **Auto-Correction**
+
+```
++-------------------------------------------------------------+
+|  Pages Settings - Auto-Correction                            |
++-------------------------------------------------------------+
+|                                                              |
+|  Pages > Settings (⌘,) > Auto-Correction                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Auto-Correction]                            │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Spelling                                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [✓] Correct spelling automatically                    │|
+|  │  [✓] Show auto-correction   ← This setting             │|
+|  │                                                          │|
+|  │  Formatting                                             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [✓] Use smart quotes and dashes                       │|
+|  │  [✓] Fix capitalization                                │|
+|  │                                                          │|
+|  │  Text Replacement                                       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [✓] Automatically detect lists                        │|
+|  │  [✓] Automatically detect links                        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show auto-correction indicators (this setting)
+defaults write com.apple.iWork.Pages TSShowsAutoCorrection -bool true
+
+# Smart quotes
+defaults write com.apple.iWork.Pages TSWPUseSmartQuotes -bool true
+
+# Smart dashes
+defaults write com.apple.iWork.Pages TSWPUseSmartDashes -bool true
+
+# Show invisibles
+defaults write com.apple.iWork.Pages TSWPShowInvisibles -bool false
+
+# Show word count
+defaults write com.apple.iWork.Pages TSWPShowWordCount -bool true
+
+# Default zoom
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 100
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Indicators not appearing | Check if auto-correction is enabled |
+| Can't revert corrections | Click word while underline visible or use ⌘Z |
+| Unwanted corrections persist | Add to user dictionary or disable auto-correct |
+| Setting not persisting | Quit Pages before changing via defaults |
+| Indicators too brief | This duration cannot be adjusted |
+| Conflicts with custom text | Add exceptions in System Settings > Keyboard |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Pages
+- **Note**: Same key exists in Numbers and Keynote
+- **Note**: Relies on system spelling/auto-correction settings
+- **Note**: Restart Pages for terminal changes to apply
+- **Note**: Works with all document languages
+
+## Source File
+
+**File**: [`defaults/applications/pages.sh`](../../../../../defaults/applications/pages.sh)
+
+```bash
+# TSShowsAutoCorrection controls auto-correction indicator visibility
+# Domain: com.apple.iWork.Pages
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+# Shows blue underline on auto-corrected text
+```
+
+## References
+
+- [Apple Support: Pages User Guide](https://support.apple.com/guide/pages/welcome/mac)
+- [Apple Support: Change auto-correction settings in Pages](https://support.apple.com/guide/pages/set-up-auto-correction-tan3d8bd6091/mac)
+- [Apple Support: Use text replacement on Mac](https://support.apple.com/guide/mac-help/replace-text-punctuation-documents-mac-mh35735/mac)

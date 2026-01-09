@@ -1,0 +1,291 @@
+# Finder Warn Before Emptying Trash
+
+Control whether Finder shows a confirmation dialog before emptying the Trash.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `WarnOnEmptyTrash` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Finder displays a confirmation dialog when you attempt to empty the Trash. When enabled, you'll see a warning showing how many items will be permanently deleted, giving you a chance to cancel if you've accidentally moved something important to Trash. Since emptying Trash is irreversible (without third-party recovery tools), this warning serves as a last line of defense against accidental data loss.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show warning** (default) — Confirmation dialog appears |
+| `false` | **No warning** — Trash empties immediately |
+
+## Visual Demonstration
+
+### Warning Enabled (true - Default):
+```
++-------------------------------------------------------------+
+|  Empty Trash Confirmation                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  User action: Finder > Empty Trash (⇧⌘⌫)                    |
+|                                                              |
+|                  ┌────────────────────────────────────────┐ |
+|                  │                                        │ |
+|                  │  🗑️  Are you sure you want to          │ |
+|                  │      permanently erase the items       │ |
+|                  │      in the Trash?                     │ |
+|                  │                                        │ |
+|                  │      You can't undo this action.       │ |
+|                  │                                        │ |
+|                  │      ┌─────────────────────────────┐   │ |
+|                  │      │ 47 items will be deleted    │   │ |
+|                  │      │ Total size: 2.3 GB          │   │ |
+|                  │      └─────────────────────────────┘   │ |
+|                  │                                        │ |
+|                  │      [Cancel]         [Empty Trash]    │ |
+|                  │                                        │ |
+|                  └────────────────────────────────────────┘ |
+|                                                              |
+|  ✓ User can review and cancel if needed                     |
+|  ✓ Shows count and size of items                            |
+|  ✓ Last chance to save important files                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Warning Disabled (false):
+```
++-------------------------------------------------------------+
+|  Empty Trash Without Warning                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  User action: Finder > Empty Trash (⇧⌘⌫)                    |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Desktop                                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  🗑️ Trash                                                │|
+|  │     │                                                    │|
+|  │     │   Emptying...                                      │|
+|  │     │   ████████████░░░░░░░░                             │|
+|  │     │                                                    │|
+|  │     └─ Immediately starts deleting                       │|
+|  │                                                          │|
+|  │  ⚠️ No confirmation dialog!                              │|
+|  │  ⚠️ Cannot cancel once started!                          │|
+|  │  ⚠️ Files permanently deleted!                           │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  RISK: Accidental keyboard shortcut (⇧⌘⌫) = data loss      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Recovery Situation:
+```
++-------------------------------------------------------------+
+|  Why the Warning Matters                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO 1: Accidental Trash                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Drag important file to Trash accidentally               |
+|  2. Empty Trash to clean up other files                     |
+|  3. With warning: Notice "Project_Final.pdf" in dialog      |
+|  4. Click Cancel, recover file from Trash                   |
+|  ✓ Data saved!                                               |
+|                                                              |
+|  SCENARIO 2: Without Warning                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Drag important file to Trash accidentally               |
+|  2. Press ⇧⌘⌫ or right-click Empty Trash                   |
+|  3. Files instantly deleted with no confirmation            |
+|  4. Realize important file was in Trash                     |
+|  ✗ Data lost! May need professional recovery ($$$)          |
+|                                                              |
+|  RECOVERY OPTIONS AFTER EMPTY TRASH:                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Time Machine backup (if available)                       |
+|  • Third-party recovery software (may work)                 |
+|  • Professional data recovery (expensive, uncertain)        |
+|  • None of the above guaranteed                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Keyboard Shortcuts:
+```
++-------------------------------------------------------------+
+|  Trash Keyboard Shortcuts                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  MOVE TO TRASH:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────┐   ┌─────┐                                          |
+|  │  ⌘  │ + │  ⌫  │   = Move selected item(s) to Trash      |
+|  └─────┘   └─────┘                                          |
+|                                                              |
+|  EMPTY TRASH:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────┐   ┌─────┐   ┌─────┐                                |
+|  │  ⇧  │ + │  ⌘  │ + │  ⌫  │   = Empty Trash               |
+|  └─────┘   └─────┘   └─────┘                                |
+|                                                              |
+|  ⚠️ Easy to accidentally hit!                                |
+|  ⚠️ Just one extra key from Move to Trash                   |
+|  ⚠️ Warning dialog is your safety net                       |
+|                                                              |
+|  DELETE IMMEDIATELY (bypass Trash):                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────┐   ┌─────┐   ┌─────┐   ┌─────┐                      |
+|  │  ⌥  │ + │  ⌘  │ + │  ⇧  │ + │  ⌫  │ = Delete immediately|
+|  └─────┘   └─────┘   └─────┘   └─────┘                      |
+|                                                              |
+|  This always shows a confirmation dialog regardless         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show warning for safety.
+
+### Why Keep Warning Enabled?
+
+1. **Prevent data loss** — Last chance to save files
+2. **Review before delete** — See item count and size
+3. **Easy mistakes** — Keyboard shortcut is close to Move to Trash
+4. **No undo** — Empty Trash cannot be reversed
+5. **Small inconvenience** — One click for peace of mind
+
+### Why Disable Warning?
+
+- **Power users** — Confident in Trash habits
+- **Workflow efficiency** — Regularly empty Trash
+- **Already have backups** — Time Machine running
+- **Quick cleanup** — Frequently clearing known junk
+- **Annoyance** — Find the dialog disruptive
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.finder WarnOnEmptyTrash
+
+# Enable warning (default, recommended)
+defaults write com.apple.finder WarnOnEmptyTrash -bool true
+
+# Disable warning (use with caution)
+defaults write com.apple.finder WarnOnEmptyTrash -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.finder WarnOnEmptyTrash
+
+# Restart Finder to apply
+killall Finder
+```
+
+## UI Location
+
+**Finder** > **Settings** > **Advanced** > **Show warning before emptying the Trash**
+
+```
++-------------------------------------------------------------+
+|  Finder Settings - Advanced                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Finder > Settings (⌘,) > Advanced                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Tags] [Sidebar] [Advanced]                  │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [✓] Show all filename extensions                       │|
+|  │                                                          │|
+|  │  [✓] Show warning before changing an extension          │|
+|  │                                                          │|
+|  │  [✓] Show warning before removing from iCloud Drive     │|
+|  │                                                          │|
+|  │  [✓] Show warning before emptying the Trash  ← This one │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Remove items from the Trash after 30 days:  [ ]        │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  When performing a search:                               │|
+|  │  [Search the Current Folder               ▼]            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Warn before emptying Trash (this setting)
+defaults write com.apple.finder WarnOnEmptyTrash -bool true
+
+# Auto-empty Trash after 30 days
+defaults write com.apple.finder FXRemoveOldTrashItems -bool false
+
+# Show warning before changing extension
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool true
+
+# Show warning before removing from iCloud Drive
+defaults write com.apple.finder FXEnableRemoveFromICloudDriveWarning -bool true
+
+# Secure empty trash (pre-macOS 10.11, now deprecated)
+# defaults write com.apple.finder EmptyTrashSecurely -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Warning not appearing | Check Finder > Settings > Advanced |
+| Want to disable temporarily | Hold Option key while selecting Empty Trash |
+| Trash won't empty | Some files may be locked or in use |
+| Recovered files not in Trash | Time Machine or third-party recovery needed |
+| Setting not persisting | Run `killall Finder` after changing |
+| "Trash cannot be emptied" | Check for locked files or active file access |
+
+## Compatibility
+
+- **macOS**: 10.0+ (all macOS versions)
+- **Note**: Option key bypasses warning temporarily
+- **Note**: "Secure Empty Trash" removed in macOS 10.11+
+- **Note**: Auto-empty after 30 days is separate setting
+- **Note**: Restart Finder for changes to apply
+
+## Source File
+
+**File**: [`defaults/finder/behavior.sh`](../../../../../defaults/finder/behavior.sh)
+
+```bash
+# WarnOnEmptyTrash controls Empty Trash confirmation
+# Domain: com.apple.finder
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+# Essential safety feature for preventing data loss
+```
+
+## References
+
+- [Apple Support: Use the Trash on Mac](https://support.apple.com/guide/mac-help/use-the-trash-mchl5c802f48/mac)
+- [Apple Support: Delete files on Mac](https://support.apple.com/guide/mac-help/delete-files-and-folders-mh15093/mac)
+- [Apple Support: Change Finder preferences on Mac](https://support.apple.com/guide/mac-help/change-finder-preferences-mchlp2883/mac)

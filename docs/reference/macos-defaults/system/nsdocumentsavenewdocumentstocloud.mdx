@@ -1,0 +1,304 @@
+# Save New Documents to iCloud
+
+Control whether new documents are saved to iCloud Drive or locally by default.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSDocumentSaveNewDocumentsToCloud` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls the default save location when creating new documents in apps that support both iCloud and local storage. When enabled, the save dialog defaults to iCloud Drive, syncing documents across all your Apple devices. When disabled, new documents default to saving locally on your Mac. This is a system-wide preference affecting all compatible apps including Pages, Numbers, Keynote, TextEdit, and third-party apps supporting iCloud Documents.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **iCloud default** (system default) — New documents save to iCloud Drive |
+| `false` | **Local default** — New documents save to On My Mac |
+
+## Visual Demonstration
+
+### iCloud Default (true - System Default):
+```
++-------------------------------------------------------------+
+|  Save Dialog - iCloud Default                                |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Save                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Save As: [Untitled                            ]        │|
+|  │                                                          │|
+|  │  Tags:    [                                    ]        │|
+|  │                                                          │|
+|  │  Where:   [☁️ iCloud Drive                      ▼]      │|
+|  │           └── Default location                          │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │  📁 iCloud Drive                                    ││|
+|  │  │    ├── 📁 Desktop                                   ││|
+|  │  │    ├── 📁 Documents                                 ││|
+|  │  │    ├── 📁 Pages                                     ││|
+|  │  │    └── 📁 Numbers                                   ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │                         [Cancel]    [Save]              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Syncs to all devices automatically                       |
+|  ✓ Accessible from iCloud.com                               |
+|  ⚠️ Requires internet for initial sync                       |
+|  ⚠️ Uses iCloud storage quota                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Local Default (false):
+```
++-------------------------------------------------------------+
+|  Save Dialog - Local Default                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Save                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Save As: [Untitled                            ]        │|
+|  │                                                          │|
+|  │  Tags:    [                                    ]        │|
+|  │                                                          │|
+|  │  Where:   [💻 On My Mac                         ▼]      │|
+|  │           └── Default location                          │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │  📁 On My Mac                                       ││|
+|  │  │    ├── 📁 Desktop                                   ││|
+|  │  │    ├── 📁 Documents                                 ││|
+|  │  │    ├── 📁 Projects                                  ││|
+|  │  │    └── 📁 Work                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │                         [Cancel]    [Save]              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Always available (no internet needed)                    |
+|  ✓ Doesn't use iCloud storage                               |
+|  ✓ Full control over file location                          |
+|  ⚠️ Not synced to other devices                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Understanding the Locations:
+```
++-------------------------------------------------------------+
+|  iCloud vs Local Storage                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  iCLOUD DRIVE:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ~/Library/Mobile Documents/com~apple~CloudDocs/            |
+|       │                                                      |
+|       ├── Desktop/    (if Desktop & Documents sync enabled) |
+|       ├── Documents/  (if Desktop & Documents sync enabled) |
+|       ├── Pages/      (Pages app documents)                 |
+|       ├── Numbers/    (Numbers app documents)               |
+|       └── Keynote/    (Keynote app documents)               |
+|                                                              |
+|  • Syncs automatically across devices                        |
+|  • Files may be "optimized" (download on demand)            |
+|  • Counts against iCloud storage quota                       |
+|                                                              |
+|  ON MY MAC (Local):                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ~/Documents/                                                |
+|  ~/Desktop/                                                  |
+|  Any local folder                                            |
+|                                                              |
+|  • Always available locally                                  |
+|  • No sync (unless backed up separately)                     |
+|  • Uses only local disk space                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Multi-Device Workflow:
+```
++-------------------------------------------------------------+
+|  iCloud Document Sync                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  WITH iCLOUD DEFAULT (true):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|     MacBook                    iPhone                        |
+|    ┌────────┐                ┌────────┐                     |
+|    │ Create │                │        │                     |
+|    │ doc in │   ────────▶   │ Access │                     |
+|    │ Pages  │    Sync via   │  doc   │                     |
+|    └────────┘    iCloud     └────────┘                     |
+|                     │                                        |
+|                     ▼                                        |
+|                  iPad                                        |
+|                ┌────────┐                                    |
+|                │ Access │                                    |
+|                │  doc   │                                    |
+|                └────────┘                                    |
+|                                                              |
+|  WITH LOCAL DEFAULT (false):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|     MacBook                    iPhone                        |
+|    ┌────────┐                ┌────────┐                     |
+|    │ Create │                │   ✗    │                     |
+|    │ doc in │      ✗        │ No     │                     |
+|    │ Pages  │   No sync     │ access │                     |
+|    └────────┘                └────────┘                     |
+|                                                              |
+|    Must manually share via AirDrop, email, etc.             |
+|    Or manually save to iCloud when needed                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Default to local storage.
+
+### Why Default to Local?
+
+1. **Always available** — No internet dependency
+2. **Privacy control** — Files stay on your machine
+3. **No quota concerns** — Don't worry about iCloud space
+4. **Faster access** — No download delay for files
+5. **Deliberate sync** — Choose what to sync
+
+### Why Default to iCloud?
+
+- **Multi-device access** — Work from anywhere
+- **Automatic backup** — Files safe in cloud
+- **Collaboration** — Easy sharing via iCloud
+- **Apple ecosystem** — Seamless with iPhone/iPad
+- **Disaster recovery** — Protected from hardware failure
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSDocumentSaveNewDocumentsToCloud
+
+# Default to local storage
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+# Default to iCloud (system default)
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSDocumentSaveNewDocumentsToCloud
+```
+
+## UI Location
+
+**System Settings** > **Apple ID** > **iCloud** (or per-app settings)
+
+```
++-------------------------------------------------------------+
+|  System Settings - iCloud                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Apple ID > iCloud Drive                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  iCloud Drive                                [On ●]     │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Desktop & Documents Folders    [●]                     │|
+|  │  Store Desktop and Documents folders in iCloud Drive    │|
+|  │                                                          │|
+|  │  Optimize Mac Storage           [●]                     │|
+|  │  Automatically remove downloaded files when space       │|
+|  │  is needed on this Mac                                  │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Apps syncing to iCloud Drive:                          │|
+|  │  [✓] Pages                                              │|
+|  │  [✓] Numbers                                            │|
+|  │  [✓] Keynote                                            │|
+|  │  [✓] TextEdit                                           │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: The NSDocumentSaveNewDocumentsToCloud setting        |
+|  is not directly exposed in System Settings UI.             |
+|  It affects the default "Where" selection in save dialogs.  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Default save location (this setting)
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+# Recent documents limit
+defaults write NSGlobalDomain NSRecentDocumentsLimit -int 10
+
+# Expanded save panel
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+
+# Save panel sidebar width
+defaults write NSGlobalDomain NSNavSidebarViewWidth -int 200
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Save dialog still defaults to iCloud | Log out and log back in, or restart Mac |
+| Can't find local files | Check ~/Documents or search in Finder |
+| iCloud not syncing | Check internet connection and iCloud status |
+| Setting not persisting | Ensure full disk access for Terminal |
+| Some apps ignore setting | App may have its own save location preference |
+| Files disappeared | Check iCloud Drive if accidentally saved there |
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion) when iCloud Documents introduced
+- **Note**: Affects all apps using standard document framework
+- **Note**: Some apps have their own save location preferences
+- **Note**: Log out/in may be required for change to take effect
+- **Note**: Doesn't affect existing documents, only new ones
+
+## Source File
+
+**File**: [`defaults/system/global.sh`](../../../../../defaults/system/global.sh)
+
+```bash
+# NSDocumentSaveNewDocumentsToCloud controls default save location
+# Domain: NSGlobalDomain
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+# true = iCloud Drive, false = On My Mac
+```
+
+## References
+
+- [Apple Support: Set up iCloud Drive](https://support.apple.com/guide/mac-help/set-up-icloud-features-mh36834/mac)
+- [Apple Support: Store files in iCloud Drive on Mac](https://support.apple.com/guide/mac-help/store-files-in-icloud-drive-mchle1ebf3eb/mac)
+- [Apple Support: Save documents on your Mac](https://support.apple.com/guide/mac-help/save-documents-mh15139/mac)

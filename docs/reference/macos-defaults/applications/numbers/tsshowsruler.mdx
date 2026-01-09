@@ -1,0 +1,280 @@
+# Numbers Show Ruler
+
+Control whether the ruler is displayed in Apple Numbers spreadsheets.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Numbers` |
+| **Key** | `TSShowsRuler` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the ruler is displayed at the top of the Numbers spreadsheet editor. The ruler helps with precise positioning of objects, adjusting column widths, and aligning content. It shows measurements in your preferred unit (inches, centimeters, or points) and displays tab stops and margins for text boxes. While spreadsheets are primarily cell-based, rulers are useful when adding shapes, charts, and text elements to your sheets.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show ruler** (default) — Ruler visible at top of sheet |
+| `false` | **Hide ruler** — More vertical space for content |
+
+## Visual Demonstration
+
+### Ruler Visible (true - Default):
+```
++-------------------------------------------------------------+
+|  Numbers with Ruler Displayed                                |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📊 My Spreadsheet                                       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [Format] [Data] [Arrange]            [▶ Play] [Share]  │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │ 0    1    2    3    4    5    6    7    8    9   10│││|
+|  │  │ |....|....|....|....|....|....|....|....|....|....││ ← Ruler│|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │     A       B       C       D       E       F          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │1│ Name   │ Price  │ Qty    │ Total  │        │        │|
+|  │2│ Item A │ $10.00 │   5    │ $50.00 │        │        │|
+|  │3│ Item B │ $15.00 │   3    │ $45.00 │        │        │|
+|  │4│ Item C │ $20.00 │   2    │ $40.00 │        │        │|
+|  │5│        │        │        │        │        │        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Ruler shows:                                                |
+|  • Measurements in inches/cm                                 |
+|  • Column boundaries                                         |
+|  • Object alignment guides                                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Ruler Hidden (false):
+```
++-------------------------------------------------------------+
+|  Numbers without Ruler                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📊 My Spreadsheet                                       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [Format] [Data] [Arrange]            [▶ Play] [Share]  │|
+|  │                                                          │|
+|  │     A       B       C       D       E       F          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │1│ Name   │ Price  │ Qty    │ Total  │        │        │|
+|  │2│ Item A │ $10.00 │   5    │ $50.00 │        │        │|
+|  │3│ Item B │ $15.00 │   3    │ $45.00 │        │        │|
+|  │4│ Item C │ $20.00 │   2    │ $40.00 │        │        │|
+|  │5│ Item D │ $25.00 │   4    │$100.00 │        │        │|
+|  │6│        │        │        │        │        │        │|  ← Extra row visible
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Benefits of hiding:                                         |
+|  • More vertical space for data                             |
+|  • Cleaner interface                                         |
+|  • Less visual clutter                                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Ruler Use Cases:
+```
++-------------------------------------------------------------+
+|  When to Use the Ruler                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  POSITIONING OBJECTS:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ 0    1    2    3    4    5    6    7    8    9   10    │|
+|  │ |....|....|....|....|....|....|....|....|....|....|    │|
+|  │      ↓                                                   │|
+|  │  ┌─────────────────────┐                                 │|
+|  │  │                     │  ← Chart positioned at 1"      │|
+|  │  │   📊 Sales Chart    │                                 │|
+|  │  │                     │                                 │|
+|  │  └─────────────────────┘                                 │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ALIGNING TEXT BOXES:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ 0    1    2    3    4    5    6    7                    │|
+|  │ |    △    |    △    |    △    |                         │|
+|  │      ↑         ↑         ↑                               │|
+|  │  Tab stops for aligned text formatting                   │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │ Label:     Value      Description                   ││|
+|  │  │ Name:      John       Marketing Lead                ││|
+|  │  │ Date:      Jan 9      Quarterly Review              ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Ruler Units Configuration:
+```
++-------------------------------------------------------------+
+|  Ruler Measurement Units                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  INCHES (Default for US):                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  │ 0    1    2    3    4    5    6    7    8    9   10    │|
+|  │ |....|....|....|....|....|....|....|....|....|....|    │|
+|                                                              |
+|  CENTIMETERS (Metric regions):                               |
+|  ─────────────────────────────────────────────────────────  |
+|  │ 0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17  │|
+|  │ |..|..|..|..|..|..|..|..|..|..|..|..|..|..|..|..|..|  │|
+|                                                              |
+|  POINTS (72 points per inch):                                |
+|  ─────────────────────────────────────────────────────────  |
+|  │ 0   72  144  216  288  360  432  504  576  648  720    │|
+|  │ |....|....|....|....|....|....|....|....|....|....|    │|
+|                                                              |
+|  To change units:                                            |
+|  Numbers > Settings > Rulers > Ruler Units                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Keep ruler visible for precise object positioning.
+
+### Why Show Ruler?
+
+1. **Precise positioning** — Exact placement of charts and shapes
+2. **Consistency** — Align objects across multiple sheets
+3. **Print accuracy** — Know exact dimensions for printed output
+4. **Text formatting** — Set tab stops in text boxes
+
+### Why Hide Ruler?
+
+- Pure data entry work (no objects)
+- Maximize vertical space on small screens
+- Prefer cleaner interface
+- Rarely add non-cell elements
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Numbers TSShowsRuler
+
+# Show ruler (default)
+defaults write com.apple.iWork.Numbers TSShowsRuler -bool true
+
+# Hide ruler
+defaults write com.apple.iWork.Numbers TSShowsRuler -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Numbers TSShowsRuler
+```
+
+## UI Location
+
+**Numbers** > **View** > **Show Ruler**
+
+```
++-------------------------------------------------------------+
+|  Numbers View Menu                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  View Menu                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Zoom                         ▶                         │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ✓ Show Ruler                     ⌘R   ← This setting  │|
+|  │  ✓ Show Tab Bar                                         │|
+|  │    Show Comments                                         │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │    Show Print View                                       │|
+|  │    Show Table Name                                       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │    Enter Full Screen              ⌃⌘F                   │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Keyboard shortcut: ⌘R (Command+R) to toggle ruler         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show ruler (this setting)
+defaults write com.apple.iWork.Numbers TSShowsRuler -bool true
+
+# Show alignment guides at object centers
+defaults write com.apple.iWork.Numbers TSShowsObjectCenterGuides -bool true
+
+# Show alignment guides at object edges
+defaults write com.apple.iWork.Numbers TSShowsObjectEdgeGuides -bool true
+
+# Default zoom level
+defaults write com.apple.iWork.Numbers TSDefaultZoom -int 100
+
+# Show comments pane
+defaults write com.apple.iWork.Numbers TSShowsComments -bool false
+
+# Show auto-correction
+defaults write com.apple.iWork.Numbers TSShowsAutoCorrection -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Ruler not appearing | Check View > Show Ruler is enabled |
+| Wrong measurement units | Numbers > Settings > Rulers > Ruler Units |
+| Setting doesn't persist | Quit Numbers before changing via defaults |
+| Ruler cuts off content | Scroll or zoom out to see full sheet |
+| Tab stops not showing | Select a text box first |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Numbers
+- **Note**: Setting is app-wide, affects all spreadsheets
+- **Note**: Individual documents don't override this setting
+- **Note**: Same key name (TSShowsRuler) used in Pages and Keynote
+- **Note**: Restart Numbers for terminal changes to take effect
+
+## Source File
+
+**File**: [`defaults/applications/numbers.sh`](../../../../../defaults/applications/numbers.sh)
+
+```bash
+# TSShowsRuler controls ruler visibility in Numbers
+# Domain: com.apple.iWork.Numbers
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Support: Numbers User Guide](https://support.apple.com/guide/numbers/welcome/mac)
+- [Apple Support: Use the ruler in Numbers](https://support.apple.com/guide/numbers/use-the-ruler-tanb7f6d6e7d/mac)
+- [Apple Support: Change Numbers settings](https://support.apple.com/guide/numbers/change-settings-tan6df912ce5/mac)

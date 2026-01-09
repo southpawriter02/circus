@@ -1,0 +1,291 @@
+# Menu Bar Analog Clock
+
+Control whether the menu bar displays an analog or digital clock.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.menuextra.clock` |
+| **Key** | `IsAnalog` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the menu bar clock displays as a traditional analog clock face with hands or as a digital display showing numbers. When set to analog, a small circular clock face appears with hour and minute hands. The analog option provides a classic aesthetic but takes up more horizontal space and doesn't show seconds.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Digital clock** (default) — Shows time as numbers |
+| `true` | **Analog clock** — Shows clock face with hands |
+
+## Visual Demonstration
+
+### Digital Clock (false - Default):
+```
++-------------------------------------------------------------+
+|  Menu Bar - Digital Clock                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │ [Apple] Finder  File  Edit     Fri 10 Jan  14:23:45 🔋│ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  Features:                                                   |
+|  • Shows exact time in numbers                              |
+|  • Can display seconds                                       |
+|  • Can show day, date, and AM/PM                            |
+|  • Compact horizontal space                                  |
+|  • Easy to read at a glance                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Analog Clock (true):
+```
++-------------------------------------------------------------+
+|  Menu Bar - Analog Clock                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │ [Apple] Finder  File  Edit  View         (◷) 🔋       │ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  The clock face:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|        12                    Shows approximately 2:23        |
+|         │                                                    |
+|    9 ───┼─── 3               • Hour hand (short)            |
+|         │ ╲                  • Minute hand (long)           |
+|        6   ╲                 • No second hand               |
+|              ╲ (minute hand pointing to ~23)                |
+|                                                              |
+|  Features:                                                   |
+|  • Classic watch aesthetic                                   |
+|  • Takes more horizontal space                               |
+|  • No seconds display                                        |
+|  • No date/day display                                       |
+|  • Requires visual interpretation                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Side-by-Side Comparison:
+```
++-------------------------------------------------------------+
+|  Digital vs Analog Comparison                                |
++-------------------------------------------------------------+
+|                                                              |
+|  DIGITAL (false):                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Space used: ████████████░░░░░░░░░░░░░░░░ (wider text)      |
+|                                                              |
+|  ┌───────────────────────────────────────────────────────┐  |
+|  │  Fri 10 Jan  14:23:45                                 │  |
+|  └───────────────────────────────────────────────────────┘  |
+|                                                              |
+|  Information shown:                                          |
+|  • Day of week: Fri                                          |
+|  • Date: 10 Jan                                              |
+|  • Time: 14:23:45 (with seconds)                            |
+|                                                              |
+|  ANALOG (true):                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Space used: ██████░░░░░░░░░░░░░░░░░░░░░░ (compact circle)  |
+|                                                              |
+|  ┌───────────────────────────────────────────────────────┐  |
+|  │  (◷)                                                  │  |
+|  └───────────────────────────────────────────────────────┘  |
+|                                                              |
+|  Information shown:                                          |
+|  • Time: ~2:23 (approximate, requires interpretation)       |
+|  • No date                                                   |
+|  • No day                                                    |
+|  • No seconds                                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Use Cases:
+```
++-------------------------------------------------------------+
+|  Choosing Your Clock Style                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  DIGITAL CLOCK (false) - BEST FOR:                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Precise time checking                                   |
+|  [x] Scheduling and meetings                                 |
+|  [x] When seconds matter                                     |
+|  [x] Quick date reference                                    |
+|  [x] Most professional environments                          |
+|  [x] International 24-hour time users                        |
+|  [x] Accessibility (easier to read)                          |
+|                                                              |
+|  ANALOG CLOCK (true) - BEST FOR:                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Classic/retro aesthetic                                 |
+|  [x] Minimal distraction (no flashing numbers)               |
+|  [x] Users comfortable reading clock faces                   |
+|  [x] When exact seconds don't matter                        |
+|  [x] Smaller menu bar footprint (no date text)              |
+|  [x] Personal preference                                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Digital clock for precise time display.
+
+### Why Use Digital Clock (false)?
+
+1. **Precision** — Shows exact time with seconds
+2. **Date display** — Can show day and date
+3. **Quick reading** — Numbers read faster than hands
+4. **Seconds option** — Important for timing
+5. **Default behavior** — Expected by most users
+
+### Why Use Analog Clock (true)?
+
+- **Aesthetic** — Classic watch appearance
+- **Minimalism** — No text, just clock face
+- **Distraction-free** — No changing numbers
+- **Preference** — Some users prefer analog
+- **Unique** — Stands out from default
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.menuextra.clock IsAnalog
+
+# Use digital clock (default, recommended)
+defaults write com.apple.menuextra.clock IsAnalog -bool false
+
+# Use analog clock
+defaults write com.apple.menuextra.clock IsAnalog -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.menuextra.clock IsAnalog
+
+# Restart menu bar to apply changes
+killall SystemUIServer
+```
+
+## UI Location
+
+**System Settings** > **Control Center** > **Clock Options**
+
+```
++-------------------------------------------------------------+
+|  Control Center Settings - Clock Options                     |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Control Center > Clock Options            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Clock Options                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Style                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  (●) Digital    ( ) Analog     <-- This setting         │|
+|  │                                                          │|
+|  │  [x] Show the day of the week  (digital only)           │|
+|  │  [x] Show date                 (digital only)           │|
+|  │  [ ] Flash the time separators (digital only)           │|
+|  │  [x] Display the time with seconds (digital only)       │|
+|  │  [ ] Use a 24-hour clock       (digital only)           │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: When Analog is selected, the additional options      |
+|  (day, date, seconds, etc.) are grayed out or hidden.       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Clock style (this setting)
+defaults write com.apple.menuextra.clock IsAnalog -bool false
+
+# Show seconds (digital only)
+defaults write com.apple.menuextra.clock ShowSeconds -bool true
+
+# Show day of week (digital only)
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+
+# Show date (digital only)
+defaults write com.apple.menuextra.clock ShowDate -int 1
+
+# Flash separators (digital only)
+defaults write com.apple.menuextra.clock FlashDateSeparators -bool false
+
+# Custom format (digital only)
+defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM  HH:mm:ss"
+
+# Restart menu bar
+killall SystemUIServer
+```
+
+## Feature Availability by Clock Type
+
+| Feature | Digital | Analog |
+|---------|---------|--------|
+| Show seconds | ✓ | ✗ |
+| Show date | ✓ | ✗ |
+| Show day of week | ✓ | ✗ |
+| 24-hour format | ✓ | ✗ |
+| Flash separators | ✓ | ✗ |
+| Custom format | ✓ | ✗ |
+| AM/PM indicator | ✓ | ✗ |
+| Click to expand | ✓ | ✓ |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Run `killall SystemUIServer` |
+| Date/seconds disappeared | They're digital-only; switch back |
+| Analog too small to read | No size adjustment; use digital |
+| Clock options grayed out | Switch to digital to access them |
+| Want analog with date | Not supported; use digital |
+| Clock disappeared | Check Control Center settings |
+
+## Compatibility
+
+- **macOS**: 10.0+ (feature available since early macOS)
+- **Note**: Requires `killall SystemUIServer` to apply
+- **Note**: Analog mode disables date/seconds options
+- **Note**: Click analog clock to see full date/time
+- **Note**: Works in both light and dark mode
+
+## Source File
+
+**File**: [`defaults/interface/menu_bar.sh`](../../../../../defaults/interface/menu_bar.sh)
+
+```bash
+# IsAnalog controls clock display style (analog vs digital)
+# Domain: com.apple.menuextra.clock
+# false = digital with numbers, true = analog with clock face
+run_defaults "com.apple.menuextra.clock" "IsAnalog" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use the menu bar on Mac](https://support.apple.com/guide/mac-help/use-the-menu-bar-mchlp1446/mac)
+- [Apple Support: Change Date & Time preferences](https://support.apple.com/guide/mac-help/change-date-time-preferences-mchlp2996/mac)
+- [Apple Support: Control Center settings](https://support.apple.com/guide/mac-help/control-center-mchl50f94f8f/mac)

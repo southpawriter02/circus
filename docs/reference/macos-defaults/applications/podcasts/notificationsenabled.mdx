@@ -1,0 +1,295 @@
+# Podcasts Notifications Enabled
+
+Control whether the Podcasts app shows notifications for new episodes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Key** | `NotificationsEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Apple Podcasts sends notifications when new episodes are available for subscribed podcasts. When enabled, you receive alerts through the macOS notification system when your favorite shows release new content. This helps you stay current with podcasts without manually checking the app.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Notifications enabled** (default) — Alerts for new episodes |
+| `false` | **Notifications disabled** — Silent updates |
+
+## Visual Demonstration
+
+### Notifications Enabled (true - Default):
+```
++-------------------------------------------------------------+
+|  Podcasts Notification Behavior                              |
++-------------------------------------------------------------+
+|                                                              |
+|  NEW EPISODE RELEASED:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                               Top-right notification    │|
+|  │                               ┌──────────────────────┐  │|
+|  │                               │ 🎙️ Podcasts          │  │|
+|  │                               │                      │  │|
+|  │                               │ New Episode          │  │|
+|  │                               │ "The Daily"          │  │|
+|  │                               │ Jan 9: Breaking News │  │|
+|  │                               │                      │  │|
+|  │                               │ [Listen] [Dismiss]   │  │|
+|  │                               └──────────────────────┘  │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │              Podcasts Library                        ││|
+|  │  │                                                      ││|
+|  │  │  ● The Daily               (1) ← New episode badge  ││|
+|  │  │    Science Friday          (-)                       ││|
+|  │  │    Tech Talk               (-)                       ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Notifications Disabled (false):
+```
++-------------------------------------------------------------+
+|  Podcasts Without Notifications                              |
++-------------------------------------------------------------+
+|                                                              |
+|  NEW EPISODE RELEASED:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                               (No notification appears)  │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │              Podcasts Library                        ││|
+|  │  │                                                      ││|
+|  │  │  ● The Daily               (1) ← Badge still shows  ││|
+|  │  │    Science Friday          (-)                       ││|
+|  │  │    Tech Talk               (-)                       ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │  Note: New episodes still download (if auto-download    │|
+|  │        enabled), just no notification alert             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Notification Center Integration:
+```
++-------------------------------------------------------------+
+|  Podcasts in Notification Center                             |
++-------------------------------------------------------------+
+|                                                              |
+|  WHEN NOTIFICATIONS ENABLED:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Notification Center                                     │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  TODAY                                                   │|
+|  │                                                          │|
+|  │  ┌────────────────────────────────────────────────────┐ │|
+|  │  │ 🎙️ Podcasts                              10:30 AM │ │|
+|  │  │ New Episode: The Daily                            │ │|
+|  │  │ "Breaking News Coverage"                          │ │|
+|  │  └────────────────────────────────────────────────────┘ │|
+|  │                                                          │|
+|  │  ┌────────────────────────────────────────────────────┐ │|
+|  │  │ 🎙️ Podcasts                               8:00 AM │ │|
+|  │  │ New Episode: Science Friday                       │ │|
+|  │  │ "Climate Research Update"                         │ │|
+|  │  └────────────────────────────────────────────────────┘ │|
+|  │                                                          │|
+|  │  EARLIER                                                 │|
+|  │  ...                                                     │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Notifications appear and can be:                           |
+|  • Clicked to open episode                                  |
+|  • Dismissed individually                                   |
+|  • Cleared all at once                                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Notification Settings Hierarchy:
+```
++-------------------------------------------------------------+
+|  Where Podcast Notifications Are Controlled                  |
++-------------------------------------------------------------+
+|                                                              |
+|  LEVEL 1: System Settings                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  System Settings > Notifications > Podcasts                 |
+|  • Allow Notifications: On/Off                              |
+|  • Alert Style: Banners/Alerts/None                         |
+|  • Show in Notification Center                              |
+|  • Badge app icon                                            |
+|  • Play sound for notifications                             |
+|                                                              |
+|  LEVEL 2: Podcasts App Setting (This Setting)                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  defaults write com.apple.podcasts NotificationsEnabled     |
+|  • Master toggle for podcast notifications                  |
+|  • Even if system allows, this can disable                  |
+|                                                              |
+|  LEVEL 3: Per-Podcast Settings (In-App)                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Podcasts > Show > Settings > Notifications                 |
+|  • Notify about new episodes                                |
+|  • Per-show override available                              |
+|                                                              |
+|  EFFECTIVE NOTIFICATION = L1 AND L2 AND L3                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable notifications to stay informed about new episodes.
+
+### Why Enable Notifications?
+
+1. **Stay current** — Know when favorites release new episodes
+2. **Timely listening** — Don't miss time-sensitive content
+3. **Discovery** — Remember subscriptions you might forget
+4. **Convenience** — No need to check app manually
+5. **Quick access** — Click notification to start listening
+
+### Why Disable Notifications?
+
+- Too many subscriptions, overwhelming notifications
+- Prefer to browse at your own pace
+- Notification fatigue
+- Focus/DND workflow
+- Check podcasts on own schedule
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.podcasts NotificationsEnabled
+
+# Enable notifications (default)
+defaults write com.apple.podcasts NotificationsEnabled -bool true
+
+# Disable notifications
+defaults write com.apple.podcasts NotificationsEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.podcasts NotificationsEnabled
+```
+
+## UI Location
+
+**Podcasts** > **Settings** > **Notifications**
+
+```
++-------------------------------------------------------------+
+|  Podcasts Settings                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Podcasts > Settings (⌘,)                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Playback] [Advanced]                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Notifications                                           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [✓] Allow notifications from Podcasts ← This setting   │|
+|  │                                                          │|
+|  │  When enabled, you'll receive notifications for new     │|
+|  │  episodes. You can customize notifications for each     │|
+|  │  show in the show's settings.                           │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Also configure in:                                         |
+|  System Settings > Notifications > Podcasts                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Notifications enabled (this setting)
+defaults write com.apple.podcasts NotificationsEnabled -bool true
+
+# Auto-download new episodes
+defaults write com.apple.podcasts downloadNewEpisodes -bool true
+
+# Sync podcasts via iCloud
+defaults write com.apple.podcasts syncPodcasts -bool true
+
+# Episode limit per podcast
+defaults write com.apple.podcasts episodeLimit -int 10
+
+# Remove played episodes
+defaults write com.apple.podcasts removePlayedEpisodes -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No notifications appearing | Check System Settings > Notifications > Podcasts |
+| Too many notifications | Disable per-show in show settings |
+| Sound with notifications | Configure in System Settings > Notifications |
+| Notifications delayed | Check Focus mode settings |
+| Setting has no effect | Restart Podcasts app after changing |
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina) — Podcasts app introduced
+- **Note**: Requires Podcasts notifications enabled in System Settings
+- **Note**: Individual shows can override this setting
+- **Note**: Works with iCloud-synced subscriptions
+- **Note**: Restart Podcasts after changing via terminal
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../../defaults/applications/podcasts.sh)
+
+```bash
+# --- Notifications Enabled ---
+# Key:          NotificationsEnabled
+# Domain:       com.apple.podcasts
+# Description:  Enable notifications for new podcast episodes
+# Default:      true
+# Listed in undocumented settings
+```
+
+## References
+
+- [Apple Support: Use Podcasts on Mac](https://support.apple.com/guide/podcasts/welcome/mac)
+- [Apple Support: Change Podcasts settings](https://support.apple.com/guide/podcasts/change-settings-podb804dc5bd/mac)
+- [Apple Support: Manage notifications on Mac](https://support.apple.com/guide/mac-help/change-notifications-settings-mh40583/mac)

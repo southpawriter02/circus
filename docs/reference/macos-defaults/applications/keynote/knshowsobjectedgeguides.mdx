@@ -1,0 +1,287 @@
+# Keynote Object Edge Alignment Guides
+
+Control whether alignment guides appear when dragging objects near the edges of other objects in Keynote.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Keynote` |
+| **Key** | `KNShowsObjectEdgeGuides` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls the display of visual alignment guides that appear when you drag an object so that its edge aligns with the edge of another object on your slide. These guides help you create neat, aligned layouts where objects share common boundaries, creating a professional and organized appearance.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show edge guides** (default) — Guides appear when edges align |
+| `false` | **Hide edge guides** — No edge alignment assistance |
+
+## Visual Demonstration
+
+### Edge Alignment Guides (true - Default):
+```
++-------------------------------------------------------------+
+|  Keynote Slide Canvas with Edge Guides                       |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │       ┌───────────────────┐                              │|
+|  │       │                   │                              │|
+|  │       │   Existing Box    │                              │|
+|  │       │                   │                              │|
+|  │       └───────────────────┤ ← Yellow edge guide line     │|
+|  │                           │                              │|
+|  │       ┌───────────────────┤                              │|
+|  │       │  ☐ Dragging Box   │  ← Right edges aligned       │|
+|  │       │   (moving)        │                              │|
+|  │       └───────────────────┘                              │|
+|  │                                                          │|
+|  │  Guide appears when right edges of objects align         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Multiple Edge Alignments:
+```
++-------------------------------------------------------------+
+|  Types of Edge Alignment                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  LEFT EDGE ALIGNMENT:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|       │┌─────────────┐                                       |
+|       ││   Box A     │                                       |
+|       │└─────────────┘                                       |
+|       │    ↑ Guide                                           |
+|       │┌─────────┐                                           |
+|       ││  Box B  │                                           |
+|       │└─────────┘                                           |
+|                                                              |
+|  RIGHT EDGE ALIGNMENT:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|       ┌─────────────┐│                                       |
+|       │   Box A     ││                                       |
+|       └─────────────┘│                                       |
+|                Guide ↑│                                      |
+|           ┌─────────┐│                                       |
+|           │  Box B  ││                                       |
+|           └─────────┘│                                       |
+|                                                              |
+|  TOP EDGE ALIGNMENT:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|       ┌─────────┐─────────────┌───────┐                     |
+|       │         │   Guide     │       │                     |
+|       │  Box A  │             │ Box B │                     |
+|       │         │             │       │                     |
+|       └─────────┘             └───────┘                     |
+|                                                              |
+|  BOTTOM EDGE ALIGNMENT:                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|       ┌─────────┐             ┌───────┐                     |
+|       │         │             │       │                     |
+|       │  Box A  │             │ Box B │                     |
+|       │         │   Guide     │       │                     |
+|       └─────────┘─────────────└───────┘                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Edge vs Center Guides:
+```
++-------------------------------------------------------------+
+|  Comparison: Edge Guides vs Center Guides                    |
++-------------------------------------------------------------+
+|                                                              |
+|  EDGE GUIDES:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|       ┌─────────────┐│  Aligns outer boundaries              |
+|       │   Box A     ││  Great for:                           |
+|       └─────────────┘│  • Creating flush layouts             |
+|       ┌─────────────┐│  • Lining up columns                  |
+|       │   Box B     ││  • Neat document margins              |
+|       └─────────────┘│                                       |
+|                                                              |
+|  CENTER GUIDES:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|       ┌───────┐                                              |
+|       │ Box A │       Aligns midpoints                       |
+|       └───┬───┘       Great for:                             |
+|           │           • Centering titles over content        |
+|       ┌───┴───────┐   • Balanced compositions                |
+|       │   Box B   │   • Symmetrical layouts                  |
+|       └───────────┘                                          |
+|                                                              |
+|  Use BOTH for professional presentation layouts!             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Practical Layout Example:
+```
++-------------------------------------------------------------+
+|  Creating a Professional Slide Layout                        |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ┌──────────────────────────────────────────────────┐   │|
+|  │  │              Slide Title                          │   │|
+|  │  └──────────────────────────────────────────────────┘   │|
+|  │  │                                                       │|
+|  │  │ ← Left edge guide (all boxes aligned)                │|
+|  │  │                                                       │|
+|  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │|
+|  │  │   Point 1    │  │   Point 2    │  │   Point 3    │   │|
+|  │  │              │  │              │  │              │   │|
+|  │  │  • Detail A  │  │  • Detail A  │  │  • Detail A  │   │|
+|  │  │  • Detail B  │  │  • Detail B  │  │  • Detail B  │   │|
+|  │  └──────────────┘  └──────────────┘  └──────────────┘   │|
+|  │  ──────────────────────────────────────────────────────  │|
+|  │  ↑ Top edge guide (all three boxes aligned)             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Edge guides ensure consistent, professional layouts.        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show edge alignment guides for clean layouts.
+
+### Why Enable Edge Guides?
+
+1. **Flush layouts** — Objects share clean boundaries
+2. **Column alignment** — Easy to create neat columns
+3. **Consistent margins** — Maintain uniform spacing
+4. **Professional look** — Aligned edges appear intentional
+5. **Faster layout** — No manual positioning required
+
+### Why Disable Edge Guides?
+
+- **Overlapping designs** — Intentionally layered objects
+- **Reduce distractions** — Fewer guides while editing
+- **Artistic layouts** — Non-grid-based compositions
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Keynote KNShowsObjectEdgeGuides
+
+# Enable edge alignment guides (default, recommended)
+defaults write com.apple.iWork.Keynote KNShowsObjectEdgeGuides -bool true
+
+# Disable edge alignment guides
+defaults write com.apple.iWork.Keynote KNShowsObjectEdgeGuides -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Keynote KNShowsObjectEdgeGuides
+```
+
+## UI Location
+
+**Keynote** > **Settings** > **Rulers** > **Show guides at object edges**
+
+```
++-------------------------------------------------------------+
+|  Keynote Settings - Rulers                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Keynote > Settings (Command+,) > Rulers                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Slideshow] [Rulers] [Auto-Correction]       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Ruler Units:  [Points                            v]    │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Alignment Guides                                        │|
+|  │                                                          │|
+|  │  [x] Show guides at object center                        │|
+|  │                                                          │|
+|  │  [x] Show guides at object edges      <-- This setting  │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [x] Show size and position when moving objects         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Object edge alignment guides (this setting)
+defaults write com.apple.iWork.Keynote KNShowsObjectEdgeGuides -bool true
+
+# Object center alignment guides
+defaults write com.apple.iWork.Keynote KNShowsObjectCenterGuides -bool true
+
+# Show size and position when moving
+defaults write com.apple.iWork.Keynote KNShowSizeAndPositionWhenMoving -bool true
+
+# Show rulers
+defaults write com.apple.iWork.Keynote TSShowsRuler -bool true
+
+# Default zoom level
+defaults write com.apple.iWork.Keynote TSDefaultZoom -int 100
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Edge guides not appearing | Check Settings > Rulers > Show guides at object edges |
+| Guides appear for some objects only | Guides only show when edges nearly align |
+| Want exact edge alignment | Use Format sidebar > Arrange for precise X/Y values |
+| Too many guides appearing | Zoom out or disable one guide type |
+| Can't align to slide edge | Use View > Show Rulers, then drag guide from ruler |
+| Setting not persisting | Restart Keynote after changing via defaults |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Keynote
+- **Note**: Same setting exists in Pages and Numbers with TS prefix
+- **Note**: Restart Keynote for terminal changes to apply
+- **Note**: Guides only appear during active drag operations
+- **Note**: Works with all object types (shapes, images, text boxes, charts)
+
+## Source File
+
+**File**: [`defaults/applications/keynote.sh`](../../../../../defaults/applications/keynote.sh)
+
+```bash
+# KNShowsObjectEdgeGuides controls edge alignment guide visibility
+# Domain: com.apple.iWork.Keynote
+# Shows alignment guides when dragging objects near the edges of other objects
+run_defaults "com.apple.iWork.Keynote" "KNShowsObjectEdgeGuides" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Keynote User Guide](https://support.apple.com/guide/keynote/welcome/mac)
+- [Apple Support: Position and align objects in Keynote](https://support.apple.com/guide/keynote/position-and-align-objects-tanb32e7b8f4/mac)
+- [Apple Support: Use alignment guides in Keynote](https://support.apple.com/guide/keynote/use-alignment-guides-tanc10df22e7/mac)

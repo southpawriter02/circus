@@ -1,0 +1,292 @@
+# Mail Number of Snippet Lines
+
+Control how many lines of message preview appear in the message list.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `NumberOfSnippetLines` |
+| **Type** | Integer |
+| **Default Value** | `2` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls how many lines of the email body are shown as a preview snippet in the Mail message list. This preview appears below the sender and subject line, giving you a glimpse of the email content without opening it. More lines provide more context but show fewer messages on screen; fewer lines allow more messages visible at once but with less preview content.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **No preview** — Only sender and subject shown |
+| `1` | **One line** — Minimal preview, maximum messages |
+| `2` | **Two lines** (default) — Balanced preview |
+| `3` | **Three lines** — More context per message |
+| `4` | **Four lines** — Detailed preview |
+| `5` | **Five lines** — Maximum preview content |
+
+## Visual Demonstration
+
+### No Preview Lines (0):
+```
++-------------------------------------------------------------+
+|  Mail - Message List (0 Lines)                               |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Inbox (23)                                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ● John Smith                               10:30 AM    │|
+|  │    Meeting Tomorrow                                      │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ● Sarah Johnson                            9:45 AM     │|
+|  │    Q4 Report Review                                      │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │    Marketing Team                            9:15 AM     │|
+|  │    Campaign Update                                       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │    IT Support                                8:30 AM     │|
+|  │    Password Reset Confirmation                           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │    Newsletter                                8:00 AM     │|
+|  │    Weekly Digest                                         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Maximum messages visible                                 |
+|  ✗ No context without opening                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Two Preview Lines (2 - Default):
+```
++-------------------------------------------------------------+
+|  Mail - Message List (2 Lines)                               |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Inbox (23)                                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ● John Smith                               10:30 AM    │|
+|  │    Meeting Tomorrow                                      │|
+|  │    Hi team, Just wanted to confirm our meeting          │|
+|  │    tomorrow at 2pm. Please bring your project...        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ● Sarah Johnson                            9:45 AM     │|
+|  │    Q4 Report Review                                      │|
+|  │    I've finished reviewing the Q4 numbers and           │|
+|  │    have some feedback. Can we schedule a call...        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │    Marketing Team                            9:15 AM     │|
+|  │    Campaign Update                                       │|
+|  │    The new campaign launched yesterday and              │|
+|  │    early metrics are looking positive...                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Good balance of context and density                     |
+|  ✓ Usually enough to understand email purpose              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Five Preview Lines (5):
+```
++-------------------------------------------------------------+
+|  Mail - Message List (5 Lines)                               |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Inbox (23)                                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ● John Smith                               10:30 AM    │|
+|  │    Meeting Tomorrow                                      │|
+|  │    Hi team,                                              │|
+|  │                                                          │|
+|  │    Just wanted to confirm our meeting tomorrow at       │|
+|  │    2pm. Please bring your project updates and be        │|
+|  │    prepared to discuss the timeline for Q1.             │|
+|  │                                                          │|
+|  │    Let me know if you have any questions...             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ● Sarah Johnson                            9:45 AM     │|
+|  │    Q4 Report Review                                      │|
+|  │    I've finished reviewing the Q4 numbers and have      │|
+|  │    some feedback. Can we schedule a call this week      │|
+|  │    to go over the findings? I noticed a few areas       │|
+|  │    that need attention before the board meeting.        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Maximum context per message                             |
+|  ✗ Fewer messages visible at once                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison at Different Sizes:
+```
++-------------------------------------------------------------+
+|  Messages Visible by Snippet Lines                           |
++-------------------------------------------------------------+
+|                                                              |
+|  On a typical 13" MacBook display (message list area):       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Lines    Messages     Context Level                         |
+|           Visible                                            |
+|  ────────────────────────────────────────────────────────   |
+|  0        ~12-15       Sender/Subject only                  |
+|  1        ~10-12       First sentence                       |
+|  2        ~8-10        First paragraph opening              |
+|  3        ~6-8         Good context                         |
+|  4        ~5-6         Detailed preview                     |
+|  5        ~4-5         Near-full preview                    |
+|                                                              |
+|  RECOMMENDATION BY USE CASE:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  High volume (100+ emails/day):  0-1 lines                  |
+|  Regular use:                    2 lines (default)          |
+|  Low volume / detail-oriented:   3-5 lines                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `2` — Default balanced preview with good visibility.
+
+### Why Use Default?
+
+1. **Balance** — Enough context without crowding
+2. **Efficient** — See multiple emails at once
+3. **Quick triage** — Determine priority without opening
+4. **Standard** — Expected Mail behavior
+
+### Why Decrease?
+
+- Process high email volume quickly
+- Prefer to open emails for content
+- Want maximum emails visible
+- Smaller screen/display
+
+### Why Increase?
+
+- Low email volume
+- Want to preview without opening
+- Large display with space to spare
+- Prefer detailed message list
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail NumberOfSnippetLines
+
+# Set to no preview (0)
+defaults write com.apple.mail NumberOfSnippetLines -int 0
+
+# Set to default (2 lines)
+defaults write com.apple.mail NumberOfSnippetLines -int 2
+
+# Set to maximum (5 lines)
+defaults write com.apple.mail NumberOfSnippetLines -int 5
+
+# Delete (reset to default)
+defaults delete com.apple.mail NumberOfSnippetLines
+```
+
+## UI Location
+
+**Mail** > **Settings** > **Viewing**
+
+```
++-------------------------------------------------------------+
+|  Mail Settings - Viewing                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Mail > Settings (⌘,) > Viewing                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Accounts] [Junk Mail] [Fonts] [Viewing] ... │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  List Preview                                            │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Show message preview:                                   │|
+|  │  [  2 Lines  ▼]           ← This setting                │|
+|  │                                                          │|
+|  │  ○ None                                                 │|
+|  │  ○ 1 Line                                               │|
+|  │  ● 2 Lines                                              │|
+|  │  ○ 3 Lines                                              │|
+|  │  ...                                                    │|
+|  │                                                          │|
+|  │  [✓] Use smart addresses                                │|
+|  │  [✓] Show related messages                              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Number of snippet lines (this setting)
+defaults write com.apple.mail NumberOfSnippetLines -int 2
+
+# Show unread messages in bold
+defaults write com.apple.mail ShouldShowUnreadMessagesInBold -bool true
+
+# Conversation view (group related messages)
+defaults write com.apple.mail ConversationViewEnabled -bool true
+
+# Disable remote content loading
+defaults write com.apple.mail DisableURLLoading -bool true
+
+# Message list font size
+defaults write com.apple.mail NSFontSize -int 13
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Preview not showing | Verify setting is > 0; restart Mail |
+| Preview shows attachments | Normal behavior; shows text content |
+| HTML emails show code | Preview shows plain text version |
+| Changes not applying | Quit and restart Mail app |
+| Want different per-mailbox | Not supported; global setting |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite) and later
+- **Note**: Setting applies to all mailboxes
+- **Note**: Restart Mail for changes to take effect
+- **Note**: Preview shows plain text, not HTML formatting
+- **Note**: Syncs with iOS Mail on some versions
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../../defaults/applications/mail.sh)
+
+```bash
+# NumberOfSnippetLines is a commonly-adjusted Mail preference
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Support: Mail settings on Mac](https://support.apple.com/guide/mail/change-viewing-preferences-mlhlc00e3f29/mac)
+- [Apple Support: Read emails in Mail on Mac](https://support.apple.com/guide/mail/read-email-messages-mlhl5d77661e/mac)
+- [Apple Support: Mail User Guide](https://support.apple.com/guide/mail/welcome/mac)

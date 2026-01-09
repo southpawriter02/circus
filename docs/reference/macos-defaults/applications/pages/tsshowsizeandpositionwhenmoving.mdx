@@ -1,0 +1,302 @@
+# Pages Show Size and Position When Moving
+
+Display object dimensions and coordinates while dragging elements in Pages.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Pages` |
+| **Key** | `TSShowSizeAndPositionWhenMoving` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Pages displays a tooltip showing an object's size (width × height) and position (X, Y coordinates) while dragging it across the document. This real-time feedback enables precise placement of images, shapes, text boxes, and other objects without needing to manually enter dimensions. The tooltip appears near the cursor during drag operations and updates continuously as you move the object.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show size/position** (default) — Tooltip displays during drag |
+| `false` | **Hide size/position** — No tooltip during drag |
+
+## Visual Demonstration
+
+### Size/Position Shown (true - Default):
+```
++-------------------------------------------------------------+
+|  Pages with Size/Position Tooltip                            |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📄 Pages - Newsletter Layout                           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │                                                      ││|
+|  │  │  Newsletter Title                                    ││|
+|  │  │                                                      ││|
+|  │  │           ┌───────────────────┐                      ││|
+|  │  │           │                   │                      ││|
+|  │  │           │   📷 Image       │  ← Dragging object   ││|
+|  │  │           │                   │                      ││|
+|  │  │           └───────────────────┘                      ││|
+|  │  │                    │                                 ││|
+|  │  │                    ▼                                 ││|
+|  │  │           ┌─────────────────────────┐               ││|
+|  │  │           │  W: 3.5 in  H: 2.25 in │ ← Size tooltip ││|
+|  │  │           │  X: 2.0 in  Y: 3.5 in  │ ← Position     ││|
+|  │  │           └─────────────────────────┘               ││|
+|  │  │                                                      ││|
+|  │  │  Article text continues here...                      ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Size/Position Hidden (false):
+```
++-------------------------------------------------------------+
+|  Pages without Size/Position Tooltip                         |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📄 Pages - Newsletter Layout                           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │                                                      ││|
+|  │  │  Newsletter Title                                    ││|
+|  │  │                                                      ││|
+|  │  │           ┌───────────────────┐                      ││|
+|  │  │           │                   │                      ││|
+|  │  │           │   📷 Image       │  ← Dragging object   ││|
+|  │  │           │                   │                      ││|
+|  │  │           └───────────────────┘                      ││|
+|  │  │                                                      ││|
+|  │  │  (No size/position feedback)                         ││|
+|  │  │  Must use Format panel for exact values             ││|
+|  │  │                                                      ││|
+|  │  │  Article text continues here...                      ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Tooltip Information:
+```
++-------------------------------------------------------------+
+|  Understanding the Size/Position Tooltip                     |
++-------------------------------------------------------------+
+|                                                              |
+|  TOOLTIP FORMAT:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────┐                    |
+|  │  W: 3.5 in    H: 2.25 in           │                    |
+|  │  X: 2.0 in    Y: 3.5 in            │                    |
+|  └─────────────────────────────────────┘                    |
+|        │           │    │         │                         |
+|        │           │    │         └─ Vertical position      |
+|        │           │    │            from top of page       |
+|        │           │    │                                   |
+|        │           │    └─ Horizontal position              |
+|        │           │       from left edge                   |
+|        │           │                                        |
+|        │           └─ Height of object                      |
+|        │                                                    |
+|        └─ Width of object                                   |
+|                                                              |
+|  UNITS:                                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Uses document ruler units (inches, cm, points, picas)    |
+|  • Change in: Pages > Settings > Rulers                     |
+|                                                              |
+|  WHEN RESIZING:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────┐                    |
+|  │  W: 4.0 in    H: 2.5 in            │ ← New dimensions   |
+|  │  Scale: 114%                        │ ← Scale factor    |
+|  └─────────────────────────────────────┘                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Working with Alignment Guides:
+```
++-------------------------------------------------------------+
+|  Size/Position with Alignment Guides                         |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │       ┌─────────────────┐                               │|
+|  │       │  Existing Image │                               │|
+|  │       └─────────────────┘                               │|
+|  │               │                                          │|
+|  │               │ ← Alignment guide (yellow line)         │|
+|  │               │                                          │|
+|  │       ┌───────┴─────────┐                               │|
+|  │       │                 │  ┌────────────────────┐       │|
+|  │       │  New Image     │  │ W: 3.5 in H: 2 in │       │|
+|  │       │  (dragging)     │  │ X: 1.5 in Y: 4 in │       │|
+|  │       │                 │  │ ● Aligned: Center │       │|
+|  │       └─────────────────┘  └────────────────────┘       │|
+|  │                                                          │|
+|  │  Tooltip + guides help with precise positioning         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  COMBINED FEATURES:                                          |
+|  • Size/position tooltip shows exact measurements           |
+|  • Yellow alignment guides show relationship to others      |
+|  • Objects snap to guides when close                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show dimensions for precise layout.
+
+### Why Show Size/Position?
+
+1. **Precise placement** — Know exact coordinates
+2. **Consistent sizing** — Match object dimensions
+3. **Professional layouts** — Accurate document design
+4. **Efficient workflow** — No separate Format panel needed
+5. **Real-time feedback** — See changes as you drag
+
+### Why Hide Size/Position?
+
+- **Cleaner view** — Less on-screen clutter
+- **Casual documents** — Precision not needed
+- **Experienced users** — Use Format panel instead
+- **Small objects** — Tooltip may obscure content
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Pages TSShowSizeAndPositionWhenMoving
+
+# Show size/position tooltip (default)
+defaults write com.apple.iWork.Pages TSShowSizeAndPositionWhenMoving -bool true
+
+# Hide size/position tooltip
+defaults write com.apple.iWork.Pages TSShowSizeAndPositionWhenMoving -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Pages TSShowSizeAndPositionWhenMoving
+```
+
+## UI Location
+
+**Pages** > **Settings** > **Rulers** > **Show size and position when moving objects**
+
+```
++-------------------------------------------------------------+
+|  Pages Settings - Rulers                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Pages > Settings (⌘,) > Rulers                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Rulers] [Auto-Correction]                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Ruler Units:  [Inches                        ▼]       │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Alignment Guides                                       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [✓] Show guides at object center                      │|
+|  │  [✓] Show guides at object edges                       │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Object Placement                                       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [✓] Show size and position   ← This setting           │|
+|  │      when moving objects                                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show size/position when moving (this setting)
+defaults write com.apple.iWork.Pages TSShowSizeAndPositionWhenMoving -bool true
+
+# Show object center guides
+defaults write com.apple.iWork.Pages TSShowsObjectCenterGuides -bool true
+
+# Show object edge guides
+defaults write com.apple.iWork.Pages TSShowsObjectEdgeGuides -bool true
+
+# Show ruler
+defaults write com.apple.iWork.Pages TSShowsRuler -bool true
+
+# Default zoom
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 100
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Tooltip not appearing | Check Settings > Rulers > Show size and position |
+| Wrong units displayed | Change in Settings > Rulers > Ruler Units |
+| Tooltip blocking view | Drag object away from tooltip area |
+| Position seems wrong | X/Y measured from top-left of page |
+| Scale not showing | Scale only appears during resize, not move |
+| Setting not persisting | Quit Pages before changing via defaults |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Pages
+- **Note**: Same key exists in Numbers and Keynote
+- **Note**: Units follow document ruler settings
+- **Note**: Restart Pages for terminal changes to apply
+- **Note**: Works with all object types
+
+## Source File
+
+**File**: [`defaults/applications/pages.sh`](../../../../../defaults/applications/pages.sh)
+
+```bash
+# --- Show Size and Position When Moving Objects ---
+# Key:          TSShowSizeAndPositionWhenMoving
+# Domain:       com.apple.iWork.Pages
+# Description:  Displays a tooltip showing object size and position while
+#               dragging objects in the document.
+# Default:      true
+# Options:      true  = Show size/position info
+#               false = Hide info during drag
+# Set to:       true (precise positioning)
+# UI Location:  Pages > Settings > Rulers
+# Source:       https://support.apple.com/guide/pages/change-settings-tanf9f2cc8d6/mac
+run_defaults "com.apple.iWork.Pages" "TSShowSizeAndPositionWhenMoving" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Pages User Guide](https://support.apple.com/guide/pages/welcome/mac)
+- [Apple Support: Position and align objects in Pages](https://support.apple.com/guide/pages/position-and-align-objects-tan3ce25fe77/mac)
+- [Apple Support: Change ruler and alignment settings in Pages](https://support.apple.com/guide/pages/change-settings-tanf9f2cc8d6/mac)

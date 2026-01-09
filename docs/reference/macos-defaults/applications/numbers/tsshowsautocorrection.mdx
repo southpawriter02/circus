@@ -1,0 +1,304 @@
+# Numbers Auto-Correction Indicators
+
+Control whether Numbers shows auto-correction indicators in cells.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Numbers` |
+| **Key** | `TSShowsAutoCorrection` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Apple Numbers displays visual indicators when text has been auto-corrected in cells. When enabled, auto-corrected text shows a brief highlight or indicator, helping you notice when Numbers has automatically changed your input. This includes spelling corrections, smart quotes, and other automatic text substitutions. The indicators help you verify that auto-corrections are appropriate for your data.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show indicators** (default) — Highlights auto-corrected text |
+| `false` | **Hide indicators** — Silent auto-correction |
+
+## Visual Demonstration
+
+### Auto-Correction Indicators Shown (true - Default):
+```
++-------------------------------------------------------------+
+|  Numbers with Auto-Correction Indicators Visible             |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📊 Numbers - Sales Report                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [Format] [Data] [Arrange]                              │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │     A           B            C           D          ││|
+|  │  │  ───────────────────────────────────────────────    ││|
+|  │  │1│ Product   │ Q1 Sales  │ Status    │ Notes        ││|
+|  │  │2│ Widget A  │ $12,500   │ Active    │ On track     ││|
+|  │  │3│ Widget B  │ $8,200    │ Review    │ [Recieved] ←┐││|
+|  │  │  │          │           │           │  ┌────────┐ │││|
+|  │  │  │          │           │           │  │Received│ │││|
+|  │  │  │          │           │           │  │(blue   │ │││|
+|  │  │  │          │           │           │  │ line)  │ │││|
+|  │  │  │          │           │           │  └────────┘ │││|
+|  │  │4│ Widget C  │ $15,300   │ Active    │ "Good"   ←──┘││|
+|  │  │  │          │           │           │  (smart quotes)│|
+|  │  │  │          │           │           │               ││|
+|  │  │  │          │           │           │               ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │  Auto-corrected text shows a brief blue underline        │|
+|  │  Click to see original and revert if needed              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Auto-Correction Indicators Hidden (false):
+```
++-------------------------------------------------------------+
+|  Numbers with Auto-Correction Indicators Hidden              |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📊 Numbers - Sales Report                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [Format] [Data] [Arrange]                              │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │     A           B            C           D          ││|
+|  │  │  ───────────────────────────────────────────────    ││|
+|  │  │1│ Product   │ Q1 Sales  │ Status    │ Notes        ││|
+|  │  │2│ Widget A  │ $12,500   │ Active    │ On track     ││|
+|  │  │3│ Widget B  │ $8,200    │ Review    │ Received ←──┐││|
+|  │  │  │          │           │           │  (no visual  │││|
+|  │  │  │          │           │           │   indicator) │││|
+|  │  │4│ Widget C  │ $15,300   │ Active    │ "Good" ←────┘││|
+|  │  │  │          │           │           │  (silently   ││|
+|  │  │  │          │           │           │   corrected) ││|
+|  │  │  │          │           │           │               ││|
+|  │  │  │          │           │           │               ││|
+|  │  │  │          │           │           │               ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │  ⚠️ Auto-corrections happen silently                     │|
+|  │  You won't know if text was changed                     │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Auto-Correction Popup:
+```
++-------------------------------------------------------------+
+|  Clicking an Auto-Corrected Word                             |
++-------------------------------------------------------------+
+|                                                              |
+|  WHEN YOU CLICK AN AUTO-CORRECTED CELL:                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ┌──────────────────────────────────────────────┐       │|
+|  │  │     D                                        │       │|
+|  │  │  ───────────────────────────────────────    │       │|
+|  │  │  Notes                                       │       │|
+|  │  │  ─────────────────                          │       │|
+|  │  │  [Received                            ]      │       │|
+|  │  │   ─────────                                 │       │|
+|  │  │      │                                       │       │|
+|  │  │      ▼                                       │       │|
+|  │  │   ┌─────────────────────────────────┐       │       │|
+|  │  │   │ ✓ Received                      │       │       │|
+|  │  │   │ ─────────────────────────────── │       │       │|
+|  │  │   │   Change back to "Recieved" ←  │       │       │|
+|  │  │   │   (click to revert)            │       │       │|
+|  │  │   └─────────────────────────────────┘       │       │|
+|  │  │                                              │       │|
+|  │  └──────────────────────────────────────────────┘       │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Click the original spelling to revert the auto-correction  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Types of Auto-Corrections:
+```
++-------------------------------------------------------------+
+|  What Gets Auto-Corrected                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  SPELLING CORRECTIONS:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  teh → the                                                   |
+|  recieve → receive                                           |
+|  occured → occurred                                          |
+|                                                              |
+|  SMART QUOTES & DASHES:                                      |
+|  ─────────────────────────────────────────────────────────  |
+|  "text" → "text" (curly quotes)                             |
+|  'text' → 'text' (curly apostrophes)                        |
+|  -- → — (em dash)                                            |
+|                                                              |
+|  CAPITALIZATION:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|  monday → Monday                                             |
+|  i → I (standalone)                                          |
+|                                                              |
+|  TEXT REPLACEMENTS:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  (c) → ©                                                     |
+|  (tm) → ™                                                    |
+|  ... → …                                                     |
+|                                                              |
+|  ⚠️ Note: Some corrections may not be appropriate for        |
+|     technical data, codes, or specific formatting            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show auto-correction indicators.
+
+### Why Show Indicators?
+
+1. **Awareness** — Know when text was automatically changed
+2. **Data integrity** — Verify corrections are appropriate
+3. **Easy revert** — Click to undo unwanted corrections
+4. **Technical data** — Catch corrections that break codes/IDs
+5. **Quality control** — Review changes before sharing
+
+### Why Hide Indicators?
+
+- Trust all auto-corrections
+- Prefer cleaner cell appearance
+- Working with non-critical text
+- Fewer visual distractions
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Numbers TSShowsAutoCorrection
+
+# Show auto-correction indicators (default)
+defaults write com.apple.iWork.Numbers TSShowsAutoCorrection -bool true
+
+# Hide auto-correction indicators
+defaults write com.apple.iWork.Numbers TSShowsAutoCorrection -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Numbers TSShowsAutoCorrection
+```
+
+## UI Location
+
+**Numbers** > **Edit** > **Substitutions**
+
+```
++-------------------------------------------------------------+
+|  Numbers Edit Menu                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Edit Menu > Substitutions                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Edit                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Undo                                  ⌘Z               │|
+|  │  Redo                                  ⇧⌘Z              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Cut                                   ⌘X               │|
+|  │  Copy                                  ⌘C               │|
+|  │  Paste                                 ⌘V               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Spelling and Grammar                  ▶                │|
+|  │  Substitutions                         ▶ ┌─────────────┐│|
+|  │  ─────────────────────────────────────── │ Show        ││|
+|  │  Find                                  ▶ │ Substitutio-││|
+|  │                                          │ ns ← Toggle ││|
+|  │                                          │ ───────────-││|
+|  │                                          │ ✓ Smart     ││|
+|  │                                          │   Quotes    ││|
+|  │                                          │ ✓ Smart     ││|
+|  │                                          │   Dashes    ││|
+|  │                                          │ ✓ Text      ││|
+|  │                                          │   Replace-  ││|
+|  │                                          │   ment      ││|
+|  │                                          └─────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  "Show Substitutions" controls indicator visibility         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Auto-correction indicators (this setting)
+defaults write com.apple.iWork.Numbers TSShowsAutoCorrection -bool true
+
+# Formula warnings
+defaults write com.apple.iWork.Numbers TSShowFormulaWarnings -bool true
+
+# Warn before deleting sheets
+defaults write com.apple.iWork.Numbers TSWarnBeforeDeletingSheets -bool true
+
+# Show ruler
+defaults write com.apple.iWork.Numbers TSShowsRuler -bool true
+
+# Show comments pane
+defaults write com.apple.iWork.Numbers TSShowsComments -bool false
+
+# System-wide auto-correction
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Indicators not showing | Check Edit > Substitutions > Show Substitutions |
+| Too many corrections | Disable specific substitutions in Edit menu |
+| Wrong corrections for codes | Disable auto-correct for that cell/selection |
+| Setting not persisting | Quit Numbers before changing via defaults |
+| Indicators too distracting | Set to false to hide them |
+| Can't revert correction | Click the underlined word while editing cell |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Numbers
+- **Note**: Same key name used in Pages and Keynote
+- **Note**: Respects system-wide substitution preferences
+- **Note**: Restart Numbers for terminal changes to apply
+- **Note**: Per-cell corrections can be reverted individually
+
+## Source File
+
+**File**: [`defaults/applications/numbers.sh`](../../../../../defaults/applications/numbers.sh)
+
+```bash
+# TSShowsAutoCorrection controls auto-correction indicator visibility
+# Domain: com.apple.iWork.Numbers
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Support: Numbers User Guide](https://support.apple.com/guide/numbers/welcome/mac)
+- [Apple Support: Change Numbers settings](https://support.apple.com/guide/numbers/change-settings-tan6df912ce5/mac)
+- [Apple Support: Use text substitutions](https://support.apple.com/guide/mac-help/use-text-replacements-mh35735/mac)

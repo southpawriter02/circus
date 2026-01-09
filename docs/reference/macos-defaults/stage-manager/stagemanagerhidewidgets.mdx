@@ -1,0 +1,289 @@
+# Stage Manager Hide Widgets
+
+Control whether widgets are hidden when Stage Manager is active.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.WindowManager` |
+| **Key** | `StageManagerHideWidgets` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether desktop widgets are hidden when Stage Manager is enabled. When Stage Manager is active, this setting determines if widgets remain visible on the desktop or are hidden to provide a cleaner workspace. Widgets can include weather, calendar, reminders, and other information displays that were introduced in macOS Sonoma.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Widgets shown** (default) — Widgets visible on desktop |
+| `true` | **Widgets hidden** — Widgets hidden when Stage Manager active |
+
+## Visual Demonstration
+
+### Widgets Visible (false - Default):
+```
++-------------------------------------------------------------+
+|  Desktop with Stage Manager and Widgets                      |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────┐                                                    |
+|  │     │  Recent Apps Strip                                 |
+|  │ App │                                                    |
+|  │  1  │    ┌─────────────────────────────────┐  ┌────────┐|
+|  │     │    │                                 │  │Weather │|
+|  ├─────┤    │                                 │  │  72°F  │|
+|  │     │    │      Active App Window          │  │  ☀️    │|
+|  │ App │    │                                 │  └────────┘|
+|  │  2  │    │                                 │  ┌────────┐|
+|  │     │    │                                 │  │Calendar│|
+|  ├─────┤    │                                 │  │ Today  │|
+|  │     │    └─────────────────────────────────┘  │ 3 evts │|
+|  │ App │                                         └────────┘|
+|  │  3  │                                         ┌────────┐|
+|  │     │                                         │Reminder│|
+|  └─────┘                                         │ 2 tasks│|
+|     ↑                                            └────────┘|
+|  Stage                                              ↑       |
+|  Manager                                         Widgets    |
+|                                                  visible    |
++-------------------------------------------------------------+
+```
+
+### Widgets Hidden (true):
+```
++-------------------------------------------------------------+
+|  Desktop with Stage Manager - Widgets Hidden                 |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────┐                                                    |
+|  │     │  Recent Apps Strip                                 |
+|  │ App │                                                    |
+|  │  1  │    ┌─────────────────────────────────────────────┐|
+|  │     │    │                                             │|
+|  ├─────┤    │                                             │|
+|  │     │    │         Active App Window                   │|
+|  │ App │    │                                             │|
+|  │  2  │    │                                             │|
+|  │     │    │         (More space without widgets)        │|
+|  ├─────┤    │                                             │|
+|  │     │    │                                             │|
+|  │ App │    │                                             │|
+|  │  3  │    │                                             │|
+|  │     │    └─────────────────────────────────────────────┘|
+|  └─────┘                                                    |
+|     ↑                                                       |
+|  Stage                                                      |
+|  Manager                    Clean desktop, widgets hidden   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Widget Visibility States:
+```
++-------------------------------------------------------------+
+|  Widget Visibility Scenarios                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  STAGE MANAGER OFF, WIDGETS EXIST:                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Widgets always visible on desktop                        |
+|  • Click desktop to see widgets                             |
+|  • This setting has no effect                               |
+|                                                              |
+|  STAGE MANAGER ON, HideWidgets = false:                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Widgets visible on desktop background                    |
+|  • Click desktop to reveal widgets                          |
+|  • Info at a glance available                               |
+|                                                              |
+|  STAGE MANAGER ON, HideWidgets = true:                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Desktop appears clean/empty                              |
+|  • Widgets not shown in Stage Manager mode                  |
+|  • Focused workspace                                        |
+|  • Must go to Notification Center for widget info           |
+|                                                              |
+|  ACCESS WIDGETS WHEN HIDDEN:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Notification Center: Click date/time in menu bar         |
+|  • Or: Two-finger swipe from right edge of trackpad        |
+|  • Widgets still accessible, just not on desktop            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison with Other Stage Manager Settings:
+```
++-------------------------------------------------------------+
+|  Stage Manager Settings Overview                             |
++-------------------------------------------------------------+
+|                                                              |
+|  SETTING                    DEFAULT    EFFECT                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  GloballyEnabled            false      Enable Stage Manager |
+|  AutoHide                   false      Show/hide app strip  |
+|  HideDesktop                false      Show/hide desktop    |
+|                                        icons                 |
+|  StageManagerHideWidgets    false      Show/hide widgets    |
+|  EnableStandardClickTo      true       Click for desktop    |
+|  ShowDesktop                           reveal               |
+|                                                              |
+|  COMMON CONFIGURATIONS:                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Minimal Distraction:                                        |
+|    HideDesktop: true                                        |
+|    StageManagerHideWidgets: true                            |
+|    AutoHide: false (keep strip visible)                     |
+|                                                              |
+|  Information Rich:                                           |
+|    HideDesktop: false                                       |
+|    StageManagerHideWidgets: false                           |
+|    AutoHide: false                                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Keep widgets visible for at-a-glance information.
+
+### Why Show Widgets?
+
+1. **Information access** — Weather, calendar, reminders visible
+2. **Quick reference** — Glance at info without switching apps
+3. **Desktop utility** — Desktop remains useful
+4. **Notification Center alternative** — Info without extra gesture
+5. **macOS Sonoma feature** — Use widgets as designed
+
+### Why Hide Widgets?
+
+- Prefer minimal, clean desktop
+- Distraction-free workspace
+- Widgets not personally useful
+- Better screenshot appearance
+- Focus on active windows only
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.WindowManager StageManagerHideWidgets
+
+# Show widgets (default)
+defaults write com.apple.WindowManager StageManagerHideWidgets -bool false
+
+# Hide widgets
+defaults write com.apple.WindowManager StageManagerHideWidgets -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.WindowManager StageManagerHideWidgets
+```
+
+## UI Location
+
+**System Settings** > **Desktop & Dock** > **Stage Manager** > **Show Widgets**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Desktop & Dock                            |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Desktop & Dock                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Stage Manager                                           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [Toggle On/Off]              Stage Manager              │|
+|  │                                                          │|
+|  │  Show recent apps             [✓]                       │|
+|  │                                                          │|
+|  │  Desktop & Stage Manager                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Show Items                                              │|
+|  │  ( ) On Desktop                                          │|
+|  │  (•) In Stage Manager                                    │|
+|  │                                                          │|
+|  │  Click wallpaper to reveal desktop   [Always ▼]         │|
+|  │                                                          │|
+|  │  Stage Manager Options:                                  │|
+|  │  [✓] Show Widgets             ← This setting            │|
+|  │                                (inverse of HideWidgets)  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Hide widgets (this setting)
+defaults write com.apple.WindowManager StageManagerHideWidgets -bool false
+
+# Enable Stage Manager globally
+defaults write com.apple.WindowManager GloballyEnabled -bool true
+
+# Auto-hide recent apps strip
+defaults write com.apple.WindowManager AutoHide -bool false
+
+# Hide desktop icons
+defaults write com.apple.WindowManager HideDesktop -bool false
+
+# Click wallpaper to show desktop
+defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool true
+
+# App window grouping
+defaults write com.apple.WindowManager AppWindowGroupingBehavior -int 0
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting has no effect | Stage Manager must be enabled first |
+| Widgets not appearing | Add widgets: click desktop > Edit Widgets |
+| Can't find widgets | Access via Notification Center when hidden |
+| Setting resets | Check if managed by MDM or profile |
+| Widgets on wrong monitor | Widget placement is per-display |
+
+## Compatibility
+
+- **macOS**: 14.0+ (Sonoma) — Widgets on desktop introduced
+- **macOS**: 13.0+ (Ventura) — Stage Manager introduced
+- **Note**: Widgets feature requires macOS Sonoma or later
+- **Note**: Setting only affects Stage Manager mode
+- **Note**: On Ventura, widgets are in Notification Center only
+
+## Source File
+
+**File**: [`defaults/interface/stage_manager.sh`](../../../../../defaults/interface/stage_manager.sh)
+
+```bash
+# --- Stage Manager Hide Widgets ---
+# Key:          StageManagerHideWidgets
+# Domain:       com.apple.WindowManager
+# Description:  Hide widget areas in Stage Manager mode.
+# Default:      false
+run_defaults "com.apple.WindowManager" "StandardHideWidgets" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Stage Manager on your Mac](https://support.apple.com/guide/mac-help/mchl534ba392/mac)
+- [Apple Support: Use widgets on your Mac](https://support.apple.com/guide/mac-help/mchl52be5da5/mac)
+- [Apple Support: macOS Sonoma features](https://support.apple.com/macos-sonoma)

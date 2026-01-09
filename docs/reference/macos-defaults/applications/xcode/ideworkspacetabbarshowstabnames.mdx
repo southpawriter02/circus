@@ -1,0 +1,250 @@
+# Xcode Workspace Tab Bar Shows Tab Names
+
+Control whether the tab bar displays tab names in Xcode workspaces.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `IDEWorkspaceTabBarShowsTabNames` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Xcode's workspace tab bar displays the names of open tabs or shows only icons. When enabled, each tab shows its name (file name, scheme name, etc.) making it easier to identify tabs at a glance. When disabled, tabs show only icons, which takes less horizontal space but requires hovering to see the name.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show tab names** (default) — Full names visible in tab bar |
+| `false` | **Icons only** — Compact tabs without names |
+
+## Visual Demonstration
+
+### Tab Names Visible (true - Default):
+```
++-------------------------------------------------------------+
+|  Xcode with Tab Names Shown                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  MyApp.xcodeproj                                         │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌─────────────┬─────────────┬─────────────┬──────────┐ │|
+|  │  │📄 AppDelegate│📄 ViewController│📄 Model  │ + │ │|
+|  │  │    .swift   │     .swift   │    .swift  │   │ │|
+|  │  └─────────────┴─────────────┴─────────────┴──────────┘ │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │  1│ import UIKit                                    ││|
+|  │  │  2│                                                 ││|
+|  │  │  3│ class ViewController: UIViewController {        ││|
+|  │  │  4│     override func viewDidLoad() {               ││|
+|  │  │  5│         super.viewDidLoad()                     ││|
+|  │  │  6│     }                                           ││|
+|  │  │  7│ }                                               ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │  Benefits:                                               │|
+|  │  • Easy file identification                              │|
+|  │  • See multiple file names at once                       │|
+|  │  • Quick navigation between files                        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Icons Only (false):
+```
++-------------------------------------------------------------+
+|  Xcode with Tab Icons Only                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  MyApp.xcodeproj                                         │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌────┬────┬────┬────┬────┬────┐                        │|
+|  │  │ 📄 │ 📄 │ 📄 │ 📄 │ 📄 │ +  │   ← Compact tabs      │|
+|  │  └────┴────┴────┴────┴────┴────┘                        │|
+|  │                     ↓                                    │|
+|  │              ┌──────────────┐                            │|
+|  │              │ViewController│  ← Hover to see name      │|
+|  │              │    .swift    │                            │|
+|  │              └──────────────┘                            │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │  1│ import UIKit                                    ││|
+|  │  │  2│                                                 ││|
+|  │  │  3│ class ViewController: UIViewController {        ││|
+|  │  │  4│     override func viewDidLoad() {               ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │  Benefits:                                               │|
+|  │  • More tabs fit in bar                                  │|
+|  │  • Cleaner appearance                                    │|
+|  │  • Better for many open files                            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Tab Bar Comparison:
+```
++-------------------------------------------------------------+
+|  Tab Bar Style Comparison                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  WITH NAMES (true):                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌────────────────┬────────────────┬────────────────┬─────┐ |
+|  │📄 AppDelegate  │📄 ViewController│📄 DataModel   │ ... │ |
+|  │   .swift       │    .swift       │   .swift      │     │ |
+|  └────────────────┴────────────────┴────────────────┴─────┘ |
+|                                                              |
+|  Width: ~150px per tab                                       |
+|  Visible tabs: 5-7 on typical display                        |
+|                                                              |
+|  WITHOUT NAMES (false):                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬─────┐  |
+|  │ 📄 │ 📄 │ 📄 │ 📄 │ 📄 │ 📄 │ 📄 │ 📄 │ 📄 │ 📄 │ ... │  |
+|  └────┴────┴────┴────┴────┴────┴────┴────┴────┴────┴─────┘  |
+|                                                              |
+|  Width: ~40px per tab                                        |
+|  Visible tabs: 15-20+ on typical display                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show tab names for easy file identification.
+
+### Why Show Names?
+
+1. **Identification** — Quickly see which file is in each tab
+2. **Navigation** — Find the right tab without hovering
+3. **Context** — Know what files are currently open
+4. **Fewer mistakes** — Less chance of editing wrong file
+
+### Why Hide Names?
+
+- Working with many files simultaneously
+- Prefer minimal interface
+- Remember files by position
+- Small screen with limited space
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dt.Xcode IDEWorkspaceTabBarShowsTabNames
+
+# Show tab names (default)
+defaults write com.apple.dt.Xcode IDEWorkspaceTabBarShowsTabNames -bool true
+
+# Hide tab names (icons only)
+defaults write com.apple.dt.Xcode IDEWorkspaceTabBarShowsTabNames -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dt.Xcode IDEWorkspaceTabBarShowsTabNames
+```
+
+## UI Location
+
+**Xcode** > **Settings** > **Navigation**
+
+```
++-------------------------------------------------------------+
+|  Xcode Settings - Navigation                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Xcode > Settings (⌘,) > Navigation                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Accounts] [Navigation] [Themes] [Text       │|
+|  │  Editing] [Key Bindings] [Source Control] [Components]  │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Navigation                                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Activation: [Single Click ▼]                           │|
+|  │                                                          │|
+|  │  Navigation Style: [Open in Place ▼]                    │|
+|  │                                                          │|
+|  │  Tab Bar                                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [✓] Show tab names                    ← This setting   │|
+|  │                                                          │|
+|  │  Optional Navigation: [Uses Focused Editor ▼]           │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show tab names (this setting)
+defaults write com.apple.dt.Xcode IDEWorkspaceTabBarShowsTabNames -bool true
+
+# Show line numbers
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool true
+
+# Show code folding sidebar
+defaults write com.apple.dt.Xcode DVTTextShowFoldingSidebar -bool true
+
+# Show minimap
+defaults write com.apple.dt.Xcode DVTTextShowMinimap -bool true
+
+# Show build duration
+defaults write com.apple.dt.Xcode ShowBuildOperationDuration -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Restart Xcode after changing via defaults |
+| Too many tabs, names truncated | Use keyboard shortcuts to navigate (⌃Tab) |
+| Want more tabs visible | Set to false for icon-only mode |
+| Can't see full file name | Hover over tab or widen Xcode window |
+| Tabs overflow window | Use tab overflow menu (>> at end) |
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina) with Xcode 11+
+- **Note**: Setting persists across Xcode updates
+- **Note**: Applies to all workspaces
+- **Note**: Restart Xcode for changes to take effect
+- **Note**: Works with tab groups feature
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../../defaults/applications/xcode.sh)
+
+```bash
+# IDEWorkspaceTabBarShowsTabNames controls tab bar display
+# Domain: com.apple.dt.Xcode
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Developer: Xcode Overview](https://developer.apple.com/documentation/xcode)
+- [Apple Developer: Customizing Xcode](https://developer.apple.com/documentation/xcode/customizing-your-workflow)
+- [Xcode Help: Navigate your workspace](https://help.apple.com/xcode/mac/current/#/dev5a6629d50)

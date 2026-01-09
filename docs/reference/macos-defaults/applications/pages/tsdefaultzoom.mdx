@@ -1,0 +1,318 @@
+# Pages Default Zoom Level
+
+Set the default zoom level for new documents in Apple Pages.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Pages` |
+| **Key** | `TSDefaultZoom` |
+| **Type** | Integer |
+| **Default Value** | `125` |
+| **Our Setting** | `100` |
+
+## Description
+
+Controls the default zoom level (as a percentage) when opening or creating new documents in Apple Pages. This affects how large the document appears on screen. A zoom level of 100% shows the document at actual print size, while higher values magnify the content for easier reading and editing, and lower values show more of the document at once.
+
+## Values
+
+| Value | Zoom Level | Use Case |
+|-------|------------|----------|
+| `50` | 50% | Overview of multi-page documents |
+| `75` | 75% | Full page view on smaller screens |
+| `100` | 100% | Actual size (print preview) |
+| `125` | 125% (default) | Comfortable reading/editing |
+| `150` | 150% | Detail work, accessibility |
+| `200` | 200% | Fine detail editing |
+| `400` | 400% | Pixel-level precision |
+
+## Visual Demonstration
+
+### Zoom Level Comparison:
+```
++-------------------------------------------------------------+
+|  Pages Zoom Levels                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  50% ZOOM (Overview):                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐                │|
+|  │  │ Page │  │ Page │  │ Page │  │ Page │   See more    │|
+|  │  │  1   │  │  2   │  │  3   │  │  4   │   pages at    │|
+|  │  │ •••  │  │ •••  │  │ •••  │  │ •••  │   once        │|
+|  │  │ •••  │  │ •••  │  │ •••  │  │ •••  │                │|
+|  │  └──────┘  └──────┘  └──────┘  └──────┘                │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  100% ZOOM (Actual Size):                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ┌─────────────────────────────────────────────────┐   │|
+|  │  │                                                   │   │|
+|  │  │  Chapter 1: Introduction                         │   │|
+|  │  │  ────────────────────────────                    │   │|
+|  │  │                                                   │   │|
+|  │  │  Lorem ipsum dolor sit amet, consectetur         │   │|
+|  │  │  adipiscing elit. Sed do eiusmod tempor          │   │|
+|  │  │  incididunt ut labore et dolore magna aliqua.   │   │|
+|  │  │                                                   │   │|
+|  │  │  Text appears at print size                      │   │|
+|  │  │                                                   │   │|
+|  │  └─────────────────────────────────────────────────┘   │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  150% ZOOM (Enlarged):                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ┌─────────────────────────────────────────────────┐   │|
+|  │  │                                                   │   │|
+|  │  │  Chapter 1: Introduction                         │   │|
+|  │  │  ────────────────────────────────                │   │|
+|  │  │                                                   │   │|
+|  │  │  Lorem ipsum dolor sit amet,                     │   │|
+|  │  │  consectetur adipiscing elit.                    │   │|
+|  │  │                                                   │   │|
+|  │  │  Larger text, easier to read                     │   │|
+|  │  │  Less page visible                               │   │|
+|  │  │                                                   │   │|
+|  │  └─────────────────────────────────────────────────┘   │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Zoom Control Location:
+```
++-------------------------------------------------------------+
+|  Pages Zoom Controls                                         |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📄 Pages - My Document                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [File] [Edit] [Insert] [Format] [Arrange] [View]      │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │                                                      ││|
+|  │  │                    Document Content                  ││|
+|  │  │                                                      ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Status Bar:                                            │|
+|  │                                                          │|
+|  │   Page 1 of 5    |    1,234 words    |   [100% ▼]  ←   │|
+|  │                                           Zoom control  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ZOOM POPUP:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌────────────────────┐                                     |
+|  │  50%               │                                     |
+|  │  75%               │                                     |
+|  │  100%              │                                     |
+|  │  ✓ 125%            │ ← Current zoom                      |
+|  │  150%              │                                     |
+|  │  200%              │                                     |
+|  │  ─────────────────-│                                     |
+|  │  Fit Page          │                                     |
+|  │  Fit Width         │                                     |
+|  └────────────────────┘                                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Keyboard Zoom Shortcuts:
+```
++-------------------------------------------------------------+
+|  Pages Zoom Keyboard Shortcuts                               |
++-------------------------------------------------------------+
+|                                                              |
+|  ZOOM IN:                                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────┐   ┌─────┐                                          |
+|  │  ⌘  │ + │  +  │   = Zoom in one step                    |
+|  └─────┘   └─────┘                                          |
+|                                                              |
+|  ZOOM OUT:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────┐   ┌─────┐                                          |
+|  │  ⌘  │ + │  -  │   = Zoom out one step                   |
+|  └─────┘   └─────┘                                          |
+|                                                              |
+|  ACTUAL SIZE (100%):                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────┐   ┌─────┐                                          |
+|  │  ⌘  │ + │  0  │   = Reset to actual size                |
+|  └─────┘   └─────┘                                          |
+|                                                              |
+|  FIT PAGE IN WINDOW:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  View > Zoom > Fit Page                                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `100` — Actual size for accurate print preview.
+
+### Why Use 100%?
+
+1. **WYSIWYG** — What you see is what you get when printed
+2. **Accurate sizing** — Images and text at true dimensions
+3. **Consistent** — Same view across all documents
+4. **Professional** — Standard for publishing workflows
+5. **Print accuracy** — Matches physical output
+
+### Why Use 125% (Default)?
+
+- **Comfortable reading** — Larger text without zooming
+- **Apple's choice** — Optimized for modern displays
+- **Retina displays** — Compensates for high pixel density
+- **Accessibility** — Easier on the eyes
+
+### Why Use Other Levels?
+
+**50-75%**: Multi-page overview, layout review
+**150-200%**: Detail editing, accessibility needs
+**Fit Page/Width**: Automatic sizing to window
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Pages TSDefaultZoom
+
+# Set to 50% (overview)
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 50
+
+# Set to 100% (actual size)
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 100
+
+# Set to 125% (default)
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 125
+
+# Set to 150% (enlarged)
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 150
+
+# Set to 200% (large)
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 200
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Pages TSDefaultZoom
+```
+
+## UI Location
+
+**Pages** > **View** > **Zoom** or bottom-left zoom control
+
+```
++-------------------------------------------------------------+
+|  Pages View Menu                                             |
++-------------------------------------------------------------+
+|                                                              |
+|  View Menu                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Zoom                              ▶ ┌─────────────────┐│|
+|  │  ───────────────────────────────────-│ Zoom In      ⌘+ ││|
+|  │  Show Ruler                       ⌘R │ Zoom Out     ⌘- ││|
+|  │  Show Word Count                     │ ─────────────── ││|
+|  │  Show Invisibles                     │ Actual Size  ⌘0 ││|
+|  │  Show Layout                         │ ─────────────── ││|
+|  │  ─────────────────────────────────── │ 50%             ││|
+|  │  Page Thumbnails                     │ 75%             ││|
+|  │  Table of Contents                   │ 100%            ││|
+|  │                                      │ 125%            ││|
+|  │                                      │ 150%            ││|
+|  │                                      │ 200%            ││|
+|  │                                      │ ─────────────── ││|
+|  │                                      │ Fit Page        ││|
+|  │                                      │ Fit Width       ││|
+|  │                                      └─────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Default zoom level (this setting)
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 100
+
+# Show ruler
+defaults write com.apple.iWork.Pages TSShowsRuler -bool true
+
+# Show word count
+defaults write com.apple.iWork.Pages TSWPShowWordCount -bool true
+
+# Show invisibles (formatting marks)
+defaults write com.apple.iWork.Pages TSWPShowInvisibles -bool false
+
+# Object center guides
+defaults write com.apple.iWork.Pages TSShowsObjectCenterGuides -bool true
+
+# Object edge guides
+defaults write com.apple.iWork.Pages TSShowsObjectEdgeGuides -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Zoom not applying to new docs | Restart Pages after changing setting |
+| Existing docs unaffected | Setting only affects new documents |
+| Zoom resets when reopening | Check per-document zoom settings |
+| Text blurry at certain zooms | Use standard zoom levels (50, 75, 100, etc.) |
+| Can't find zoom control | Look at bottom-left of document window |
+| Keyboard shortcuts not working | Ensure Pages window is focused |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Pages
+- **Note**: Same key name used in Numbers and Keynote
+- **Note**: Each iWork app stores zoom separately
+- **Note**: Restart Pages for terminal changes to apply
+- **Note**: Per-document zoom saved with document
+
+## Source File
+
+**File**: [`defaults/applications/pages.sh`](../../../../../defaults/applications/pages.sh)
+
+```bash
+# --- Default Zoom Level ---
+# Key:          TSDefaultZoom
+# Domain:       com.apple.iWork.Pages
+# Description:  Sets the default zoom level for new documents.
+# Default:      125 (125%)
+# Options:      25-400 (percentage)
+# Set to:       100 (actual size)
+# UI Location:  View > Zoom
+# Source:       https://support.apple.com/guide/pages/change-settings-tanf9f2cc8d6/mac
+run_defaults "com.apple.iWork.Pages" "TSDefaultZoom" "-int" "100"
+```
+
+## References
+
+- [Apple Support: Pages User Guide](https://support.apple.com/guide/pages/welcome/mac)
+- [Apple Support: Change the view in Pages](https://support.apple.com/guide/pages/change-the-view-tanf71f97888/mac)
+- [Apple Support: Zoom in or out in Pages](https://support.apple.com/guide/pages/zoom-in-or-out-tan0f4f50f97/mac)

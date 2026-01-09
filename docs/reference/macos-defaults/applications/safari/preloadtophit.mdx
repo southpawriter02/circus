@@ -1,0 +1,289 @@
+# Safari Preload Top Hit
+
+Control whether Safari preloads the top search result for faster navigation.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `PreloadTopHit` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Safari preloads the website that appears as the "Top Hit" in search suggestions. When enabled, Safari begins loading the top result in the background before you actually navigate to it, making the page appear to load instantly when selected. While this improves perceived performance, it has privacy implications as websites are loaded before you explicitly choose to visit them.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Preload enabled** (default) — Top hit loads in background |
+| `false` | **Preload disabled** — Pages load only when selected |
+
+## Visual Demonstration
+
+### Preload Enabled (true - Default):
+```
++-------------------------------------------------------------+
+|  Safari - Preload Top Hit Enabled                            |
++-------------------------------------------------------------+
+|                                                              |
+|  USER TYPES: "apple"                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🔍 apple█                                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ★ Top Hit — apple.com                   ← PRELOADING   │|
+|  │    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░        (background)    │|
+|  │                                                          │|
+|  │  🔍 Google Search — apple                               │|
+|  │  🔍 Google Search — apple store                         │|
+|  │  📖 Bookmarks — Apple Developer                         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  WHAT HAPPENS IN BACKGROUND:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Safari identifies "apple.com" as Top Hit                |
+|  2. Begins loading apple.com silently                       |
+|  3. Your IP address sent to apple.com                       |
+|  4. Page resources downloaded                                |
+|  5. Tracking pixels may execute                             |
+|                                                              |
+|  RESULT: Page appears instant when clicked                   |
+|          BUT: Site knows you typed "apple" (privacy leak)   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Preload Disabled (false - Privacy):
+```
++-------------------------------------------------------------+
+|  Safari - Preload Top Hit Disabled                           |
++-------------------------------------------------------------+
+|                                                              |
+|  USER TYPES: "apple"                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🔍 apple█                                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ★ Top Hit — apple.com                   (not loading)  │|
+|  │                                                          │|
+|  │  🔍 Google Search — apple                               │|
+|  │  🔍 Google Search — apple store                         │|
+|  │  📖 Bookmarks — Apple Developer                         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  WHAT HAPPENS:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Safari shows suggestions                                |
+|  2. NO network requests to suggested sites                  |
+|  3. User selects a result                                   |
+|  4. THEN page begins loading                                |
+|                                                              |
+|  RESULT: Small delay when clicking                           |
+|          BUT: Complete privacy until you choose to visit    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Privacy Implications:
+```
++-------------------------------------------------------------+
+|  Privacy Comparison                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  PRELOAD ENABLED (true):                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Typing "bank" could:                                        |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Your Mac ───────────────────────► yourbank.com         │|
+|  │           │                                              │|
+|  │           │  Sends:                                      │|
+|  │           │  • Your IP address                           │|
+|  │           │  • Cookies (if any)                          │|
+|  │           │  • User-agent info                           │|
+|  │           │                                              │|
+|  │           │  Even if you don't click!                    │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  PRELOAD DISABLED (false):                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Your Mac ─────── X ─────────────► yourbank.com         │|
+|  │                                                          │|
+|  │  No connection until you explicitly click                │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Your browsing intent stays private                       |
+|  ✓ No data leaked to unvisited sites                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Performance vs Privacy:
+```
++-------------------------------------------------------------+
+|  Trade-off Analysis                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  PRELOAD ENABLED:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Performance:  ★★★★★  Instant page load                     |
+|  Privacy:      ★★☆☆☆  Sites know your search intent        |
+|  Bandwidth:    ★★★☆☆  Uses data for unvisited pages        |
+|                                                              |
+|  PRELOAD DISABLED:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Performance:  ★★★☆☆  Normal page load time                 |
+|  Privacy:      ★★★★★  No leakage until you click           |
+|  Bandwidth:    ★★★★★  Only loads pages you visit           |
+|                                                              |
+|  RECOMMENDATION:                                             |
+|  • Privacy-conscious users: Disable (false)                 |
+|  • Performance priority: Enable (true)                      |
+|  • Metered connection: Disable to save data                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable preloading for enhanced privacy.
+
+### Why Disable?
+
+1. **Privacy protection** — Sites don't know your search intent
+2. **No premature tracking** — Tracking pixels don't execute
+3. **Bandwidth savings** — No wasted data on unvisited sites
+4. **Control** — Pages load only when you explicitly choose
+5. **Security** — Reduces exposure to potentially malicious sites
+
+### Why Enable?
+
+- Prioritize speed over privacy
+- Frequently use Top Hit results
+- Fast, unlimited internet connection
+- Trust suggested websites
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari PreloadTopHit
+
+# Enable preloading (default)
+defaults write com.apple.Safari PreloadTopHit -bool true
+
+# Disable preloading (recommended for privacy)
+defaults write com.apple.Safari PreloadTopHit -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Safari PreloadTopHit
+```
+
+## UI Location
+
+**Safari** > **Settings** > **Search** > **Preload Top Hit in the background**
+
+```
++-------------------------------------------------------------+
+|  Safari Settings - Search                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Safari > Settings (⌘,) > Search                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Tabs] [AutoFill] [Passwords] [Search] ...   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Search engine: [Google                          ▼]     │|
+|  │                                                          │|
+|  │  Smart Search Field                                      │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [✓] Include search engine suggestions                  │|
+|  │  [✓] Include Safari Suggestions                         │|
+|  │  [✓] Enable Quick Website Search                        │|
+|  │  [ ] Preload Top Hit in the background  ← This setting  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Preload top hit (this setting)
+defaults write com.apple.Safari PreloadTopHit -bool false
+
+# Block storage (cookies) policy
+defaults write com.apple.Safari BlockStoragePolicy -int 2
+
+# Suppress search suggestions
+defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+
+# Universal search (Safari suggestions)
+defaults write com.apple.Safari UniversalSearchEnabled -bool false
+
+# Do Not Track header
+defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Pages feel slower | Expected behavior; preloading disabled |
+| Top Hit not appearing | Unrelated to preloading; check search settings |
+| Still see suggestions | Suggestions shown; only preloading is disabled |
+| Changes not working | Restart Safari for setting to take effect |
+| Want partial privacy | Consider other privacy settings instead |
+
+## Security Implications
+
+- **Reconnaissance**: Disabled preloading prevents exposing search queries
+- **Malicious sites**: Won't preload potentially harmful Top Hit results
+- **Network monitoring**: Reduces signals about browsing intent
+- **Cookie exposure**: Cookies not sent to preloaded sites
+
+## Compatibility
+
+- **macOS**: 10.11+ (El Capitan and later)
+- **Safari**: 9.0+ (feature introduced)
+- **Note**: Setting takes effect immediately
+- **Note**: Does not affect other browsers
+- **Note**: Separate from Safari Suggestions setting
+
+## Source File
+
+**File**: [`defaults/profiles/privacy.sh`](../../../../../defaults/profiles/privacy.sh)
+
+```bash
+# --- Disable Preloading Top Hit ---
+# Prevents Safari from preloading pages, which could leak browsing intent
+run_defaults "com.apple.Safari" "PreloadTopHit" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Safari Search settings](https://support.apple.com/guide/safari/search-settings-sfri27018/mac)
+- [Apple Support: Safari Privacy](https://support.apple.com/guide/safari/privacy-ibrw1074/mac)
+- [WebKit Blog: Privacy features](https://webkit.org/blog/)

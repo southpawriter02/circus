@@ -1,0 +1,259 @@
+# Menu Bar Flash Date Separators
+
+Control whether the clock's colon separators flash each second.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.menuextra.clock` |
+| **Key** | `FlashDateSeparators` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the colon (:) separators in the menu bar clock flash on and off each second. When enabled, the colons blink at one-second intervals, similar to how many digital clocks and displays work. This provides a visual indication that the clock is running and updating.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Static separators** (default) — Colons always visible |
+| `true` | **Flashing separators** — Colons blink each second |
+
+## Visual Demonstration
+
+### Static Separators (false - Default):
+```
++-------------------------------------------------------------+
+|  Menu Bar Clock - Static Separators                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Every second:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Second 0:   14:23:05                                        |
+|  Second 1:   14:23:06                                        |
+|  Second 2:   14:23:07                                        |
+|  Second 3:   14:23:08                                        |
+|                                                              |
+|  Colons (:) remain visible at all times.                     |
+|  Only the numbers change.                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Flashing Separators (true):
+```
++-------------------------------------------------------------+
+|  Menu Bar Clock - Flashing Separators                        |
++-------------------------------------------------------------+
+|                                                              |
+|  Every second (alternating):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Second 0:   14:23:05   (colons visible)                     |
+|  Second 1:   14 23 06   (colons hidden)                      |
+|  Second 2:   14:23:07   (colons visible)                     |
+|  Second 3:   14 23 08   (colons hidden)                      |
+|                                                              |
+|  Creates a blinking effect like a digital clock display.     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison:
+```
++-------------------------------------------------------------+
+|  Visual Effect Comparison                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  STATIC (false):                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │ [Apple] Finder  File  Edit  View     14:23:45  [icons]│ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  Clean, steady display. No visual movement except           |
+|  numbers changing (if seconds shown).                       |
+|                                                              |
+|  FLASHING (true):                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Frame 1 (even seconds):                                     |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │ [Apple] Finder  File  Edit  View     14:23:44  [icons]│ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  Frame 2 (odd seconds):                                      |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │ [Apple] Finder  File  Edit  View     14 23 45  [icons]│ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  Creates "heartbeat" visual feedback that clock is active.   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Use Cases:
+```
++-------------------------------------------------------------+
+|  When to Use Each Setting                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  STATIC SEPARATORS (false) - BEST FOR:                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Clean, distraction-free interface                       |
+|  [x] Professional/work environments                          |
+|  [x] Users sensitive to visual motion                        |
+|  [x] Screen recordings and presentations                     |
+|  [x] Most users (default behavior)                           |
+|                                                              |
+|  FLASHING SEPARATORS (true) - BEST FOR:                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Visual confirmation clock is updating                   |
+|  [x] Retro digital clock aesthetic                           |
+|  [x] Users who like the classic blinking effect              |
+|  [x] Time-sensitive environments (trading, etc.)             |
+|  [x] When not showing seconds but want motion feedback       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Static separators for clean appearance.
+
+### Why Use Static Separators (false)?
+
+1. **Distraction-free** — No constant visual movement
+2. **Clean interface** — Matches modern macOS aesthetic
+3. **Professional** — Stable, consistent display
+4. **Screen recording** — No flashing artifacts
+5. **Default behavior** — Expected appearance
+
+### Why Use Flashing Separators (true)?
+
+- **Visual feedback** — Confirms clock is running
+- **Nostalgia** — Classic digital clock look
+- **Attention** — Draws eye to time periodically
+- **Preference** — Some users like the effect
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.menuextra.clock FlashDateSeparators
+
+# Disable flashing (static separators - default)
+defaults write com.apple.menuextra.clock FlashDateSeparators -bool false
+
+# Enable flashing separators
+defaults write com.apple.menuextra.clock FlashDateSeparators -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.menuextra.clock FlashDateSeparators
+
+# Restart menu bar to apply changes
+killall SystemUIServer
+```
+
+## UI Location
+
+**System Settings** > **Control Center** > **Clock Options**
+
+```
++-------------------------------------------------------------+
+|  Control Center Settings - Clock Options                     |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Control Center > Clock Options            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Clock Options                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Style                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ( ) Digital    (●) Analog                              │|
+|  │                                                          │|
+|  │  [x] Show the day of the week                           │|
+|  │  [x] Show date                                          │|
+|  │                                                          │|
+|  │  [ ] Flash the time separators  <-- This setting        │|
+|  │                                                          │|
+|  │  [x] Display the time with seconds                      │|
+|  │                                                          │|
+|  │  [ ] Use a 24-hour clock                                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: This checkbox is only visible when clock style is    |
+|  Digital, not Analog.                                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Flash time separators (this setting)
+defaults write com.apple.menuextra.clock FlashDateSeparators -bool false
+
+# Show seconds in clock
+defaults write com.apple.menuextra.clock ShowSeconds -bool true
+
+# Use analog clock (disables this setting's effect)
+defaults write com.apple.menuextra.clock IsAnalog -bool false
+
+# Show day of week
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
+
+# Custom date format
+defaults write com.apple.menuextra.clock DateFormat -string "EEE d MMM  HH:mm:ss"
+
+# Restart menu bar
+killall SystemUIServer
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Run `killall SystemUIServer` |
+| Flashing not visible | Ensure IsAnalog is false (digital mode) |
+| Want flash without seconds | Works with ShowSeconds false too |
+| Flashing too distracting | Set to false (disable) |
+| Can't find in System Settings | Look under Control Center > Clock Options |
+| Setting reverts | May need to restart after reboot |
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion and later)
+- **Note**: Only applies to digital clock mode
+- **Note**: Requires `killall SystemUIServer` to apply
+- **Note**: Has no effect when IsAnalog is true
+- **Note**: Works with or without seconds displayed
+
+## Source File
+
+**File**: [`defaults/interface/menu_bar.sh`](../../../../../defaults/interface/menu_bar.sh)
+
+```bash
+# FlashDateSeparators controls colon blinking in menu bar clock
+# Domain: com.apple.menuextra.clock
+# false = static separators, true = blinking separators
+run_defaults "com.apple.menuextra.clock" "FlashDateSeparators" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use the menu bar on Mac](https://support.apple.com/guide/mac-help/use-the-menu-bar-mchlp1446/mac)
+- [Apple Support: Change Date & Time preferences](https://support.apple.com/guide/mac-help/change-date-time-preferences-mchlp2996/mac)
+- [Apple Support: Control Center settings](https://support.apple.com/guide/mac-help/control-center-mchl50f94f8f/mac)

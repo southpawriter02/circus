@@ -1,0 +1,311 @@
+# Pages Show Ruler
+
+Control whether the ruler is displayed in Apple Pages documents.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Pages` |
+| **Key** | `TSShowsRuler` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the horizontal ruler is displayed at the top of the document editing area in Apple Pages. The ruler shows measurements, tab stops, indents, and margins. It's essential for precise document formatting, alignment of text and objects, and setting up professional layouts. The ruler can be toggled on and off without affecting the document's actual formatting.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show ruler** (default) — Ruler visible at top of document |
+| `false` | **Hide ruler** — More vertical editing space |
+
+## Visual Demonstration
+
+### Ruler Shown (true - Default):
+```
++-------------------------------------------------------------+
+|  Pages with Ruler Visible                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📄 Pages - Business Letter                             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [File] [Edit] [Insert] [Format] [Arrange] [View]      │|
+|  │                                                          │|
+|  │  RULER:                                                  │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │ ◀▷│1   │   2│   3│   4│   5│   6│   7│   8│◀▷     ││|
+|  │  │ ◣  ▼           △                              ◥    ││|
+|  │  │ │  │           │                              │    ││|
+|  │  │ │  │           │                              │    ││|
+|  │  │ │  └─First line indent                       │    ││|
+|  │  │ │                                             │    ││|
+|  │  │ └─Left margin                         Right margin─┘││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │                                                      ││|
+|  │  │  Dear Mr. Johnson,                                   ││|
+|  │  │                                                      ││|
+|  │  │  I am writing to follow up on our conversation...   ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Ruler elements: Margins, indents, tabs, alignment guides   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Ruler Hidden (false):
+```
++-------------------------------------------------------------+
+|  Pages with Ruler Hidden                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📄 Pages - Business Letter                             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [File] [Edit] [Insert] [Format] [Arrange] [View]      │|
+|  │                                                          │|
+|  │  (No ruler - more editing space)                        │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │                                                      ││|
+|  │  │  Dear Mr. Johnson,                                   ││|
+|  │  │                                                      ││|
+|  │  │  I am writing to follow up on our conversation      ││|
+|  │  │  from last week regarding the project timeline.     ││|
+|  │  │                                                      ││|
+|  │  │  As discussed, we are on track to deliver the       ││|
+|  │  │  initial prototype by the end of this month.        ││|
+|  │  │                                                      ││|
+|  │  │  More vertical space available for content          ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │  ⚠️ Formatting still applies, just not visually shown   │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Ruler Features:
+```
++-------------------------------------------------------------+
+|  Understanding the Ruler                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  RULER ANATOMY:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ◀▷│1   │   2│   3│   4│   5│   6│   7│   8│◀▷         │|
+|  │  ◣  ▼       △       ●       ●               ◥          │|
+|  │  │  │       │       │       │               │          │|
+|  │  │  │       │       │       │               │          │|
+|  │  │  │       │       │       │               └─ Right   │|
+|  │  │  │       │       │       │                  margin  │|
+|  │  │  │       │       │       └─ Tab stop (right align)  │|
+|  │  │  │       │       └─ Tab stop (center align)         │|
+|  │  │  │       └─ First line indent                       │|
+|  │  │  └─ Left paragraph indent                           │|
+|  │  └─ Left margin                                         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  TAB STOP TYPES:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ├  Left tab      - Text flows right from tab              |
+|  ┤  Right tab     - Text flows left to tab                 |
+|  ┼  Center tab    - Text centers on tab                    |
+|  ┤. Decimal tab   - Numbers align on decimal point         |
+|                                                              |
+|  MARGIN INDICATORS:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ◀▷ = Draggable margin markers                             |
+|  Gray area = Outside printable area                         |
+|  White area = Editable text area                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Using the Ruler:
+```
++-------------------------------------------------------------+
+|  Ruler Interactions                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  SETTING A TAB STOP:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Click on ruler at desired position                      |
+|  2. Tab stop appears                                         |
+|  3. Double-click to change type                             |
+|  4. Drag to reposition                                       |
+|  5. Drag off ruler to remove                                |
+|                                                              |
+|  ADJUSTING INDENTS:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ◣ = Left margin (drag left/right)                      │|
+|  │  ▼ = First line indent (drag independently)             │|
+|  │  ◥ = Right margin (drag left/right)                     │|
+|  │                                                          │|
+|  │  Tip: Hold Option while dragging to see measurements    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  KEYBOARD SHORTCUT:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────┐   ┌─────┐                                          |
+|  │  ⌘  │ + │  R  │   = Toggle ruler visibility             |
+|  └─────┘   └─────┘                                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show ruler for precise formatting.
+
+### Why Show the Ruler?
+
+1. **Precise alignment** — Set exact tab stops and indents
+2. **Visual margins** — See document boundaries
+3. **Professional layouts** — Create properly formatted documents
+4. **Quick adjustments** — Drag to change formatting
+5. **Industry standard** — Expected in word processors
+
+### Why Hide the Ruler?
+
+- **More screen space** — Maximize editing area
+- **Distraction-free writing** — Focus on content
+- **Simple documents** — No complex formatting needed
+- **Touch interface** — Using trackpad gestures instead
+- **Presentation mode** — Cleaner view when demoing
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Pages TSShowsRuler
+
+# Show ruler (default)
+defaults write com.apple.iWork.Pages TSShowsRuler -bool true
+
+# Hide ruler
+defaults write com.apple.iWork.Pages TSShowsRuler -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Pages TSShowsRuler
+```
+
+## UI Location
+
+**Pages** > **View** > **Show Ruler** (⌘R)
+
+```
++-------------------------------------------------------------+
+|  Pages View Menu                                             |
++-------------------------------------------------------------+
+|                                                              |
+|  View Menu                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Zoom                              ▶                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ✓ Show Ruler                      ⌘R   ← This option  │|
+|  │    Show Tab Bar                                         │|
+|  │    Show Word Count                                      │|
+|  │    Show Layout                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │    Show Invisibles                                      │|
+|  │    Show Comments                                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │    Page Thumbnails                                      │|
+|  │    Table of Contents                                    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Checkmark indicates ruler is currently visible             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show ruler (this setting)
+defaults write com.apple.iWork.Pages TSShowsRuler -bool true
+
+# Default zoom level
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 100
+
+# Show word count
+defaults write com.apple.iWork.Pages TSWPShowWordCount -bool true
+
+# Show invisibles (formatting marks)
+defaults write com.apple.iWork.Pages TSWPShowInvisibles -bool false
+
+# Show object center guides
+defaults write com.apple.iWork.Pages TSShowsObjectCenterGuides -bool true
+
+# Show object edge guides
+defaults write com.apple.iWork.Pages TSShowsObjectEdgeGuides -bool true
+
+# Show size/position when moving
+defaults write com.apple.iWork.Pages TSShowSizeAndPositionWhenMoving -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Ruler not appearing | View > Show Ruler or press ⌘R |
+| Tab stops not visible | Ensure ruler is shown and zoom is adequate |
+| Can't drag margin markers | Click precisely on the marker, not near it |
+| Ruler units wrong | Check system Region settings |
+| Setting not persisting | Quit Pages before changing via defaults |
+| Ruler appears in some docs | Per-document setting may override default |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Pages
+- **Note**: Same key name used in Numbers and Keynote
+- **Note**: Ruler units follow System Settings regional preferences
+- **Note**: Restart Pages for terminal changes to apply
+- **Note**: Keyboard shortcut ⌘R works regardless of default
+
+## Source File
+
+**File**: [`defaults/applications/pages.sh`](../../../../../defaults/applications/pages.sh)
+
+```bash
+# TSShowsRuler controls ruler visibility in Pages
+# Domain: com.apple.iWork.Pages
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+# Toggle with View > Show Ruler or ⌘R
+```
+
+## References
+
+- [Apple Support: Pages User Guide](https://support.apple.com/guide/pages/welcome/mac)
+- [Apple Support: Use rulers and guides in Pages](https://support.apple.com/guide/pages/use-rulers-and-alignment-guides-tanf71f97888/mac)
+- [Apple Support: Set tab stops in Pages](https://support.apple.com/guide/pages/set-tab-stops-tanae5f7f72/mac)

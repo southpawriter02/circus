@@ -1,0 +1,305 @@
+# WebKit2 Plugins Enabled
+
+Control browser plugin functionality in Safari's modern WebKit2 rendering engine.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether browser plugins (such as Flash, Silverlight, and other NPAPI/PPAPI plugins) are enabled in Safari's WebKit2 rendering engine. This is the modern counterpart to the legacy `WebKitPluginsEnabled` setting. Browser plugins have been deprecated across the industry due to significant security concerns, and Apple has removed plugin support from Safari. This setting should remain disabled for security best practices.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Plugins disabled** (default, recommended) — Plugin content will not run |
+| `true` | **Plugins enabled** — Browser plugins can run (legacy systems only) |
+
+## Visual Demonstration
+
+### Plugins Disabled (false - Default/Recommended):
+```
++-------------------------------------------------------------+
+|  Safari - Browser Plugins Disabled                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Website with Flash Content:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  [URL: https://old-game-site.example.com]            |  |
+|  +-------------------------------------------------------+  |
+|  |                                                       |  |
+|  |  +-----------------------------------------------+   |  |
+|  |  |                                               |   |  |
+|  |  |    🧩  Plugin Content Blocked                 |   |  |
+|  |  |                                               |   |  |
+|  |  |    This content requires a browser plugin    |   |  |
+|  |  |    that is no longer supported in Safari.    |   |  |
+|  |  |                                               |   |  |
+|  |  |    Plugins like Flash have been             |   |  |
+|  |  |    discontinued for security reasons.        |   |  |
+|  |  |                                               |   |  |
+|  |  +-----------------------------------------------+   |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  ✓ Protected from plugin-based attacks                      |
+|  ✓ No third-party code execution                            |
+|  ✓ Better battery life and performance                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Plugin Security History:
+```
++-------------------------------------------------------------+
+|  Why Browser Plugins Should Be Disabled                      |
++-------------------------------------------------------------+
+|                                                              |
+|  COMMON BROWSER PLUGINS (ALL DEPRECATED):                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Adobe Flash Player:                                         |
+|  • End of Life: December 31, 2020                           |
+|  • Hundreds of critical vulnerabilities                      |
+|  • Primary malware delivery mechanism                        |
+|                                                              |
+|  Microsoft Silverlight:                                      |
+|  • End of Life: October 12, 2021                            |
+|  • Multiple remote code execution vulnerabilities            |
+|                                                              |
+|  Java Plugin:                                                |
+|  • Discontinued by Oracle in 2017                           |
+|  • Frequent zero-day exploits                                |
+|                                                              |
+|  QuickTime Plugin:                                           |
+|  • Discontinued, security vulnerabilities                    |
+|                                                              |
+|  SECURITY RISKS OF PLUGINS:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [!] Run with elevated privileges                           |
+|  [!] Execute arbitrary code on your system                  |
+|  [!] Access local files and network                         |
+|  [!] Bypass browser security sandbox                         |
+|  [!] Difficult to keep updated                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Industry Timeline:
+```
++-------------------------------------------------------------+
+|  Browser Plugin Deprecation Timeline                         |
++-------------------------------------------------------------+
+|                                                              |
+|  2010: Steve Jobs' "Thoughts on Flash" letter               |
+|  2015: Chrome begins blocking Flash by default               |
+|  2016: Safari disables Flash by default                      |
+|  2017: Oracle discontinues Java browser plugin               |
+|  2017: Safari removes NPAPI plugin support                   |
+|  2020: Flash Player end-of-life (December 31)               |
+|  2021: Flash Player blocked from running                     |
+|  2021: Silverlight end-of-life                               |
+|                                                              |
+|  TODAY:                                                      |
+|  ─────────────────────────────────────────────────────────  |
+|  • No major browser supports NPAPI plugins                  |
+|  • HTML5 has replaced all plugin functionality               |
+|  • Web standards cover video, audio, games, apps            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## WebKit vs WebKit2
+
+```
++-------------------------------------------------------------+
+|  Understanding WebKit and WebKit2 Plugin Settings            |
++-------------------------------------------------------------+
+|                                                              |
+|  LEGACY WEBKIT (WebKitPluginsEnabled):                       |
+|  ─────────────────────────────────────────────────────────  |
+|  • Original single-process architecture                     |
+|  • Plugins run in same process as browser                   |
+|  • Higher security risk if plugin compromised                |
+|                                                              |
+|  MODERN WEBKIT2 (This Setting):                             |
+|  ─────────────────────────────────────────────────────────  |
+|  • Multi-process architecture                                |
+|  • Plugins run in separate sandboxed process                |
+|  • Better isolation but still security risk                 |
+|  • Used in Safari 5.1+ (2011 onwards)                       |
+|                                                              |
+|  FOR COMPLETE PLUGIN BLOCKING:                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Set BOTH settings to false:                                 |
+|  • WebKitPluginsEnabled -bool false                         |
+|  • ...WebKit2PluginsEnabled -bool false (this setting)      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Plugins disabled in WebKit2 for security.
+
+### Why Disable Plugins (false)?
+
+1. **Security** — Plugins are primary browser attack vector
+2. **Deprecated** — All major plugins discontinued
+3. **Performance** — Better battery life without plugins
+4. **Stability** — Plugins can crash browsers
+5. **Modern Web** — HTML5 replaces all plugin functionality
+
+### What Replaced Plugins
+
+| Old Plugin Technology | Modern Replacement |
+|----------------------|-------------------|
+| Flash video | HTML5 `<video>` element |
+| Flash games | HTML5 Canvas + WebGL |
+| Flash animations | CSS animations, SVG |
+| Silverlight streaming | HLS, DASH streaming |
+| Java applets | JavaScript, WebAssembly |
+| PDF plugins | Native browser PDF |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled"
+
+# Disable plugins in WebKit2 (recommended)
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled" -bool false
+
+# Also disable in legacy WebKit for completeness
+defaults write com.apple.Safari WebKitPluginsEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled"
+```
+
+Restart Safari for changes to take effect.
+
+## UI Location
+
+This setting is no longer accessible via UI in modern macOS versions. In older versions:
+
+**Safari** > **Settings** > **Security** > **Internet plug-ins** > **Allow Plug-ins** (removed)
+
+```
++-------------------------------------------------------------+
+|  Safari Settings - Security (Historical)                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Safari > Settings > Security (Pre-High Sierra)              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Security                                             |  |
+|  |  ──────────────────────────────────────────────────  |  |
+|  |                                                       |  |
+|  |  Fraudulent sites:                                    |  |
+|  |  [x] Warn when visiting a fraudulent website          |  |
+|  |                                                       |  |
+|  |  Web content:                                         |  |
+|  |  [x] Enable JavaScript                               |  |
+|  |                                                       |  |
+|  |  Internet plug-ins: (REMOVED in modern macOS)         |  |
+|  |  ─────────────────────────────────────────────────── |  |
+|  |  [ ] Allow Plug-ins  <-- This setting                |  |
+|  |      [Manage Website Settings...]                     |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  Note: This UI was removed in Safari 14 / macOS Big Sur     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# WebKit2 Plugins (this setting)
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled" -bool false
+
+# Legacy WebKit Plugins
+defaults write com.apple.Safari WebKitPluginsEnabled -bool false
+
+# WebKit2 Java
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled" -bool false
+
+# Legacy WebKit Java
+defaults write com.apple.Safari WebKitJavaEnabled -bool false
+
+# JavaScript (keep enabled - essential for modern web)
+defaults write com.apple.Safari WebKitJavaScriptEnabled -bool true
+```
+
+## Complete Security Configuration
+
+For maximum browser security:
+
+```bash
+# Disable all legacy plugin technologies
+defaults write com.apple.Safari WebKitPluginsEnabled -bool false
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled" -bool false
+defaults write com.apple.Safari WebKitJavaEnabled -bool false
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled" -bool false
+
+# Block pop-ups
+defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
+
+# Enable fraud warnings
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+
+# Disable AutoFill for security
+defaults write com.apple.Safari AutoFillCreditCardData -bool false
+defaults write com.apple.Safari AutoFillPasswords -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Legacy site requires Flash | Use Internet Archive's Ruffle emulator |
+| Can't view old Flash content | Consider Flashpoint archive project |
+| Plugin site not working | Expected - use modern alternatives |
+| Setting doesn't apply | Safari restart required |
+| No UI toggle visible | Normal on modern macOS - plugins removed |
+
+## Compatibility
+
+- **macOS**: 10.7-10.12 (full plugin support); 10.13+ (limited); 10.15+ (plugins removed)
+- **Safari**: 5.1+ (when WebKit2 was introduced)
+- **Note**: NPAPI plugin support removed in Safari 11 (2017)
+- **Note**: Flash support removed in Safari 14 (2020)
+- **Note**: Setting exists for compatibility but has no effect on modern systems
+
+## Source File
+
+**File**: [`defaults/profiles/lockdown.sh`](../../../../../../defaults/profiles/lockdown.sh)
+
+```bash
+# Disable Plug-ins in WebKit2 for security
+# Domain: com.apple.Safari
+# Plug-ins can be security risks
+run_defaults "com.apple.Safari" "com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: About plug-ins in Safari](https://support.apple.com/guide/safari/use-plug-ins-in-safari-sfri24936/mac)
+- [Adobe Flash Player EOL](https://www.adobe.com/products/flashplayer/end-of-life.html)
+- [Steve Jobs: Thoughts on Flash](https://web.archive.org/web/20170615060422/https://www.apple.com/hotnews/thoughts-on-flash/)
+- [WebKit Blog: Reducing Plugin Content](https://webkit.org/blog/6589/next-steps-for-legacy-plug-ins/)

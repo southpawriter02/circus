@@ -1,0 +1,321 @@
+# Mail Spell Checking Behavior
+
+Control when Mail checks spelling in your emails.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `SpellCheckingBehavior` |
+| **Type** | Integer |
+| **Default Value** | `1` (as you type) |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls when the Mail application checks spelling in email messages you compose. You can choose to have spelling checked automatically as you type, only when you click send, or never. This setting helps catch typos before sending emails, with options to balance between real-time feedback and less intrusive checking.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Never** — No automatic spell checking |
+| `1` | **While typing** (default) — Real-time spell checking |
+| `2` | **Before sending** — Check when you click Send |
+
+## Visual Demonstration
+
+### Spell Checking Options:
+```
++-------------------------------------------------------------+
+|  Spell Checking Behavior Comparison                          |
++-------------------------------------------------------------+
+|                                                              |
+|  WHILE TYPING (1 - Default):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  New Message                                             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  To: colleague@company.com                              │|
+|  │  Subject: Project Updte                                 │|
+|  │                     ~~~~~  <- Red underline appears     │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Hi Team,                                                │|
+|  │                                                          │|
+|  │  I wanted to share the laetst project stats. We've      │|
+|  │                          ~~~~~~                          │|
+|  │  made signficant progress this week.                    │|
+|  │       ~~~~~~~~~                                          │|
+|  │                                                          │|
+|  │  Misspellings underlined immediately as you type.        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  + Instant feedback                                          |
+|  + Fix typos as you go                                       |
+|  - Can be distracting while drafting                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Before Sending Mode:
+```
++-------------------------------------------------------------+
+|  Spell Check Before Sending (2)                              |
++-------------------------------------------------------------+
+|                                                              |
+|  COMPOSING (no spell check):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  New Message                                             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Hi Team,                                                │|
+|  │                                                          │|
+|  │  I wanted to share the laetst project stats. We've      │|
+|  │  made signficant progress this week.                    │|
+|  │                                                          │|
+|  │  No underlines while composing - distraction-free!       │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  CLICK SEND → Spell check runs:                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ┌─────────────────────────────────────────────────┐   │|
+|  │  │  Spell Check Found 2 Issues                      │   │|
+|  │  │  ─────────────────────────────────────────────  │   │|
+|  │  │                                                  │   │|
+|  │  │  "laetst" → latest                              │   │|
+|  │  │            [Change] [Ignore] [Learn]            │   │|
+|  │  │                                                  │   │|
+|  │  │  "signficant" → significant                     │   │|
+|  │  │                [Change] [Ignore] [Learn]        │   │|
+|  │  │                                                  │   │|
+|  │  │  [Continue Checking]  [Send Anyway]             │   │|
+|  │  │                                                  │   │|
+|  │  └─────────────────────────────────────────────────┘   │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  + Distraction-free composing                                |
+|  + Catches all errors before sending                         |
+|  - Requires extra step before send                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Never Mode:
+```
++-------------------------------------------------------------+
+|  Spell Check Never (0)                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  New Message                                             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Hi Team,                                                │|
+|  │                                                          │|
+|  │  I wanted to share the laetst project stats. We've      │|
+|  │  made signficant progress this week.                    │|
+|  │                                                          │|
+|  │  Teh report is atached.                                 │|
+|  │                                                          │|
+|  │  No spell checking at all. Errors not highlighted.       │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  + No distractions                                           |
+|  + Full control over content                                 |
+|  + Good for technical/code content                           |
+|  - Typos may go unnoticed                                    |
+|  - Must manually check if needed                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Use Case Comparison:
+```
++-------------------------------------------------------------+
+|  Choosing the Right Mode                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  WHILE TYPING (1) - BEST FOR:                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Regular email correspondence                            |
+|  [x] Users who want immediate feedback                       |
+|  [x] Quick emails where errors need quick fixing             |
+|  [x] Non-native speakers who benefit from guidance           |
+|  [x] Professional communication                              |
+|                                                              |
+|  BEFORE SENDING (2) - BEST FOR:                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Writers who find underlines distracting                 |
+|  [x] Long-form email composition                             |
+|  [x] Drafting complex messages                               |
+|  [x] Users who prefer to edit in batches                     |
+|  [x] Final review before sending                             |
+|                                                              |
+|  NEVER (0) - BEST FOR:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Technical emails with code/commands                     |
+|  [x] Emails in languages not supported by spell check        |
+|  [x] Users confident in their spelling                       |
+|  [x] Specialized terminology-heavy emails                    |
+|  [x] When spell check creates false positives                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1` — Check spelling while typing for immediate feedback.
+
+### Why Check While Typing (1)?
+
+1. **Immediate feedback** — Catch errors as they happen
+2. **Easy corrections** — Right-click to fix quickly
+3. **Professional emails** — Reduces embarrassing typos
+4. **Habit building** — Learn correct spellings
+5. **Default behavior** — Expected Mail experience
+
+### Why Check Before Sending (2)?
+
+- **Focus mode** — Compose without distraction
+- **Review process** — Final check catches everything
+- **Long emails** — Better for detailed messages
+- **Writing flow** — Underlines don't break concentration
+
+### Why Never (0)?
+
+- **Technical content** — Code, commands, specialized terms
+- **Foreign languages** — Non-supported languages
+- **Personal preference** — Confident spellers
+- **False positives** — Too many incorrect suggestions
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail SpellCheckingBehavior
+
+# Check spelling while typing (default, recommended)
+defaults write com.apple.mail SpellCheckingBehavior -int 1
+
+# Check spelling before sending
+defaults write com.apple.mail SpellCheckingBehavior -int 2
+
+# Never check spelling
+defaults write com.apple.mail SpellCheckingBehavior -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.mail SpellCheckingBehavior
+
+# Restart Mail to apply changes
+killall Mail
+```
+
+## UI Location
+
+**Mail** > **Settings** > **Composing** > **Check spelling**
+
+```
++-------------------------------------------------------------+
+|  Mail Settings - Composing                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Mail > Settings (Command+,) > Composing                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Accounts] [Junk Mail] [Fonts & Colors]     │|
+|  │  [Viewing] [Composing] [Signatures] [Rules]            │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Message Format: [Rich Text             v]              │|
+|  │                                                          │|
+|  │  Check spelling: [While typing          v] <- Setting   │|
+|  │                  ┌──────────────────────┐               │|
+|  │                  │ While typing         │               │|
+|  │                  │ Before sending       │               │|
+|  │                  │ Never                │               │|
+|  │                  └──────────────────────┘               │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Responding                                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [x] Use the same message format as original message    │|
+|  │  [x] Quote the text of the original message             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Spell checking behavior (this setting)
+defaults write com.apple.mail SpellCheckingBehavior -int 1
+
+# System-wide autocorrection
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool true
+
+# System-wide spell checking
+defaults write NSGlobalDomain WebAutomaticSpellingCorrectionEnabled -bool true
+
+# Smart quotes (may interfere with code in emails)
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# Smart dashes
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Mail send format (plain text vs rich text)
+defaults write com.apple.mail SendFormat -string "Plain"
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Spell check not working | Verify setting in Mail > Settings > Composing |
+| Wrong language detected | Edit > Spelling and Grammar > Show Spelling and Grammar |
+| Too many false positives | Add words to dictionary or disable spell check |
+| Spell check too slow | May indicate system issue; restart Mail |
+| Setting not applying | Restart Mail after changing via defaults |
+| Want both modes | Not possible; choose one or use Edit menu manually |
+
+## Compatibility
+
+- **macOS**: 10.0+ (all versions with Mail)
+- **Note**: Restart Mail for terminal changes to apply
+- **Note**: Works with system spelling dictionary
+- **Note**: Can add custom words via right-click > Learn Spelling
+- **Note**: Language detection is automatic based on content
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../../defaults/applications/mail.sh)
+
+```bash
+# SpellCheckingBehavior controls when Mail checks spelling
+# Domain: com.apple.mail
+# 0 = never, 1 = while typing (default), 2 = before sending
+run_defaults "com.apple.mail" "SpellCheckingBehavior" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Check spelling and grammar in Mail on Mac](https://support.apple.com/guide/mail/check-spelling-and-grammar-mlhl41eb7f/mac)
+- [Apple Support: Change Composing settings in Mail on Mac](https://support.apple.com/guide/mail/composing-cpmlpref1a/mac)
+- [Apple Support: Set up spelling and grammar checking on Mac](https://support.apple.com/guide/mac-help/check-spelling-and-grammar-mchl3e64ca2c/mac)

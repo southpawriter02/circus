@@ -1,0 +1,278 @@
+# Numbers 1904 Date System
+
+Control whether Numbers uses the 1904 date system for date calculations instead of the standard 1900 system.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Numbers` |
+| **Key** | `Use1904DateSystem` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls which date system Numbers uses for internal date calculations. The 1900 date system (default) starts counting from January 1, 1900, and is compatible with Microsoft Excel on Windows. The 1904 date system starts from January 1, 1904, and was historically used by Excel on Mac. Using the wrong date system when exchanging files can cause dates to display incorrectly by 4 years and 1 day.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **1900 date system** (default) — Excel/Windows compatible |
+| `true` | **1904 date system** — Legacy Mac Excel compatible |
+
+## Visual Demonstration
+
+### Date System Comparison:
+```
++-------------------------------------------------------------+
+|  1900 vs 1904 Date Systems                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  1900 DATE SYSTEM (false - Default):                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Serial Number 1 = January 1, 1900                           |
+|                                                              |
+|  Date             Serial Number                              |
+|  ─────────────────────────────────                          |
+|  Jan 1, 1900      1                                          |
+|  Jan 1, 2000      36526                                      |
+|  Jan 1, 2025      45658                                      |
+|                                                              |
+|  • Standard for Windows Excel                                |
+|  • Default for modern spreadsheets                           |
+|  • Most compatible option                                    |
+|                                                              |
+|  1904 DATE SYSTEM (true):                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Serial Number 0 = January 1, 1904                           |
+|                                                              |
+|  Date             Serial Number                              |
+|  ─────────────────────────────────                          |
+|  Jan 1, 1904      0                                          |
+|  Jan 1, 2000      35064                                      |
+|  Jan 1, 2025      44196                                      |
+|                                                              |
+|  • Legacy Mac Excel compatibility                            |
+|  • Handles dates before 1900 better                         |
+|  • Avoids 1900 leap year bug                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### The 1900 Leap Year Bug:
+```
++-------------------------------------------------------------+
+|  Why Two Date Systems Exist                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  THE PROBLEM:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  The 1900 date system has a historical bug:                  |
+|                                                              |
+|  It incorrectly treats 1900 as a leap year.                  |
+|                                                              |
+|     1900 was NOT a leap year                                 |
+|     (Century years must be divisible by 400)                 |
+|     1900 / 400 = 4.75 (not a whole number)                   |
+|                                                              |
+|  Excel inherited this bug from Lotus 1-2-3 for compatibility |
+|  and keeps it for backward compatibility with old files.     |
+|                                                              |
+|  THE SOLUTION (1904 system):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Classic Mac Excel used 1904 as the start date to:          |
+|  • Avoid the 1900 leap year problem                          |
+|  • Handle dates before 1900 (as negative numbers)            |
+|                                                              |
+|  PRACTICAL IMPACT:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  For modern usage (dates after March 1, 1900), the bug      |
+|  has no practical effect. Use 1900 system for compatibility. |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Compatibility Issues:
+```
++-------------------------------------------------------------+
+|  Date System Mismatch Problems                               |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO: Sharing files between different date systems      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Original file (1900 system):                                |
+|  ┌────────┬─────────────┐                                    |
+|  │ Event  │ Date        │                                    |
+|  ├────────┼─────────────┤                                    |
+|  │ Launch │ Jan 15, 2025│                                    |
+|  │ Review │ Mar 20, 2025│                                    |
+|  └────────┴─────────────┘                                    |
+|                                                              |
+|  Opened in 1904 system (WRONG):                              |
+|  ┌────────┬─────────────┐                                    |
+|  │ Event  │ Date        │                                    |
+|  ├────────┼─────────────┤                                    |
+|  │ Launch │ Jan 14, 2021│  ← 4 years, 1 day off!            |
+|  │ Review │ Mar 19, 2021│  ← Dates shifted backward          |
+|  └────────┴─────────────┘                                    |
+|                                                              |
+|  DIFFERENCE: 1462 days (4 years + 1 day for leap year bug)   |
+|                                                              |
+|  SOLUTION: Always use 1900 system unless working with        |
+|  legacy Mac files that specifically require 1904 system.     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### When Each System is Used:
+```
++-------------------------------------------------------------+
+|  Date System Usage Guide                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  USE 1900 SYSTEM (false) WHEN:                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Sharing files with Windows Excel users                  |
+|  [x] Creating new spreadsheets                               |
+|  [x] Working with Google Sheets                              |
+|  [x] Most business/professional contexts                     |
+|  [x] Files will be exported to other formats                 |
+|  [x] Working with modern data (post-1900)                    |
+|                                                              |
+|  USE 1904 SYSTEM (true) WHEN:                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Opening legacy Mac Excel files (pre-2008)               |
+|  [x] Working with files from older Mac systems               |
+|  [x] Historical data requiring dates before 1900             |
+|  [x] Specific compatibility with 1904-based systems          |
+|                                                              |
+|  NOTE: Numbers can open files and preserve their date        |
+|  system. This setting affects NEW documents.                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Use standard 1900 date system for Excel compatibility.
+
+### Why Use 1900 System (false)?
+
+1. **Excel compatibility** — Standard for Windows Excel
+2. **Google Sheets** — Uses 1900 system
+3. **Modern standard** — Expected by most users
+4. **File exchange** — Dates display correctly when shared
+5. **Business use** — Industry standard
+
+### Why Use 1904 System (true)?
+
+- **Legacy files** — Old Mac Excel compatibility
+- **Pre-1900 dates** — Better handling of historical dates
+- **Avoid leap year bug** — Technically more correct
+- **Specific requirements** — Some old systems require it
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Numbers Use1904DateSystem
+
+# Use 1900 date system (default, recommended)
+defaults write com.apple.iWork.Numbers Use1904DateSystem -bool false
+
+# Use 1904 date system (legacy compatibility)
+defaults write com.apple.iWork.Numbers Use1904DateSystem -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Numbers Use1904DateSystem
+```
+
+## UI Location
+
+This setting is typically configured per-document in Excel imports, not globally in Numbers settings.
+
+```
++-------------------------------------------------------------+
+|  Date System in Numbers                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Numbers handles date systems automatically:                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • New Numbers documents use 1900 system by default          |
+|  • Imported Excel files preserve their original system       |
+|  • The defaults setting affects new document behavior        |
+|                                                              |
+|  To check a document's date system:                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Create a cell with formula: =DATE(1904,1,1)              |
+|  2. Format as number (not date)                              |
+|  3. If result is 0: Using 1904 system                        |
+|  4. If result is 1462: Using 1900 system                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Date system (this setting)
+defaults write com.apple.iWork.Numbers Use1904DateSystem -bool false
+
+# Tab key behavior
+defaults write com.apple.iWork.Numbers TSInsertTabInsteadOfMoving -bool false
+
+# Show formula warnings
+defaults write com.apple.iWork.Numbers TSShowFormulaWarnings -bool true
+
+# Default zoom level
+defaults write com.apple.iWork.Numbers TSDefaultZoom -int 100
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Dates off by 4 years | Document uses different date system than expected |
+| Excel import dates wrong | Check if Excel file uses 1904 system |
+| Formula results unexpected | DATE() function returns different values per system |
+| Can't match Excel dates | Ensure both use same date system |
+| Setting not affecting open docs | Setting applies to new documents only |
+| Setting not persisting | Restart Numbers after changing via defaults |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Numbers
+- **Note**: This is a global default for NEW documents
+- **Note**: Existing documents preserve their date system
+- **Note**: Excel files imported will use their original system
+- **Note**: Restart Numbers for terminal changes to apply
+
+## Source File
+
+**File**: [`defaults/applications/numbers.sh`](../../../../../defaults/applications/numbers.sh)
+
+```bash
+# Use1904DateSystem controls date calculation base
+# Domain: com.apple.iWork.Numbers
+# false = 1900 system (Excel compatible), true = 1904 system (legacy Mac)
+run_defaults "com.apple.iWork.Numbers" "Use1904DateSystem" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Numbers User Guide](https://support.apple.com/guide/numbers/welcome/mac)
+- [Apple Support: About the 1900 and 1904 date systems](https://support.apple.com/en-us/102516)
+- [Microsoft Support: Date systems in Excel](https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487)

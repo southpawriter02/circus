@@ -1,0 +1,263 @@
+# Safari Developer Extras Enabled
+
+Enable the Develop menu and Web Inspector in Safari for web development.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `WebKitDeveloperExtrasEnabledPreferenceKey` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Enables Safari's powerful web developer tools including the Web Inspector, JavaScript debugger, network monitor, and responsive design mode. This setting works alongside `IncludeDevelopMenu` and `WebKit2DeveloperExtrasEnabled` to provide full developer functionality. The Develop menu gives access to tools essential for web development, debugging, and testing websites.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Developer tools enabled** — Web Inspector and Develop menu available |
+| `false` | **Developer tools disabled** (default) — Consumer-focused experience |
+
+## Visual Demonstration
+
+### Develop Menu Enabled:
+```
++-------------------------------------------------------------+
+|  Safari with Develop Menu                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  MENU BAR:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Safari  File  Edit  View  History  Bookmarks  Develop  ... |
+|                                                 ↑            |
+|                                                 This menu    |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Develop                                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Open Page With...                          ▶           │|
+|  │  User Agent                                 ▶           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Show Web Inspector                    ⌥⌘I             │|
+|  │  Show JavaScript Console               ⌥⌘C             │|
+|  │  Show Page Source                      ⌥⌘U             │|
+|  │  Show Page Resources                   ⌥⌘A             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Enter Responsive Design Mode          ⌃⌘R             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Empty Caches                          ⌥⌘E             │|
+|  │  Disable Images                                         │|
+|  │  Disable Styles                                         │|
+|  │  Disable JavaScript                                     │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Allow JavaScript from Smart Search Field               │|
+|  │  Allow Remote Automation                                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Web Inspector Panel:
+```
++-------------------------------------------------------------+
+|  Safari Web Inspector                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Safari - https://example.com                            │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [Website Content]                                       │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │  Elements │ Console │ Sources │ Network │ Timelines │...│|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  <html>                                                  │|
+|  │    <head>                                                │|
+|  │      <title>Example</title>                              │|
+|  │    </head>                                               │|
+|  │    <body>                                                │|
+|  │      <div class="container">                             │|
+|  │        <h1>Welcome</h1>          │ Styles:              │|
+|  │        ← Selected element        │ .container {         │|
+|  │      </div>                      │   margin: 0 auto;    │|
+|  │    </body>                       │   max-width: 1200px; │|
+|  │  </html>                         │ }                    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Responsive Design Mode:
+```
++-------------------------------------------------------------+
+|  Responsive Design Mode (⌃⌘R)                                |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [iPhone 15 Pro ▼] [375 × 812] [1x ▼] [Rotate]         │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │      ┌─────────────────────────┐                        │|
+|  │      │   ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓   │                        │|
+|  │      │   Simulated mobile     │                        │|
+|  │      │   viewport             │                        │|
+|  │      │                        │                        │|
+|  │      │   [Website renders     │                        │|
+|  │      │    as it would on      │                        │|
+|  │      │    selected device]    │                        │|
+|  │      │                        │                        │|
+|  │      │                        │                        │|
+|  │      └─────────────────────────┘                        │|
+|  │                                                          │|
+|  │  Device presets: iPhone, iPad, custom sizes             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Security Implications
+
+- **Development only**: Keep disabled on production/shared machines
+- **Script execution**: Allows running arbitrary JavaScript via console
+- **Network inspection**: Can view sensitive data in network requests
+- **Local file access**: Some features may access local resources
+
+## Our Configuration
+
+**Set to**: `true` — Enable developer tools for web development.
+
+### Why Enable?
+
+1. **Web Inspector** — Inspect and modify DOM, CSS, JavaScript
+2. **Debugging** — Step through JavaScript with breakpoints
+3. **Network analysis** — Monitor requests, responses, timings
+4. **Performance** — Profile page load and runtime performance
+5. **Responsive testing** — Test layouts at different screen sizes
+
+### Why Keep Disabled?
+
+- Non-developer using Safari for browsing
+- Shared or public computer
+- Reduce attack surface on sensitive machines
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey
+
+# Enable developer extras
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+
+# Also set companion keys for full functionality
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled" -bool true
+
+# Disable developer extras
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey
+```
+
+## UI Location
+
+**Safari** > **Settings** > **Advanced**
+
+```
++-------------------------------------------------------------+
+|  Safari Settings - Advanced                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Safari > Settings (⌘,) > Advanced                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Tabs] [AutoFill] [Passwords] [Search]       │|
+|  │  [Security] [Privacy] [Websites] [Extensions] [Advanced]│|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Smart Search Field                                      │|
+|  │  [✓] Show full website address                          │|
+|  │                                                          │|
+|  │  Accessibility                                           │|
+|  │  [✓] Press Tab to highlight each item on a webpage      │|
+|  │                                                          │|
+|  │  Default encoding: [Unicode (UTF-8) ▼]                  │|
+|  │                                                          │|
+|  │  [✓] Show features for web developers ← This setting    │|
+|  │                                                          │|
+|  │      When enabled, the Develop menu appears in the      │|
+|  │      menu bar and additional features are available.    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Developer extras (this setting)
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+
+# Show Develop menu in menu bar
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+
+# WebKit2 developer extras
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled" -bool true
+
+# Show full URL in address bar
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+
+# Enable remote automation (WebDriver)
+defaults write com.apple.Safari AllowRemoteAutomation -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Develop menu not showing | Set all three developer keys; restart Safari |
+| Web Inspector blank | Ensure website allows inspection |
+| Responsive mode missing | Check Develop > Enter Responsive Design Mode |
+| Can't inspect element | Right-click and check "Inspect Element" option |
+| Changes not persisting | Quit Safari before running defaults commands |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite) for basic tools
+- **Note**: Requires Safari to have been run at least once
+- **Note**: Full functionality requires all three developer keys
+- **Note**: Some features added in newer Safari/WebKit versions
+- **Note**: Remote debugging requires additional setup
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../../defaults/applications/safari.sh)
+
+```bash
+# --- Enable the Develop Menu and Web Inspector ---
+# Key:          IncludeDevelopMenu
+#               WebKitDeveloperExtrasEnabledPreferenceKey
+#               com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled
+# Domain:       com.apple.Safari
+run_defaults "com.apple.Safari" "WebKitDeveloperExtrasEnabledPreferenceKey" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use the developer tools in Safari](https://support.apple.com/guide/safari/use-the-developer-tools-in-the-develop-menu-sfri20948/mac)
+- [WebKit: Web Inspector Reference](https://webkit.org/web-inspector/)
+- [Apple Developer: Safari Developer Documentation](https://developer.apple.com/safari/tools/)

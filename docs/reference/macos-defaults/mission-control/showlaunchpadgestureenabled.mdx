@@ -1,0 +1,295 @@
+# Mission Control Launchpad Gesture
+
+Control whether the trackpad pinch gesture opens Launchpad.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `showLaunchpadGestureEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the four-finger (or thumb and three fingers) pinch gesture on the trackpad opens Launchpad. Launchpad displays all your applications in an iOS-style grid, making it easy to find and launch apps. This gesture is enabled by default and provides a quick way to access your applications without using the Dock or Finder.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enable gesture** (default) — Pinch opens Launchpad |
+| `false` | **Disable gesture** — Pinch does nothing |
+
+## Visual Demonstration
+
+### Launchpad Gesture:
+```
++-------------------------------------------------------------+
+|  Launchpad Trackpad Gesture                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  THE GESTURE:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|     Pinch with thumb and three fingers                       |
+|                                                              |
+|              Before                    After                 |
+|                                                              |
+|           (finger)                   (finger)                |
+|              │                          ╲                    |
+|              │                           ╲                   |
+|   (finger)───┼───(finger)    (finger)────●────(finger)      |
+|              │                           ╱                   |
+|              │                          ╱                    |
+|           (thumb)                    (thumb)                 |
+|                                                              |
+|       Spread apart          →      Pinch together            |
+|                                                              |
+|  Result: Launchpad opens with all applications               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Launchpad View:
+```
++-------------------------------------------------------------+
+|  What Launchpad Looks Like                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                    🔍 Search...                          │|
+|  │                                                          │|
+|  │  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐      │|
+|  │  │Safari│  │ Mail │  │Photos│  │Music │  │ Maps │      │|
+|  │  └──────┘  └──────┘  └──────┘  └──────┘  └──────┘      │|
+|  │                                                          │|
+|  │  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐      │|
+|  │  │ Notes│  │Remind│  │ News │  │Stocks│  │ TV   │      │|
+|  │  └──────┘  └──────┘  └──────┘  └──────┘  └──────┘      │|
+|  │                                                          │|
+|  │  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐      │|
+|  │  │Voice │  │ Home │  │ Find │  │ App  │  │System│      │|
+|  │  │Memos │  │      │  │ My   │  │Store │  │ Set. │      │|
+|  │  └──────┘  └──────┘  └──────┘  └──────┘  └──────┘      │|
+|  │                                                          │|
+|  │                        ● ○ ○                             │|
+|  │                     (page dots)                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Swipe left/right for more pages. Click app to launch.       |
+|  Spread fingers (reverse gesture) to close Launchpad.        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Gesture Enabled vs Disabled:
+```
++-------------------------------------------------------------+
+|  Gesture Behavior Comparison                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  ENABLED (true - Default):                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────────┐          ┌──────────────────────────────┐ |
+|  │   Desktop    │  Pinch   │        Launchpad            │ |
+|  │              │   ───>   │  ┌───┐ ┌───┐ ┌───┐ ┌───┐   │ |
+|  │  [Windows]   │          │  │App│ │App│ │App│ │App│   │ |
+|  │              │          │  └───┘ └───┘ └───┘ └───┘   │ |
+|  └──────────────┘          └──────────────────────────────┘ |
+|                                                              |
+|  Quick access to all apps via trackpad gesture.              |
+|                                                              |
+|  DISABLED (false):                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────────┐          ┌──────────────────────────────┐ |
+|  │   Desktop    │  Pinch   │        Desktop              │ |
+|  │              │   ───>   │                              │ |
+|  │  [Windows]   │  (nothing│        [Windows]             │ |
+|  │              │  happens)│                              │ |
+|  └──────────────┘          └──────────────────────────────┘ |
+|                                                              |
+|  Alternative ways to open Launchpad:                         |
+|  • Click Launchpad icon in Dock                             |
+|  • Press F4 key (on supported keyboards)                    |
+|  • Use Spotlight (Cmd+Space) then type app name             |
+|  • Set up a Hot Corner for Launchpad                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### When to Enable vs Disable:
+```
++-------------------------------------------------------------+
+|  Choosing Your Preference                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  ENABLE GESTURE (true) - BEST FOR:                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Users who prefer iOS-like app access                    |
+|  [x] Visual browsing of installed applications               |
+|  [x] Users with many apps who use search                     |
+|  [x] New Mac users familiar with iPhone/iPad                 |
+|  [x] Quick launching without memorizing shortcuts            |
+|                                                              |
+|  DISABLE GESTURE (false) - BEST FOR:                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Users who accidentally trigger the gesture              |
+|  [x] Preferring Spotlight (Cmd+Space) for app launching     |
+|  [x] Users who prefer keyboard-driven workflows              |
+|  [x] When pinch conflicts with other apps (design software)  |
+|  [x] Users who never use Launchpad                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable Launchpad gesture for quick app access.
+
+### Why Enable Launchpad Gesture?
+
+1. **Quick access** — Fast way to see all apps
+2. **Visual browsing** — See app icons at a glance
+3. **iOS familiarity** — Consistent with iPhone/iPad
+4. **Search integration** — Type to search apps
+5. **Default behavior** — Expected by most users
+
+### Why Disable Launchpad Gesture?
+
+- **Accidental triggers** — Gesture triggered unintentionally
+- **App conflicts** — Design apps may use similar gestures
+- **Prefer Spotlight** — Use Cmd+Space for app launching
+- **Keyboard workflow** — Don't use trackpad gestures
+- **Muscle memory** — Gesture conflicts with habits
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dock showLaunchpadGestureEnabled
+
+# Enable Launchpad gesture (default)
+defaults write com.apple.dock showLaunchpadGestureEnabled -bool true
+
+# Disable Launchpad gesture
+defaults write com.apple.dock showLaunchpadGestureEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dock showLaunchpadGestureEnabled
+
+# IMPORTANT: Restart Dock to apply changes
+killall Dock
+```
+
+## UI Location
+
+**System Settings** > **Trackpad** > **More Gestures** > **Launchpad**
+
+```
++-------------------------------------------------------------+
+|  Trackpad Settings - More Gestures                           |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Trackpad > More Gestures                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [Point & Click] [Scroll & Zoom] [More Gestures]       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [x] Swipe between pages                                │|
+|  │      Scroll left or right with two fingers              │|
+|  │                                                          │|
+|  │  [x] Swipe between full-screen applications             │|
+|  │      Swipe left or right with four fingers              │|
+|  │                                                          │|
+|  │  [x] Notification Center                                 │|
+|  │      Swipe left from the right edge with two fingers    │|
+|  │                                                          │|
+|  │  [x] Mission Control                                    │|
+|  │      Swipe up with four fingers                         │|
+|  │                                                          │|
+|  │  [x] App Exposé                                         │|
+|  │      Swipe down with four fingers                       │|
+|  │                                                          │|
+|  │  [x] Launchpad                    <-- This setting      │|
+|  │      Pinch with thumb and three fingers                 │|
+|  │                                                          │|
+|  │  [x] Show Desktop                                       │|
+|  │      Spread with thumb and three fingers                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Launchpad gesture (this setting)
+defaults write com.apple.dock showLaunchpadGestureEnabled -bool true
+
+# Mission Control gesture
+defaults write com.apple.dock showMissionControlGestureEnabled -bool true
+
+# Show Desktop gesture
+defaults write com.apple.dock showDesktopGestureEnabled -bool true
+
+# App Exposé gesture
+defaults write com.apple.dock showAppExposeGestureEnabled -bool true
+
+# Launchpad animation speed
+defaults write com.apple.dock springboard-show-duration -float 0.1
+defaults write com.apple.dock springboard-hide-duration -float 0.1
+
+# Reset Launchpad layout
+defaults write com.apple.dock ResetLaunchPad -bool true
+
+# Apply changes
+killall Dock
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Gesture not working | Check System Settings > Trackpad > More Gestures |
+| Setting not applying | Run `killall Dock` after changing |
+| Gesture triggers accidentally | Disable via settings or this default |
+| Launchpad slow to open | Reduce animation: springboard-show-duration |
+| Apps missing from Launchpad | Drag apps to /Applications folder |
+| Launchpad layout messy | Reset with ResetLaunchPad setting |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion and later)
+- **Hardware**: Requires trackpad (built-in or Magic Trackpad)
+- **Note**: Requires `killall Dock` to apply changes
+- **Note**: Gesture requires multi-touch trackpad support
+- **Note**: Also works with Magic Trackpad 1 and 2
+
+## Source File
+
+**File**: [`defaults/interface/mission_control.sh`](../../../../../defaults/interface/mission_control.sh)
+
+```bash
+# showLaunchpadGestureEnabled controls trackpad pinch-to-Launchpad
+# Domain: com.apple.dock
+# true = pinch gesture opens Launchpad, false = gesture disabled
+run_defaults "com.apple.dock" "showLaunchpadGestureEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Multi-Touch gestures on your Mac](https://support.apple.com/en-us/HT204895)
+- [Apple Support: Open Launchpad on Mac](https://support.apple.com/guide/mac-help/open-apps-with-launchpad-mh35840/mac)
+- [Apple Support: Change Trackpad settings on Mac](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac)

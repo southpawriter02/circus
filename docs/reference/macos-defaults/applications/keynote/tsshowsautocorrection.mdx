@@ -1,0 +1,247 @@
+# Keynote Show Auto-Correction
+
+Display visual indicators when text is auto-corrected in Apple Keynote.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Keynote` |
+| **Key** | `TSShowsAutoCorrection` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Keynote displays visual feedback when auto-correction modifies your text on slides. When enabled, a brief blue underline appears beneath auto-corrected words, alerting you to changes made automatically. This is particularly important in presentations where incorrect auto-corrections could be embarrassing during delivery. The indicator disappears after a few seconds or when you continue typing.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show auto-correction indicators** (default) — Blue underline on corrected text |
+| `false` | **Hide auto-correction indicators** — Corrections happen silently |
+
+## Visual Demonstration
+
+### Auto-Correction on Slides:
+```
++-------------------------------------------------------------+
+|  Keynote with Auto-Correction Indicators                     |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🎬 Keynote - Sales Presentation                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌────────────────────────────────────────────────────┐ │|
+|  │  │                                                     │ │|
+|  │  │     Revenue Growth Straetgy                         │ │|
+|  │  │                        ~~~~~~~~                     │ │|
+|  │  │                        Strategy                     │ │|
+|  │  │                        ↑                            │ │|
+|  │  │               Auto-corrected!                       │ │|
+|  │  │                                                     │ │|
+|  │  │     • Expand market presense                        │ │|
+|  │  │                       ~~~~~~~~                      │ │|
+|  │  │                       presence                      │ │|
+|  │  │                                                     │ │|
+|  │  │     • Increase custoemr retention                   │ │|
+|  │  │                ~~~~~~~~                             │ │|
+|  │  │                customer                             │ │|
+|  │  │                                                     │ │|
+|  │  └────────────────────────────────────────────────────┘ │|
+|  │                                                          │|
+|  │  Catch corrections before presenting!                   │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Presentation Importance:
+```
++-------------------------------------------------------------+
+|  Why This Matters for Presentations                          |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO: Without indicators                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  You type: "Our company's Macintosh sales..."               |
+|  Auto-corrects to: "Our company's Macrobiotic sales..."     |
+|                                                              |
+|  ❌ You don't notice                                         |
+|  ❌ Presented to audience with error                         |
+|  ❌ Embarrassing during live presentation                    |
+|                                                              |
+|  SCENARIO: With indicators                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  You type: "Our company's Macintosh sales..."               |
+|  Auto-corrects to: "Our company's Macrobiotic sales..."     |
+|                         ~~~~~~~~~~~                          |
+|                         (blue underline appears)             |
+|                                                              |
+|  ✓ You notice the correction                                |
+|  ✓ Click to revert or confirm                               |
+|  ✓ Fixed before presenting                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Common Presentation Auto-Corrections:
+```
++-------------------------------------------------------------+
+|  Typical Auto-Corrections in Presentations                   |
++-------------------------------------------------------------+
+|                                                              |
+|  WANTED CORRECTIONS:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|  • teh → the                                                 |
+|  • adn → and                                                 |
+|  • recieve → receive                                         |
+|                                                              |
+|  UNWANTED CORRECTIONS (names/terms):                         |
+|  ─────────────────────────────────────────────────────────  |
+|  • Kubernetes → Kuberspace (wrong!)                          |
+|  • DevOps → Devops (capitalization)                          |
+|  • iPhone → IPhone (wrong!)                                  |
+|  • CEO's name → different word                               |
+|                                                              |
+|  TECHNICAL TERMS:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|  • API → Api (wrong case)                                    |
+|  • SaaS → Sass (wrong!)                                      |
+|  • OAuth → Oath (wrong!)                                     |
+|                                                              |
+|  ⚠️ Always verify corrections on technical content!         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show indicators to catch errors before presenting.
+
+### Why Show Indicators?
+
+1. **Catch errors** — Prevent embarrassing mistakes
+2. **Brand names** — Protect proper spelling
+3. **Technical terms** — Verify specialized vocabulary
+4. **Names** — Ensure people's names are correct
+5. **Review before presenting** — Quality check opportunity
+
+### Why Hide Indicators?
+
+- **Distraction-free** — Focus on content creation
+- **Trust auto-correct** — Confident in corrections
+- **Clean editing** — Less visual noise
+- **Quick drafts** — Will review later anyway
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Keynote TSShowsAutoCorrection
+
+# Show auto-correction indicators (default)
+defaults write com.apple.iWork.Keynote TSShowsAutoCorrection -bool true
+
+# Hide auto-correction indicators
+defaults write com.apple.iWork.Keynote TSShowsAutoCorrection -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Keynote TSShowsAutoCorrection
+```
+
+## UI Location
+
+**Keynote** > **Settings** > **Auto-Correction**
+
+```
++-------------------------------------------------------------+
+|  Keynote Settings - Auto-Correction                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Keynote > Settings (⌘,) > Auto-Correction                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Slideshow] [Rulers] [Auto-Correction]       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Spelling                                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [✓] Correct spelling automatically                    │|
+|  │  [✓] Show auto-correction   ← This setting             │|
+|  │                                                          │|
+|  │  Formatting                                             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [✓] Use smart quotes and dashes                       │|
+|  │  [✓] Fix capitalization                                │|
+|  │                                                          │|
+|  │  Superscript and Subscript                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [✓] Automatically format fractions                    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show auto-correction indicators (this setting)
+defaults write com.apple.iWork.Keynote TSShowsAutoCorrection -bool true
+
+# Default zoom level
+defaults write com.apple.iWork.Keynote TSDefaultZoom -int 100
+
+# Show presenter notes
+defaults write com.apple.iWork.Keynote ShowPresenterNotes -bool true
+
+# Show comments pane
+defaults write com.apple.iWork.Keynote TSShowsComments -bool true
+
+# Show ruler
+defaults write com.apple.iWork.Keynote TSShowsRuler -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Indicators not appearing | Check if auto-correction is enabled in settings |
+| Correction reverted wrong | Click underlined word for options |
+| Keeps correcting brand names | Add to user dictionary in System Settings |
+| Setting not persisting | Quit Keynote before changing via defaults |
+| Indicators disappear too fast | Cannot adjust duration |
+| Conflicts with custom terms | Add exceptions in System Settings > Keyboard |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Keynote
+- **Note**: Same key exists in Pages and Numbers
+- **Note**: Relies on system auto-correction settings
+- **Note**: Restart Keynote for terminal changes to apply
+- **Note**: Works with all slide layouts
+
+## Source File
+
+**File**: [`defaults/applications/keynote.sh`](../../../../../defaults/applications/keynote.sh)
+
+```bash
+# TSShowsAutoCorrection controls auto-correction indicator visibility
+# Domain: com.apple.iWork.Keynote
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+# Critical for catching errors before presenting
+```
+
+## References
+
+- [Apple Support: Keynote User Guide](https://support.apple.com/guide/keynote/welcome/mac)
+- [Apple Support: Change auto-correction settings in Keynote](https://support.apple.com/guide/keynote/set-up-auto-correction-tand6d1bdf8/mac)
+- [Apple Support: Use text replacement on Mac](https://support.apple.com/guide/mac-help/replace-text-punctuation-documents-mac-mh35735/mac)

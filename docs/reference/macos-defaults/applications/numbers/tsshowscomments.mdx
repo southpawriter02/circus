@@ -1,0 +1,291 @@
+# Numbers Show Comments
+
+Control whether the comments pane is displayed in Apple Numbers spreadsheets.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Numbers` |
+| **Key** | `TSShowsComments` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Comments & Changes pane is displayed by default when opening spreadsheets in Apple Numbers. Comments allow collaborators to add notes, questions, and feedback to specific cells or ranges without modifying the actual data. When enabled, the comments pane shows all comments and tracked changes in a sidebar, making it easy to review and respond to feedback.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show comments pane** — Comments sidebar visible |
+| `false` | **Hide comments pane** (default) — Cleaner view, access via View menu |
+
+## Visual Demonstration
+
+### Comments Pane Shown (true):
+```
++-------------------------------------------------------------+
+|  Numbers with Comments Pane Visible                          |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📊 Budget Report                                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [Format] [Data] [Arrange]                              │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────┬────────────────────┐│|
+|  │  │     A       B       C       D   │  Comments          ││|
+|  │  │  ───────────────────────────────│  ────────────────  ││|
+|  │  │1│ Item   │ Q1     │ Q2     │ Q3 │                    ││|
+|  │  │2│ Sales  │ $50K 💬│ $55K   │ $60│  💬 John (B2):     ││|
+|  │  │3│ Costs  │ $30K   │ $32K 💬│ $35│  "Are these        ││|
+|  │  │4│ Profit │ $20K   │ $23K   │ $25│   numbers final?"  ││|
+|  │  │ │        │        │        │    │                    ││|
+|  │  │ │        │        │        │    │  💬 Sara (C3):     ││|
+|  │  │ │        │        │        │    │  "Need to verify   ││|
+|  │  │ │        │        │        │    │   with accounting" ││|
+|  │  │ │        │        │        │    │                    ││|
+|  │  │ │        │        │        │    │  [Reply] [Resolve] ││|
+|  │  │ │        │        │        │    │                    ││|
+|  │  └─────────────────────────────────┴────────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Benefits: Easy comment review, threaded discussions         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comments Pane Hidden (false - Default):
+```
++-------------------------------------------------------------+
+|  Numbers with Comments Pane Hidden                           |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📊 Budget Report                                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [Format] [Data] [Arrange]                              │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │     A       B       C       D       E       F       ││|
+|  │  │  ─────────────────────────────────────────────────  ││|
+|  │  │1│ Item   │ Q1     │ Q2     │ Q3     │ Q4     │ Tot  ││|
+|  │  │2│ Sales  │ $50K 💬│ $55K   │ $60K   │ $65K   │ $230K││|
+|  │  │3│ Costs  │ $30K   │ $32K 💬│ $35K   │ $38K   │ $135K││|
+|  │  │4│ Profit │ $20K   │ $23K   │ $25K   │ $27K   │ $95K ││|
+|  │  │5│        │        │        │        │        │      ││|
+|  │  │6│        │        │        │        │        │      ││|
+|  │  │                                                      ││|
+|  │  │  💬 Indicators show cells with comments              ││|
+|  │  │  Click indicator to view comment popup               ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Benefits: More workspace, cleaner view                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comment Workflow:
+```
++-------------------------------------------------------------+
+|  Working with Comments in Numbers                            |
++-------------------------------------------------------------+
+|                                                              |
+|  ADDING A COMMENT:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Select a cell or range                                   |
+|  2. Insert > Comment (or ⌥⌘K)                               |
+|  3. Type your comment                                        |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │     A       B                                            │|
+|  │1│ Sales  │ $50,000  ← Right-click or ⌥⌘K                │|
+|  │ │        │    │                                          │|
+|  │ │        │    ▼                                          │|
+|  │ │        │ ┌────────────────────────┐                   │|
+|  │ │        │ │  💬 Add Comment        │                   │|
+|  │ │        │ │ ────────────────────── │                   │|
+|  │ │        │ │ [Type comment here...] │                   │|
+|  │ │        │ │                        │                   │|
+|  │ │        │ │ [Cancel]     [Done]    │                   │|
+|  │ │        │ └────────────────────────┘                   │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  COMMENT STATES:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  💬 Yellow indicator  = Unresolved comment                   |
+|  ✓  Green checkmark   = Resolved comment                     |
+|  🔴 Red indicator     = Urgent/flagged comment               |
+|                                                              |
+|  KEYBOARD SHORTCUTS:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ⌥⌘K    Add comment to selection                            |
+|  ⇧⌘K    Show/hide comments pane (toggle TSShowsComments)    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Collaboration View:
+```
++-------------------------------------------------------------+
+|  Comments for Collaboration                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  SHARED SPREADSHEET WITH MULTIPLE REVIEWERS:                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Comments Pane                                           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  📊 Budget Review - Q4 2025                             │|
+|  │                                                          │|
+|  │  ┌────────────────────────────────────────────────────┐ │|
+|  │  │  John Smith (B2) - Yesterday                       │ │|
+|  │  │  "These Q1 numbers look low. Can we verify?"       │ │|
+|  │  │                                                     │ │|
+|  │  │  └─ Sara (Reply):                                  │ │|
+|  │  │     "Checked with accounting - correct"            │ │|
+|  │  │                                                     │ │|
+|  │  │  [Mark as Resolved]                                │ │|
+|  │  └────────────────────────────────────────────────────┘ │|
+|  │                                                          │|
+|  │  ┌────────────────────────────────────────────────────┐ │|
+|  │  │  Mike Johnson (D5) - 2 hours ago                   │ │|
+|  │  │  "Should we include projected Q1 2026?"           │ │|
+|  │  │                                                     │ │|
+|  │  │  [Reply]                                           │ │|
+|  │  └────────────────────────────────────────────────────┘ │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Hide comments pane for cleaner default view.
+
+### Why Hide Comments Pane?
+
+1. **More workspace** — Full width for spreadsheet
+2. **Cleaner view** — Focus on data, not discussions
+3. **On-demand access** — Show when needed via View menu
+4. **Standard default** — Most work doesn't need comments visible
+
+### Why Show Comments Pane?
+
+- Active collaboration on spreadsheet
+- Reviewing shared documents
+- Need to respond to feedback
+- Tracking changes in team projects
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Numbers TSShowsComments
+
+# Show comments pane by default
+defaults write com.apple.iWork.Numbers TSShowsComments -bool true
+
+# Hide comments pane (default)
+defaults write com.apple.iWork.Numbers TSShowsComments -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Numbers TSShowsComments
+```
+
+## UI Location
+
+**Numbers** > **View** > **Comments & Changes**
+
+```
++-------------------------------------------------------------+
+|  Numbers View Menu                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  View Menu                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Zoom                         ▶                         │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │    Show Ruler                     ⌘R                    │|
+|  │  ✓ Show Tab Bar                                         │|
+|  │    Comments & Changes             ⇧⌘K   ← This option  │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │    Show Print View                                       │|
+|  │    Show Table Name                                       │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Keyboard shortcut: ⇧⌘K (Shift+Command+K)                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show comments pane (this setting)
+defaults write com.apple.iWork.Numbers TSShowsComments -bool false
+
+# Show ruler
+defaults write com.apple.iWork.Numbers TSShowsRuler -bool true
+
+# Show auto-correction indicators
+defaults write com.apple.iWork.Numbers TSShowsAutoCorrection -bool true
+
+# Show formula warnings
+defaults write com.apple.iWork.Numbers TSShowFormulaWarnings -bool true
+
+# Default zoom level
+defaults write com.apple.iWork.Numbers TSDefaultZoom -int 100
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Comments pane not showing | Use View > Comments & Changes or ⇧⌘K |
+| Can't add comments | Select a cell first; use Insert > Comment |
+| Comments not syncing | Check iCloud sync is enabled |
+| Old comments showing | Use Mark as Resolved to hide addressed items |
+| Setting not persisting | Quit Numbers before changing via defaults |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Numbers
+- **Note**: Comments sync via iCloud for shared spreadsheets
+- **Note**: Setting is app-wide, affects all documents
+- **Note**: Same key name used in Pages and Keynote
+- **Note**: Restart Numbers for terminal changes to take effect
+
+## Source File
+
+**File**: [`defaults/applications/numbers.sh`](../../../../../defaults/applications/numbers.sh)
+
+```bash
+# TSShowsComments controls comments pane visibility
+# Domain: com.apple.iWork.Numbers
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Support: Numbers User Guide](https://support.apple.com/guide/numbers/welcome/mac)
+- [Apple Support: Add comments in Numbers](https://support.apple.com/guide/numbers/add-comments-tanabea5df/mac)
+- [Apple Support: Collaborate on spreadsheets](https://support.apple.com/guide/numbers/collaborate-tan8cb3d4f1a/mac)

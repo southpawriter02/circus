@@ -1,0 +1,309 @@
+# Safari Continuous Spell Checking
+
+Control whether Safari automatically checks spelling as you type in text fields.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `WebContinuousSpellCheckingEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Safari continuously checks spelling as you type in web form fields, text areas, and editable content. When enabled, misspelled words are underlined with a red dotted line, and you can right-click for spelling suggestions. This helps catch typos in emails, social media posts, forms, and any text input on websites.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Spell checking enabled** (default) — Misspellings highlighted |
+| `false` | **Spell checking disabled** — No spelling indicators |
+
+## Visual Demonstration
+
+### Spell Checking Enabled (true - Default):
+```
++-------------------------------------------------------------+
+|  Safari with Spell Checking Enabled                          |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🌐 Safari - Compose Email                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [◀] [▶] [↻]  [ mail.example.com/compose    ]  [🔒]    │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │  New Message                                         ││|
+|  │  │  ─────────────────────────────────────────────────  ││|
+|  │  │                                                      ││|
+|  │  │  To: [john@example.com                           ]  ││|
+|  │  │  Subject: [Meeting Tommorow                      ]  ││|
+|  │  │            ~~~~~~~~                                  ││|
+|  │  │  ┌─────────────────────────────────────────────────┐││|
+|  │  │  │                                                  │││|
+|  │  │  │  Hi John,                                        │││|
+|  │  │  │                                                  │││|
+|  │  │  │  I wanted to confirm our meating for tommorow.  │││|
+|  │  │  │                       ~~~~~~      ~~~~~~~~       │││|
+|  │  │  │  Please let me know if you're availible.        │││|
+|  │  │  │                                  ~~~~~~~~~       │││|
+|  │  │  │                                                  │││|
+|  │  │  │  Best regards                                    │││|
+|  │  │  │                                                  │││|
+|  │  │  └─────────────────────────────────────────────────┘││|
+|  │  │                                                      ││|
+|  │  │  [Send]                                              ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ~~~~~~ = Red underline indicating misspelled word          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Spell Checking Disabled (false):
+```
++-------------------------------------------------------------+
+|  Safari with Spell Checking Disabled                         |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🌐 Safari - Compose Email                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [◀] [▶] [↻]  [ mail.example.com/compose    ]  [🔒]    │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │  New Message                                         ││|
+|  │  │  ─────────────────────────────────────────────────  ││|
+|  │  │                                                      ││|
+|  │  │  To: [john@example.com                           ]  ││|
+|  │  │  Subject: [Meeting Tommorow                      ]  ││|
+|  │  │                                                      ││|
+|  │  │  ┌─────────────────────────────────────────────────┐││|
+|  │  │  │                                                  │││|
+|  │  │  │  Hi John,                                        │││|
+|  │  │  │                                                  │││|
+|  │  │  │  I wanted to confirm our meating for tommorow.  │││|
+|  │  │  │  (no underlines - misspellings not detected)    │││|
+|  │  │  │  Please let me know if you're availible.        │││|
+|  │  │  │                                                  │││|
+|  │  │  │                                                  │││|
+|  │  │  │  Best regards                                    │││|
+|  │  │  │                                                  │││|
+|  │  │  └─────────────────────────────────────────────────┘││|
+|  │  │                                                      ││|
+|  │  │  [Send]  ← Typos will be sent!                       ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ⚠️ No visual feedback for spelling errors                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Right-Click Spelling Suggestions:
+```
++-------------------------------------------------------------+
+|  Spell Check Context Menu                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  WHEN RIGHT-CLICKING A MISSPELLED WORD:                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ...confirm our meating for tomorrow.                   │|
+|  │                 ~~~~~~~                                  │|
+|  │                    │                                     │|
+|  │                    ▼                                     │|
+|  │            ┌────────────────────────────┐               │|
+|  │            │  meeting    ← Suggestion 1 │               │|
+|  │            │  mating                     │               │|
+|  │            │  meat                       │               │|
+|  │            │  ─────────────────────────  │               │|
+|  │            │  Ignore Spelling            │               │|
+|  │            │  Learn Spelling             │               │|
+|  │            │  ─────────────────────────  │               │|
+|  │            │  Spelling and Grammar...    │               │|
+|  │            └────────────────────────────┘               │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  • Click suggestion to replace word                         |
+|  • "Learn Spelling" adds word to dictionary                 |
+|  • "Ignore" skips this instance                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Multiple Language Support:
+```
++-------------------------------------------------------------+
+|  Multi-Language Spell Checking                               |
++-------------------------------------------------------------+
+|                                                              |
+|  SAFARI USES SYSTEM LANGUAGE SETTINGS:                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  System Settings > Keyboard > Text Input > Spelling     │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Spelling:                                               │|
+|  │  ┌───────────────────────────────────────────────────┐  │|
+|  │  │  [✓] Automatic by Language                        │  │|
+|  │  │  [ ] English (US)                                 │  │|
+|  │  │  [ ] English (UK)                                 │  │|
+|  │  │  [ ] French                                       │  │|
+|  │  │  [ ] German                                       │  │|
+|  │  │  [ ] Spanish                                      │  │|
+|  │  │  ...                                              │  │|
+|  │  └───────────────────────────────────────────────────┘  │|
+|  │                                                          │|
+|  │  "Automatic by Language" detects language per text field │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Safari respects system spelling preferences                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable spell checking to catch typos.
+
+### Why Enable Spell Checking?
+
+1. **Catch typos** — Immediate feedback while typing
+2. **Professional communication** — Avoid embarrassing mistakes in emails
+3. **Form accuracy** — Catch errors in important submissions
+4. **Learning tool** — Helps with unfamiliar words
+5. **Non-intrusive** — Just underlines, doesn't auto-correct
+
+### Why Disable Spell Checking?
+
+- Writing in a language not supported by macOS
+- Entering technical terms, code, or jargon frequently
+- Privacy concerns about text analysis
+- Performance on very slow systems
+- Personal preference for manual checking
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari WebContinuousSpellCheckingEnabled
+
+# Enable spell checking (default, recommended)
+defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool true
+
+# Disable spell checking
+defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Safari WebContinuousSpellCheckingEnabled
+```
+
+## UI Location
+
+**Safari** > **Edit** > **Spelling and Grammar**
+
+```
++-------------------------------------------------------------+
+|  Safari Edit Menu                                            |
++-------------------------------------------------------------+
+|                                                              |
+|  Edit Menu in Safari                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Edit                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Undo                              ⌘Z                   │|
+|  │  Redo                              ⇧⌘Z                  │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Cut                               ⌘X                   │|
+|  │  Copy                              ⌘C                   │|
+|  │  Paste                             ⌘V                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Spelling and Grammar              ▶ ┌─────────────────┐│|
+|  │  ─────────────────────────────────── │ Show Spelling   ││|
+|  │  Substitutions                     ▶ │ and Grammar     ││|
+|  │  Transformations                   ▶ │                 ││|
+|  │  Speech                            ▶ │ Check Document  ││|
+|  │                                      │ Now             ││|
+|  │                                      │ ────────────── ││|
+|  │                                      │ ✓ Check        ││|
+|  │                                      │   Spelling     ││|
+|  │                                      │   While Typing ││|
+|  │                                      │                 ││|
+|  │                                      │ Check Grammar  ││|
+|  │                                      │ With Spelling  ││|
+|  │                                      └─────────────────┘│|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  "Check Spelling While Typing" = WebContinuousSpellChecking |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Continuous spell checking (this setting)
+defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool true
+
+# Grammar checking alongside spelling
+defaults write com.apple.Safari WebGrammarCheckingEnabled -bool true
+
+# Auto-correct spelling
+defaults write com.apple.Safari WebAutomaticSpellingCorrectionEnabled -bool false
+
+# Text replacement/substitutions
+defaults write com.apple.Safari WebAutomaticTextReplacementEnabled -bool true
+
+# Smart quotes
+defaults write com.apple.Safari WebAutomaticQuoteSubstitutionEnabled -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Spell check not working | Verify enabled in Edit > Spelling and Grammar |
+| Wrong language detected | Set specific language in System Settings > Keyboard |
+| Technical terms flagged | Right-click > Learn Spelling to add to dictionary |
+| No suggestions appearing | Right-click the underlined word |
+| Spell check too slow | Disable for large text areas; re-enable when done |
+| Custom words not saved | Check ~/Library/Spelling/ for custom dictionaries |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite) and later
+- **Note**: Uses system spelling dictionaries and preferences
+- **Note**: Safari must be quit for terminal changes to apply
+- **Note**: Works with all installed system languages
+- **Note**: Custom learned words stored per user
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../../defaults/applications/safari.sh)
+
+```bash
+# WebContinuousSpellCheckingEnabled controls spell checking in web forms
+# Domain: com.apple.Safari
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Support: Check spelling and grammar on Mac](https://support.apple.com/guide/mac-help/check-spelling-and-grammar-mchlp2299/mac)
+- [Apple Support: Safari settings](https://support.apple.com/guide/safari/welcome/mac)
+- [Apple Support: Change language settings](https://support.apple.com/guide/mac-help/change-language-region-settings-mchlce657ecd/mac)

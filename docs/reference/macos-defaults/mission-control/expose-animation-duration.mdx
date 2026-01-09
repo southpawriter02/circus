@@ -1,0 +1,270 @@
+# Mission Control Expose Animation Duration
+
+Control the speed of Mission Control and Exposé window animations.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `expose-animation-duration` |
+| **Type** | Float |
+| **Default Value** | `0.2` (approximately) |
+| **Our Setting** | Not set (system default) |
+
+## Description
+
+Controls the duration of animations when entering and exiting Mission Control, Application Windows (App Exposé), and Show Desktop. Lowering this value makes the animations faster, creating a snappier feel. Setting it to 0 makes the transitions nearly instant. This is particularly useful for power users who frequently use Mission Control and want minimal delay.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Instant** — No animation, immediate transition |
+| `0.1` | **Fast** — Quick but visible animation |
+| `0.2` | **Default** — Standard macOS animation speed |
+| `0.5` | **Slow** — Leisurely animation |
+| `1.0` | **Very slow** — Extended animation for accessibility |
+
+## Visual Demonstration
+
+### Animation Speed Comparison:
+```
++-------------------------------------------------------------+
+|  Mission Control Animation Duration                          |
++-------------------------------------------------------------+
+|                                                              |
+|  INSTANT (0 seconds):                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Desktop                    →  Mission Control               |
+|  ┌─────────────────┐           ┌─────────────────┐          |
+|  │  Current App    │    >>>    │ [1] [2] [3] [4] │          |
+|  │                 │   SNAP!   │ ┌───┐ ┌───┐     │          |
+|  │                 │           │ │Win│ │Win│     │          |
+|  └─────────────────┘           └─────────────────┘          |
+|                                                              |
+|  No visible animation. Instant switch.                       |
+|                                                              |
+|  DEFAULT (0.2 seconds):                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Desktop           →   Transition   →   Mission Control      |
+|  ┌───────────┐        ┌───────────┐     ┌───────────┐       |
+|  │  Current  │   →    │  Zoom Out │  →  │ [Spaces]  │       |
+|  │  App      │        │  ~~~~~~   │     │ [Windows] │       |
+|  └───────────┘        └───────────┘     └───────────┘       |
+|                                                              |
+|  Smooth animation takes ~200ms.                              |
+|                                                              |
+|  SLOW (0.5-1.0 seconds):                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Desktop    →    →    →    →    →    Mission Control         |
+|  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐          |
+|  │      │  │ ~~~  │  │ ~~~~ │  │ ~~~  │  │      │          |
+|  │  App │→ │      │→ │      │→ │      │→ │ View │          |
+|  └──────┘  └──────┘  └──────┘  └──────┘  └──────┘          |
+|                                                              |
+|  Extended animation for accessibility or preference.         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Use Case Scenarios:
+```
++-------------------------------------------------------------+
+|  Who Benefits from Different Speeds                          |
++-------------------------------------------------------------+
+|                                                              |
+|  INSTANT/FAST (0 - 0.1):                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Power users switching spaces frequently                 |
+|  [x] Developers with many windows open                       |
+|  [x] Users who find animations distracting                   |
+|  [x] Older Macs where animations may feel sluggish          |
+|  [x] Efficiency-focused workflows                            |
+|                                                              |
+|  DEFAULT (0.2):                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Most users — balanced experience                        |
+|  [x] New Mac users learning the interface                    |
+|  [x] Users who appreciate visual polish                      |
+|  [x] Standard macOS experience                               |
+|                                                              |
+|  SLOW (0.5+):                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Accessibility needs — easier to track movement          |
+|  [x] Users with motion sensitivity (though Reduce            |
+|      Motion in Accessibility is preferred)                   |
+|  [x] Demos or presentations                                  |
+|  [x] Learning spatial layout of spaces                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Affected Animations:
+```
++-------------------------------------------------------------+
+|  What This Setting Controls                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  AFFECTED:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Mission Control enter/exit animation                    |
+|  [x] Application Windows (App Exposé) animation              |
+|  [x] Show Desktop (spread windows) animation                 |
+|  [x] Spaces switching via Mission Control                    |
+|                                                              |
+|  NOT AFFECTED:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [ ] Hot corner trigger delay (separate setting)             |
+|  [ ] Dock show/hide animation (autohide-time-modifier)      |
+|  [ ] Window minimize animation (mineffect)                   |
+|  [ ] Swipe between spaces (uses different timing)            |
+|  [ ] Launchpad animation (different setting)                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: Not explicitly set — Uses system default (~0.2 seconds).
+
+### Why Keep Default?
+
+1. **Balanced experience** — Smooth without being slow
+2. **Visual feedback** — Animation helps track spatial changes
+3. **Expected behavior** — Matches standard macOS feel
+4. **No jarring transitions** — Maintains visual polish
+
+### Why Speed Up (Lower Value)?
+
+- **Efficiency** — Faster workspace switching
+- **Power user preference** — Less waiting
+- **Performance feel** — System feels snappier
+- **Frequent Mission Control use** — Reduces cumulative delay
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dock expose-animation-duration
+
+# Set instant transition (no animation)
+defaults write com.apple.dock expose-animation-duration -float 0
+
+# Set fast animation
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
+# Set slow animation (for accessibility)
+defaults write com.apple.dock expose-animation-duration -float 0.5
+
+# Delete (reset to default)
+defaults delete com.apple.dock expose-animation-duration
+
+# IMPORTANT: Restart Dock to apply changes
+killall Dock
+```
+
+## UI Location
+
+There is no direct GUI setting for animation duration. Users seeking reduced animation should check:
+
+**System Settings** > **Accessibility** > **Display** > **Reduce motion**
+
+```
++-------------------------------------------------------------+
+|  Accessibility Settings                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Accessibility > Display                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Display                                                │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Vision                                                  │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [ ] Reduce motion                                      │|
+|  │      Reduce the motion of the user interface,           │|
+|  │      including the parallax effect of icons.            │|
+|  │                                                          │|
+|  │  Note: "Reduce motion" provides a system-wide           │|
+|  │  alternative. The expose-animation-duration             │|
+|  │  setting offers finer control specifically for          │|
+|  │  Mission Control animations.                            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Mission Control animation duration (this setting)
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
+# Group windows by application in Mission Control
+defaults write com.apple.dock expose-group-apps -bool true
+
+# Rearrange Spaces based on most recent use
+defaults write com.apple.dock mru-spaces -bool false
+
+# Displays have separate Spaces
+defaults write com.apple.spaces spans-displays -bool false
+
+# Dock auto-hide animation speed
+defaults write com.apple.dock autohide-time-modifier -float 0.5
+
+# Launchpad animation duration
+defaults write com.apple.dock springboard-show-duration -float 0.1
+defaults write com.apple.dock springboard-hide-duration -float 0.1
+
+# Apply changes
+killall Dock
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Run `killall Dock` after changing |
+| Animation still slow | Check Reduce Motion in Accessibility settings |
+| Value reverted after restart | Ensure you're writing to correct domain |
+| Want even faster | Set to 0 for instant transitions |
+| Animation feels choppy | Try 0.1 instead of 0 for smoother feel |
+| Other animations still slow | This only affects Mission Control, not all animations |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite and later)
+- **Note**: Requires `killall Dock` to apply changes
+- **Note**: Works alongside Reduce Motion accessibility setting
+- **Note**: Does not affect trackpad gesture animations directly
+- **Note**: May interact differently with third-party window managers
+
+## Source File
+
+**File**: [`defaults/interface/mission_control.sh`](../../../../../defaults/interface/mission_control.sh)
+
+```bash
+# expose-animation-duration controls Mission Control animation speed
+# Domain: com.apple.dock
+# Lower values = faster animations (0 = instant, 0.2 = default)
+# Not explicitly set in our defaults - uses system default
+```
+
+## References
+
+- [Apple Support: Use Mission Control on Mac](https://support.apple.com/guide/mac-help/open-windows-spaces-mission-control-mh35798/mac)
+- [Apple Support: Change Accessibility Display settings](https://support.apple.com/guide/mac-help/change-accessibility-display-settings-mchlc02c7974/mac)
+- [defaults-write.com: Mission Control Animation Duration](https://www.defaults-write.com/mission-control-animation-speed/)

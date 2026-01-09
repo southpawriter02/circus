@@ -1,0 +1,274 @@
+# Podcasts Episode Delete Behavior
+
+Control how played podcast episodes are handled after listening.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Key** | `EpisodeDeleteBehavior` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls what happens to podcast episodes after you finish listening to them. This setting helps manage storage space by automatically removing played episodes, or keeps them available for re-listening. The behavior can be set globally and overridden on a per-podcast basis. This is particularly useful for managing storage on devices with limited space.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Manual delete** (default) — Keep all episodes until manually deleted |
+| `1` | **Delete after 24 hours** — Remove played episodes after one day |
+| `2` | **Delete after a week** — Remove played episodes after seven days |
+| `3` | **Delete immediately** — Remove as soon as episode finishes |
+
+## Visual Demonstration
+
+### Episode Management Options:
+```
++-------------------------------------------------------------+
+|  Podcasts Episode Delete Behavior Options                    |
++-------------------------------------------------------------+
+|                                                              |
+|  OPTION 0: MANUAL DELETE                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🎙️ My Podcast Library                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ✓ Episode 10 - Played 3 weeks ago     [Still here]     │|
+|  │  ✓ Episode 9  - Played 2 weeks ago     [Still here]     │|
+|  │  ✓ Episode 8  - Played last week       [Still here]     │|
+|  │  ○ Episode 7  - New                    [Not played]     │|
+|  │                                                          │|
+|  │  Storage used: 2.3 GB                                    │|
+|  └─────────────────────────────────────────────────────────┘|
+|  Good for: Re-listening, reference material, archiving      |
+|                                                              |
+|  OPTION 3: DELETE IMMEDIATELY                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🎙️ My Podcast Library                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ○ Episode 7  - New                    [Ready to play]  │|
+|  │                                                          │|
+|  │  [Episodes auto-deleted after playing]                   │|
+|  │                                                          │|
+|  │  Storage used: 150 MB                                    │|
+|  └─────────────────────────────────────────────────────────┘|
+|  Good for: Limited storage, news podcasts, one-time content |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Storage Impact:
+```
++-------------------------------------------------------------+
+|  Storage Impact by Delete Behavior                           |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO: 10 podcast subscriptions, 3 episodes/week each    |
+|  Episode size: ~50MB average                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  DELETE BEHAVIOR          APPROX. STORAGE USED               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Manual (0)               █████████████████████ 15+ GB      |
+|                           (accumulates over time)            |
+|                                                              |
+|  After 1 Week (2)         █████████ 7.5 GB                  |
+|                           (last week's episodes)             |
+|                                                              |
+|  After 24 Hours (1)       ███ 1.5 GB                        |
+|                           (today's episodes only)            |
+|                                                              |
+|  Immediately (3)          █ ~500 MB                          |
+|                           (only currently playing/queued)    |
+|                                                              |
+|  RECOMMENDATION BY DEVICE:                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Mac with large SSD       → Manual (0) or After Week (2)    |
+|  Mac with limited space   → After 24 Hours (1)              |
+|  Heavy podcast listener   → After 24 Hours (1) or Week (2)  |
+|  Casual listener          → Manual (0)                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Per-Podcast Override:
+```
++-------------------------------------------------------------+
+|  Per-Podcast Settings Override                               |
++-------------------------------------------------------------+
+|                                                              |
+|  You can override the global setting for specific shows:     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  The Daily - Show Settings                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Episodes to Keep                                        │|
+|  │  [Delete after playing ▼]  ← Override global setting    │|
+|  │                                                          │|
+|  │  Download Episodes                                       │|
+|  │  [On ▼]                                                 │|
+|  │                                                          │|
+|  │  Play in Order                                          │|
+|  │  [Newest first ▼]                                       │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Example setup:                                              |
+|  • News podcasts → Delete immediately (time-sensitive)      |
+|  • Tutorial series → Keep manually (reference material)     |
+|  • Favorites → Keep for 1 week (might re-listen)            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1` — Delete after 24 hours for balanced storage management.
+
+### Why Delete After 24 Hours (1)?
+
+1. **Storage efficient** — Prevents accumulation
+2. **Grace period** — Time to re-listen if needed
+3. **Automatic** — No manual cleanup required
+4. **Balance** — Not too aggressive, not too permissive
+
+### Why Keep Manual (0)?
+
+- Want to re-listen to episodes
+- Podcasts serve as reference material
+- Plenty of storage available
+- Prefer manual control
+
+### Why Delete Immediately (3)?
+
+- Very limited storage
+- Only listen once
+- News/daily podcasts become stale
+- Maximum storage savings
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.podcasts EpisodeDeleteBehavior
+
+# Manual delete (keep all, default)
+defaults write com.apple.podcasts EpisodeDeleteBehavior -int 0
+
+# Delete after 24 hours
+defaults write com.apple.podcasts EpisodeDeleteBehavior -int 1
+
+# Delete after 1 week
+defaults write com.apple.podcasts EpisodeDeleteBehavior -int 2
+
+# Delete immediately after playing
+defaults write com.apple.podcasts EpisodeDeleteBehavior -int 3
+
+# Delete (reset to default)
+defaults delete com.apple.podcasts EpisodeDeleteBehavior
+```
+
+## UI Location
+
+**Podcasts** > **Settings** > **General**
+
+```
++-------------------------------------------------------------+
+|  Podcasts Settings - General                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Podcasts > Settings (⌘,) > General                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  General                                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Sync Library                                            │|
+|  │  [On ▼]                                                 │|
+|  │                                                          │|
+|  │  Download Episodes                                       │|
+|  │  [On ▼]                                                 │|
+|  │                                                          │|
+|  │  Remove Played Downloads                                 │|
+|  │  [After 24 Hours ▼]              ← This setting         │|
+|  │                                                          │|
+|  │  Options:                                                │|
+|  │  • Off (Manual)                                         │|
+|  │  • After 24 Hours                                       │|
+|  │  • After 1 Week                                         │|
+|  │  • After Listening                                      │|
+|  │                                                          │|
+|  │  Download When                                          │|
+|  │  [On Wi-Fi Only ▼]                                     │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Episode delete behavior (this setting)
+defaults write com.apple.podcasts EpisodeDeleteBehavior -int 1
+
+# Auto-download new episodes
+defaults write com.apple.podcasts downloadNewEpisodes -bool true
+
+# Episode limit per podcast
+defaults write com.apple.podcasts episodeLimit -int 10
+
+# Sync podcasts via iCloud
+defaults write com.apple.podcasts syncPodcasts -bool true
+
+# Remove played episodes (older setting)
+defaults write com.apple.podcasts removePlayedEpisodes -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Episodes not being deleted | Check per-show settings for overrides |
+| Episodes deleted too soon | Change to longer retention (0 or 2) |
+| Storage still full | Check episode limit setting as well |
+| Want to keep specific episodes | Download to Files or use per-show settings |
+| Setting not taking effect | Restart Podcasts app |
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina) with Podcasts app
+- **Note**: Per-podcast settings can override this global setting
+- **Note**: Syncs with iOS Podcasts via iCloud
+- **Note**: Downloaded episodes are affected; streamed episodes not stored
+- **Note**: Restart Podcasts for terminal changes to apply
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../../defaults/applications/podcasts.sh)
+
+```bash
+# EpisodeDeleteBehavior controls automatic episode cleanup
+# Domain: com.apple.podcasts
+# Values: 0=Manual, 1=24hrs, 2=1week, 3=Immediately
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Support: Use Podcasts on Mac](https://support.apple.com/guide/podcasts/welcome/mac)
+- [Apple Support: Change Podcasts settings](https://support.apple.com/guide/podcasts/change-settings-podb804dc5bd/mac)
+- [Apple Support: Manage podcast downloads](https://support.apple.com/guide/podcasts/download-or-stream-episodes-podbc7a6e7e5/mac)

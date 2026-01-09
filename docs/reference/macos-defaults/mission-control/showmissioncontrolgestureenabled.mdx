@@ -1,0 +1,306 @@
+# Mission Control Gesture
+
+Control whether the trackpad swipe-up gesture opens Mission Control.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `showMissionControlGestureEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether swiping up with three or four fingers on the trackpad opens Mission Control. Mission Control provides a bird's-eye view of all open windows, desktop spaces, and full-screen apps, making it easy to navigate between them. This gesture is enabled by default and is one of the most commonly used trackpad gestures on macOS.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enable gesture** (default) — Swipe up opens Mission Control |
+| `false` | **Disable gesture** — Swipe up does nothing |
+
+## Visual Demonstration
+
+### Mission Control Gesture:
+```
++-------------------------------------------------------------+
+|  Mission Control Trackpad Gesture                            |
++-------------------------------------------------------------+
+|                                                              |
+|  THE GESTURE:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|     Swipe up with three or four fingers                      |
+|                                                              |
+|              ↑   ↑   ↑   ↑                                   |
+|              │   │   │   │                                   |
+|            ┌───┬───┬───┬───┐                                 |
+|            │ ● │ ● │ ● │ ● │  (fingers)                      |
+|            └───┴───┴───┴───┘                                 |
+|                  │                                           |
+|                  │                                           |
+|          ════════════════════                                |
+|              [Trackpad]                                      |
+|                                                              |
+|  Swipe upward from center of trackpad                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Mission Control View:
+```
++-------------------------------------------------------------+
+|  What Mission Control Shows                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Spaces Bar (top)                                       │|
+|  │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────────┐   │|
+|  │  │Desktop 1│ │Desktop 2│ │Desktop 3│ │ + Add Space │   │|
+|  │  └─────────┘ └─────────┘ └─────────┘ └─────────────┘   │|
+|  │─────────────────────────────────────────────────────────│|
+|  │                                                          │|
+|  │  Windows (thumbnails of all open windows)                │|
+|  │  ┌───────────────┐  ┌───────────────┐  ┌─────────────┐ │|
+|  │  │    Safari     │  │   VS Code     │  │   Finder    │ │|
+|  │  │  ┌─────────┐  │  │  ┌─────────┐  │  │ ┌─────────┐│ │|
+|  │  │  │ Browser │  │  │  │  Code   │  │  │ │  Files  ││ │|
+|  │  │  │ Content │  │  │  │ Editor  │  │  │ │         ││ │|
+|  │  │  └─────────┘  │  │  └─────────┘  │  │ └─────────┘│ │|
+|  │  └───────────────┘  └───────────────┘  └─────────────┘ │|
+|  │                                                          │|
+|  │  ┌───────────────┐  ┌───────────────┐                   │|
+|  │  │   Terminal    │  │    Notes      │                   │|
+|  │  │  ┌─────────┐  │  │  ┌─────────┐  │                   │|
+|  │  │  │  Shell  │  │  │  │  Note   │  │                   │|
+|  │  │  └─────────┘  │  │  └─────────┘  │                   │|
+|  │  └───────────────┘  └───────────────┘                   │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Click any window to switch to it. Drag windows between      |
+|  spaces. Click desktop space to switch to it.                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Gesture Enabled vs Disabled:
+```
++-------------------------------------------------------------+
+|  Gesture Behavior Comparison                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  ENABLED (true - Default):                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────────┐  Swipe   ┌──────────────────────────────┐ |
+|  │   Desktop    │    ↑     │      Mission Control         │ |
+|  │              │   ───>   │  [Space 1] [Space 2] [+]     │ |
+|  │  [Windows]   │          │  ┌───┐ ┌───┐ ┌───┐ ┌───┐    │ |
+|  │              │          │  │Win│ │Win│ │Win│ │Win│    │ |
+|  └──────────────┘          └──────────────────────────────┘ |
+|                                                              |
+|  Instant access to window and space management.              |
+|                                                              |
+|  DISABLED (false):                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────────┐  Swipe   ┌──────────────────────────────┐ |
+|  │   Desktop    │    ↑     │        Desktop               │ |
+|  │              │   ───>   │                              │ |
+|  │  [Windows]   │  (nothing│        [Windows]             │ |
+|  │              │  happens)│                              │ |
+|  └──────────────┘          └──────────────────────────────┘ |
+|                                                              |
+|  Alternative ways to open Mission Control:                   |
+|  • Press Control+↑ (Control + Up Arrow)                     |
+|  • Press F3 key (on supported keyboards)                    |
+|  • Click Mission Control icon in Dock                       |
+|  • Set up a Hot Corner for Mission Control                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Mission Control Features:
+```
++-------------------------------------------------------------+
+|  What You Can Do in Mission Control                          |
++-------------------------------------------------------------+
+|                                                              |
+|  WINDOW MANAGEMENT:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Click any window to switch to it                        |
+|  [x] Drag windows between desktop spaces                     |
+|  [x] Close windows by hovering and clicking X                |
+|  [x] View all windows from all apps at once                  |
+|                                                              |
+|  SPACE MANAGEMENT:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Click a space to switch to it                          |
+|  [x] Drag windows to spaces bar to move them                 |
+|  [x] Click + to create a new desktop space                  |
+|  [x] Hover over space and click X to delete it              |
+|  [x] Drag spaces to reorder them                            |
+|                                                              |
+|  FULL-SCREEN APPS:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] View all full-screen apps as separate spaces            |
+|  [x] Switch between full-screen apps                         |
+|  [x] Exit full-screen by dragging window down               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable Mission Control gesture for efficient window management.
+
+### Why Enable Mission Control Gesture?
+
+1. **Essential navigation** — Core way to manage windows
+2. **Space management** — Create, switch, organize desktops
+3. **Window overview** — See all windows at once
+4. **Intuitive gesture** — Natural swipe-up motion
+5. **Productivity** — Quickly find buried windows
+
+### Why Disable Mission Control Gesture?
+
+- **Accidental triggers** — Gesture triggered by mistake
+- **App conflicts** — Some apps use similar gestures
+- **Prefer keyboard** — Use Control+↑ instead
+- **Hot Corner preference** — Use corner trigger instead
+- **Limited use** — Don't use multiple spaces
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dock showMissionControlGestureEnabled
+
+# Enable Mission Control gesture (default)
+defaults write com.apple.dock showMissionControlGestureEnabled -bool true
+
+# Disable Mission Control gesture
+defaults write com.apple.dock showMissionControlGestureEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dock showMissionControlGestureEnabled
+
+# IMPORTANT: Restart Dock to apply changes
+killall Dock
+```
+
+## UI Location
+
+**System Settings** > **Trackpad** > **More Gestures** > **Mission Control**
+
+```
++-------------------------------------------------------------+
+|  Trackpad Settings - More Gestures                           |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Trackpad > More Gestures                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [Point & Click] [Scroll & Zoom] [More Gestures]       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [x] Swipe between pages                                │|
+|  │      Scroll left or right with two fingers              │|
+|  │                                                          │|
+|  │  [x] Swipe between full-screen applications             │|
+|  │      Swipe left or right with four fingers              │|
+|  │                                                          │|
+|  │  [x] Notification Center                                 │|
+|  │      Swipe left from the right edge with two fingers    │|
+|  │                                                          │|
+|  │  [x] Mission Control              <-- This setting      │|
+|  │      Swipe up with four fingers                         │|
+|  │                                                          │|
+|  │  [x] App Exposé                                         │|
+|  │      Swipe down with four fingers                       │|
+|  │                                                          │|
+|  │  [x] Launchpad                                          │|
+|  │      Pinch with thumb and three fingers                 │|
+|  │                                                          │|
+|  │  [x] Show Desktop                                       │|
+|  │      Spread with thumb and three fingers                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Mission Control gesture (this setting)
+defaults write com.apple.dock showMissionControlGestureEnabled -bool true
+
+# Launchpad gesture
+defaults write com.apple.dock showLaunchpadGestureEnabled -bool true
+
+# App Exposé gesture
+defaults write com.apple.dock showAppExposeGestureEnabled -bool true
+
+# Show Desktop gesture
+defaults write com.apple.dock showDesktopGestureEnabled -bool true
+
+# Group windows by application in Mission Control
+defaults write com.apple.dock expose-group-apps -bool true
+
+# Don't rearrange Spaces based on most recent use
+defaults write com.apple.dock mru-spaces -bool false
+
+# Mission Control animation speed
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
+# Apply changes
+killall Dock
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Gesture not working | Check System Settings > Trackpad > More Gestures |
+| Setting not applying | Run `killall Dock` after changing |
+| Gesture conflicts with app | Disable in that app's settings or here |
+| Only 3 fingers work | Check gesture configuration in settings |
+| Mission Control slow | Reduce expose-animation-duration |
+| Spaces keep rearranging | Set mru-spaces to false |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion and later)
+- **Hardware**: Requires trackpad (built-in or Magic Trackpad)
+- **Note**: Requires `killall Dock` to apply changes
+- **Note**: Three-finger option available in Accessibility settings
+- **Note**: Works with Magic Trackpad 1 and 2
+- **Note**: Can use Magic Mouse with two-finger double-tap
+
+## Source File
+
+**File**: [`defaults/interface/mission_control.sh`](../../../../../defaults/interface/mission_control.sh)
+
+```bash
+# showMissionControlGestureEnabled controls trackpad swipe-up gesture
+# Domain: com.apple.dock
+# true = swipe up opens Mission Control, false = gesture disabled
+run_defaults "com.apple.dock" "showMissionControlGestureEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Multi-Touch gestures on your Mac](https://support.apple.com/en-us/HT204895)
+- [Apple Support: Use Mission Control on Mac](https://support.apple.com/guide/mac-help/open-windows-spaces-mission-control-mh35798/mac)
+- [Apple Support: Change Trackpad settings on Mac](https://support.apple.com/guide/mac-help/change-trackpad-settings-mchlp1226/mac)
+- [Apple Support: Work in multiple spaces on Mac](https://support.apple.com/guide/mac-help/work-in-multiple-spaces-mh14112/mac)

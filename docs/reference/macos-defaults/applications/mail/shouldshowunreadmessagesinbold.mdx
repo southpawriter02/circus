@@ -1,0 +1,297 @@
+# Mail Show Unread Messages in Bold
+
+Control whether unread email messages appear in bold text for visual distinction.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `ShouldShowUnreadMessagesInBold` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether unread messages in Apple Mail's message list are displayed with bold text styling. When enabled, unread emails stand out with bold sender names and subject lines, making it easy to quickly identify new messages. This visual distinction helps users prioritize and manage their inbox more effectively.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Bold unread messages** (default) — Clear visual distinction |
+| `false` | **Normal text weight** — Unread messages use standard font |
+
+## Visual Demonstration
+
+### Bold Unread Messages (true - Default):
+```
++-------------------------------------------------------------+
+|  Apple Mail - Message List                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Inbox (3 unread)                              [Search] │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ● JOHN SMITH                              10:30 AM     │|
+|  │    PROJECT UPDATE - URGENT                              │|
+|  │    Hi team, I wanted to share the latest...             │|
+|  │    ↑                                                     │|
+|  │    Bold text = UNREAD                                   │|
+|  │                                                          │|
+|  │  ● JANE DOE                                 9:45 AM     │|
+|  │    MEETING TOMORROW                                     │|
+|  │    Don't forget about our 2pm meeting...                │|
+|  │                                                          │|
+|  │  ○ Alex Johnson                            Yesterday    │|
+|  │    Re: Budget proposal                                  │|
+|  │    Thanks for sending that over, I'll...                │|
+|  │    ↑                                                     │|
+|  │    Normal weight = READ                                 │|
+|  │                                                          │|
+|  │  ● SARAH WILSON                            Yesterday    │|
+|  │    QUARTERLY REPORT                                     │|
+|  │    Please review the attached Q4...                     │|
+|  │                                                          │|
+|  │  ○ Mike Brown                              Dec 15       │|
+|  │    Holiday schedule                                     │|
+|  │    Here's the updated holiday...                        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  LEGEND: ● = Unread (BOLD)   ○ = Read (normal)             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Normal Text Weight (false):
+```
++-------------------------------------------------------------+
+|  Apple Mail - Without Bold Unread                            |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Inbox (3 unread)                              [Search] │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ● John Smith                              10:30 AM     │|
+|  │    Project update - Urgent                              │|
+|  │    Hi team, I wanted to share the latest...             │|
+|  │    ↑                                                     │|
+|  │    Same weight as read messages                         │|
+|  │                                                          │|
+|  │  ● Jane Doe                                 9:45 AM     │|
+|  │    Meeting tomorrow                                     │|
+|  │    Don't forget about our 2pm meeting...                │|
+|  │                                                          │|
+|  │  ○ Alex Johnson                            Yesterday    │|
+|  │    Re: Budget proposal                                  │|
+|  │    Thanks for sending that over, I'll...                │|
+|  │                                                          │|
+|  │  ● Sarah Wilson                            Yesterday    │|
+|  │    Quarterly report                                     │|
+|  │    Please review the attached Q4...                     │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: Only the blue dot (●) indicates unread status        |
+|        Text styling is identical for all messages           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Visual Comparison:
+```
++-------------------------------------------------------------+
+|  Unread Message Indicators                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  WITH BOLD (true):                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ● SENDER NAME                           Time              |
+|    SUBJECT LINE IN BOLD                                    |
+|    Preview text in normal weight...                        |
+|                                                              |
+|  Visual cues:                                                |
+|  1. Blue dot (●)                                            |
+|  2. Bold sender name                                        |
+|  3. Bold subject line                                       |
+|                                                              |
+|  WITHOUT BOLD (false):                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ● Sender Name                           Time              |
+|    Subject line in normal weight                           |
+|    Preview text in normal weight...                        |
+|                                                              |
+|  Visual cues:                                                |
+|  1. Blue dot (●) only                                       |
+|                                                              |
+|  READABILITY IMPACT:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Bold enabled:   ███████████  Easy to spot unread          |
+|  Bold disabled:  ███░░░░░░░░  Harder to distinguish        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Scanning Inbox Quickly:
+```
++-------------------------------------------------------------+
+|  Quick Inbox Triage                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  BOLD ENABLED - Easy scanning:                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  │  ● BOSS NAME        → Immediately visible               │|
+|  │  ○ Newsletter       → Skippable                         │|
+|  │  ● CLIENT NAME      → Immediately visible               │|
+|  │  ○ Old thread       → Already read                      │|
+|  │  ● URGENT SENDER    → Immediately visible               │|
+|                                                              |
+|  Eye naturally drawn to bold text                            |
+|                                                              |
+|  BOLD DISABLED - Uniform appearance:                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  │  ● Boss Name        → Check dot                         │|
+|  │  ○ Newsletter       → Check dot                         │|
+|  │  ● Client Name      → Check dot                         │|
+|  │  ○ Old thread       → Check dot                         │|
+|  │  ● Urgent Sender    → Check dot                         │|
+|                                                              |
+|  Must look at each dot individually                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show unread messages in bold for quick identification.
+
+### Why Enable Bold?
+
+1. **Quick scanning** — Instantly identify unread messages
+2. **Visual hierarchy** — Clear distinction between read/unread
+3. **Prioritization** — Focus on what needs attention
+4. **Accessibility** — Easier to spot new messages
+5. **Standard behavior** — Expected in email clients
+
+### Why Disable Bold?
+
+- Prefer uniform message list appearance
+- Use filters/rules for prioritization instead
+- Minimal visual styling preference
+- Rely solely on unread indicator dot
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail ShouldShowUnreadMessagesInBold
+
+# Enable bold for unread (default)
+defaults write com.apple.mail ShouldShowUnreadMessagesInBold -bool true
+
+# Disable bold for unread
+defaults write com.apple.mail ShouldShowUnreadMessagesInBold -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.mail ShouldShowUnreadMessagesInBold
+```
+
+## UI Location
+
+**Mail** > **Settings** > **Viewing** > **Show unread messages with bold font**
+
+```
++-------------------------------------------------------------+
+|  Mail Settings - Viewing                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Mail > Settings (⌘,) > Viewing                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Accounts] [Junk Mail] [Fonts] [Viewing] ... │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  List Preview                                            │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Show message preview:  [2 Lines             ▼]         │|
+|  │                                                          │|
+|  │  [✓] Show unread messages with bold font ← This setting │|
+|  │                                                          │|
+|  │  [✓] Show contact photos in the message list            │|
+|  │                                                          │|
+|  │  Conversation View                                       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [✓] Organize by conversation                           │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Bold unread messages (this setting)
+defaults write com.apple.mail ShouldShowUnreadMessagesInBold -bool true
+
+# Number of preview lines
+defaults write com.apple.mail NumberOfSnippetLines -int 2
+
+# Conversation view
+defaults write com.apple.mail ConversationViewEnabled -bool true
+
+# Show unread count in Dock
+defaults write com.apple.mail ShouldShowUnreadMessagesInDockIcon -bool true
+
+# Play sound for new mail
+defaults write com.apple.mail PlayMailSounds -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Bold not appearing | Restart Mail after changing setting |
+| Some messages not bold | Check if messages are actually unread |
+| Bold looks wrong | Check font settings in Mail > Settings > Fonts |
+| Setting not saving | Ensure Mail is quit before changing via defaults |
+| Want different indicator | Blue dot cannot be changed; only bold can be toggled |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite and later)
+- **Note**: Setting applies immediately to message list
+- **Note**: Works with all account types (iCloud, Gmail, Exchange)
+- **Note**: Independent of conversation view settings
+- **Note**: Restart Mail if changed via terminal
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../../defaults/applications/mail.sh)
+
+```bash
+# --- Show Unread Messages in Bold ---
+# Key:          ShouldShowUnreadMessagesInBold
+# Domain:       com.apple.mail
+# Description:  Display unread messages with bold text for visual distinction
+# Default:      true
+# Listed in undocumented settings - controls message list styling
+```
+
+## References
+
+- [Apple Support: Use Mail on your Mac](https://support.apple.com/guide/mail/welcome/mac)
+- [Apple Support: Mail preferences](https://support.apple.com/guide/mail/change-viewing-preferences-mlhlc00e3f29/mac)
+- [Apple Support: Manage your inbox](https://support.apple.com/guide/mail/manage-your-inbox-mlhl82e59a2e/mac)

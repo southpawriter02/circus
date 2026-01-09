@@ -1,0 +1,361 @@
+# Number of Hours Displayed
+
+Control how many hours are visible at once in Calendar day and week views.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iCal` |
+| **Key** | `number of hours displayed` |
+| **Type** | Integer |
+| **Default Value** | `12` |
+| **Our Setting** | `12` |
+
+## Description
+
+Controls the number of hours visible at once in the day and week views without scrolling. A higher value shows more hours simultaneously but makes each hour slot smaller, while a lower value shows fewer hours but with larger, more readable time slots. This setting helps optimize the calendar view for your typical workday duration and screen size.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `6` | Very detailed view — 6 hours visible |
+| `8` | Standard workday — 8 hours visible |
+| `10` | Extended workday — 10 hours visible |
+| `12` | **Balanced** (default) — 12 hours visible |
+| `14` | More coverage — 14 hours visible |
+| `16` | Most of day — 16 hours visible |
+| `18` | Nearly full day — 18 hours visible |
+| `24` | Full day — All 24 hours visible |
+
+## Visual Demonstration
+
+### 12 Hours Displayed (Default):
+```
++-------------------------------------------------------------+
+|  Calendar Week View - 12 Hours                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Day View / Week View:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------+-------+-------+-------+-------+-------+-------+  |
+|  | Time  | Sun   | Mon   | Tue   | Wed   | Thu   | Fri   |  |
+|  +-------+-------+-------+-------+-------+-------+-------+  |
+|  | 8 AM  |       |Meeting|       |       |       |       |  |
+|  |       |       |───────|       |       |       |       |  |
+|  | 9 AM  |       |       |       |Standup|       |       |  |
+|  |       |       |       |       |───────|       |       |  |
+|  | 10 AM |       |       |Review |       |       |       |  |
+|  |       |       |       |───────|       |       |       |  |
+|  | 11 AM |       |       |       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 12 PM |       |       |Lunch  |       |Lunch  |       |  |
+|  |       |       |       |───────|       |───────|       |  |
+|  | 1 PM  |       |       |       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 2 PM  |       |       |       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 3 PM  |       |1:1    |       |       |       |       |  |
+|  |       |       |───────|       |       |       |       |  |
+|  | 4 PM  |       |       |       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 5 PM  |       |       |       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 6 PM  |       |       |       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 7 PM  |       |       |       |       |       |       |  |
+|  +-------+-------+-------+-------+-------+-------+-------+  |
+|                                                              |
+|  Visible: 8 AM - 7 PM (12 hours)                            |
+|  Scrolling needed for: Before 8 AM, after 7 PM              |
+|  Time slot height: Medium                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### 8 Hours Displayed (Focused Workday):
+```
++-------------------------------------------------------------+
+|  Calendar Week View - 8 Hours                                |
++-------------------------------------------------------------+
+|                                                              |
+|  +-------+-------+-------+-------+-------+-------+-------+  |
+|  | Time  | Sun   | Mon   | Tue   | Wed   | Thu   | Fri   |  |
+|  +-------+-------+-------+-------+-------+-------+-------+  |
+|  |       |       |       |       |       |       |       |  |
+|  | 9 AM  |       |       |       |Standup|       |       |  |
+|  |       |       |       |       |───────|       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 10 AM |       |       |Review |       |       |       |  |
+|  |       |       |       |───────|       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 11 AM |       |       |       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 12 PM |       |       |Lunch  |       |Lunch  |       |  |
+|  |       |       |       |───────|       |───────|       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 1 PM  |       |       |       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 2 PM  |       |       |       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 3 PM  |       |1:1    |       |       |       |       |  |
+|  |       |       |───────|       |       |       |       |  |
+|  |       |       |       |       |       |       |       |  |
+|  | 4 PM  |       |       |       |       |       |       |  |
+|  +-------+-------+-------+-------+-------+-------+-------+  |
+|                                                              |
+|  Visible: 9 AM - 4 PM (8 hours)                             |
+|  Scrolling needed for: Before 9 AM, after 4 PM              |
+|  Time slot height: Larger (easier to read & click)           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### 24 Hours Displayed (Full Day):
+```
++-------------------------------------------------------------+
+|  Calendar Week View - 24 Hours                               |
++-------------------------------------------------------------+
+|                                                              |
+|  +-------+-------+-------+-------+-------+-------+-------+  |
+|  | Time  | Sun   | Mon   | Tue   | Wed   | Thu   | Fri   |  |
+|  +-------+-------+-------+-------+-------+-------+-------+  |
+|  | 12 AM |       |       |       |       |       |       |  |
+|  | 2 AM  |       |       |       |       |       |       |  |
+|  | 4 AM  |       |       |       |       |       |       |  |
+|  | 6 AM  |       |       |       |       |       |       |  |
+|  | 8 AM  |       |Meeting|       |       |       |       |  |
+|  | 10 AM |       |       |Review |       |       |       |  |
+|  | 12 PM |       |       |Lunch  |       |Lunch  |       |  |
+|  | 2 PM  |       |       |       |       |       |       |  |
+|  | 4 PM  |       |       |       |       |       |       |  |
+|  | 6 PM  |       |Dinner |       |       |Gym    |       |  |
+|  | 8 PM  |       |       |       |       |       |       |  |
+|  | 10 PM |       |       |       |       |       |       |  |
+|  +-------+-------+-------+-------+-------+-------+-------+  |
+|                                                              |
+|  Visible: All 24 hours (no scrolling needed)                 |
+|  Time slot height: Very small (harder to read)               |
+|  Best for: Overview, shift workers, night owls               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison by Screen Size:
+```
++-------------------------------------------------------------+
+|  Recommended Settings by Screen Size                         |
++-------------------------------------------------------------+
+|                                                              |
+|  SMALL SCREEN (13" laptop):                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: 8-10 hours                                     |
+|  • Larger time slots easier to tap/click                    |
+|  • Less visual clutter                                       |
+|  • Focused on typical work hours                             |
+|                                                              |
+|  MEDIUM SCREEN (15"-24" display):                            |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: 12 hours (default)                             |
+|  • Good balance of coverage and readability                 |
+|  • Covers typical waking hours                               |
+|  • Minimal scrolling needed                                  |
+|                                                              |
+|  LARGE SCREEN (27"+ display):                                |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: 14-18 hours                                    |
+|  • More screen real estate to use                           |
+|  • Early morning and evening visible                         |
+|  • Good for variable schedules                               |
+|                                                              |
+|  SHIFT WORKERS / OVERNIGHT:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: 24 hours                                       |
+|  • See full day at once                                      |
+|  • No time slots hidden                                      |
+|  • Works across midnight schedules                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `12` — Balanced view covering typical waking hours.
+
+### Why 12 Hours (Default)?
+
+1. **Coverage** — Shows most of typical waking/working hours
+2. **Readability** — Time slots are reasonably sized
+3. **Balance** — Minimal scrolling for normal schedules
+4. **Standard** — Expected default behavior
+5. **Versatile** — Works for most screen sizes
+
+### Alternative Configurations
+
+| Use Case | Value | Reason |
+|----------|-------|--------|
+| Small laptop | `8` | Larger, easier-to-click slots |
+| Standard workday | `10` | Focus on 9-5 hours |
+| Long days | `14-16` | See early and late hours |
+| Shift work | `24` | Full day view |
+| Quick overview | `18-24` | Maximum coverage |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iCal "number of hours displayed"
+
+# Set to 12 hours (balanced - default)
+defaults write com.apple.iCal "number of hours displayed" -int 12
+
+# Set to 8 hours (focused workday)
+defaults write com.apple.iCal "number of hours displayed" -int 8
+
+# Set to 24 hours (full day view)
+defaults write com.apple.iCal "number of hours displayed" -int 24
+
+# Delete (reset to default)
+defaults delete com.apple.iCal "number of hours displayed"
+```
+
+Restart Calendar for changes to take effect.
+
+## UI Location
+
+**Calendar** > **Settings** > **General** > **Show X hours at a time**
+
+```
++-------------------------------------------------------------+
+|  Calendar Settings - General                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Calendar > Settings > General                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  General                                              |  |
+|  |  ──────────────────────────────────────────────────  |  |
+|  |                                                       |  |
+|  |  Start week on:                                       |  |
+|  |  [Monday]                                             |  |
+|  |                                                       |  |
+|  |  Scroll in week view by:                              |  |
+|  |  [Week]                                               |  |
+|  |                                                       |  |
+|  |  Day starts at:                                       |  |
+|  |  [9:00 AM]                                            |  |
+|  |                                                       |  |
+|  |  Day ends at:                                         |  |
+|  |  [6:00 PM]                                            |  |
+|  |                                                       |  |
+|  |  Show:                                                |  |
+|  |  +-------------------------------------------+        |  |
+|  |  | 12 hours at a time                    [v] |  <---  |  |
+|  |  +-------------------------------------------+        |  |
+|  |        ^                                              |  |
+|  |        This setting                                   |  |
+|  |                                                       |  |
+|  |  Options: 6, 8, 10, 12, 14, 16, 18, 24               |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Hours displayed (this setting)
+defaults write com.apple.iCal "number of hours displayed" -int 12
+
+# Day start time (minutes from midnight)
+defaults write com.apple.iCal "first minute of work hours" -int 540
+
+# Day end time (minutes from midnight)
+defaults write com.apple.iCal "last minute of work hours" -int 1080
+
+# First day of week
+defaults write com.apple.iCal "first day of week" -int 1
+
+# Scroll by weeks
+defaults write com.apple.iCal "scroll by weeks in week view" -bool true
+```
+
+## Interaction with Work Hours
+
+The hours displayed setting works with the work hours settings:
+
+```
++-------------------------------------------------------------+
+|  Hours Displayed + Work Hours                                |
++-------------------------------------------------------------+
+|                                                              |
+|  Work Hours: 9:00 AM - 6:00 PM (configured)                  |
+|  Hours Displayed: 12                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  | 7 AM  | Compressed (outside work hours)               |  |
+|  | 8 AM  | Compressed                                    |  |
+|  +-------+-----------------------------------------------+  |
+|  | 9 AM  |                                               |  |
+|  |       |   EXPANDED VIEW                               |  |
+|  | 10 AM |   (work hours shown at full size)             |  |
+|  |       |                                               |  |
+|  | 11 AM |                                               |  |
+|  |       |                                               |  |
+|  | ...   |                                               |  |
+|  |       |                                               |  |
+|  | 5 PM  |                                               |  |
+|  |       |                                               |  |
+|  | 6 PM  |                                               |  |
+|  +-------+-----------------------------------------------+  |
+|  | 7 PM  | Compressed (outside work hours)               |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  Non-work hours may appear compressed regardless of         |
+|  total hours displayed setting.                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Time slots too small | Reduce hours displayed value |
+| Need to scroll too much | Increase hours displayed value |
+| Can't see early/late events | Increase to 18-24 hours |
+| Setting not applying | Restart Calendar app |
+| Value not in dropdown | Only preset values (6,8,10,12,14,16,18,24) available |
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion and later)
+- **Note**: Only affects day and week views
+- **Note**: Month view is unaffected
+- **Note**: Requires Calendar restart
+- **Note**: Works with work hours settings
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../../../defaults/applications/calendar.sh)
+
+```bash
+# "number of hours displayed" controls visible hours in day/week view
+# Domain: com.apple.iCal
+# Values: 6, 8, 10, 12 (default), 14, 16, 18, 24
+run_defaults "com.apple.iCal" "number of hours displayed" "-int" "12"
+```
+
+## References
+
+- [Apple Support: Use Calendar on Mac](https://support.apple.com/guide/calendar/welcome/mac)
+- [Apple Support: Change Calendar general preferences](https://support.apple.com/guide/calendar/change-general-preferences-icl1023/mac)
+- [Apple Support: Change how you view your calendar](https://support.apple.com/guide/calendar/change-calendar-views-icl1016/mac)

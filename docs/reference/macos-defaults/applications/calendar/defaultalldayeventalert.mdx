@@ -1,0 +1,302 @@
+# Default All-Day Event Alert
+
+Set the default alert time for all-day events in Calendar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iCal` |
+| **Key** | `DefaultAllDayEventAlert` |
+| **Type** | Integer |
+| **Default Value** | `-39600` (9:00 AM day of event) |
+| **Our Setting** | `-39600` |
+
+## Description
+
+Controls the default reminder time for all-day events like birthdays, holidays, and full-day appointments. Unlike timed events that use minutes-before values, all-day events use seconds from midnight on the event day. The default value of `-39600` represents 9:00 AM on the day of the event (9 hours × 3600 seconds = 32400, but negative indicates same day). This setting provides a morning reminder for events that don't have a specific start time.
+
+## Values
+
+The value is specified in seconds, where negative values indicate time on the day of the event:
+
+| Value | Alert Time | Description |
+|-------|------------|-------------|
+| `0` | **None** | No default alert |
+| `-32400` | 9:00 AM | Morning reminder (9 hours from midnight) |
+| `-39600` | 9:00 AM (default) | Morning reminder |
+| `-25200` | 5:00 PM previous day | Day-before evening |
+| `-86400` | Day before (9 AM) | 24 hours before event day |
+| `-172800` | 2 days before | Early warning |
+
+## Visual Demonstration
+
+### How All-Day Event Alerts Work:
+```
++-------------------------------------------------------------+
+|  All-Day Event Alert Timeline                                |
++-------------------------------------------------------------+
+|                                                              |
+|  Event: "Company Holiday Party" (All-Day, December 15)       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  December 14th                    December 15th              |
+|  ─────────────                    ─────────────              |
+|                                                              |
+|                                   ┌─────────────────────┐   |
+|  [ Evening before ]──────────────>│  HOLIDAY PARTY      │   |
+|  (if -25200)                      │  (All Day Event)    │   |
+|                                   │                     │   |
+|       [ 9:00 AM ]────────────────>│  DEFAULT ALERT TIME │   |
+|       (if -39600)                 │  ───────────────────│   |
+|                                   │  "Company Holiday   │   |
+|                                   │   Party is today"   │   |
+|                                   └─────────────────────┘   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Alert Time Comparison:
+```
++-------------------------------------------------------------+
+|  All-Day Event Alert Options                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  EVENT DAY: January 15th (Birthday)                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  PREVIOUS DAYS:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Jan 13  │  Jan 14  │  Jan 15  (Event Day)                  |
+|  ────────┼──────────┼─────────────────────────              |
+|          │          │                                        |
+|  -172800 │          │   2 days before alert                  |
+|  (2 days)│          │                                        |
+|          │          │                                        |
+|          │ -86400   │   1 day before alert                   |
+|          │ (1 day)  │                                        |
+|          │          │                                        |
+|          │ -25200   │   Evening before (5 PM)                |
+|          │ (evening)│                                        |
+|          │          │                                        |
+|  ────────┴──────────┴─────────────────────────              |
+|                                                              |
+|  EVENT DAY ALERTS:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|          │  Morning  │  Afternoon  │  Evening               |
+|  ────────┼───────────┼─────────────┼────────────            |
+|          │           │             │                         |
+|  -39600  │    ●      │             │   9:00 AM alert        |
+|  -32400  │    ●      │             │   9:00 AM alert        |
+|  -21600  │           │     ●       │   12:00 PM alert       |
+|   -7200  │           │             │    ●      2:00 PM      |
+|          │           │             │                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### All-Day vs Timed Events:
+```
++-------------------------------------------------------------+
+|  All-Day Events vs Timed Events                              |
++-------------------------------------------------------------+
+|                                                              |
+|  TIMED EVENT (DefaultEventAlert):                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Event: "Meeting at 2:00 PM"                                 |
+|  Alert: -900 (15 minutes before)                             |
+|                                                              |
+|  Timeline:                                                   |
+|  ... 1:30 PM ... 1:45 PM [ALERT] ... 2:00 PM [MEETING]      |
+|                    ↑                      ↑                  |
+|               Alert fires           Event starts             |
+|                                                              |
+|  ALL-DAY EVENT (DefaultAllDayEventAlert):                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Event: "Mom's Birthday" (All-Day)                           |
+|  Alert: -39600 (9:00 AM on event day)                        |
+|                                                              |
+|  Timeline:                                                   |
+|  ... Midnight ... 9:00 AM [ALERT] ... All Day [EVENT]       |
+|                      ↑                    ↑                  |
+|               Alert fires           Event spans entire day   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Common Alert Time Values:
+```
++-------------------------------------------------------------+
+|  Value Calculator for All-Day Events                         |
++-------------------------------------------------------------+
+|                                                              |
+|  Formula: Hours from midnight × 3600 (negative)              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Same Day Alerts:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|  6:00 AM  =  -6 × 3600  = -21600                            |
+|  7:00 AM  =  -7 × 3600  = -25200                            |
+|  8:00 AM  =  -8 × 3600  = -28800                            |
+|  9:00 AM  =  -9 × 3600  = -32400 (or -39600 works too)      |
+|  12:00 PM = -12 × 3600  = -43200                            |
+|                                                              |
+|  Day Before Alerts:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  Day before 9 AM = 24 hours + 9 hours = -118800             |
+|  Day before 5 PM = -(24-17) × 3600 = -25200                 |
+|                                                              |
+|  No Alert:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  0 = No default alert (can still add manually)               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `-39600` — Alert at 9:00 AM on the day of the event.
+
+### Why 9:00 AM Alert?
+
+1. **Morning Planning** — Start day knowing about all-day events
+2. **Not Too Early** — Respects typical wake-up times
+3. **Actionable** — Time to prepare if needed
+4. **Default Behavior** — Expected standard setting
+5. **Professional** — Reminder before work day gets busy
+
+### Alternative Configurations
+
+| Use Case | Value | Description |
+|----------|-------|-------------|
+| Early bird | `-32400` | 9 AM alert |
+| Day before | `-86400` | Evening before event |
+| No reminders | `0` | Disable default alerts |
+| Afternoon | `-21600` | Noon reminder |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iCal DefaultAllDayEventAlert
+
+# Set to 9:00 AM on day of event (default)
+defaults write com.apple.iCal DefaultAllDayEventAlert -int -39600
+
+# Set to day before at 9:00 AM
+defaults write com.apple.iCal DefaultAllDayEventAlert -int -118800
+
+# Disable default all-day alerts
+defaults write com.apple.iCal DefaultAllDayEventAlert -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.iCal DefaultAllDayEventAlert
+```
+
+Restart Calendar for changes to take effect.
+
+## UI Location
+
+**Calendar** > **Settings** > **Alerts** > **All-day events**
+
+```
++-------------------------------------------------------------+
+|  Calendar Settings - Alerts                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Calendar > Settings > Alerts                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Alerts                                               |  |
+|  |  ──────────────────────────────────────────────────  |  |
+|  |                                                       |  |
+|  |  Events:                                              |  |
+|  |  +-------------------------------------------+        |  |
+|  |  | 15 minutes before                     [v] |        |  |
+|  |  +-------------------------------------------+        |  |
+|  |                                                       |  |
+|  |  All-day events:                                      |  |
+|  |  +-------------------------------------------+        |  |
+|  |  | On day of event (9:00 AM)             [v] |  <---  |  |
+|  |  +-------------------------------------------+        |  |
+|  |        ^                                              |  |
+|  |        This setting                                   |  |
+|  |                                                       |  |
+|  |  Options in dropdown:                                 |  |
+|  |  ─────────────────────────────────────────────────── |  |
+|  |  • None                                               |  |
+|  |  • On day of event (9:00 AM) ← Default                |  |
+|  |  • 1 day before (9:00 AM)                             |  |
+|  |  • 2 days before (9:00 AM)                            |  |
+|  |  • 1 week before (9:00 AM)                            |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# All-day event alerts (this setting)
+defaults write com.apple.iCal DefaultAllDayEventAlert -int -39600
+
+# Timed event alerts
+defaults write com.apple.iCal DefaultEventAlert -int -900
+
+# Show birthdays calendar (uses all-day alerts)
+defaults write com.apple.iCal "display birthdays calendar" -bool true
+
+# Shared calendar notifications
+defaults write com.apple.iCal SharedCalendarNotificationsDisabled -bool false
+```
+
+## Event Types Using All-Day Alerts
+
+| Event Type | Uses This Setting | Notes |
+|------------|-------------------|-------|
+| All-day events you create | Yes | Default alert applies |
+| Birthdays from Contacts | Yes | Calendar's built-in birthdays |
+| Holidays | Varies | Some come with predefined alerts |
+| Anniversaries | Yes | Full-day events |
+| Vacation days | Yes | Multi-day events |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Alert not appearing | Check System Notifications for Calendar |
+| Wrong time | Verify value in seconds calculation |
+| Alerts too early/late | Adjust value using formula above |
+| Existing events unaffected | Setting only affects new events |
+| Birthdays not alerting | Check "display birthdays calendar" setting |
+
+## Compatibility
+
+- **macOS**: 10.8+ (Mountain Lion and later)
+- **Note**: Only affects new all-day events
+- **Note**: Existing events retain their alert settings
+- **Note**: Individual events can override this default
+- **Note**: Requires Calendar restart for changes
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../../../defaults/applications/calendar.sh)
+
+```bash
+# DefaultAllDayEventAlert sets the default reminder for all-day events
+# Domain: com.apple.iCal
+# Value is in seconds; -39600 = 9:00 AM on event day
+run_defaults "com.apple.iCal" "DefaultAllDayEventAlert" "-int" "-39600"
+```
+
+## References
+
+- [Apple Support: Use Calendar on Mac](https://support.apple.com/guide/calendar/welcome/mac)
+- [Apple Support: Set alerts for events in Calendar](https://support.apple.com/guide/calendar/set-alerts-for-events-icl1023/mac)
+- [Apple Support: Change Calendar alert preferences](https://support.apple.com/guide/calendar/change-alerts-preferences-icl1026/mac)

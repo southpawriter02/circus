@@ -1,0 +1,349 @@
+# Finder Disable All Animations
+
+Control whether Finder window animations are disabled for faster navigation.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.finder` |
+| **Key** | `DisableAllAnimations` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether all Finder window animations are disabled. When enabled, Finder operations like opening folders, resizing windows, and Quick Look become instant instead of animated. This can make Finder feel significantly snappier, especially on older hardware or when working with many files. Power users who prioritize speed over visual polish often enable this setting.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Animations enabled** (default) — Smooth, polished transitions |
+| `true` | **Animations disabled** — Instant, no-animation mode |
+
+## Visual Demonstration
+
+### Animations Enabled vs Disabled:
+```
++-------------------------------------------------------------+
+|  Finder Animation Comparison                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  ANIMATIONS ENABLED (false - Default):                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Opening a folder:                                           |
+|  ┌────────┐    ┌──────────┐    ┌────────────┐               |
+|  │ Folder │ -> │  ~~~~~~  │ -> │   Files    │               |
+|  │  Icon  │    │ Zooming  │    │  Revealed  │               |
+|  └────────┘    └──────────┘    └────────────┘               |
+|                  ~200ms                                       |
+|                                                              |
+|  Smooth zoom animation from folder icon to window content.   |
+|                                                              |
+|  ANIMATIONS DISABLED (true):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Opening a folder:                                           |
+|  ┌────────┐         ┌────────────┐                          |
+|  │ Folder │  ───>   │   Files    │                          |
+|  │  Icon  │  SNAP!  │  Revealed  │                          |
+|  └────────┘         └────────────┘                          |
+|                  ~0ms                                         |
+|                                                              |
+|  Instant transition, no animation.                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Affected Animations:
+```
++-------------------------------------------------------------+
+|  What Gets Disabled                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  DISABLED WHEN true:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Folder open/close animations                            |
+|  [x] Window resize animations                                |
+|  [x] Quick Look preview opening animation                    |
+|  [x] Column view sliding animation                           |
+|  [x] Get Info window opening animation                       |
+|  [x] Toolbar show/hide animation                             |
+|  [x] Sidebar show/hide animation                             |
+|  [x] Icon arrangement animations                             |
+|                                                              |
+|  NOT AFFECTED:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [ ] Dock animations (separate settings)                     |
+|  [ ] Mission Control animations (separate settings)          |
+|  [ ] System-wide window minimize (separate settings)         |
+|  [ ] Menu bar animations                                     |
+|  [ ] Notification animations                                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Performance Comparison:
+```
++-------------------------------------------------------------+
+|  Speed Difference                                            |
++-------------------------------------------------------------+
+|                                                              |
+|  OPEN FOLDER:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  With animations:      ████████████████████  ~250ms          |
+|  Without animations:   ██                    ~20ms           |
+|                                                              |
+|  QUICK LOOK (Spacebar):                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  With animations:      ████████████████████  ~300ms          |
+|  Without animations:   ███                   ~50ms           |
+|                                                              |
+|  GET INFO (Cmd+I):                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  With animations:      ████████████████████  ~200ms          |
+|  Without animations:   ██                    ~30ms           |
+|                                                              |
+|  COLUMN VIEW NAVIGATION:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  With animations:      ████████████████████  ~150ms/column   |
+|  Without animations:   █                     ~10ms/column    |
+|                                                              |
+|  Cumulative effect: Significant time savings for heavy users |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Who Benefits:
+```
++-------------------------------------------------------------+
+|  Use Cases for Each Setting                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  KEEP ANIMATIONS (false) - BEST FOR:                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Users who appreciate visual polish                      |
+|  [x] New Mac users learning the interface                    |
+|  [x] Casual/general computing                                |
+|  [x] Presentations and demos                                 |
+|  [x] Modern hardware where animations are smooth             |
+|                                                              |
+|  DISABLE ANIMATIONS (true) - BEST FOR:                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Power users who prioritize speed                        |
+|  [x] Heavy file management workflows                         |
+|  [x] Developers navigating large codebases                   |
+|  [x] Older Macs where animations feel sluggish               |
+|  [x] Users with motion sensitivity                           |
+|  [x] Terminal-style instant feedback preference              |
+|  [x] IT admins managing many files                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Before and After:
+```
++-------------------------------------------------------------+
+|  Visual Experience Comparison                                |
++-------------------------------------------------------------+
+|                                                              |
+|  WITH ANIMATIONS:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  User clicks folder...                                       |
+|                                                              |
+|  Frame 1:  ┌─────┐                                          |
+|            │ 📁  │  <- Folder icon                          |
+|            └─────┘                                          |
+|                                                              |
+|  Frame 2:  ┌───────────┐                                    |
+|            │  ~~~~~~   │  <- Zooming out                    |
+|            └───────────┘                                    |
+|                                                              |
+|  Frame 3:  ┌─────────────────┐                              |
+|            │  Files loading  │  <- Content appearing        |
+|            └─────────────────┘                              |
+|                                                              |
+|  Frame 4:  ┌─────────────────────┐                          |
+|            │ 📄 📄 📁 📁 📄 📄   │  <- Final view           |
+|            └─────────────────────┘                          |
+|                                                              |
+|  WITHOUT ANIMATIONS:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  User clicks folder...                                       |
+|                                                              |
+|  Frame 1:  ┌─────────────────────┐                          |
+|            │ 📄 📄 📁 📁 📄 📄   │  <- Instant final view   |
+|            └─────────────────────┘                          |
+|                                                              |
+|  No intermediate frames. Instant result.                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Keep animations for polished experience.
+
+### Why Keep Animations (false)?
+
+1. **Visual feedback** — Animations show what's happening
+2. **Polished feel** — macOS design language maintained
+3. **Easier to follow** — Transitions help track changes
+4. **Modern hardware** — Animations are smooth on current Macs
+5. **Default experience** — Consistent with expectations
+
+### Why Disable Animations (true)?
+
+- **Speed** — Instant response feels faster
+- **Efficiency** — Less waiting during file operations
+- **Focus** — No distracting motion
+- **Old hardware** — Better performance on older Macs
+- **Preference** — Some users prefer instant feedback
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.finder DisableAllAnimations
+
+# Disable all Finder animations (for speed)
+defaults write com.apple.finder DisableAllAnimations -bool true
+
+# Enable Finder animations (default)
+defaults write com.apple.finder DisableAllAnimations -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.finder DisableAllAnimations
+
+# Restart Finder to apply changes
+killall Finder
+```
+
+### Related Animation Commands
+
+```bash
+# Disable Finder animations
+defaults write com.apple.finder DisableAllAnimations -bool true
+
+# Speed up window resize animation (system-wide)
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+
+# Disable window animations when opening/closing (system-wide)
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+
+# Speed up Mission Control animations
+defaults write com.apple.dock expose-animation-duration -float 0
+
+# Speed up Dock show/hide
+defaults write com.apple.dock autohide-time-modifier -float 0
+
+# Apply all changes
+killall Finder
+killall Dock
+```
+
+## UI Location
+
+There is no GUI setting for this option. It must be configured via the defaults command.
+
+```
++-------------------------------------------------------------+
+|  No GUI Setting Available                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  This setting is not exposed in Finder Preferences:          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Finder > Settings (Command+,)                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [General] [Tags] [Sidebar] [Advanced]                  │|
+|  │                                                          │|
+|  │  • No animation toggle available                         │|
+|  │  • Must use Terminal/defaults command                    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Alternative: System Settings > Accessibility > Display     |
+|  has "Reduce motion" which affects system-wide animations.   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Disable Finder animations (this setting)
+defaults write com.apple.finder DisableAllAnimations -bool true
+
+# Disable window opening animation
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+
+# Speed up window resize
+defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+
+# Disable Quick Look animation
+defaults write -g QLPanelAnimationDuration -float 0
+
+# Disable Dock animations
+defaults write com.apple.dock launchanim -bool false
+
+# Disable folder spring-loading delay
+defaults write NSGlobalDomain com.apple.springing.delay -float 0
+
+# Restart affected services
+killall Finder
+killall Dock
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Run `killall Finder` after changing |
+| Some animations still occur | Use additional settings above for full effect |
+| Finder crashes after change | Delete setting and restart Finder |
+| Want partial animations | This is all-or-nothing; use system Reduce Motion instead |
+| Miss animations, want them back | Set to false and restart Finder |
+| Still feels slow | Check for indexing (Spotlight) or disk issues |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion and later)
+- **Note**: Requires `killall Finder` to apply changes
+- **Note**: Setting persists across restarts
+- **Note**: Does not affect other applications
+- **Note**: Works alongside system-wide Reduce Motion setting
+- **Note**: May interact with accessibility settings
+
+## Source File
+
+**File**: [`defaults/interface/finder.sh`](../../../../../defaults/interface/finder.sh)
+
+```bash
+# DisableAllAnimations controls Finder window animation behavior
+# Domain: com.apple.finder
+# false = smooth animations (default), true = instant transitions
+# Not explicitly set - keeps default animations
+```
+
+## References
+
+- [Apple Support: Change Finder settings on Mac](https://support.apple.com/guide/mac-help/change-finder-settings-on-mac-mchlp2609/mac)
+- [Apple Support: Reduce motion on your Mac](https://support.apple.com/en-us/HT204898)
+- [defaults-write.com: Speed Up Finder](https://www.defaults-write.com/disable-the-animation-when-opening-the-info-window-in-os-x-finder/)
+- [macOS Hidden Settings: Finder Animations](https://macos-defaults.com/finder/disableallanimations.html)

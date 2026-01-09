@@ -1,0 +1,337 @@
+# Siri Keyboard Shortcut
+
+Configure the keyboard shortcut used to activate Siri.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Siri` |
+| **Key** | `HotkeyTag` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `0` |
+
+## Description
+
+Controls which keyboard shortcut activates Siri on macOS. By default, holding the microphone key (on supported keyboards) or pressing a configured key combination invokes Siri. This setting allows you to customize the keyboard trigger or disable it entirely. The setting works alongside voice activation ("Hey Siri") if that feature is enabled.
+
+## Values
+
+| Value | Shortcut | Description |
+|-------|----------|-------------|
+| `0` | **Hold Dictation Key** | Hold Fn key or mic key (default) |
+| `1` | **Hold Command Space** | Hold ⌘ + Space |
+| `2` | **Hold Option Space** | Hold ⌥ + Space |
+| `3` | **Press Fn Space** | Press Fn + Space |
+| `4` | **Disabled** | No keyboard shortcut |
+
+## Visual Demonstration
+
+### Keyboard Shortcut Options:
+```
++-------------------------------------------------------------+
+|  Siri Keyboard Shortcuts                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  VALUE 0 - HOLD DICTATION KEY (Default):                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  MacBook Keyboard Layout                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────────┐ │|
+|  │  │ esc │ F1  │ F2  │ F3  │ F4  │ F5  │ F6  │ 🎤 ← HOLD│ │|
+|  │  └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────────┘ │|
+|  │                                                          │|
+|  │  Or on keyboards without mic key:                       │|
+|  │                                                          │|
+|  │  ┌─────┐                                                │|
+|  │  │ fn  │ ← Hold to activate Siri                        │|
+|  │  └─────┘                                                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  VALUE 1 - HOLD COMMAND SPACE:                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ┌─────┐     ┌───────────────────────────┐              │|
+|  │  │  ⌘  │  +  │         Space             │  HOLD        │|
+|  │  └─────┘     └───────────────────────────┘              │|
+|  │                                                          │|
+|  │  Note: Conflicts with Spotlight (⌘+Space press)         │|
+|  │  Spotlight = Quick press, Siri = Hold                   │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  VALUE 2 - HOLD OPTION SPACE:                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ┌─────┐     ┌───────────────────────────┐              │|
+|  │  │  ⌥  │  +  │         Space             │  HOLD        │|
+|  │  └─────┘     └───────────────────────────┘              │|
+|  │                                                          │|
+|  │  Less common shortcut, fewer conflicts                  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  VALUE 3 - PRESS FN SPACE:                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ┌─────┐     ┌───────────────────────────┐              │|
+|  │  │ fn  │  +  │         Space             │  PRESS       │|
+|  │  └─────┘     └───────────────────────────┘              │|
+|  │                                                          │|
+|  │  Single press (not hold), immediate activation          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Siri Activation Flow:
+```
++-------------------------------------------------------------+
+|  Activating Siri via Keyboard                                |
++-------------------------------------------------------------+
+|                                                              |
+|  STEP 1: Press/Hold Configured Shortcut                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │   User presses: ⌘ + Space (hold)                        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                      │                                       |
+|                      ▼                                       |
+|  STEP 2: Siri Appears                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │           ┌───────────────────────────────┐              │|
+|  │           │                               │              │|
+|  │           │      🟣 Siri                  │              │|
+|  │           │                               │              │|
+|  │           │   "What can I help you with?" │              │|
+|  │           │                               │              │|
+|  │           │         ◉ Listening...        │              │|
+|  │           │                               │              │|
+|  │           └───────────────────────────────┘              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                      │                                       |
+|                      ▼                                       |
+|  STEP 3: Speak or Type Query                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │   "Set a reminder for 3pm"                              │|
+|  │               or                                         │|
+|  │   [Type your query if Type to Siri enabled]             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Shortcut Conflicts:
+```
++-------------------------------------------------------------+
+|  Potential Keyboard Conflicts                                |
++-------------------------------------------------------------+
+|                                                              |
+|  ⌘ + SPACE:                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Press quickly  →  Spotlight Search  🔍                      |
+|  Hold down      →  Siri              🟣                      |
+|                                                              |
+|  Potential issue: Accidental Siri activation when trying    |
+|  to use Spotlight if you hold too long.                     |
+|                                                              |
+|  ⌥ + SPACE:                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  May conflict with:                                          |
+|  • Third-party app shortcuts                                 |
+|  • Window managers (Rectangle, Magnet)                      |
+|  • Input method switching                                    |
+|                                                              |
+|  RECOMMENDATION:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Use default (Hold Dictation Key) if keyboard supports   |
+|  • Use Fn + Space if you prefer dedicated trigger           |
+|  • Disable if you never use Siri                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `0` — Hold Dictation Key (default).
+
+### Why Use Default (0)?
+
+1. **No conflicts** — Dedicated key doesn't override other shortcuts
+2. **Intuitive** — Microphone key naturally associated with voice
+3. **Apple default** — Consistent with expected macOS behavior
+4. **Works everywhere** — Supported on all Mac keyboards
+
+### Alternative Options
+
+**Hold Command Space (1)**:
+- Familiar to Spotlight users
+- Quick access near primary typing position
+- Risk of accidental activation
+
+**Hold Option Space (2)**:
+- Fewer software conflicts
+- Less discoverable
+- Good for power users
+
+**Press Fn Space (3)**:
+- Immediate activation (no holding)
+- Clearer separation from other shortcuts
+- Requires two hands
+
+**Disabled (4)**:
+- For users who never use Siri
+- Use "Hey Siri" voice only
+- Maximum keyboard availability
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Siri HotkeyTag
+
+# Set to Hold Dictation Key (default)
+defaults write com.apple.Siri HotkeyTag -int 0
+
+# Set to Hold Command Space
+defaults write com.apple.Siri HotkeyTag -int 1
+
+# Set to Hold Option Space
+defaults write com.apple.Siri HotkeyTag -int 2
+
+# Set to Press Fn Space
+defaults write com.apple.Siri HotkeyTag -int 3
+
+# Disable keyboard shortcut
+defaults write com.apple.Siri HotkeyTag -int 4
+
+# Delete (reset to default)
+defaults delete com.apple.Siri HotkeyTag
+```
+
+## UI Location
+
+**System Settings** > **Siri & Spotlight** > **Keyboard Shortcut**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Siri & Spotlight                          |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Siri & Spotlight                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Ask Siri                                                │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [●] Ask Siri                                           │|
+|  │                                                          │|
+|  │  Listen for "Hey Siri"           [✓]                    │|
+|  │                                                          │|
+|  │  Keyboard shortcut:                                     │|
+|  │  ┌───────────────────────────────────────────────────┐  │|
+|  │  │  Hold Dictation Key (Microphone)              ▼   │  │|
+|  │  └───────────────────────────────────────────────────┘  │|
+|  │                                                          │|
+|  │  Options:                                                │|
+|  │  • Hold Dictation Key (Microphone)  ← Default           │|
+|  │  • Hold Command Space                                   │|
+|  │  • Hold Option Space                                    │|
+|  │  • Press Fn Space                                       │|
+|  │  • Off                                                  │|
+|  │                                                          │|
+|  │  Language:           [English (United States)   ▼]      │|
+|  │                                                          │|
+|  │  Siri Voice:         [American (Voice 4)        ▼]      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Siri keyboard shortcut (this setting)
+defaults write com.apple.Siri HotkeyTag -int 0
+
+# Enable/disable Siri
+defaults write com.apple.assistant.support "Assistant Enabled" -bool true
+
+# Type to Siri (instead of voice)
+defaults write com.apple.Siri TypeToSiriEnabled -bool false
+
+# Voice feedback
+defaults write com.apple.Siri VoiceFeedback -string "On"
+
+# Siri suggestions
+defaults write com.apple.Siri SiriSuggestionsEnabled -bool true
+
+# Hey Siri voice activation
+defaults write com.apple.Siri VoiceTriggerUserEnabled -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Shortcut not working | Verify Siri is enabled in System Settings |
+| Conflicts with Spotlight | Use Option Space or Fn Space instead |
+| Accidental activation | Switch to Fn Space (requires press, not hold) |
+| Shortcut changed unexpectedly | Check third-party keyboard software |
+| Setting not persisting | Log out and log back in |
+| No microphone key | Use alternative shortcut option |
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra) when Siri was introduced
+- **Note**: Microphone key available on MacBook Pro 2016+ and Magic Keyboard
+- **Note**: Older keyboards use Fn key as dictation key
+- **Note**: May require logout for changes to apply
+- **Note**: Works alongside "Hey Siri" voice activation
+
+## Source File
+
+**File**: [`defaults/system/siri.sh`](../../../../../defaults/system/siri.sh)
+
+```bash
+# HotkeyTag controls Siri keyboard shortcut
+# Domain: com.apple.Siri
+# Options: 0 = Hold Dictation, 1 = Hold ⌘Space, 2 = Hold ⌥Space,
+#          3 = Press Fn Space, 4 = Off
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+```
+
+## References
+
+- [Apple Support: Use Siri on your Mac](https://support.apple.com/guide/mac-help/use-siri-mchl6b029310/mac)
+- [Apple Support: Change Siri settings](https://support.apple.com/guide/mac-help/change-siri-preferences-mchl3d63437e/mac)
+- [Apple Support: Set up Siri](https://support.apple.com/guide/mac-help/set-up-siri-mchl600e9f3a/mac)

@@ -1,0 +1,288 @@
+# Mail Addresses Include Name on Pasteboard
+
+Control whether copied email addresses include the contact name.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `AddressesIncludeNameOnPasteboard` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether copying an email address from Mail includes the contact's display name along with the email address. When enabled, copying "john@example.com" from a message would copy "John Smith <john@example.com>" instead of just the email address. This affects how email addresses can be pasted into other applications.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Email only** (default) — Copies just the email address |
+| `true` | **Name and email** — Copies "Name <email@domain.com>" format |
+
+## Visual Demonstration
+
+### Copy Behavior Comparison:
+```
++-------------------------------------------------------------+
+|  Email Address Copy Behavior                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  SOURCE EMAIL IN MAIL:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  From: John Smith <john.smith@company.com>                  |
+|         ↑                                                    |
+|         Click to copy                                        |
+|                                                              |
+|  INCLUDE NAME = false (default):                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Copied to clipboard:                                        |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  john.smith@company.com                                  │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  INCLUDE NAME = true:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Copied to clipboard:                                        |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  John Smith <john.smith@company.com>                     │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Paste Scenarios:
+```
++-------------------------------------------------------------+
+|  Where You Paste the Address                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO 1: Composing email (another client)               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Email only (false):                                         |
+|  To: john.smith@company.com                                 |
+|      ✓ Works in all email fields                            |
+|                                                              |
+|  Name + Email (true):                                        |
+|  To: John Smith <john.smith@company.com>                    |
+|      ✓ Works, shows display name                            |
+|                                                              |
+|  SCENARIO 2: Spreadsheet/Database                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Email only (false):                                         |
+|  │ Email Column      │                                       |
+|  │ john@company.com  │  ✓ Clean data entry                  |
+|                                                              |
+|  Name + Email (true):                                        |
+|  │ Email Column                        │                     |
+|  │ John Smith <john@company.com>       │  ⚠️ Extra parsing  |
+|                                                              |
+|  SCENARIO 3: Contact form / Sign-up                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Email only (false):                                         |
+|  Email: [john@company.com         ]  ✓ Valid format         |
+|                                                              |
+|  Name + Email (true):                                        |
+|  Email: [John Smith <john@comp... ]  ✗ May be rejected      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Privacy Considerations:
+```
++-------------------------------------------------------------+
+|  Privacy Implications                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  EMAIL ONLY (false):                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Copied: john.smith@company.com                             |
+|                                                              |
+|  • Only email address shared                                |
+|  • No personal name information                             |
+|  • Minimal data exposure                                    |
+|                                                              |
+|  NAME + EMAIL (true):                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Copied: John Smith <john.smith@company.com>                |
+|                                                              |
+|  • Includes display name                                    |
+|  • More context provided                                    |
+|  • More personal information shared                         |
+|                                                              |
+|  WHEN NAME MATTERS:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ✓ Forwarding contact info to colleague                     |
+|  ✓ Creating address book entries                            |
+|  ✓ Professional correspondence                              |
+|                                                              |
+|  WHEN EMAIL-ONLY IS BETTER:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ✓ Data entry in forms                                      |
+|  ✓ Spreadsheet/database population                          |
+|  ✓ Sign-up fields                                           |
+|  ✓ Technical contexts (scripts, configs)                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Copy Methods in Mail:
+```
++-------------------------------------------------------------+
+|  Ways to Copy Email Addresses in Mail                        |
++-------------------------------------------------------------+
+|                                                              |
+|  METHOD 1: Click address in message header                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  From: [John Smith] ← Click → Context menu appears          |
+|                                                              |
+|  ┌──────────────────────────────┐                           |
+|  │  New Message                 │                           |
+|  │  Reply                       │                           |
+|  │  ──────────────────────────  │                           |
+|  │  Copy Address               ← Uses this setting          │|
+|  │  Add to Contacts             │                           |
+|  │  Search Messages...          │                           |
+|  └──────────────────────────────┘                           |
+|                                                              |
+|  METHOD 2: Select text and Copy (⌘C)                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Copies exactly what you select (setting doesn't apply)     |
+|                                                              |
+|  METHOD 3: Drag address to another app                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  May include name depending on receiving app                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Copy email address only for cleaner pasting.
+
+### Why Email Only?
+
+1. **Universal compatibility** — Works in all email fields
+2. **Clean data** — No need to parse out the name
+3. **Form friendly** — Valid for sign-up/contact forms
+4. **Technical use** — Ready for scripts and configs
+5. **Privacy** — Less personal information copied
+
+### Why Include Name?
+
+- Forwarding complete contact information
+- Creating address book entries
+- Professional email introductions
+- When context about the person matters
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail AddressesIncludeNameOnPasteboard
+
+# Copy email address only (default)
+defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false
+
+# Copy name and email address
+defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.mail AddressesIncludeNameOnPasteboard
+```
+
+## UI Location
+
+This setting is not directly exposed in Mail's preferences UI. It can only be configured via the `defaults` command or terminal.
+
+```
++-------------------------------------------------------------+
+|  Not Available in Mail Settings UI                           |
++-------------------------------------------------------------+
+|                                                              |
+|  This preference must be set via Terminal:                  |
+|                                                              |
+|  $ defaults write com.apple.mail \                          |
+|      AddressesIncludeNameOnPasteboard -bool true            |
+|                                                              |
+|  Or using defaults read to check current value:             |
+|                                                              |
+|  $ defaults read com.apple.mail \                           |
+|      AddressesIncludeNameOnPasteboard                       |
+|                                                              |
+|  Note: Restart Mail after changing for it to take effect    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Include name on paste (this setting)
+defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false
+
+# Show unread in bold
+defaults write com.apple.mail ShouldShowUnreadMessagesInBold -bool true
+
+# Preview lines
+defaults write com.apple.mail NumberOfSnippetLines -int 2
+
+# Conversation view
+defaults write com.apple.mail ConversationViewEnabled -bool true
+
+# Mail Privacy Protection
+defaults write com.apple.mail ProtectMailActivityInICloud -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not working | Restart Mail after changing via defaults |
+| Still getting name | Use manual text selection instead of "Copy Address" |
+| Pasted address invalid | Use false setting for cleaner email-only copy |
+| Want both options | Toggle setting as needed, or use text selection |
+| Can't find in UI | This is a hidden preference, use terminal only |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite and later)
+- **Note**: Hidden preference, not in Mail Settings UI
+- **Note**: Affects "Copy Address" menu command
+- **Note**: Restart Mail after changing
+- **Note**: Manual text selection ignores this setting
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../../defaults/applications/mail.sh)
+
+```bash
+# --- Addresses Include Name on Pasteboard ---
+# Key:          AddressesIncludeNameOnPasteboard
+# Domain:       com.apple.mail
+# Description:  Include contact name when copying email addresses
+# Default:      false (email address only)
+# Listed in undocumented settings
+```
+
+## References
+
+- [Apple Support: Use Mail on your Mac](https://support.apple.com/guide/mail/welcome/mac)
+- [Apple Support: Copy and paste](https://support.apple.com/guide/mac-help/copy-and-paste-mchlp1227/mac)
+- [Apple Support: Mail preferences](https://support.apple.com/guide/mail/mail-preferences-cpmlprfrc/mac)

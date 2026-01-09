@@ -1,0 +1,262 @@
+# Podcasts Trim Silence
+
+Automatically reduce silent gaps in podcast playback.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Key** | `TrimSilence` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Apple Podcasts app automatically shortens or removes silent pauses during podcast playback. When enabled, the app detects periods of silence (gaps between sentences, dramatic pauses, thinking time) and either removes or compresses them, effectively reducing episode length without changing playback speed. This is different from increasing playback speed—trim silence maintains normal voice pitch and pace but removes dead air.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Silence preserved** (default) — Natural pauses intact |
+| `true` | **Silence trimmed** — Silent gaps shortened or removed |
+
+## Visual Demonstration
+
+### Without Trim Silence (false - Default):
+```
++-------------------------------------------------------------+
+|  Audio Waveform - Silence Preserved                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Speaker's natural speech pattern:                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ▁▂▃▄▅▆▇█▇▆▅▄▃▂▁   ▁▁   ▁▂▃▄▅▆▇█▇▆▅▄▃▂▁   ▁▁   ▁▂▃▄▅▆    |
+|  ──────Speech──────  Gap  ──────Speech──────  Gap  ─Speech─  |
+|                                                              |
+|  "So, um..."     [pause]  "let me think"   [pause] "about"  |
+|                                                              |
+|  Total playback: All pauses included                        |
+|  Episode time:   Original length                            |
+|                                                              |
+|  ✓ Natural conversation flow                                |
+|  ✓ Dramatic pauses preserved                                |
+|  ✓ Thinking time intact                                     |
+|  ✗ Longer listening time                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Trim Silence (true):
+```
++-------------------------------------------------------------+
+|  Audio Waveform - Silence Trimmed                            |
++-------------------------------------------------------------+
+|                                                              |
+|  Same speech with silence removed:                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ▁▂▃▄▅▆▇█▇▆▅▄▃▂▁▁▂▃▄▅▆▇█▇▆▅▄▃▂▁▁▂▃▄▅▆                       |
+|  ──────Speech─────────────Speech───────────Speech──          |
+|                                                              |
+|  "So, um..." "let me think" "about"                         |
+|              ↑ Gaps shortened                               |
+|                                                              |
+|  Total playback: Reduced by ~10-20%                         |
+|  Episode time:   Shorter than original                      |
+|                                                              |
+|  ✓ Faster content consumption                               |
+|  ✓ Voice pitch unchanged                                    |
+|  ✓ Speech pace unchanged                                    |
+|  ✗ Can feel rushed or unnatural                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Time Savings Comparison:
+```
++-------------------------------------------------------------+
+|  Trim Silence vs Playback Speed                              |
++-------------------------------------------------------------+
+|                                                              |
+|  60-MINUTE EPISODE COMPARISON:                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Method              Time      Voice Effect                  |
+|  ────────────────────────────────────────────────────────   |
+|  Normal (1x)         60 min    Natural                      |
+|  Trim Silence Only   50-54 min Natural (gaps removed)       |
+|  1.25x Speed Only    48 min    Slightly faster voice        |
+|  Trim + 1.25x        40-43 min Faster + gaps removed        |
+|  1.5x Speed Only     40 min    Noticeably faster voice      |
+|  Trim + 1.5x         33-36 min Fast + gaps removed          |
+|                                                              |
+|  KEY DIFFERENCE:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Trim Silence: Removes dead air, keeps natural pace         |
+|  Speed Up:     Compresses everything, including speech      |
+|                                                              |
+|  COMBINED:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  Using both trim silence AND increased speed provides       |
+|  maximum time savings while keeping speech more natural     |
+|  than speed increase alone                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### How Detection Works:
+```
++-------------------------------------------------------------+
+|  Silence Detection Algorithm                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  WHAT GETS TRIMMED:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ✓ Long pauses between sentences                           |
+|  ✓ "Um" and "uh" gaps                                      |
+|  ✓ Thinking pauses                                         |
+|  ✓ Dead air during transitions                             |
+|  ✓ Recording silence at beginning/end                      |
+|                                                              |
+|  WHAT'S PRESERVED:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ✓ Natural breath pauses (very short)                      |
+|  ✓ Intentional dramatic pauses (varies)                    |
+|  ✓ Music and sound effects                                 |
+|  ✓ Background noise (not silence)                          |
+|                                                              |
+|  Note: Algorithm isn't perfect—intentional dramatic         |
+|  pauses may be shortened, affecting storytelling            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Preserve natural audio with all pauses intact.
+
+### Why Keep Disabled?
+
+1. **Natural flow** — Hear content as creators intended
+2. **Dramatic effect** — Preserve intentional pauses
+3. **Comprehension** — Natural pauses aid understanding
+4. **Audio quality** — No potential for audio artifacts
+
+### Why Enable?
+
+- Want to save time without voice pitch change
+- Listen to verbose speakers with many pauses
+- Combine with speed increase for maximum efficiency
+- Prefer denser audio content
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.podcasts TrimSilence
+
+# Disable trim silence (default)
+defaults write com.apple.podcasts TrimSilence -bool false
+
+# Enable trim silence
+defaults write com.apple.podcasts TrimSilence -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.podcasts TrimSilence
+```
+
+## UI Location
+
+**Podcasts** > **Now Playing** > **Speed Menu** or **Settings**
+
+```
++-------------------------------------------------------------+
+|  Accessing Trim Silence                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  METHOD 1 - Now Playing (if available):                      |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Play any podcast episode                                |
+|  2. Tap speed button                                        |
+|  3. Look for "Trim Silence" toggle in speed options         |
+|                                                              |
+|  METHOD 2 - Episode/Show Settings:                           |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Right-click episode or go to show page                  |
+|  2. Open playback settings                                  |
+|  3. Look for "Trim Silence" option                          |
+|                                                              |
+|  Note: Feature availability may vary by macOS version       |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Playback Speed                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │   0.5x   0.75x   1x   1.25x   1.5x   2x                 │|
+|  │                   ●                                      │|
+|  │                                                          │|
+|  │   ○ Trim Silence        ← Toggle                        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Trim silence (this setting)
+defaults write com.apple.podcasts TrimSilence -bool false
+
+# Playback speed (0.5-2.0)
+defaults write com.apple.podcasts PlaybackSpeed -float 1.0
+
+# Continuous playback
+defaults write com.apple.podcasts continuousPlaybackEnabled -bool true
+
+# Skip forward time (seconds)
+defaults write com.apple.podcasts skipForwardTime -int 30
+
+# Skip back time (seconds)
+defaults write com.apple.podcasts skipBackTime -int 15
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Option not appearing | May not be available in all Podcasts versions |
+| Audio sounds choppy | Disable trim silence; some content doesn't work well |
+| Pauses still present | Very short pauses may be preserved intentionally |
+| Drama/story feels rushed | Disable for fiction/narrative content |
+| Setting not persisting | Check per-show settings; restart Podcasts |
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina)
+- **Note**: Feature availability varies by Podcasts version
+- **Note**: Works best with talk/interview content
+- **Note**: May affect audiobooks and fiction podcasts negatively
+- **Note**: iOS Podcasts app has similar feature
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../../defaults/applications/podcasts.sh)
+
+```bash
+# TrimSilence is part of the com.apple.podcasts domain
+# Typically adjusted via the app interface
+```
+
+## References
+
+- [Apple Support: Use Podcasts on Mac](https://support.apple.com/guide/podcasts/welcome/mac)
+- [Apple Support: Change playback settings](https://support.apple.com/guide/podcasts/change-settings-podb804dc5bd/mac)
+- [Apple Support: Customize show settings](https://support.apple.com/guide/podcasts/customize-show-settings-podb7a76ee9d/mac)

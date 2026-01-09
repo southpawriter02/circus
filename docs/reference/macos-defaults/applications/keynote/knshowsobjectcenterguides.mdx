@@ -1,0 +1,272 @@
+# Keynote Object Center Alignment Guides
+
+Control whether alignment guides appear when dragging objects near the center of other objects in Keynote.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Keynote` |
+| **Key** | `KNShowsObjectCenterGuides` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls the display of visual alignment guides that appear when you drag an object near the horizontal or vertical center of another object on your slide. These guides help you precisely align objects without manual measurement, ensuring professional-looking presentations with consistent layouts.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show center guides** (default) — Guides appear when objects align |
+| `false` | **Hide center guides** — No visual alignment assistance |
+
+## Visual Demonstration
+
+### Center Alignment Guides (true - Default):
+```
++-------------------------------------------------------------+
+|  Keynote Slide Canvas with Center Guides                     |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │       ┌───────────────────┐                              │|
+|  │       │                   │                              │|
+|  │       │   Existing Box    │                              │|
+|  │       │                   │                              │|
+|  │       └─────────┬─────────┘                              │|
+|  │                 │                                        │|
+|  │                 │  ← Yellow center guide line            │|
+|  │                 │                                        │|
+|  │       ┌─────────┴─────────┐                              │|
+|  │       │  ☐ Dragging Box   │  ← Being aligned             │|
+|  │       │   (moving)        │                              │|
+|  │       └───────────────────┘                              │|
+|  │                                                          │|
+|  │  Guide appears when centers of objects vertically align  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Horizontal Center Alignment:
+```
++-------------------------------------------------------------+
+|  Horizontal Center Guide                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │   ┌─────────┐ ─────────────────────── ┌─────────┐       │|
+|  │   │ Box A   │        Guide Line       │  Box B  │       │|
+|  │   │         │ ─────────────────────── │ (drag)  │       │|
+|  │   └─────────┘           ↑             └─────────┘       │|
+|  │                         │                                │|
+|  │              Yellow guide shows horizontal               │|
+|  │              centers are aligned                         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  The guide appears when the horizontal center of Box B      |
+|  aligns with the horizontal center of Box A.                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Center Guides (false):
+```
++-------------------------------------------------------------+
+|  No Visual Alignment Feedback                                |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │       ┌───────────────────┐                              │|
+|  │       │   Existing Box    │                              │|
+|  │       └───────────────────┘                              │|
+|  │                                                          │|
+|  │       ┌───────────────────┐                              │|
+|  │       │  ☐ Dragging Box   │  ← No guide shown            │|
+|  │       │   (moving)        │     Must eyeball alignment   │|
+|  │       └───────────────────┘                              │|
+|  │                                                          │|
+|  │  Objects may appear aligned but could be slightly off    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Without guides, precise alignment requires manual checking  |
+|  using rulers or the Format inspector's position values.    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Alignment Types:
+```
++-------------------------------------------------------------+
+|  Types of Center Alignment                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  VERTICAL CENTER ALIGNMENT:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|       ┌─────┐                                                |
+|       │  A  │                                                |
+|       └──┬──┘                                                |
+|          │  ← Guide appears here                             |
+|       ┌──┴──┐                                                |
+|       │  B  │                                                |
+|       └─────┘                                                |
+|                                                              |
+|  Objects A and B share the same vertical center line.        |
+|                                                              |
+|  HORIZONTAL CENTER ALIGNMENT:                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|       ┌─────┐ ────────── ┌─────┐                            |
+|       │  A  │   Guide    │  B  │                            |
+|       └─────┘ ────────── └─────┘                            |
+|                                                              |
+|  Objects A and B share the same horizontal center line.      |
+|                                                              |
+|  BOTH CENTERS (Perfect centering):                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|            │                                                 |
+|       ┌────┼────┐                                            |
+|   ────│────┼────│────                                        |
+|       │    │    │                                            |
+|       └────┼────┘                                            |
+|            │                                                 |
+|                                                              |
+|  Cross-hair guides when object is centered on another.       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show alignment guides for precise positioning.
+
+### Why Enable Center Guides?
+
+1. **Professional layouts** — Precisely aligned objects look polished
+2. **Faster editing** — No manual measurement needed
+3. **Consistent spacing** — Easy to center elements
+4. **Visual feedback** — Immediate confirmation of alignment
+5. **Slide balance** — Helps create visually balanced compositions
+
+### Why Disable Center Guides?
+
+- **Free-form design** — Intentionally asymmetric layouts
+- **Reduce visual clutter** — Fewer on-screen elements while editing
+- **Artistic placement** — Prefer organic, non-aligned positioning
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Keynote KNShowsObjectCenterGuides
+
+# Enable center alignment guides (default, recommended)
+defaults write com.apple.iWork.Keynote KNShowsObjectCenterGuides -bool true
+
+# Disable center alignment guides
+defaults write com.apple.iWork.Keynote KNShowsObjectCenterGuides -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Keynote KNShowsObjectCenterGuides
+```
+
+## UI Location
+
+**Keynote** > **Settings** > **Rulers** > **Show guides at object center**
+
+```
++-------------------------------------------------------------+
+|  Keynote Settings - Rulers                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Keynote > Settings (⌘,) > Rulers                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Slideshow] [Rulers] [Auto-Correction]       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Ruler Units:  [Points                            ▼]    │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Alignment Guides                                        │|
+|  │                                                          │|
+|  │  [✓] Show guides at object center     ← This setting    │|
+|  │                                                          │|
+|  │  [✓] Show guides at object edges                        │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [✓] Show size and position when moving objects         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Object center alignment guides (this setting)
+defaults write com.apple.iWork.Keynote KNShowsObjectCenterGuides -bool true
+
+# Object edge alignment guides
+defaults write com.apple.iWork.Keynote KNShowsObjectEdgeGuides -bool true
+
+# Show size and position when moving
+defaults write com.apple.iWork.Keynote KNShowSizeAndPositionWhenMoving -bool true
+
+# Show rulers
+defaults write com.apple.iWork.Keynote TSShowsRuler -bool true
+
+# Default zoom level
+defaults write com.apple.iWork.Keynote TSDefaultZoom -int 100
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Guides not appearing | Check Settings > Rulers > Show guides at object center |
+| Guides appear for some objects only | Guides only show when objects nearly align |
+| Want more precise alignment | Use Format sidebar > Arrange tab for exact positions |
+| Guides too sensitive | Zoom out for less frequent triggering |
+| Can't align to slide center | Use View > Show Rulers, then drag from ruler |
+| Setting not persisting | Restart Keynote after changing via defaults |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Keynote
+- **Note**: Same setting exists in Pages (`com.apple.iWork.Pages`) and Numbers (`com.apple.iWork.Numbers`)
+- **Note**: Restart Keynote for terminal changes to apply
+- **Note**: Guides only appear during active drag operations
+- **Note**: Works with all object types (shapes, images, text boxes, charts)
+
+## Source File
+
+**File**: [`defaults/applications/keynote.sh`](../../../../../defaults/applications/keynote.sh)
+
+```bash
+# KNShowsObjectCenterGuides controls center alignment guide visibility
+# Domain: com.apple.iWork.Keynote
+# Shows alignment guides when dragging objects near the center of other objects
+run_defaults "com.apple.iWork.Keynote" "KNShowsObjectCenterGuides" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Keynote User Guide](https://support.apple.com/guide/keynote/welcome/mac)
+- [Apple Support: Position and align objects in Keynote](https://support.apple.com/guide/keynote/position-and-align-objects-tanb32e7b8f4/mac)
+- [Apple Support: Use alignment guides in Keynote](https://support.apple.com/guide/keynote/use-alignment-guides-tanc10df22e7/mac)

@@ -1,0 +1,290 @@
+# Activity Monitor Update Period
+
+Control how frequently Activity Monitor refreshes process and resource data.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.ActivityMonitor` |
+| **Key** | `UpdatePeriod` |
+| **Type** | Integer |
+| **Default Value** | `5` (5 seconds) |
+| **Our Setting** | `2` (2 seconds) |
+
+## Description
+
+Controls the refresh interval for Activity Monitor's process list and resource graphs. A shorter interval provides more responsive real-time monitoring but uses slightly more system resources. A longer interval reduces CPU usage from Activity Monitor itself but may miss brief spikes in resource usage. The setting affects all tabs (CPU, Memory, Energy, Disk, Network).
+
+## Values
+
+| Value | Interval | Use Case |
+|-------|----------|----------|
+| `1` | 1 second | Real-time debugging, watching for spikes |
+| `2` | 2 seconds | Active troubleshooting |
+| `5` | 5 seconds (default) | General monitoring |
+| `10` | 10 seconds | Background monitoring, low overhead |
+
+## Visual Demonstration
+
+### Update Period Impact:
+```
++-------------------------------------------------------------+
+|  Activity Monitor Update Behavior                            |
++-------------------------------------------------------------+
+|                                                              |
+|  1-SECOND UPDATE (Very Frequent):                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  CPU History Graph:                                          |
+|  100%│▃▅▇█▆▄▃▅▇█▆▃▂▄▆▇█▅▃▂▃▄▆▇█▅▃                          |
+|   75%│                                                       |
+|   50%│         Smooth, detailed graph                       |
+|   25%│         Catches brief spikes                          |
+|    0%└──────────────────────────────────────────             |
+|        Time: 1s intervals                                    |
+|                                                              |
+|  5-SECOND UPDATE (Default):                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  CPU History Graph:                                          |
+|  100%│   ▇   █       ▇   █                                   |
+|   75%│ ▅   ▆   ▄   ▅   ▆                                     |
+|   50%│▃       ▃ ▃ ▃       ▃                                  |
+|   25%│                                                       |
+|    0%└──────────────────────────────────────────             |
+|        Time: 5s intervals (choppier)                         |
+|                                                              |
+|  10-SECOND UPDATE (Infrequent):                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  CPU History Graph:                                          |
+|  100%│       █               █                               |
+|   75%│   ▅       ▅       ▅       ▅                           |
+|   50%│                                                       |
+|   25%│▃               ▃               ▃                      |
+|    0%└──────────────────────────────────────────             |
+|        Time: 10s intervals (may miss spikes)                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Real-Time Process Updates:
+```
++-------------------------------------------------------------+
+|  Process List Updates                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  FASTER UPDATE (1-2 seconds):                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Process Name        %CPU   Memory   Energy             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Xcode               45.2%  2.1 GB   High    ← Updates  │|
+|  │  Safari              12.8%  890 MB   Medium    every    │|
+|  │  Slack                8.1%  450 MB   Low       1-2 sec  │|
+|  │  Terminal             3.2%  120 MB   Very Low           │|
+|  │                                                          │|
+|  │  Benefits:                                               │|
+|  │  ✓ See CPU spikes immediately                           │|
+|  │  ✓ Catch runaway processes quickly                      │|
+|  │  ✓ Better for active debugging                          │|
+|  │                                                          │|
+|  │  Drawbacks:                                              │|
+|  │  ✗ Slightly higher CPU usage by Activity Monitor        │|
+|  │  ✗ List reordering can be distracting                   │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  SLOWER UPDATE (5-10 seconds):                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Process Name        %CPU   Memory   Energy             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Xcode               32.5%  2.1 GB   High    ← Updates  │|
+|  │  Safari              15.1%  895 MB   Medium    every    │|
+|  │  Slack                6.5%  452 MB   Low       5-10 sec │|
+|  │  Terminal             2.8%  120 MB   Very Low           │|
+|  │                                                          │|
+|  │  Benefits:                                               │|
+|  │  ✓ Lower overhead from Activity Monitor                 │|
+|  │  ✓ More stable list (less jumping around)               │|
+|  │  ✓ Better for background monitoring                     │|
+|  │                                                          │|
+|  │  Drawbacks:                                              │|
+|  │  ✗ May miss brief CPU spikes                            │|
+|  │  ✗ Delayed awareness of issues                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Dock Icon Updates:
+```
++-------------------------------------------------------------+
+|  Dock Icon Also Follows Update Period                        |
++-------------------------------------------------------------+
+|                                                              |
+|  Activity Monitor's Dock icon can show:                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐               |
+|  │ CPU │  │ MEM │  │ ⚡ │  │DISK │  │ NET │               |
+|  │▅▇█▃▅│  │▇▇▇▅▃│  │ ⚡⚡ │  │ R/W │  │ ↑↓  │               |
+|  └─────┘  └─────┘  └─────┘  └─────┘  └─────┘               |
+|    CPU    Memory   Energy    Disk    Network                |
+|   Usage   Pressure  Impact   Activity  Traffic              |
+|                                                              |
+|  Configure: View > Dock Icon > [Choose type]                |
+|                                                              |
+|  The Dock icon updates at the same interval as the app.     |
+|  Faster updates = more responsive Dock icon but more CPU.   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `2` — Faster updates for active monitoring.
+
+### Why Use 2 Seconds?
+
+1. **Responsive monitoring** — Quick feedback on system state
+2. **Catch spikes** — Don't miss brief resource bursts
+3. **Active debugging** — Essential when troubleshooting
+4. **Still efficient** — Minimal overhead vs 1 second
+5. **Balance** — Fast enough for most needs
+
+### Why Use Default (5 Seconds)?
+
+- **Lower overhead** — Activity Monitor uses less CPU
+- **Stable display** — Less list jumping
+- **Background monitoring** — Sufficient for casual use
+- **Battery savings** — Slightly less energy on laptops
+
+### Why Use 1 Second?
+
+- **Critical debugging** — Catching brief issues
+- **Performance testing** — Precise measurements
+- **Real-time monitoring** — Maximum responsiveness
+
+### Why Use 10 Seconds?
+
+- **Passive monitoring** — Just want to see trends
+- **Minimal overhead** — Keep Activity Monitor very light
+- **Long-term observation** — Historical patterns
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.ActivityMonitor UpdatePeriod
+
+# Set to 1 second (very frequent)
+defaults write com.apple.ActivityMonitor UpdatePeriod -int 1
+
+# Set to 2 seconds (recommended for troubleshooting)
+defaults write com.apple.ActivityMonitor UpdatePeriod -int 2
+
+# Set to 5 seconds (default)
+defaults write com.apple.ActivityMonitor UpdatePeriod -int 5
+
+# Set to 10 seconds (low overhead)
+defaults write com.apple.ActivityMonitor UpdatePeriod -int 10
+
+# Delete (reset to default)
+defaults delete com.apple.ActivityMonitor UpdatePeriod
+```
+
+## UI Location
+
+**Activity Monitor** > **View** > **Update Frequency**
+
+```
++-------------------------------------------------------------+
+|  Activity Monitor View Menu                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  View Menu                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  All Processes                      ⌃⌘1                 │|
+|  │  All Processes, Hierarchically      ⌃⌘2                 │|
+|  │  My Processes                       ⌃⌘3                 │|
+|  │  System Processes                   ⌃⌘4                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Columns                            ▶                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Update Frequency                   ▶ ┌───────────────┐│|
+|  │  ─────────────────────────────────────│ Very Often (1s)││|
+|  │  Dock Icon                          ▶ │ ✓ Often (2s)  ││|
+|  │                                       │ Normally (5s) ││|
+|  │                                       │ Rarely (10s)  ││|
+|  │                                       └───────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Update period (this setting)
+defaults write com.apple.ActivityMonitor UpdatePeriod -int 2
+
+# Show all processes
+defaults write com.apple.ActivityMonitor ShowCategory -int 102
+
+# Sort by CPU usage
+defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
+
+# Sort direction (0 = descending)
+defaults write com.apple.ActivityMonitor SortDirection -int 0
+
+# Default tab (0 = CPU)
+defaults write com.apple.ActivityMonitor SelectedTab -int 0
+
+# Open main window on launch
+defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Updates seem slow | Check View > Update Frequency setting |
+| Activity Monitor uses too much CPU | Increase update period to 5 or 10 seconds |
+| Can't see brief spikes | Decrease update period to 1-2 seconds |
+| Graphs not updating | Ensure Activity Monitor window is visible |
+| Dock icon not updating | Check View > Dock Icon is enabled |
+| Setting not persisting | Quit Activity Monitor before changing via defaults |
+
+## Compatibility
+
+- **macOS**: 10.3+ (Panther) with Activity Monitor
+- **Note**: Affects all tabs (CPU, Memory, Energy, Disk, Network)
+- **Note**: Also affects Dock icon update rate
+- **Note**: Quit and reopen Activity Monitor for changes to apply
+- **Note**: Shorter intervals use slightly more CPU
+
+## Source File
+
+**File**: [`defaults/interface/activity_monitor.sh`](../../../../../defaults/interface/activity_monitor.sh)
+
+```bash
+# UpdatePeriod controls Activity Monitor refresh interval
+# Domain: com.apple.ActivityMonitor
+# Options: 1, 2, 5, 10 (seconds)
+# Lower values = more responsive but higher CPU usage
+```
+
+## References
+
+- [Apple Support: Use Activity Monitor on your Mac](https://support.apple.com/guide/activity-monitor/welcome/mac)
+- [Apple Support: View system information using Activity Monitor](https://support.apple.com/en-us/102516)
+- [Apple Support: Monitor CPU activity](https://support.apple.com/guide/activity-monitor/view-cpu-activity-actmntr43452/mac)

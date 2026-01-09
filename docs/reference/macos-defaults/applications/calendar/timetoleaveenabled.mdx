@@ -1,0 +1,312 @@
+# Calendar Time to Leave
+
+Enable travel time notifications that remind you when to leave for appointments.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iCal` |
+| **Key** | `TimeToLeaveEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Calendar calculates and displays "Time to Leave" notifications for events with locations. When enabled, Calendar uses the event's location to estimate travel time (based on current traffic conditions for driving) and alerts you when it's time to leave. This integrates with Apple Maps for accurate travel time estimates and considers your current location if Location Services is enabled.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Time to Leave enabled** (default) — Travel time alerts shown |
+| `false` | **Time to Leave disabled** — No departure reminders |
+
+## Visual Demonstration
+
+### Time to Leave Notification:
+```
++-------------------------------------------------------------+
+|  Time to Leave Alert                                         |
++-------------------------------------------------------------+
+|                                                              |
+|  NOTIFICATION APPEARS BEFORE EVENT:                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|                           ┌────────────────────────────────┐ |
+|                           │ 📅 Calendar                    │ |
+|                           │                                │ |
+|                           │ Time to Leave                  │ |
+|                           │ ─────────────────────────────  │ |
+|                           │ Leave now to arrive on time   │ |
+|                           │ for "Team Meeting"             │ |
+|                           │                                │ |
+|                           │ 📍 123 Main St, San Francisco │ |
+|                           │ 🚗 25 min drive               │ |
+|                           │                                │ |
+|                           │ [Snooze]  [Directions]        │ |
+|                           └────────────────────────────────┘ |
+|                                                              |
+|  • Alert factors in current traffic conditions              |
+|  • Updates dynamically as traffic changes                   |
+|  • "Directions" opens Apple Maps                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Calendar Event with Travel Time:
+```
++-------------------------------------------------------------+
+|  Calendar View with Time to Leave                            |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📅 Calendar - January 2026                             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ◀ Week of January 9                            ▶       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  THURSDAY, JANUARY 9                                     │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  9:00                                                   │|
+|  │  ─────                                                  │|
+|  │       ┌─────────────────────────────────────────┐      │|
+|  │  9:30 │ 🚗 Travel Time (25 min)                │      │|
+|  │       │    Leave by 9:30 AM                    │      │|
+|  │       └─────────────────────────────────────────┘      │|
+|  │  10:00 ┌─────────────────────────────────────────┐      │|
+|  │       │ 📍 Team Meeting                        │      │|
+|  │       │    123 Main St, San Francisco          │      │|
+|  │       │    10:00 AM - 11:00 AM                 │      │|
+|  │       └─────────────────────────────────────────┘      │|
+|  │  11:00                                                  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Travel time block shows before event with location         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Event Details with Travel Time:
+```
++-------------------------------------------------------------+
+|  Event Details Panel                                         |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Team Meeting                                           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  📅  Thursday, January 9, 2026                          │|
+|  │      10:00 AM - 11:00 AM                                │|
+|  │                                                          │|
+|  │  📍  Location                                           │|
+|  │      123 Main St                                        │|
+|  │      San Francisco, CA 94102                            │|
+|  │      [Open in Maps]                                     │|
+|  │                                                          │|
+|  │  🚗  Travel Time                                        │|
+|  │      ┌───────────────────────────────────────────────┐  │|
+|  │      │  🚗 Driving: 25-35 min (traffic dependent)   │  │|
+|  │      │  🚶 Walking: 45 min                          │  │|
+|  │      │  🚇 Transit: 30 min                          │  │|
+|  │      │                                               │  │|
+|  │      │  Starting location: Current Location         │  │|
+|  │      └───────────────────────────────────────────────┘  │|
+|  │                                                          │|
+|  │  🔔  Alert                                              │|
+|  │      ✓ Time to Leave                                   │|
+|  │      • 15 minutes before                               │|
+|  │                                                          │|
+|  │  📝  Notes                                              │|
+|  │      Conference Room B                                  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### How Time to Leave Works:
+```
++-------------------------------------------------------------+
+|  Time to Leave System                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  REQUIREMENTS:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ✓ Event has a location                                     |
+|  ✓ Time to Leave enabled (this setting)                     |
+|  ✓ Location Services enabled (optional but recommended)     |
+|  ✓ Internet connection (for traffic data)                   |
+|                                                              |
+|  CALCULATION FLOW:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────────────┐                                       |
+|  │  Event Location  │                                       |
+|  │  (123 Main St)   │                                       |
+|  └────────┬─────────┘                                       |
+|           │                                                  |
+|           ▼                                                  |
+|  ┌──────────────────┐                                       |
+|  │  Your Location   │◀── From iPhone/Mac Location Services  |
+|  │  (Home/Office)   │    or manually set starting point     |
+|  └────────┬─────────┘                                       |
+|           │                                                  |
+|           ▼                                                  |
+|  ┌──────────────────┐                                       |
+|  │  Apple Maps API  │◀── Real-time traffic conditions       |
+|  │  Travel Time     │                                       |
+|  └────────┬─────────┘                                       |
+|           │                                                  |
+|           ▼                                                  |
+|  ┌──────────────────┐                                       |
+|  │  Alert Time      │   Event: 10:00 AM                     |
+|  │  Calculated      │   Travel: 25 min                      |
+|  │                  │   Alert: 9:30 AM                      |
+|  └──────────────────┘                                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable Time to Leave for punctuality.
+
+### Why Enable Time to Leave?
+
+1. **Never late** — Accounts for actual travel time
+2. **Traffic awareness** — Adjusts for real-time conditions
+3. **Smart reminders** — More useful than fixed alerts
+4. **Stress reduction** — Know exactly when to leave
+5. **Integration** — Works with Maps for directions
+
+### Why Disable Time to Leave?
+
+- Working from home (no commute needed)
+- Events at same location (unnecessary travel blocks)
+- Privacy concerns about location tracking
+- Prefer fixed-time reminders
+- Living in area with unreliable traffic data
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iCal TimeToLeaveEnabled
+
+# Enable Time to Leave (default, recommended)
+defaults write com.apple.iCal TimeToLeaveEnabled -bool true
+
+# Disable Time to Leave
+defaults write com.apple.iCal TimeToLeaveEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iCal TimeToLeaveEnabled
+```
+
+## UI Location
+
+**Calendar** > **Settings** > **Alerts**
+
+```
++-------------------------------------------------------------+
+|  Calendar Settings                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Calendar > Settings (⌘,) > Alerts                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Accounts] [Alerts] [Advanced]               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Events                                                  │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  All-day events:        [9:00 AM day of event    ▼]    │|
+|  │  Timed events:          [15 minutes before      ▼]     │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Time to Leave                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [✓] Time to Leave alerts ← This setting                │|
+|  │                                                          │|
+|  │      Receive alerts when it's time to leave for        │|
+|  │      events with a location. Alerts are based on       │|
+|  │      your current location and real-time traffic.      │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Shared calendar messages                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [ ] Show shared calendar messages in Notification      │|
+|  │      Center                                             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Time to Leave alerts (this setting)
+defaults write com.apple.iCal TimeToLeaveEnabled -bool true
+
+# Default event alert time
+defaults write com.apple.iCal DefaultEventAlert -int -900
+
+# Default all-day event alert
+defaults write com.apple.iCal DefaultAllDayEventAlert -int -39600
+
+# Time zone support
+defaults write com.apple.iCal "TimeZone support enabled" -bool true
+
+# Show week numbers
+defaults write com.apple.iCal "Show Week Numbers" -bool true
+
+# First day of week
+defaults write com.apple.iCal "first day of week" -int 1
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No Time to Leave alerts | Ensure event has a location address |
+| Wrong travel time estimate | Check starting location in event |
+| Alerts not appearing | Verify Calendar notifications in System Settings |
+| Travel time not shown in calendar | Enable in Calendar > Settings > Alerts |
+| Location not found | Use complete address with city/state |
+| Traffic not updating | Check internet connection |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Calendar
+- **Note**: Requires Location Services for automatic departure point
+- **Note**: Traffic data requires internet connection
+- **Note**: Works best with complete street addresses
+- **Note**: Syncs with iOS Calendar via iCloud
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../../defaults/applications/calendar.sh)
+
+```bash
+# TimeToLeaveEnabled controls Time to Leave alerts
+# Domain: com.apple.iCal
+# Listed in undocumented settings in DOCUMENTATION-STATUS.md
+# Requires events with locations for travel time calculations
+```
+
+## References
+
+- [Apple Support: Get travel time and directions in Calendar](https://support.apple.com/guide/calendar/get-travel-time-and-directions-icl47de80f9/mac)
+- [Apple Support: Change Calendar alerts preferences](https://support.apple.com/guide/calendar/change-alerts-preferences-icl1026/mac)
+- [Apple Support: Use Calendar on Mac](https://support.apple.com/guide/calendar/welcome/mac)

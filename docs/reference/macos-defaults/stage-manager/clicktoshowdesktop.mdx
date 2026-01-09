@@ -1,0 +1,255 @@
+# Click Desktop to Show Desktop
+
+Control whether clicking on the desktop background reveals the desktop.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.WindowManager` |
+| **Key** | `EnableStandardClickToShowDesktop` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether clicking on the desktop wallpaper (an area not covered by windows) reveals the desktop by moving all windows aside. When enabled, clicking on any visible desktop area temporarily hides all windows, allowing access to desktop files and folders. This behavior was changed in macOS Sonoma and can be disabled for users who prefer the previous behavior where clicking the desktop did nothing special.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Click reveals desktop** (default in Sonoma+) — Windows move aside |
+| `false` | **Click does nothing** — Traditional behavior; windows stay put |
+
+## Visual Demonstration
+
+### Click to Show Desktop Enabled (true - Default):
+```
++-------------------------------------------------------------+
+|  Desktop Click Behavior - Enabled                            |
++-------------------------------------------------------------+
+|                                                              |
+|  BEFORE CLICK:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │  ▓▓ ┌─────────────────────────┐ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │  ▓▓ │     Safari Window       │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │  ▓▓ │                         │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │  ▓▓ └─────────────────────────┘ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ← Click here          │|
+|  │  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  AFTER CLICK (windows slide off):                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  📁 Documents    📁 Projects    📁 Downloads           │|
+|  │                                                          │|
+|  │  📄 Notes.txt    🖼️ Photo.jpg   📊 Report.xlsx        │|
+|  │                                                          │|
+|  │                Clean Desktop View                        │|
+|  │                                                          │|
+|  │  Click desktop again to bring windows back              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Click to Show Desktop Disabled (false):
+```
++-------------------------------------------------------------+
+|  Desktop Click Behavior - Disabled                           |
++-------------------------------------------------------------+
+|                                                              |
+|  BEFORE AND AFTER CLICK (no change):                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │  ▓▓ ┌─────────────────────────┐ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │  ▓▓ │     Safari Window       │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │  ▓▓ │                         │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │  ▓▓ └─────────────────────────┘ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  │  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ← Click here          │|
+|  │  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│|
+|  └─────────────────────────────────────────────────────────┘|
+|                    ↓ Click ↓                                |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  (Nothing happens - windows stay in place)              │|
+|  │  Same view as before click                              │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Traditional macOS behavior                               |
+|  ✓ No accidental desktop reveals                           |
+|  ✓ Use keyboard shortcut instead: ⌘F3 or Fn+F11            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Alternative Methods to Show Desktop:
+```
++-------------------------------------------------------------+
+|  Other Ways to Reveal Desktop                                |
++-------------------------------------------------------------+
+|                                                              |
+|  KEYBOARD SHORTCUTS:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ⌘ + F3         Show Desktop (older Macs)                   |
+|  Fn + F11       Show Desktop                                |
+|  F11            Show Desktop (if function keys enabled)     |
+|                                                              |
+|  TRACKPAD GESTURES:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Spread with thumb + 3 fingers → Show Desktop               |
+|  (Must be enabled in System Settings > Trackpad)            |
+|                                                              |
+|  HOT CORNERS:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  System Settings > Desktop & Dock > Hot Corners             |
+|  Assign "Desktop" to a screen corner                        |
+|  Move cursor to corner → Desktop revealed                   |
+|                                                              |
+|  STAGE MANAGER:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  When Stage Manager is active, click desktop               |
+|  always shows desktop (independent of this setting)         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable click-to-reveal-desktop for quick access.
+
+### Why Enable?
+
+1. **Quick access** — Fast way to see desktop files
+2. **iOS consistency** — Matches iPad Stage Manager behavior
+3. **Intuitive** — Natural expectation when clicking desktop
+4. **Convenient** — No keyboard shortcut needed
+
+### Why Disable?
+
+- Prefer previous macOS behavior
+- Accidental clicks reveal desktop unexpectedly
+- Always use keyboard shortcuts
+- Find behavior disorienting
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.WindowManager EnableStandardClickToShowDesktop
+
+# Enable click to show desktop (default in Sonoma+)
+defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool true
+
+# Disable click to show desktop (traditional behavior)
+defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.WindowManager EnableStandardClickToShowDesktop
+```
+
+## UI Location
+
+**System Settings** > **Desktop & Dock**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Desktop & Dock                            |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Desktop & Dock                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Desktop & Dock                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Desktop & Stage Manager                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Click wallpaper to reveal desktop                       │|
+|  │  [Only in Stage Manager ▼]      ← This setting          │|
+|  │                                                          │|
+|  │  Options:                                                │|
+|  │  • Always                                               │|
+|  │  • Only in Stage Manager                                │|
+|  │  • Never (use keyboard shortcut)                        │|
+|  │                                                          │|
+|  │  Stage Manager                                           │|
+|  │  [OFF ○──────]                                          │|
+|  │                                                          │|
+|  │  Show windows from an application                        │|
+|  │  [All at Once ▼]                                        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Click to show desktop (this setting)
+defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool true
+
+# Stage Manager enabled
+defaults write com.apple.WindowManager GloballyEnabled -bool false
+
+# Stage Manager hide desktop items
+defaults write com.apple.WindowManager HideDesktop -bool false
+
+# Stage Manager hide widgets
+defaults write com.apple.WindowManager StageManagerHideWidgets -bool false
+
+# Stage Manager auto-hide strip
+defaults write com.apple.WindowManager AutoHide -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Click does nothing | Enable setting or use keyboard shortcut |
+| Accidental reveals | Disable setting; use shortcuts instead |
+| Stage Manager overrides | Stage Manager has its own click behavior |
+| Setting not persisting | Restart Dock: killall Dock |
+| Different behavior than expected | Check Stage Manager status |
+
+## Compatibility
+
+- **macOS**: 14+ (Sonoma) for this specific setting
+- **Note**: In earlier macOS, clicking desktop never revealed desktop
+- **Note**: Stage Manager (macOS 13+) introduced similar behavior first
+- **Note**: Interacts with Stage Manager settings
+- **Note**: Restart may be required for changes
+
+## Source File
+
+**File**: [`defaults/interface/stage_manager.sh`](../../../../../defaults/interface/stage_manager.sh)
+
+```bash
+# EnableStandardClickToShowDesktop is part of WindowManager domain
+# Controls macOS Sonoma's click-to-reveal-desktop feature
+```
+
+## References
+
+- [Apple Support: Use Stage Manager on your Mac](https://support.apple.com/guide/mac-help/mchl534ba392/mac)
+- [Apple Support: Show the desktop on Mac](https://support.apple.com/guide/mac-help/show-or-hide-the-desktop-mchlp1115/mac)
+- [Apple Support: What's new in macOS Sonoma](https://support.apple.com/guide/mac-help/whats-new-in-macos-sonoma-mchl1a6c89ff/mac)

@@ -1,0 +1,376 @@
+# Quit Always Keeps Windows
+
+Control whether applications remember and restore open windows when relaunched.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSQuitAlwaysKeepsWindows` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls the system-wide behavior for window restoration when applications quit and relaunch. When set to `false` (default), applications remember their open windows and restore them upon relaunch, allowing you to resume work exactly where you left off. When set to `true`, applications close all windows without saving state, starting fresh each launch. This setting affects applications that support macOS's Resume feature.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Remember windows** (default) — Restore open windows when app relaunches |
+| `true` | **Close windows** — Discard window state, start fresh on launch |
+
+## Visual Demonstration
+
+### Remember Windows (false - Default):
+```
++-------------------------------------------------------------+
+|  Window Restoration Enabled                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Before Quitting TextEdit:                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +---------------------------+  +---------------------------+|
+|  |  Document1.txt            |  |  Notes.txt                ||
+|  |  ─────────────────────── |  |  ─────────────────────── ||
+|  |                           |  |                           ||
+|  |  Some important text...   |  |  Meeting notes from...    ||
+|  |                           |  |                           ||
+|  +---------------------------+  +---------------------------+|
+|                                                              |
+|  [Quit TextEdit - Cmd+Q]                                    |
+|                                                              |
+|  After Relaunching TextEdit:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +---------------------------+  +---------------------------+|
+|  |  Document1.txt            |  |  Notes.txt                ||
+|  |  ─────────────────────── |  |  ─────────────────────── ||
+|  |                           |  |                           ||
+|  |  Some important text...   |  |  Meeting notes from...    ||
+|  |  ◀── Same windows         |  |  ◀── Same content         ||
+|  +---------------------------+  +---------------------------+|
+|                                                              |
+|  ✓ Windows restored automatically                           |
+|  ✓ Scroll positions preserved                               |
+|  ✓ Window positions maintained                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Close Windows (true):
+```
++-------------------------------------------------------------+
+|  Window Restoration Disabled                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Before Quitting TextEdit:                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +---------------------------+  +---------------------------+|
+|  |  Document1.txt            |  |  Notes.txt                ||
+|  |  ─────────────────────── |  |  ─────────────────────── ||
+|  |                           |  |                           ||
+|  |  Some important text...   |  |  Meeting notes from...    ||
+|  |                           |  |                           ||
+|  +---------------------------+  +---------------------------+|
+|                                                              |
+|  [Quit TextEdit - Cmd+Q]                                    |
+|                                                              |
+|  After Relaunching TextEdit:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +---------------------------+                               |
+|  |  TextEdit                 |                               |
+|  |  ─────────────────────── |                               |
+|  |                           |                               |
+|  |  (Empty - No windows)     |                               |
+|  |                           |                               |
+|  +---------------------------+                               |
+|                                                              |
+|  ✗ Windows not restored                                     |
+|  ✗ Must manually reopen documents                           |
+|  ○ Fresh start each launch                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison:
+```
++-------------------------------------------------------------+
+|  Window Restoration Comparison                               |
++-------------------------------------------------------------+
+|                                                              |
+|  REMEMBER WINDOWS (false):                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Pros:                                                       |
+|  [+] Resume work instantly                                  |
+|  [+] No lost context                                        |
+|  [+] Scroll positions saved                                 |
+|  [+] Window arrangements preserved                          |
+|  [+] Standard macOS behavior                                |
+|                                                              |
+|  Cons:                                                       |
+|  [-] Windows accumulate over time                           |
+|  [-] May reveal sensitive documents                         |
+|  [-] Slower app launch (restoring state)                    |
+|                                                              |
+|  CLOSE WINDOWS (true):                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Pros:                                                       |
+|  [+] Clean start each time                                  |
+|  [+] Privacy (no lingering documents)                       |
+|  [+] Faster app launch                                      |
+|  [+] Predictable behavior                                   |
+|                                                              |
+|  Cons:                                                       |
+|  [-] Must reopen files manually                             |
+|  [-] Lost context on restart                                |
+|  [-] Disrupts workflow on crashes                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Use Cases
+
+### When to Keep Window Restoration (false)
+```
++-------------------------------------------------------------+
+|  Resume Feature Benefits                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Ideal for:                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Development workflows                                   |
+|      Multiple files open across projects                    |
+|                                                              |
+|  [x] Writing and editing                                     |
+|      Documents open exactly where you left off              |
+|                                                              |
+|  [x] Research tasks                                          |
+|      Multiple Preview PDFs, Safari tabs preserved           |
+|                                                              |
+|  [x] Crash recovery                                          |
+|      System restart restores your workspace                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### When to Disable Window Restoration (true)
+```
++-------------------------------------------------------------+
+|  Fresh Start Benefits                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  Ideal for:                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Shared computers                                        |
+|      Don't show previous user's documents                   |
+|                                                              |
+|  [x] Privacy-sensitive environments                          |
+|      No record of previously opened files                   |
+|                                                              |
+|  [x] Presentation machines                                   |
+|      Always start with clean slate                          |
+|                                                              |
+|  [x] Troubleshooting                                         |
+|      Isolate issues from saved state                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Remember and restore windows for workflow continuity.
+
+### Why Remember Windows (false)?
+
+1. **Productivity** — Resume work instantly after restarts
+2. **Context Preservation** — Don't lose your place in documents
+3. **Crash Recovery** — Survive unexpected restarts gracefully
+4. **Standard Behavior** — Expected macOS experience
+5. **Workflow Continuity** — Maintain working environment
+
+### When to Disable
+
+- Shared computer environments
+- Privacy requirements
+- Preference for clean starts
+- Troubleshooting persistent issues
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSQuitAlwaysKeepsWindows
+
+# Remember windows on relaunch (default, recommended)
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
+
+# Close windows, start fresh
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSQuitAlwaysKeepsWindows
+```
+
+Changes take effect for newly launched applications.
+
+## UI Location
+
+**System Settings** > **Desktop & Dock** > **Close windows when quitting an application**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Desktop & Dock                            |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Desktop & Dock                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Desktop & Dock                                       |  |
+|  |  ──────────────────────────────────────────────────  |  |
+|  |                                                       |  |
+|  |  Windows & Apps                                       |  |
+|  |  ─────────────────────────────────────────────────── |  |
+|  |                                                       |  |
+|  |  Prefer tabs when opening documents:                  |  |
+|  |  [In Full Screen Only]                               |  |
+|  |                                                       |  |
+|  |  Ask to keep changes when closing documents:          |  |
+|  |  [ON]                                                |  |
+|  |                                                       |  |
+|  |  Close windows when quitting an application:          |  |
+|  |  [ OFF ]  <-- This setting (inverse of default)      |  |
+|  |                                                       |  |
+|  |  When OFF: Windows are restored on relaunch          |  |
+|  |  When ON:  Windows are closed and forgotten          |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+**Note**: The UI toggle is inverted from the defaults key name. "Close windows when quitting" OFF = `NSQuitAlwaysKeepsWindows false` (remember windows).
+
+## Related Settings
+
+```bash
+# Window restoration (this setting)
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
+
+# Prefer tabs when opening documents
+defaults write NSGlobalDomain AppleWindowTabbingMode -string "fullscreen"
+
+# Ask to keep changes when closing
+defaults write NSGlobalDomain NSCloseAlwaysConfirmsChanges -bool true
+
+# Resume apps on login
+defaults write com.apple.loginwindow TALLogoutSavesState -bool true
+```
+
+## Applications Supporting Resume
+
+| Application | Supports Resume | Notes |
+|-------------|-----------------|-------|
+| TextEdit | Yes | Full window restoration |
+| Preview | Yes | Restores open PDFs/images |
+| Safari | Yes | Tab restoration (separate setting) |
+| Pages/Numbers/Keynote | Yes | Document state preserved |
+| Terminal | Configurable | Has own restore preference |
+| Finder | Partial | Windows may not fully restore |
+| Third-party apps | Varies | Depends on implementation |
+
+## How Resume Works
+
+```
++-------------------------------------------------------------+
+|  macOS Resume System                                         |
++-------------------------------------------------------------+
+|                                                              |
+|  When Quitting (with NSQuitAlwaysKeepsWindows = false):      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Application receives quit signal                         |
+|                                                              |
+|  2. System saves state:                                      |
+|     ~/Library/Saved Application State/                       |
+|     └── com.apple.TextEdit.savedState/                      |
+|         ├── windows.plist                                   |
+|         ├── window_1.data                                   |
+|         └── window_2.data                                   |
+|                                                              |
+|  3. Application quits                                        |
+|                                                              |
+|  When Relaunching:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Application launches                                     |
+|                                                              |
+|  2. System checks for saved state                           |
+|                                                              |
+|  3. If found, restores:                                      |
+|     • Window positions and sizes                            |
+|     • Open documents                                         |
+|     • Scroll positions                                       |
+|     • Selection state                                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Windows not restoring | Verify setting is false; check app supports Resume |
+| Unwanted windows appearing | Set to true or clear Saved Application State |
+| Specific app not restoring | App may have own preference; check app settings |
+| Slow app launch | Large saved state; consider clearing or disabling |
+| Setting not taking effect | Restart the application |
+
+## Clear Saved State
+
+To clear saved window state while keeping restoration enabled:
+
+```bash
+# Clear all saved application state
+rm -rf ~/Library/Saved\ Application\ State/*
+
+# Clear specific app's state
+rm -rf ~/Library/Saved\ Application\ State/com.apple.TextEdit.savedState
+```
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion, when Resume was introduced)
+- **Note**: Some applications have their own restore settings
+- **Note**: Safari has separate tab restoration preference
+- **Note**: Terminal has NSQuitAlwaysKeepsWindows per-app override
+- **Note**: Saved state stored in user's Library folder
+
+## Source File
+
+**File**: [`defaults/interface/window_management.sh`](../../../../../defaults/interface/window_management.sh)
+
+```bash
+# NSQuitAlwaysKeepsWindows controls window restoration behavior
+# Domain: NSGlobalDomain
+# false = remember and restore windows (default)
+# true = close and forget windows
+run_defaults "NSGlobalDomain" "NSQuitAlwaysKeepsWindows" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Resume on your Mac](https://support.apple.com/guide/mac-help/resume-mchlp2498/mac)
+- [Apple Support: Change Desktop & Dock settings](https://support.apple.com/guide/mac-help/change-desktop-dock-settings-mchlp1119/mac)
+- [Apple Developer: Implementing Resume](https://developer.apple.com/library/archive/documentation/General/Conceptual/MOSXAppProgrammingGuide/CoreAppDesign/CoreAppDesign.html)

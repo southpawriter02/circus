@@ -1,0 +1,281 @@
+# App Expose Gesture Enabled
+
+Control whether trackpad gestures can invoke App Expose (show all windows for current app).
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `showAppExposeGestureEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the four-finger swipe down gesture (or three-finger swipe down if configured) activates App Expose. App Expose is a window management feature that shows all open windows for the currently active application, spread across the screen for easy selection. This is useful when working with many windows in a single app like Safari with multiple tabs or Finder with multiple folders open.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Gesture enabled** (default) — Swipe down shows App Expose |
+| `false` | **Gesture disabled** — Swipe down does nothing |
+
+## Visual Demonstration
+
+### App Expose Activated (Swipe Down):
+```
++-------------------------------------------------------------+
+|  App Expose - All Safari Windows                             |
++-------------------------------------------------------------+
+|                                                              |
+|  BEFORE GESTURE (Normal Desktop):                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Safari - Apple                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [Active window showing Apple website]                   │|
+|  │                                                          │|
+|  │                                                          │|
+|  │  (Other Safari windows hidden behind)                    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|                    ↓ Four-finger swipe down ↓               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### App Expose View:
+```
++-------------------------------------------------------------+
+|  App Expose - All Safari Windows Revealed                    |
++-------------------------------------------------------------+
+|                                                              |
+|  AFTER GESTURE:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │|
+|  │  │Safari-Apple  │  │Safari-GitHub │  │Safari-Docs   │  │|
+|  │  │              │  │              │  │              │  │|
+|  │  │  [Preview]   │  │  [Preview]   │  │  [Preview]   │  │|
+|  │  │              │  │              │  │              │  │|
+|  │  └──────────────┘  └──────────────┘  └──────────────┘  │|
+|  │                                                          │|
+|  │  ┌──────────────┐  ┌──────────────┐                     │|
+|  │  │Safari-Mail   │  │Safari-Maps   │                     │|
+|  │  │              │  │              │                     │|
+|  │  │  [Preview]   │  │  [Preview]   │                     │|
+|  │  │              │  │              │                     │|
+|  │  └──────────────┘  └──────────────┘                     │|
+|  │                                                          │|
+|  │  Click any window to switch to it                        │|
+|  │  Press Escape or swipe up to exit                        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Difference from Mission Control:
+```
++-------------------------------------------------------------+
+|  App Expose vs Mission Control                               |
++-------------------------------------------------------------+
+|                                                              |
+|  MISSION CONTROL (Swipe UP - ALL apps):                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Desktop 1        Desktop 2        Desktop 3             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐        │|
+|  │  │ Safari │  │ VSCode │  │Terminal│  │ Finder │        │|
+|  │  └────────┘  └────────┘  └────────┘  └────────┘        │|
+|  │                                                          │|
+|  │  Shows ALL windows from ALL applications                 │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  APP EXPOSE (Swipe DOWN - Current app only):                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐        │|
+|  │  │Safari 1│  │Safari 2│  │Safari 3│  │Safari 4│        │|
+|  │  └────────┘  └────────┘  └────────┘  └────────┘        │|
+|  │                                                          │|
+|  │  Shows ONLY windows from the CURRENT application         │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Gesture Configuration:
+```
++-------------------------------------------------------------+
+|  Configuring App Expose Gesture                              |
++-------------------------------------------------------------+
+|                                                              |
+|  TRACKPAD SETTINGS:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  System Settings > Trackpad > More Gestures                  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Mission Control                                         │|
+|  │  [Swipe up with four fingers ▼]  ← Mission Control      │|
+|  │                                                          │|
+|  │  App Exposé                                              │|
+|  │  [Swipe down with four fingers ▼] ← This setting        │|
+|  │                                                          │|
+|  │  Options:                                                │|
+|  │  • Off                                                   │|
+|  │  • Swipe down with three fingers                        │|
+|  │  • Swipe down with four fingers (default)               │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: showAppExposeGestureEnabled controls whether this    |
+|  gesture is available at all. The finger count is           |
+|  controlled by TrackpadFourFingerVertSwipeGesture.          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable App Expose gesture for quick window switching.
+
+### Why Enable?
+
+1. **Fast window access** — Quickly see all windows of current app
+2. **Visual overview** — See window contents before switching
+3. **Multi-window workflow** — Essential for apps with many windows
+4. **Keyboard alternative** — Gesture is faster than Control+Down Arrow
+
+### Why Disable?
+
+- Accidental triggering while scrolling
+- Prefer keyboard shortcuts only
+- Limited trackpad gesture space
+- Find Mission Control sufficient
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dock showAppExposeGestureEnabled
+
+# Enable App Expose gesture (default)
+defaults write com.apple.dock showAppExposeGestureEnabled -bool true
+
+# Disable App Expose gesture
+defaults write com.apple.dock showAppExposeGestureEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dock showAppExposeGestureEnabled
+
+# Restart Dock to apply
+killall Dock
+```
+
+## UI Location
+
+**System Settings** > **Trackpad** > **More Gestures**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Trackpad - More Gestures                  |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Trackpad > More Gestures                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [Point & Click]  [Scroll & Zoom]  [More Gestures]     │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Swipe between pages                                     │|
+|  │  [Scroll left or right with two fingers ▼]              │|
+|  │                                                          │|
+|  │  Swipe between full-screen applications                  │|
+|  │  [Swipe left or right with four fingers ▼]              │|
+|  │                                                          │|
+|  │  Notification Center                                     │|
+|  │  [Swipe left from the right edge with two fingers ▼]    │|
+|  │                                                          │|
+|  │  Mission Control                                         │|
+|  │  [Swipe up with four fingers ▼]                         │|
+|  │                                                          │|
+|  │  App Exposé                               ← This setting │|
+|  │  [Swipe down with four fingers ▼]                       │|
+|  │                                                          │|
+|  │  Launchpad                                               │|
+|  │  [Pinch with thumb and three fingers]                   │|
+|  │                                                          │|
+|  │  Show Desktop                                            │|
+|  │  [Spread with thumb and three fingers]                  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# App Expose gesture (this setting)
+defaults write com.apple.dock showAppExposeGestureEnabled -bool true
+
+# Mission Control gesture
+defaults write com.apple.dock showMissionControlGestureEnabled -bool true
+
+# Launchpad gesture
+defaults write com.apple.dock showLaunchpadGestureEnabled -bool true
+
+# Group windows by app in Mission Control
+defaults write com.apple.dock expose-group-apps -bool true
+
+# Trackpad vertical swipe gesture (controls finger count)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerVertSwipeGesture -int 2
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Gesture not working | Restart Dock: `killall Dock` |
+| Need to use three fingers | Change in Trackpad settings or adjust TrackpadFourFingerVertSwipeGesture |
+| Conflicts with other gestures | Check System Settings > Trackpad for conflicts |
+| Works in some apps only | Some full-screen apps override gestures |
+| Shows wrong app windows | Ensure correct app is frontmost before gesture |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion) when App Expose was introduced
+- **Note**: Requires multi-touch trackpad or Magic Mouse
+- **Note**: Gesture can be configured for 3 or 4 fingers
+- **Note**: Restart Dock after changing via terminal
+- **Note**: Works alongside Mission Control
+
+## Source File
+
+**File**: [`defaults/interface/dock.sh`](../../../../../defaults/interface/dock.sh)
+
+```bash
+# showAppExposeGestureEnabled controls App Expose trackpad gesture
+# Domain: com.apple.dock
+# Enables four-finger swipe down to show windows of current app
+```
+
+## References
+
+- [Apple Support: Use trackpad and mouse gestures](https://support.apple.com/guide/mac-help/multi-touch-gestures-mchlp1108/mac)
+- [Apple Support: Use Mission Control on Mac](https://support.apple.com/guide/mac-help/use-mission-control-mh35797/mac)
+- [Apple Support: View open windows and spaces in Mission Control](https://support.apple.com/guide/mac-help/open-windows-spaces-mission-control-mh35789/mac)

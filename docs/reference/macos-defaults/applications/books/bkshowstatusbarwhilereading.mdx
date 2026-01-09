@@ -1,0 +1,297 @@
+# Books Show Status Bar While Reading
+
+Control whether the macOS menu bar remains visible while reading books in fullscreen mode.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iBooksX` |
+| **Key** | `BKShowStatusBarWhileReading` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the macOS menu bar (status bar) remains visible when reading a book in Apple Books. When disabled, the menu bar hides during reading to provide a more immersive, distraction-free experience. When enabled, the menu bar stays visible, providing quick access to the time, battery status, Wi-Fi, and other menu bar items without moving the cursor to the top of the screen.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Hide status bar** (default) — Immersive reading mode |
+| `true` | **Show status bar** — Menu bar always visible while reading |
+
+## Visual Demonstration
+
+### Status Bar Hidden (false - Default):
+```
++-------------------------------------------------------------+
+|  Immersive Reading Mode                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                                                          │|
+|  │                    Chapter 12                            │|
+|  │                    ══════════                            │|
+|  │                                                          │|
+|  │     The morning sun cast long shadows across             │|
+|  │     the valley as Sarah approached the old               │|
+|  │     farmhouse. Years had passed since she had            │|
+|  │     last walked this path, yet every stone,              │|
+|  │     every tree seemed achingly familiar.                 │|
+|  │                                                          │|
+|  │     She paused at the gate, her hand resting             │|
+|  │     on the weathered wood. The paint had                 │|
+|  │     peeled away in places, revealing layers              │|
+|  │     of colors beneath—each one a memory, a               │|
+|  │     different era of this place she once                 │|
+|  │     called home.                                         │|
+|  │                                                          │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Page 203 of 412                                    50% │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Full screen dedicated to reading. Menu bar hidden.          |
+|  Move cursor to top of screen to reveal menu bar.            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Status Bar Visible (true):
+```
++-------------------------------------------------------------+
+|  Reading with Status Bar                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ [Apple] Books  File  Edit  View      WiFi Batt 2:30 PM │|
+|  │ ─────────────────────────────────────────────────────── │|
+|  │                                                          │|
+|  │                    Chapter 12                            │|
+|  │                    ══════════                            │|
+|  │                                                          │|
+|  │     The morning sun cast long shadows across             │|
+|  │     the valley as Sarah approached the old               │|
+|  │     farmhouse. Years had passed since she had            │|
+|  │     last walked this path, yet every stone,              │|
+|  │     every tree seemed achingly familiar.                 │|
+|  │                                                          │|
+|  │     She paused at the gate, her hand resting             │|
+|  │     on the weathered wood. The paint had                 │|
+|  │     peeled away in places, revealing layers              │|
+|  │     of colors beneath—each one a memory...               │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Page 203 of 412                                    50% │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Menu bar always visible. Quick access to system info.       |
+|  Slightly less reading area due to menu bar space.           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison View:
+```
++-------------------------------------------------------------+
+|  Hidden vs Visible Status Bar                                |
++-------------------------------------------------------------+
+|                                                              |
+|  HIDDEN (false - Immersive):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                    ↑                                     │|
+|  │                    │ Full height for content             │|
+|  │                    │                                     │|
+|  │              [Book Content]                              │|
+|  │                    │                                     │|
+|  │                    │                                     │|
+|  │                    ↓                                     │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Pros:                           Cons:                       |
+|  + Maximum reading space         - Must move cursor to see   |
+|  + Distraction-free                time/battery              |
+|  + Book-like experience          - Menu access less convenient
+|                                                              |
+|  VISIBLE (true):                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ [Menu Bar]                                    2:30 PM  │|
+|  │─────────────────────────────────────────────────────────│|
+|  │              [Book Content]                              │|
+|  │                                                          │|
+|  │              Reduced height                              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Pros:                           Cons:                       |
+|  + Always see time/battery       - Less immersive            |
+|  + Quick menu access             - Distractions visible      |
+|  + Consistent UI                 - Less reading space        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### When to Use Each:
+```
++-------------------------------------------------------------+
+|  Choosing Your Reading Experience                            |
++-------------------------------------------------------------+
+|                                                              |
+|  HIDE STATUS BAR (false) - BEST FOR:                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Long reading sessions                                   |
+|  [x] Fiction/novels - deep immersion                         |
+|  [x] Evening reading - fewer distractions                    |
+|  [x] Focus mode - minimize interruptions                     |
+|  [x] Small screens - maximize reading area                   |
+|  [x] Dark/night themes - less visual clutter                |
+|                                                              |
+|  SHOW STATUS BAR (true) - BEST FOR:                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [x] Time-sensitive reading - need to see clock              |
+|  [x] Low battery situations - monitor power                  |
+|  [x] Reference reading - frequent app switching              |
+|  [x] Work-related reading - stay connected                   |
+|  [x] Short reading sessions - convenient                     |
+|  [x] Multi-tasking - quick access to menus                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Hide status bar for immersive reading.
+
+### Why Hide Status Bar (false)?
+
+1. **Immersive reading** — Focus entirely on the book
+2. **Maximum space** — More text visible on screen
+3. **Distraction-free** — No clock or notifications
+4. **Book-like** — Closer to physical book experience
+5. **Default behavior** — Standard Books experience
+
+### Why Show Status Bar (true)?
+
+- **Time awareness** — Need to see the clock
+- **Battery monitoring** — Check power while reading
+- **Quick access** — Frequent menu bar use
+- **Consistency** — Prefer consistent macOS UI
+- **Work reading** — Stay connected to system
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iBooksX BKShowStatusBarWhileReading
+
+# Hide status bar while reading (default, recommended)
+defaults write com.apple.iBooksX BKShowStatusBarWhileReading -bool false
+
+# Show status bar while reading
+defaults write com.apple.iBooksX BKShowStatusBarWhileReading -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.iBooksX BKShowStatusBarWhileReading
+```
+
+## UI Location
+
+**View** menu during reading, or automatic behavior.
+
+```
++-------------------------------------------------------------+
+|  Books View Menu                                             |
++-------------------------------------------------------------+
+|                                                              |
+|  While reading in Books:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Show Toolbar                         Command+Option+T              │|
+|  │  Hide Toolbar                                           │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Enter Full Screen                    Command+Control+F             │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Actual Size                          Command+0                │|
+|  │  Zoom In                              Command++                │|
+|  │  Zoom Out                             Command+-                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: Status bar visibility is controlled via defaults,     |
+|  not directly through the View menu.                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show status bar while reading (this setting)
+defaults write com.apple.iBooksX BKShowStatusBarWhileReading -bool false
+
+# Auto night theme
+defaults write com.apple.iBooksX BKAutoNightThemeEnabled -bool true
+
+# Page turn animation
+defaults write com.apple.iBooksX BKAnimatePageTurn -bool true
+
+# Scroll direction (horizontal/vertical)
+defaults write com.apple.iBooksX BKScrollDirection -int 1
+
+# Sync reading position
+defaults write com.apple.iBooksX BKSyncReadingPosition -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Status bar not hiding | Ensure you're in fullscreen or reading mode |
+| Can't access menu bar | Move cursor to top of screen to reveal |
+| Setting not applying | Restart Books app after changing via defaults |
+| Want status bar only sometimes | Move cursor to top to temporarily reveal |
+| Clock needed while reading | Enable status bar or use external clock |
+| Menu bar stuck visible | Check macOS System Settings > Desktop & Dock |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Books
+- **Note**: Only affects reading mode, not library view
+- **Note**: Restart Books for terminal changes to apply
+- **Note**: Menu bar can always be revealed by moving cursor to top
+- **Note**: Works in both windowed and fullscreen modes
+
+## Source File
+
+**File**: [`defaults/applications/books.sh`](../../../../../defaults/applications/books.sh)
+
+```bash
+# BKShowStatusBarWhileReading controls menu bar visibility during reading
+# Domain: com.apple.iBooksX
+# false = hide for immersion, true = keep visible for quick access
+run_defaults "com.apple.iBooksX" "BKShowStatusBarWhileReading" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Books on Mac](https://support.apple.com/guide/books/welcome/mac)
+- [Apple Support: Change Books settings](https://support.apple.com/guide/books/settings-ibks1016d5f5/mac)
+- [Apple Support: Read books in Books on Mac](https://support.apple.com/guide/books/read-books-ibks20a2a8e5/mac)

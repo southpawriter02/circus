@@ -1,0 +1,268 @@
+# WebKit2 Java Enabled
+
+Control Java plugin functionality in Safari's modern WebKit2 rendering engine.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Java plugin is enabled in Safari's WebKit2 rendering engine. This is the modern counterpart to the legacy `WebKitJavaEnabled` setting. Java support has been deprecated in Safari for security reasons, and Apple removed Java plugin support starting with macOS Catalina (10.15). This setting should remain disabled for security best practices, as Java has historically been a major source of browser security vulnerabilities.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Java disabled** (default, recommended) — Java content will not run |
+| `true` | **Java enabled** — Java applets can run (legacy systems only) |
+
+## Visual Demonstration
+
+### Java Disabled (false - Default/Recommended):
+```
++-------------------------------------------------------------+
+|  Safari - Java Plugin Disabled                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Website with Java Applet:                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  [URL: https://legacy-bank-system.example.com]       |  |
+|  +-------------------------------------------------------+  |
+|  |                                                       |  |
+|  |  +-----------------------------------------------+   |  |
+|  |  |                                               |   |  |
+|  |  |    ⚠️  Java is not available                  |   |  |
+|  |  |                                               |   |  |
+|  |  |    This website requires Java to display     |   |  |
+|  |  |    interactive content. Java is no longer    |   |  |
+|  |  |    supported in Safari.                       |   |  |
+|  |  |                                               |   |  |
+|  |  +-----------------------------------------------+   |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  ✓ Protected from Java-based attacks                        |
+|  ✓ No plugin vulnerabilities                                |
+|  ✓ Modern web standard                                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Security Implications:
+```
++-------------------------------------------------------------+
+|  Why Java Should Be Disabled                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  JAVA SECURITY HISTORY:                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [!] Java has been the #1 attack vector for browsers        |
+|  [!] Multiple critical vulnerabilities (CVEs) every year    |
+|  [!] Drive-by download attacks via malicious applets        |
+|  [!] Sandbox escapes allowing system access                  |
+|  [!] Zero-day exploits frequently targeted Java              |
+|                                                              |
+|  TIMELINE:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  2015: Apple disables Java by default                       |
+|  2017: Oracle discontinues Java browser plugin               |
+|  2019: Apple removes Java support (macOS Catalina)          |
+|  2020+: Java plugins no longer functional                    |
+|                                                              |
+|  MODERN ALTERNATIVES:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • JavaScript + WebAssembly for interactive content         |
+|  • HTML5 Canvas for graphics                                 |
+|  • Modern web APIs for functionality                         |
+|  • Native apps for complex applications                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## WebKit vs WebKit2
+
+```
++-------------------------------------------------------------+
+|  Understanding WebKit and WebKit2 Settings                   |
++-------------------------------------------------------------+
+|                                                              |
+|  LEGACY WEBKIT (WebKitJavaEnabled):                         |
+|  ─────────────────────────────────────────────────────────  |
+|  • Original rendering engine settings                       |
+|  • Single-process architecture                               |
+|  • Used in older Safari versions                             |
+|                                                              |
+|  MODERN WEBKIT2 (This Setting):                             |
+|  ─────────────────────────────────────────────────────────  |
+|  • Multi-process architecture                                |
+|  • Improved security (sandboxed rendering)                  |
+|  • Used in Safari 5.1+ (2011 onwards)                       |
+|  • Separate web content process                              |
+|                                                              |
+|  FOR COMPLETE JAVA BLOCKING:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Set BOTH settings to false:                                 |
+|  • WebKitJavaEnabled -bool false                            |
+|  • ...WebKit2JavaEnabled -bool false (this setting)         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Java disabled in WebKit2 for security.
+
+### Why Disable Java (false)?
+
+1. **Security** — Java plugins are a known attack vector
+2. **Deprecated** — Apple removed Java support in modern macOS
+3. **Unnecessary** — Modern websites use JavaScript/HTML5
+4. **Performance** — No plugin overhead
+5. **Best Practice** — Industry standard to disable
+
+### When Java Might Be Needed
+
+In rare legacy scenarios (not recommended):
+- Old enterprise applications not yet modernized
+- Legacy banking systems (should use dedicated browser/VM)
+- Educational software from pre-2015
+
+**Note**: If you must use Java, consider running it in a virtual machine or isolated browser profile.
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled"
+
+# Disable Java in WebKit2 (recommended)
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled" -bool false
+
+# Also disable in legacy WebKit for completeness
+defaults write com.apple.Safari WebKitJavaEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled"
+```
+
+Restart Safari for changes to take effect.
+
+## UI Location
+
+This setting is no longer accessible via UI in modern macOS versions. In older versions:
+
+**Safari** > **Settings** > **Security** > **Internet plug-ins** > **Allow Java** (removed)
+
+```
++-------------------------------------------------------------+
+|  Safari Settings - Security (Historical)                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Safari > Settings > Security (Pre-Catalina)                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |  Security                                             |  |
+|  |  ──────────────────────────────────────────────────  |  |
+|  |                                                       |  |
+|  |  Fraudulent sites:                                    |  |
+|  |  [x] Warn when visiting a fraudulent website          |  |
+|  |                                                       |  |
+|  |  Web content:                                         |  |
+|  |  [x] Enable JavaScript                               |  |
+|  |                                                       |  |
+|  |  Internet plug-ins: (REMOVED in modern macOS)         |  |
+|  |  ─────────────────────────────────────────────────── |  |
+|  |  [ ] Allow Plug-ins (no longer available)            |  |
+|  |  [ ] Allow Java (no longer available)                |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# WebKit2 Java (this setting)
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled" -bool false
+
+# Legacy WebKit Java
+defaults write com.apple.Safari WebKitJavaEnabled -bool false
+
+# WebKit2 Plugins
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled" -bool false
+
+# Legacy WebKit Plugins
+defaults write com.apple.Safari WebKitPluginsEnabled -bool false
+
+# JavaScript (keep enabled - essential for modern web)
+defaults write com.apple.Safari WebKitJavaScriptEnabled -bool true
+```
+
+## Complete Lockdown Configuration
+
+For maximum browser security:
+
+```bash
+# Disable all legacy plugin technologies
+defaults write com.apple.Safari WebKitJavaEnabled -bool false
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled" -bool false
+defaults write com.apple.Safari WebKitPluginsEnabled -bool false
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled" -bool false
+
+# Block pop-ups
+defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically" -bool false
+
+# Enable fraud warnings
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Legacy site requires Java | Use alternative browser or VM |
+| Setting doesn't exist | Normal on modern macOS - Java removed |
+| Can't find UI toggle | Removed from Safari preferences |
+| Java site not loading | Expected behavior when disabled |
+
+## Compatibility
+
+- **macOS**: 10.7-10.14 (functional); 10.15+ (Java removed from system)
+- **Safari**: 5.1+ (when WebKit2 was introduced)
+- **Note**: Java plugin support removed in macOS Catalina (10.15)
+- **Note**: Setting exists for compatibility but has no effect on modern systems
+- **Note**: Oracle discontinued Java browser plugin in 2017
+
+## Source File
+
+**File**: [`defaults/profiles/lockdown.sh`](../../../../../../defaults/profiles/lockdown.sh)
+
+```bash
+# Disable Java in WebKit2 for security
+# Domain: com.apple.Safari
+# Java has a history of security vulnerabilities
+run_defaults "com.apple.Safari" "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: About Java for Mac](https://support.apple.com/en-us/102672)
+- [Apple Support: Safari no longer supports Java](https://support.apple.com/en-us/HT211934)
+- [Oracle: Discontinuing the Java Browser Plugin](https://www.oracle.com/java/technologies/javase/browser-discontinuance.html)
+- [CVE Details: Java Security Vulnerabilities](https://www.cvedetails.com/product/19117/Oracle-JRE.html)

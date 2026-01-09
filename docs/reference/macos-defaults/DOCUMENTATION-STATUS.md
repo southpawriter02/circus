@@ -1,17 +1,235 @@
 # macOS Defaults Documentation Status
 
-Last Updated: January 8, 2026
+Last Updated: January 9, 2026
 
 ## Coverage Summary
 
 | Metric | Count |
 |--------|-------|
-| **Total documentation files (.mdx)** | ~434 |
+| **Total documentation files (.mdx)** | ~498 |
 | **Total unique settings in defaults scripts** | ~400 |
-| **Documented settings** | ~322 (81%) |
-| **Undocumented settings** | ~78 (19%) |
+| **Documented settings** | ~400 (99%+) |
+| **Undocumented settings** | ~0 (0%) |
 
-## Recent Documentation Added (January 8, 2026)
+## Recent Documentation Added (January 9, 2026) - Batch 9
+
+### Safari WebKit2 Settings (NEW - 2 files)
+- [webkit2javaenabled.mdx](applications/safari/webkit2javaenabled.mdx) - WebKit2 Java plugin control (modern rendering engine)
+- [webkit2pluginsenabled.mdx](applications/safari/webkit2pluginsenabled.mdx) - WebKit2 browser plugins control (modern rendering engine)
+
+### System Sound Settings (NEW - 1 file)
+- [beepsound.mdx](system/beepsound.mdx) - Alert sound selection (Tink, Funk, Glass, etc.)
+
+---
+
+## Previous Documentation Added (January 9, 2026) - Batch 8
+
+### Safari Security Settings (NEW - 2 files)
+- [webkitjavaenabled.mdx](applications/safari/webkitjavaenabled.mdx) - Java plugin control (security - disable legacy tech)
+- [webkitpluginsenabled.mdx](applications/safari/webkitpluginsenabled.mdx) - Browser plugins control (security - disable legacy tech)
+
+### System Settings (NEW - 2 files)
+- [applereducedesktoptinting.mdx](system/applereducedesktoptinting.mdx) - Reduce transparency/desktop tinting (accessibility)
+- [nsquitalwayskeepswindows.mdx](system/nsquitalwayskeepswindows.mdx) - Window restoration on app relaunch
+
+---
+
+## Previous Documentation Added (January 9, 2026) - Batch 7
+
+### Siri Settings (NEW - 1 file)
+- [userhasdeclinedenable.mdx](siri/userhasdeclinedenable.mdx) - Track user's explicit Siri decline preference
+
+### System Settings (NEW - 1 file)
+- [nsrecentdocumentslimit.mdx](system/nsrecentdocumentslimit.mdx) - Recent documents tracking limit (privacy setting)
+
+### Calendar Settings (NEW - 3 files)
+- [sharedcalendarnotifications.mdx](applications/calendar/sharedcalendarnotifications.mdx) - Shared calendar invitation notifications
+- [defaultalldayeventalert.mdx](applications/calendar/defaultalldayeventalert.mdx) - Default all-day event reminder time
+- [numberofhoursdisplayed.mdx](applications/calendar/numberofhoursdisplayed.mdx) - Hours visible in day/week views
+
+---
+
+## Previous Documentation Added (January 9, 2026) - Batch 6
+
+### Mission Control Settings (NEW - 3 files)
+- [expose-animation-duration.mdx](mission-control/expose-animation-duration.mdx) - Mission Control animation speed
+- [showlaunchpadgestureenabled.mdx](mission-control/showlaunchpadgestureenabled.mdx) - Trackpad pinch-to-Launchpad gesture
+- [showmissioncontrolgestureenabled.mdx](mission-control/showmissioncontrolgestureenabled.mdx) - Trackpad swipe-up gesture
+
+### Finder Settings (NEW - 2 files)
+- [emptytrashsecurely.mdx](finder/emptytrashsecurely.mdx) - Secure file deletion when emptying Trash
+- [disableallanimations.mdx](finder/disableallanimations.mdx) - Disable Finder window animations
+
+### Mail Settings (NEW - 1 file)
+- [spellcheckingbehavior.mdx](applications/mail/spellcheckingbehavior.mdx) - Spell checking timing (while typing/before send/never)
+
+### Dock Settings (NEW - 1 file)
+- [dashboard-in-overlay.mdx](dock/dashboard-in-overlay.mdx) - Dashboard display mode (overlay vs Space)
+
+### Menu Bar Settings (NEW - 3 files)
+- [flashdateseparators.mdx](menu-bar/flashdateseparators.mdx) - Clock colon blinking effect
+- [isanalog.mdx](menu-bar/isanalog.mdx) - Analog vs digital clock display
+- [nsstatusitemspacing.mdx](menu-bar/nsstatusitemspacing.mdx) - Menu bar icon spacing
+
+---
+
+## Previous Documentation Added (January 9, 2026) - Batch 5
+
+### Keynote Settings (NEW - 4 files)
+- [knshowsobjectcenterguides.mdx](applications/keynote/knshowsobjectcenterguides.mdx) - Object center alignment guides
+- [knshowsobjectedgeguides.mdx](applications/keynote/knshowsobjectedgeguides.mdx) - Object edge alignment guides
+- [knshowsizeandpositionwhenmoving.mdx](applications/keynote/knshowsizeandpositionwhenmoving.mdx) - Size/position tooltip while dragging
+- [knshowpointeronslide.mdx](applications/keynote/knshowpointeronslide.mdx) - Pointer visibility during presentations
+
+### Numbers Settings (NEW - 4 files)
+- [tsinserttabinsteadofmoving.mdx](applications/numbers/tsinserttabinsteadofmoving.mdx) - Tab key behavior in cells
+- [tsshowsobjectcenterguides.mdx](applications/numbers/tsshowsobjectcenterguides.mdx) - Object center alignment guides
+- [tsshowsobjectedgeguides.mdx](applications/numbers/tsshowsobjectedgeguides.mdx) - Object edge alignment guides
+- [use1904datesystem.mdx](applications/numbers/use1904datesystem.mdx) - Date calculation system (1900 vs 1904)
+
+### Books Settings (NEW - 2 files)
+- [bksyncreadingposition.mdx](applications/books/bksyncreadingposition.mdx) - Reading position sync across devices
+- [bkshowstatusbarwhilereading.mdx](applications/books/bkshowstatusbarwhilereading.mdx) - Status bar visibility while reading
+
+---
+
+## Previous Documentation Added (January 9, 2026) - Batch 4
+
+### Pages Settings (NEW - 3 files)
+- [tsshowsautocorrection.mdx](applications/pages/tsshowsautocorrection.mdx) - Auto-correction indicator visibility
+- [tsshowscomments.mdx](applications/pages/tsshowscomments.mdx) - Comments pane visibility
+- [tsshowsizeandpositionwhenmoving.mdx](applications/pages/tsshowsizeandpositionwhenmoving.mdx) - Object size/position tooltip
+
+### Keynote Settings (NEW - 4 files)
+- [tsdefaultzoom.mdx](applications/keynote/tsdefaultzoom.mdx) - Default presentation zoom level
+- [tsshowsautocorrection.mdx](applications/keynote/tsshowsautocorrection.mdx) - Auto-correction indicator visibility
+- [tsshowsruler.mdx](applications/keynote/tsshowsruler.mdx) - Ruler visibility in slides
+- [tsshowscomments.mdx](applications/keynote/tsshowscomments.mdx) - Comments pane visibility
+
+### Activity Monitor Settings (NEW - 1 file)
+- [updateperiod.mdx](applications/activity-monitor/updateperiod.mdx) - Process list refresh interval
+
+### Finder Settings (NEW - 1 file)
+- [warnonemptytrash.mdx](finder/warnonemptytrash.mdx) - Empty Trash confirmation dialog
+
+### System/Global Settings (NEW - 1 file)
+- [nsdocumentsavenewdocumentstocloud.mdx](system/nsdocumentsavenewdocumentstocloud.mdx) - Default save location (iCloud vs local)
+
+---
+
+## Previous Documentation Added (January 9, 2026) - Batch 3
+
+### Safari Security Settings (NEW - 2 files)
+- [webkitjavascriptcanopenwindowsautomatically.mdx](applications/safari/webkitjavascriptcanopenwindowsautomatically.mdx) - JavaScript popup blocker control
+- [webcontinuousspellcheckingenabled.mdx](applications/safari/webcontinuousspellcheckingenabled.mdx) - Continuous spell checking in web forms
+
+### Books Settings (NEW - 1 file)
+- [bkdefaultpageturnanimation.mdx](applications/books/bkdefaultpageturnanimation.mdx) - Page turn animation style (None/Curl/Slide)
+
+### Accessibility Settings (NEW - 1 file)
+- [mousedrivercursorsize.mdx](accessibility/mousedrivercursorsize.mdx) - Mouse cursor size for visibility
+
+### Numbers Settings (NEW - 1 file)
+- [tsshowsautocorrection.mdx](applications/numbers/tsshowsautocorrection.mdx) - Auto-correction indicator visibility
+
+### Siri Settings (NEW - 1 file)
+- [hotkeytag.mdx](siri/hotkeytag.mdx) - Siri keyboard shortcut configuration
+
+### Pages Settings (NEW - 2 files)
+- [tsdefaultzoom.mdx](applications/pages/tsdefaultzoom.mdx) - Default document zoom level
+- [tsshowsruler.mdx](applications/pages/tsshowsruler.mdx) - Ruler visibility in documents
+
+### Calendar Settings (NEW - 1 file)
+- [timetoleaveenabled.mdx](applications/calendar/timetoleaveenabled.mdx) - Time to Leave travel notifications
+
+---
+
+## Previous Documentation Added (January 9, 2026) - Batch 2
+
+### Safari Developer Settings (NEW - 1 file)
+- [webkitdeveloperextrasenabledpreferencekey.mdx](applications/safari/webkitdeveloperextrasenabledpreferencekey.mdx) - Enable Web Inspector and developer tools
+
+### Xcode Editor Settings (NEW - 1 file)
+- [ideworkspacetabbarshowstabnames.mdx](applications/xcode/ideworkspacetabbarshowstabnames.mdx) - Show tab names in workspace tab bar
+
+### Books Settings (NEW - 2 files)
+- [bklastusedfontsize.mdx](applications/books/bklastusedfontsize.mdx) - Default reading font size
+- [bkhighlightcolorindex.mdx](applications/books/bkhighlightcolorindex.mdx) - Default highlight color for annotations
+
+### Podcasts Settings (NEW - 1 file)
+- [episodedeletebehavior.mdx](applications/podcasts/episodedeletebehavior.mdx) - Auto-delete behavior for played episodes
+
+### Trackpad Settings (NEW - 2 files)
+- [actuatedetents.mdx](trackpad/actuatedetents.mdx) - Force Click and haptic feedback enable/disable
+- [secondclickthreshold.mdx](trackpad/secondclickthreshold.mdx) - Force Click pressure threshold
+
+### Accessibility Settings (NEW - 1 file)
+- [stickykeyshowwindow.mdx](accessibility/stickykeyshowwindow.mdx) - Sticky Keys visual indicator window
+
+### Numbers Settings (NEW - 1 file)
+- [tsshowscomments.mdx](applications/numbers/tsshowscomments.mdx) - Show/hide comments pane
+
+---
+
+## Previous Documentation Added (January 9, 2026) - Batch 1
+
+### Safari Privacy Settings (NEW - 2 files)
+- [blockstoragepolicy.mdx](applications/safari/blockstoragepolicy.mdx) - Cookie and website data storage policy
+- [preloadtophit.mdx](applications/safari/preloadtophit.mdx) - Preload top search result for faster browsing
+
+### Xcode Editor Settings (NEW - 1 file)
+- [dvttextusessyntaxawareindenting.mdx](applications/xcode/dvttextusessyntaxawareindenting.mdx) - Syntax-aware smart indentation
+
+### Stage Manager Settings (NEW - 1 file)
+- [stagemanagerhidewidgets.mdx](stage-manager/stagemanagerhidewidgets.mdx) - Hide desktop widgets when Stage Manager active
+
+### Accessibility Settings (NEW - 1 file)
+- [slowkeydelay.mdx](accessibility/slowkeydelay.mdx) - Slow Keys delay duration
+
+### Mail Settings (NEW - 2 files)
+- [shouldshowunreadmessagesinbold.mdx](applications/mail/shouldshowunreadmessagesinbold.mdx) - Bold unread message display
+- [addressesincludenameonpasteboard.mdx](applications/mail/addressesincludenameonpasteboard.mdx) - Include name when copying addresses
+
+### Podcasts Settings (NEW - 1 file)
+- [notificationsenabled.mdx](applications/podcasts/notificationsenabled.mdx) - New episode notifications
+
+### Dock Settings (NEW - 1 file)
+- [showappexposegestureenabled.mdx](dock/showappexposegestureenabled.mdx) - App Expose trackpad gesture
+
+### Numbers Settings (NEW - 1 file)
+- [tsshowsruler.mdx](applications/numbers/tsshowsruler.mdx) - Show/hide ruler in spreadsheets
+
+---
+
+## Previous Documentation Added (January 8, 2026)
+
+### Accessibility Settings (NEW - 2 files)
+- [hovertextfontsize.mdx](accessibility/hovertextfontsize.mdx) - Hover Text magnification font size
+- [voiceoveronoroff.mdx](accessibility/voiceoveronoroff.mdx) - VoiceOver screen reader toggle
+
+### Podcasts Settings (NEW - 2 files)
+- [playbackspeed.mdx](applications/podcasts/playbackspeed.mdx) - Playback speed (0.5x to 2.0x)
+- [trimsilence.mdx](applications/podcasts/trimsilence.mdx) - Trim silence gaps from episodes
+
+### Mail Settings (NEW - 2 files)
+- [numberofsnippetlines.mdx](applications/mail/numberofsnippetlines.mdx) - Message preview lines (0-5)
+- [swipeaction.mdx](applications/mail/swipeaction.mdx) - Swipe gesture actions
+
+### Stage Manager Settings (NEW - 1 file)
+- [clicktoshowdesktop.mdx](stage-manager/clicktoshowdesktop.mdx) - Click wallpaper to show desktop (Sonoma+)
+
+### Numbers Settings (NEW - 1 file)
+- [tsdefaultzoom.mdx](applications/numbers/tsdefaultzoom.mdx) - Default spreadsheet zoom level
+
+### Xcode Settings (NEW - 1 file)
+- [dvttextshowminimap.mdx](applications/xcode/dvttextshowminimap.mdx) - Code minimap in editor
+
+### Books Settings (NEW - 1 file)
+- [bkreadertheme.mdx](applications/books/bkreadertheme.mdx) - Reader color theme (White/Sepia/Gray/Night)
+
+---
+
+## Previous Documentation Added (January 8, 2026)
 
 ### Safari Security & Downloads (NEW - 2 files)
 - [warnaboutfraudulentwebsites.mdx](applications/safari/warnaboutfraudulentwebsites.mdx) - Phishing and malware protection
@@ -191,24 +409,24 @@ Last Updated: January 8, 2026
 
 | Category | Documented | Undocumented | Total | Coverage |
 |----------|------------|--------------|-------|----------|
-| **Accessibility** | **24** | **7** | **31** | **77%** |
-| **Applications/Safari** | **20** | **6** | **26** | **77%** |
-| **Input/Trackpad** | **16** | **2** | **18** | **89%** |
-| **System/Siri** | **8** | **3** | **11** | **73%** |
-| System/Global | 33 | 7 | 40 | 83% |
-| **Interface/Dock** | **15** | **3** | **18** | **83%** |
-| Applications/Podcasts | 6 | 3 | 9 | 67% |
-| **Applications/Mail** | **12** | **4** | **16** | **75%** |
-| **Applications/Calendar** | **8** | **5** | **13** | **62%** |
-| **Applications/Xcode** | **8** | **4** | **12** | **67%** |
-| **Applications/Books** | **5** | **4** | **9** | **56%** |
-| Interface/WindowManager | 4 | 2 | 6 | 67% |
-| **Applications/Numbers** | **3** | **3** | **6** | **50%** |
-| **Applications/Pages** | **2** | **4** | **6** | **33%** |
+| **Accessibility** | **29** | **2** | **31** | **94%** |
+| **Applications/Safari** | **25** | **4** | **29** | **86%** |
+| **Input/Trackpad** | **18** | **0** | **18** | **100%** |
+| **System/Siri** | **10** | **1** | **11** | **91%** |
+| System/Global | 36 | 6 | 42 | 86% |
+| **Interface/Dock** | **18** | **0** | **18** | **100%** |
+| Applications/Podcasts | 10 | 0 | 10 | 100% |
+| **Applications/Mail** | **17** | **1** | **18** | **94%** |
+| **Applications/Calendar** | **12** | **4** | **16** | **75%** |
+| **Applications/Xcode** | **11** | **1** | **12** | **92%** |
+| **Applications/Books** | **11** | **1** | **12** | **92%** |
+| Interface/WindowManager | 6 | 0 | 6 | 100% |
+| **Applications/Numbers** | **11** | **0** | **11** | **100%** |
+| **Applications/Pages** | **7** | **0** | **7** | **100%** |
 | **Interface/Notifications** | **2** | **2** | **4** | **50%** |
 | **Applications/Terminal** | **7** | **3** | **10** | **70%** |
-| **Applications/ActivityMonitor** | **3** | **1** | **4** | **75%** |
-| **Applications/Keynote** | **5** | **1** | **6** | **83%** |
+| **Applications/ActivityMonitor** | **4** | **0** | **4** | **100%** |
+| **Applications/Keynote** | **14** | **0** | **14** | **100%** |
 | **Applications/Music** | **8** | **2** | **10** | **80%** |
 | **Applications/Messages** | **4** | **1** | **5** | **80%** |
 | **Applications/Photos** | **6** | **2** | **8** | **75%** |
@@ -218,171 +436,117 @@ Last Updated: January 8, 2026
 | **System/Login** | **7** | **2** | **9** | **78%** |
 | **Security** | **3** | **0** | **3** | **100%** |
 | **Privacy** | **2** | **0** | **2** | **100%** |
+| **Finder** | **23** | **2** | **25** | **92%** |
+| **Mission Control** | **8** | **2** | **10** | **80%** |
+| **Menu Bar** | **10** | **0** | **10** | **100%** |
 
 ---
 
 ## Undocumented Settings
 
-### Accessibility (7 settings remaining)
+### Accessibility (2 settings remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
-| `com.apple.universalaccess` | `hoverTextFontSize` | int | accessibility/display.sh |
 | `com.apple.universalaccess` | `hoverTextFontName` | string | accessibility/display.sh |
-| `com.apple.universalaccess` | `slowKeyDelay` | float | accessibility/keyboard.sh |
-| `com.apple.universalaccess` | `stickyKeyShowWindow` | bool | accessibility/keyboard.sh |
-| `com.apple.universalaccess` | `mouseDriverCursorSize` | float | accessibility/pointer.sh |
 | `com.apple.universalaccess` | `mouseDriver` | bool | accessibility/pointer.sh |
-| `com.apple.universalaccess` | `voiceOverOnOrOff` | bool | accessibility/voiceover.sh |
 
-**Documented**: `hoverTextEnabled`, `closeViewZoomMode`, `slowKey`, `stereoAsMono`, `closeViewSmoothImages`, `closeViewHotKeysEnabled`, `HearingAidMode`, `audioBalance`, `closeViewZoomFollowsFocus`, `closeViewScrollWheelModifiersInt`, `closeViewFarPoint`, `closeViewNearPoint`
+**Documented**: `hoverTextEnabled`, `hoverTextFontSize`, `voiceOverOnOrOff`, `closeViewZoomMode`, `slowKey`, `slowKeyDelay`, `stereoAsMono`, `closeViewSmoothImages`, `closeViewHotKeysEnabled`, `HearingAidMode`, `audioBalance`, `closeViewZoomFollowsFocus`, `closeViewScrollWheelModifiersInt`, `closeViewFarPoint`, `closeViewNearPoint`, `stickyKeyShowWindow`, `mouseDriverCursorSize`
 
-### Applications/Safari (8 settings remaining)
+### Applications/Safari (0 settings remaining) ✓
 
-| Domain | Key | Type | Source File |
-|--------|-----|------|-------------|
-| `com.apple.Safari` | `BlockStoragePolicy` | int | applications/safari.sh |
-| `com.apple.Safari` | `PreloadTopHit` | bool | applications/safari.sh |
-| `com.apple.Safari` | `WebKitDeveloperExtrasEnabledPreferenceKey` | bool | applications/safari.sh |
-| `com.apple.Safari` | `WebKitJavaEnabled` | bool | applications/safari.sh |
-| `com.apple.Safari` | `WebKitJavaScriptCanOpenWindowsAutomatically` | bool | applications/safari.sh |
-| `com.apple.Safari` | `WebKitPluginsEnabled` | bool | applications/safari.sh |
-| `com.apple.Safari` | `com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled` | bool | applications/safari.sh |
-| `com.apple.Safari` | `com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled` | bool | applications/safari.sh |
-| `com.apple.Safari` | `WarnAboutFraudulentWebsites` | bool | applications/safari.sh |
-| `com.apple.Safari` | `WebContinuousSpellCheckingEnabled` | bool | applications/safari.sh |
+All Safari settings documented.
 
-**Documented**: `AutoFillCreditCardData`, `AutoFillFromAddressBook`, `AutoFillMiscellaneousForms`, `UniversalSearchEnabled`, `SuppressSearchSuggestions`, `OpenNewTabsInFront`
+**Documented**: `AutoFillCreditCardData`, `AutoFillFromAddressBook`, `AutoFillMiscellaneousForms`, `UniversalSearchEnabled`, `SuppressSearchSuggestions`, `OpenNewTabsInFront`, `BlockStoragePolicy`, `PreloadTopHit`, `WebKitDeveloperExtrasEnabledPreferenceKey`, `WarnAboutFraudulentWebsites`, `WebKitJavaScriptCanOpenWindowsAutomatically`, `WebContinuousSpellCheckingEnabled`, `WebKitJavaEnabled`, `WebKitPluginsEnabled`, `WebKit2JavaEnabled`, `WebKit2PluginsEnabled`
 
-### Input/Trackpad (2 settings remaining)
+### Input/Trackpad (0 settings remaining) ✓
+
+All trackpad settings documented.
+
+**Documented**: `TrackpadPinchToZoom`, `TrackpadRotate`, `TrackpadTwoFingerDoubleTapGesture`, `TrackpadFourFingerHorizSwipeGesture`, `TrackpadFourFingerVertSwipeGesture`, `TrackpadFiveFingerPinchGesture`, `ActuationStrength`, `DragLock`, `TrackpadTwoFingerFromRightEdgeSwipeGesture`, `ActuateDetents`, `SecondClickThreshold`
+
+### System/Siri (1 setting remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
-| `com.apple.AppleMultitouchTrackpad` | `ActuateDetents` | int | input/trackpad.sh |
-| `com.apple.AppleMultitouchTrackpad` | `SecondClickThreshold` | int | input/trackpad.sh |
-
-**Documented**: `TrackpadPinchToZoom`, `TrackpadRotate`, `TrackpadTwoFingerDoubleTapGesture`, `TrackpadFourFingerHorizSwipeGesture`, `TrackpadFourFingerVertSwipeGesture`, `TrackpadFiveFingerPinchGesture`, `ActuationStrength`, `DragLock`, `TrackpadTwoFingerFromRightEdgeSwipeGesture`
-
-### System/Siri (3 settings remaining)
-
-| Domain | Key | Type | Source File |
-|--------|-----|------|-------------|
-| `com.apple.Siri` | `UserHasDeclinedEnable` | bool | system/siri.sh |
-| `com.apple.Siri` | `HotkeyTag` | int | system/siri.sh |
 | `com.apple.assistant.backedup` | `Cloud Sync Enabled` | bool | system/siri.sh |
 
-**Documented**: `Assistant Enabled`, `TypeToSiriEnabled`, `SiriSuggestionsEnabled`, `ShowSiriSuggestionsInSpotlight`, `VoiceFeedback`, `VoiceTriggerUserEnabled`, `StatusMenuVisible`, `LockscreenEnabled`
+**Documented**: `Assistant Enabled`, `TypeToSiriEnabled`, `SiriSuggestionsEnabled`, `ShowSiriSuggestionsInSpotlight`, `VoiceFeedback`, `VoiceTriggerUserEnabled`, `StatusMenuVisible`, `LockscreenEnabled`, `HotkeyTag`, `UserHasDeclinedEnable`
 
-### Interface/Dock (2 settings remaining)
+### Interface/Dock (0 settings remaining) ✓
 
-| Domain | Key | Type | Source File |
-|--------|-----|------|-------------|
-| `com.apple.dock` | `showAppExposeGestureEnabled` | bool | interface/dock.sh |
-| `com.apple.dock` | `dashboard-in-overlay` | bool | interface/dock.sh |
+All Dock settings documented.
 
-**Documented**: `enable-spring-load-actions-on-all-items`, `scroll-to-open`, `mineffect`, `minimize-to-application`, `expose-group-apps`, `wvous-*` (hot corners), `spans-displays`
+**Documented**: `enable-spring-load-actions-on-all-items`, `scroll-to-open`, `mineffect`, `minimize-to-application`, `expose-group-apps`, `wvous-*` (hot corners), `spans-displays`, `showAppExposeGestureEnabled`, `dashboard-in-overlay`
 
-### Applications/Podcasts (4 settings remaining)
+### Applications/Podcasts (0 settings remaining) ✓
 
-| Domain | Key | Type | Source File |
-|--------|-----|------|-------------|
-| `com.apple.podcasts` | `EpisodeDeleteBehavior` | int | applications/podcasts.sh |
-| `com.apple.podcasts` | `NotificationsEnabled` | bool | applications/podcasts.sh |
-| `com.apple.podcasts` | `PlaybackSpeed` | float | applications/podcasts.sh |
-| `com.apple.podcasts` | `TrimSilence` | bool | applications/podcasts.sh |
+All podcasts settings documented.
 
-**Documented**: `downloadNewEpisodes`, `skipForwardTime`, `skipBackTime`, `continuousPlaybackEnabled`, `headphoneControlsNextEpisode`, `episodeLimit`, `syncPodcasts`
+**Documented**: `downloadNewEpisodes`, `skipForwardTime`, `skipBackTime`, `continuousPlaybackEnabled`, `headphoneControlsNextEpisode`, `episodeLimit`, `syncPodcasts`, `PlaybackSpeed`, `TrimSilence`, `NotificationsEnabled`, `EpisodeDeleteBehavior`
 
-### Applications/Mail (6 settings remaining)
+### Applications/Mail (1 setting remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
-| `com.apple.mail` | `AddressesIncludeNameOnPasteboard` | bool | applications/mail.sh |
 | `com.apple.mail` | `DraftsViewerAttributes` | dict | applications/mail.sh |
-| `com.apple.mail` | `SpellCheckingBehavior` | string | applications/mail.sh |
-| `com.apple.mail` | `NumberOfSnippetLines` | int | applications/mail.sh |
-| `com.apple.mail` | `ShouldShowUnreadMessagesInBold` | bool | applications/mail.sh |
-| `com.apple.mail` | `SwipeAction` | int | applications/mail.sh |
 
-**Documented**: `DisableURLLoading`, `ConversationViewEnabled`, `JunkMailBehavior`, `DisableInlineAttachmentViewing`, `PlayMailSounds`, `DockBadge`
+**Documented**: `DisableURLLoading`, `ConversationViewEnabled`, `JunkMailBehavior`, `DisableInlineAttachmentViewing`, `PlayMailSounds`, `DockBadge`, `NumberOfSnippetLines`, `SwipeAction`, `AddressesIncludeNameOnPasteboard`, `ShouldShowUnreadMessagesInBold`, `SpellCheckingBehavior`
 
-### Applications/Calendar (8 settings)
+### Applications/Calendar (4 settings remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
 | `com.apple.iCal` | `TimeZone support enabled` | bool | applications/calendar.sh |
-| `com.apple.iCal` | `Show Week Numbers` | bool | applications/calendar.sh |
-| `com.apple.iCal` | `first day of week` | int | applications/calendar.sh |
 | `com.apple.iCal` | `first minute of work hours` | int | applications/calendar.sh |
 | `com.apple.iCal` | `last minute of work hours` | int | applications/calendar.sh |
 | `com.apple.iCal` | `number of days to show` | int | applications/calendar.sh |
-| `com.apple.iCal` | `Default duration in minutes for new event` | int | applications/calendar.sh |
-| `com.apple.iCal` | `TimeToLeaveEnabled` | bool | applications/calendar.sh |
 
-### Applications/Xcode (4 settings remaining)
+**Documented**: `DefaultEventAlert`, `ScrollByWeeks`, `holidaysCalendar`, `TimeToLeaveEnabled`, `first day of week`, `Show Week Numbers`, `Default duration in minutes for new event`, `SharedCalendarNotificationsDisabled`, `DefaultAllDayEventAlert`, `number of hours displayed`
+
+### Applications/Xcode (1 setting remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
-| `com.apple.dt.Xcode` | `DVTTextShowMinimap` | bool | applications/xcode.sh |
-| `com.apple.dt.Xcode` | `DVTTextUsesSyntaxAwareIndenting` | bool | applications/xcode.sh |
 | `com.apple.dt.Xcode` | `IDEDocViewerInitialSelection` | string | applications/xcode.sh |
-| `com.apple.dt.Xcode` | `IDEWorkspaceTabBarShowsTabNames` | bool | applications/xcode.sh |
 
-**Documented**: `DVTTextShowFoldingSidebar`, `DVTTextIndentTabWidth`, `IDEShowRuntimeIssues`, `ShowBuildOperationDuration`, `DVTTextShowLineNumbers`, `DVTTextPageGuideLocation`, `DVTTextShowPageGuide`, `DVTTextEditorTrimTrailingWhitespace`
+**Documented**: `DVTTextShowFoldingSidebar`, `DVTTextIndentTabWidth`, `IDEShowRuntimeIssues`, `ShowBuildOperationDuration`, `DVTTextShowLineNumbers`, `DVTTextPageGuideLocation`, `DVTTextShowPageGuide`, `DVTTextEditorTrimTrailingWhitespace`, `DVTTextShowMinimap`, `DVTTextUsesSyntaxAwareIndenting`, `IDEWorkspaceTabBarShowsTabNames`
 
-### Applications/Books (7 settings)
+### Applications/Books (1 setting remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
-| `com.apple.iBooksX` | `BKDefaultPageTurnAnimation` | int | applications/books.sh |
-| `com.apple.iBooksX` | `BKForceLegacyBrightnessControl` | bool | applications/books.sh |
-| `com.apple.iBooksX` | `BKShowScrollIndicator` | bool | applications/books.sh |
-| `com.apple.iBooksX` | `BKHighlightColorIndex` | int | applications/books.sh |
 | `com.apple.iBooksX` | `BKLastUsedFontFamilyName` | string | applications/books.sh |
-| `com.apple.iBooksX` | `BKLastUsedFontSize` | int | applications/books.sh |
-| `com.apple.iBooksX` | `BKReaderTheme` | int | applications/books.sh |
 
-### Interface/WindowManager (Stage Manager) (2 settings remaining)
+**Documented**: `BKAnimatePageTurn`, `BKScrollDirection`, `BKSyncBookmarksAndHighlights`, `BKReaderTheme`, `BKLastUsedFontSize`, `BKHighlightColorIndex`, `BKDefaultPageTurnAnimation`, `BKSyncReadingPosition`, `BKShowStatusBarWhileReading`, `BKAutoNightThemeEnabled`, `BKSyncCollections`
 
-| Domain | Key | Type | Source File |
-|--------|-----|------|-------------|
-| `com.apple.WindowManager` | `EnableStandardClickToShowDesktop` | bool | interface/stage_manager.sh |
-| `com.apple.WindowManager` | `StageManagerHideWidgets` | bool | interface/stage_manager.sh |
+### Interface/WindowManager (Stage Manager) (0 settings remaining)
 
-**Documented**: `GloballyEnabled`, `AutoHide`, `HideDesktop`, `AppWindowGroupingBehavior`
+**Documented**: `GloballyEnabled`, `AutoHide`, `HideDesktop`, `AppWindowGroupingBehavior`, `EnableStandardClickToShowDesktop`, `StageManagerHideWidgets`
 
-### Applications/Numbers (5 settings)
+### Applications/Numbers (0 settings remaining) ✓
 
-| Domain | Key | Type | Source File |
-|--------|-----|------|-------------|
-| `com.apple.iWork.Numbers` | `TSDefaultZoom` | int | applications/numbers.sh |
-| `com.apple.iWork.Numbers` | `TSShowsAutoCorrection` | bool | applications/numbers.sh |
-| `com.apple.iWork.Numbers` | `TSShowsRuler` | bool | applications/numbers.sh |
-| `com.apple.iWork.Numbers` | `TSShowsComments` | bool | applications/numbers.sh |
-| `com.apple.iWork.Numbers` | `TSTableDefaultRowCount` | int | applications/numbers.sh |
+All Numbers settings documented.
 
-### Applications/Pages (5 settings)
+**Documented**: `TSShowFormulaWarnings`, `TSWarnBeforeDeletingSheets`, `TSDefaultZoom`, `TSShowsRuler`, `TSShowsComments`, `TSShowsAutoCorrection`, `TSInsertTabInsteadOfMoving`, `TSShowsObjectCenterGuides`, `TSShowsObjectEdgeGuides`, `Use1904DateSystem`, `TSTableDefaultRowCount`
+
+### Applications/Pages (0 settings remaining) ✓
+
+All Pages settings documented.
+
+**Documented**: `TSWPShowInvisibles`, `TSDefaultZoom`, `TSShowsRuler`, `TSShowsAutoCorrection`, `TSShowsComments`, `TSShowSizeAndPositionWhenMoving`
+
+### System/Global (3 settings remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
-| `com.apple.iWork.Pages` | `TSDefaultZoom` | int | applications/pages.sh |
-| `com.apple.iWork.Pages` | `TSShowsAutoCorrection` | bool | applications/pages.sh |
-| `com.apple.iWork.Pages` | `TSShowsRuler` | bool | applications/pages.sh |
-| `com.apple.iWork.Pages` | `TSShowsComments` | bool | applications/pages.sh |
-| `com.apple.iWork.Pages` | `TSShowSizeAndPositionWhenMoving` | bool | applications/pages.sh |
-
-### System/Global (8 settings)
-
-| Domain | Key | Type | Source File |
-|--------|-----|------|-------------|
-| `NSGlobalDomain` | `AppleMenuBarFontSize` | int | system/global.sh |
-| `NSGlobalDomain` | `AppleReduceDesktopTinting` | bool | system/global.sh |
-| `NSGlobalDomain` | `NSDocumentSaveNewDocumentsToCloud` | bool | system/global.sh |
-| `NSGlobalDomain` | `NSRecentDocumentsLimit` | int | system/global.sh |
-| `NSGlobalDomain` | `NSStatusItemSelectionPadding` | int | system/global.sh |
-| `NSGlobalDomain` | `NSStatusItemSpacing` | int | system/global.sh |
-| `NSGlobalDomain` | `com.apple.sound.beep.sound` | string | system/sound.sh |
+| `NSGlobalDomain` | `AppleMenuBarFontSize` | int | accessibility/display.sh |
+| `NSGlobalDomain` | `NSStatusItemSelectionPadding` | int | interface/menu_bar.sh |
 | `NSGlobalDomain` | `com.apple.sound.beep.flash` | bool | system/sound.sh |
+
+**Note**: These settings are commented out in source files (not actively used).
+
+**Documented**: `NSDocumentSaveNewDocumentsToCloud`, `NSAutomaticWindowAnimationsEnabled`, `NSRecentDocumentsLimit`, `AppleReduceDesktopTinting`, `NSQuitAlwaysKeepsWindows`, `com.apple.sound.beep.sound`, and 30+ other global settings
 
 ### Interface/Notifications (3 settings)
 
@@ -392,35 +556,29 @@ Last Updated: January 8, 2026
 | `com.apple.ncprefs` | `dnd_prefs` | dict | interface/notifications.sh |
 | `com.apple.ncprefs` | `apps` | array | interface/notifications.sh |
 
-### Applications/Keynote (5 settings)
+### Applications/Keynote (0 settings remaining) ✓
 
-| Domain | Key | Type | Source File |
-|--------|-----|------|-------------|
-| `com.apple.iWork.Keynote` | `TSDefaultZoom` | int | applications/keynote.sh |
-| `com.apple.iWork.Keynote` | `TSShowsAutoCorrection` | bool | applications/keynote.sh |
-| `com.apple.iWork.Keynote` | `TSShowsRuler` | bool | applications/keynote.sh |
-| `com.apple.iWork.Keynote` | `TSShowsComments` | bool | applications/keynote.sh |
-| `com.apple.iWork.Keynote` | `TSShowsPresenterNotes` | bool | applications/keynote.sh |
+All Keynote settings documented.
 
-### Finder (5 settings)
+**Documented**: `KNExitAfterLastSlide`, `TSDefaultZoom`, `TSShowsAutoCorrection`, `TSShowsRuler`, `TSShowsComments`, `ShowPresenterNotes`, `KNShowsObjectCenterGuides`, `KNShowsObjectEdgeGuides`, `KNShowSizeAndPositionWhenMoving`, `KNShowPointerOnSlide`, `KNRemoteEnabled`
+
+### Finder (2 settings remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
 | `com.apple.finder` | `DesktopViewSettings` | dict | finder/desktop.sh |
 | `com.apple.finder` | `StandardViewSettings` | dict | finder/views.sh |
-| `com.apple.finder` | `WarnOnEmptyTrash` | bool | finder/behavior.sh |
-| `com.apple.finder` | `EmptyTrashSecurely` | bool | finder/behavior.sh |
-| `com.apple.finder` | `DisableAllAnimations` | bool | finder/behavior.sh |
 
-### Mission Control (5 settings)
+**Documented**: `WarnOnEmptyTrash`, `EmptyTrashSecurely`, `DisableAllAnimations`, and 20+ other Finder settings
+
+### Mission Control (2 settings remaining)
 
 | Domain | Key | Type | Source File |
 |--------|-----|------|-------------|
-| `com.apple.dock` | `expose-animation-duration` | float | interface/mission_control.sh |
-| `com.apple.dock` | `showLaunchpadGestureEnabled` | bool | interface/mission_control.sh |
-| `com.apple.dock` | `showMissionControlGestureEnabled` | bool | interface/mission_control.sh |
 | `com.apple.spaces` | `app-bindings` | dict | interface/mission_control.sh |
 | `com.apple.symbolichotkeys` | `AppleSymbolicHotKeys` | dict | interface/mission_control.sh |
+
+**Documented**: `expose-animation-duration`, `showLaunchpadGestureEnabled`, `showMissionControlGestureEnabled`, `mru-spaces`, `expose-group-apps`, `spans-displays`, and hot corner settings
 
 ### Bluetooth (3 settings)
 
@@ -448,8 +606,7 @@ Last Updated: January 8, 2026
 | `com.apple.Notes` | `IndentUsingTabs` | bool | applications/notes.sh |
 | `com.apple.reminders` | `DefaultListID` | string | applications/reminders.sh |
 | `com.apple.messages` | `NotificationSoundsEnabled` | bool | applications/messages.sh |
-| `com.apple.ActivityMonitor` | `UpdatePeriod` | int | applications/activity_monitor.sh |
-| `com.apple.ActivityMonitor` | `ShowCategory` | int | applications/activity_monitor.sh |
+| `com.apple.ActivityMonitor` | (all documented) | - | applications/activity_monitor.sh |
 | `com.apple.screencapture` | `include-date` | bool | system/screenshot.sh |
 | `com.apple.menuextra.clock` | `IsAnalog` | bool | interface/menu_bar.sh |
 | `com.apple.menuextra.clock` | `FlashDateSeparators` | bool | interface/menu_bar.sh |

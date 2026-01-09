@@ -1,0 +1,295 @@
+# Safari JavaScript Popup Blocker
+
+Control whether JavaScript can open new windows (pop-ups) automatically in Safari.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `WebKitJavaScriptCanOpenWindowsAutomatically` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether websites can use JavaScript to open new windows or pop-ups without user interaction. When disabled (the default), Safari blocks pop-up windows that weren't triggered by a direct user action like clicking a link or button. This prevents annoying advertising pop-ups and potential security threats from malicious websites that use pop-ups for phishing or drive-by downloads.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Allow pop-ups** — JavaScript can open windows automatically |
+| `false` | **Block pop-ups** (default) — Only user-initiated pop-ups allowed |
+
+## Visual Demonstration
+
+### Pop-ups Blocked (false - Default):
+```
++-------------------------------------------------------------+
+|  Safari with Pop-up Blocker Enabled                          |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🌐 Safari                                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [◀] [▶] [↻]  [ sketchy-website.com          ]  [🔒]   │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │                                                      ││|
+|  │  │         🚫 Pop-up Blocked                           ││|
+|  │  │                                                      ││|
+|  │  │    Safari blocked a pop-up from this website.       ││|
+|  │  │                                                      ││|
+|  │  │    ┌─────────────────────────────────────────┐     ││|
+|  │  │    │  Click here to show blocked pop-ups    │     ││|
+|  │  │    │  (Address bar notification)             │     ││|
+|  │  │    └─────────────────────────────────────────┘     ││|
+|  │  │                                                      ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Pop-up blocked! User can choose to allow if needed.        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Pop-ups Allowed (true):
+```
++-------------------------------------------------------------+
+|  Safari with Pop-ups Allowed                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🌐 Safari (Main Window)                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [ sketchy-website.com ]                                │|
+|  │                                                          │|
+|  │  ┌────────────────────────────────┐                    │|
+|  │  │                                │                    │|
+|  │  │  Main Page Content             │                    │|
+|  │  │                                │                    │|
+|  │  └────────────────────────────────┘                    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|     ┌─────────────────────────────────────────────────────┐ |
+|     │  🌐 Pop-up Window 1                                  │ |
+|     │  ─────────────────────────────────────────────────  │ |
+|     │                                                      │ |
+|     │  ⚠️  CONGRATULATIONS!                               │ |
+|     │      You've won a prize!                            │ |
+|     │      [Click Here!!!]                                │ |
+|     │                                                      │ |
+|     └─────────────────────────────────────────────────────┘ |
+|                                                              |
+|       ┌───────────────────────────────────────────────────┐ |
+|       │  🌐 Pop-up Window 2                                │ |
+|       │  ─────────────────────────────────────────────    │ |
+|       │  Another unwanted advertisement...                │ |
+|       └───────────────────────────────────────────────────┘ |
+|                                                              |
+|  ⚠️ Risk: Ads, scams, phishing, and malware pop-ups        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### How Pop-up Blocking Works:
+```
++-------------------------------------------------------------+
+|  Pop-up Blocking Behavior                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  USER-INITIATED (ALLOWED even when blocking enabled):        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │   User clicks → [Open New Window]                       │|
+|  │                        │                                 │|
+|  │                        ▼                                 │|
+|  │               ┌──────────────────┐                      │|
+|  │               │  New window opens │  ✓ Allowed          │|
+|  │               │  (user-initiated) │                     │|
+|  │               └──────────────────┘                      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  AUTOMATIC (BLOCKED when pop-up blocker enabled):            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │   Page loads → window.open() runs automatically         │|
+|  │                        │                                 │|
+|  │                        ▼                                 │|
+|  │               ┌──────────────────┐                      │|
+|  │               │  🚫 BLOCKED      │  ✗ Not allowed       │|
+|  │               │  (no user action) │                     │|
+|  │               └──────────────────┘                      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Security Implications
+
+### Why Block Pop-ups?
+
+| Threat | Description |
+|--------|-------------|
+| **Phishing** | Fake login windows mimicking banks, email providers |
+| **Malware** | Drive-by download prompts for malicious software |
+| **Scareware** | Fake virus warnings demanding payment |
+| **Ad bombardment** | Multiple unwanted advertising windows |
+| **Crypto mining** | Hidden windows running cryptocurrency miners |
+| **Session hijacking** | Pop-ups designed to steal authentication tokens |
+
+### When You Might Need Pop-ups
+
+Some legitimate sites require pop-ups for:
+- Payment processing windows (e.g., PayPal, bank authentication)
+- OAuth login flows (Sign in with Google/Apple)
+- Print preview dialogs
+- Online banking security verification
+- File download confirmations
+
+## Our Configuration
+
+**Set to**: `false` — Block automatic pop-ups for security.
+
+### Why Block Pop-ups?
+
+1. **Security** — Prevents phishing and malware delivery
+2. **User experience** — No unwanted windows interrupting browsing
+3. **Performance** — Fewer windows means less memory usage
+4. **Privacy** — Blocks tracking pop-ups and beacons
+5. **Default behavior** — Most users expect this protection
+
+### Per-Site Exceptions
+
+Safari allows enabling pop-ups for specific trusted sites:
+```
+Safari > Settings > Websites > Pop-up Windows
+```
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically
+
+# Block pop-ups (default, recommended)
+defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
+
+# Allow pop-ups (not recommended)
+defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically
+
+# Also set WebKit2 version for complete coverage
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
+```
+
+## UI Location
+
+**Safari** > **Settings** > **Websites** > **Pop-up Windows**
+
+```
++-------------------------------------------------------------+
+|  Safari Website Settings                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Safari > Settings (⌘,) > Websites                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Tabs] [AutoFill] [Passwords]                │|
+|  │  [Search] [Security] [Privacy] [Websites] [Extensions]  │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌──────────────┬────────────────────────────────────┐  │|
+|  │  │ Sidebar      │  Pop-up Windows                    │  │|
+|  │  │              │  ─────────────────────────────────  │  │|
+|  │  │ Auto-Play    │                                    │  │|
+|  │  │ Camera       │  Allow pop-up windows on the       │  │|
+|  │  │ Microphone   │  websites below:                   │  │|
+|  │  │ Location     │                                    │  │|
+|  │  │ Notifications│  ┌──────────────────────────────┐  │  │|
+|  │  │              │  │ Website         Permission   │  │  │|
+|  │  │ ▶ Pop-up     │  │ ─────────────────────────── │  │  │|
+|  │  │   Windows ←  │  │ bank.com        Allow       │  │  │|
+|  │  │              │  │ paypal.com      Allow       │  │  │|
+|  │  │ Page Zoom    │  │ ads.com         Block       │  │  │|
+|  │  │ Reader       │  └──────────────────────────────┘  │  │|
+|  │  │              │                                    │  │|
+|  │  │              │  When visiting other websites:    │  │|
+|  │  │              │  [Block and Notify ▼]             │  │|
+|  │  │              │                                    │  │|
+|  │  └──────────────┴────────────────────────────────────┘  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Options: Block and Notify | Block | Allow                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Pop-up blocker (this setting)
+defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
+
+# WebKit2 version of same setting
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
+
+# Enable JavaScript (master toggle)
+defaults write com.apple.Safari WebKitJavaScriptEnabled -bool true
+
+# Warn about fraudulent websites
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+
+# Block all cookies
+defaults write com.apple.Safari BlockStoragePolicy -int 2
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Legitimate pop-up blocked | Add site to exceptions in Safari > Settings > Websites |
+| Pop-ups still appearing | Check for browser extensions; clear Safari cache |
+| Bank login not working | Enable pop-ups for bank domain specifically |
+| OAuth login failing | Allow pop-ups for authentication provider domain |
+| Setting not applying | Quit Safari completely, then reopen |
+| Still getting pop-ups | Some are tab-unders; check for malware |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite) and later
+- **Note**: Safari must be quit for terminal changes to apply
+- **Note**: Per-site settings override the global preference
+- **Note**: Both WebKit and WebKit2 keys should be set for full coverage
+- **Note**: Some legacy sites may not work without pop-ups
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../../defaults/applications/safari.sh)
+
+```bash
+# WebKitJavaScriptCanOpenWindowsAutomatically controls pop-up blocking
+# Domain: com.apple.Safari
+# This setting is not explicitly in the current safari.sh but is a
+# standard Safari security preference
+```
+
+## References
+
+- [Apple Support: Block pop-up windows in Safari](https://support.apple.com/guide/safari/block-pop-ups-sfri40696/mac)
+- [Apple Support: Safari security settings](https://support.apple.com/guide/safari/security-ibrw1074/mac)
+- [WebKit JavaScript Documentation](https://webkit.org/blog/)

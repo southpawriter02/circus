@@ -1,0 +1,289 @@
+# Siri User Declined Enable
+
+Track whether the user has explicitly declined to enable Siri.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Siri` |
+| **Key** | `UserHasDeclinedEnable` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+This preference records whether the user has explicitly declined to enable Siri when prompted during macOS setup or subsequent Siri activation attempts. When set to `true`, it signals to the system that the user has made a conscious decision not to use Siri, which prevents repeated prompts to enable the assistant. This is particularly useful in privacy-focused configurations where Siri should remain disabled without nagging the user.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Not declined** (default) — User may be prompted to enable Siri |
+| `true` | **User declined** — User explicitly chose not to enable Siri |
+
+## Visual Demonstration
+
+### Not Declined (false - Default):
+```
++-------------------------------------------------------------+
+|  Siri Setup Prompt (May Appear)                             |
++-------------------------------------------------------------+
+|                                                              |
+|  When launching apps or during system updates:               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |                                                       |  |
+|  |              Enable Siri?                             |  |
+|  |              ────────────                             |  |
+|  |                                                       |  |
+|  |     Siri helps you get things done with your          |  |
+|  |     voice. Ask Siri to find files, send               |  |
+|  |     messages, open apps, and more.                    |  |
+|  |                                                       |  |
+|  |     [Enable Siri]        [Not Now]                    |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  This prompt may reappear after:                            |
+|  • macOS updates                                             |
+|  • System Settings changes                                   |
+|  • Certain app launches                                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### User Declined (true):
+```
++-------------------------------------------------------------+
+|  Siri Permanently Declined                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  System remembers user's choice:                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |                                                       |  |
+|  |     No Siri Prompts                                   |  |
+|  |     ───────────────                                   |  |
+|  |                                                       |  |
+|  |     The system will not prompt you to enable          |  |
+|  |     Siri during normal usage.                         |  |
+|  |                                                       |  |
+|  |     To enable Siri later:                             |  |
+|  |     System Settings > Siri & Spotlight                |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
+|  Benefits:                                                   |
+|  • No annoying setup prompts                                 |
+|  • Cleaner system experience                                 |
+|  • Privacy-focused default                                   |
+|  • User choice is respected                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison with Assistant Enabled:
+```
++-------------------------------------------------------------+
+|  UserHasDeclinedEnable vs Assistant Enabled                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +---------------------------+---------------------------+  |
+|  | UserHasDeclinedEnable     | Assistant Enabled         |  |
+|  +---------------------------+---------------------------+  |
+|  | Records user preference   | Controls Siri state       |  |
+|  | about being prompted      | (on/off)                  |  |
+|  +---------------------------+---------------------------+  |
+|  | true = Don't prompt again | true = Siri is on         |  |
+|  | false = May prompt        | false = Siri is off       |  |
+|  +---------------------------+---------------------------+  |
+|  | Affects: Future prompts   | Affects: Siri function    |  |
+|  +---------------------------+---------------------------+  |
+|                                                              |
+|  Recommended Privacy Configuration:                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  UserHasDeclinedEnable = true    (no prompts)               |
+|  Assistant Enabled = false       (Siri off)                 |
+|                                                              |
+|  Result: Siri disabled, no prompts to enable it             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Privacy & Security Implications
+
+### Why Set to True?
+
+1. **Prevent Nagging** — No repeated prompts to enable Siri
+2. **Privacy Signal** — Clearly indicates user's preference
+3. **Corporate Compliance** — Part of privacy-focused deployment
+4. **Consistent State** — Prevents accidental Siri enablement
+5. **User Autonomy** — Respects explicit user choice
+
+### Privacy Configuration Stack
+
+```
++-------------------------------------------------------------+
+|  Complete Siri Privacy Configuration                         |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Disable Siri:                                            |
+|     defaults write com.apple.assistant.support \             |
+|       "Assistant Enabled" -bool false                        |
+|                                                              |
+|  2. Mark as declined:                                        |
+|     defaults write com.apple.Siri \                          |
+|       UserHasDeclinedEnable -bool true                       |
+|                                                              |
+|  3. Disable Siri Suggestions:                                |
+|     defaults write com.apple.Siri \                          |
+|       SiriSuggestionsEnabled -bool false                     |
+|                                                              |
+|  4. Remove from menu bar:                                    |
+|     defaults write com.apple.Siri \                          |
+|       StatusMenuVisible -bool false                          |
+|                                                              |
+|  Result: Full Siri privacy with no prompts                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — User has declined Siri, preventing future prompts.
+
+### Why Mark as Declined (true)?
+
+1. **No Interruptions** — Prevents setup prompts during workflow
+2. **Privacy Profile** — Part of comprehensive privacy configuration
+3. **User Experience** — Cleaner, distraction-free system
+4. **Intentional Choice** — Documents that Siri was consciously rejected
+5. **Deployment Ready** — Ideal for privacy-focused fleet management
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Siri UserHasDeclinedEnable
+
+# Mark Siri as declined (prevent prompts)
+defaults write com.apple.Siri UserHasDeclinedEnable -bool true
+
+# Reset (may receive prompts again)
+defaults write com.apple.Siri UserHasDeclinedEnable -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Siri UserHasDeclinedEnable
+```
+
+Changes may require logout to take full effect.
+
+## UI Location
+
+There is no direct UI toggle for this setting. It is set automatically when the user declines Siri during:
+
+- **macOS Setup Assistant** — Initial Mac setup
+- **System Settings** > **Siri & Spotlight** — When declining to enable
+- **Siri Prompt Dialogs** — When clicking "Don't Enable" or "Not Now"
+
+```
++-------------------------------------------------------------+
+|  How This Setting Gets Set                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  During macOS Setup:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  +-------------------------------------------------------+  |
+|  |                 Set Up Siri                           |  |
+|  |  ─────────────────────────────────────────────────── |  |
+|  |                                                       |  |
+|  |  Siri helps you get things done just by              |  |
+|  |  asking. You can use Siri to control                 |  |
+|  |  settings, find files, and more.                     |  |
+|  |                                                       |  |
+|  |      [Continue]        [Set Up Later]                |  |
+|  |                               ^                       |  |
+|  |                               |                       |  |
+|  |                Sets UserHasDeclinedEnable = true      |  |
+|  |                                                       |  |
+|  +-------------------------------------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# User declined Siri (this setting)
+defaults write com.apple.Siri UserHasDeclinedEnable -bool true
+
+# Master Siri toggle
+defaults write com.apple.assistant.support "Assistant Enabled" -bool false
+
+# Siri menu bar visibility
+defaults write com.apple.Siri StatusMenuVisible -bool false
+
+# Siri Suggestions
+defaults write com.apple.Siri SiriSuggestionsEnabled -bool false
+
+# Type to Siri (if enabled)
+defaults write com.apple.Siri TypeToSiriEnabled -bool true
+```
+
+## Use Cases
+
+### Enterprise/Privacy Deployment
+```bash
+# Full Siri privacy configuration
+defaults write com.apple.assistant.support "Assistant Enabled" -bool false
+defaults write com.apple.Siri UserHasDeclinedEnable -bool true
+defaults write com.apple.Siri StatusMenuVisible -bool false
+defaults write com.apple.Siri SiriSuggestionsEnabled -bool false
+```
+
+### Personal Privacy Setup
+```bash
+# Disable Siri but allow future reconsideration
+defaults write com.apple.assistant.support "Assistant Enabled" -bool false
+# Don't set UserHasDeclinedEnable if you might want prompts later
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still getting Siri prompts | Set `UserHasDeclinedEnable` to true |
+| Can't find setting in UI | This is a programmatic setting only |
+| Siri enables after update | Re-apply the defaults command |
+| Setting doesn't persist | Check for MDM profiles overriding |
+| Want prompts back | Set to false and restart |
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra, when Siri was introduced to Mac)
+- **Note**: May need to be reapplied after major macOS updates
+- **Note**: MDM profiles may override this setting
+- **Note**: Works in conjunction with `Assistant Enabled` for full privacy
+
+## Source File
+
+**File**: [`defaults/profiles/privacy.sh`](../../../../../defaults/profiles/privacy.sh)
+
+```bash
+# UserHasDeclinedEnable marks that user declined Siri setup
+# Domain: com.apple.Siri
+# true = don't prompt user to enable Siri
+run_defaults "com.apple.Siri" "UserHasDeclinedEnable" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Siri on your Mac](https://support.apple.com/guide/mac-help/mchl6b029310/mac)
+- [Apple Support: Siri & Privacy](https://support.apple.com/guide/mac-help/siri-and-privacy-mchl10bafcd0/mac)
+- [Apple Support: Set up your Mac](https://support.apple.com/guide/mac-help/set-up-your-mac-mchlp1413/mac)

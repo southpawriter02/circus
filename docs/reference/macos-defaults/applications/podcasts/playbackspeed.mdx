@@ -1,0 +1,267 @@
+# Podcasts Playback Speed
+
+Control the default playback speed for podcast episodes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Key** | `PlaybackSpeed` |
+| **Type** | Float |
+| **Default Value** | `1.0` |
+| **Our Setting** | `1.0` |
+
+## Description
+
+Controls the default playback speed for podcast episodes in the Apple Podcasts app. Adjusting playback speed allows you to listen to podcasts faster to consume more content, or slower for better comprehension. The setting affects all podcasts by default, though individual shows can have their own speed settings. Common speeds include 1.5x for experienced listeners who want to save time, or 0.75x for complex content.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0.5` | **Half speed** — Very slow, useful for language learning |
+| `0.75` | **Three-quarters** — Slower for complex content |
+| `1.0` | **Normal speed** (default) — Original recording pace |
+| `1.25` | **Slightly faster** — Mild time savings |
+| `1.5` | **One and a half** — Popular fast listening speed |
+| `1.75` | **Fast** — Significant time savings |
+| `2.0` | **Double speed** — Maximum speed for experienced listeners |
+
+## Visual Demonstration
+
+### Playback Speed Impact:
+```
++-------------------------------------------------------------+
+|  Playback Speed Time Comparison                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Original Episode Length: 60 minutes                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Speed     Listening Time    Time Saved                      |
+|  ────────────────────────────────────────────                |
+|  0.5x      120 minutes       -60 min (slower)               |
+|  0.75x      80 minutes       -20 min (slower)               |
+|  1.0x       60 minutes         0 min (normal)               |
+|  1.25x      48 minutes        12 min saved                  |
+|  1.5x       40 minutes        20 min saved                  |
+|  1.75x      34 minutes        26 min saved                  |
+|  2.0x       30 minutes        30 min saved                  |
+|                                                              |
+|  WEEKLY IMPACT (5 hrs/week of podcasts):                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  At 1.0x: 5 hours listening                                 |
+|  At 1.5x: 3.3 hours listening (1.7 hrs saved)              |
+|  At 2.0x: 2.5 hours listening (2.5 hrs saved)              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Speed Selection in App:
+```
++-------------------------------------------------------------+
+|  Podcasts - Now Playing Speed Control                        |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Now Playing                                             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │        ┌─────────────────────────────┐                  │|
+|  │        │                              │                  │|
+|  │        │     [Podcast Artwork]        │                  │|
+|  │        │                              │                  │|
+|  │        └─────────────────────────────┘                  │|
+|  │                                                          │|
+|  │  Episode Title                                           │|
+|  │  Podcast Name                                            │|
+|  │                                                          │|
+|  │  ────●──────────────────────────────                    │|
+|  │  5:23                              45:30                 │|
+|  │                                                          │|
+|  │       ⏪15    ▶️     ⏩30                                │|
+|  │                                                          │|
+|  │  [1x]  ← Speed button (tap to cycle)                    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Tap speed button to cycle: 1x → 1.5x → 2x → 0.5x → 1x     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### When to Use Different Speeds:
+```
++-------------------------------------------------------------+
+|  Recommended Speeds by Content Type                          |
++-------------------------------------------------------------+
+|                                                              |
+|  CONVERSATIONAL/INTERVIEW:                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: 1.25x - 1.75x                                 |
+|  Natural speech has pauses that can be compressed           |
+|  Casual content easy to follow at faster speeds             |
+|                                                              |
+|  NEWS/CURRENT EVENTS:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: 1.25x - 1.5x                                  |
+|  Moderate speed for staying informed                        |
+|  Fast enough for efficiency, slow enough for comprehension  |
+|                                                              |
+|  EDUCATIONAL/TECHNICAL:                                      |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: 1.0x - 1.25x                                  |
+|  Complex concepts need processing time                      |
+|  May need to rewind and re-listen                          |
+|                                                              |
+|  LANGUAGE LEARNING:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: 0.75x - 1.0x                                  |
+|  Slower speed helps catch pronunciation                     |
+|  Gives time to process unfamiliar words                    |
+|                                                              |
+|  FICTION/STORYTELLING:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: 1.0x - 1.25x                                  |
+|  Pacing is part of the storytelling                        |
+|  Dramatic pauses lose effect at high speeds                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1.0` — Normal speed for authentic listening experience.
+
+### Why Use Normal Speed?
+
+1. **Authentic** — Hear content as creators intended
+2. **Comprehension** — Maximum understanding of complex topics
+3. **Enjoyment** — Natural pacing for entertainment content
+4. **Flexibility** — Adjust per-episode as needed
+
+### Why Increase Speed?
+
+- Limited listening time
+- Familiar with fast playback
+- Conversational content with natural pauses
+- Want to consume more content
+
+### Why Decrease Speed?
+
+- Learning new language
+- Complex technical content
+- Hearing impairment
+- Prefer slower pace
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.podcasts PlaybackSpeed
+
+# Set to normal speed (1.0)
+defaults write com.apple.podcasts PlaybackSpeed -float 1.0
+
+# Set to 1.5x speed
+defaults write com.apple.podcasts PlaybackSpeed -float 1.5
+
+# Set to double speed (2.0)
+defaults write com.apple.podcasts PlaybackSpeed -float 2.0
+
+# Set to slower speed (0.75)
+defaults write com.apple.podcasts PlaybackSpeed -float 0.75
+
+# Delete (reset to default)
+defaults delete com.apple.podcasts PlaybackSpeed
+```
+
+## UI Location
+
+**Podcasts** > **Now Playing** > **Speed Button**
+
+```
++-------------------------------------------------------------+
+|  Accessing Playback Speed                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  METHOD 1 - Now Playing Screen:                              |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Play any podcast episode                                |
+|  2. Look for speed button (shows current speed like "1x")   |
+|  3. Tap to cycle through speeds                             |
+|                                                              |
+|  METHOD 2 - Episode Menu:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Right-click/Control-click on episode                    |
+|  2. Select "Playback Speed"                                 |
+|  3. Choose desired speed                                    |
+|                                                              |
+|  METHOD 3 - Settings (Default):                              |
+|  ─────────────────────────────────────────────────────────  |
+|  Note: Default playback speed is set via defaults           |
+|  command or through individual show settings                |
+|                                                              |
+|  PER-SHOW SETTINGS:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Go to show page                                         |
+|  2. Click gear icon / Settings                              |
+|  3. Adjust "Playback Speed" for that show                   |
+|  4. Overrides default for that specific podcast             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Playback speed (this setting)
+defaults write com.apple.podcasts PlaybackSpeed -float 1.0
+
+# Trim silence (removes pauses)
+defaults write com.apple.podcasts TrimSilence -bool false
+
+# Skip forward interval (seconds)
+defaults write com.apple.podcasts skipForwardTime -int 30
+
+# Skip back interval (seconds)
+defaults write com.apple.podcasts skipBackTime -int 15
+
+# Continuous playback (auto-play next)
+defaults write com.apple.podcasts continuousPlaybackEnabled -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Speed not changing | Restart Podcasts app; check per-show override |
+| Audio sounds distorted | Lower speed; some voices don't compress well |
+| Speed resets | Per-show settings may override default |
+| Can't find speed control | Check Now Playing screen bottom area |
+| Voices sound chipmunk-like | Apple Podcasts uses pitch correction; this is a bug |
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina - when Podcasts became standalone app)
+- **Note**: Speed changes don't affect downloaded file, only playback
+- **Note**: Per-show settings override this default
+- **Note**: iOS Podcasts app syncs speed preferences via iCloud
+- **Note**: Some third-party podcast apps have different speed ranges
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../../defaults/applications/podcasts.sh)
+
+```bash
+# PlaybackSpeed is mentioned in the domain but typically adjusted
+# via the app interface rather than defaults command
+```
+
+## References
+
+- [Apple Support: Use Podcasts on Mac](https://support.apple.com/guide/podcasts/welcome/mac)
+- [Apple Support: Change playback speed in Podcasts](https://support.apple.com/guide/podcasts/change-playback-speed-podb56afac2e/mac)
+- [Apple Support: Customize show settings](https://support.apple.com/guide/podcasts/customize-show-settings-podb7a76ee9d/mac)

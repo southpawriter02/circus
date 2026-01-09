@@ -1,0 +1,244 @@
+# Numbers Object Edge Alignment Guides
+
+Control whether alignment guides appear when dragging objects near the edges of other objects in Numbers.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Numbers` |
+| **Key** | `TSShowsObjectEdgeGuides` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls the display of visual alignment guides that appear when you drag an object so that its edge aligns with the edge of another object in your Numbers spreadsheet. These guides help create clean, professional layouts where charts, tables, and images share common boundaries.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show edge guides** (default) — Guides appear when edges align |
+| `false` | **Hide edge guides** — No edge alignment assistance |
+
+## Visual Demonstration
+
+### Edge Alignment Guides (true - Default):
+```
++-------------------------------------------------------------+
+|  Numbers Sheet with Edge Guides                              |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Numbers Spreadsheet                                     │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌────────────────────────────────────┐│                │|
+|  │  │   Data Table                        ││                │|
+|  │  │   ┌────┬────┬────┐                 ││ ← Yellow       │|
+|  │  │   │ A  │ B  │ C  │                 ││   edge guide   │|
+|  │  │   ├────┼────┼────┤                 ││                │|
+|  │  │   │ 10 │ 20 │ 30 │                 ││                │|
+|  │  │   └────┴────┴────┘                 ││                │|
+|  │  └────────────────────────────────────┘│                │|
+|  │  ┌────────────────────────────────────┐│                │|
+|  │  │   Chart (being dragged)            ││                │|
+|  │  │   ┌──────────────────────────┐     ││                │|
+|  │  │   │  [Bar Chart]             │     ││                │|
+|  │  │   └──────────────────────────┘     ││                │|
+|  │  └────────────────────────────────────┘│                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Guide appears when right edges of table and chart align.    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Creating Flush Layouts:
+```
++-------------------------------------------------------------+
+|  Professional Report with Edge-Aligned Elements              |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  │┌───────────────────────────────────────────────────┐ │|
+|  │  ││              Monthly Sales Report                 │ │|
+|  │  │└───────────────────────────────────────────────────┘ │|
+|  │  │                                                       │|
+|  │  │┌─────────────────────┐  ┌─────────────────────────┐  │|
+|  │  ││    Data Table       │  │      Summary Box        │  │|
+|  │  ││  ┌────┬────┬────┐  │  │                         │  │|
+|  │  ││  │Jan │Feb │Mar │  │  │  Total: $45,000         │  │|
+|  │  ││  ├────┼────┼────┤  │  │  Avg:   $15,000         │  │|
+|  │  ││  │10K │15K │20K │  │  │  YoY:   +23%            │  │|
+|  │  ││  └────┴────┴────┘  │  │                         │  │|
+|  │  │└─────────────────────┘  └─────────────────────────┘  │|
+|  │  │                                                       │|
+|  │  │┌───────────────────────────────────────────────────┐ │|
+|  │  ││                     Chart                         │ │|
+|  │  ││    [═══════════════════════════════════════]     │ │|
+|  │  │└───────────────────────────────────────────────────┘ │|
+|  │  │                                                       │|
+|  │  │ All left edges aligned using edge guides             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Edge Types:
+```
++-------------------------------------------------------------+
+|  Types of Edge Alignment                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  LEFT EDGE:            RIGHT EDGE:                           |
+|  ─────────────         ─────────────                         |
+|                                                              |
+|  │┌─────────┐          ┌─────────┐│                         |
+|  ││ Table   │          │ Table   ││                         |
+|  │└─────────┘          └─────────┘│                         |
+|  │                                │                          |
+|  │┌───────┐              ┌───────┐│                         |
+|  ││ Chart │              │ Chart ││                         |
+|  │└───────┘              └───────┘│                         |
+|                                                              |
+|  TOP EDGE:             BOTTOM EDGE:                          |
+|  ─────────────         ─────────────                         |
+|                                                              |
+|  ┌─────┐───────┌─────┐                                      |
+|  │  A  │       │  B  │  ← Top edges aligned                 |
+|  │     │       │     │                                       |
+|  └─────┘       └─────┘                                      |
+|                                                              |
+|  ┌─────┐       ┌─────┐                                      |
+|  │  A  │       │  B  │                                       |
+|  │     │       │     │                                       |
+|  └─────┘───────└─────┘  ← Bottom edges aligned              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show edge alignment guides for clean layouts.
+
+### Why Enable Edge Guides?
+
+1. **Flush layouts** — Objects share clean, aligned boundaries
+2. **Professional reports** — Neat, organized appearance
+3. **Quick alignment** — Visual snap-to-edge feedback
+4. **Column layouts** — Easy to create multi-column reports
+5. **Consistent margins** — Match spacing between elements
+
+### Why Disable Edge Guides?
+
+- **Overlapping designs** — Intentionally layered elements
+- **Less visual clutter** — Fewer guides while editing
+- **Free positioning** — Non-grid-based layouts
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Numbers TSShowsObjectEdgeGuides
+
+# Enable edge alignment guides (default, recommended)
+defaults write com.apple.iWork.Numbers TSShowsObjectEdgeGuides -bool true
+
+# Disable edge alignment guides
+defaults write com.apple.iWork.Numbers TSShowsObjectEdgeGuides -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Numbers TSShowsObjectEdgeGuides
+```
+
+## UI Location
+
+**Numbers** > **Settings** > **Rulers** > **Show guides at object edges**
+
+```
++-------------------------------------------------------------+
+|  Numbers Settings - Rulers                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Numbers > Settings (Command+,) > Rulers                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Rulers] [Auto-Correction]                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Ruler Units:  [Points                            v]    │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Alignment Guides                                        │|
+|  │                                                          │|
+|  │  [x] Show guides at object center                        │|
+|  │                                                          │|
+|  │  [x] Show guides at object edges      <-- This setting  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Object edge alignment guides (this setting)
+defaults write com.apple.iWork.Numbers TSShowsObjectEdgeGuides -bool true
+
+# Object center alignment guides
+defaults write com.apple.iWork.Numbers TSShowsObjectCenterGuides -bool true
+
+# Show rulers
+defaults write com.apple.iWork.Numbers TSShowsRuler -bool true
+
+# Default zoom level
+defaults write com.apple.iWork.Numbers TSDefaultZoom -int 100
+
+# Formula warnings
+defaults write com.apple.iWork.Numbers TSShowFormulaWarnings -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Edge guides not appearing | Check Settings > Rulers > Show guides at object edges |
+| Guides only for some objects | Works for charts, shapes, images; not table cells |
+| Want exact edge alignment | Use Format sidebar > Arrange for precise X/Y values |
+| Too many guides appearing | Zoom out or disable one guide type |
+| Can't align to sheet edge | Use View > Show Rulers, drag guide from ruler |
+| Setting not persisting | Restart Numbers after changing via defaults |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) with Numbers
+- **Note**: Same setting exists in Pages and Keynote
+- **Note**: Restart Numbers for terminal changes to apply
+- **Note**: Guides only appear during active drag operations
+- **Note**: Works with charts, shapes, images, text boxes (not individual cells)
+
+## Source File
+
+**File**: [`defaults/applications/numbers.sh`](../../../../../defaults/applications/numbers.sh)
+
+```bash
+# TSShowsObjectEdgeGuides controls edge alignment guide visibility
+# Domain: com.apple.iWork.Numbers
+# Shows alignment guides when dragging objects near the edges of other objects
+run_defaults "com.apple.iWork.Numbers" "TSShowsObjectEdgeGuides" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Numbers User Guide](https://support.apple.com/guide/numbers/welcome/mac)
+- [Apple Support: Position and align objects in Numbers](https://support.apple.com/guide/numbers/position-and-align-objects-tan8a8e5afac/mac)
+- [Apple Support: Use alignment guides in Numbers](https://support.apple.com/guide/numbers/use-alignment-guides-tanc3a3dc04/mac)
