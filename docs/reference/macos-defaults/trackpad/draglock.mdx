@@ -1,0 +1,279 @@
+# Trackpad Drag Lock
+
+Keep items held while repositioning fingers during drag operations.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `DragLock` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether dragging operations remain active when you lift your finger from the trackpad. When enabled (drag lock on), you can lift your finger to reposition it without dropping the item—tap again to release. When disabled, lifting your finger immediately ends the drag operation. This is particularly useful for long drags across the screen where you need to "pick up and continue" the drag motion.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** (default) — Lifting finger drops the item immediately |
+| `true` | **Enabled** — Item stays held; tap again to release |
+
+## Visual Demonstration
+
+### Drag Lock Disabled (Default):
+```
++-------------------------------------------------------------+
+|  Drag Lock OFF - Immediate Release                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Step 1: Start drag                                         |
+|  +------------------------------------------------------+   |
+|  |  +-----+                                             |   |
+|  |  |File | <-- Finger down, start dragging             |   |
+|  |  +-----+                                             |   |
+|  |      \                                               |   |
+|  |       \  Dragging...                                 |   |
+|  |        \                                             |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Step 2: Lift finger = Item drops                           |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |            +-----+                                   |   |
+|  |            |File | <-- Dropped here when finger lifts|   |
+|  |            +-----+                                   |   |
+|  |                                                      |   |
+|  |  Finger up = Drag ends immediately                   |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Precise control                                          |
+|  * Drop exactly where you release                           |
+|  * No extra tap needed                                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Drag Lock Enabled:
+```
++-------------------------------------------------------------+
+|  Drag Lock ON - Continue After Lifting                       |
++-------------------------------------------------------------+
+|                                                              |
+|  Step 1: Start drag                                         |
+|  +------------------------------------------------------+   |
+|  |  +-----+                                             |   |
+|  |  |File | <-- Finger down, start dragging             |   |
+|  |  +-----+                                             |   |
+|  |      \                                               |   |
+|  |       \  Dragging...                                 |   |
+|  |        \                                             |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Step 2: Lift finger to reposition                          |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |            +-----+                                   |   |
+|  |            |File | <-- Still held! (drag lock)       |   |
+|  |            +-----+                                   |   |
+|  |                ^                                     |   |
+|  |  Reposition finger on trackpad                       |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Step 3: Continue dragging                                  |
+|  +------------------------------------------------------+   |
+|  |            +-----+                                   |   |
+|  |            |File | <-- Finger down again, continue   |   |
+|  |            +-----+                                   |   |
+|  |                 \                                    |   |
+|  |                  \  Keep dragging...                 |   |
+|  |                   \                                  |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Step 4: Tap to release                                     |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |                         +-----+                      |   |
+|  |                         |File | <-- TAP to drop      |   |
+|  |                         +-----+                      |   |
+|  |                                                      |   |
+|  |  Single tap releases the drag                        |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Long Drag Scenario:
+```
++-------------------------------------------------------------+
+|  Long Drag Across Screen                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  WITHOUT DRAG LOCK:                                         |
+|  +------------------------------------------------------+   |
+|  |  +-----+                                             |   |
+|  |  |File |                                             |   |
+|  |  +-----+                                             |   |
+|  |     \                                                |   |
+|  |      \___  Drag as far as finger reaches...         |   |
+|  |          \___                                        |   |
+|  |              X  Finger at edge of trackpad!         |   |
+|  |                                                      |   |
+|  |  Must lift = drops item = start over :(             |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  WITH DRAG LOCK:                                            |
+|  +------------------------------------------------------+   |
+|  |  +-----+                                             |   |
+|  |  |File |                                             |   |
+|  |  +-----+                                             |   |
+|  |     \                                                |   |
+|  |      \___  Drag to trackpad edge...                 |   |
+|  |          \___                                        |   |
+|  |              | Lift finger (item stays held!)       |   |
+|  |                                                      |   |
+|  |  Reposition to center of trackpad...                |   |
+|  |              |                                       |   |
+|  |              \___                                    |   |
+|  |                  \___                                |   |
+|  |                      \  Continue dragging!          |   |
+|  |                       \                              |   |
+|  |                        | Tap to release              |   |
+|  |                       +-----+                        |   |
+|  |                       |File | Final position        |   |
+|  |                       +-----+                        |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Immediate release for precise control.
+
+### Why Disable Drag Lock?
+
+1. **Precision** — Drop exactly where you release
+2. **No extra action** — No tap needed to drop
+3. **Natural** — Matches physical expectations
+4. **Fewer accidents** — No forgotten "held" items
+5. **Simpler** — One less thing to remember
+
+### Why Enable Drag Lock?
+
+- Frequently make long drags across screen
+- Using small trackpad (limited surface area)
+- Have difficulty maintaining finger contact
+- Prefer deliberate drop action
+- Reposition fingers often during drag
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad DragLock
+
+# Disable drag lock (default - immediate release)
+defaults write com.apple.AppleMultitouchTrackpad DragLock -bool false
+
+# Enable drag lock (tap to release)
+defaults write com.apple.AppleMultitouchTrackpad DragLock -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad DragLock
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Pointer Control** > **Trackpad Options**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Pointer Control          |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Trackpad Options                                |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Use trackpad for dragging                       |       |
+|  |  [*] Enable                                      |       |
+|  |                                                  |       |
+|  |  Dragging style:                                 |       |
+|  |  [Without Drag Lock                          v]  |       |
+|  |                                                  |       |
+|  |  Options:                                        |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | Without Drag Lock                          |  |       |
+|  |  |    ^-- This setting (false)                |  |       |
+|  |  | With Drag Lock                             |  |       |
+|  |  |    ^-- This setting (true)                 |  |       |
+|  |  | Three Finger Drag                          |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Drag lock (this setting)
+defaults write com.apple.AppleMultitouchTrackpad DragLock -bool false
+
+# Three-finger drag (alternative dragging method)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+
+# Tap to click
+defaults write com.apple.AppleMultitouchTrackpad Clicking -int 1
+
+# Haptic feedback strength
+defaults write com.apple.AppleMultitouchTrackpad ActuationStrength -int 1
+```
+
+## Dragging Methods Comparison
+
+| Method | How It Works | Pros | Cons |
+|--------|-------------|------|------|
+| Click & Drag | Hold trackpad down while moving | Standard, precise | Tiring for long drags |
+| Tap & Drag | Double-tap and hold on second tap | Quick to initiate | Requires tap to click |
+| Drag Lock | Lift finger keeps holding | Great for long drags | Extra tap to release |
+| Three-Finger Drag | Three fingers move items | No click/tap needed | Uses three-finger gestures |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Items dropping unexpectedly | Enable drag lock if you need to reposition |
+| Can't release items | Tap again to drop (if drag lock enabled) |
+| Drag lock not working | Verify setting and logout/login |
+| Conflicts with gestures | Three-finger drag uses same fingers |
+| Setting not persisting | Check Accessibility preferences |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Works with tap-to-drag and click-and-drag
+- **Note**: Independent of three-finger drag setting
+- **Note**: May require logout for changes to take effect
+
+## Source File
+
+**File**: [`defaults/input/trackpad_mouse.sh`](../../../../defaults/input/trackpad_mouse.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "DragLock" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Change Trackpad preferences on Mac](https://support.apple.com/guide/mac-help/change-trackpad-preferences-mchlp1226/mac)
+- [Apple Support: Use trackpad gestures](https://support.apple.com/en-us/102482)
+- [Apple Support: Accessibility features for motor](https://support.apple.com/guide/mac-help/accessibility-features-for-motor-mh35856/mac)

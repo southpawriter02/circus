@@ -1,0 +1,283 @@
+# Mail Conversation View All Mailboxes
+
+Include related messages from all mailboxes in conversations.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `ConversationViewAllMailboxes` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Mail includes related messages from all mailboxes when displaying email conversations. When enabled, viewing a conversation in your Inbox will also show related messages that are in Sent, Archive, or other folders. This provides complete context for email threads without manually searching other folders.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Include all mailboxes** — Show related messages from everywhere |
+| `false` | **Current mailbox only** (default) — Only show messages in current folder |
+
+## Visual Demonstration
+
+### Current Mailbox Only (false - Default):
+```
++-------------------------------------------------------------+
+|  Mail - Conversation from Single Mailbox                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Viewing in: INBOX                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📧 Project Update Thread                                │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  From: John Smith                     Jan 8, 10:00 AM   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Hi, here's the latest update on the project...         │|
+|  │                                                          │|
+|  │  From: Jane Doe                       Jan 8, 11:30 AM   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Thanks for the update. I have a few questions...       │|
+|  │                                                          │|
+|  │  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐│|
+|  │    YOUR REPLY (in Sent folder) - NOT SHOWN              │|
+|  │    You: "Here are the answers to your questions..."     │|
+|  │  └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘│|
+|  │                                                          │|
+|  │  From: John Smith                     Jan 8, 3:00 PM    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Great, let's proceed with that approach.               │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✗ Your replies not visible (they're in Sent)              |
+|  ✗ Incomplete conversation context                         |
+|  ✗ Need to check Sent folder separately                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### All Mailboxes Included (true - Recommended):
+```
++-------------------------------------------------------------+
+|  Mail - Complete Conversation View                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Viewing in: INBOX (+ related messages from all folders)     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📧 Project Update Thread                                │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  From: John Smith                     Jan 8, 10:00 AM   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Hi, here's the latest update on the project...         │|
+|  │                                                          │|
+|  │  From: Jane Doe                       Jan 8, 11:30 AM   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Thanks for the update. I have a few questions...       │|
+|  │                                                          │|
+|  │  From: Me (Sent)                      Jan 8, 1:00 PM    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Here are the answers to your questions...              │|
+|  │  ↑ Now visible from Sent folder!                        │|
+|  │                                                          │|
+|  │  From: John Smith                     Jan 8, 3:00 PM    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Great, let's proceed with that approach.               │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Complete conversation visible                           |
+|  ✓ Your sent replies included                              |
+|  ✓ Full context without folder switching                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### How It Pulls Messages:
+```
++-------------------------------------------------------------+
+|  Related Messages Source                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  When viewing a conversation with this enabled:              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  📁 Inbox                                                    |
+|  │  └── 📧 Original message from John                       |
+|  │      └── 📧 Reply from Jane                              |
+|  │          └── 📧 Follow-up from John                      |
+|  │                                                          |
+|  📁 Sent                                                     |
+|  │  └── 📧 Your reply ──────────────────────┐               |
+|  │                                          │               |
+|  📁 Archive                                 │               |
+|  │  └── 📧 Earlier thread message ─────────┼───┐           |
+|  │                                          │   │           |
+|  📁 Trash                                   │   │           |
+|     └── 📧 Deleted reply ────────────────┬─┘   │           |
+|                                          │     │           |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │          COMBINED CONVERSATION VIEW                     │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  All related messages shown together chronologically    │|
+|  │  regardless of which folder they're actually in         │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Include related messages for full conversation context.
+
+### Why Include All Mailboxes?
+
+1. **Context** — See your replies alongside received messages
+2. **Efficiency** — No need to switch between folders
+3. **Clarity** — Understand full thread at a glance
+4. **Workflow** — Better for reviewing long email chains
+5. **Completeness** — Archived messages still visible in threads
+
+### Why Limit to Current Mailbox?
+
+- Prefer isolated folder views
+- Very large mailboxes (performance)
+- Specific organizational workflow
+- Want to see only received messages
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail ConversationViewAllMailboxes
+
+# Enable (include related messages from all mailboxes)
+defaults write com.apple.mail ConversationViewAllMailboxes -bool true
+
+# Disable (current mailbox only)
+defaults write com.apple.mail ConversationViewAllMailboxes -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.mail ConversationViewAllMailboxes
+```
+
+## UI Location
+
+**View** menu > **Include Related Messages**
+
+```
++-------------------------------------------------------------+
+|  Mail View Menu                                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Mail > View                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Sort By                                          ▶     │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ✓ Organize by Conversation                             │|
+|  │  ✓ Include Related Messages     ← This setting          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Show Mailbox List                           ⌘⇧M       │|
+|  │  Show Favorites Bar                          ⌘⇧F       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Message                                         ▶      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: "Organize by Conversation" must also be enabled      |
+|  for this setting to have any effect.                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Works With Conversation View
+
+```
++-------------------------------------------------------------+
+|  Prerequisite: Conversation View Enabled                     |
++-------------------------------------------------------------+
+|                                                              |
+|  This setting only works when conversations are enabled:     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [✓] Organize by Conversation (View menu)                   |
+|      │                                                       |
+|      └── [✓] Include Related Messages (this setting)        |
+|                                                              |
+|  If conversations are disabled:                              |
+|  ─────────────────────────────────────────────────────────  |
+|  Messages show individually without threading               |
+|  "Include Related Messages" has no effect                   |
+|                                                              |
+|  To enable both:                                             |
+|  defaults write com.apple.mail ConversationViewEnabled -bool true
+|  defaults write com.apple.mail ConversationViewAllMailboxes -bool true
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Include related messages (this setting)
+defaults write com.apple.mail ConversationViewAllMailboxes -bool true
+
+# Enable conversation view (required for above)
+defaults write com.apple.mail ConversationViewEnabled -bool true
+
+# Conversation sort order (true = newest on top)
+defaults write com.apple.mail ConversationViewSortDescending -bool true
+
+# Mark all as read when opening conversation
+defaults write com.apple.mail ConversationViewMarkAllAsRead -bool false
+
+# Highlight conversations with unread messages
+defaults write com.apple.mail HighlightConversationsWithUnread -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Related messages not showing | Enable "Organize by Conversation" first |
+| Too many messages in thread | Can't limit; use search to narrow |
+| Deleted messages appearing | They're shown from Trash; empty Trash |
+| Performance slow | Large mailboxes may be slower; consider archiving |
+| Setting not working | Restart Mail after changing |
+
+## Compatibility
+
+- **Mail**: macOS 10.10+ (Yosemite) for full conversation features
+- **Note**: Requires "Organize by Conversation" enabled
+- **Note**: Works with all account types (iCloud, Gmail, Exchange)
+- **Note**: May affect performance with very large mailboxes
+- **Note**: Restart Mail after changing setting
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "ConversationViewAllMailboxes" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use conversations in Mail](https://support.apple.com/guide/mail/use-conversations-mlhl5254dbdf/mac)
+- [Apple Support: Organize emails in Mail](https://support.apple.com/guide/mail/organize-emails-mlhlfa3a2d9d/mac)
+- [Apple Support: Mail User Guide](https://support.apple.com/guide/mail/welcome/mac)

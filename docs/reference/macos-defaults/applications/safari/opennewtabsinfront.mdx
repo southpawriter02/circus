@@ -1,0 +1,271 @@
+# Safari New Tab Behavior
+
+Control whether new tabs open in foreground or background.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `OpenNewTabsInFront` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether new tabs opened via Command-click (or middle-click) immediately become the active tab or open in the background. When set to `false`, new tabs open in the background, allowing you to queue up multiple links for later reading without interrupting your current browsing. When set to `true`, Safari immediately switches to each new tab as it opens.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Background** (default) — New tabs open behind current tab |
+| `true` | **Foreground** — Immediately switch to new tab |
+
+## Visual Demonstration
+
+### Background Tabs (OpenNewTabsInFront = false):
+```
++-------------------------------------------------------------+
+|  Safari Tab Bar - New Tabs Open in Background                |
++-------------------------------------------------------------+
+|                                                              |
+|  Step 1: Reading an article with multiple links              |
+|  ┌────────────────────────────────────────────────────────┐  |
+|  │ [Article ●] [        ] [        ] [        ]           │  |
+|  └────────────────────────────────────────────────────────┘  |
+|                                                              |
+|  Step 2: Command-click three interesting links               |
+|  ┌────────────────────────────────────────────────────────┐  |
+|  │ [Article ●] [Link 1  ] [Link 2  ] [Link 3  ]           │  |
+|  └────────────────────────────────────────────────────────┘  |
+|                        ↑         ↑         ↑                 |
+|              Opened in background (not focused)              |
+|                                                              |
+|  You remain on "Article" - continue reading uninterrupted   |
+|                                                              |
+|  Step 3: Finish article, tabs are ready                      |
+|  ┌────────────────────────────────────────────────────────┐  |
+|  │ [Article  ] [Link 1 ●] [Link 2  ] [Link 3  ]           │  |
+|  └────────────────────────────────────────────────────────┘  |
+|                    ↑                                         |
+|          Click to read when ready                            |
+|                                                              |
+|  ● = Current active tab                                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Foreground Tabs (OpenNewTabsInFront = true):
+```
++-------------------------------------------------------------+
+|  Safari Tab Bar - New Tabs Open in Foreground                |
++-------------------------------------------------------------+
+|                                                              |
+|  Step 1: Reading an article with multiple links              |
+|  ┌────────────────────────────────────────────────────────┐  |
+|  │ [Article ●] [        ] [        ] [        ]           │  |
+|  └────────────────────────────────────────────────────────┘  |
+|                                                              |
+|  Step 2: Command-click first link                            |
+|  ┌────────────────────────────────────────────────────────┐  |
+|  │ [Article  ] [Link 1 ●] [        ] [        ]           │  |
+|  └────────────────────────────────────────────────────────┘  |
+|                    ↑                                         |
+|          Immediately switched! Lost reading position         |
+|                                                              |
+|  To continue original article:                               |
+|  Must click back to "Article" tab                            |
+|                                                              |
+|  ● = Current active tab                                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Workflow Comparison:
+```
++-------------------------------------------------------------+
+|  Research Workflow Comparison                                |
++-------------------------------------------------------------+
+|                                                              |
+|  BACKGROUND TABS (OpenNewTabsInFront = false):               |
+|                                                              |
+|  1. Read article                                             |
+|  2. Cmd-click interesting link 1 → stays on article         |
+|  3. Cmd-click interesting link 2 → stays on article         |
+|  4. Cmd-click interesting link 3 → stays on article         |
+|  5. Finish article                                           |
+|  6. Read through queued tabs                                 |
+|                                                              |
+|  Flow: Continuous, focused reading                           |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  FOREGROUND TABS (OpenNewTabsInFront = true):                |
+|                                                              |
+|  1. Read article                                             |
+|  2. Cmd-click link 1 → switches to link 1                   |
+|  3. Click back to article                                    |
+|  4. Find where you were...                                   |
+|  5. Cmd-click link 2 → switches to link 2                   |
+|  6. Click back to article                                    |
+|  7. Find where you were...                                   |
+|                                                              |
+|  Flow: Interrupted, context-switching                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Override Behavior:
+```
++-------------------------------------------------------------+
+|  Keyboard Modifier Override                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  With OpenNewTabsInFront = false (background):               |
+|                                                              |
+|  • Command + Click      → Opens in background tab           |
+|  • Command + Shift + Click → Opens in foreground tab        |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  With OpenNewTabsInFront = true (foreground):                |
+|                                                              |
+|  • Command + Click      → Opens in foreground tab           |
+|  • Command + Shift + Click → Opens in background tab        |
+|                                                              |
+|  Shift key reverses the default behavior                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — New tabs open in background for uninterrupted browsing.
+
+### Why Background Tabs?
+
+1. **Focus** — Continue reading without interruption
+2. **Efficiency** — Queue multiple links at once
+3. **Research** — Open many references, read later
+4. **Control** — You decide when to switch
+5. **Memory** — Don't lose your place
+
+### Why Foreground Tabs?
+
+- Want to immediately read new link
+- Prefer to follow links linearly
+- Don't open many tabs at once
+- Faster for single-link navigation
+- Match other browsers' behavior
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari OpenNewTabsInFront
+
+# Open new tabs in background (recommended)
+defaults write com.apple.Safari OpenNewTabsInFront -bool false
+
+# Open new tabs in foreground
+defaults write com.apple.Safari OpenNewTabsInFront -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.Safari OpenNewTabsInFront
+```
+
+## UI Location
+
+**Safari** → **Settings** → **Tabs**
+
+```
++-------------------------------------------------------------+
+|  Safari Settings > Tabs                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Open pages in tabs instead of windows:                      |
+|  [Automatically                                       v]    |
+|                                                              |
+|  [*] Command-click opens a link in a new tab                 |
+|                                                              |
+|  [ ] When a new tab or window opens, make it active          |
+|      ^-- This setting (unchecked = background)               |
+|                                                              |
+|  [ ] Use Command-1 through Command-9 to switch tabs          |
+|                                                              |
+|  Tab layout:                                                 |
+|  [Compact                                             v]    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# New tabs behavior (this setting)
+defaults write com.apple.Safari OpenNewTabsInFront -bool false
+
+# Show tab bar always
+defaults write com.apple.Safari AlwaysShowTabBar -bool true
+
+# Tab layout style
+defaults write com.apple.Safari ShowStandaloneTabBar -bool true
+```
+
+## Tab Management Tips
+
+```
++-------------------------------------------------------------+
+|  Safari Tab Keyboard Shortcuts                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Opening Tabs:                                               |
+|  • Cmd + T         → New empty tab                          |
+|  • Cmd + Click     → Open link in new tab                   |
+|  • Cmd + Shift + Click → Override foreground/background     |
+|                                                              |
+|  Navigating Tabs:                                            |
+|  • Cmd + Shift + ]  → Next tab                              |
+|  • Cmd + Shift + [  → Previous tab                          |
+|  • Cmd + 1-9       → Jump to tab by position                |
+|                                                              |
+|  Managing Tabs:                                              |
+|  • Cmd + W         → Close current tab                      |
+|  • Cmd + Shift + T → Reopen last closed tab                 |
+|  • Cmd + Shift + \\ → Show all tabs overview                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| New tabs still opening in front | Check setting, restart Safari |
+| Want to override temporarily | Hold Shift while Command-clicking |
+| Middle-click not working | Enable in Mouse/Trackpad settings |
+| Links opening in new windows | Check "Open pages in tabs" setting |
+| Setting keeps reverting | Check for profiles or extensions |
+
+## Compatibility
+
+- **macOS**: 10.4+ (Tiger)
+- **Note**: Takes effect immediately
+- **Note**: Shift key reverses behavior temporarily
+- **Note**: Works with Command-click and middle-click
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "OpenNewTabsInFront" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Open and close tabs in Safari](https://support.apple.com/guide/safari/open-and-close-tabs-sfri28032/mac)
+- [Apple Support: Use tabs in Safari on Mac](https://support.apple.com/guide/safari/tabs-sfri33061/mac)
+- [Apple Support: Safari keyboard shortcuts](https://support.apple.com/guide/safari/keyboard-and-other-shortcuts-cpsh003/mac)

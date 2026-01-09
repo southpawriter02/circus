@@ -1,0 +1,286 @@
+# Safari AutoFill from Contacts
+
+Automatically fill contact information from your address book on web forms.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `AutoFillFromAddressBook` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Safari automatically fills web forms with personal information from your Contacts (Address Book). When enabled, Safari can populate fields like name, email, phone number, and mailing address from your "My Card" in Contacts. While convenient for filling out registration and shipping forms, this can expose personal information to websites and creates a security risk if your Mac is shared or compromised.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** — No contact info AutoFill (more secure) |
+| `true` | **Enabled** (default) — Contact info auto-filled on forms |
+
+## Visual Demonstration
+
+### AutoFill from Contacts Enabled (Default):
+```
++-------------------------------------------------------------+
+|  Web Form - AutoFill Enabled                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Create Account                                              |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  First Name                                          |   |
+|  |  +------------------------------------------------+  |   |
+|  |  | John                                       [v] |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |         ^                                            |   |
+|  |    Auto-filled from Contacts                         |   |
+|  |                                                      |   |
+|  |  Last Name                                           |   |
+|  |  +------------------------------------------------+  |   |
+|  |  | Smith                                          |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |                                                      |   |
+|  |  Email                                               |   |
+|  |  +------------------------------------------------+  |   |
+|  |  | john.smith@email.com                           |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |                                                      |   |
+|  |  Phone                                               |   |
+|  |  +------------------------------------------------+  |   |
+|  |  | (555) 123-4567                                 |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |                                                      |   |
+|  |  Address                                             |   |
+|  |  +------------------------------------------------+  |   |
+|  |  | 123 Main Street, Anytown, CA 90210             |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Safari AutoFill dropdown:                                  |
+|  +------------------------------------------------+         |
+|  | [Contact icon] Use contact info: "John Smith"  |         |
+|  | [Edit in Contacts...]                          |         |
+|  +------------------------------------------------+         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### AutoFill from Contacts Disabled (Recommended):
+```
++-------------------------------------------------------------+
+|  Web Form - AutoFill Disabled                                |
++-------------------------------------------------------------+
+|                                                              |
+|  Create Account                                              |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  First Name                                          |   |
+|  |  +------------------------------------------------+  |   |
+|  |  |                                                |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |         ^                                            |   |
+|  |    Must enter manually                               |   |
+|  |                                                      |   |
+|  |  Last Name                                           |   |
+|  |  +------------------------------------------------+  |   |
+|  |  |                                                |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |                                                      |   |
+|  |  Email                                               |   |
+|  |  +------------------------------------------------+  |   |
+|  |  |                                                |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Benefits:                                                   |
+|  * Personal info not exposed to websites                    |
+|  * Control what data you share                              |
+|  * Safe on shared computers                                 |
+|  * Prevents accidental data exposure                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### What Information Can Be Exposed:
+```
++-------------------------------------------------------------+
+|  Contact Data Safari Can AutoFill                            |
++-------------------------------------------------------------+
+|                                                              |
+|  From your "My Card" in Contacts:                           |
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  PERSONAL:                                        |       |
+|  |  * Full name                                      |       |
+|  |  * Nickname                                       |       |
+|  |  * Email addresses (all)                          |       |
+|  |  * Phone numbers (all)                            |       |
+|  |  * Birthday                                       |       |
+|  +--------------------------------------------------+       |
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  ADDRESSES:                                       |       |
+|  |  * Home address                                   |       |
+|  |  * Work address                                   |       |
+|  |  * Other addresses                                |       |
+|  +--------------------------------------------------+       |
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  PROFESSIONAL:                                    |       |
+|  |  * Company name                                   |       |
+|  |  * Job title                                      |       |
+|  |  * Department                                     |       |
+|  +--------------------------------------------------+       |
+|                                                              |
+|  All this data could be auto-filled into web forms!        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Contact AutoFill disabled for privacy.
+
+### Why Disable Contact AutoFill?
+
+1. **Privacy** — Prevents automatic sharing of personal data with websites
+2. **Security** — Reduces risk if Mac is compromised or shared
+3. **Control** — Forces conscious decision about what to share
+4. **Data minimization** — Only provide info actually needed
+5. **Phishing protection** — Won't auto-fill on fake forms
+
+### Why Keep Enabled?
+
+- Frequently fill out registration forms
+- Single-user Mac with physical security
+- Convenience outweighs privacy concerns
+- Trust the websites you visit
+- Time savings for online shopping
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari AutoFillFromAddressBook
+
+# Disable contact AutoFill (more secure)
+defaults write com.apple.Safari AutoFillFromAddressBook -bool false
+
+# Enable contact AutoFill (default)
+defaults write com.apple.Safari AutoFillFromAddressBook -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.Safari AutoFillFromAddressBook
+```
+
+Restart Safari for changes to take effect.
+
+## UI Location
+
+**Safari** > **Settings** (Cmd + ,) > **AutoFill**
+
+```
++-------------------------------------------------------------+
+|  Safari Settings > AutoFill                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  AutoFill                                        |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  AutoFill web forms:                             |       |
+|  |                                                  |       |
+|  |  [ ] Using information from my contacts         |       |
+|  |      ^-- This setting                           |       |
+|  |      [Edit...]                                   |       |
+|  |                                                  |       |
+|  |  [ ] User names and passwords                   |       |
+|  |                                                  |       |
+|  |  [ ] Credit cards                               |       |
+|  |      [Edit...]                                   |       |
+|  |                                                  |       |
+|  |  [ ] Other forms                                |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Contact info AutoFill (this setting)
+defaults write com.apple.Safari AutoFillFromAddressBook -bool false
+
+# Password AutoFill
+defaults write com.apple.Safari AutoFillPasswords -bool false
+
+# Credit card AutoFill
+defaults write com.apple.Safari AutoFillCreditCardData -bool false
+
+# Other forms AutoFill
+defaults write com.apple.Safari AutoFillMiscellaneousForms -bool false
+
+# Disable all AutoFill at once
+for key in AutoFillFromAddressBook AutoFillPasswords AutoFillCreditCardData AutoFillMiscellaneousForms; do
+  defaults write com.apple.Safari "$key" -bool false
+done
+```
+
+## Security Implications
+
+| Risk | Description | Mitigation |
+|------|-------------|------------|
+| Data exposure | Personal info shared with websites | Disable AutoFill |
+| Phishing | Fake sites could capture your data | Disable + verify URLs |
+| Shared computers | Others could see your info | Disable AutoFill |
+| Malicious forms | Hidden fields could capture extra data | Disable AutoFill |
+| Screen sharing | Personal info visible during calls | Disable or be careful |
+
+## AutoFill Types Comparison
+
+| Type | Key | Privacy Risk | Recommendation |
+|------|-----|--------------|----------------|
+| Contacts | `AutoFillFromAddressBook` | Medium | Disable |
+| Credit Cards | `AutoFillCreditCardData` | High | Disable |
+| Passwords | `AutoFillPasswords` | High | Use password manager |
+| Other Forms | `AutoFillMiscellaneousForms` | Low | Personal preference |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still seeing AutoFill | Verify setting, restart Safari |
+| Wrong contact info | Update your "My Card" in Contacts |
+| Setting not persisting | Check if managed by MDM |
+| AutoFill not appearing | Enable setting, check Contacts |
+| Old data appearing | Clear Safari AutoFill data |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Note**: Restart Safari for changes to take effect
+- **Note**: Uses data from your "My Card" in Contacts app
+- **Note**: Managed Macs may override this setting
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "AutoFillFromAddressBook" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: AutoFill web forms in Safari](https://support.apple.com/guide/safari/autofill-web-forms-ibrw1103/mac)
+- [Apple Support: Safari privacy settings](https://support.apple.com/guide/safari/privacy-ibrw1074/mac)
+- [Apple Support: Change your My Card in Contacts](https://support.apple.com/guide/contacts/change-your-own-contact-card-adrbdcf93f4c/mac)

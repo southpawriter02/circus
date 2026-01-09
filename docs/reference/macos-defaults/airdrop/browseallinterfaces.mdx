@@ -1,0 +1,247 @@
+# AirDrop Over Ethernet
+
+Enable AirDrop functionality over Ethernet connections.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.NetworkBrowser` |
+| **Key** | `BrowseAllInterfaces` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether AirDrop can work over Ethernet connections in addition to Wi-Fi. This setting is primarily useful for older Mac Pro and Mac mini models that may not have native AirDrop support via their Wi-Fi hardware. Enabling this allows AirDrop to use the wired network connection for file transfers.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enable Ethernet AirDrop** — AirDrop works over wired network |
+| `false` | **Wi-Fi only** (default) — AirDrop requires Wi-Fi/Bluetooth |
+
+## Visual Demonstration
+
+### Standard AirDrop (Wi-Fi/Bluetooth):
+```
++-------------------------------------------------------------+
+|  Standard AirDrop - Wireless Only                            |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌──────────────┐                    ┌──────────────┐       |
+|  │              │   Bluetooth for    │              │       |
+|  │   MacBook    │   discovery        │   iPhone     │       |
+|  │              │ ←───────────────→  │              │       |
+|  │              │                    │              │       |
+|  │   📡 Wi-Fi   │   Wi-Fi for        │   📡 Wi-Fi   │       |
+|  │              │   transfer         │              │       |
+|  └──────────────┘ ←───────────────→  └──────────────┘       |
+|                                                              |
+|  ✓ Works on all modern Macs                                |
+|  ✓ No additional configuration                             |
+|  ✓ Portable - works anywhere                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### AirDrop Over Ethernet (with BrowseAllInterfaces):
+```
++-------------------------------------------------------------+
+|  AirDrop Over Ethernet - Wired Network                       |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌──────────────┐        ROUTER        ┌──────────────┐     |
+|  │              │       ┌──────┐       │              │     |
+|  │   Mac Pro    │       │      │       │   MacBook    │     |
+|  │              │═══════│ ⚡️   │═══════│              │     |
+|  │              │  ETH  │      │  ETH  │              │     |
+|  │   🔌 Wired   │       └──────┘       │   🔌 Wired   │     |
+|  │              │                      │              │     |
+|  └──────────────┘                      └──────────────┘     |
+|         ▲                                     ▲             |
+|         │                                     │             |
+|         └─────────────────────────────────────┘             |
+|                   AirDrop via Ethernet                      |
+|                                                              |
+|  USE CASES:                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  • Older Mac Pro (2013 and earlier)                         |
+|  • Mac mini used as server (no display for Wi-Fi setup)     |
+|  • Environments where Wi-Fi is disabled                     |
+|  • Faster transfers over Gigabit Ethernet                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### When This Setting Helps:
+```
++-------------------------------------------------------------+
+|  Mac Models That Benefit                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  NATIVE AIRDROP SUPPORT (don't need this setting):           |
+|  ─────────────────────────────────────────────────────────  |
+|  • All MacBook Air (2012+)                                  |
+|  • All MacBook Pro (2012+)                                  |
+|  • All iMac (2012+)                                         |
+|  • Mac Pro (2013+)                                          |
+|  • Mac mini (2014+)                                         |
+|  • All Apple Silicon Macs                                   |
+|                                                              |
+|  MAY NEED ETHERNET AIRDROP:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  • Mac Pro (2009-2012) — Tower models                       |
+|  • Mac mini (2011-2012)                                     |
+|  • Older iMac models                                        |
+|  • Macs with disabled/broken Wi-Fi                          |
+|  • VMs or Hackintosh systems                                |
+|                                                              |
+|  Note: Even with this setting, AirDrop may not work on      |
+|  very old Macs that lack the necessary hardware.            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable for maximum flexibility.
+
+### Why Enable?
+
+1. **Compatibility** — Works with older Mac hardware
+2. **Reliability** — Wired connection more stable
+3. **Speed** — Gigabit Ethernet faster than Wi-Fi
+4. **Flexibility** — Works even if Wi-Fi disabled
+5. **No downside** — Doesn't affect normal AirDrop
+
+### Why Keep Default (Disabled)?
+
+- Standard AirDrop works fine
+- Modern Mac with good Wi-Fi
+- Prefer wireless-only operation
+- Security policy restrictions
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.NetworkBrowser BrowseAllInterfaces
+
+# Enable AirDrop over Ethernet
+defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
+
+# Disable (Wi-Fi only, default)
+defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.NetworkBrowser BrowseAllInterfaces
+```
+
+## UI Location
+
+There is no direct UI setting for this option. It can only be configured via Terminal.
+
+```
++-------------------------------------------------------------+
+|  Enabling Ethernet AirDrop                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  STEP 1: Enable the setting                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  defaults write com.apple.NetworkBrowser \                  |
+|      BrowseAllInterfaces -bool true                         |
+|                                                              |
+|  STEP 2: Ensure both Macs on same network                   |
+|  ─────────────────────────────────────────────────────────  |
+|  • Connected via Ethernet to same router/switch             |
+|  • Or direct Ethernet cable between Macs                    |
+|                                                              |
+|  STEP 3: Keep Bluetooth ON                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  • AirDrop still uses Bluetooth for discovery               |
+|  • File transfer happens over Ethernet                      |
+|                                                              |
+|  STEP 4: Open AirDrop in Finder                              |
+|  ─────────────────────────────────────────────────────────  |
+|  • Finder > AirDrop (or ⇧⌘R)                               |
+|  • Other Macs should appear                                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Enable AirDrop over Ethernet (this setting)
+defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
+
+# AirDrop discoverability
+defaults write com.apple.sharingd DiscoverableMode -string "Contacts Only"
+
+# Check Bluetooth status
+system_profiler SPBluetoothDataType | grep "State"
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| AirDrop not appearing | Ensure Bluetooth is ON even for Ethernet |
+| Can't see other Macs | Verify both on same network subnet |
+| Transfer very slow | Check cable/switch supports Gigabit |
+| Works wirelessly but not wired | This setting may not be needed |
+| Old Mac still not working | Hardware may not support AirDrop at all |
+
+## Technical Notes
+
+```
++-------------------------------------------------------------+
+|  How Ethernet AirDrop Works                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  DISCOVERY (still uses Bluetooth):                           |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Bluetooth Low Energy advertises presence                |
+|  2. Devices discover each other via BLE                     |
+|  3. Negotiate connection over available network             |
+|                                                              |
+|  TRANSFER (can use Ethernet):                                |
+|  ─────────────────────────────────────────────────────────  |
+|  1. If both on same Ethernet network                        |
+|  2. And BrowseAllInterfaces = true                          |
+|  3. File transfers use wired connection                     |
+|  4. Much faster than Wi-Fi for large files                  |
+|                                                              |
+|  REQUIREMENTS:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|  • Bluetooth still required for discovery                   |
+|  • Same IP subnet for Ethernet transfer                     |
+|  • Firewall must allow AirDrop traffic                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Compatibility
+
+- **AirDrop**: macOS 10.7+ (Lion)
+- **Note**: Primarily for older Macs without native AirDrop Wi-Fi
+- **Note**: Modern Macs work without this setting
+- **Note**: Bluetooth still required for device discovery
+- **Note**: Both Macs need setting enabled for Ethernet transfer
+
+## Source File
+
+**File**: [`defaults/system/airdrop.sh`](../../../../defaults/system/airdrop.sh)
+
+```bash
+run_defaults "com.apple.NetworkBrowser" "BrowseAllInterfaces" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use AirDrop on your Mac](https://support.apple.com/guide/mac-help/use-airdrop-mh35868/mac)
+- [Apple Support: AirDrop system requirements](https://support.apple.com/en-us/HT203106)
+- [Apple Support: If AirDrop doesn't work](https://support.apple.com/en-us/HT203106)

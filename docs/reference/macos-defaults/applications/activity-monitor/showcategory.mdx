@@ -1,0 +1,306 @@
+# Activity Monitor Process Filter
+
+Control which processes are displayed in Activity Monitor.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.ActivityMonitor` |
+| **Key** | `ShowCategory` |
+| **Type** | Integer |
+| **Default Value** | `100` |
+| **Our Setting** | `102` |
+
+## Description
+
+Controls which category of processes Activity Monitor displays in its main window. By default, only processes owned by the current user are shown. Changing this to "All Processes" (102) reveals system daemons, kernel tasks, and processes owned by root and other users — essential for comprehensive system monitoring and debugging.
+
+## Values
+
+| Value | Category | Description |
+|-------|----------|-------------|
+| `100` | **My Processes** (default) | Processes owned by current user only |
+| `101` | **My Processes, Hierarchically** | User processes in parent/child tree view |
+| `102` | **All Processes** (our setting) | Every process on the system |
+| `103` | **All Processes, Hierarchically** | All processes in tree view |
+| `104` | **Selected Processes** | Custom selection (user-defined) |
+| `105` | **System Processes** | Only macOS system processes |
+| `106` | **Other User Processes** | Processes not owned by you |
+| `107` | **Active Processes** | Currently using CPU (non-idle) |
+| `108` | **Inactive Processes** | Sleeping/idle processes |
+| `109` | **GPU Processes** | Processes using graphics hardware |
+| `110` | **Windowed Processes** | Apps with visible windows |
+
+## Visual Demonstration
+
+### My Processes (100) - Default:
+```
++-------------------------------------------------------------+
+|  Activity Monitor - My Processes Only                        |
++-------------------------------------------------------------+
+|                                                              |
+|  View: My Processes                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Process Name            PID    User       %CPU    Memory    |
+|  ─────────────────────────────────────────────────────────  |
+|  Safari                 1234    ryan       12.5%   1.2 GB    |
+|  Finder                 567     ryan        2.1%   180 MB    |
+|  Terminal               890     ryan        0.5%    45 MB    |
+|  Mail                   111     ryan        0.3%   210 MB    |
+|  Slack                  222     ryan        1.8%   450 MB    |
+|                                                              |
+|  Total: 5 processes (only your apps)                         |
+|                                                              |
+|  ⚠️ Missing: System processes, daemons, kernel tasks         |
+|  ⚠️ Can't see what's actually consuming system resources     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### All Processes (102) - Our Setting:
+```
++-------------------------------------------------------------+
+|  Activity Monitor - All Processes                            |
++-------------------------------------------------------------+
+|                                                              |
+|  View: All Processes                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Process Name            PID    User       %CPU    Memory    |
+|  ─────────────────────────────────────────────────────────  |
+|  kernel_task            0      root       15.2%   1.8 GB    |
+|  WindowServer           158    _windowserver 8.4%  890 MB    |
+|  Safari                 1234   ryan       12.5%   1.2 GB    |
+|  mds_stores             201    root        5.1%   350 MB    |
+|  Spotlight              245    root        3.2%   280 MB    |
+|  Finder                 567    ryan        2.1%   180 MB    |
+|  coreaudiod             89     _coreaudio  1.9%    65 MB    |
+|  launchd                1      root        0.8%    45 MB    |
+|  ...                                                         |
+|                                                              |
+|  Total: 423 processes (complete system view)                 |
+|                                                              |
+|  ✓ See kernel_task and system daemons                        |
+|  ✓ Identify which process is really using resources          |
+|  ✓ Debug system-level issues                                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### All Processes, Hierarchically (103):
+```
++-------------------------------------------------------------+
+|  Activity Monitor - Hierarchical View                        |
++-------------------------------------------------------------+
+|                                                              |
+|  View: All Processes, Hierarchically                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Process Name            PID    User       %CPU    Memory    |
+|  ─────────────────────────────────────────────────────────  |
+|  ▼ launchd (1)          1      root        0.8%    45 MB    |
+|    ├─ WindowServer      158    _window...  8.4%   890 MB    |
+|    ├─▼ loginwindow      302    ryan        0.1%    35 MB    |
+|    │  ├─ Finder         567    ryan        2.1%   180 MB    |
+|    │  ├─ Dock           588    ryan        0.5%    75 MB    |
+|    │  └─▼ Safari        1234   ryan       12.5%   1.2 GB    |
+|    │     ├─ Safari Web  1235   ryan        4.2%   340 MB    |
+|    │     ├─ Safari Web  1236   ryan        3.1%   280 MB    |
+|    │     └─ Safari Net  1237   ryan        0.3%    15 MB    |
+|    ├─ mds_stores        201    root        5.1%   350 MB    |
+|    └─ ...                                                    |
+|                                                              |
+|  ✓ See parent/child relationships                            |
+|  ✓ Understand which app spawned which process                |
+|  ✓ Identify helper processes and extensions                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Filter Use Cases:
+```
++-------------------------------------------------------------+
+|  Choosing the Right Process Filter                           |
++-------------------------------------------------------------+
+|                                                              |
+|  102 - All Processes (recommended for developers):           |
+|  • Debugging system performance issues                       |
+|  • Finding which daemon is using CPU                         |
+|  • Identifying memory leaks in system processes              |
+|  • Understanding total system load                           |
+|                                                              |
+|  100 - My Processes (default, for casual users):             |
+|  • Managing your own running applications                    |
+|  • Force-quitting frozen apps                                |
+|  • Simpler view with fewer entries                           |
+|                                                              |
+|  107 - Active Processes:                                     |
+|  • Finding what's actively using CPU right now               |
+|  • Ignoring idle background processes                        |
+|  • Quick performance troubleshooting                         |
+|                                                              |
+|  109 - GPU Processes:                                        |
+|  • Debugging graphics performance                            |
+|  • Finding apps using discrete GPU (battery drain)           |
+|  • Video encoding/decoding investigation                     |
+|                                                              |
+|  103 - All Processes, Hierarchically:                        |
+|  • Understanding process relationships                       |
+|  • Finding helper processes for an app                       |
+|  • Debugging process spawning issues                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `102` — All Processes for complete system visibility.
+
+### Why All Processes?
+
+1. **Complete view** — See everything running on your system
+2. **Debugging** — Identify system daemons causing issues
+3. **Performance** — Find the real CPU/memory hogs
+4. **Security** — Notice unexpected processes
+5. **Professional** — Standard for developers and admins
+
+### Why My Processes Only?
+
+- Simpler interface for basic use
+- Avoid accidentally killing system processes
+- Less overwhelming for casual users
+- Only managing your own apps
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.ActivityMonitor ShowCategory
+
+# Show all processes (recommended for power users)
+defaults write com.apple.ActivityMonitor ShowCategory -int 102
+
+# Show all processes hierarchically
+defaults write com.apple.ActivityMonitor ShowCategory -int 103
+
+# Show only my processes (default)
+defaults write com.apple.ActivityMonitor ShowCategory -int 100
+
+# Show active (non-idle) processes
+defaults write com.apple.ActivityMonitor ShowCategory -int 107
+
+# Show GPU processes
+defaults write com.apple.ActivityMonitor ShowCategory -int 109
+
+# Delete (reset to default)
+defaults delete com.apple.ActivityMonitor ShowCategory
+```
+
+## UI Location
+
+**Activity Monitor** → **View** menu
+
+```
++-------------------------------------------------------------+
+|  Activity Monitor > View Menu                                |
++-------------------------------------------------------------+
+|                                                              |
+|  View                                                        |
+|  ├── (●) All Processes               ⌃⌘1                    |
+|  │       ^-- Our setting (ShowCategory = 102)                |
+|  ├── ( ) All Processes, Hierarchically  ⌃⌘2                 |
+|  ├── ─────────────────────                                  |
+|  ├── ( ) My Processes                   ⌃⌘3                 |
+|  │       ^-- Default (ShowCategory = 100)                    |
+|  ├── ( ) My Processes, Hierarchically   ⌃⌘4                 |
+|  ├── ─────────────────────                                  |
+|  ├── ( ) System Processes               ⌃⌘5                 |
+|  ├── ( ) Other User Processes           ⌃⌘6                 |
+|  ├── ( ) Active Processes               ⌃⌘7                 |
+|  ├── ( ) Inactive Processes             ⌃⌘8                 |
+|  ├── ( ) GPU Processes                  ⌃⌘9                 |
+|  ├── ( ) Windowed Processes             ⌃⌘0                 |
+|  └── ─────────────────────                                  |
+|                                                              |
+|  Keyboard shortcuts: ⌃⌘1 through ⌃⌘0                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Process filter view (this setting)
+defaults write com.apple.ActivityMonitor ShowCategory -int 102
+
+# Sort column (what to sort by)
+defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
+
+# Sort direction (0=descending, 1=ascending)
+defaults write com.apple.ActivityMonitor SortDirection -int 0
+
+# Default tab on launch (0=CPU, 1=Memory, 2=Energy, 3=Disk, 4=Network)
+defaults write com.apple.ActivityMonitor SelectedTab -int 0
+
+# Open main window on launch
+defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
+```
+
+## Keyboard Shortcuts
+
+```
++-------------------------------------------------------------+
+|  Activity Monitor View Shortcuts                             |
++-------------------------------------------------------------+
+|                                                              |
+|  ⌃⌘1    All Processes                                       |
+|  ⌃⌘2    All Processes, Hierarchically                       |
+|  ⌃⌘3    My Processes                                        |
+|  ⌃⌘4    My Processes, Hierarchically                        |
+|  ⌃⌘5    System Processes                                    |
+|  ⌃⌘6    Other User Processes                                |
+|  ⌃⌘7    Active Processes                                    |
+|  ⌃⌘8    Inactive Processes                                  |
+|  ⌃⌘9    GPU Processes                                       |
+|  ⌃⌘0    Windowed Processes                                  |
+|                                                              |
+|  Other useful shortcuts:                                     |
+|  ⌘I     Inspect selected process (detailed info)            |
+|  ⌥⌘Q    Force Quit selected process                         |
+|  ⌘F     Search/filter processes                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't see system processes | Set ShowCategory to 102 |
+| Too many processes shown | Use search filter (⌘F) |
+| Process list empty | Check View menu selection |
+| Setting not persisting | Quit Activity Monitor and reopen |
+| Need to see process tree | Use hierarchical view (101 or 103) |
+
+## Compatibility
+
+- **macOS**: 10.3+ (Panther)
+- **Note**: Requires restart of Activity Monitor for changes
+- **Note**: Some system processes may require elevated permissions to inspect
+- **Note**: Works with all Activity Monitor tabs
+
+## Source File
+
+**File**: [`defaults/interface/activity_monitor.sh`](../../../../../defaults/interface/activity_monitor.sh)
+
+```bash
+run_defaults "com.apple.ActivityMonitor" "ShowCategory" "-int" "102"
+```
+
+## References
+
+- [Apple Support: Use Activity Monitor on your Mac](https://support.apple.com/guide/activity-monitor/welcome/mac)
+- [Apple Support: View information about processes](https://support.apple.com/guide/activity-monitor/view-information-about-processes-actmntr1001/mac)
+- [Apple Support: View CPU activity](https://support.apple.com/guide/activity-monitor/view-cpu-activity-actmntr43452/mac)

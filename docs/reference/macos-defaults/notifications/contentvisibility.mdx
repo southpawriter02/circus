@@ -1,0 +1,339 @@
+# Notification Content Visibility
+
+Control when notification content previews are displayed.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.ncprefs` |
+| **Key** | `content_visibility` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `2` |
+
+## Description
+
+Controls when the actual content of notifications (message text, email subjects, etc.) is displayed in notification banners and the Notification Center. This is a privacy feature that prevents others from reading your notifications when your Mac is unattended or visible to others. You can choose to always show previews, never show them, or only show them when your Mac is unlocked.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Never show previews** — Only app name and generic alert |
+| `1` | **Always show previews** (default) — Full content visible always |
+| `2` | **When unlocked only** — Content shown only when logged in |
+
+## Visual Demonstration
+
+### Always Show Previews (Default):
+```
++-------------------------------------------------------------+
+|  Notification Previews - Always Visible                      |
++-------------------------------------------------------------+
+|                                                              |
+|  LOCKED SCREEN:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                   🔐 Locked                              │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │ 💬 Messages                              now        ││|
+|  │  │ John Smith                                          ││|
+|  │  │ Hey, the password for the account is abc123!        ││|
+|  │  │ ⚠️ Anyone walking by can read this!                ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │ 📧 Mail                                   2m ago    ││|
+|  │  │ HR Department                                       ││|
+|  │  │ Your salary review: Increase to $xxx,xxx...         ││|
+|  │  │ ⚠️ Sensitive information visible!                  ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✗ Private messages visible to anyone                      |
+|  ✗ Email subjects exposed                                  |
+|  ✗ Sensitive data readable on lock screen                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### When Unlocked Only (Recommended):
+```
++-------------------------------------------------------------+
+|  Notification Previews - When Unlocked                       |
++-------------------------------------------------------------+
+|                                                              |
+|  LOCKED SCREEN:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                   🔐 Locked                              │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │ 💬 Messages                              now        ││|
+|  │  │ Notification                                        ││|
+|  │  │ ✓ Content hidden for privacy                       ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────────┐│|
+|  │  │ 📧 Mail                                   2m ago    ││|
+|  │  │ Notification                                        ││|
+|  │  │ ✓ Content hidden for privacy                       ││|
+|  │  └─────────────────────────────────────────────────────┘│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  UNLOCKED/LOGGED IN:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ 💬 Messages                              now            │|
+|  │ John Smith                                              │|
+|  │ Hey, the password for the account is abc123!            │|
+|  │ (Full content visible - you're authenticated)           │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Privacy on lock screen                                  |
+|  ✓ Full information when unlocked                          |
+|  ✓ Best balance of security and convenience                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Never Show Previews:
+```
++-------------------------------------------------------------+
+|  Notification Previews - Always Hidden                       |
++-------------------------------------------------------------+
+|                                                              |
+|  ALL STATES (locked or unlocked):                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ 💬 Messages                              now            │|
+|  │ Notification                                            │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ 📧 Mail                                   2m ago        │|
+|  │ Notification                                            │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ 📅 Calendar                              5m ago         │|
+|  │ Notification                                            │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Maximum privacy                                         |
+|  ✗ Must click notification to see content                  |
+|  ✗ Can't quickly triage notifications                      |
+|  ✗ Less convenient for everyday use                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `2` — Show previews only when unlocked for privacy.
+
+### Why "When Unlocked" (Recommended)?
+
+1. **Privacy** — Passersby can't read your messages
+2. **Security** — Sensitive information protected
+3. **Convenience** — Full content when you're using Mac
+4. **Balance** — Best of both worlds
+5. **Professional** — Appropriate for office environments
+
+### Why "Always"?
+
+- Single-user Mac in private location
+- Quick notification triage important
+- No privacy concerns
+- Personal preference for convenience
+
+### Why "Never"?
+
+- High-security environment
+- Shared display situations
+- Maximum privacy required
+- Screen frequently visible to others
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.ncprefs content_visibility
+
+# Never show previews (most private)
+defaults write com.apple.ncprefs content_visibility -int 0
+
+# Always show previews (default)
+defaults write com.apple.ncprefs content_visibility -int 1
+
+# When unlocked only (recommended)
+defaults write com.apple.ncprefs content_visibility -int 2
+
+# Delete (reset to default)
+defaults delete com.apple.ncprefs content_visibility
+```
+
+## UI Location
+
+**System Settings** > **Notifications** > **Show Previews**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Notifications                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Notifications                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Show Previews                                               |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ○ Always                                               │|
+|  │                                                          │|
+|  │  ● When Unlocked          ← Recommended                 │|
+|  │                                                          │|
+|  │  ○ Never                                                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Application Notifications                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [Calendar]        Banners ✓  Sounds ✓  Badges ✓           |
+|  [FaceTime]        Banners ✓  Sounds ✓  Badges ✓           |
+|  [Mail]            Banners ✓  Sounds ✓  Badges ✓           |
+|  [Messages]        Banners ✓  Sounds ✓  Badges ✓           |
+|  ...                                                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Per-App Preview Settings
+
+```
++-------------------------------------------------------------+
+|  Per-Application Preview Control                             |
++-------------------------------------------------------------+
+|                                                              |
+|  You can override global settings for specific apps:         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  System Settings > Notifications > [App Name]                |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Messages                                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Show Previews:                                          │|
+|  │  ┌───────────────────────┐                              │|
+|  │  │ Default (When Unlocked) ▼│                           │|
+|  │  │ ─────────────────────    │                           │|
+|  │  │ Default (When Unlocked)  │                           │|
+|  │  │ Always                    │                           │|
+|  │  │ When Unlocked             │                           │|
+|  │  │ Never                     │                           │|
+|  │  └───────────────────────┘                              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  EXAMPLE SETUP:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|  • Global: When Unlocked                                    |
+|  • Messages: Never (extra privacy for texts)                |
+|  • Calendar: Always (events usually not sensitive)          |
+|  • Mail: When Unlocked (follow global)                      |
+|  • Slack: Never (work messages private)                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Privacy Scenarios
+
+```
++-------------------------------------------------------------+
+|  Common Privacy Scenarios                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO: Coffee shop work                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  Setting: When Unlocked or Never                            |
+|  Why: People can see your screen                            |
+|                                                              |
+|  SCENARIO: Home office, living alone                         |
+|  ─────────────────────────────────────────────────────────  |
+|  Setting: Always                                            |
+|  Why: No privacy concerns                                   |
+|                                                              |
+|  SCENARIO: Open office plan                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  Setting: When Unlocked                                     |
+|  Why: Coworkers might glance at screen                      |
+|                                                              |
+|  SCENARIO: Presenting to a group                             |
+|  ─────────────────────────────────────────────────────────  |
+|  Setting: Never (or use Do Not Disturb)                     |
+|  Why: Notifications visible on projector                    |
+|                                                              |
+|  SCENARIO: Shared family Mac                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  Setting: When Unlocked                                     |
+|  Why: Each user sees their own when logged in              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Content visibility (this setting)
+defaults write com.apple.ncprefs content_visibility -int 2
+
+# Banner display time
+defaults write com.apple.notificationcenterui bannerTime -int 5
+
+# Show widgets on desktop
+defaults write com.apple.WindowManager ShowOnDesktop -bool true
+
+# Focus/DND (use System Settings or Control Center)
+# These are stored in CloudKit, not easily set via defaults
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Restart NotificationCenter: `killall NotificationCenter` |
+| One app ignoring setting | Check per-app override in Notifications settings |
+| Previews still showing locked | Verify setting is 2 not 1; restart required |
+| Can't change setting | May be managed by MDM profile |
+| Want different behavior per app | Use per-app settings in System Settings |
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina) for current behavior
+- **Note**: Older macOS versions may have different key names
+- **Note**: Per-app settings stored in separate database
+- **Note**: Focus modes can override this setting
+- **Note**: MDM can enforce notification policies
+
+## Source File
+
+**File**: [`defaults/interface/notifications.sh`](../../../../defaults/interface/notifications.sh)
+
+```bash
+run_defaults "com.apple.ncprefs" "content_visibility" "-int" "2"
+```
+
+## References
+
+- [Apple Support: Change Notifications preferences on Mac](https://support.apple.com/guide/mac-help/change-notifications-preferences-mh40583/mac)
+- [Apple Support: Use Focus on your Mac](https://support.apple.com/guide/mac-help/turn-a-focus-on-or-off-mchl613dc43f/mac)
+- [Apple Support: Notifications User Guide](https://support.apple.com/guide/mac-help/notifications-mchl2fb1258f/mac)

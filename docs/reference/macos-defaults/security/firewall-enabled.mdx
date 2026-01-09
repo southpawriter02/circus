@@ -1,0 +1,294 @@
+# Firewall Enabled (Global State)
+
+Enable the macOS Application Level Firewall.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `/Library/Preferences/com.apple.alf` |
+| **Key** | `globalstate` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls the overall state of the macOS Application Level Firewall (ALF). The firewall monitors and controls incoming network connections to your Mac, blocking unauthorized applications from receiving connections. This is an essential security feature, especially when using public networks like coffee shops or airports. The firewall operates at the application level, allowing or blocking specific apps rather than ports.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Off** (default) — Firewall disabled, all connections allowed |
+| `1` | **On** — Firewall enabled with per-app control |
+| `2` | **Block all** — Block all incoming except essential services |
+
+## Visual Demonstration
+
+### Firewall Off (0 - Default):
+```
++-------------------------------------------------------------+
+|  Firewall Disabled - All Connections Allowed                 |
++-------------------------------------------------------------+
+|                                                              |
+|  INTERNET                          YOUR MAC                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|      👤 User A                                               |
+|         │                                                    |
+|         │ Connection Request   ┌──────────────────────┐     |
+|         └────────────────────▶ │    Your Mac          │     |
+|                                │    ────────────────  │     |
+|      👤 User B                 │                      │     |
+|         │                      │  ✓ All connections  │     |
+|         │ File Sharing         │    accepted         │     |
+|         └────────────────────▶ │                      │     |
+|                                │  No protection      │     |
+|      👤 Attacker               │                      │     |
+|         │                      │  🔓 VULNERABLE      │     |
+|         │ Malicious Request    │                      │     |
+|         └────────────────────▶ │                      │     |
+|                                └──────────────────────┘     |
+|                                                              |
+|  ⚠️ All incoming connections accepted without verification  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Firewall On (1 - Recommended):
+```
++-------------------------------------------------------------+
+|  Firewall Enabled - Per-App Control                          |
++-------------------------------------------------------------+
+|                                                              |
+|  INTERNET                          YOUR MAC                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|      👤 User A                   ┌──────────────────────┐   |
+|         │                        │    🔥 FIREWALL       │   |
+|         │ SSH Connection         │    ────────────────  │   |
+|         └──────────────────────▶ │ ✓ SSH allowed       │   |
+|                                  │   (you approved)    │   |
+|      👤 User B                   │                      │   |
+|         │                        │                      │   |
+|         │ File Sharing           │ ✓ File Sharing OK   │   |
+|         └──────────────────────▶ │   (signed app)      │   |
+|                                  │                      │   |
+|      👤 Attacker                 │                      │   |
+|         │                        │ ✗ BLOCKED           │   |
+|         │ Backdoor Connection    │   (unknown app)     │   |
+|         └──────────────────────X │                      │   |
+|                                  └──────────────────────┘   |
+|                                                              |
+|  ✓ Authorized apps can receive connections                 |
+|  ✓ Unknown/unauthorized apps blocked                       |
+|  ✓ User prompted for new apps                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Block All Incoming (2 - Maximum Security):
+```
++-------------------------------------------------------------+
+|  Block All Incoming Connections                              |
++-------------------------------------------------------------+
+|                                                              |
+|  INTERNET                          YOUR MAC                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|      👤 Any User                 ┌──────────────────────┐   |
+|         │                        │    🔥 FIREWALL       │   |
+|         │ Any Connection         │    ────────────────  │   |
+|         └──────────────────────X │ ✗ BLOCKED           │   |
+|                                  │                      │   |
+|      👤 Attacker                 │ Only allows:        │   |
+|         │                        │ • DHCP              │   |
+|         │ Any Connection         │ • Bonjour           │   |
+|         └──────────────────────X │ • IPSec             │   |
+|                                  │                      │   |
+|  Outbound connections ─────────▶ │ ✓ Outbound OK       │   |
+|  (web browsing, email)           │   (not blocked)     │   |
+|                                  └──────────────────────┘   |
+|                                                              |
+|  ⚠️ File Sharing, Screen Sharing, SSH etc. will NOT work   |
+|  Best for: Maximum security on untrusted networks           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Security Implications
+
+```
++-------------------------------------------------------------+
+|  Why Enable the Firewall                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  PROTECTS AGAINST:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. UNAUTHORIZED ACCESS                                      |
+|     • Blocks connections to services you don't want exposed |
+|     • Prevents accidental exposure of services              |
+|                                                              |
+|  2. MALWARE COMMAND & CONTROL                                |
+|     • Blocks unknown apps from receiving instructions       |
+|     • Prevents backdoors from accepting connections         |
+|                                                              |
+|  3. NETWORK SCANNING                                         |
+|     • Makes open ports less visible to attackers           |
+|     • Combined with stealth mode for best protection       |
+|                                                              |
+|  4. PUBLIC NETWORK ATTACKS                                   |
+|     • Essential protection on coffee shop/airport WiFi     |
+|     • Blocks other users on same network                   |
+|                                                              |
+|  ESPECIALLY IMPORTANT WHEN:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  • Using public WiFi                                        |
+|  • Running services (web server, file sharing)             |
+|  • On networks you don't control                           |
+|  • Laptop used in multiple locations                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1` — Firewall enabled with per-app control.
+
+### Why Enable (1)?
+
+1. **Security** — Block unauthorized incoming connections
+2. **Control** — Approve apps that can receive connections
+3. **Flexibility** — Allow legitimate services when needed
+4. **Protection** — Essential for public networks
+5. **Best practice** — Recommended security baseline
+
+### Why Block All (2)?
+
+- Maximum security needed
+- Public/untrusted network
+- Don't need any incoming connections
+- High-security environment
+
+### Why Keep Off (0)? (Not recommended)
+
+- Network troubleshooting
+- Specific compatibility issues
+- Home network with hardware firewall
+- Still not recommended
+
+## Code Examples
+
+```bash
+# Read current value (requires sudo)
+sudo defaults read /Library/Preferences/com.apple.alf globalstate
+
+# Enable firewall (per-app control)
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+
+# Block all incoming connections
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 2
+
+# Disable firewall (not recommended)
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 0
+
+# Restart firewall to apply changes
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+
+# Or use the firewall utility (easier)
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
+```
+
+## UI Location
+
+**System Settings** > **Network** > **Firewall**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Firewall                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Network > Firewall                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Firewall                                                │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Firewall                                    [● ON ]    │|
+|  │                                              ← Toggle   │|
+|  │                                                          │|
+|  │  A firewall protects your Mac from unwanted             │|
+|  │  incoming connections from other computers.             │|
+|  │                                                          │|
+|  │  [Options...]                                            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Click "Options..." for:                                     |
+|  • Block all incoming connections                           |
+|  • Allow built-in software automatically                    |
+|  • Allow signed software automatically                      |
+|  • Enable stealth mode                                      |
+|  • Per-application rules                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Enable firewall (this setting)
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+
+# Enable stealth mode
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 1
+
+# Enable firewall logging
+sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -int 1
+
+# Allow signed apps automatically
+sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -int 1
+
+# Allow downloaded signed apps
+sudo defaults write /Library/Preferences/com.apple.alf allowdownloadsignedenabled -int 1
+
+# Check firewall status
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| File Sharing not working | Check firewall options; allow Sharing.framework |
+| SSH blocked | Allow sshd-keygen-wrapper in firewall options |
+| Screen Sharing blocked | Add Screen Sharing to allowed apps |
+| App can't receive connections | Add app to firewall allowed list |
+| Changes not applying | Restart firewall agent (see commands above) |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion) for current implementation
+- **Note**: Requires sudo/administrator to modify
+- **Note**: Changes require firewall restart or reboot
+- **Note**: System Integrity Protection (SIP) protects settings
+- **Note**: Works alongside network hardware firewalls
+
+## Source File
+
+**File**: [`defaults/system/firewall.sh`](../../../../defaults/system/firewall.sh)
+
+```bash
+run_sudo_defaults "/Library/Preferences/com.apple.alf" "globalstate" "-int" "1"
+```
+
+## References
+
+- [Apple Support: About the application firewall](https://support.apple.com/en-us/102445)
+- [Apple Support: Block connections with a firewall](https://support.apple.com/guide/mac-help/block-connections-to-your-mac-with-a-firewall-mh34041/mac)
+- [Apple Support: Firewall settings on Mac](https://support.apple.com/guide/mac-help/change-firewall-settings-on-mac-mh11783/mac)

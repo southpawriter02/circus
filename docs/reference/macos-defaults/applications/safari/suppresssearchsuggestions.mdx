@@ -1,0 +1,233 @@
+# Safari Suppress Search Suggestions
+
+Hide search suggestion interface in Safari's Smart Search Field.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `SuppressSearchSuggestions` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Safari displays the search suggestions dropdown interface in the Smart Search Field. This setting works in conjunction with `UniversalSearchEnabled` — while that setting controls whether data is sent to Apple, this setting controls whether the suggestions UI is displayed at all. When enabled (set to true), the dropdown with search suggestions, Siri suggestions, and website recommendations is completely hidden.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Show** (default) — Display search suggestions dropdown |
+| `true` | **Suppress** — Hide search suggestions interface |
+
+## Visual Demonstration
+
+### Suggestions Displayed (Default):
+```
++-------------------------------------------------------------+
+|  Safari Address Bar - SuppressSearchSuggestions = false      |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐ |
+|  │ 🔍 apple products                                        │ |
+|  └─────────────────────────────────────────────────────────┘ |
+|  ┌─────────────────────────────────────────────────────────┐ |
+|  │                                                          │ |
+|  │  Google Suggestions:                                     │ |
+|  │  🔍 apple products list                                  │ |
+|  │  🔍 apple products 2024                                  │ |
+|  │  🔍 apple products comparison                            │ |
+|  │                                                          │ |
+|  │  Safari Suggestions:                                     │ |
+|  │  📍 Apple Store - apple.com                             │ |
+|  │  📖 Apple Inc. - Wikipedia                              │ |
+|  │                                                          │ |
+|  │  Bookmarks and History:                                  │ |
+|  │  ⭐ Apple Developer Documentation                        │ |
+|  │  🕐 apple.com/shop (visited yesterday)                  │ |
+|  │                                                          │ |
+|  └─────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  Dropdown appears below address bar as you type             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Suggestions Suppressed:
+```
++-------------------------------------------------------------+
+|  Safari Address Bar - SuppressSearchSuggestions = true       |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐ |
+|  │ 🔍 apple products                                        │ |
+|  └─────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  (No dropdown appears - clean interface)                     |
+|                                                              |
+|  Type your query → Press Enter → Go directly to search      |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐ |
+|  │                                                          │ |
+|  │  Only your bookmarks bar visible                         │ |
+|  │                                                          │ |
+|  │  ⭐ GitHub  ⭐ Gmail  ⭐ Docs  ⭐ News               │ |
+|  │                                                          │ |
+|  └─────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  Clean, distraction-free browsing experience                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Workflow Comparison:
+```
++-------------------------------------------------------------+
+|  Typing Experience Comparison                                |
++-------------------------------------------------------------+
+|                                                              |
+|  WITH SUGGESTIONS (SuppressSearchSuggestions = false):       |
+|                                                              |
+|  [Type query]                                                |
+|       ↓                                                      |
+|  [Dropdown appears - covers page content]                    |
+|       ↓                                                      |
+|  [Scan suggestions, possibly click one]                      |
+|       ↓                                                      |
+|  [Navigate to result]                                        |
+|                                                              |
+|  Pros: Discover related searches                             |
+|  Cons: Visual distraction, decision fatigue                 |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  WITHOUT SUGGESTIONS (SuppressSearchSuggestions = true):     |
+|                                                              |
+|  [Type query]                                                |
+|       ↓                                                      |
+|  [Press Enter]                                               |
+|       ↓                                                      |
+|  [Navigate to result]                                        |
+|                                                              |
+|  Pros: Focused, faster, less distraction                    |
+|  Cons: No autocomplete convenience                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Suppress suggestions for clean, focused browsing.
+
+### Why Suppress?
+
+1. **Focus** — No distracting dropdown
+2. **Speed** — Type and go without scanning
+3. **Privacy** — Reinforces disabled suggestions
+4. **Clean UI** — Uncluttered address bar
+5. **Intentional** — Search what you meant
+
+### Why Show Suggestions?
+
+- Discover related searches
+- Quick access to websites
+- Spell check queries
+- Find forgotten bookmarks
+- Exploratory browsing
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari SuppressSearchSuggestions
+
+# Suppress search suggestions UI (recommended)
+defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+
+# Show search suggestions UI (default)
+defaults write com.apple.Safari SuppressSearchSuggestions -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Safari SuppressSearchSuggestions
+```
+
+## UI Location
+
+This setting doesn't have a direct UI toggle. It's typically set via `defaults` command or managed alongside the "Include Safari Suggestions" checkbox.
+
+**Related UI**: Safari → Settings → Search → Include Safari Suggestions
+
+```
++-------------------------------------------------------------+
+|  Safari Settings > Search                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  [ ] Include Safari Suggestions                              |
+|      When unchecked, SuppressSearchSuggestions effectively  |
+|      achieves similar result for Safari suggestions         |
+|                                                              |
+|  Note: SuppressSearchSuggestions provides programmatic       |
+|  control over the suggestion UI display                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Suppress suggestion UI (this setting)
+defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+
+# Disable data transmission to Apple
+defaults write com.apple.Safari UniversalSearchEnabled -bool false
+
+# Both together for complete privacy
+defaults write com.apple.Safari UniversalSearchEnabled -bool false
+defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+```
+
+## Combined Privacy Setup
+
+For complete search privacy:
+```bash
+# 1. Don't send data to Apple
+defaults write com.apple.Safari UniversalSearchEnabled -bool false
+
+# 2. Don't show suggestion UI
+defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+
+# 3. Don't preload top hit
+defaults write com.apple.Safari PreloadTopHit -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Suggestions still showing | Restart Safari after setting |
+| Want only history suggestions | This suppresses all — use UniversalSearchEnabled instead |
+| Can't find setting in UI | No direct UI — use defaults command |
+| Changes not persisting | Check for MDM profiles or parental controls |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Note**: Takes effect after Safari restart
+- **Note**: Works with UniversalSearchEnabled setting
+- **Note**: May not be exposed in Safari UI
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "SuppressSearchSuggestions" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Search the web in Safari](https://support.apple.com/guide/safari/search-the-web-ibrw1044/mac)
+- [Apple Support: Customize Safari settings](https://support.apple.com/guide/safari/customize-settings-ibrwb0c38ea7/mac)

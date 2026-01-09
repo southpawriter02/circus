@@ -1,0 +1,300 @@
+# Disk Utility Show APFS Snapshots
+
+Display APFS snapshots in the Disk Utility sidebar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.DiskUtility` |
+| **Key** | `DUShowAPFSSnapshots` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether APFS (Apple File System) snapshots are displayed in Disk Utility's sidebar. APFS snapshots are point-in-time copies of the file system, created automatically by Time Machine, macOS updates, and other system operations. Showing snapshots helps you understand disk space usage and manage backup states.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show snapshots** — Display APFS snapshots in sidebar |
+| `false` | **Hide snapshots** (default) — Snapshots not visible in sidebar |
+
+## Visual Demonstration
+
+### With Snapshots Visible:
+```
++-------------------------------------------------------------+
+|  Disk Utility - APFS Snapshots Shown                         |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │  SIDEBAR                      │  VOLUME INFO           │ |
+|  │  ──────────────────────       │  ────────────────────  │ |
+|  │                               │                        │ |
+|  │  Internal                     │  Macintosh HD          │ |
+|  │  ├── APPLE SSD AP0512Q        │  ────────────────────  │ |
+|  │  │   ├── Container disk1      │                        │ |
+|  │  │   │   ├── Macintosh HD     │  Type: APFS Volume     │ |
+|  │  │   │   │   ├── 📸 Snapshot  │  Capacity: 500 GB      │ |
+|  │  │   │   │   │   2024-01-08   │  Used: 250 GB          │ |
+|  │  │   │   │   ├── 📸 Snapshot  │  Available: 250 GB     │ |
+|  │  │   │   │   │   2024-01-07   │                        │ |
+|  │  │   │   │   └── 📸 Snapshot  │  SNAPSHOTS:            │ |
+|  │  │   │   │       2024-01-05   │  ────────────────────  │ |
+|  │  │   │   ├── Macintosh HD-Dat │  3 snapshots found     │ |
+|  │  │   │   ├── Preboot          │  Total: 15.2 GB        │ |
+|  │  │   │   ├── Recovery         │                        │ |
+|  │  │   │   └── VM               │  [Delete Snapshots...] │ |
+|  │                               │                        │ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  ✓ See all Time Machine local snapshots                     |
+|  ✓ Identify disk space used by snapshots                    |
+|  ✓ Delete old snapshots to reclaim space                    |
+|  ✓ Understand backup history                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### What Are APFS Snapshots?
+```
++-------------------------------------------------------------+
+|  Understanding APFS Snapshots                                |
++-------------------------------------------------------------+
+|                                                              |
+|  WHAT THEY ARE:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|  Snapshots are instant, read-only copies of your file       |
+|  system at a specific moment. They're space-efficient,      |
+|  only storing the differences from the current state.       |
+|                                                              |
+|  Timeline:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Monday     Tuesday    Wednesday  Thursday   Today          |
+|  ─────────────────────────────────────────────────────────  |
+|    📸         📸          📸         📸        Current      |
+|    ↓          ↓           ↓          ↓         State        |
+|  Snapshot  Snapshot   Snapshot   Snapshot    ┌─────┐        |
+|    #1        #2         #3         #4        │ Now │        |
+|                                              └─────┘        |
+|                                                              |
+|  WHO CREATES THEM:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|  • Time Machine (hourly when backup drive not connected)    |
+|  • macOS updates (before installing updates)                |
+|  • Some backup software (Carbon Copy Cloner, etc.)          |
+|  • Manual creation via tmutil command                       |
+|                                                              |
+|  SPACE USAGE:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|  • Initially: Near zero (just metadata)                     |
+|  • Over time: Grows as files change                         |
+|  • Deleted when: Space needed or manually removed           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Snapshots (Hidden):
+```
++-------------------------------------------------------------+
+|  Disk Utility - Snapshots Hidden (Default)                   |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌────────────────────────────────────────────────────────┐ |
+|  │  SIDEBAR                      │  VOLUME INFO           │ |
+|  │  ──────────────────────       │  ────────────────────  │ |
+|  │                               │                        │ |
+|  │  Internal                     │  Macintosh HD          │ |
+|  │  ├── APPLE SSD AP0512Q        │  ────────────────────  │ |
+|  │  │   └── Container disk1      │                        │ |
+|  │  │       ├── Macintosh HD     │  Type: APFS Volume     │ |
+|  │  │       ├── Macintosh HD-Dat │  Capacity: 500 GB      │ |
+|  │  │       ├── Preboot          │  Used: 250 GB          │ |
+|  │  │       ├── Recovery         │  Available: 250 GB     │ |
+|  │  │       └── VM               │                        │ |
+|  │                               │  (No snapshot info)    │ |
+|  │  External                     │                        │ |
+|  │  └── ...                      │                        │ |
+|  │                               │                        │ |
+|  └────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  ✗ Snapshots exist but are hidden                          |
+|  ✗ Can't see snapshot space usage                          |
+|  ✗ Must use terminal to manage snapshots                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show snapshots to understand disk space usage.
+
+### Why Show Snapshots?
+
+1. **Space awareness** — See how much space snapshots consume
+2. **Troubleshooting** — Diagnose "where did my space go?" issues
+3. **Management** — Delete unnecessary snapshots easily
+4. **Backup visibility** — Understand local Time Machine snapshots
+5. **Transparency** — See what's actually on your disk
+
+### Why Hide Snapshots?
+
+- Simpler interface for basic users
+- Less clutter in sidebar
+- Snapshots managed automatically
+- Rarely need to interact with them
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.DiskUtility DUShowAPFSSnapshots
+
+# Show APFS snapshots
+defaults write com.apple.DiskUtility DUShowAPFSSnapshots -bool true
+
+# Hide APFS snapshots (default)
+defaults write com.apple.DiskUtility DUShowAPFSSnapshots -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.DiskUtility DUShowAPFSSnapshots
+```
+
+## Managing Snapshots via Terminal
+
+```bash
+# List all local snapshots
+tmutil listlocalsnapshots /
+
+# List snapshots with dates
+tmutil listlocalsnapshotdates
+
+# Delete a specific snapshot
+sudo tmutil deletelocalsnapshots 2024-01-08-120000
+
+# Delete all local snapshots
+sudo tmutil deletelocalsnapshots /
+
+# Check snapshot space usage
+sudo du -sh /.MobileBackups* 2>/dev/null
+```
+
+## UI Location
+
+This is a defaults-only setting. Related View menu options in Disk Utility:
+
+```
++-------------------------------------------------------------+
+|  Disk Utility View Options                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  View                                                        |
+|  ├── Show All Devices              ⌘2                       |
+|  │    (Shows full disk hierarchy)                           |
+|  ├── Show Only Volumes             ⌘1                       |
+|  │    (Simplified view)                                     |
+|  ├── ─────────────────                                      |
+|  ├── Show APFS Snapshots                                    |
+|  │    (May not appear in menu -                             |
+|  │     controlled by defaults)                              |
+|  └── ...                                                    |
+|                                                              |
+|  Note: The defaults command is the reliable way to          |
+|  enable snapshot visibility.                                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Snapshot Space Recovery
+
+```
++-------------------------------------------------------------+
+|  Reclaiming Space from Snapshots                             |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO: "My disk shows 50GB used but Finder says less"   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Often caused by APFS snapshots holding deleted files:      |
+|                                                              |
+|  1. You delete 20GB of files                                |
+|  2. Files removed from current view                         |
+|  3. BUT snapshots still reference those files               |
+|  4. Space not truly freed until snapshots expire/deleted    |
+|                                                              |
+|  TO RECLAIM SPACE:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Option 1: Wait                                              |
+|  • macOS auto-deletes old snapshots when space needed       |
+|  • Time Machine snapshots expire after 24 hours             |
+|                                                              |
+|  Option 2: Delete manually (Terminal)                        |
+|  tmutil listlocalsnapshots /                                |
+|  sudo tmutil deletelocalsnapshots 2024-01-08-120000         |
+|                                                              |
+|  Option 3: Disk Utility (with setting enabled)              |
+|  • Select volume in sidebar                                 |
+|  • Expand to see snapshots                                  |
+|  • Right-click > Delete                                     |
+|                                                              |
+|  ⚠️ WARNING: Deleting snapshots removes recovery points!   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show APFS snapshots (this setting)
+defaults write com.apple.DiskUtility DUShowAPFSSnapshots -bool true
+
+# Show all devices in sidebar
+defaults write com.apple.DiskUtility SidebarShowAllDevices -bool true
+
+# Enable debug menu
+defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
+
+# Advanced image options
+defaults write com.apple.DiskUtility advanced-image-options -bool true
+
+# Confirm before erase
+defaults write com.apple.DiskUtility DUAskBeforeErase -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Snapshots not showing | Restart Disk Utility after changing setting |
+| Can't delete snapshot | Need admin privileges; use sudo in Terminal |
+| "No snapshots" but space used | Check with `tmutil listlocalsnapshots /` |
+| Disk space not freed after delete | APFS space reclamation may be delayed |
+| Snapshot list won't load | Try View > Show All Devices first |
+
+## Compatibility
+
+- **Disk Utility**: macOS 10.13+ (High Sierra)
+- **Note**: Only works with APFS-formatted volumes
+- **Note**: HFS+ volumes don't support snapshots
+- **Note**: External drives may not show snapshots
+- **Note**: Some snapshots are protected (macOS update snapshots)
+
+## Source File
+
+**File**: [`defaults/applications/disk_utility.sh`](../../../../../defaults/applications/disk_utility.sh)
+
+```bash
+run_defaults "com.apple.DiskUtility" "DUShowAPFSSnapshots" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Disk Utility User Guide](https://support.apple.com/guide/disk-utility/welcome/mac)
+- [Apple Support: About APFS snapshots](https://support.apple.com/en-us/HT204015)
+- [Apple Support: Time Machine local snapshots](https://support.apple.com/en-us/HT204015)

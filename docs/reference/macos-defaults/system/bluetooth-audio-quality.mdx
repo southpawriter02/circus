@@ -1,0 +1,322 @@
+# Bluetooth Audio Quality (Bitpool)
+
+Control the audio quality for Bluetooth A2DP streaming.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.BluetoothAudioAgent` |
+| **Key** | `Apple Bitpool Min (editable)` |
+| **Type** | Integer |
+| **Default Value** | `2` |
+| **Our Setting** | `40` |
+
+## Description
+
+Controls the minimum bitpool value for Bluetooth audio streaming using the A2DP (Advanced Audio Distribution Profile) protocol. The bitpool determines audio quality and bandwidth usage. Higher values mean better audio quality but may cause dropouts with some devices or in crowded RF environments. This setting affects all Bluetooth audio devices including headphones, speakers, and car audio systems.
+
+## Values
+
+| Key | Default | Our Setting | Range |
+|-----|---------|-------------|-------|
+| `Apple Bitpool Min (editable)` | `2` | `40` | 2-64 |
+| `Apple Bitpool Max (editable)` | `64` | `53` | 2-64 |
+| `Apple Initial Bitpool (editable)` | `35` | `40` | 2-64 |
+
+### Bitpool Quality Levels:
+| Range | Quality | Notes |
+|-------|---------|-------|
+| `2-15` | Low | Very compressed, may have artifacts |
+| `16-32` | Medium | Acceptable for speech, basic music |
+| `33-45` | Good | Recommended for music listening |
+| `46-53` | High | Excellent quality, most headphones |
+| `54-64` | Maximum | Best quality, may cause dropouts |
+
+## Visual Demonstration
+
+### How Bitpool Affects Audio:
+```
++-------------------------------------------------------------+
+|  Bluetooth Audio Bitpool Visualization                       |
++-------------------------------------------------------------+
+|                                                              |
+|  BITPOOL = 2 (Minimum - Low Quality):                        |
+|  ─────────────────────────────────────────────────────────  |
+|  🎵 Audio Signal ────▶ [Heavily Compressed] ────▶ 🎧        |
+|                                                              |
+|  Quality: ██░░░░░░░░ Poor                                   |
+|  Bandwidth: Low                                              |
+|  Dropouts: Rare                                             |
+|  Use case: Very weak connections                            |
+|                                                              |
+|  BITPOOL = 40 (Our Setting - Good Quality):                  |
+|  ─────────────────────────────────────────────────────────  |
+|  🎵 Audio Signal ────▶ [Balanced Compression] ────▶ 🎧      |
+|                                                              |
+|  Quality: ██████░░░░ Good                                   |
+|  Bandwidth: Moderate                                         |
+|  Dropouts: Unlikely                                         |
+|  Use case: Most listening scenarios                         |
+|                                                              |
+|  BITPOOL = 64 (Maximum - Best Quality):                      |
+|  ─────────────────────────────────────────────────────────  |
+|  🎵 Audio Signal ────▶ [Light Compression] ────▶ 🎧         |
+|                                                              |
+|  Quality: ██████████ Excellent                              |
+|  Bandwidth: High                                             |
+|  Dropouts: Possible in busy RF environments                 |
+|  Use case: Quality-focused, good connection                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Connection Negotiation:
+```
++-------------------------------------------------------------+
+|  How Bitpool Negotiation Works                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Mac                              Headphones                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Initial Connection:                                         |
+|                                                              |
+|  [Mac: "I support 40-53 bitpool"]                           |
+|           ─────────────────────────▶                        |
+|                                                              |
+|                     [Headphones: "I support 20-48 bitpool"] |
+|           ◀─────────────────────────                        |
+|                                                              |
+|  Negotiated: bitpool = 48 (highest common value)            |
+|           ◀═════════════════════════▶                       |
+|                                                              |
+|  Result: Connection uses bitpool 48                         |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  If interference detected:                                   |
+|  Connection may drop to lower bitpool within your min/max   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Common Scenarios:
+```
++-------------------------------------------------------------+
+|  Recommended Settings by Scenario                            |
++-------------------------------------------------------------+
+|                                                              |
+|  🎧 HIGH-END HEADPHONES (AirPods Max, Sony WH-1000):        |
+|  ─────────────────────────────────────────────────────────  |
+|  Min: 40    Initial: 45    Max: 58                          |
+|  Why: These headphones support high bitpools                |
+|                                                              |
+|  🎵 STANDARD WIRELESS EARBUDS (AirPods, Galaxy Buds):       |
+|  ─────────────────────────────────────────────────────────  |
+|  Min: 35    Initial: 40    Max: 53                          |
+|  Why: Good balance for typical use                          |
+|                                                              |
+|  🚗 CAR BLUETOOTH AUDIO:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  Min: 25    Initial: 35    Max: 45                          |
+|  Why: Car systems may have older Bluetooth, interference    |
+|                                                              |
+|  🔊 BLUETOOTH SPEAKERS:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|  Min: 30    Initial: 40    Max: 50                          |
+|  Why: Variable quality, moderate settings work best         |
+|                                                              |
+|  🏢 BUSY OFFICE (Lots of Bluetooth):                        |
+|  ─────────────────────────────────────────────────────────  |
+|  Min: 20    Initial: 35    Max: 45                          |
+|  Why: RF congestion may cause dropouts at high bitpools     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: Min=40, Initial=40, Max=53 — Balanced quality and stability.
+
+### Why These Values?
+
+1. **Quality** — Bitpool 40+ provides good music quality
+2. **Stability** — Max of 53 avoids dropout-prone high values
+3. **Compatibility** — Works with most Bluetooth devices
+4. **Negotiation** — Initial 40 starts with quality, can adapt
+5. **Floor** — Min 40 prevents quality dropping too low
+
+### Why Use Lower Values?
+
+- Frequent audio dropouts or stuttering
+- Older Bluetooth devices
+- Crowded Bluetooth environments
+- Prioritizing stability over quality
+
+### Why Use Higher Values?
+
+- High-end headphones/speakers
+- Dedicated listening environment
+- Quality is paramount
+- Strong, stable connection
+
+## Code Examples
+
+```bash
+# Read current values
+defaults read com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)"
+defaults read com.apple.BluetoothAudioAgent "Apple Bitpool Max (editable)"
+defaults read com.apple.BluetoothAudioAgent "Apple Initial Bitpool (editable)"
+
+# Set minimum bitpool (floor for quality)
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
+
+# Set maximum bitpool (ceiling for quality)
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Max (editable)" -int 53
+
+# Set initial bitpool (starting negotiation value)
+defaults write com.apple.BluetoothAudioAgent "Apple Initial Bitpool (editable)" -int 40
+
+# Reset to defaults
+defaults delete com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)"
+defaults delete com.apple.BluetoothAudioAgent "Apple Bitpool Max (editable)"
+defaults delete com.apple.BluetoothAudioAgent "Apple Initial Bitpool (editable)"
+```
+
+## After Changing Settings
+
+```
++-------------------------------------------------------------+
+|  Applying Bluetooth Audio Changes                            |
++-------------------------------------------------------------+
+|                                                              |
+|  Changes take effect on next Bluetooth audio connection:     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Option 1: Reconnect device                                  |
+|  1. Disconnect Bluetooth headphones                         |
+|  2. Reconnect them                                          |
+|                                                              |
+|  Option 2: Restart Bluetooth                                 |
+|  1. Turn Bluetooth off (Menu bar or System Settings)        |
+|  2. Wait a few seconds                                      |
+|  3. Turn Bluetooth back on                                  |
+|  4. Connect audio device                                    |
+|                                                              |
+|  Option 3: Kill audio agent (forces reload)                  |
+|  sudo killall coreaudiod                                    |
+|  (Audio will briefly stop then restart)                     |
+|                                                              |
+|  Note: No reboot required                                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## UI Location
+
+No direct UI access. These settings can only be configured via Terminal.
+
+```
++-------------------------------------------------------------+
+|  No GUI Setting Available                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Bluetooth has no bitpool options          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Use Terminal commands (above) to configure                  |
+|                                                              |
+|  To verify current connection quality:                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Option + Click Bluetooth icon in menu bar                   |
+|  Shows device info including codec being used                |
+|                                                              |
+|  Or use system_profiler:                                     |
+|  system_profiler SPBluetoothDataType                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Bitpool settings (this documentation)
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Max (editable)" -int 53
+defaults write com.apple.BluetoothAudioAgent "Apple Initial Bitpool (editable)" -int 40
+
+# Show Bluetooth in menu bar
+defaults write com.apple.controlcenter Bluetooth -int 2
+
+# Note: AAC codec selection is automatic and depends on device support
+# Modern Apple devices typically use AAC which provides better quality than SBC
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Audio dropouts/stuttering | Lower max bitpool (try 45) |
+| Quality sounds poor | Raise min bitpool (try 35+) |
+| Settings not applying | Reconnect device or restart Bluetooth |
+| Old headphones won't connect | May not support high bitpools; lower max |
+| Car audio cuts out | Lower all values; car BT often limited |
+| AirPods sound fine | Apple uses AAC, less affected by bitpool |
+
+## Technical Notes
+
+```
++-------------------------------------------------------------+
+|  Understanding A2DP and Bitpool                              |
++-------------------------------------------------------------+
+|                                                              |
+|  A2DP (Advanced Audio Distribution Profile):                 |
+|  ─────────────────────────────────────────────────────────  |
+|  • Standard Bluetooth audio streaming profile               |
+|  • Uses SBC (Sub-Band Codec) by default                     |
+|  • Some devices support AAC, aptX, LDAC                     |
+|                                                              |
+|  BITPOOL:                                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  • Parameter in SBC codec configuration                     |
+|  • Higher = more bits allocated = better quality            |
+|  • Range: 2-64 for SBC                                      |
+|  • Both devices must support the chosen value               |
+|                                                              |
+|  CODECS ON MACOS:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|  • SBC: Universal, bitpool-dependent quality                |
+|  • AAC: Better than SBC, used with AirPods                  |
+|  • aptX: Not natively supported on macOS                    |
+|  • LDAC: Not supported on macOS                             |
+|                                                              |
+|  Note: Apple prioritizes AAC when available                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Note**: Primarily affects SBC codec devices
+- **Note**: AAC devices (AirPods) less affected
+- **Note**: Some high-end headphones negotiate independently
+- **Note**: Very old Bluetooth may not support high bitpools
+
+## Source File
+
+**File**: [`defaults/system/bluetooth.sh`](../../../../defaults/system/bluetooth.sh)
+
+```bash
+run_defaults "com.apple.BluetoothAudioAgent" "Apple Bitpool Min (editable)" "-int" "40"
+run_defaults "com.apple.BluetoothAudioAgent" "Apple Bitpool Max (editable)" "-int" "53"
+run_defaults "com.apple.BluetoothAudioAgent" "Apple Initial Bitpool (editable)" "-int" "40"
+```
+
+## References
+
+- [Apple Support: Use Bluetooth on your Mac](https://support.apple.com/en-us/HT201171)
+- [Bluetooth SIG: A2DP Specification](https://www.bluetooth.com/specifications/specs/advanced-audio-distribution-profile-1-3/)
+- [Apple Support: If you have issues with Bluetooth](https://support.apple.com/en-us/HT201586)

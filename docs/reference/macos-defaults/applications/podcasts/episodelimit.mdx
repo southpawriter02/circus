@@ -1,0 +1,309 @@
+# Podcasts Episode Limit
+
+Set maximum episodes to keep per podcast subscription.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Key** | `episodeLimit` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `10` |
+
+## Description
+
+Controls the maximum number of episodes to retain for each podcast subscription. When the limit is reached, older episodes are automatically removed to make room for new ones. This helps manage storage space, especially on devices with limited capacity. A value of `0` means no limit — all episodes are kept indefinitely.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **No limit** (default) — Keep all episodes |
+| `1` | Most recent episode only |
+| `3` | Last 3 episodes |
+| `5` | Last 5 episodes |
+| `10` | Last 10 episodes |
+
+## Visual Demonstration
+
+### No Limit (episodeLimit = 0):
+```
++-------------------------------------------------------------+
+|  Podcast Library - No Episode Limit                          |
++-------------------------------------------------------------+
+|                                                              |
+|  🎙️ Daily Tech News (publishes daily)                       |
+|  ├── Episode 365 (Today)           12 MB                    |
+|  ├── Episode 364 (Yesterday)       15 MB                    |
+|  ├── Episode 363                   14 MB                    |
+|  ├── Episode 362                   11 MB                    |
+|  ├── ...                                                    |
+|  ├── Episode 2 (1 year ago)        18 MB                    |
+|  └── Episode 1 (1 year ago)        16 MB                    |
+|                                                              |
+|  Total: 365 episodes × ~14MB = 5.1 GB for ONE podcast!      |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  With 10 subscriptions, storage quickly fills up:            |
+|                                                              |
+|  Podcast Storage:                                            |
+|  [████████████████████████████████████████████] 51 GB       |
+|                                                              |
+|  Problem: Old episodes rarely listened to but take space    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Limit (episodeLimit = 10):
+```
++-------------------------------------------------------------+
+|  Podcast Library - 10 Episode Limit                          |
++-------------------------------------------------------------+
+|                                                              |
+|  🎙️ Daily Tech News (publishes daily)                       |
+|  ├── Episode 365 (Today)           12 MB                    |
+|  ├── Episode 364 (Yesterday)       15 MB                    |
+|  ├── Episode 363                   14 MB                    |
+|  ├── Episode 362                   11 MB                    |
+|  ├── Episode 361                   13 MB                    |
+|  ├── Episode 360                   12 MB                    |
+|  ├── Episode 359                   14 MB                    |
+|  ├── Episode 358                   15 MB                    |
+|  ├── Episode 357                   11 MB                    |
+|  └── Episode 356                   13 MB                    |
+|                                                              |
+|  Total: 10 episodes × ~14MB = 140 MB (manageable!)          |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  New episode arrives → Episode 365 downloaded               |
+|                      → Episode 355 auto-removed             |
+|                                                              |
+|  Podcast Storage with limits:                                |
+|  [████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 1.4 GB      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Storage Impact Comparison:
+```
++-------------------------------------------------------------+
+|  Storage Usage by Episode Limit                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Assuming: 10 daily podcasts, ~15MB per episode              |
+|                                                              |
+|  Limit    Episodes      Storage       1 Year Growth          |
+|  ─────────────────────────────────────────────────────────  |
+|  0        Unlimited     Unlimited     54+ GB                 |
+|  1        10 eps        150 MB        150 MB (stable)        |
+|  3        30 eps        450 MB        450 MB (stable)        |
+|  5        50 eps        750 MB        750 MB (stable)        |
+|  10       100 eps       1.5 GB        1.5 GB (stable)        |
+|                                                              |
+|  With limits, storage stays constant!                        |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ Storage Over Time                                       │|
+|  │                                                          │|
+|  │ GB                                                       │|
+|  │ 50│          No Limit: ━━━━━━━━━━━━━━━━━━╱              │|
+|  │ 40│                        ╱                             │|
+|  │ 30│                   ╱                                  │|
+|  │ 20│              ╱                                       │|
+|  │ 10│         ╱                                            │|
+|  │  2│    ╱   With Limit: ━━━━━━━━━━━━━━━━━━━━━━━━━━        │|
+|  │   └─────────────────────────────────────────────────     │|
+|  │      Jan  Mar  May  Jul  Sep  Nov                        │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `10` — Keep last 10 episodes for balance of storage and availability.
+
+### Why 10 Episodes?
+
+1. **Storage** — Predictable, bounded storage use
+2. **Catch-up** — Two weeks of backlog for most shows
+3. **Flexibility** — Miss a few days without losing content
+4. **Automatic** — No manual cleanup needed
+5. **Reasonable** — Older episodes rarely listened to
+
+### Why No Limit?
+
+- Archive shows for reference
+- Irregular listening schedule
+- Plenty of storage available
+- Want complete collections
+- Serial podcasts (need all episodes)
+
+### Why Fewer Episodes?
+
+- Very limited storage
+- Listen immediately
+- Many subscriptions
+- Stream rather than download
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.podcasts episodeLimit
+
+# Keep last 10 episodes
+defaults write com.apple.podcasts episodeLimit -int 10
+
+# Keep last 5 episodes
+defaults write com.apple.podcasts episodeLimit -int 5
+
+# Keep only most recent episode
+defaults write com.apple.podcasts episodeLimit -int 1
+
+# No limit (keep all)
+defaults write com.apple.podcasts episodeLimit -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.podcasts episodeLimit
+```
+
+## UI Location
+
+**Podcasts** → **Settings** → **General** → **Limit Episodes**
+
+```
++-------------------------------------------------------------+
+|  Podcasts Settings > General                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Downloads                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Download Episodes:  [On                              v]    |
+|                                                              |
+|  Remove Played Downloads:  [After 24 Hours            v]    |
+|                                                              |
+|  Limit Episodes:  [10 Most Recent                     v]    |
+|                   ^-- This setting                           |
+|                                                              |
+|  Options:                                                    |
+|  +----------------------------------------+                  |
+|  | Off (No Limit)                         |                  |
+|  | 1 Most Recent                          |                  |
+|  | 3 Most Recent                          |                  |
+|  | 5 Most Recent                          |                  |
+|  | 10 Most Recent  ←                      |                  |
+|  +----------------------------------------+                  |
+|                                                              |
+|  Download on This Mac:                                       |
+|  Downloads for subscribed shows will be stored on this Mac  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Episode limit (this setting)
+defaults write com.apple.podcasts episodeLimit -int 10
+
+# Auto-download new episodes
+defaults write com.apple.podcasts downloadNewEpisodes -bool true
+
+# Remove played episodes automatically
+defaults write com.apple.podcasts removePlayedEpisodes -bool true
+
+# Sync podcasts across devices
+defaults write com.apple.podcasts syncPodcasts -bool true
+```
+
+## Per-Show Override
+
+The global episodeLimit can be overridden per podcast:
+
+```
++-------------------------------------------------------------+
+|  Per-Show Episode Settings                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Right-click podcast → Settings...                           |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  🎙️ Daily News Show                                     │|
+|  │                                                          │|
+|  │  Limit Episodes:                                         │|
+|  │  [○] Use Default (10 Most Recent)                        │|
+|  │  [●] Custom: [5 Most Recent                        v]    │|
+|  │                                                          │|
+|  │  Download Episodes:                                      │|
+|  │  [○] Use Default                                         │|
+|  │  [●] Custom: [All Episodes                         v]    │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Override specific podcasts without changing global setting |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Storage Management Tips
+
+```
++-------------------------------------------------------------+
+|  Podcast Storage Best Practices                              |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Set a reasonable episode limit (5-10 for most)          |
+|                                                              |
+|  2. Enable "Remove Played Downloads"                         |
+|     → Automatically cleans up finished episodes             |
+|                                                              |
+|  3. Override for special cases:                              |
+|     → Serial shows: No limit (need all episodes)            |
+|     → News shows: 1-3 (only latest matters)                 |
+|     → Interview shows: 5-10 (moderate backlog)              |
+|                                                              |
+|  4. Consider streaming instead of downloading                |
+|     → Save storage, requires internet                       |
+|                                                              |
+|  5. Check storage periodically:                              |
+|     Podcasts → File → Library → Download All/Remove All     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Episodes not being removed | Check per-show overrides |
+| Wrong number of episodes | Restart Podcasts app |
+| Storage still growing | Check "Remove Played Downloads" |
+| Episodes disappearing too fast | Increase limit |
+| Need old episode | Re-download from show page |
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina, when Podcasts became separate app)
+- **Note**: Setting syncs via iCloud (affects all devices)
+- **Note**: Per-show overrides take precedence
+- **Note**: Restart may be required for changes
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../../defaults/applications/podcasts.sh)
+
+```bash
+run_defaults "com.apple.podcasts" "episodeLimit" "-int" "10"
+```
+
+## References
+
+- [Apple Support: Use Podcasts on Mac](https://support.apple.com/guide/podcasts/welcome/mac)
+- [Apple Support: Change Podcasts settings](https://support.apple.com/guide/podcasts/change-settings-podb804dc5bd/mac)
+- [Apple Support: Manage podcast downloads](https://support.apple.com/guide/podcasts/manage-downloads-podbddd67d18/mac)

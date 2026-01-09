@@ -1,0 +1,333 @@
+# Xcode Code Folding Ribbon
+
+Show or hide the code folding sidebar in the editor.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `DVTTextShowFoldingSidebar` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Xcode displays the code folding ribbon (sidebar) in the source editor gutter. When enabled, small triangular fold indicators appear next to code blocks (functions, classes, if statements, etc.) that can be collapsed to hide their contents. This helps navigate large files by temporarily hiding implementation details and focusing on the structure.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show folding ribbon** (default) — Display fold indicators in the gutter |
+| `false` | **Hide folding ribbon** — No folding controls visible |
+
+## Visual Demonstration
+
+### With Folding Ribbon Enabled:
+```
++-------------------------------------------------------------+
+|  Xcode Editor - Folding Ribbon Visible                       |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌──────────────────────────────────────────────────────┐   |
+|  │ ▼ │  1 │ class UserManager {                        │   |
+|  │   │  2 │                                             │   |
+|  │ ▼ │  3 │   func fetchUser(id: String) async throws { │   |
+|  │   │  4 │     let url = URL(string: "/api/users")!    │   |
+|  │   │  5 │     let (data, _) = try await URLSession..  │   |
+|  │   │  6 │     return try JSONDecoder().decode(...)    │   |
+|  │   │  7 │   }                                         │   |
+|  │   │  8 │                                             │   |
+|  │ ▼ │  9 │   func saveUser(_ user: User) async {       │   |
+|  │   │ 10 │     // Implementation...                    │   |
+|  │   │ 11 │   }                                         │   |
+|  │   │ 12 │                                             │   |
+|  │   │ 13 │ }                                           │   |
+|  └──────────────────────────────────────────────────────┘   |
+|     ↑   ↑                                                    |
+|  Folding  Line                                               |
+|  Ribbon  Numbers                                             |
+|                                                              |
+|  Click ▼ to collapse a code block                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### After Folding a Function:
+```
++-------------------------------------------------------------+
+|  Xcode Editor - Code Folded                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌──────────────────────────────────────────────────────┐   |
+|  │ ▼ │  1 │ class UserManager {                        │   |
+|  │   │  2 │                                             │   |
+|  │ ▶ │  3 │   func fetchUser(id: String) async...{...}  │   |
+|  │   │    │   ────────────────────────────────────────  │   |
+|  │   │  8 │                                             │   |
+|  │ ▼ │  9 │   func saveUser(_ user: User) async {       │   |
+|  │   │ 10 │     // Implementation...                    │   |
+|  │   │ 11 │   }                                         │   |
+|  │   │ 12 │                                             │   |
+|  │   │ 13 │ }                                           │   |
+|  └──────────────────────────────────────────────────────┘   |
+|                                                              |
+|  ▶ = Collapsed block (click to expand)                      |
+|  {...} = Indicates hidden code                              |
+|  Lines 4-7 are hidden from view                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Folding Ribbon:
+```
++-------------------------------------------------------------+
+|  Xcode Editor - No Folding Ribbon                            |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌──────────────────────────────────────────────────────┐   |
+|  │  1 │ class UserManager {                             │   |
+|  │  2 │                                                  │   |
+|  │  3 │   func fetchUser(id: String) async throws {     │   |
+|  │  4 │     let url = URL(string: "/api/users")!        │   |
+|  │  5 │     let (data, _) = try await URLSession...     │   |
+|  │  6 │     return try JSONDecoder().decode(...)        │   |
+|  │  7 │   }                                              │   |
+|  │  8 │                                                  │   |
+|  │  9 │   func saveUser(_ user: User) async {           │   |
+|  │ 10 │     // Implementation...                         │   |
+|  │ 11 │   }                                              │   |
+|  │ 12 │                                                  │   |
+|  │ 13 │ }                                                │   |
+|  └──────────────────────────────────────────────────────┘   |
+|                                                              |
+|  ✗ No visual fold indicators                                |
+|  ✗ Cannot collapse code blocks with mouse                   |
+|  ✓ Keyboard shortcuts still work (⌥⌘←/→)                    |
+|  ✓ More horizontal space in narrow windows                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Code Folding Use Cases:
+```
++-------------------------------------------------------------+
+|  When Code Folding Helps                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  1. REVIEWING CLASS STRUCTURE                                |
+|     ┌────────────────────────────────────────────────────┐  |
+|     │ ▶ class ViewController: UIViewController {...}      │  |
+|     │ ▶ extension ViewController: UITableViewDelegate {..}│  |
+|     │ ▶ extension ViewController: UITableViewDataSource {.│  |
+|     │ ▶ private extension ViewController {...}            │  |
+|     └────────────────────────────────────────────────────┘  |
+|     Quick overview of file organization                      |
+|                                                              |
+|  2. FOCUSING ON ONE FUNCTION                                 |
+|     ┌────────────────────────────────────────────────────┐  |
+|     │ ▶ func setupUI() {...}                              │  |
+|     │ ▼ func handleLogin() {                              │  |
+|     │     // Working on this function                     │  |
+|     │     let username = usernameField.text               │  |
+|     │     let password = passwordField.text               │  |
+|     │     ...                                             │  |
+|     │   }                                                 │  |
+|     │ ▶ func handleLogout() {...}                         │  |
+|     └────────────────────────────────────────────────────┘  |
+|     Hide unrelated code to reduce distraction               |
+|                                                              |
+|  3. HIDING BOILERPLATE                                       |
+|     ┌────────────────────────────────────────────────────┐  |
+|     │ ▶ // MARK: - Properties {...}                       │  |
+|     │ ▶ // MARK: - IBOutlets {...}                        │  |
+|     │ ▼ // MARK: - Business Logic                         │  |
+|     │     func processOrder() {                           │  |
+|     │       // Your actual code here                      │  |
+|     │     }                                               │  |
+|     └────────────────────────────────────────────────────┘  |
+|     Collapse auto-generated or standard sections            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show folding ribbon for code navigation.
+
+### Why Show Folding Ribbon?
+
+1. **Navigation** — Quick overview of code structure
+2. **Focus** — Hide irrelevant code while working
+3. **Review** — Collapse implementation to see API
+4. **Large files** — Essential for files with many methods
+5. **Presentations** — Hide complexity when demoing
+
+### Why Hide Folding Ribbon?
+
+- Prefer keyboard shortcuts exclusively
+- Want more horizontal space
+- Find fold indicators visually distracting
+- Rarely use code folding
+- Working on small files
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dt.Xcode DVTTextShowFoldingSidebar
+
+# Show code folding ribbon (recommended)
+defaults write com.apple.dt.Xcode DVTTextShowFoldingSidebar -bool true
+
+# Hide code folding ribbon
+defaults write com.apple.dt.Xcode DVTTextShowFoldingSidebar -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dt.Xcode DVTTextShowFoldingSidebar
+```
+
+## UI Location
+
+**Xcode** → **Settings** (⌘,) → **Text Editing** → **Display**
+
+```
++-------------------------------------------------------------+
+|  Xcode Settings > Text Editing > Display                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Display                                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [*] Line numbers                                            |
+|                                                              |
+|  [*] Code folding ribbon                                     |
+|      ^-- This setting                                        |
+|                                                              |
+|  [ ] Page guide at column: [80       ]                       |
+|                                                              |
+|  [ ] Highlight instances of selected symbol                  |
+|                                                              |
+|  [*] Show invisibles                                         |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Note: Changes apply immediately to open editors            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Keyboard Shortcuts
+
+Even without the folding ribbon visible, you can fold code using keyboard shortcuts:
+
+```
++-------------------------------------------------------------+
+|  Code Folding Keyboard Shortcuts                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Single Block:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|  ⌥⌘←    Fold current block (at cursor)                      |
+|  ⌥⌘→    Unfold current block                                |
+|                                                              |
+|  All Blocks:                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  ⇧⌥⌘←  Fold all methods/functions                           |
+|  ⇧⌥⌘→  Unfold all methods/functions                         |
+|                                                              |
+|  Comment Blocks:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|  ⌃⇧⌘←  Fold all comment blocks                              |
+|  ⌃⇧⌘→  Unfold all comment blocks                            |
+|                                                              |
+|  Menu Access:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|  Editor → Code Folding → Fold                                |
+|  Editor → Code Folding → Unfold                              |
+|  Editor → Code Folding → Fold Methods & Functions            |
+|  Editor → Code Folding → Unfold All                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show folding ribbon (this setting)
+defaults write com.apple.dt.Xcode DVTTextShowFoldingSidebar -bool true
+
+# Show line numbers
+defaults write com.apple.dt.Xcode DVTTextShowLineNumbers -bool true
+
+# Show page guide
+defaults write com.apple.dt.Xcode DVTTextShowPageGuide -bool true
+
+# Page guide column position
+defaults write com.apple.dt.Xcode DVTTextPageGuideLocation -int 120
+```
+
+## What Can Be Folded
+
+```
++-------------------------------------------------------------+
+|  Foldable Code Structures                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Swift:                                                      |
+|  • Classes, structs, enums                                   |
+|  • Functions and methods                                     |
+|  • If/else/switch blocks                                     |
+|  • For/while loops                                           |
+|  • Guard statements                                          |
+|  • Closures                                                  |
+|  • Extension blocks                                          |
+|  • Multi-line comments                                       |
+|  • MARK regions                                              |
+|                                                              |
+|  Objective-C:                                                |
+|  • @interface/@implementation blocks                         |
+|  • Methods                                                   |
+|  • #pragma mark regions                                      |
+|  • Conditional compilation (#if/#endif)                      |
+|                                                              |
+|  Other Languages:                                            |
+|  • Most brace-delimited blocks                               |
+|  • XML/HTML tags                                             |
+|  • JSON objects/arrays                                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Fold indicators not showing | Enable "Code folding ribbon" in settings |
+| Can't fold specific code | Not all constructs are foldable |
+| Folded code lost | Folds reset on file close (by design) |
+| Keyboard shortcuts don't work | Cursor must be inside foldable block |
+| Ribbon taking too much space | Disable for more horizontal room |
+
+## Compatibility
+
+- **Xcode**: 4.0+ (available since Xcode 4)
+- **Note**: Settings persist across Xcode updates
+- **Note**: Applies to all source editor tabs
+- **Note**: Works with Swift, Objective-C, C, C++, and other supported languages
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../../defaults/applications/xcode.sh)
+
+```bash
+run_defaults "com.apple.dt.Xcode" "DVTTextShowFoldingSidebar" "-bool" "true"
+```
+
+## References
+
+- [Apple Developer Documentation: Xcode](https://developer.apple.com/documentation/xcode)
+- [Xcode Help: Navigate your code](https://developer.apple.com/documentation/xcode/navigating-your-code)
+- [WWDC: What's New in Xcode](https://developer.apple.com/videos/xcode/)

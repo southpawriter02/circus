@@ -1,0 +1,353 @@
+# Firewall Stealth Mode
+
+Make your Mac invisible to network probes and scans.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `/Library/Preferences/com.apple.alf` |
+| **Key** | `stealthenabled` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls whether your Mac responds to network probing requests such as ICMP ping, port scans, and service discovery protocols like Bonjour. When enabled, your Mac silently ignores these probes rather than responding, making it harder to detect on the network. This reduces your attack surface by hiding your Mac from casual network reconnaissance.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Stealth off** (default) — Mac responds to pings and probes |
+| `1` | **Stealth on** — Mac ignores probes, appears offline |
+
+## Visual Demonstration
+
+### Stealth Mode Off (0 - Default):
+```
++-------------------------------------------------------------+
+|  Without Stealth Mode                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  ATTACKER'S VIEW:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  $ ping 192.168.1.50                                        |
+|  PING 192.168.1.50: 64 bytes from 192.168.1.50              |
+|  icmp_seq=0 ttl=64 time=1.234 ms                            |
+|  icmp_seq=1 ttl=64 time=0.987 ms                            |
+|                                                              |
+|  ✓ Host is UP and responding                               |
+|                                                              |
+|  $ nmap -sS 192.168.1.50                                    |
+|  Host is up (0.0012s latency)                               |
+|  PORT     STATE  SERVICE                                    |
+|  22/tcp   open   ssh                                        |
+|  445/tcp  open   microsoft-ds                               |
+|  548/tcp  open   afp                                        |
+|  5900/tcp open   vnc                                        |
+|                                                              |
+|  ✗ Attacker knows: IP, services, open ports                |
+|  ✗ Mac is easily discoverable                              |
+|  ✗ Services visible for targeting                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Stealth Mode On (1 - Recommended):
+```
++-------------------------------------------------------------+
+|  With Stealth Mode Enabled                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  ATTACKER'S VIEW:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  $ ping 192.168.1.50                                        |
+|  PING 192.168.1.50: ...                                     |
+|  Request timeout for icmp_seq 0                             |
+|  Request timeout for icmp_seq 1                             |
+|  Request timeout for icmp_seq 2                             |
+|                                                              |
+|  ? Host appears DOWN or unreachable                         |
+|                                                              |
+|  $ nmap -sS 192.168.1.50                                    |
+|  Note: Host seems down. If it is really up, but blocking    |
+|  our ping probes, try -Pn                                   |
+|                                                              |
+|  $ nmap -Pn 192.168.1.50                                    |
+|  All 1000 scanned ports on 192.168.1.50 are filtered       |
+|                                                              |
+|  ✓ Attacker can't confirm if host exists                   |
+|  ✓ Mac appears offline or doesn't exist                    |
+|  ✓ Services hidden from casual scans                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### How Stealth Mode Works:
+```
++-------------------------------------------------------------+
+|  Stealth Mode Behavior                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  PING REQUEST (ICMP Echo):                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Normal: Attacker ──PING──▶ Mac ──PONG──▶ Attacker          |
+|  Stealth: Attacker ──PING──▶ Mac ──(silence)──              |
+|                                                              |
+|  PORT SCAN:                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Normal (closed port):                                       |
+|  Attacker ──SYN──▶ Mac ──RST──▶ Attacker                    |
+|  "Port is closed" - confirms host exists                    |
+|                                                              |
+|  Stealth (filtered):                                         |
+|  Attacker ──SYN──▶ Mac ──(silence)──                        |
+|  "Port filtered" - can't tell if host exists                |
+|                                                              |
+|  BONJOUR/MDNS DISCOVERY:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Normal: Mac advertises services on local network           |
+|  Stealth: Mac doesn't respond to discovery queries          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Network Visibility Comparison:
+```
++-------------------------------------------------------------+
+|  Your Mac on a Public Network                                |
++-------------------------------------------------------------+
+|                                                              |
+|  Coffee Shop WiFi: 50 devices connected                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  WITHOUT STEALTH:                                            |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Network Devices:                                        │|
+|  │  ├── 192.168.1.1   Router          ✓                   │|
+|  │  ├── 192.168.1.10  iPhone          ✓                   │|
+|  │  ├── 192.168.1.25  Windows PC      ✓                   │|
+|  │  ├── 192.168.1.50  YOUR-MACBOOK    ✓  ← Visible!       │|
+|  │  └── 192.168.1.75  Android Phone   ✓                   │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  WITH STEALTH:                                               |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Network Devices:                                        │|
+|  │  ├── 192.168.1.1   Router          ✓                   │|
+|  │  ├── 192.168.1.10  iPhone          ✓                   │|
+|  │  ├── 192.168.1.25  Windows PC      ✓                   │|
+|  │  ├── 192.168.1.50  (no response)   ?  ← Hidden!        │|
+|  │  └── 192.168.1.75  Android Phone   ✓                   │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Security Implications
+
+```
++-------------------------------------------------------------+
+|  Stealth Mode Benefits and Trade-offs                        |
++-------------------------------------------------------------+
+|                                                              |
+|  BENEFITS:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  • Hides Mac from casual network scans                      |
+|  • Reduces attack surface visibility                        |
+|  • Prevents service enumeration                             |
+|  • Makes targeted attacks harder                            |
+|  • Defense in depth with firewall                           |
+|                                                              |
+|  LIMITATIONS:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|  • Determined attackers can still find you                  |
+|  • Active connections still visible                         |
+|  • ARP (local network) still reveals presence               |
+|  • Won't stop targeted attacks                              |
+|                                                              |
+|  SIDE EFFECTS:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|  • Network admins can't ping your Mac                       |
+|  • Some network tools may not work                          |
+|  • AirDrop may have issues (uses Bonjour)                  |
+|  • Network diagnostics harder                               |
+|                                                              |
+|  RECOMMENDATION:                                             |
+|  Enable stealth mode on laptops used on public networks     |
+|  Consider disabling on trusted home/office networks         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1` — Enable stealth mode for enhanced security.
+
+### Why Enable?
+
+1. **Privacy** — Harder to detect on networks
+2. **Security** — Reduces reconnaissance effectiveness
+3. **Public networks** — Essential for coffee shops, airports
+4. **Defense in depth** — Complements firewall rules
+5. **Low impact** — Most users won't notice difference
+
+### Why Disable?
+
+- Need to be discoverable for legitimate services
+- AirDrop or Bonjour services required
+- Network admin needs to monitor your Mac
+- Troubleshooting network connectivity issues
+
+## Code Examples
+
+```bash
+# Read current value (requires sudo)
+sudo defaults read /Library/Preferences/com.apple.alf stealthenabled
+
+# Enable stealth mode
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 1
+
+# Disable stealth mode
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 0
+
+# Restart firewall to apply changes
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+
+# Or use the firewall utility
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode off
+
+# Check stealth mode status
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode
+```
+
+## UI Location
+
+**System Settings** > **Network** > **Firewall** > **Options...**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Firewall Options                          |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Network > Firewall > Options...          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Firewall Options                                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [ ] Block all incoming connections                     │|
+|  │      Block all incoming connections except those        │|
+|  │      required for basic Internet services.              │|
+|  │                                                          │|
+|  │  [✓] Automatically allow built-in software to           │|
+|  │      receive incoming connections                       │|
+|  │                                                          │|
+|  │  [✓] Automatically allow downloaded signed software     │|
+|  │      to receive incoming connections                    │|
+|  │                                                          │|
+|  │  [✓] Enable stealth mode        ← This setting          │|
+|  │      Don't respond to ICMP ping requests or             │|
+|  │      connection attempts from closed TCP or UDP ports.  │|
+|  │                                                          │|
+|  │  Applications:                                           │|
+|  │  [+ -] to add/remove app-specific rules                 │|
+|  │                                                          │|
+|  │  [Cancel]                               [OK]            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Testing Stealth Mode
+
+```
++-------------------------------------------------------------+
+|  Verifying Stealth Mode is Working                           |
++-------------------------------------------------------------+
+|                                                              |
+|  FROM ANOTHER DEVICE ON SAME NETWORK:                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Test 1: Ping                                                |
+|  $ ping <your-mac-ip>                                       |
+|  Expected (stealth on): Request timeout                     |
+|  Expected (stealth off): Reply from <ip>                    |
+|                                                              |
+|  Test 2: Port scan                                           |
+|  $ nmap <your-mac-ip>                                       |
+|  Expected (stealth on): Host seems down                     |
+|  Expected (stealth off): Host is up, ports listed          |
+|                                                              |
+|  Test 3: Bonjour discovery                                   |
+|  $ dns-sd -B _services._dns-sd._udp                         |
+|  Expected (stealth on): Your Mac's services not listed      |
+|  Expected (stealth off): Services advertised                |
+|                                                              |
+|  Note: Your Mac still works normally - outbound connections |
+|  and responses to connections YOU initiate still work.      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Enable stealth mode (this setting)
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -int 1
+
+# Enable firewall (required for stealth to work)
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+
+# Enable firewall logging
+sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -int 1
+
+# Allow signed apps automatically
+sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -int 1
+
+# View firewall log
+log show --predicate 'subsystem == "com.apple.alf"' --last 1h
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| AirDrop not working | May need to disable stealth temporarily |
+| Can't be pinged (expected) | This is stealth mode working correctly |
+| Bonjour services not discoverable | Expected behavior; connect via IP |
+| Network admin complaints | Provide IP directly for monitoring |
+| Changes not applying | Restart firewall agent; check firewall is on |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Requires firewall to be enabled (globalstate = 1 or 2)
+- **Note**: Requires sudo/administrator to modify
+- **Note**: May affect some network discovery features
+- **Note**: Works independently of router/network firewall
+
+## Source File
+
+**File**: [`defaults/system/firewall.sh`](../../../../defaults/system/firewall.sh)
+
+```bash
+run_sudo_defaults "/Library/Preferences/com.apple.alf" "stealthenabled" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Use stealth mode to keep your Mac more secure](https://support.apple.com/guide/mac-help/use-stealth-mode-to-keep-your-mac-more-secure-mh11463/mac)
+- [Apple Support: About the application firewall](https://support.apple.com/en-us/102445)
+- [Apple Support: Firewall settings on Mac](https://support.apple.com/guide/mac-help/change-firewall-settings-on-mac-mh11783/mac)

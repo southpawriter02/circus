@@ -1,0 +1,303 @@
+# Messages Message Effects
+
+Enable or disable automatic playback of bubble and screen effects.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.MobileSMS` |
+| **Key** | `EnableMessageEffects` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Messages automatically plays bubble effects (slam, loud, gentle, invisible ink) and full-screen effects (balloons, confetti, lasers, fireworks, hearts, spotlight, echo) when receiving iMessages that include these effects. These effects add personality to conversations but can be distracting or inaccessible for some users.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Effects enabled** (default) — Animations play automatically |
+| `false` | **Effects disabled** — Static messages, no animations |
+
+## Visual Demonstration
+
+### With Effects Enabled:
+```
++-------------------------------------------------------------+
+|  Messages - Effect Animation                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  iMessage Conversation with Effects:                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Messages — John                                    ⨉   │|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │                                                          │|
+|  │                    Happy Birthday! 🎂                    │|
+|  │                    (sent with Celebration)               │|
+|  │                                                          │|
+|  │  ╔═══════════════════════════════════════════════════╗  │|
+|  │  ║  🎊  🎉  🎊  🎉  🎊  🎉  🎊  🎉  🎊  🎉  🎊  🎉  ║  │|
+|  │  ║         CONFETTI FALLING FROM TOP                 ║  │|
+|  │  ║  🎉  🎊  🎉  🎊  🎉  🎊  🎉  🎊  🎉  🎊  🎉  🎊  ║  │|
+|  │  ║                                                   ║  │|
+|  │  ║      ┌─────────────────────┐                     ║  │|
+|  │  ║      │  Happy Birthday! 🎂 │ ←── Message bubble  ║  │|
+|  │  ║      └─────────────────────┘                     ║  │|
+|  │  ║                                                   ║  │|
+|  │  ╚═══════════════════════════════════════════════════╝  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Full-screen confetti animation plays                     |
+|  ✓ Adds celebration atmosphere to message                   |
+|  ✓ Animation lasts ~3 seconds                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Bubble Effects:
+```
++-------------------------------------------------------------+
+|  iMessage Bubble Effects                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  SLAM Effect:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌──────────────────┐                                       |
+|  │ STOP IT! │ ← Message slams onto screen with impact      |
+|  └──────────────────┘                                       |
+|         💥                                                  |
+|                                                              |
+|  LOUD Effect:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|  ╔══════════════════════════╗                               |
+|  ║ THIS IS IMPORTANT! ║ ← Large, bold, shaking text        |
+|  ╚══════════════════════════╝                               |
+|                                                              |
+|  Gentle Effect:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌────────────┐                                             |
+|  │ᵒᵏᵃʸ       │ ← Small, whispered text                     |
+|  └────────────┘                                             |
+|                                                              |
+|  Invisible Ink Effect:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌──────────────────┐                                       |
+|  │ ▒▒▒▒▒▒▒▒▒▒▒▒▒▒  │ ← Swipe to reveal hidden message     |
+|  └──────────────────┘                                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Full-Screen Effects:
+```
++-------------------------------------------------------------+
+|  Available Full-Screen Effects                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Effect        | Trigger Words        | Description          |
+|  ─────────────────────────────────────────────────────────  |
+|  Echo          | (hold send button)   | Message repeats     |
+|  Spotlight     | (hold send button)   | Focuses on bubble   |
+|  Balloons      | "happy birthday"     | Balloons rise       |
+|  Confetti      | "congratulations"    | Confetti falls      |
+|  Love          | (hold send button)   | Hearts float up     |
+|  Lasers        | (hold send button)   | Laser lights        |
+|  Fireworks     | "happy new year"     | Fireworks display   |
+|  Celebration   | (hold send button)   | Party atmosphere    |
+|                                                              |
+|  To send with effect: Hold the send button, select effect   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Effects Disabled:
+```
++-------------------------------------------------------------+
+|  Messages - No Effects                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  iMessage Conversation (effects disabled):                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Messages — John                                    ⨉   │|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │                                                          │|
+|  │                          ┌─────────────────────┐        │|
+|  │                          │  Happy Birthday! 🎂 │        │|
+|  │                          └─────────────────────┘        │|
+|  │                          (sent with Celebration)         │|
+|  │                                                          │|
+|  │  No animation plays - just the message appears          │|
+|  │  Effect name shown in gray below the message            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Less distracting                                         |
+|  ✓ Better for accessibility                                 |
+|  ✓ Saves battery/CPU                                        |
+|  ✓ Effect type still visible in parentheses                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable message effects for full iMessage experience.
+
+### Why Enable Effects?
+
+1. **Full experience** — See messages as sender intended
+2. **Fun interactions** — Adds personality to conversations
+3. **Social context** — Celebrations feel more celebratory
+4. **Surprise element** — Invisible ink reveals are fun
+5. **Apple design** — Part of the iMessage experience
+
+### Why Disable Effects?
+
+- Motion sensitivity or vestibular disorders
+- Prefer minimal/professional interface
+- Reduce visual distractions
+- Save battery on older Macs
+- Accessibility needs
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.MobileSMS EnableMessageEffects
+
+# Enable message effects (default)
+defaults write com.apple.MobileSMS EnableMessageEffects -bool true
+
+# Disable message effects
+defaults write com.apple.MobileSMS EnableMessageEffects -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.MobileSMS EnableMessageEffects
+```
+
+## UI Location
+
+**Messages** → **Settings** (⌘,) → **General**
+
+```
++-------------------------------------------------------------+
+|  Messages Settings > General                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  General                                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [*] Save history when conversations are closed              |
+|                                                              |
+|  [*] Play sound effects                                      |
+|                                                              |
+|  [*] Automatically play message effects                      |
+|      ^-- This setting (EnableMessageEffects)                 |
+|                                                              |
+|  [ ] Filter unknown senders                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Accessibility Considerations
+
+```
++-------------------------------------------------------------+
+|  Accessibility & Message Effects                             |
++-------------------------------------------------------------+
+|                                                              |
+|  For users with motion sensitivity:                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Option 1: Disable in Messages                               |
+|  defaults write com.apple.MobileSMS EnableMessageEffects -bool false
+|                                                              |
+|  Option 2: System-wide Reduce Motion                         |
+|  System Settings > Accessibility > Display > Reduce motion   |
+|  (Also reduces effects in Messages)                          |
+|                                                              |
+|  Note: Even with effects disabled, you can still SEND       |
+|  effects - they just won't animate on YOUR screen           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Message effects (this setting)
+defaults write com.apple.MobileSMS EnableMessageEffects -bool true
+
+# Save conversation history
+defaults write com.apple.MobileSMS SaveConversationsOnClose -bool true
+
+# Sound effects for messages
+defaults write com.apple.MobileSMS PlaySoundEffects -bool true
+
+# System-wide reduce motion (affects Messages too)
+defaults write com.apple.universalaccess reduceMotion -bool true
+```
+
+## Effect Replay
+
+Even with effects enabled, you can replay them:
+
+```
++-------------------------------------------------------------+
+|  Replaying Message Effects                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  If you missed an effect:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Right-click (or Control-click) the message              |
+|  2. Select "Replay Effect" from context menu                |
+|                                                              |
+|  Or:                                                         |
+|  1. Tap "Replay" if visible below the message               |
+|                                                              |
+|  Note: Only works for messages that were sent with effects  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Effects not playing | Check setting is enabled |
+| Reduce Motion enabled | Disable in System Settings > Accessibility |
+| Effects laggy | Normal on older hardware |
+| Can't send effects | Long-press/force-touch send button |
+| Effect not recognized | Works with iMessage only, not SMS |
+
+## Compatibility
+
+- **Messages**: macOS 10.12+ (Sierra)
+- **Note**: Effects only work with iMessage (blue bubbles)
+- **Note**: SMS (green bubbles) does not support effects
+- **Note**: Recipient must also have compatible device/settings
+- **Note**: Some effects require Force Touch trackpad to send
+
+## Source File
+
+**File**: [`defaults/applications/messages.sh`](../../../../../defaults/applications/messages.sh)
+
+```bash
+run_defaults "com.apple.MobileSMS" "EnableMessageEffects" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Messages on your Mac](https://support.apple.com/guide/messages/welcome/mac)
+- [Apple Support: Send message effects](https://support.apple.com/guide/messages/send-message-effects-icht66f17f9/mac)
+- [Apple Support: Accessibility in Messages](https://support.apple.com/guide/messages/accessibility-ichtcbb3efab/mac)

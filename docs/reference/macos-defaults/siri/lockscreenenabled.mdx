@@ -1,0 +1,290 @@
+# Siri on Lock Screen
+
+Allow Siri to be used when your Mac is locked.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Siri` |
+| **Key** | `LockscreenEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Siri can be activated and used while your Mac is on the lock screen. When enabled, anyone with physical access to your Mac can invoke Siri without unlocking, potentially accessing information or performing actions. When disabled, the Mac must be unlocked before Siri can be used, providing better security in shared or public environments.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enabled** (default) — Siri available on lock screen |
+| `false` | **Disabled** — Must unlock Mac to use Siri |
+
+## Visual Demonstration
+
+### Siri on Lock Screen Enabled (Default):
+```
++-------------------------------------------------------------+
+|  Lock Screen - Siri Enabled                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |                   [User Avatar]                      |   |
+|  |                    John Smith                        |   |
+|  |                                                      |   |
+|  |              [Password Field.......]                 |   |
+|  |                                                      |   |
+|  |                                                      |   |
+|  |                                        [Siri Icon]   |   |
+|  |                                            ^         |   |
+|  |                                            |         |   |
+|  |                                   Click or "Hey Siri"|   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Anyone can:                                                |
+|  * "Hey Siri, what's on my calendar?"                       |
+|  * "Hey Siri, read my messages"                             |
+|  * "Hey Siri, send an email to..."                          |
+|  * "Hey Siri, what's my next meeting?"                      |
+|                                                              |
+|  Security Risk!                                             |
+|  * No authentication required                               |
+|  * Personal info accessible                                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Siri on Lock Screen Disabled (Recommended):
+```
++-------------------------------------------------------------+
+|  Lock Screen - Siri Disabled                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |                   [User Avatar]                      |   |
+|  |                    John Smith                        |   |
+|  |                                                      |   |
+|  |              [Password Field.......]                 |   |
+|  |                                                      |   |
+|  |                                                      |   |
+|  |                                                      |   |
+|  |                                                      |   |
+|  |                   No Siri icon shown                 |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  "Hey Siri" response:                                       |
+|  +------------------------------------------------------+   |
+|  |  "I'll need you to unlock your Mac first."          |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Security Benefits:                                         |
+|  * Must authenticate to use Siri                           |
+|  * Personal info protected                                 |
+|  * No bypass of lock screen                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Information Accessible via Lock Screen Siri:
+```
++-------------------------------------------------------------+
+|  What Siri Can Access When Locked                            |
++-------------------------------------------------------------+
+|                                                              |
+|  CALENDAR & REMINDERS:                                      |
+|  +------------------------------------------------------+   |
+|  |  "Hey Siri, what's my schedule today?"               |   |
+|  |                                                      |   |
+|  |  Siri: "You have 3 events today:                     |   |
+|  |   9:00 AM - Team standup                             |   |
+|  |   2:00 PM - Meeting with Client ABC                  |   |
+|  |   5:00 PM - Doctor's appointment"                    |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  MESSAGES & EMAILS:                                         |
+|  +------------------------------------------------------+   |
+|  |  "Hey Siri, read my last message"                    |   |
+|  |                                                      |   |
+|  |  Siri: "From Jane: 'Can you pick up groceries        |   |
+|  |   on your way home? We need milk and bread.'"        |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  CONTACTS:                                                  |
+|  +------------------------------------------------------+   |
+|  |  "Hey Siri, what's John's phone number?"             |   |
+|  |                                                      |   |
+|  |  Siri: "John Smith's mobile is (555) 123-4567"       |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  All this without unlocking the Mac!                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Siri disabled on lock screen for security.
+
+### Why Disable Siri on Lock Screen?
+
+1. **Security** — Prevents unauthorized information access
+2. **Privacy** — Calendar, messages, contacts protected
+3. **Physical access** — Passersby can't query your Mac
+4. **Work environment** — Protects sensitive data
+5. **Best practice** — Defense in depth security
+
+### Why Keep Enabled?
+
+- Hands-free convenience at home
+- Quick timers and basic queries
+- Single-user environment
+- Physical security already strong
+- Prefer convenience over security
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Siri LockscreenEnabled
+
+# Disable Siri on lock screen (more secure)
+defaults write com.apple.Siri LockscreenEnabled -bool false
+
+# Enable Siri on lock screen (default)
+defaults write com.apple.Siri LockscreenEnabled -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.Siri LockscreenEnabled
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Siri & Spotlight** (or **Siri**)
+
+```
++-------------------------------------------------------------+
+|  System Settings > Siri & Spotlight                          |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Siri                                            |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Ask Siri                                        |       |
+|  |  [*] Enable                                      |       |
+|  |                                                  |       |
+|  |  Listen for "Hey Siri"                           |       |
+|  |  [ ] Enable                                      |       |
+|  |                                                  |       |
+|  |  Keyboard shortcut                               |       |
+|  |  [Hold Command Space               v]            |       |
+|  |                                                  |       |
+|  |  Language                                        |       |
+|  |  [English (United States)          v]            |       |
+|  |                                                  |       |
+|  |  [ ] Allow Siri when locked                      |       |
+|  |      ^-- This setting                            |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Lock screen Siri (this setting)
+defaults write com.apple.Siri LockscreenEnabled -bool false
+
+# Master Siri toggle
+defaults write com.apple.assistant.support "Assistant Enabled" -bool true
+
+# "Hey Siri" voice trigger
+defaults write com.apple.Siri VoiceTriggerUserEnabled -bool false
+
+# Siri voice feedback
+defaults write com.apple.Siri VoiceFeedback -string "Off"
+
+# Type to Siri
+defaults write com.apple.Siri TypeToSiriEnabled -bool true
+
+# Show Siri in menu bar
+defaults write com.apple.Siri StatusMenuVisible -bool false
+```
+
+## Security Best Practices
+
+```
++-------------------------------------------------------------+
+|  Lock Screen Security Settings                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Recommended configuration:                                  |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  Setting                      | Recommended          |   |
+|  |------------------------------|----------------------|   |
+|  |  Siri on lock screen         | OFF                  |   |
+|  |  Notifications on lock screen| Limited/OFF          |   |
+|  |  Control Center on lock      | Consider disabling   |   |
+|  |  USB accessories when locked | Disabled             |   |
+|  |  Require password           | Immediately           |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Additional security:                                        |
+|  * Enable FileVault encryption                              |
+|  * Use strong password                                      |
+|  * Set short auto-lock timeout                              |
+|  * Disable "Hey Siri" if not needed                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## What Siri CAN'T Do When Locked
+
+Even with lock screen Siri enabled:
+- Cannot unlock the Mac
+- Cannot view photos or files
+- Cannot open apps
+- Cannot change system settings
+- Cannot access encrypted content
+
+But can still access calendar, messages, contacts, and perform Siri searches.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Siri still works when locked | Verify setting and logout/login |
+| "Hey Siri" not responding | Check if Siri enabled overall |
+| Setting not persisting | Check MDM/profile restrictions |
+| Siri icon still on lock screen | Restart Mac after changing |
+| Can't find setting in UI | Look under Siri & Spotlight |
+
+## Compatibility
+
+- **macOS**: 10.12+ (Sierra, when Siri was added to Mac)
+- **Note**: May require logout for changes to take effect
+- **Note**: Independent of "Hey Siri" setting
+- **Note**: Managed Macs may have this set by policy
+
+## Source File
+
+**File**: [`defaults/system/siri.sh`](../../../../defaults/system/siri.sh)
+
+```bash
+run_defaults "com.apple.Siri" "LockscreenEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Use Siri on your Mac](https://support.apple.com/guide/mac-help/use-siri-mchl6b029310/mac)
+- [Apple Support: Change Siri settings on Mac](https://support.apple.com/guide/mac-help/change-siri-settings-mchl67af9c5d/mac)
+- [Apple Support: Mac security settings](https://support.apple.com/guide/mac-help/security-settings-mh40595/mac)

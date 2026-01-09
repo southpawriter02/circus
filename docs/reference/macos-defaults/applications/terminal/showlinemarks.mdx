@@ -1,0 +1,317 @@
+# Terminal Line Marks
+
+Display navigation marks in the scrollbar for command prompts.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Terminal` |
+| **Key** | `ShowLineMarks` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Terminal displays line marks in the scrollbar that indicate where each command prompt appears in the scrollback buffer. These marks appear as small horizontal lines in the scrollbar and can be clicked to quickly jump to that command's location. This feature is invaluable when navigating through long terminal sessions to find specific command output.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show line marks** (default) — Marks visible in scrollbar |
+| `false` | **Hide line marks** — Clean scrollbar without marks |
+
+## Visual Demonstration
+
+### With Line Marks Enabled:
+```
++-------------------------------------------------------------+
+|  Terminal - Line Marks in Scrollbar                          |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌──────────────────────────────────────────────────────┬─┐ |
+|  │  Terminal — zsh — 80×24                              │▲│ |
+|  ├──────────────────────────────────────────────────────┼─┤ |
+|  │  $ ls -la                                            │ │ |
+|  │  total 48                                            │█│ |
+|  │  drwxr-xr-x  12 user staff  384 Jan  8 10:00 .      │ │ |
+|  │  drwxr-xr-x   5 user staff  160 Jan  8 09:00 ..     │─│← Mark |
+|  │  -rw-r--r--   1 user staff  120 Jan  8 09:30 file   │ │ |
+|  │                                                      │ │ |
+|  │  $ git status                                        │─│← Mark |
+|  │  On branch main                                      │ │ |
+|  │  Your branch is up to date with 'origin/main'.      │ │ |
+|  │                                                      │ │ |
+|  │  $ npm install                                       │─│← Mark |
+|  │  npm WARN deprecated package@1.0.0                  │ │ |
+|  │  added 1542 packages in 32s                         │ │ |
+|  │                                                      │ │ |
+|  │  $ npm test                                          │─│← Mark |
+|  │  PASS src/tests/app.test.js                         │ │ |
+|  │  PASS src/tests/utils.test.js                       │ │ |
+|  │                                                      │ │ |
+|  │  $                                                   │▼│ |
+|  └──────────────────────────────────────────────────────┴─┘ |
+|                                                              |
+|  Each ─ mark indicates a command prompt location            |
+|  Click a mark to jump directly to that command              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Navigating with Line Marks:
+```
++-------------------------------------------------------------+
+|  Using Line Marks for Navigation                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Long scrollback session:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────────────────────────────────────────────────┬─┐ |
+|  │  (scrolled up - viewing old output)                  │▲│ |
+|  ├──────────────────────────────────────────────────────┼─┤ |
+|  │  $ ./build.sh                                        │ │ |
+|  │  Building project...                                 │ │ |
+|  │  [============================] 100%                 │ │ |
+|  │  ...                                                 │─│ |
+|  │  (1000 more lines of build output)                  │ │ |
+|  │  ...                                                 │─│ |
+|  │                                                      │ │ |
+|  │                                                      │─│ |
+|  │                                                      │ │ |
+|  │                                                      │─│← You are here |
+|  │                                                      │ │ |
+|  │                                                      │─│ |
+|  │                                                      │ │ |
+|  │                                                      │░│← Current view |
+|  │                                                      │▼│ |
+|  └──────────────────────────────────────────────────────┴─┘ |
+|                                                              |
+|  Click any mark to jump to that command's output            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Line Marks:
+```
++-------------------------------------------------------------+
+|  Terminal - No Line Marks                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌──────────────────────────────────────────────────────┬─┐ |
+|  │  Terminal — zsh — 80×24                              │▲│ |
+|  ├──────────────────────────────────────────────────────┼─┤ |
+|  │  $ ls -la                                            │ │ |
+|  │  total 48                                            │█│ |
+|  │  drwxr-xr-x  12 user staff  384 Jan  8 10:00 .      │ │ |
+|  │  drwxr-xr-x   5 user staff  160 Jan  8 09:00 ..     │ │ |
+|  │  -rw-r--r--   1 user staff  120 Jan  8 09:30 file   │ │ |
+|  │                                                      │ │ |
+|  │  $ git status                                        │ │ |
+|  │  On branch main                                      │ │ |
+|  │  Your branch is up to date with 'origin/main'.      │ │ |
+|  │                                                      │ │ |
+|  │  $ npm install                                       │ │ |
+|  │  npm WARN deprecated package@1.0.0                  │ │ |
+|  │  added 1542 packages in 32s                         │ │ |
+|  │                                                      │ │ |
+|  │  $                                                   │▼│ |
+|  └──────────────────────────────────────────────────────┴─┘ |
+|                                                              |
+|  ✗ No visual indicators of command locations                |
+|  ✗ Must scroll manually to find commands                    |
+|  ✗ Harder to navigate long sessions                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Mark Keyboard Navigation:
+```
++-------------------------------------------------------------+
+|  Navigating Between Marks                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Keyboard shortcuts:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ⌘↑    Scroll to previous mark (previous command)           |
+|  ⌘↓    Scroll to next mark (next command)                   |
+|                                                              |
+|  Usage flow:                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Run several commands                                     |
+|  2. Want to review output of earlier command                |
+|  3. Press ⌘↑ repeatedly to jump back through commands       |
+|  4. Press ⌘↓ to jump forward again                          |
+|                                                              |
+|  Example:                                                    |
+|  ┌─────────────────────────────────────────────────────┐   |
+|  │  $ first_command    ← Press ⌘↑ three times         │   |
+|  │  (output)                                            │   |
+|  │  $ second_command   ← Press ⌘↑ twice               │   |
+|  │  (output)                                            │   |
+|  │  $ third_command    ← Press ⌘↑ once                │   |
+|  │  (output)                                            │   |
+|  │  $ current_prompt   ← You are here                 │   |
+|  └─────────────────────────────────────────────────────┘   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show line marks for navigation.
+
+### Why Show Line Marks?
+
+1. **Navigation** — Jump directly to any command
+2. **Review** — Find specific command output quickly
+3. **Context** — Visual overview of session history
+4. **Efficiency** — Faster than manual scrolling
+5. **Debugging** — Quickly locate error messages
+
+### Why Hide Line Marks?
+
+- Prefer clean, minimal scrollbar
+- Never use mark navigation
+- Find marks visually distracting
+- Using other navigation methods (search)
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Terminal ShowLineMarks
+
+# Show line marks (recommended)
+defaults write com.apple.Terminal ShowLineMarks -bool true
+
+# Hide line marks
+defaults write com.apple.Terminal ShowLineMarks -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Terminal ShowLineMarks
+```
+
+## UI Location
+
+**Terminal** → **Settings** (⌘,) → **Profiles** → **[Profile]** → **Window**
+
+```
++-------------------------------------------------------------+
+|  Terminal Settings > Profiles > Window                       |
++-------------------------------------------------------------+
+|                                                              |
+|  Window                                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Title: [Default                                        ]    |
+|                                                              |
+|  Columns: [80    ]    Rows: [24    ]                        |
+|                                                              |
+|  Scrollback:                                                 |
+|  ( ) Limit number of rows to: [10000  ]                     |
+|  (●) Unlimited scrollback                                    |
+|                                                              |
+|  [*] Show marks                                              |
+|      ^-- This setting (ShowLineMarks)                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+Or toggle from the **View** menu:
+
+```
++-------------------------------------------------------------+
+|  View Menu                                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  View                                                        |
+|  ├── [*] Show Marks        ← Toggle this                    |
+|  ├── Hide Marks                                             |
+|  ├── ─────────────                                          |
+|  ├── Jump to Previous Mark    ⌘↑                            |
+|  ├── Jump to Next Mark        ⌘↓                            |
+|  ├── ─────────────                                          |
+|  ├── Mark Current Prompt      ⌘U                            |
+|  └── ...                                                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show line marks (this setting)
+defaults write com.apple.Terminal ShowLineMarks -bool true
+
+# Unlimited scrollback
+defaults write com.apple.Terminal ShouldLimitScrollback -bool false
+
+# Shell exit action
+defaults write com.apple.Terminal ShellExitAction -int 1
+
+# Secure keyboard entry
+defaults write com.apple.Terminal SecureKeyboardEntry -bool true
+```
+
+## Manual Marks
+
+You can also add custom marks at any point:
+
+```
++-------------------------------------------------------------+
+|  Creating Custom Marks                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  Automatic marks: Created at each command prompt             |
+|                                                              |
+|  Manual marks:                                               |
+|  • Edit menu > Marks > Mark as Prompt (⌘U)                  |
+|  • Creates a mark at current cursor position                |
+|                                                              |
+|  Use case:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Long command output                                      |
+|  2. Notice important line                                    |
+|  3. Press ⌘U to mark it                                     |
+|  4. Continue working                                         |
+|  5. Press ⌘↑ to return to marked location                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No marks showing | Enable "Show Marks" in View menu |
+| Marks in wrong places | Check shell prompt configuration |
+| Can't click marks | Marks are in scrollbar, click there |
+| Keyboard nav not working | Use ⌘↑/⌘↓ for mark navigation |
+| Too many marks | Each prompt creates a mark (expected) |
+
+## Compatibility
+
+- **Terminal**: macOS 10.11+ (El Capitan)
+- **Note**: Works with all shells (bash, zsh, fish)
+- **Note**: Marks sync with prompt display
+- **Note**: Setting is per-profile
+
+## Source File
+
+**File**: [`defaults/applications/terminal.sh`](../../../../../defaults/applications/terminal.sh)
+
+```bash
+run_defaults "com.apple.Terminal" "ShowLineMarks" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use marks in Terminal](https://support.apple.com/guide/terminal/use-marks-trml85m/mac)
+- [Apple Support: Terminal User Guide](https://support.apple.com/guide/terminal/welcome/mac)
+- [Apple Support: Terminal keyboard shortcuts](https://support.apple.com/guide/terminal/keyboard-shortcuts-trmlshtcts/mac)

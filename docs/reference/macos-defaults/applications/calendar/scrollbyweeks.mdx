@@ -1,0 +1,247 @@
+# Calendar Scroll By Weeks
+
+Control how week view scrolling behavior works in Calendar.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iCal` |
+| **Key** | `scroll by weeks in week view` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether scrolling in Calendar's week view moves by individual days or by entire weeks. When enabled, each scroll action jumps a full 7 days, making it faster to navigate through the calendar. When disabled (default), scrolling moves by single days, providing finer control but requiring more scrolling to move through weeks.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Scroll by week** — Each scroll jumps 7 days |
+| `false` | **Scroll by day** (default) — Each scroll moves one day |
+
+## Visual Demonstration
+
+### Scroll By Day (Default - false):
+```
++-------------------------------------------------------------+
+|  Calendar Week View - Day Scrolling                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Current View: Jan 6-12                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┐               |
+|  │ Mon │ Tue │ Wed │ Thu │ Fri │ Sat │ Sun │               |
+|  │  6  │  7  │  8  │  9  │ 10  │ 11  │ 12  │               |
+|  │     │     │     │     │     │     │     │               |
+|  └─────┴─────┴─────┴─────┴─────┴─────┴─────┘               |
+|                                                              |
+|  [Scroll Right →]                                            |
+|                                                              |
+|  After ONE scroll action:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┐               |
+|  │ Tue │ Wed │ Thu │ Fri │ Sat │ Sun │ Mon │               |
+|  │  7  │  8  │  9  │ 10  │ 11  │ 12  │ 13  │               |
+|  │     │     │     │     │     │     │     │               |
+|  └─────┴─────┴─────┴─────┴─────┴─────┴─────┘               |
+|                                                              |
+|  Result: Moved only 1 day forward                           |
+|  Need 7 scrolls to see next full week                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Scroll By Week (true - Recommended):
+```
++-------------------------------------------------------------+
+|  Calendar Week View - Week Scrolling                         |
++-------------------------------------------------------------+
+|                                                              |
+|  Current View: Jan 6-12                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┐               |
+|  │ Mon │ Tue │ Wed │ Thu │ Fri │ Sat │ Sun │               |
+|  │  6  │  7  │  8  │  9  │ 10  │ 11  │ 12  │               |
+|  │     │     │     │     │     │     │     │               |
+|  └─────┴─────┴─────┴─────┴─────┴─────┴─────┘               |
+|                                                              |
+|  [Scroll Right →]                                            |
+|                                                              |
+|  After ONE scroll action:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┐               |
+|  │ Mon │ Tue │ Wed │ Thu │ Fri │ Sat │ Sun │               |
+|  │ 13  │ 14  │ 15  │ 16  │ 17  │ 18  │ 19  │               |
+|  │     │     │     │     │     │     │     │               |
+|  └─────┴─────┴─────┴─────┴─────┴─────┴─────┘               |
+|                                                              |
+|  Result: Jumped full 7 days forward                         |
+|  Each scroll shows the next complete week                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Navigation Comparison:
+```
++-------------------------------------------------------------+
+|  Scroll Behavior Comparison                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  TASK: Navigate from Week 1 to Week 4                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Scroll by DAY (default):                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  Week 1 → scroll → scroll → scroll → scroll → scroll        |
+|         → scroll → scroll (7 scrolls = 1 week)              |
+|  Week 2 → scroll × 7                                        |
+|  Week 3 → scroll × 7                                        |
+|  Week 4                                                      |
+|                                                              |
+|  Total: 21 scroll actions                                   |
+|                                                              |
+|  Scroll by WEEK (enabled):                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  Week 1 → scroll → Week 2 → scroll → Week 3 → scroll        |
+|        → Week 4                                              |
+|                                                              |
+|  Total: 3 scroll actions                                    |
+|                                                              |
+|  ✓ 7x faster navigation with week scrolling                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Scroll by week for easier navigation.
+
+### Why Scroll by Week?
+
+1. **Efficiency** — Faster navigation through calendar
+2. **Consistency** — Week boundaries stay aligned
+3. **Planning** — See complete weeks at a glance
+4. **Workflow** — Match how most people think about time
+5. **Less effort** — Fewer scroll/swipe actions needed
+
+### Why Scroll by Day?
+
+- Need fine-grained day-by-day navigation
+- Reviewing events across week boundaries
+- Personal preference for gradual scrolling
+- Working with day-specific workflows
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iCal "scroll by weeks in week view"
+
+# Enable scroll by week (recommended)
+defaults write com.apple.iCal "scroll by weeks in week view" -bool true
+
+# Disable (scroll by day, default)
+defaults write com.apple.iCal "scroll by weeks in week view" -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iCal "scroll by weeks in week view"
+```
+
+## UI Location
+
+**Calendar** > **Settings** > **General** > **Scroll in week view by**
+
+```
++-------------------------------------------------------------+
+|  Calendar Settings - General                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Calendar > Settings (⌘,) > General                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  General                                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Start week on:                                          │|
+|  │  [Monday ▼]                                              │|
+|  │                                                          │|
+|  │  Scroll in week view by:                                 │|
+|  │  ○ Day                                                   │|
+|  │  ● Week              ← This setting                     │|
+|  │                                                          │|
+|  │  Day starts at:                                          │|
+|  │  [9:00 AM ▼]                                             │|
+|  │                                                          │|
+|  │  Day ends at:                                            │|
+|  │  [6:00 PM ▼]                                             │|
+|  │                                                          │|
+|  │  Show:                                                   │|
+|  │  [12 hours at a time ▼]                                  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Scroll by weeks (this setting)
+defaults write com.apple.iCal "scroll by weeks in week view" -bool true
+
+# First day of week (0=Sun, 1=Mon, etc.)
+defaults write com.apple.iCal "first day of week" -int 1
+
+# Day start time (minutes from midnight)
+defaults write com.apple.iCal "first minute of work hours" -int 540
+
+# Day end time (minutes from midnight)
+defaults write com.apple.iCal "last minute of work hours" -int 1080
+
+# Number of hours displayed at once
+defaults write com.apple.iCal "number of hours displayed" -int 12
+
+# Show week numbers
+defaults write com.apple.iCal "Show Week Numbers" -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Restart Calendar app |
+| Trackpad scrolling too fast | Adjust trackpad sensitivity in System Settings |
+| Want different behavior for day view | This only affects week view |
+| Arrow keys still move by day | Keyboard nav unchanged; setting affects scroll/swipe |
+| Month view unaffected | This setting is week view specific |
+
+## Compatibility
+
+- **Calendar**: macOS 10.8+ (Mountain Lion)
+- **Note**: Setting only affects week view scrolling
+- **Note**: Keyboard navigation (arrow keys) not affected
+- **Note**: Month and day views have separate behavior
+- **Note**: Syncs via iCloud preferences
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../../defaults/applications/calendar.sh)
+
+```bash
+run_defaults "com.apple.iCal" "scroll by weeks in week view" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change Calendar preferences](https://support.apple.com/guide/calendar/change-general-preferences-icl1023/mac)
+- [Apple Support: View events in Calendar](https://support.apple.com/guide/calendar/view-events-icl1005/mac)
+- [Apple Support: Calendar User Guide](https://support.apple.com/guide/calendar/welcome/mac)

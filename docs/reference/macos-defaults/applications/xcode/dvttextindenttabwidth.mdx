@@ -1,0 +1,285 @@
+# Xcode Tab Width
+
+Set the number of spaces displayed for tab characters.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `DVTTextIndentTabWidth` |
+| **Type** | Integer |
+| **Default Value** | `4` |
+| **Our Setting** | `4` |
+
+## Description
+
+Controls how many spaces are displayed for each tab character in the Xcode source editor. This affects visual alignment when viewing code that uses tabs for indentation. The setting does not change the actual file content — it only affects how tabs are rendered on screen. For consistent code formatting, this should typically match your `DVTTextIndentWidth` setting.
+
+## Values
+
+| Value | Display Width |
+|-------|---------------|
+| `2` | 2 spaces per tab (compact) |
+| `4` | 4 spaces per tab (default, Swift/Obj-C standard) |
+| `8` | 8 spaces per tab (traditional Unix) |
+
+## Visual Demonstration
+
+### Tab Width = 2:
+```
++-------------------------------------------------------------+
+|  Xcode Editor - Tab Width 2                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  func example() {                                            |
+|  ··if condition {                                            |
+|  ····let value = compute()                                   |
+|  ····return value                                            |
+|  ··}                                                         |
+|  }                                                           |
+|                                                              |
+|  Compact, dense code appearance                              |
+|  Good for: Wide files, limited screen width                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Tab Width = 4 (Default):
+```
++-------------------------------------------------------------+
+|  Xcode Editor - Tab Width 4                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  func example() {                                            |
+|  ····if condition {                                          |
+|  ········let value = compute()                               |
+|  ········return value                                        |
+|  ····}                                                       |
+|  }                                                           |
+|                                                              |
+|  Balanced readability and compactness                        |
+|  Standard for Swift and Objective-C                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Tab Width = 8:
+```
++-------------------------------------------------------------+
+|  Xcode Editor - Tab Width 8                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  func example() {                                            |
+|  ········if condition {                                      |
+|  ················let value = compute()                       |
+|  ················return value                                |
+|  ········}                                                   |
+|  }                                                           |
+|                                                              |
+|  Traditional Unix style, very wide indentation               |
+|  Good for: Deeply nested code (makes it obvious)             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Tab vs Space Indentation:
+```
++-------------------------------------------------------------+
+|  Tab Width Setting Context                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Two related but different concepts:                         |
+|                                                              |
+|  1. Tab WIDTH (this setting - DVTTextIndentTabWidth)         |
+|     How wide tabs APPEAR visually                            |
+|     Affects: Existing tab characters in files                |
+|                                                              |
+|  2. Indent WIDTH (DVTTextIndentWidth)                        |
+|     Spaces added when pressing Tab key (if using spaces)     |
+|     Affects: New indentation you create                      |
+|                                                              |
+|  Best practice: Set both to same value (4 recommended)       |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Tab Characters vs Spaces:                                   |
+|                                                              |
+|  File with TABS:                                             |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ func foo() {<TAB>                                        │|
+|  │ <TAB>let x = 1<TAB>// comment                           │|
+|  │ }                                                        │|
+|  └─────────────────────────────────────────────────────────┘|
+|  TabWidth changes how this looks (2, 4, or 8 spaces)        |
+|                                                              |
+|  File with SPACES:                                           |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ func foo() {                                             │|
+|  │     let x = 1    // comment                             │|
+|  │ }                                                        │|
+|  └─────────────────────────────────────────────────────────┘|
+|  TabWidth has NO effect (spaces are always 1 char)          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `4` — Standard width for Swift and Objective-C.
+
+### Why 4 Spaces?
+
+1. **Standard** — Apple's Swift style guide uses 4-space indentation
+2. **Readable** — Good balance of visibility and compactness
+3. **Consistent** — Matches most iOS/macOS codebases
+4. **Tool support** — SwiftLint, swift-format default to 4
+5. **xcodebuild** — Apple templates use 4 spaces
+
+### Why 2 Spaces?
+
+- Working on web projects (HTML/CSS/JS conventions)
+- Deeply nested code structures
+- Limited horizontal screen space
+- Personal preference for compact code
+
+### Why 8 Spaces?
+
+- Traditional C/Unix convention
+- Makes deep nesting visually obvious
+- Working with kernel or system code
+- Enforces flatter code structure
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dt.Xcode DVTTextIndentTabWidth
+
+# Set to 4 spaces (Swift/Obj-C standard)
+defaults write com.apple.dt.Xcode DVTTextIndentTabWidth -int 4
+
+# Set to 2 spaces (compact)
+defaults write com.apple.dt.Xcode DVTTextIndentTabWidth -int 2
+
+# Set to 8 spaces (traditional)
+defaults write com.apple.dt.Xcode DVTTextIndentTabWidth -int 8
+
+# Delete (reset to default)
+defaults delete com.apple.dt.Xcode DVTTextIndentTabWidth
+```
+
+## UI Location
+
+**Xcode** → **Settings** (⌘,) → **Text Editing** → **Indentation**
+
+```
++-------------------------------------------------------------+
+|  Xcode Settings > Text Editing > Indentation                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Indentation                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Prefer indent using: [Spaces                          v]   |
+|                                                              |
+|  Tab width:    [4    ] spaces                                |
+|                ^-- This setting (DVTTextIndentTabWidth)      |
+|                                                              |
+|  Indent width: [4    ] spaces                                |
+|                ^-- DVTTextIndentWidth                        |
+|                                                              |
+|  [*] Tab key inserts tab, not spaces                         |
+|                                                              |
+|  [*] Automatically trim trailing whitespace                  |
+|      [*] Including whitespace-only lines                     |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Note: Tab width affects display; Indent width affects       |
+|  how many spaces are inserted when you press Tab             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Tab width (this setting - how tabs appear)
+defaults write com.apple.dt.Xcode DVTTextIndentTabWidth -int 4
+
+# Indent width (spaces inserted when pressing Tab)
+defaults write com.apple.dt.Xcode DVTTextIndentWidth -int 4
+
+# Use spaces instead of tabs
+defaults write com.apple.dt.Xcode DVTTextUsesSyntaxAwareIndenting -bool true
+
+# Trim trailing whitespace
+defaults write com.apple.dt.Xcode DVTTextEditorTrimTrailingWhitespace -bool true
+
+# Also trim whitespace-only lines
+defaults write com.apple.dt.Xcode DVTTextEditorTrimWhitespaceOnlyLines -bool true
+```
+
+## EditorConfig Compatibility
+
+For team consistency, consider using `.editorconfig` in your project:
+
+```
++-------------------------------------------------------------+
+|  .editorconfig Example                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  # .editorconfig                                             |
+|  root = true                                                 |
+|                                                              |
+|  [*.swift]                                                   |
+|  indent_style = space                                        |
+|  indent_size = 4                                             |
+|  tab_width = 4                                               |
+|                                                              |
+|  [*.{m,h}]                                                   |
+|  indent_style = space                                        |
+|  indent_size = 4                                             |
+|  tab_width = 4                                               |
+|                                                              |
+|  [Makefile]                                                  |
+|  indent_style = tab                                          |
+|  tab_width = 8                                               |
+|                                                              |
+|  Note: Xcode has limited EditorConfig support; SwiftFormat   |
+|  or other tools may be needed for full compliance           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Inconsistent indentation | Set Tab width = Indent width |
+| Code looks different than teammate's | Agree on tab width for project |
+| Tabs vs spaces mixed | Use "Show invisibles" to identify |
+| SwiftLint warnings | Ensure settings match SwiftLint config |
+| Pressing Tab adds wrong spaces | Check "Indent width" setting |
+
+## Compatibility
+
+- **Xcode**: 4.0+
+- **Note**: Setting is per-user, not per-project
+- **Note**: Works with all supported languages
+- **Note**: Changes apply immediately to open files
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../../defaults/applications/xcode.sh)
+
+```bash
+run_defaults "com.apple.dt.Xcode" "DVTTextIndentTabWidth" "-int" "4"
+```
+
+## References
+
+- [Apple Developer Documentation: Xcode](https://developer.apple.com/documentation/xcode)
+- [Swift API Design Guidelines](https://swift.org/documentation/api-design-guidelines/)
+- [Google Swift Style Guide](https://google.github.io/swift/)

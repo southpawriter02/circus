@@ -1,0 +1,285 @@
+# Notes Group Notes By Date
+
+Control whether notes are grouped by date in the note list.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Notes` |
+| **Key** | `GroupNotesByDate` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether notes in the note list are grouped under date headers like "Today", "Yesterday", "Previous 7 Days", "Previous 30 Days", and older periods. When enabled, notes are organized chronologically with visual separators. When disabled, notes appear as a flat list without date groupings.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Group by date** (default) — Notes organized under date headers |
+| `false` | **Flat list** — All notes in a single ungrouped list |
+
+## Visual Demonstration
+
+### Grouped By Date (true - Default):
+```
++-------------------------------------------------------------+
+|  Notes - Group By Date Enabled                               |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  All iCloud                            [🔍] [📝] [⋯]   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  TODAY                                                   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  📝 Project Meeting Notes                               │|
+|  │     Quick notes from the standup...                     │|
+|  │  📝 Shopping List                                       │|
+|  │     Groceries for the week...                           │|
+|  │                                                          │|
+|  │  YESTERDAY                                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  📝 Book Recommendations                                │|
+|  │     Fiction titles to check out...                      │|
+|  │                                                          │|
+|  │  PREVIOUS 7 DAYS                                         │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  📝 Recipe: Pasta Carbonara                             │|
+|  │     Ingredients and instructions...                     │|
+|  │  📝 Travel Planning                                     │|
+|  │     Flight options, hotels...                           │|
+|  │                                                          │|
+|  │  PREVIOUS 30 DAYS                                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  📝 Annual Review Notes                                 │|
+|  │     Goals and achievements...                           │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Easy to find recent notes                               |
+|  ✓ Clear temporal organization                             |
+|  ✓ Visual hierarchy helps navigation                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Flat List (false):
+```
++-------------------------------------------------------------+
+|  Notes - Flat List (No Grouping)                             |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  All iCloud                            [🔍] [📝] [⋯]   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  📝 Project Meeting Notes                               │|
+|  │     Quick notes from the standup...                     │|
+|  │  📝 Shopping List                                       │|
+|  │     Groceries for the week...                           │|
+|  │  📝 Book Recommendations                                │|
+|  │     Fiction titles to check out...                      │|
+|  │  📝 Recipe: Pasta Carbonara                             │|
+|  │     Ingredients and instructions...                     │|
+|  │  📝 Travel Planning                                     │|
+|  │     Flight options, hotels...                           │|
+|  │  📝 Annual Review Notes                                 │|
+|  │     Goals and achievements...                           │|
+|  │  📝 Old Project Ideas                                   │|
+|  │     Brainstorming from last year...                     │|
+|  │  📝 Contact Information                                 │|
+|  │     Important numbers...                                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Compact view shows more notes                           |
+|  ✓ No visual interruptions                                 |
+|  ✗ Harder to find notes by recency                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Date Groups Explained:
+```
++-------------------------------------------------------------+
+|  Date Grouping Categories                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  GROUP NAME           INCLUDES                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  TODAY                Notes edited today                    |
+|                                                              |
+|  YESTERDAY            Notes edited yesterday                |
+|                                                              |
+|  PREVIOUS 7 DAYS      Notes from 2-7 days ago              |
+|                                                              |
+|  PREVIOUS 30 DAYS     Notes from 8-30 days ago             |
+|                                                              |
+|  [Month Year]         Notes older than 30 days             |
+|  e.g., "December 2025" grouped by month                    |
+|                                                              |
+|  [Year]               Notes from previous years            |
+|  e.g., "2024"         grouped by year                      |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Note: Grouping is based on "Date Edited" by default        |
+|  Can change to "Date Created" in Notes > Settings           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Group notes by date for better organization.
+
+### Why Group By Date?
+
+1. **Recency** — Quickly find recently edited notes
+2. **Organization** — Visual structure aids navigation
+3. **Context** — Know when you last worked on a note
+4. **Productivity** — Less scrolling to find recent items
+5. **Default behavior** — Matches user expectations
+
+### Why Use Flat List?
+
+- Prefer continuous scrolling without interruptions
+- Many notes edited recently (groups get large)
+- Use search primarily to find notes
+- Prefer alphabetical or manual sorting
+- Fewer total notes don't need grouping
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Notes GroupNotesByDate
+
+# Enable date grouping (default)
+defaults write com.apple.Notes GroupNotesByDate -bool true
+
+# Disable date grouping (flat list)
+defaults write com.apple.Notes GroupNotesByDate -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Notes GroupNotesByDate
+```
+
+## UI Location
+
+**View** menu > **Group Notes By Date**
+
+```
++-------------------------------------------------------------+
+|  Notes View Menu                                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Notes > View                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  View                                                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Show Note Count                                        │|
+|  │  Show Folders                              ⌘⇧S          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Sort Notes By                             ▶            │|
+|  │  ✓ Group Notes By Date     ← This setting              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  as Gallery                                ⌘1           │|
+|  │  as List                                   ⌘2           │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Show Attachments Browser                  ⌘⇧J          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Toggle directly from the View menu - checkmark indicates   |
+|  grouping is enabled                                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Works With Sort Order
+
+```
++-------------------------------------------------------------+
+|  Grouping + Sorting Interaction                              |
++-------------------------------------------------------------+
+|                                                              |
+|  SORT ORDER                 GROUPING BEHAVIOR                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Date Edited (default)      Groups by edit date             |
+|                             Most recently edited first      |
+|                                                              |
+|  Date Created               Groups by creation date         |
+|                             Most recently created first     |
+|                                                              |
+|  Title                      Alphabetical, no date groups    |
+|                             (grouping has no effect)        |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Note: When sorting by Title, date grouping is ignored      |
+|  since alphabetical ordering doesn't align with dates       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Group notes by date (this setting)
+defaults write com.apple.Notes GroupNotesByDate -bool true
+
+# Sort notes order (1=Date Edited, 2=Date Created, 3=Title)
+defaults write com.apple.Notes NotesSortOrder -int 1
+
+# Folders sort order (1=Manual, 2=Name A-Z, 3=Name Z-A)
+defaults write com.apple.Notes FoldersSortOrder -int 1
+
+# Default font size
+defaults write com.apple.Notes DefaultFontSize -int 16
+
+# New note body style (0=Title, 1=Heading, 2=Subheading, 3=Body)
+defaults write com.apple.Notes NewNoteBodyStyle -int 0
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Quit and relaunch Notes |
+| Dates seem wrong | Check system date/time settings |
+| Too many notes in "Today" | Notes uses edit date, not create date |
+| Grouping not visible | May be disabled when sorting by Title |
+| Groups collapsed | Click group header to expand |
+
+## Compatibility
+
+- **Notes**: macOS 10.15+ (Catalina) for full feature set
+- **Note**: Requires Notes app restart to apply
+- **Note**: Syncs via iCloud with iOS Notes
+- **Note**: Works with all note account types
+- **Note**: Gallery and List views both support grouping
+
+## Source File
+
+**File**: [`defaults/applications/notes.sh`](../../../../../defaults/applications/notes.sh)
+
+```bash
+run_defaults "com.apple.Notes" "GroupNotesByDate" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Notes on your Mac](https://support.apple.com/guide/notes/welcome/mac)
+- [Apple Support: Organize notes in folders](https://support.apple.com/guide/notes/organize-notes-in-folders-apd928e8dab0/mac)
+- [Apple Support: Search and sort notes](https://support.apple.com/guide/notes/search-notes-apd36c894f2a/mac)

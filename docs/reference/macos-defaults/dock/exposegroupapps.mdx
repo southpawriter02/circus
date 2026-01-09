@@ -1,0 +1,271 @@
+# Mission Control Group Windows by Application
+
+Group windows from the same application in Mission Control view.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `expose-group-apps` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls how windows are displayed in Mission Control (the bird's-eye view of all open windows). When enabled, windows from the same application are stacked together in a group, making it easier to identify related windows. When disabled, all windows are displayed separately, which can become overwhelming when many windows are open.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** (default) — All windows displayed individually |
+| `true` | **Enabled** — Windows grouped by their application |
+
+## Visual Demonstration
+
+### Group Windows Disabled (Default):
+```
++-------------------------------------------------------------+
+|  Mission Control - All Windows Separate                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Desktop 1    Desktop 2    Desktop 3       + (add space)    |
+|  +--------+   +--------+   +--------+                       |
+|  |        |   |        |   |        |                       |
+|  +--------+   +--------+   +--------+                       |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  All windows displayed individually:                 |   |
+|  |                                                      |   |
+|  |  +-------+ +-------+ +-------+ +-------+ +-------+  |   |
+|  |  |Safari | |Safari | |Mail   | |Code   | |Code   |  |   |
+|  |  |Win 1  | |Win 2  | |Inbox  | |File 1 | |File 2 |  |   |
+|  |  +-------+ +-------+ +-------+ +-------+ +-------+  |   |
+|  |                                                      |   |
+|  |  +-------+ +-------+ +-------+ +-------+            |   |
+|  |  |Safari | |Finder | |Finder | |Notes  |            |   |
+|  |  |Win 3  | |Win 1  | |Win 2  | |       |            |   |
+|  |  +-------+ +-------+ +-------+ +-------+            |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Problems:                                                   |
+|  * Hard to find windows from same app                       |
+|  * Cluttered view with many windows                         |
+|  * No visual organization                                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Group Windows Enabled (Recommended):
+```
++-------------------------------------------------------------+
+|  Mission Control - Windows Grouped by App                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Desktop 1    Desktop 2    Desktop 3       + (add space)    |
+|  +--------+   +--------+   +--------+                       |
+|  |        |   |        |   |        |                       |
+|  +--------+   +--------+   +--------+                       |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  Windows grouped by application:                     |   |
+|  |                                                      |   |
+|  |  +---------------+   +-------+   +---------------+   |   |
+|  |  |   Safari      |   | Mail  |   |    VS Code    |   |   |
+|  |  | +-----------+ |   |       |   | +-----------+ |   |   |
+|  |  | |Win 1|Win 2| |   +-------+   | |File1|File2| |   |   |
+|  |  | +-----------+ |               | +-----------+ |   |   |
+|  |  | |   Win 3   | |               +---------------+   |   |
+|  |  | +-----------+ |                                   |   |
+|  |  +---------------+   +---------------+   +-------+   |   |
+|  |                      |    Finder     |   | Notes |   |   |
+|  |                      | +-----------+ |   |       |   |   |
+|  |                      | |Win 1|Win 2| |   +-------+   |   |
+|  |                      | +-----------+ |               |   |
+|  |                      +---------------+               |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Benefits:                                                   |
+|  * Easy to identify app groups                              |
+|  * Cleaner, organized view                                  |
+|  * Hover over group to expand                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Interacting with Grouped Windows:
+```
++-------------------------------------------------------------+
+|  Expanding a Window Group                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  1. See grouped windows in Mission Control:                 |
+|     +-------------------+                                   |
+|     |     Safari        |                                   |
+|     |  +-----+-----+    |                                   |
+|     |  |  1  |  2  |    |   <-- Stacked/grouped             |
+|     |  +-----+-----+    |                                   |
+|     |     |  3  |       |                                   |
+|     |     +-----+       |                                   |
+|     +-------------------+                                   |
+|                                                              |
+|  2. Hover over group to see all windows:                    |
+|     +-------------------+                                   |
+|     |     Safari        |                                   |
+|     |                   |                                   |
+|     |  +-----+ +-----+ +-----+                              |
+|     |  |     | |     | |     |   <-- Expanded               |
+|     |  |Win 1| |Win 2| |Win 3|                              |
+|     |  |     | |     | |     |                              |
+|     |  +-----+ +-----+ +-----+                              |
+|     |                   |                                   |
+|     +-------------------+                                   |
+|                                                              |
+|  3. Click any window to switch to it                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Group windows by application for organized view.
+
+### Why Enable Window Grouping?
+
+1. **Organization** — Related windows are together
+2. **Clarity** — Easy to find windows by app
+3. **Less clutter** — Reduces visual noise in Mission Control
+4. **Efficiency** — Faster to locate specific windows
+5. **Professional** — Cleaner workspace management
+
+### Why Keep Disabled?
+
+- Prefer seeing all windows at once
+- Don't use many windows
+- Want to compare windows across apps
+- Find grouped view harder to navigate
+- Familiar with ungrouped layout
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dock expose-group-apps
+
+# Enable window grouping
+defaults write com.apple.dock expose-group-apps -bool true
+
+# Disable window grouping (default)
+defaults write com.apple.dock expose-group-apps -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dock expose-group-apps
+
+# Restart Dock to apply changes
+killall Dock
+```
+
+## UI Location
+
+**System Settings** > **Desktop & Dock** > **Mission Control**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Desktop & Dock                            |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Mission Control                                 |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  [ ] Automatically rearrange Spaces based on     |       |
+|  |      most recent use                             |       |
+|  |                                                  |       |
+|  |  [*] When switching to an application, switch    |       |
+|  |      to a Space with open windows                |       |
+|  |                                                  |       |
+|  |  [*] Group windows by application                |       |
+|  |      ^-- This setting                            |       |
+|  |                                                  |       |
+|  |  [ ] Displays have separate Spaces               |       |
+|  |                                                  |       |
+|  |  [Hot Corners...]                                |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Group windows by app (this setting)
+defaults write com.apple.dock expose-group-apps -bool true
+
+# Don't auto-rearrange Spaces
+defaults write com.apple.dock mru-spaces -bool false
+
+# Each display has separate Spaces
+defaults write com.apple.spaces spans-displays -bool false
+
+# Switch to app's Space when clicking Dock icon
+defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool true
+
+# Show app windows gesture
+defaults write com.apple.dock showAppExposeGestureEnabled -bool true
+```
+
+## Mission Control Access Methods
+
+| Method | How to Trigger |
+|--------|----------------|
+| **Keyboard** | Control + Up Arrow (or F3) |
+| **Trackpad** | Swipe up with three/four fingers |
+| **Mouse** | Double-tap Magic Mouse with two fingers |
+| **Hot Corner** | Configure in Hot Corners settings |
+| **Touch Bar** | Mission Control button (if available) |
+
+## Window Management Features
+
+| Feature | Purpose |
+|---------|---------|
+| **Mission Control** | Overview of all windows and Spaces |
+| **App Exposé** | Show all windows for one app (Control+Down) |
+| **Show Desktop** | Hide all windows temporarily |
+| **Spaces** | Virtual desktops for organization |
+| **Split View** | Two apps side by side in fullscreen |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Windows not grouping | Run `killall Dock` and try again |
+| Setting not working | Verify boolean value, restart Dock |
+| Groups hard to see | Hover over group to expand |
+| Can't access specific window | Click on visible part of stacked window |
+| Mission Control slow | Reduce number of open windows |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion, when Mission Control replaced Exposé)
+- **Note**: Requires Dock restart (`killall Dock`)
+- **Note**: Works with all Mission Control triggers
+- **Note**: Complements App Exposé feature
+
+## Source File
+
+**File**: [`defaults/interface/mission_control.sh`](../../../../defaults/interface/mission_control.sh)
+
+```bash
+run_defaults "com.apple.dock" "expose-group-apps" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Mission Control on Mac](https://support.apple.com/en-us/102556)
+- [Apple Support: Work in multiple spaces on Mac](https://support.apple.com/guide/mac-help/work-in-multiple-spaces-mh14112/mac)
+- [Apple Support: Change Mission Control preferences](https://support.apple.com/guide/mac-help/mission-control-preferences-mchl92dfa2dc/mac)

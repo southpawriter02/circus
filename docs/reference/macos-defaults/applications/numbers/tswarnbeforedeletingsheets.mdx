@@ -1,0 +1,336 @@
+# Numbers Warn Before Deleting Sheets
+
+Show confirmation dialog before permanently deleting sheets.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Numbers` |
+| **Key** | `TSWarnBeforeDeletingSheets` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Numbers displays a confirmation dialog before deleting sheets from a spreadsheet. This safety feature prevents accidental data loss from unintended deletions. When a sheet is deleted, all data, formulas, charts, and formatting on that sheet are permanently removed. This cannot be undone after the document is saved.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show warning** (default) — Confirmation required before deletion |
+| `false` | **No warning** — Sheets deleted immediately on click |
+
+## Visual Demonstration
+
+### With Warning Enabled (Recommended):
+```
++-------------------------------------------------------------+
+|  Numbers - Delete Sheet Confirmation                         |
++-------------------------------------------------------------+
+|                                                              |
+|  Step 1: Right-click on sheet tab                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ [Sheet 1] [Sales Data ▼] [Summary] [Charts]        [+] │|
+|  │           ┌──────────────────────┐                      │|
+|  │           │ Duplicate            │                      │|
+|  │           │ Rename...            │                      │|
+|  │           │ ────────────────     │                      │|
+|  │           │ Delete ← Click       │                      │|
+|  │           └──────────────────────┘                      │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Step 2: Confirmation dialog appears                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │   ⚠️ Are you sure you want to delete "Sales Data"?     │|
+|  │                                                          │|
+|  │   This sheet contains 15 tables and 3 charts.           │|
+|  │   This action cannot be undone after you close          │|
+|  │   the document.                                          │|
+|  │                                                          │|
+|  │                        [Cancel]  [Delete]                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ User must confirm deletion                               |
+|  ✓ Prevents accidental data loss                            |
+|  ✓ Shows sheet contents summary                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### What You Might Lose:
+```
++-------------------------------------------------------------+
+|  Sheet Contents at Risk                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  When deleting a sheet, you lose EVERYTHING on it:           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  📊 TABLES                                                   |
+|     • All rows and columns of data                          |
+|     • Formulas and calculations                              |
+|     • Cell formatting and styles                             |
+|     • Data validation rules                                  |
+|                                                              |
+|  📈 CHARTS                                                   |
+|     • All chart visualizations                              |
+|     • Chart formatting and customizations                   |
+|     • Interactive chart elements                             |
+|                                                              |
+|  🖼️ OTHER OBJECTS                                           |
+|     • Images and shapes                                      |
+|     • Text boxes                                             |
+|     • Media (video, audio)                                   |
+|                                                              |
+|  🔗 REFERENCES                                               |
+|     • Formulas on OTHER sheets referencing this sheet       |
+|       will break and show #REF! errors                      |
+|                                                              |
+|  ⚠️ After document is saved, deletion is PERMANENT          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Warning (Risky):
+```
++-------------------------------------------------------------+
+|  Numbers - No Deletion Warning                               |
++-------------------------------------------------------------+
+|                                                              |
+|  ⚠️ DANGER: One wrong click = data loss                    |
+|                                                              |
+|  Right-click > Delete                                        |
+|         ↓                                                    |
+|  [SHEET IMMEDIATELY DELETED!]                                |
+|         ↓                                                    |
+|  No confirmation, no warning                                 |
+|         ↓                                                    |
+|  ⌘Z works... until document is closed                       |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Scenario:                                                   |
+|  1. Working quickly, organizing sheets                       |
+|  2. Accidentally click "Delete" on wrong sheet               |
+|  3. Don't notice until later                                |
+|  4. Save document                                            |
+|  5. 🚨 Sheet permanently lost!                              |
+|                                                              |
+|  ✗ No opportunity to reconsider                             |
+|  ✗ Easy to delete wrong sheet by mistake                    |
+|  ✗ Harder to recover from errors                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Recovery Options:
+```
++-------------------------------------------------------------+
+|  What To Do If You Delete Accidentally                       |
++-------------------------------------------------------------+
+|                                                              |
+|  IF YOU HAVEN'T SAVED:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  • Press ⌘Z (Undo) immediately                              |
+|  • Sheet will be restored                                    |
+|                                                              |
+|  IF AUTO-SAVE KICKED IN:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|  • File > Revert To > Browse All Versions                   |
+|  • Find a version before deletion                           |
+|  • Restore from that version                                |
+|                                                              |
+|  IF DOCUMENT WAS CLOSED:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|  • Check Time Machine backup                                 |
+|  • ~/Library/Containers/com.apple.iWork.Numbers/            |
+|  • Check iCloud Drive version history                       |
+|                                                              |
+|  BEST PRACTICE:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|  Keep TSWarnBeforeDeletingSheets = true!                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show warning before deleting sheets.
+
+### Why Show Warning (Recommended)?
+
+1. **Safety** — Prevents accidental data loss
+2. **Confirmation** — Ensures intentional deletion
+3. **Information** — Shows what will be deleted
+4. **Second chance** — Opportunity to reconsider
+5. **Peace of mind** — Know you won't lose data accidentally
+
+### Why Disable Warning?
+
+- Reorganizing many sheets quickly (use caution!)
+- Very confident in your actions
+- Working with non-critical data
+- Personal preference (not recommended)
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Numbers TSWarnBeforeDeletingSheets
+
+# Show warning before deleting (recommended)
+defaults write com.apple.iWork.Numbers TSWarnBeforeDeletingSheets -bool true
+
+# Disable warning (not recommended)
+defaults write com.apple.iWork.Numbers TSWarnBeforeDeletingSheets -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Numbers TSWarnBeforeDeletingSheets
+```
+
+## UI Location
+
+The warning appears when deleting sheets. The preference is set via defaults command.
+
+```
++-------------------------------------------------------------+
+|  How to Delete Sheets in Numbers                             |
++-------------------------------------------------------------+
+|                                                              |
+|  METHOD 1: Right-click                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  Right-click sheet tab > Delete                              |
+|                                                              |
+|  METHOD 2: Menu                                              |
+|  ─────────────────────────────────────────────────────────  |
+|  Select sheet > Edit > Delete Sheet                          |
+|                                                              |
+|  METHOD 3: Keyboard (when tab is selected)                   |
+|  ─────────────────────────────────────────────────────────  |
+|  Select sheet tab > Press Delete key                         |
+|                                                              |
+|  All methods trigger the warning dialog when enabled         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Sheet Organization Best Practices
+
+```
++-------------------------------------------------------------+
+|  Safe Sheet Management                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  BEFORE DELETING:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Check for formulas referencing this sheet               |
+|     Edit > Find > Find in All Sheets                        |
+|     Search for the sheet name                               |
+|                                                              |
+|  2. Consider hiding instead of deleting                      |
+|     Sheet tab > Hide Sheet                                  |
+|     (Can unhide later if needed)                            |
+|                                                              |
+|  3. Export data first if unsure                             |
+|     File > Export To > CSV                                  |
+|     (Creates backup of data)                                |
+|                                                              |
+|  ORGANIZING MANY SHEETS:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|  • Rename sheets clearly: "Raw Data", "Analysis", "Charts"  |
+|  • Use sheet groups (drag tabs to reorder)                  |
+|  • Archive old sheets to separate documents                 |
+|  • Hide unused sheets rather than delete                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Warn before deleting sheets (this setting)
+defaults write com.apple.iWork.Numbers TSWarnBeforeDeletingSheets -bool true
+
+# Show formula warnings
+defaults write com.apple.iWork.Numbers TSShowFormulaWarnings -bool true
+
+# Auto-save documents
+defaults write com.apple.iWork.Numbers NSDocumentSavesInPlace -bool true
+
+# Tab key behavior
+defaults write com.apple.iWork.Numbers TSInsertTabInsteadOfMoving -bool false
+
+# Show alignment guides
+defaults write com.apple.iWork.Numbers TSShowsObjectCenterGuides -bool true
+```
+
+## Comparison: Delete vs Hide
+
+```
++-------------------------------------------------------------+
+|  Delete vs Hide Sheet                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  DELETE SHEET:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|  • Permanently removes sheet and all content                |
+|  • Breaks references to this sheet                          |
+|  • Reduces file size                                        |
+|  • Cannot be recovered after save                           |
+|                                                              |
+|  HIDE SHEET (Alternative):                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  • Sheet remains in document, just invisible                |
+|  • References still work                                     |
+|  • File size unchanged                                       |
+|  • Can unhide anytime                                        |
+|                                                              |
+|  How to hide: Sheet tab > Hide Sheet                        |
+|  How to unhide: View > Show All Sheets                      |
+|                                                              |
+|  💡 Tip: Hide sheets you might need later,                  |
+|     Delete only when certain you don't need them            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Warning not appearing | Check TSWarnBeforeDeletingSheets is true |
+| Accidentally deleted sheet | Press ⌘Z immediately |
+| Can't undo after save | Use File > Revert To for versions |
+| Formulas broken after delete | Delete broke references - restore sheet |
+| Want to delete without prompt | Temporarily disable (not recommended) |
+
+## Compatibility
+
+- **Numbers**: macOS 10.13+ (High Sierra)
+- **Note**: Warning applies to all sheet deletion methods
+- **Note**: Setting persists across sessions
+- **Note**: Applies to all Numbers documents
+- **Note**: Works with iCloud synced documents
+
+## Source File
+
+**File**: [`defaults/applications/numbers.sh`](../../../../../defaults/applications/numbers.sh)
+
+```bash
+run_defaults "com.apple.iWork.Numbers" "TSWarnBeforeDeletingSheets" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Add or delete sheets in Numbers](https://support.apple.com/guide/numbers/add-or-delete-a-sheet-tan12e5f0ccc/mac)
+- [Apple Support: Numbers User Guide](https://support.apple.com/guide/numbers/welcome/mac)
+- [Apple Support: Use versions to track changes](https://support.apple.com/guide/numbers/use-versions-tan9de8ca8d7/mac)

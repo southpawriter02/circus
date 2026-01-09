@@ -1,0 +1,284 @@
+# Zoom Scroll Wheel Modifier Key
+
+Modifier key for scroll gesture zoom.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `closeViewScrollWheelModifiersInt` |
+| **Type** | Integer |
+| **Default Value** | `262144` (Control) |
+| **Our Setting** | `262144` (Control) |
+
+## Description
+
+Specifies which modifier key must be held while scrolling to trigger screen zoom. This works in conjunction with the scroll gesture zoom feature, allowing you to zoom in and out by holding a modifier key and using the scroll wheel or trackpad scroll gesture. The default is the Control key, but you can configure it to use Option, Command, or Shift instead.
+
+## Values
+
+| Value | Modifier Key | Symbol |
+|-------|-------------|--------|
+| `131072` | Shift | ⇧ |
+| `262144` | Control (default) | ⌃ |
+| `524288` | Option | ⌥ |
+| `1048576` | Command | ⌘ |
+
+## Visual Demonstration
+
+### Scroll Gesture with Modifier Key:
+```
++-------------------------------------------------------------+
+|  Scroll Gesture Zoom                                         |
++-------------------------------------------------------------+
+|                                                              |
+|  Hold modifier key + scroll to zoom:                        |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  +---+                                               |   |
+|  |  |⌃  |  +  +--------+                                |   |
+|  |  +---+     |  ↑↑↑   |  Scroll Up = Zoom IN          |   |
+|  |  Control   | Scroll |                                |   |
+|  |            +--------+                                |   |
+|  |                                                      |   |
+|  |  +---+                                               |   |
+|  |  |⌃  |  +  +--------+                                |   |
+|  |  +---+     |  ↓↓↓   |  Scroll Down = Zoom OUT       |   |
+|  |  Control   | Scroll |                                |   |
+|  |            +--------+                                |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Works with:                                                |
+|  * Mouse scroll wheel                                       |
+|  * Trackpad two-finger scroll                               |
+|  * Magic Mouse swipe                                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Modifier Key Options:
+```
++-------------------------------------------------------------+
+|  Available Modifier Keys                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  CONTROL (262144) - Default:                                |
+|  +------------------------------------------------------+   |
+|  |  +---+                                               |   |
+|  |  |⌃  | Control + Scroll                              |   |
+|  |  +---+                                               |   |
+|  |  * Most common choice                                |   |
+|  |  * Dedicated key on all keyboards                    |   |
+|  |  * Rarely conflicts with apps                        |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  OPTION (524288):                                           |
+|  +------------------------------------------------------+   |
+|  |  +---+                                               |   |
+|  |  |⌥  | Option + Scroll                               |   |
+|  |  +---+                                               |   |
+|  |  * Easy thumb access                                 |   |
+|  |  * May conflict with some apps                       |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  COMMAND (1048576):                                         |
+|  +------------------------------------------------------+   |
+|  |  +---+                                               |   |
+|  |  |⌘  | Command + Scroll                              |   |
+|  |  +---+                                               |   |
+|  |  * Natural for Mac users                             |   |
+|  |  * Often conflicts with app shortcuts                |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  SHIFT (131072):                                            |
+|  +------------------------------------------------------+   |
+|  |  +---+                                               |   |
+|  |  |⇧  | Shift + Scroll                                |   |
+|  |  +---+                                               |   |
+|  |  * Large key, easy to find                           |   |
+|  |  * May conflict with horizontal scroll               |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Zoom Workflow:
+```
++-------------------------------------------------------------+
+|  Using Scroll Gesture Zoom                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Enable scroll gesture zoom in Accessibility settings    |
+|                                                              |
+|  2. Choose your modifier key (Control is recommended)       |
+|                                                              |
+|  3. To zoom:                                                 |
+|     +--------------------------------------------------+    |
+|     |  Hold Control                                    |    |
+|     |       ↓                                          |    |
+|     |  Scroll Up (zoom in) or Down (zoom out)          |    |
+|     |       ↓                                          |    |
+|     |  Release Control when at desired zoom            |    |
+|     +--------------------------------------------------+    |
+|                                                              |
+|  4. Normal scrolling works when modifier not held           |
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Without Modifier:     With Modifier:            |       |
+|  |  +--------------+      +--------------+          |       |
+|  |  | Normal       |      | Screen       |          |       |
+|  |  | page scroll  |      | zooms in/out |          |       |
+|  |  +--------------+      +--------------+          |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `262144` — Control key for scroll gesture zoom.
+
+### Why Use Control Key?
+
+1. **Standard** — Default choice that most users expect
+2. **Dedicated** — Control key exists on all Mac keyboards
+3. **Accessible** — Easy to reach with pinky finger
+4. **Minimal conflicts** — Few apps use Control+scroll
+5. **Consistent** — Works same way across macOS
+
+### Alternative Recommendations
+
+| Situation | Recommended Key |
+|-----------|-----------------|
+| General use | Control (262144) |
+| Designers (Cmd+scroll used) | Option (524288) |
+| Limited hand mobility | Shift (131072) |
+| One-handed use | Option (524288) |
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess closeViewScrollWheelModifiersInt
+
+# Set to Control (default)
+defaults write com.apple.universalaccess closeViewScrollWheelModifiersInt -int 262144
+
+# Set to Option
+defaults write com.apple.universalaccess closeViewScrollWheelModifiersInt -int 524288
+
+# Set to Command
+defaults write com.apple.universalaccess closeViewScrollWheelModifiersInt -int 1048576
+
+# Set to Shift
+defaults write com.apple.universalaccess closeViewScrollWheelModifiersInt -int 131072
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess closeViewScrollWheelModifiersInt
+```
+
+**Note**: You must also enable scroll gesture zoom for this to work:
+```bash
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Zoom**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Zoom                      |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Zoom                                            |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Use keyboard shortcuts to zoom                  |       |
+|  |  [*] Enable                                      |       |
+|  |                                                  |       |
+|  |  Use scroll gesture with modifier keys to zoom   |       |
+|  |  [*] Enable                                      |       |
+|  |       ^-- Must be enabled!                       |       |
+|  |                                                  |       |
+|  |  Modifier key: [Control (⌃)              v]      |       |
+|  |                ^-- This setting                  |       |
+|  |                                                  |       |
+|  |  Options:                                        |       |
+|  |  * Control (⌃)                                   |       |
+|  |  * Option (⌥)                                    |       |
+|  |  * Command (⌘)                                   |       |
+|  |  * Shift (⇧)                                     |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Scroll wheel modifier (this setting)
+defaults write com.apple.universalaccess closeViewScrollWheelModifiersInt -int 262144
+
+# Enable scroll gesture zoom (required)
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+# Enable keyboard shortcuts
+defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool true
+
+# Zoom follows focus
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+
+# Smooth images when zoomed
+defaults write com.apple.universalaccess closeViewSmoothImages -bool true
+
+# Zoom style (0=full, 1=split, 2=PiP)
+defaults write com.apple.universalaccess closeViewZoomMode -int 0
+```
+
+## Modifier Key Value Reference
+
+| Decimal | Hex | Key Name | Symbol |
+|---------|-----|----------|--------|
+| 131072 | 0x20000 | Shift | ⇧ |
+| 262144 | 0x40000 | Control | ⌃ |
+| 524288 | 0x80000 | Option | ⌥ |
+| 1048576 | 0x100000 | Command | ⌘ |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Scroll zoom not working | Enable `closeViewScrollWheelToggle` first |
+| Wrong modifier key | Check value matches table above |
+| Conflicts with apps | Try a different modifier key |
+| Zoom too sensitive | Adjust zoom limits in settings |
+| Setting not taking effect | Logout and login again |
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Note**: Requires scroll gesture zoom to be enabled
+- **Note**: May require logout for changes to take effect
+- **Note**: Works with mouse wheel and trackpad scroll
+
+## Source File
+
+**File**: [`defaults/accessibility/zoom.sh`](../../../../defaults/accessibility/zoom.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "closeViewScrollWheelModifiersInt" "-int" "262144"
+```
+
+## References
+
+- [Apple Support: Zoom in on the Mac screen](https://support.apple.com/guide/mac-help/zoom-in-on-the-mac-screen-mh35715/mac)
+- [Apple Support: Change Zoom preferences](https://support.apple.com/guide/mac-help/change-zoom-preferences-mchl70c97e7f/mac)
+- [Apple Developer: Modifier key values](https://developer.apple.com/documentation/appkit/nsevent/modifierflags)

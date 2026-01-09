@@ -1,0 +1,276 @@
+# Preview Scale Documents To Fit
+
+Control whether documents automatically scale to fit the window.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Preview` |
+| **Key** | `PVScaleDocumentsToFit` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Preview automatically scales PDF documents and images to fit within the window when opened. When enabled, the entire page or image is visible without scrolling. When disabled, documents open at their actual pixel size, which may require scrolling for large documents or high-resolution images.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Scale to fit** (default) — Document fits in window |
+| `false` | **Actual size** — Show at 100% zoom, may require scrolling |
+
+## Visual Demonstration
+
+### Scale To Fit (true - Default):
+```
++-------------------------------------------------------------+
+|  Preview - Scale To Fit Enabled                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Opening a large PDF (8.5" x 11" letter size):              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Preview - Document.pdf                       ⬜ ⬜ ✕   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌───────────────────────────────────────────────────┐  │|
+|  │  │                                                    │  │|
+|  │  │   ┌─────────────────────────────────────────────┐ │  │|
+|  │  │   │                                              │ │  │|
+|  │  │   │        ENTIRE PAGE VISIBLE                  │ │  │|
+|  │  │   │                                              │ │  │|
+|  │  │   │        Scaled down to fit window            │ │  │|
+|  │  │   │                                              │ │  │|
+|  │  │   │        No scrolling needed                  │ │  │|
+|  │  │   │                                              │ │  │|
+|  │  │   └─────────────────────────────────────────────┘ │  │|
+|  │  │                                                    │  │|
+|  │  └───────────────────────────────────────────────────┘  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ See entire document at a glance                         |
+|  ✓ Good for reviewing, navigation                          |
+|  ✓ Zoom in as needed with gestures                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Actual Size (false):
+```
++-------------------------------------------------------------+
+|  Preview - Actual Size (100%)                                |
++-------------------------------------------------------------+
+|                                                              |
+|  Opening the same large PDF:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Preview - Document.pdf                       ⬜ ⬜ ✕   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  ┌───────────────────────────────────────────────────┐  │|
+|  │  │                                                   ░│  │|
+|  │  │                                                   ░│  │|
+|  │  │   ONLY TOP-LEFT PORTION VISIBLE                  ░│  │|
+|  │  │                                                   ░│  │|
+|  │  │   Shows at actual pixel size                     ░│  │|
+|  │  │                                                   ░│  │|
+|  │  │   Need to scroll to see rest                     ░│  │|
+|  │  │                                                   ░│  │|
+|  │  │                                                   ░│  │|
+|  │  └───────────────────────────────────────────────────┘  │|
+|  │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ True 100% zoom for pixel-accurate viewing               |
+|  ✓ Better for detail inspection                            |
+|  ✗ Requires scrolling for most documents                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Behavior with Different Document Sizes:
+```
++-------------------------------------------------------------+
+|  Scaling Behavior Examples                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  SMALL IMAGE (800x600 pixels):                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Scale to Fit: Shows at actual size (fits already)          |
+|  Actual Size:  Shows at actual size                         |
+|  Result: Same behavior - image already fits                 |
+|                                                              |
+|  LARGE PDF (letter size, 612x792 points):                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Scale to Fit: Scaled down ~60-80% to fit window            |
+|  Actual Size:  Shows at 100%, requires scrolling            |
+|  Result: Different behavior - scaling reduces document      |
+|                                                              |
+|  HIGH-RES IMAGE (4000x3000 pixels):                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Scale to Fit: Scaled down ~20-30% to fit window            |
+|  Actual Size:  Shows at 100%, massive scrolling needed      |
+|  Result: Very different - scaling essential for overview    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Scale to fit for convenient document viewing.
+
+### Why Scale To Fit?
+
+1. **Overview** — See entire document immediately
+2. **Navigation** — Easy to scan multi-page PDFs
+3. **Convenience** — No immediate scrolling needed
+4. **Gestures** — Pinch-to-zoom when detail needed
+5. **Efficiency** — Faster document review
+
+### Why Use Actual Size?
+
+- Need pixel-accurate viewing (designers, photographers)
+- Reviewing image quality at native resolution
+- Checking print dimensions
+- Detailed inspection work
+- Prefer consistent 100% baseline
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Preview PVScaleDocumentsToFit
+
+# Enable scale to fit (default)
+defaults write com.apple.Preview PVScaleDocumentsToFit -bool true
+
+# Disable (show at actual size)
+defaults write com.apple.Preview PVScaleDocumentsToFit -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Preview PVScaleDocumentsToFit
+```
+
+## UI Location
+
+**Preview** > **Settings** > **PDF** tab
+
+```
++-------------------------------------------------------------+
+|  Preview Settings - PDF                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Preview > Settings (⌘,) > PDF                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General]  [Images]  [PDF]                             │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Opening documents:                                      │|
+|  │  [✓] Scale to fit          ← This setting               │|
+|  │  [✓] Open to last page viewed                           │|
+|  │                                                          │|
+|  │  Viewing documents:                                      │|
+|  │  [Single Page Continuous ▼]                              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Zoom Controls in Preview
+
+```
++-------------------------------------------------------------+
+|  Manual Zoom Controls                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  Regardless of this setting, you can always zoom:            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  KEYBOARD SHORTCUTS:                                         |
+|  ⌘+             Zoom in                                     |
+|  ⌘-             Zoom out                                    |
+|  ⌘0             Actual size (100%)                          |
+|  ⌘9             Zoom to fit                                 |
+|                                                              |
+|  TRACKPAD GESTURES:                                          |
+|  Pinch out      Zoom in                                     |
+|  Pinch in       Zoom out                                    |
+|  Double-tap     Toggle fit/actual size                      |
+|                                                              |
+|  VIEW MENU:                                                  |
+|  View > Zoom In                                             |
+|  View > Zoom Out                                            |
+|  View > Actual Size                                         |
+|  View > Zoom to Fit                                         |
+|                                                              |
+|  Note: This setting only affects initial opening zoom       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Scale documents to fit (this setting)
+defaults write com.apple.Preview PVScaleDocumentsToFit -bool true
+
+# Remember current page in PDFs
+defaults write com.apple.Preview PVPDFRememberCurrentPage -bool true
+
+# PDF display mode (0=Single, 1=Single Continuous, 2=Two, 3=Two Continuous)
+defaults write com.apple.Preview PVPDFDisplayMode -int 1
+
+# Window size behavior (1=New window, 2=Tabs, 3=Fit to window)
+defaults write com.apple.Preview PVWindowSize -int 3
+
+# Sidebar mode (0=Hidden, 1=Thumbnails, 2=TOC, 3=Annotations)
+defaults write com.apple.Preview PVSidebarViewModeForNewDocuments -int 1
+
+# Background color (0=Default, 1=White, 2=Black)
+defaults write com.apple.Preview PVBackgroundColor -int 0
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Quit and restart Preview |
+| Document still scrolls | Window may be smaller than scaled document |
+| Images look blurry | Scaled down images lose detail; zoom in |
+| Want actual size just once | Use ⌘0 or View > Actual Size |
+| PDF pages different sizes | Each page scales individually |
+
+## Compatibility
+
+- **Preview**: macOS 10.7+ (Lion)
+- **Note**: Affects both PDFs and images
+- **Note**: Setting persists across sessions
+- **Note**: Individual zoom adjustments are temporary
+- **Note**: Retina displays may show at 2x pixel density
+
+## Source File
+
+**File**: [`defaults/applications/preview.sh`](../../../../../defaults/applications/preview.sh)
+
+```bash
+run_defaults "com.apple.Preview" "PVScaleDocumentsToFit" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Preview User Guide](https://support.apple.com/guide/preview/welcome/mac)
+- [Apple Support: Change Preview preferences](https://support.apple.com/guide/preview/change-preferences-prvw11793/mac)
+- [Apple Support: Zoom in on a PDF or image](https://support.apple.com/guide/preview/zoom-in-on-a-pdf-or-image-prvw1011/mac)

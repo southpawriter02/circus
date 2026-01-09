@@ -1,0 +1,337 @@
+# TextEdit Smart Quotes
+
+Control automatic conversion of straight quotes to typographic curly quotes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.TextEdit` |
+| **Key** | `SmartQuotes` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether TextEdit automatically substitutes straight quotes (`"` and `'`) with typographic "curly" quotes (`"` `"` and `'` `'`). While curly quotes look more professional in documents, they are different Unicode characters that can break code, scripts, and configuration files. Developers and technical users should disable this feature.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Smart quotes enabled** (default) — Convert to curly quotes |
+| `false` | **Smart quotes disabled** — Keep straight ASCII quotes |
+
+## Visual Demonstration
+
+### Smart Quotes Enabled (Default):
+```
++-------------------------------------------------------------+
+|  TextEdit - Smart Quotes Conversion                          |
++-------------------------------------------------------------+
+|                                                              |
+|  What you type:           What appears:                      |
+|  ─────────────────────    ─────────────────────              |
+|                                                              |
+|  "Hello, World!"    →     "Hello, World!"                   |
+|  (Straight quotes)        (Curly quotes)                     |
+|                                                              |
+|  It's working       →     It's working                      |
+|  (Straight apostrophe)    (Curly apostrophe)                |
+|                                                              |
+|  CHARACTER COMPARISON:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  STRAIGHT (ASCII)          CURLY (Unicode)                   |
+|  "  U+0022                 "  U+201C (left)                 |
+|  "  U+0022                 "  U+201D (right)                |
+|  '  U+0027                 '  U+2018 (left)                 |
+|  '  U+0027                 '  U+2019 (right/apostrophe)     |
+|                                                              |
+|  ✓ Looks more professional in documents                     |
+|  ✓ Proper typography for publishing                         |
+|  ✗ BREAKS CODE AND SCRIPTS                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### The Problem for Developers:
+```
++-------------------------------------------------------------+
+|  ⚠️ Why Smart Quotes Break Code                             |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO: Writing a shell script in TextEdit               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  You type:                                                   |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  echo "Hello, World!"                                    │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Smart Quotes converts to:                                   |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  echo "Hello, World!"                                    │|
+|  │       ↑              ↑                                   │|
+|  │       These are DIFFERENT characters!                    │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  When you run the script:                                    |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  $ bash script.sh                                        │|
+|  │  bash: line 1: unexpected EOF while looking for         │|
+|  │  matching `"'                                            │|
+|  │  bash: line 2: syntax error: unexpected end of file     │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  THE SHELL DOESN'T RECOGNIZE CURLY QUOTES!                  |
+|                                                              |
+|  Same problem in:                                            |
+|  • Python:  print("Hello")  → SyntaxError                  |
+|  • JSON:    {"key": "value"}  → Parse error                |
+|  • YAML:    name: 'value'  → Invalid                       |
+|  • SQL:     SELECT * WHERE name='John'  → Error            |
+|  • Config:  setting="value"  → Not recognized              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Smart Quotes Disabled (Recommended for Developers):
+```
++-------------------------------------------------------------+
+|  TextEdit - Straight Quotes Preserved                        |
++-------------------------------------------------------------+
+|                                                              |
+|  What you type:           What appears:                      |
+|  ─────────────────────    ─────────────────────              |
+|                                                              |
+|  "Hello, World!"    →     "Hello, World!"                   |
+|  (Stays the same)         (Still straight quotes)           |
+|                                                              |
+|  echo "Hello"       →     echo "Hello"                      |
+|  (Works in scripts!)      (No conversion = no errors)       |
+|                                                              |
+|  ✓ Code works correctly                                     |
+|  ✓ Scripts execute without errors                           |
+|  ✓ Config files parse properly                              |
+|  ✓ Copy-paste safe for code                                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable smart quotes for code and technical work.
+
+### Why Disable Smart Quotes?
+
+1. **Code safety** — Scripts and programs work correctly
+2. **Config files** — Settings files parse without errors
+3. **Copy-paste** — Quotes from web pages work correctly
+4. **JSON/YAML** — Data files remain valid
+5. **Consistency** — What you type is what you get
+
+### Why Enable Smart Quotes?
+
+- Writing prose, articles, or books
+- Creating professional documents
+- Typography matters more than code
+- Not editing any technical files
+- Documents will be printed or published
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.TextEdit SmartQuotes
+
+# Disable smart quotes (recommended for developers)
+defaults write com.apple.TextEdit SmartQuotes -bool false
+
+# Enable smart quotes (for prose writing)
+defaults write com.apple.TextEdit SmartQuotes -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.TextEdit SmartQuotes
+```
+
+## UI Location
+
+**Edit** menu > **Substitutions** > **Smart Quotes**
+
+```
++-------------------------------------------------------------+
+|  TextEdit Edit Menu                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Edit                                                        |
+|  ├── Undo                          ⌘Z                       |
+|  ├── Redo                          ⇧⌘Z                      |
+|  ├── ─────────────────                                      |
+|  ├── Cut                           ⌘X                       |
+|  ├── Copy                          ⌘C                       |
+|  ├── Paste                         ⌘V                       |
+|  ├── ─────────────────                                      |
+|  ├── Substitutions                 ▶                        |
+|  │   ├── Show Substitutions                                 |
+|  │   ├── ─────────────────                                  |
+|  │   ├── [✓] Smart Copy/Paste                               |
+|  │   ├── [✓] Smart Quotes        ← This setting            |
+|  │   ├── [✓] Smart Dashes                                   |
+|  │   ├── [✓] Smart Links                                    |
+|  │   ├── [✓] Data Detectors                                 |
+|  │   └── [✓] Text Replacement                               |
+|  └── ...                                                    |
+|                                                              |
+|  Note: Menu shows current state                              |
+|        ✓ = Enabled, no check = Disabled                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+Also in **TextEdit Settings**:
+```
++-------------------------------------------------------------+
+|  TextEdit > Settings > New Document                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Options                                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [✓] Check spelling as you type                             |
+|  [✓] Check grammar with spelling                            |
+|  [✓] Correct spelling automatically                         |
+|                                                              |
+|  [✓] Smart copy/paste                                       |
+|  [ ] Smart quotes         ← Uncheck for development         |
+|  [ ] Smart dashes         ← Also uncheck for development    |
+|  [✓] Smart links                                            |
+|  [✓] Data detectors                                         |
+|  [✓] Text replacement                                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Finding and Fixing Curly Quotes
+
+```
++-------------------------------------------------------------+
+|  How to Fix Files with Curly Quotes                          |
++-------------------------------------------------------------+
+|                                                              |
+|  If your file has curly quotes that break code:             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  OPTION 1: Find and Replace in TextEdit                      |
+|  1. Edit > Find > Find and Replace (⌥⌘F)                    |
+|  2. Find: " (copy a curly quote from the document)          |
+|  3. Replace: " (type a straight quote)                      |
+|  4. Click "All" to replace all                              |
+|  5. Repeat for other quote types                            |
+|                                                              |
+|  OPTION 2: Terminal (sed)                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  # Replace all curly quotes with straight                   |
+|  sed -i '' "s/[""]/\"/g; s/['']/'/g" filename.txt          |
+|                                                              |
+|  OPTION 3: Use a proper code editor                          |
+|  ─────────────────────────────────────────────────────────  |
+|  • VS Code, Sublime Text, BBEdit                            |
+|  • These don't convert quotes by default                    |
+|  • Better for code editing than TextEdit                    |
+|                                                              |
+|  PREVENTION:                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  • Set SmartQuotes = false in defaults                      |
+|  • Use plain text mode (⇧⌘T) for code                      |
+|  • Use a dedicated code editor                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Smart quotes (this setting)
+defaults write com.apple.TextEdit SmartQuotes -bool false
+
+# Smart dashes (also problematic for code)
+defaults write com.apple.TextEdit SmartDashes -bool false
+
+# Plain text mode (no formatting)
+defaults write com.apple.TextEdit RichText -int 0
+
+# Smart links (URL detection)
+defaults write com.apple.TextEdit SmartLinks -bool true
+
+# Data detectors (date/phone detection)
+defaults write com.apple.TextEdit DataDetectors -bool true
+
+# Default font for plain text
+defaults write com.apple.TextEdit NSFixedPitchFont -string "Menlo-Regular"
+```
+
+## System-Wide Smart Quotes
+
+```
++-------------------------------------------------------------+
+|  Disabling Smart Quotes System-Wide                          |
++-------------------------------------------------------------+
+|                                                              |
+|  TextEdit's setting only affects TextEdit.                  |
+|  Other apps have their own smart quote settings.            |
+|                                                              |
+|  SYSTEM SETTINGS (affects most apps):                        |
+|  ─────────────────────────────────────────────────────────  |
+|  System Settings > Keyboard > Text Input > Input Sources    |
+|  > Edit... > [ ] Use smart quotes and dashes                |
+|                                                              |
+|  Terminal command:                                           |
+|  defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+|                                                              |
+|  This disables smart quotes in:                              |
+|  • Notes                                                    |
+|  • Mail                                                     |
+|  • Messages                                                 |
+|  • Most macOS apps using standard text fields              |
+|                                                              |
+|  Apps with their own settings:                               |
+|  • Microsoft Word (has own autocorrect)                     |
+|  • Google Docs (web-based settings)                         |
+|  • Pages (Format > Substitutions)                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Smart quotes still appearing | Restart TextEdit after changing |
+| Need quotes for one document | Use Edit > Substitutions toggle |
+| Code still breaking | Check for existing curly quotes in file |
+| Pasted text has curly quotes | Source had them; find/replace needed |
+| Want smart quotes sometimes | Toggle via Edit menu per-document |
+
+## Compatibility
+
+- **TextEdit**: All macOS versions
+- **Note**: Setting is per-app, not system-wide
+- **Note**: Affects new documents; existing quotes unchanged
+- **Note**: Plain text mode bypasses this setting
+- **Note**: Rich text mode respects this setting
+
+## Source File
+
+**File**: [`defaults/applications/textedit.sh`](../../../../../defaults/applications/textedit.sh)
+
+```bash
+run_defaults "com.apple.TextEdit" "SmartQuotes" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: TextEdit for Mac](https://support.apple.com/guide/textedit/welcome/mac)
+- [Apple Support: Type special characters in TextEdit](https://support.apple.com/guide/textedit/type-special-characters-txted0d7f6/mac)
+- [Apple Support: Use substitutions in apps on Mac](https://support.apple.com/guide/mac-help/use-substitutions-in-apps-mchlp1171/mac)

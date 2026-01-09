@@ -1,0 +1,309 @@
+# Mail Conversation View
+
+Group related emails into threaded conversations.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `ConversationViewEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Mail groups related messages into threaded conversations. When enabled, emails with the same subject line and participants are collapsed into a single conversation entry, showing the most recent message with a count of total messages in the thread. This makes it easier to follow email discussions and reduces inbox clutter from back-and-forth exchanges.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Conversation view** (default) — Group related emails into threads |
+| `false` | **Individual messages** — Show each email as a separate item |
+
+## Visual Demonstration
+
+### Conversation View Enabled:
+```
++-------------------------------------------------------------+
+|  Mail - Conversation View                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Inbox (3 conversations)                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ ▶ Project Update                              (5) 📎    │|
+|  │   Alice, Bob, Carol                           2:34 PM    │|
+|  │   "Sounds good! Let's proceed with..."                   │|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │ ▶ Meeting Tomorrow                            (3)        │|
+|  │   David                                      11:45 AM    │|
+|  │   "Confirmed, see you at 10am"                          │|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │   Newsletter: Weekly Digest                              │|
+|  │   news@company.com                            9:00 AM    │|
+|  │   "This week's top stories..."                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  (5) = 5 messages in this conversation                      |
+|                                                              |
+|  Expanded conversation:                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ▼ Project Update                                (5) 📎     |
+|     │                                                        |
+|     ├── Alice (Mon 9:00 AM)                                 |
+|     │   "Here's the project update..."                      |
+|     │                                                        |
+|     ├── Bob (Mon 10:15 AM)                                  |
+|     │   "Thanks! I have a question about..."                |
+|     │                                                        |
+|     ├── Alice (Mon 11:30 AM)                                |
+|     │   "Good question. The answer is..."                   |
+|     │                                                        |
+|     ├── Carol (Today 1:22 PM)                               |
+|     │   "I agree with Alice's approach"                     |
+|     │                                                        |
+|     └── Bob (Today 2:34 PM)                                 |
+|         "Sounds good! Let's proceed with..."                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Conversation View Disabled:
+```
++-------------------------------------------------------------+
+|  Mail - Individual Messages                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Inbox (11 messages)                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │   Re: Project Update                                     │|
+|  │   Bob                                         2:34 PM    │|
+|  │   "Sounds good! Let's proceed with..."                   │|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │   Re: Project Update                                     │|
+|  │   Carol                                       1:22 PM    │|
+|  │   "I agree with Alice's approach"                        │|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │   Re: Meeting Tomorrow                                   │|
+|  │   David                                      11:45 AM    │|
+|  │   "Confirmed, see you at 10am"                          │|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │   Re: Meeting Tomorrow                                   │|
+|  │   You                                        11:00 AM    │|
+|  │   "Does 10am work for you?"                             │|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │   Re: Meeting Tomorrow                                   │|
+|  │   David                                      10:30 AM    │|
+|  │   "Let's schedule a meeting"                            │|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │   Newsletter: Weekly Digest                              │|
+|  │   news@company.com                            9:00 AM    │|
+|  │   ...                                                    │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ⚠️ Same conversations appear as separate emails             |
+|  ⚠️ Harder to follow the flow of discussion                 |
+|  ⚠️ More scrolling required                                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Thread Navigation:
+```
++-------------------------------------------------------------+
+|  Navigating Conversations                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Keyboard shortcuts:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ↑ / ↓       Navigate between conversations                 |
+|  ← / →       Collapse / Expand conversation                 |
+|  Return      Open selected message                          |
+|                                                              |
+|  Toolbar:                                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────────────────────────────────────────────────┐  |
+|  │ [◀ Prev] [Next ▶]  │  Navigate within conversation   │  |
+|  │                    │                                  │  |
+|  │      ▼ ▲          │  Expand/collapse all threads    │  |
+|  └──────────────────────────────────────────────────────┘  |
+|                                                              |
+|  View menu options:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  View → Expand All Conversations (⌘⌥→)                      |
+|  View → Collapse All Conversations (⌘⌥←)                    |
+|  View → Organize by Conversation (toggle)                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable conversation threading for organized inbox.
+
+### Why Enable Conversations?
+
+1. **Organization** — Related emails grouped together
+2. **Context** — See full discussion history at once
+3. **Cleaner inbox** — Fewer items to scroll through
+4. **Follow-up** — Easy to track conversation status
+5. **Standard** — Matches modern email behavior
+
+### Why Disable Conversations?
+
+- Prefer chronological email list
+- Each email needs individual attention
+- Conversations split unexpectedly
+- Work with automated/system emails
+- Old email workflow habit
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail ConversationViewEnabled
+
+# Enable conversation view (recommended)
+defaults write com.apple.mail ConversationViewEnabled -bool true
+
+# Disable conversation view
+defaults write com.apple.mail ConversationViewEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.mail ConversationViewEnabled
+```
+
+## UI Location
+
+**Mail** → **View** → **Organize by Conversation**
+
+```
++-------------------------------------------------------------+
+|  Mail > View Menu                                            |
++-------------------------------------------------------------+
+|                                                              |
+|  View                                                        |
+|  ├── Message                           ▶                     |
+|  ├── Sort By                           ▶                     |
+|  ├── ──────────────────────                                 |
+|  ├── [✓] Organize by Conversation      ← Toggle this        |
+|  ├── Expand All Conversations          ⌘⌥→                  |
+|  ├── Collapse All Conversations        ⌘⌥←                  |
+|  ├── ──────────────────────                                 |
+|  ├── Show Related Messages             ▶                     |
+|  └── ...                                                     |
+|                                                              |
+|  Or in Settings:                                             |
+|  Mail → Settings → Viewing                                   |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Viewing                                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [*] Organize by Conversation                            │|
+|  │      ^-- This setting                                    │|
+|  │                                                          │|
+|  │  [ ] Show most recent message at the top                 │|
+|  │                                                          │|
+|  │  [*] Include related messages                            │|
+|  │      Include messages from: [All Mailboxes         v]    │|
+|  │                                                          │|
+|  │  [*] Mark all messages as read when opening conversation │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Conversation view (this setting)
+defaults write com.apple.mail ConversationViewEnabled -bool true
+
+# Show most recent message at top of conversation
+defaults write com.apple.mail ConversationViewSortDescending -bool true
+
+# Include related messages from other mailboxes
+defaults write com.apple.mail ConversationViewIncludeAllMailboxes -bool true
+
+# Mark all messages read when opening conversation
+defaults write com.apple.mail ConversationViewMarkAllAsRead -bool true
+```
+
+## How Conversations Are Grouped
+
+```
++-------------------------------------------------------------+
+|  Conversation Grouping Logic                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Messages are grouped into the same conversation when:       |
+|                                                              |
+|  ✓ Same subject line (ignoring Re:, Fwd:, etc.)             |
+|  ✓ References/In-Reply-To headers match                      |
+|  ✓ Same participants (To, From, Cc)                          |
+|                                                              |
+|  Example grouping:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Subject: "Project Update"              ┐                    |
+|  Subject: "Re: Project Update"          │ Same conversation |
+|  Subject: "RE: Project Update"          │                    |
+|  Subject: "Fwd: Re: Project Update"     ┘                    |
+|                                                              |
+|  Subject: "New: Project Update"         ← Different!         |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Potential splitting issues:                                 |
+|                                                              |
+|  • Subject line edited by recipient                          |
+|  • Headers stripped by email server                          |
+|  • Very old threads (>30 days gap sometimes split)          |
+|  • Cross-mailbox conversations (check Related Messages)      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Conversations not grouping | Check if subjects match exactly |
+| Wrong messages grouped | Subject line too generic |
+| Can't find old reply | Enable "Include related messages" |
+| Thread split unexpectedly | Check for subject line changes |
+| Too many messages in thread | Consider archiving old messages |
+| Setting not applying | Restart Mail app |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Also available in iOS Mail app
+- **Note**: Works with all email account types
+- **Note**: Syncs across devices via iCloud settings
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "ConversationViewEnabled" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Organize emails by conversation in Mail on Mac](https://support.apple.com/guide/mail/organize-emails-by-conversation-mlhl31bb9e9e/mac)
+- [Apple Support: Read emails in Mail on Mac](https://support.apple.com/guide/mail/read-emails-mlhl276a3529/mac)
+- [Apple Support: Mail keyboard shortcuts](https://support.apple.com/guide/mail/keyboard-shortcuts-mlhlb94d4ce0/mac)

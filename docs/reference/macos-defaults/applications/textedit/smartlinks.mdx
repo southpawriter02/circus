@@ -1,0 +1,342 @@
+# TextEdit Smart Links
+
+Automatically detect and make URLs clickable in documents.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.TextEdit` |
+| **Key** | `SmartLinks` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether TextEdit automatically detects URLs, email addresses, and web links in text and makes them clickable. When enabled, typing `https://example.com` automatically becomes a hyperlink that can be Command-clicked to open in your browser. This feature works in both plain text and rich text modes.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Smart links enabled** (default) — URLs become clickable links |
+| `false` | **Smart links disabled** — URLs remain as plain text |
+
+## Visual Demonstration
+
+### With Smart Links Enabled:
+```
++-------------------------------------------------------------+
+|  TextEdit - Smart Links Active                               |
++-------------------------------------------------------------+
+|                                                              |
+|  As you type:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Check out the documentation at                          │|
+|  │  https://docs.example.com/guide                          │|
+|  │  ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔                            │|
+|  │  (Underlined, colored - it's clickable!)                │|
+|  │                                                          │|
+|  │  Contact me at hello@example.com                         │|
+|  │                 ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔                     │|
+|  │  (Email address is also clickable)                      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Supported link types:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ✓ https://example.com        (HTTPS URLs)                  |
+|  ✓ http://example.com         (HTTP URLs)                   |
+|  ✓ ftp://files.example.com    (FTP URLs)                    |
+|  ✓ www.example.com            (Auto-detected domains)       |
+|  ✓ user@example.com           (Email addresses)             |
+|  ✓ file:///path/to/file       (Local file paths)           |
+|                                                              |
+|  To open: ⌘-click the link                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### How Links Appear:
+```
++-------------------------------------------------------------+
+|  Link Appearance in TextEdit                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  RICH TEXT MODE:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Links are styled with:                                      |
+|  • Blue color (system link color)                           |
+|  • Underline                                                |
+|  • Cursor changes to pointing hand on hover                 |
+|                                                              |
+|  Example:                                                    |
+|  Visit our website at https://apple.com for more info.      |
+|                       ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔                    |
+|                       (blue, underlined)                    |
+|                                                              |
+|  PLAIN TEXT MODE:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Links are still detected but may appear differently:       |
+|  • Often same color as text                                 |
+|  • May or may not be underlined                             |
+|  • Still clickable with ⌘-click                             |
+|                                                              |
+|  Example:                                                    |
+|  Visit https://apple.com for more info.                     |
+|         ^^^^^^^^^^^^^^^^^                                   |
+|         (clickable even without styling)                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Smart Links:
+```
++-------------------------------------------------------------+
+|  TextEdit - Smart Links Disabled                             |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Check out the documentation at                          │|
+|  │  https://docs.example.com/guide                          │|
+|  │  (Just plain text - not clickable)                      │|
+|  │                                                          │|
+|  │  Contact me at hello@example.com                         │|
+|  │  (Just plain text - not clickable)                      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  To open URLs, you must:                                     |
+|  1. Select the URL text                                     |
+|  2. Copy it (⌘C)                                            |
+|  3. Open browser                                            |
+|  4. Paste in address bar (⌘V)                               |
+|  5. Press Enter                                             |
+|                                                              |
+|  Or right-click and look for "Open URL" option              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable smart links for convenient URL access.
+
+### Why Enable Smart Links?
+
+1. **Convenience** — Open URLs with a single ⌘-click
+2. **Email access** — Click emails to open mail client
+3. **Documentation** — Quick access to referenced URLs
+4. **Notes** — Personal notes with clickable references
+5. **Standard behavior** — Users expect links to be clickable
+
+### Why Disable Smart Links?
+
+- Writing about URLs without wanting them clickable
+- Documenting code that contains URLs
+- Preventing accidental link clicks
+- URLs interfere with text selection
+- Personal preference for plain text behavior
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.TextEdit SmartLinks
+
+# Enable smart links (default)
+defaults write com.apple.TextEdit SmartLinks -bool true
+
+# Disable smart links
+defaults write com.apple.TextEdit SmartLinks -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.TextEdit SmartLinks
+```
+
+## UI Location
+
+**Edit** menu > **Substitutions** > **Smart Links**
+
+```
++-------------------------------------------------------------+
+|  TextEdit Edit Menu                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Edit                                                        |
+|  ├── Undo                          ⌘Z                       |
+|  ├── Redo                          ⇧⌘Z                      |
+|  ├── ─────────────────                                      |
+|  ├── Cut                           ⌘X                       |
+|  ├── Copy                          ⌘C                       |
+|  ├── Paste                         ⌘V                       |
+|  ├── ─────────────────                                      |
+|  ├── Substitutions                 ▶                        |
+|  │   ├── Show Substitutions                                 |
+|  │   ├── ─────────────────                                  |
+|  │   ├── [✓] Smart Copy/Paste                               |
+|  │   ├── [✓] Smart Quotes                                   |
+|  │   ├── [✓] Smart Dashes                                   |
+|  │   ├── [✓] Smart Links         ← This setting            |
+|  │   ├── [✓] Data Detectors                                 |
+|  │   └── [✓] Text Replacement                               |
+|  └── ...                                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+Also in **TextEdit Settings**:
+```
++-------------------------------------------------------------+
+|  TextEdit > Settings > New Document                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Options                                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [✓] Check spelling as you type                             |
+|  [✓] Check grammar with spelling                            |
+|  [✓] Correct spelling automatically                         |
+|                                                              |
+|  [✓] Smart copy/paste                                       |
+|  [ ] Smart quotes                                           |
+|  [ ] Smart dashes                                           |
+|  [✓] Smart links          ← This setting                   |
+|  [✓] Data detectors                                         |
+|  [✓] Text replacement                                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Link Actions
+
+```
++-------------------------------------------------------------+
+|  What You Can Do with Smart Links                            |
++-------------------------------------------------------------+
+|                                                              |
+|  ⌘-CLICK:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  • Web URLs: Opens in default browser                       |
+|  • Email addresses: Opens new email in mail app             |
+|  • File paths: Opens file in appropriate app                |
+|                                                              |
+|  RIGHT-CLICK MENU:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌─────────────────────────┐                                |
+|  │ Open Link               │                                |
+|  │ Add Link to Reading List│                                |
+|  │ Copy Link               │                                |
+|  │ Share...                │                                |
+|  │ ─────────────────       │                                |
+|  │ Edit Link...            │ (Rich text only)               |
+|  │ Remove Link             │ (Rich text only)               |
+|  └─────────────────────────┘                                |
+|                                                              |
+|  KEYBOARD ACCESS:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|  • Tab: Move to next link in document                       |
+|  • Enter: Open selected link                                |
+|  • Space: May open link when selected                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Smart Links vs Data Detectors
+
+```
++-------------------------------------------------------------+
+|  Smart Links vs Data Detectors                               |
++-------------------------------------------------------------+
+|                                                              |
+|  SMART LINKS (this setting):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  Detects:                                                    |
+|  • URLs (http://, https://, ftp://)                         |
+|  • Domain names (www.example.com)                           |
+|  • Email addresses (user@domain.com)                        |
+|  • File paths (file:///...)                                 |
+|                                                              |
+|  Actions:                                                    |
+|  • ⌘-click to open                                          |
+|  • Copy link address                                        |
+|  • Add to Reading List                                      |
+|                                                              |
+|  DATA DETECTORS (separate setting):                          |
+|  ─────────────────────────────────────────────────────────  |
+|  Detects:                                                    |
+|  • Dates ("March 15, 2024")                                 |
+|  • Times ("3:00 PM")                                        |
+|  • Addresses ("123 Main St, Cupertino, CA")                 |
+|  • Phone numbers ("(555) 123-4567")                         |
+|  • Tracking numbers                                         |
+|                                                              |
+|  Actions:                                                    |
+|  • Create calendar event                                    |
+|  • Add to contacts                                          |
+|  • Open in Maps                                             |
+|  • Show FaceTime options                                    |
+|                                                              |
+|  Both can be enabled independently                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Smart links (this setting)
+defaults write com.apple.TextEdit SmartLinks -bool true
+
+# Data detectors (dates, addresses, phone numbers)
+defaults write com.apple.TextEdit DataDetectors -bool true
+
+# Smart quotes (curly quote conversion)
+defaults write com.apple.TextEdit SmartQuotes -bool false
+
+# Smart dashes (en-dash/em-dash conversion)
+defaults write com.apple.TextEdit SmartDashes -bool false
+
+# Plain text mode
+defaults write com.apple.TextEdit RichText -int 0
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Links not being detected | Check SmartLinks setting is enabled |
+| Can't click links | Use ⌘-click, not regular click |
+| Link opens wrong app | Check default browser/mail settings |
+| Links detected incorrectly | May need space after URL |
+| Want to edit link without opening | Right-click and select Edit Link |
+
+## Compatibility
+
+- **TextEdit**: All macOS versions
+- **Note**: Works in both plain text and rich text modes
+- **Note**: Link styling may differ between modes
+- **Note**: Detection happens as you type
+- **Note**: Existing text is re-analyzed when setting changes
+
+## Source File
+
+**File**: [`defaults/applications/textedit.sh`](../../../../../defaults/applications/textedit.sh)
+
+```bash
+run_defaults "com.apple.TextEdit" "SmartLinks" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: TextEdit for Mac](https://support.apple.com/guide/textedit/welcome/mac)
+- [Apple Support: Type special characters in TextEdit](https://support.apple.com/guide/textedit/type-special-characters-txted0d7f6/mac)
+- [Apple Support: Use substitutions in apps on Mac](https://support.apple.com/guide/mac-help/use-substitutions-in-apps-mchlp1171/mac)

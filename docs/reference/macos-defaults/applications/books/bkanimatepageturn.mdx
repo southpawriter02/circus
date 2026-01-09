@@ -1,0 +1,272 @@
+# Books Page Turn Animation
+
+Enable or disable the animated page-turning effect when reading.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iBooksX` |
+| **Key** | `BKAnimatePageTurn` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Books displays an animated page-turning effect when navigating between pages. When enabled, pages appear to curl and flip like a physical book. Disabling this animation results in instant page transitions, which some users prefer for faster reading or reduced visual distraction.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Animation enabled** (default) — Pages curl and flip like a real book |
+| `false` | **Animation disabled** — Instant page transitions |
+
+## Visual Demonstration
+
+### With Page Turn Animation:
+```
++-------------------------------------------------------------+
+|  Books - Animated Page Turn                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Tap or swipe to turn page:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Frame 1 (Start):                                            |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Chapter 5                                               │|
+|  │                                                          │|
+|  │  The adventure continues as our hero                    │|
+|  │  ventures deeper into the forest...                     │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Frame 2 (Page curling):                                     |
+|  ┌──────────────────────────────────────────────────┬──────┐|
+|  │                                                   │╲     │|
+|  │  Chapter 5                                        │ ╲    │|
+|  │                                                   │  ╲   │|
+|  │  The adventure continues as our hero             │   ╲  │|
+|  │  ventures deeper into the forest...              │    ╲ │|
+|  │                                                   │     ╲│|
+|  └──────────────────────────────────────────────────┴──────┘|
+|                    Page curling to reveal next ──────↗      |
+|                                                              |
+|  Frame 3 (Complete):                                         |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Chapter 6                                               │|
+|  │                                                          │|
+|  │  Dawn broke over the mountains as...                    │|
+|  │                                                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Natural book-like feel                                   |
+|  ✓ Satisfying visual feedback                               |
+|  ✓ Helps track reading progress                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Page Turn Animation:
+```
++-------------------------------------------------------------+
+|  Books - Instant Page Transition                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Tap or swipe to turn page:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Before:                                                     |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Chapter 5                                               │|
+|  │                                                          │|
+|  │  The adventure continues as our hero                    │|
+|  │  ventures deeper into the forest...                     │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                           │                                  |
+|                           │ INSTANT                          |
+|                           ↓                                  |
+|  After:                                                      |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Chapter 6                                               │|
+|  │                                                          │|
+|  │  Dawn broke over the mountains as...                    │|
+|  │                                                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Faster navigation                                        |
+|  ✓ Less visual distraction                                  |
+|  ✓ Better for speed reading                                 |
+|  ✓ Reduced motion for accessibility                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Navigation Methods:
+```
++-------------------------------------------------------------+
+|  How to Navigate Pages in Books                              |
++-------------------------------------------------------------+
+|                                                              |
+|  KEYBOARD:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  →  or  Space    = Next page                                |
+|  ←  or  Shift+Space = Previous page                         |
+|  ⌘→              = Skip forward                             |
+|  ⌘←              = Skip backward                            |
+|                                                              |
+|  TRACKPAD/MOUSE:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|  Swipe left      = Next page                                |
+|  Swipe right     = Previous page                            |
+|  Click edges     = Turn page in that direction              |
+|                                                              |
+|  Animation affects all navigation methods                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable page turn animation for natural reading feel.
+
+### Why Enable Animation?
+
+1. **Natural feel** — Mimics physical book experience
+2. **Visual feedback** — Confirms page turn action
+3. **Reading rhythm** — Creates natural reading pace
+4. **Orientation** — Helps track position in book
+5. **Enjoyment** — Many readers find it satisfying
+
+### Why Disable Animation?
+
+- Prefer instant transitions
+- Speed reading or skimming
+- Motion sensitivity
+- Faster navigation when searching
+- Minimal interface preference
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iBooksX BKAnimatePageTurn
+
+# Enable page turn animation (default)
+defaults write com.apple.iBooksX BKAnimatePageTurn -bool true
+
+# Disable page turn animation
+defaults write com.apple.iBooksX BKAnimatePageTurn -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iBooksX BKAnimatePageTurn
+```
+
+## UI Location
+
+**View** menu while reading a book
+
+```
++-------------------------------------------------------------+
+|  Books View Menu                                             |
++-------------------------------------------------------------+
+|                                                              |
+|  View                                                        |
+|  ├── Actual Size                   ⌘0                       |
+|  ├── Zoom In                       ⌘+                       |
+|  ├── Zoom Out                      ⌘-                       |
+|  ├── ─────────────────                                      |
+|  ├── Scroll Vertical/Horizontal                             |
+|  ├── Two Pages                                              |
+|  ├── ─────────────────                                      |
+|  ├── [*] Turn Pages Animation                               |
+|  │       ^-- This setting                                   |
+|  ├── ─────────────────                                      |
+|  ├── Show Toolbar                                           |
+|  └── ...                                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Page turn animation (this setting)
+defaults write com.apple.iBooksX BKAnimatePageTurn -bool true
+
+# Auto night theme
+defaults write com.apple.iBooksX BKAutoNightThemeEnabled -bool true
+
+# Scroll direction
+defaults write com.apple.iBooksX BKScrollDirection -int 1
+
+# Sync reading position
+defaults write com.apple.iBooksX BKSyncReadingPosition -bool true
+
+# Sync bookmarks and highlights
+defaults write com.apple.iBooksX BKSyncBookmarksAndHighlights -bool true
+```
+
+## Accessibility Considerations
+
+```
++-------------------------------------------------------------+
+|  Animation and Accessibility                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  For users with motion sensitivity:                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Option 1: Disable in Books                                  |
+|  defaults write com.apple.iBooksX BKAnimatePageTurn -bool false
+|                                                              |
+|  Option 2: System-wide Reduce Motion                         |
+|  System Settings > Accessibility > Display > Reduce motion   |
+|  (May also affect Books animations)                          |
+|                                                              |
+|  The animation is relatively gentle compared to other        |
+|  macOS animations, but may still affect sensitive users.    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Animation not showing | Check setting is enabled |
+| Animation is choppy | Normal on older Macs; try disabling |
+| Want faster reading | Disable animation for instant transitions |
+| Setting not applying | Restart Books app |
+| Different on iPad/iPhone | iOS has separate setting |
+
+## Compatibility
+
+- **Books**: macOS 10.14+ (Mojave)
+- **Note**: Animation only applies to EPUB format books
+- **Note**: PDFs use different navigation (no page curl)
+- **Note**: Audiobooks not affected (no pages)
+- **Note**: Setting syncs via iCloud with Books settings
+
+## Source File
+
+**File**: [`defaults/applications/books.sh`](../../../../../defaults/applications/books.sh)
+
+```bash
+run_defaults "com.apple.iBooksX" "BKAnimatePageTurn" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Read books in the Books app on Mac](https://support.apple.com/guide/books/read-books-ibksdc11e1b6/mac)
+- [Apple Support: Books User Guide](https://support.apple.com/guide/books/welcome/mac)
+- [Apple Support: Change Books settings](https://support.apple.com/guide/books/settings-ibks1016d5f5/mac)

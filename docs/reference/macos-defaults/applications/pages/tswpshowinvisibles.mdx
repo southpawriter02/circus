@@ -1,0 +1,327 @@
+# Pages Show Invisible Characters
+
+Display invisible formatting characters like spaces, tabs, and line breaks.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Pages` |
+| **Key** | `TSWPShowInvisibles` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Pages displays invisible formatting characters such as spaces, tabs, paragraph marks, line breaks, and section breaks. Showing invisibles helps identify formatting issues, find extra spaces, and understand document structure. This is especially useful for troubleshooting layout problems or preparing documents for publishing.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show invisibles** — Display formatting characters |
+| `false` | **Hide invisibles** (default) — Clean document view |
+
+## Visual Demonstration
+
+### With Invisibles Hidden (Default):
+```
++-------------------------------------------------------------+
+|  Pages Document - Normal View                                |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Chapter 1: Introduction                                 │|
+|  │                                                          │|
+|  │  This is the first paragraph of the document. It        │|
+|  │  contains multiple sentences that flow naturally        │|
+|  │  across the page.                                        │|
+|  │                                                          │|
+|  │  The second paragraph follows after a blank line.       │|
+|  │  Notice how clean the text appears without any          │|
+|  │  visible formatting marks.                               │|
+|  │                                                          │|
+|  │      • Bullet point one                                  │|
+|  │      • Bullet point two                                  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Clean reading experience                                 |
+|  ✓ How document will appear when printed/exported           |
+|  ✗ Can't see double spaces or formatting issues             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Invisibles Shown:
+```
++-------------------------------------------------------------+
+|  Pages Document - Show Invisibles                            |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Chapter·1:·Introduction¶                                │|
+|  │  ¶                                                       │|
+|  │  This·is·the·first·paragraph·of·the·document.·It¬       │|
+|  │  contains·multiple·sentences·that·flow·naturally¬       │|
+|  │  across·the·page.¶                                       │|
+|  │  ¶                                                       │|
+|  │  The·second·paragraph·follows·after·a·blank·line.¬      │|
+|  │  Notice·how·clean·the·text·appears·without·any¬         │|
+|  │  visible·formatting·marks.¶                              │|
+|  │  ¶                                                       │|
+|  │  →   •·Bullet·point·one¶                                │|
+|  │  →   •·Bullet·point·two¶                                │|
+|  │  ¶                                                       │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Symbol Key:                                                 |
+|  · = Space                ¶ = Paragraph break               |
+|  → = Tab                  ¬ = Soft line wrap                |
+|  ⤦ = Line break (Shift+Return)                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Invisible Character Legend:
+```
++-------------------------------------------------------------+
+|  Invisible Characters Reference                              |
++-------------------------------------------------------------+
+|                                                              |
+|  CHARACTER         SYMBOL    KEYBOARD                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Space             ·         Spacebar                        |
+|  Non-breaking      °         Option + Space                  |
+|  Tab               →         Tab key                         |
+|  Paragraph mark    ¶         Return/Enter                    |
+|  Line break        ⤦         Shift + Return                  |
+|  Soft wrap         ¬         (automatic at margins)          |
+|  Section break     ═══       Insert > Section Break          |
+|  Page break        ───       Insert > Page Break             |
+|  Column break      ┊┊┊       Insert > Column Break           |
+|                                                              |
+|  Color coding (may vary by theme):                           |
+|  • Blue: Spaces and tabs                                    |
+|  • Orange: Paragraph marks                                   |
+|  • Red: Section/page breaks                                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Finding Formatting Problems:
+```
++-------------------------------------------------------------+
+|  Using Invisibles to Find Issues                             |
++-------------------------------------------------------------+
+|                                                              |
+|  PROBLEM: Double spaces                                      |
+|  ─────────────────────────────────────────────────────────  |
+|  Hidden:    "The quick  brown fox"                          |
+|  Visible:   "The·quick··brown·fox"                          |
+|             ↑ Normal    ↑↑ Double space (problem!)          |
+|                                                              |
+|  PROBLEM: Tab vs. space inconsistency                        |
+|  ─────────────────────────────────────────────────────────  |
+|  Hidden:    "Item 1   Item 2"                               |
+|  Visible:   "Item·1→  Item·2"                               |
+|             ↑ Space   ↑ Tab (mixing = alignment issues)     |
+|                                                              |
+|  PROBLEM: Extra paragraph marks                              |
+|  ─────────────────────────────────────────────────────────  |
+|  Hidden:    [appears as blank lines]                        |
+|  Visible:   ¶                                               |
+|             ¶                                               |
+|             ¶  ← Three paragraph marks (too many!)          |
+|                                                              |
+|  PROBLEM: Line break vs. paragraph break                     |
+|  ─────────────────────────────────────────────────────────  |
+|  Hidden:    [both look like new lines]                      |
+|  Visible:   Line one⤦  ← Shift+Return (same paragraph)     |
+|             Line two                                        |
+|             New paragraph¶ ← Return (new paragraph)         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Hide invisibles for clean viewing.
+
+### Why Hide Invisibles (Default)?
+
+1. **Clean view** — See document as readers will see it
+2. **Less clutter** — Symbols can distract from content
+3. **Reading mode** — Better for reviewing text
+4. **Print preview** — Matches printed output
+5. **Default behavior** — What most users expect
+
+### Why Show Invisibles?
+
+- Troubleshooting formatting issues
+- Finding double spaces or extra returns
+- Understanding document structure
+- Preparing for publishing (clean formatting)
+- Teaching proper document formatting
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Pages TSWPShowInvisibles
+
+# Hide invisibles (default)
+defaults write com.apple.iWork.Pages TSWPShowInvisibles -bool false
+
+# Show invisibles
+defaults write com.apple.iWork.Pages TSWPShowInvisibles -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Pages TSWPShowInvisibles
+```
+
+## UI Location
+
+**View** → **Show Invisibles**
+
+```
++-------------------------------------------------------------+
+|  Pages View Menu                                             |
++-------------------------------------------------------------+
+|                                                              |
+|  View                                                        |
+|  ├── Show Page Thumbnails                                   |
+|  ├── Show Table of Contents                                 |
+|  ├── Show Comments Pane                                     |
+|  ├── ─────────────────                                      |
+|  ├── [*] Show Ruler                                         |
+|  ├── Show Word Count                                        |
+|  ├── [ ] Show Invisibles                                    |
+|  │       ^-- This setting                                   |
+|  ├── ─────────────────                                      |
+|  ├── Show Format Bar                                        |
+|  └── ...                                                    |
+|                                                              |
+|  Keyboard shortcut: ⌘ + Shift + I (may vary)               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Quick Toggle Workflow
+
+```
++-------------------------------------------------------------+
+|  Practical Invisibles Workflow                               |
++-------------------------------------------------------------+
+|                                                              |
+|  STEP 1: Write with invisibles OFF                           |
+|  ─────────────────────────────────────────────────────────  |
+|  Focus on content without distraction                        |
+|                                                              |
+|  STEP 2: Turn invisibles ON for review                       |
+|  ─────────────────────────────────────────────────────────  |
+|  View > Show Invisibles (or ⌘⇧I)                            |
+|                                                              |
+|  STEP 3: Check for common issues                             |
+|  ─────────────────────────────────────────────────────────  |
+|  • Double spaces ··                                          |
+|  • Extra paragraph breaks ¶¶¶                               |
+|  • Inconsistent indentation (tabs vs spaces)                |
+|  • Trailing spaces before paragraph marks                   |
+|                                                              |
+|  STEP 4: Fix issues and turn invisibles OFF                  |
+|  ─────────────────────────────────────────────────────────  |
+|  View > Hide Invisibles                                      |
+|  Review final appearance                                     |
+|                                                              |
+|  STEP 5: Export or print                                     |
+|  ─────────────────────────────────────────────────────────  |
+|  Document is clean and properly formatted                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show invisibles (this setting)
+defaults write com.apple.iWork.Pages TSWPShowInvisibles -bool false
+
+# Show word count
+defaults write com.apple.iWork.Pages TSWPShowWordCount -bool true
+
+# Smart quotes
+defaults write com.apple.iWork.Pages TSWPUseSmartQuotes -bool true
+
+# Smart dashes
+defaults write com.apple.iWork.Pages TSWPUseSmartDashes -bool true
+
+# Default zoom level
+defaults write com.apple.iWork.Pages TSDefaultZoom -int 100
+
+# Auto-save
+defaults write com.apple.iWork.Pages NSDocumentSavesInPlace -bool true
+```
+
+## Find and Replace with Invisibles
+
+```
++-------------------------------------------------------------+
+|  Using Find to Fix Formatting                                |
++-------------------------------------------------------------+
+|                                                              |
+|  While you can SEE invisibles, you can also FIND them:       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Find double spaces:                                         |
+|  Edit > Find > Find... (⌘F)                                 |
+|  Type two spaces in Find field                              |
+|  Replace with single space                                   |
+|                                                              |
+|  Find trailing spaces:                                       |
+|  Find: " ¶" (space before paragraph mark)                   |
+|  Replace: "¶"                                                |
+|  (Use Insert > Special Characters for ¶)                    |
+|                                                              |
+|  Note: The invisible characters themselves are not          |
+|  entered in Find/Replace - use the actual characters        |
+|  (space, tab, return)                                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't see spacing problems | Enable Show Invisibles |
+| Too many symbols cluttering view | Disable Show Invisibles |
+| Want to print without symbols | Invisibles never print |
+| Symbols appearing in exported PDF | Invisibles don't export (display only) |
+| Different symbols than expected | Symbols may vary by Pages version |
+
+## Compatibility
+
+- **Pages**: macOS 10.13+ (High Sierra)
+- **Note**: Invisibles only show in edit view
+- **Note**: Never printed or exported
+- **Note**: Toggle applies immediately
+- **Note**: Setting persists across sessions
+
+## Source File
+
+**File**: [`defaults/applications/pages.sh`](../../../../../defaults/applications/pages.sh)
+
+```bash
+run_defaults "com.apple.iWork.Pages" "TSWPShowInvisibles" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Show or hide invisible characters in Pages](https://support.apple.com/guide/pages/show-or-hide-formatting-symbols-tanfe2bda612/mac)
+- [Apple Support: Pages User Guide](https://support.apple.com/guide/pages/welcome/mac)
+- [Apple Support: Format text in Pages](https://support.apple.com/guide/pages/format-text-tan179f14aec/mac)

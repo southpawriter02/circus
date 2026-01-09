@@ -1,0 +1,322 @@
+# Photos Metadata Overlay
+
+Display photo metadata information while viewing images.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Photos` |
+| **Key** | `IPXShowMetadataInfo` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Photos displays a metadata overlay showing information like date taken, location, camera settings, and file details when viewing images. This overlay provides quick context about each photo without needing to open the Info panel. Particularly useful for photographers reviewing their work or organizing photos by technical details.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show metadata** — Display info overlay when viewing |
+| `false` | **Hide metadata** (default) — Clean viewing experience |
+
+## Visual Demonstration
+
+### With Metadata Visible:
+```
++-------------------------------------------------------------+
+|  Photos - Viewing with Metadata                              |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                    🏔️                                    │|
+|  │               [PHOTO: Mountain                          │|
+|  │                 Landscape]                               │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │  ┌──────────────────────────────────────────────────┐   │|
+|  │  │  📅 January 8, 2026 at 3:42 PM                   │   │|
+|  │  │  📍 Yosemite National Park, CA                   │   │|
+|  │  │  📷 Canon EOS R5                                 │   │|
+|  │  │  ⚙️  f/8  1/250s  ISO 100  24mm                  │   │|
+|  │  │  📐 6720 × 4480  •  45.2 MB                      │   │|
+|  │  └──────────────────────────────────────────────────┘   │|
+|  │                      ^-- Metadata overlay               │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Date and time captured                                   |
+|  ✓ GPS location (if available)                              |
+|  ✓ Camera make and model                                    |
+|  ✓ Exposure settings (aperture, shutter, ISO)               |
+|  ✓ Image dimensions and file size                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Metadata Details Shown:
+```
++-------------------------------------------------------------+
+|  Metadata Information Categories                             |
++-------------------------------------------------------------+
+|                                                              |
+|  CAPTURE INFORMATION:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|  📅 Date & Time        January 8, 2026 at 3:42:18 PM       |
+|  📍 Location           Yosemite National Park, California  |
+|  🗺️ Coordinates        37.8651° N, 119.5383° W             |
+|                                                              |
+|  CAMERA SETTINGS:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|  📷 Camera             Canon EOS R5                         |
+|  🔭 Lens               RF 24-70mm f/2.8L IS USM            |
+|  🔆 Aperture           f/8                                  |
+|  ⏱️ Shutter Speed       1/250 second                        |
+|  🔢 ISO                 100                                  |
+|  📏 Focal Length        24mm                                |
+|                                                              |
+|  FILE INFORMATION:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|  📐 Dimensions          6720 × 4480 pixels                  |
+|  📄 File Size           45.2 MB                             |
+|  🖼️ Format              HEIC / RAW                          |
+|  📁 Filename            IMG_0847.HEIC                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Metadata (Default):
+```
++-------------------------------------------------------------+
+|  Photos - Clean Viewing Mode                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                                                          │|
+|  │                    🏔️                                    │|
+|  │               [PHOTO: Mountain                          │|
+|  │                 Landscape]                               │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Full-screen photo viewing                                |
+|  ✓ No distracting overlays                                  |
+|  ✓ Better for casual browsing                               |
+|  ✗ Must open Info panel (⌘I) to see details                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Accessing Full Info Panel:
+```
++-------------------------------------------------------------+
+|  Info Panel vs Metadata Overlay                              |
++-------------------------------------------------------------+
+|                                                              |
+|  METADATA OVERLAY (this setting):                            |
+|  ─────────────────────────────────────────────────────────  |
+|  • Quick summary visible during viewing                      |
+|  • Shows key details at a glance                             |
+|  • Non-intrusive overlay                                     |
+|                                                              |
+|  INFO PANEL (⌘I):                                            |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌─────────────────────────────────────────┐ ┌───────────┐ |
+|  │                                         │ │ Info      │ |
+|  │          [PHOTO]                        │ │───────────│ |
+|  │                                         │ │ IMG_0847  │ |
+|  │                                         │ │           │ |
+|  │                                         │ │ Date:     │ |
+|  │                                         │ │ Jan 8     │ |
+|  │                                         │ │           │ |
+|  │                                         │ │ Location: │ |
+|  │                                         │ │ Yosemite  │ |
+|  │                                         │ │           │ |
+|  │                                         │ │ Camera:   │ |
+|  │                                         │ │ Canon R5  │ |
+|  └─────────────────────────────────────────┘ └───────────┘ |
+|                                                              |
+|  Info panel shows additional details:                        |
+|  • Keywords and descriptions                                 |
+|  • People recognized                                         |
+|  • Album membership                                          |
+|  • Editing history                                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show metadata for quick reference.
+
+### Why Show Metadata?
+
+1. **Photography workflow** — Review camera settings while culling
+2. **Organization** — See dates/locations without extra clicks
+3. **Learning** — Understand which settings produced good results
+4. **Quick reference** — File size/dimensions at a glance
+5. **Location context** — Remember where photos were taken
+
+### Why Hide Metadata?
+
+- Casual photo viewing (less distraction)
+- Clean, immersive slideshow experience
+- Screen recordings or presentations
+- When metadata is not relevant
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Photos IPXShowMetadataInfo
+
+# Show metadata overlay (recommended)
+defaults write com.apple.Photos IPXShowMetadataInfo -bool true
+
+# Hide metadata overlay (default)
+defaults write com.apple.Photos IPXShowMetadataInfo -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Photos IPXShowMetadataInfo
+```
+
+## UI Location
+
+**View** → **Metadata** → **Show Metadata**
+
+```
++-------------------------------------------------------------+
+|  Photos View Menu                                            |
++-------------------------------------------------------------+
+|                                                              |
+|  View                                                        |
+|  ├── Show Sidebar                       ⌥⌘S                 |
+|  ├── Hide Toolbar                                           |
+|  ├── ─────────────                                          |
+|  ├── Metadata                            ▸                  |
+|  │   ├── [*] Show Metadata                                  |
+|  │   │       ^-- This setting                               |
+|  │   ├── Keywords                                           |
+|  │   ├── Titles                                             |
+|  │   └── Referenced File Badges                             |
+|  ├── ─────────────                                          |
+|  ├── Show Hidden Photo Album                                |
+|  └── ...                                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Keyboard Shortcut
+
+```
++-------------------------------------------------------------+
+|  Quick Toggle                                                |
++-------------------------------------------------------------+
+|                                                              |
+|  Toggle metadata visibility:                                 |
+|                                                              |
+|  View > Metadata > Show Metadata                            |
+|                                                              |
+|  Or use keyboard shortcut:                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Press: ⌘ + Shift + M  (may vary by version)               |
+|                                                              |
+|  The overlay toggles on/off while viewing photos            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show metadata overlay (this setting)
+defaults write com.apple.Photos IPXShowMetadataInfo -bool true
+
+# Show Hidden album in sidebar
+defaults write com.apple.Photos IPXDefaultsShowHiddenAlbum -bool true
+
+# Auto-open when device connects
+defaults write com.apple.Photos IPXDefaultsOpenPhotosForDevice -bool false
+
+# Delete after import
+defaults write com.apple.Photos IPXDefaultsDeleteAfterImport -bool false
+
+# Enable face/people recognition
+defaults write com.apple.photoanalysisd GraphEngineDaemonEnabled -bool true
+```
+
+## Privacy Considerations
+
+```
++-------------------------------------------------------------+
+|  Metadata and Privacy                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  Photo metadata can contain sensitive information:           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  📍 GPS LOCATION                                             |
+|     • Exact coordinates where photo was taken               |
+|     • Can reveal home address, workplace, habits            |
+|                                                              |
+|  📅 DATE/TIME                                                |
+|     • When you were at specific locations                   |
+|     • Daily routine patterns                                |
+|                                                              |
+|  📷 CAMERA SERIAL                                            |
+|     • Some cameras embed serial numbers                     |
+|     • Can be traced to purchase                             |
+|                                                              |
+|  When sharing photos:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|  • Use Share > Options to control metadata                  |
+|  • Turn off "Location" when sharing publicly                |
+|  • Consider using "Export" for more control                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No metadata showing | Enable in View > Metadata > Show Metadata |
+| Missing GPS data | Photo taken with location services disabled |
+| Camera info blank | Screenshot or photo from app (no EXIF) |
+| Wrong date/time | Camera clock was incorrect when taken |
+| Can't see all details | Use Info panel (⌘I) for full information |
+
+## Compatibility
+
+- **Photos**: macOS 10.13+ (High Sierra)
+- **Note**: Metadata shown depends on what's embedded in photo
+- **Note**: Screenshots and downloads may have limited metadata
+- **Note**: iCloud photos sync metadata across devices
+- **Note**: RAW files typically have more detailed metadata
+
+## Source File
+
+**File**: [`defaults/applications/photos.sh`](../../../../../defaults/applications/photos.sh)
+
+```bash
+run_defaults "com.apple.Photos" "IPXShowMetadataInfo" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: View photo information in Photos](https://support.apple.com/guide/photos/view-photo-information-pht32bbaa53e/mac)
+- [Apple Support: Photos User Guide](https://support.apple.com/guide/photos/welcome/mac)
+- [Apple Support: Change location information for photos](https://support.apple.com/guide/photos/change-location-information-pht609ead4f/mac)

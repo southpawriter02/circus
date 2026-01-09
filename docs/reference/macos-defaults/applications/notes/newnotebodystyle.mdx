@@ -1,0 +1,366 @@
+# Notes New Note Body Style
+
+Control the initial formatting style for new notes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Notes` |
+| **Key** | `NewNoteBodyStyle` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `0` |
+
+## Description
+
+Controls the initial text formatting style when creating a new note. This determines whether the first line starts as a Title, Heading, Subheading, or plain Body text. The setting affects the visual hierarchy and size of text at the top of new notes, helping establish consistent note structure.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Title** (default) — Large bold text, best for note names |
+| `1` | **Heading** — Medium bold text, secondary emphasis |
+| `2` | **Subheading** — Small bold text, tertiary level |
+| `3` | **Body** — Regular paragraph text, no emphasis |
+
+## Visual Demonstration
+
+### Title Style (0 - Default):
+```
++-------------------------------------------------------------+
+|  New Note - Title Style                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ████████████████████████████████                       │|
+|  │  My New Note Title                                      │|
+|  │  (Large, bold - 24pt equivalent)                        │|
+|  │                                                          │|
+|  │  |                                                       │|
+|  │  ↑ Cursor here, ready to type title                     │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Best for: Named notes, documents, organized content     |
+|  ✓ Note title appears in note list                         |
+|  ✓ Creates visual hierarchy automatically                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Heading Style (1):
+```
++-------------------------------------------------------------+
+|  New Note - Heading Style                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ██████████████████████                                 │|
+|  │  Section Header                                         │|
+|  │  (Medium bold - 18pt equivalent)                        │|
+|  │                                                          │|
+|  │  |                                                       │|
+|  │  ↑ Cursor here, ready to type                           │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Best for: Section-based notes                           |
+|  ✓ Slightly smaller than title                             |
+|  ✓ Good for quick categorized notes                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Subheading Style (2):
+```
++-------------------------------------------------------------+
+|  New Note - Subheading Style                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ████████████████                                       │|
+|  │  Sub-section                                            │|
+|  │  (Small bold - 14pt equivalent)                         │|
+|  │                                                          │|
+|  │  |                                                       │|
+|  │  ↑ Cursor here, ready to type                           │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Best for: Detailed outlines                             |
+|  ✓ Subtle emphasis                                         |
+|  ✓ Good for sub-topics                                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Body Style (3):
+```
++-------------------------------------------------------------+
+|  New Note - Body Style                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Regular paragraph text                                 │|
+|  │  (Normal weight - matches DefaultFontSize)              │|
+|  │                                                          │|
+|  │  |                                                       │|
+|  │  ↑ Cursor here, ready to type                           │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Best for: Quick capture, scratch notes                  |
+|  ✓ No formatting overhead                                  |
+|  ✓ Plain text feel                                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Style Comparison:
+```
++-------------------------------------------------------------+
+|  All Styles Comparison                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  ████████████████████████████████████████               │|
+|  │  TITLE - Largest, Bold (Value: 0)                       │|
+|  │                                                          │|
+|  │  ████████████████████████████                           │|
+|  │  HEADING - Medium, Bold (Value: 1)                      │|
+|  │                                                          │|
+|  │  ██████████████████████                                 │|
+|  │  SUBHEADING - Small, Bold (Value: 2)                    │|
+|  │                                                          │|
+|  │  Body text - Regular weight (Value: 3)                  │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Size Hierarchy: Title > Heading > Subheading > Body        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `0` — Start with Title for named, organized notes.
+
+### Why Use Title?
+
+1. **Organization** — Clear note identification
+2. **Note list** — First line becomes note title in list
+3. **Hierarchy** — Natural document structure
+4. **Searchable** — Titles help find notes later
+5. **Professional** — Clean, organized appearance
+
+### Why Use Other Styles?
+
+**Heading (1)**:
+- Notes with multiple equal sections
+- Quick categorized captures
+- Less formal structure needed
+
+**Subheading (2)**:
+- Detailed outlines
+- Sub-categorized content
+- Compact note headers
+
+**Body (3)**:
+- Quick scratch notes
+- Stream of consciousness
+- No formatting desired
+- Plain text preference
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Notes NewNoteBodyStyle
+
+# Set to Title (default)
+defaults write com.apple.Notes NewNoteBodyStyle -int 0
+
+# Set to Heading
+defaults write com.apple.Notes NewNoteBodyStyle -int 1
+
+# Set to Subheading
+defaults write com.apple.Notes NewNoteBodyStyle -int 2
+
+# Set to Body
+defaults write com.apple.Notes NewNoteBodyStyle -int 3
+
+# Delete (reset to default)
+defaults delete com.apple.Notes NewNoteBodyStyle
+```
+
+## UI Location
+
+**Notes** > **Settings** > **New Notes Start With**
+
+```
++-------------------------------------------------------------+
+|  Notes Settings                                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Notes > Settings (⌘,)                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Settings                                                │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Default Account:                                        │|
+|  │  [iCloud ▼]                                              │|
+|  │                                                          │|
+|  │  Sort Notes By:                                          │|
+|  │  [Date Edited ▼]                                         │|
+|  │                                                          │|
+|  │  New Notes Start With:                                   │|
+|  │  [Title ▼]           ← This setting                     │|
+|  │   ├─ Title                                               │|
+|  │   ├─ Heading                                             │|
+|  │   ├─ Subheading                                          │|
+|  │   └─ Body                                                │|
+|  │                                                          │|
+|  │  Default Text Size:                                      │|
+|  │  [───────●──────]                                        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Note List Behavior
+
+```
++-------------------------------------------------------------+
+|  How Title Style Affects Note List                           |
++-------------------------------------------------------------+
+|                                                              |
+|  When using Title style (0):                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Note Content:                    Note List Shows:           |
+|  ┌─────────────────────┐        ┌─────────────────────┐    |
+|  │ Meeting Notes       │  ───▶  │ Meeting Notes       │    |
+|  │ Discussed quarterly │        │ Discussed quarterly │    |
+|  │ goals and metrics   │        │ goals and metrics   │    |
+|  └─────────────────────┘        └─────────────────────┘    |
+|     ↑ Title line                   ↑ Becomes note name     |
+|                                                              |
+|  When using Body style (3):                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Note Content:                    Note List Shows:           |
+|  ┌─────────────────────┐        ┌─────────────────────┐    |
+|  │ Discussed quarterly │  ───▶  │ Discussed quarterly │    |
+|  │ goals and metrics   │        │ goals and metrics   │    |
+|  │ for the team...     │        │ for the team...     │    |
+|  └─────────────────────┘        └─────────────────────┘    |
+|     ↑ Body text                    ↑ First line as name    |
+|                                                              |
+|  Tip: Title style creates cleaner, more identifiable notes  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# New note body style (this setting)
+defaults write com.apple.Notes NewNoteBodyStyle -int 0
+
+# Default font size (10-36 points)
+defaults write com.apple.Notes DefaultFontSize -int 16
+
+# Sort notes order (1=Date Edited, 2=Date Created, 3=Title)
+defaults write com.apple.Notes NotesSortOrder -int 1
+
+# Group notes by date
+defaults write com.apple.Notes GroupNotesByDate -bool true
+
+# Folders sort order
+defaults write com.apple.Notes FoldersSortOrder -int 1
+```
+
+## Keyboard Shortcuts in Notes
+
+```
++-------------------------------------------------------------+
+|  Format Shortcuts in Notes                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Even after creating a note, you can change formatting:      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ⌘⇧T          Title                                        |
+|  ⌘⇧H          Heading                                      |
+|  ⌘⇧J          Subheading                                   |
+|  ⌘⇧B          Body                                         |
+|                                                              |
+|  ⌘B           Bold                                          |
+|  ⌘I           Italic                                        |
+|  ⌘U           Underline                                     |
+|  ⌘⇧S          Strikethrough                                |
+|                                                              |
+|  ⌘⇧L          Checklist                                    |
+|  ⌘⇧7          Bulleted List                                |
+|  ⌘⇧8          Dashed List                                  |
+|  ⌘⇧9          Numbered List                                |
+|                                                              |
+|  Note: You can always change style after note creation      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Quit and restart Notes |
+| Old notes unchanged | Setting only affects new notes |
+| Style looks different | May vary with font size setting |
+| Want different styles per folder | Not supported; global setting |
+| Title too big | Consider Heading (1) or adjust font size |
+
+## Compatibility
+
+- **Notes**: macOS 10.15+ (Catalina) for full formatting
+- **Note**: Setting syncs via iCloud
+- **Note**: Only affects new notes, not existing
+- **Note**: Works with all account types (iCloud, On My Mac)
+- **Note**: iOS Notes has similar setting
+
+## Source File
+
+**File**: [`defaults/applications/notes.sh`](../../../../../defaults/applications/notes.sh)
+
+```bash
+run_defaults "com.apple.Notes" "NewNoteBodyStyle" "-int" "0"
+```
+
+## References
+
+- [Apple Support: Use Notes on your Mac](https://support.apple.com/guide/notes/welcome/mac)
+- [Apple Support: Format text in Notes](https://support.apple.com/guide/notes/format-text-apd310fc42ce/mac)
+- [Apple Support: Notes keyboard shortcuts](https://support.apple.com/guide/notes/keyboard-shortcuts-apd6e7f1a228/mac)

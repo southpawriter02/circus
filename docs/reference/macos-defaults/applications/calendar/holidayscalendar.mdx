@@ -1,0 +1,367 @@
+# Calendar Holidays Calendar
+
+Control whether the regional Holidays calendar is displayed.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iCal` |
+| **Key** | `add holiday calendar` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Calendar displays the regional Holidays calendar, which shows public holidays based on your system's region setting. The holidays calendar helps with planning by showing national holidays, bank holidays, and other regional observances. Events appear as all-day events and are automatically updated by Apple.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show holidays** (default) — Regional holidays visible in calendar |
+| `false` | **Hide holidays** — No holiday calendar shown |
+
+## Visual Demonstration
+
+### With Holidays Calendar (true):
+```
++-------------------------------------------------------------+
+|  Calendar - January 2026                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │        January 2026                                     │|
+|  │  Sun    Mon    Tue    Wed    Thu    Fri    Sat         │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                  1      2      3                        │|
+|  │               🎉 New                                    │|
+|  │               Year's                                    │|
+|  │               Day                                       │|
+|  │                                                          │|
+|  │   4      5      6      7      8      9     10          │|
+|  │                                                          │|
+|  │  11     12     13     14     15     16     17          │|
+|  │                                                          │|
+|  │  18     19     20     21     22     23     24          │|
+|  │       🇺🇸 MLK                                           │|
+|  │          Day                                            │|
+|  │                                                          │|
+|  │  25     26     27     28     29     30     31          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ See holidays for planning                               |
+|  ✓ Know when businesses are closed                         |
+|  ✓ Plan time off around holidays                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Holidays Calendar (false):
+```
++-------------------------------------------------------------+
+|  Calendar - January 2026                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │        January 2026                                     │|
+|  │  Sun    Mon    Tue    Wed    Thu    Fri    Sat         │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                  1      2      3                        │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │   4      5      6      7      8      9     10          │|
+|  │                                                          │|
+|  │  11     12     13     14     15     16     17          │|
+|  │                                                          │|
+|  │  18     19     20     21     22     23     24          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │  25     26     27     28     29     30     31          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✗ No holiday visibility                                   |
+|  ✗ May miss planning considerations                        |
+|  ✓ Cleaner calendar view                                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Holiday Calendar in Sidebar:
+```
++-------------------------------------------------------------+
+|  Calendar Sidebar                                            |
++-------------------------------------------------------------+
+|                                                              |
+|  CALENDARS                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  iCloud                                                      |
+|  │ ● Home                                                   |
+|  │ ● Work                                                   |
+|  │ ● Personal                                               |
+|  │                                                          |
+|  Other                                                       |
+|  │ ● Birthdays                                              |
+|  │ ● Holidays        ← Holidays calendar                   |
+|  │   (United States)                                        |
+|  │                                                          |
+|  Subscribed                                                  |
+|  │ ○ Team Calendar                                          |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Tip: Click checkbox to show/hide holidays                  |
+|  Note: Can't delete, but can hide via checkbox              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Common Holidays Shown:
+```
++-------------------------------------------------------------+
+|  Example Holidays by Region                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  🇺🇸 UNITED STATES:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  • New Year's Day (Jan 1)                                   |
+|  • Martin Luther King Jr. Day                               |
+|  • Presidents' Day                                          |
+|  • Memorial Day                                             |
+|  • Independence Day (Jul 4)                                 |
+|  • Labor Day                                                |
+|  • Columbus Day                                             |
+|  • Veterans Day                                             |
+|  • Thanksgiving                                             |
+|  • Christmas Day (Dec 25)                                   |
+|                                                              |
+|  🇬🇧 UNITED KINGDOM:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|  • New Year's Day                                           |
+|  • Good Friday, Easter Monday                               |
+|  • Early May Bank Holiday                                   |
+|  • Spring Bank Holiday                                      |
+|  • Summer Bank Holiday                                      |
+|  • Christmas Day, Boxing Day                                |
+|                                                              |
+|  🇩🇪 GERMANY:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|  • Neujahr, Tag der Arbeit                                  |
+|  • Tag der Deutschen Einheit                                |
+|  • Weihnachten (1. & 2. Feiertag)                          |
+|  • Plus regional holidays                                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show holidays for planning purposes.
+
+### Why Show Holidays?
+
+1. **Planning** — Know when businesses/offices are closed
+2. **Scheduling** — Avoid booking meetings on holidays
+3. **Awareness** — Don't miss important dates
+4. **Coordination** — Helpful for international teams
+5. **Time off** — Plan vacations around holidays
+
+### Why Hide Holidays?
+
+- Calendar looks cluttered with holiday events
+- Holidays not relevant to your work
+- Using a different holiday calendar (subscribed)
+- Prefer minimal calendar view
+- Holidays differ from your region
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iCal "add holiday calendar"
+
+# Show holidays calendar (default)
+defaults write com.apple.iCal "add holiday calendar" -bool true
+
+# Hide holidays calendar
+defaults write com.apple.iCal "add holiday calendar" -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iCal "add holiday calendar"
+```
+
+## UI Location
+
+**Calendar** > **Settings** > **General** > **Show Holidays calendar**
+
+```
++-------------------------------------------------------------+
+|  Calendar Settings - General                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Calendar > Settings (⌘,) > General                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  General                                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Default Calendar:                                       │|
+|  │  [Home ▼]                                                │|
+|  │                                                          │|
+|  │  Default alert:                                          │|
+|  │  [15 minutes before ▼]                                   │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [✓] Show Birthdays calendar                            │|
+|  │                                                          │|
+|  │  [✓] Show Holidays calendar    ← This setting           │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Alternative: Hide via Sidebar
+
+```
++-------------------------------------------------------------+
+|  Alternative: Toggle in Sidebar                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Instead of removing the calendar entirely, you can toggle  |
+|  visibility in the sidebar:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Other                                                       |
+|  │ ● Birthdays        (checked = visible)                   |
+|  │ ○ Holidays         (unchecked = hidden)                  |
+|      ↑                                                       |
+|      Click to toggle visibility                              |
+|                                                              |
+|  Difference:                                                 |
+|  • Setting = false: Calendar removed entirely               |
+|  • Sidebar unchecked: Calendar exists but hidden            |
+|                                                              |
+|  Sidebar method lets you quickly show/hide as needed        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Region Settings
+
+```
++-------------------------------------------------------------+
+|  How Holidays Region is Determined                           |
++-------------------------------------------------------------+
+|                                                              |
+|  The holidays shown are based on:                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  System Settings > General > Language & Region > Region     |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Language & Region                                       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Region: [United States ▼]                              │|
+|  │                                                          │|
+|  │  • Determines holiday calendar region                   │|
+|  │  • Also affects date/time/number formats                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  To show different region's holidays:                        |
+|  1. Change system region, OR                                |
+|  2. Subscribe to a different holiday calendar               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show holidays calendar (this setting)
+defaults write com.apple.iCal "add holiday calendar" -bool true
+
+# Show birthdays calendar (from Contacts)
+defaults write com.apple.iCal "display birthdays calendar" -bool true
+
+# Show week numbers
+defaults write com.apple.iCal "Show Week Numbers" -bool true
+
+# Time zone support
+defaults write com.apple.iCal "TimeZone support enabled" -bool true
+
+# First day of week
+defaults write com.apple.iCal "first day of week" -int 1
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Wrong holidays showing | Check System Settings > Language & Region |
+| Holidays not appearing | Enable setting and restart Calendar |
+| Want multiple regions | Subscribe to additional holiday calendars |
+| Holiday events can't be deleted | They're read-only; hide via sidebar |
+| Holidays sync issues | Wait for iCloud sync; check internet |
+
+## Subscribed Holiday Calendars
+
+If the built-in holidays don't fit your needs, you can subscribe to alternative calendars:
+
+```
++-------------------------------------------------------------+
+|  Alternative Holiday Calendar Sources                        |
++-------------------------------------------------------------+
+|                                                              |
+|  1. File > New Calendar Subscription                         |
+|  2. Enter URL for holiday calendar                           |
+|                                                              |
+|  Popular sources:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • webcal://www.officeholidays.com/ics/usa                  |
+|  • Google Calendar holiday calendars                        |
+|  • timeanddate.com ICS feeds                                |
+|  • Company/organization holiday calendars                   |
+|                                                              |
+|  Benefits of subscribed calendars:                           |
+|  ─────────────────────────────────────────────────────────  |
+|  • Multiple regions simultaneously                          |
+|  • Religious/cultural holidays                              |
+|  • Industry-specific dates                                  |
+|  • School calendars                                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Compatibility
+
+- **Calendar**: macOS 10.8+ (Mountain Lion)
+- **Note**: Holidays based on system region setting
+- **Note**: Holiday calendar is read-only
+- **Note**: Syncs across devices via iCloud
+- **Note**: Apple updates holiday data automatically
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../../defaults/applications/calendar.sh)
+
+```bash
+run_defaults "com.apple.iCal" "add holiday calendar" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change Calendar preferences](https://support.apple.com/guide/calendar/change-general-preferences-icl1023/mac)
+- [Apple Support: Set up iCloud Calendar](https://support.apple.com/guide/calendar/set-up-icloud-calendar-icl1022/mac)
+- [Apple Support: Subscribe to calendars](https://support.apple.com/guide/calendar/subscribe-to-calendars-icl1022/mac)

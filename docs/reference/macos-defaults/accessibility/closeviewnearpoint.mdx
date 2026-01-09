@@ -1,0 +1,295 @@
+# Accessibility Minimum Zoom Level (Maximum Magnification)
+
+Set the maximum magnification when zoomed in.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `closeViewNearPoint` |
+| **Type** | Integer |
+| **Default Value** | `20` |
+| **Our Setting** | `20` |
+
+## Description
+
+Controls the maximum zoom magnification level when using macOS's accessibility zoom feature. This sets how far you can zoom into the screen — the "closest" view to the content. Despite the confusing naming convention (`NearPoint` = maximum zoom, `FarPoint` = minimum zoom), this setting determines how much magnification is available when you're fully zoomed in.
+
+## Values
+
+| Value | Magnification | Use Case |
+|-------|---------------|----------|
+| `2` | **2x** | Slight magnification for small text |
+| `5` | **5x** | General readability assistance |
+| `10` | **10x** | Low vision support |
+| `15` | **15x** | Detailed inspection |
+| `20` | **20x** (default) | Full accessibility range |
+| `40` | **40x** | Maximum - pixel-level viewing |
+
+## Visual Demonstration
+
+### Maximum Zoom Comparison:
+```
++-------------------------------------------------------------+
+|  Zoom Magnification Levels                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Original text at 1x (normal):                               |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ Hello World                                              │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  At 5x magnification (closeViewNearPoint = 5):              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │     H e l l o                                           │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  At 10x magnification (closeViewNearPoint = 10):            |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                                                          │|
+|  │         e l                                              │|
+|  │                                                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  At 20x magnification (closeViewNearPoint = 20):            |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ ████████████████                                         │|
+|  │ █              █                                         │|
+|  │ █   ██████     █  ← Individual character visible        │|
+|  │ █   █    █     █                                         │|
+|  │ █   ██████     █                                         │|
+|  │ █   █          █                                         │|
+|  │ █   ██████     █                                         │|
+|  │ █              █                                         │|
+|  │ ████████████████                                         │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Zoom Range Slider:
+```
++-------------------------------------------------------------+
+|  Zoom Range Configuration                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  The zoom range is defined by two settings:                  |
+|                                                              |
+|  closeViewFarPoint = 1 (zoomed out / minimum)               |
+|  closeViewNearPoint = 20 (zoomed in / maximum)              |
+|                                                              |
+|  Slider visualization:                                       |
+|                                                              |
+|  Zoomed Out                              Zoomed In          |
+|  (FarPoint)                              (NearPoint)        |
+|      │                                        │             |
+|      ▼                                        ▼             |
+|  1x  ├────────────────────────────────────────┤  20x        |
+|      │    │    │    │    │    │    │    │    │              |
+|      1x   2x   5x   7x   10x  12x  15x  17x  20x             |
+|                                                              |
+|  User can zoom anywhere in this range:                       |
+|  • ⌥⌘= or Control+scroll up to zoom IN (toward 20x)         |
+|  • ⌥⌘- or Control+scroll down to zoom OUT (toward 1x)       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Practical Use Cases:
+```
++-------------------------------------------------------------+
+|  Recommended NearPoint Settings                              |
++-------------------------------------------------------------+
+|                                                              |
+|  For occasional text magnification:                          |
+|  ─────────────────────────────────────────────────────────  |
+|  NearPoint = 5                                               |
+|  Good for: Reading small print, viewing tiny UI elements    |
+|  1x ────────────●                                            |
+|                 5x                                           |
+|                                                              |
+|  For accessibility / low vision:                             |
+|  ─────────────────────────────────────────────────────────  |
+|  NearPoint = 20 (default)                                    |
+|  Good for: Vision impairment, detailed content viewing      |
+|  1x ────────────────────────────────────────────●            |
+|                                                 20x          |
+|                                                              |
+|  For design / pixel-level work:                              |
+|  ─────────────────────────────────────────────────────────  |
+|  NearPoint = 40                                              |
+|  Good for: UI design, pixel art, quality inspection         |
+|  1x ────────────────────────────────────────────────────●    |
+|                                                         40x  |
+|                                                              |
+|  For presentations:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  NearPoint = 10                                              |
+|  Good for: Showing code to audience, demos                  |
+|  1x ──────────────────●                                      |
+|                       10x                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `20` — Standard accessibility range for maximum flexibility.
+
+### Why 20x Maximum?
+
+1. **Accessibility** — Supports various vision needs
+2. **Flexibility** — Wide range for different situations
+3. **Standard** — Apple's default recommendation
+4. **Practical** — Beyond 20x rarely useful
+5. **Balance** — Enough zoom without extremes
+
+### Why Higher (40x)?
+
+- Pixel-level design work
+- Extreme vision impairment
+- Quality assurance testing
+- Digital art creation
+
+### Why Lower (5-10x)?
+
+- Prevent over-zooming
+- Simpler zoom control
+- Casual use only
+- Faster zoom transitions
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess closeViewNearPoint
+
+# Set maximum zoom to 20x (recommended)
+defaults write com.apple.universalaccess closeViewNearPoint -int 20
+
+# Set maximum zoom to 10x (moderate)
+defaults write com.apple.universalaccess closeViewNearPoint -int 10
+
+# Set maximum zoom to 40x (extreme)
+defaults write com.apple.universalaccess closeViewNearPoint -int 40
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess closeViewNearPoint
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Zoom**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Zoom                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Zoom                                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [*] Use keyboard shortcuts to zoom                          |
+|  [*] Use scroll gesture with modifier keys to zoom           |
+|                                                              |
+|  Zoom style: [Full Screen                              v]   |
+|                                                              |
+|  Zoom range:                                                 |
+|  Minimum  |────────────────────────────────●|  Maximum      |
+|           1x                              20x               |
+|                                             ↑               |
+|                                    closeViewNearPoint       |
+|                                                              |
+|  Drag the Maximum slider to adjust closeViewNearPoint       |
+|                                                              |
+|  [Advanced...]                                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Maximum zoom level (this setting)
+defaults write com.apple.universalaccess closeViewNearPoint -int 20
+
+# Minimum zoom level
+defaults write com.apple.universalaccess closeViewFarPoint -int 1
+
+# Enable keyboard shortcuts for zoom
+defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool true
+
+# Enable scroll gesture zoom
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+# Zoom follows keyboard focus
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+
+# Smooth zoomed images
+defaults write com.apple.universalaccess closeViewSmoothImages -bool true
+```
+
+## Complete Zoom Configuration
+
+```bash
+#!/bin/bash
+# Complete zoom setup for accessibility
+
+# Enable zoom features
+defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool true
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+# Set zoom range
+defaults write com.apple.universalaccess closeViewFarPoint -int 1
+defaults write com.apple.universalaccess closeViewNearPoint -int 20
+
+# Use Control for scroll gesture
+defaults write com.apple.universalaccess closeViewScrollWheelModifiersInt -int 262144
+
+# Full screen zoom style
+defaults write com.apple.universalaccess closeViewZoomMode -int 0
+
+# Smooth images when zoomed
+defaults write com.apple.universalaccess closeViewSmoothImages -bool true
+
+# Follow keyboard focus
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+
+echo "Zoom configured. May require logout to take effect."
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't zoom in enough | Increase closeViewNearPoint value |
+| Zoom too extreme | Decrease closeViewNearPoint value |
+| Zoomed view is pixelated | Enable "Smooth images" |
+| Zoom not following cursor | Check zoom style and follow focus settings |
+| Settings not saving | Try logging out and back in |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Part of accessibility features
+- **Note**: Works with all zoom styles
+- **Note**: Some changes may require logout
+
+## Source File
+
+**File**: [`defaults/accessibility/zoom.sh`](../../../../defaults/accessibility/zoom.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "closeViewNearPoint" "-int" "20"
+```
+
+## References
+
+- [Apple Support: Zoom in on the Mac screen](https://support.apple.com/guide/mac-help/zoom-in-on-the-mac-screen-mh35715/mac)
+- [Apple Support: Change Zoom preferences](https://support.apple.com/guide/mac-help/change-zoom-preferences-mchl70c97e7f/mac)
+- [Apple Accessibility: Vision features](https://www.apple.com/accessibility/vision/)

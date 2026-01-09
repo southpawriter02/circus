@@ -1,0 +1,323 @@
+# Gatekeeper Quarantine Dialog
+
+Control whether macOS shows security prompts for downloaded applications.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.LaunchServices` |
+| **Key** | `LSQuarantine` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether macOS displays the "Are you sure you want to open this application?" dialog when launching applications downloaded from the internet. This is part of macOS's Gatekeeper security system. When enabled, downloaded files receive a quarantine extended attribute that triggers security verification and user confirmation before first run. This is a critical security feature that should remain enabled.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Quarantine enabled** (default) — Show security dialog for downloads |
+| `false` | **Quarantine disabled** — No prompts (DANGEROUS) |
+
+## Visual Demonstration
+
+### Quarantine Enabled (true - Default):
+```
++-------------------------------------------------------------+
+|  Gatekeeper Quarantine Flow                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  STEP 1: Download Application                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Safari downloads "CoolApp.dmg"                             |
+|  macOS adds quarantine attribute:                           |
+|  com.apple.quarantine = "0181;...;Safari;..."              |
+|                                                              |
+|  STEP 2: First Launch Attempt                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  User double-clicks CoolApp                                 |
+|  macOS detects quarantine flag                              |
+|  Gatekeeper verification begins                             |
+|                                                              |
+|  STEP 3: Security Dialog                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  "CoolApp" is an app downloaded from the Internet.      │|
+|  │                                                          │|
+|  │  Are you sure you want to open it?                      │|
+|  │                                                          │|
+|  │  Safari downloaded this file on January 8, 2026         │|
+|  │  from coolapp.com                                        │|
+|  │                                                          │|
+|  │  [Cancel]                              [Open]           │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  STEP 4: After Approval                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Quarantine flag removed from app                           |
+|  Future launches don't prompt                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Different Warning Scenarios:
+```
++-------------------------------------------------------------+
+|  Gatekeeper Warning Types                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  SIGNED BY IDENTIFIED DEVELOPER:                             |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  "AppName" is an app downloaded from the Internet.      │|
+|  │                                                          │|
+|  │  Are you sure you want to open it?                      │|
+|  │                                                          │|
+|  │  [Cancel]                              [Open]           │|
+|  └─────────────────────────────────────────────────────────┘|
+|  Result: Can open normally                                  |
+|                                                              |
+|  UNSIGNED OR UNIDENTIFIED DEVELOPER:                         |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  "AppName" can't be opened because Apple cannot check   │|
+|  │  it for malicious software.                              │|
+|  │                                                          │|
+|  │  This software needs to be updated. Contact the         │|
+|  │  developer for more information.                        │|
+|  │                                                          │|
+|  │  [Move to Trash]                       [Cancel]         │|
+|  └─────────────────────────────────────────────────────────┘|
+|  Workaround: Right-click > Open, or System Settings         |
+|                                                              |
+|  KNOWN MALWARE DETECTED:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ⛔️ "AppName" will damage your computer.                │|
+|  │                                                          │|
+|  │  You should move it to the Trash.                       │|
+|  │                                                          │|
+|  │  [Move to Trash]                       [Cancel]         │|
+|  └─────────────────────────────────────────────────────────┘|
+|  Result: BLOCKED - known malicious software                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Quarantine Disabled (false - DANGEROUS):
+```
++-------------------------------------------------------------+
+|  ⚠️  WARNING: Quarantine Disabled                           |
++-------------------------------------------------------------+
+|                                                              |
+|  WHAT HAPPENS:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Downloads launch WITHOUT:                                   |
+|  ✗ Security verification dialog                            |
+|  ✗ Developer signature check                               |
+|  ✗ Malware scanning                                        |
+|  ✗ User confirmation                                       |
+|                                                              |
+|  SECURITY RISKS:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Malware can run silently after download                 |
+|  • Phishing attacks more effective                         |
+|  • No protection from drive-by downloads                   |
+|  • Social engineering attacks easier                       |
+|  • Ransomware can execute immediately                      |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ⛔️ DO NOT DISABLE THIS SETTING                         │|
+|  │                                                          │|
+|  │  This is a critical security feature.                   │|
+|  │  Keep it enabled (true) always.                         │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Security Implications
+
+```
++-------------------------------------------------------------+
+|  🔒 CRITICAL SECURITY SETTING                                |
++-------------------------------------------------------------+
+|                                                              |
+|  THE QUARANTINE SYSTEM PROTECTS AGAINST:                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. DRIVE-BY DOWNLOADS                                       |
+|     Malicious files that download without user action       |
+|     are stopped before they can execute                     |
+|                                                              |
+|  2. TROJAN HORSE APPLICATIONS                                |
+|     Apps disguised as legitimate software must pass         |
+|     Gatekeeper verification                                 |
+|                                                              |
+|  3. SOCIAL ENGINEERING                                       |
+|     Users get a moment to consider before running           |
+|     "Open Invoice.app" from email                           |
+|                                                              |
+|  4. MODIFIED APPLICATIONS                                    |
+|     Re-downloads of tampered apps are flagged               |
+|                                                              |
+|  5. KNOWN MALWARE                                            |
+|     XProtect blocks known malicious software                |
+|                                                              |
+|  NEVER DISABLE THIS SETTING FOR CONVENIENCE                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Keep quarantine enabled for security.
+
+### Why Keep Enabled?
+
+1. **Essential security** — First line of defense against malware
+2. **No performance impact** — One-time check per app
+3. **User awareness** — Know what you're running
+4. **Malware protection** — Blocks known threats
+5. **Apple default** — Expected behavior
+
+### Why NEVER Disable?
+
+- Removes critical security protection
+- Allows malware to run unchecked
+- No legitimate reason for regular users
+- Even power users should keep enabled
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.LaunchServices LSQuarantine
+
+# Keep quarantine enabled (ALWAYS)
+defaults write com.apple.LaunchServices LSQuarantine -bool true
+
+# DO NOT RUN - Disable quarantine (DANGEROUS)
+# defaults write com.apple.LaunchServices LSQuarantine -bool false
+
+# Delete (reset to default - enabled)
+defaults delete com.apple.LaunchServices LSQuarantine
+```
+
+## Manually Removing Quarantine (When Necessary)
+
+```
++-------------------------------------------------------------+
+|  Handling Quarantine for Specific Files                      |
++-------------------------------------------------------------+
+|                                                              |
+|  IF you need to run an unsigned app you trust:               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  OPTION 1: Right-click > Open                                |
+|  • Right-click (or Ctrl-click) the app                      |
+|  • Select "Open"                                            |
+|  • Click "Open" in the dialog                               |
+|  • App is allowed once, quarantine attribute kept           |
+|                                                              |
+|  OPTION 2: System Settings                                   |
+|  • System Settings > Privacy & Security                     |
+|  • Scroll to "Security"                                     |
+|  • Find "AppName was blocked..."                           |
+|  • Click "Open Anyway"                                      |
+|                                                              |
+|  OPTION 3: Remove attribute (advanced)                       |
+|  • xattr -d com.apple.quarantine /path/to/app              |
+|  • Only for specific files you've verified                  |
+|  • Does NOT disable quarantine system-wide                  |
+|                                                              |
+|  NEVER use these methods for apps from unknown sources       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## How Quarantine Works
+
+```
++-------------------------------------------------------------+
+|  Quarantine Extended Attribute                               |
++-------------------------------------------------------------+
+|                                                              |
+|  View quarantine info:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  xattr -p com.apple.quarantine /path/to/file               |
+|                                                              |
+|  Example output:                                             |
+|  0181;5f8a1234;Safari;E8A4D612-1234-5678-9ABC-DEF012345678 |
+|                                                              |
+|  Components:                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  0181        - Flags (indicates type and origin)           |
+|  5f8a1234    - Timestamp (hex, Unix time)                  |
+|  Safari      - Application that downloaded the file        |
+|  E8A4D612... - UUID of downloading application             |
+|                                                              |
+|  Files with this attribute trigger Gatekeeper.              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Quarantine dialog (this setting - keep enabled)
+defaults write com.apple.LaunchServices LSQuarantine -bool true
+
+# Gatekeeper can also be controlled via spctl:
+# Check status
+spctl --status
+
+# Enable Gatekeeper (recommended)
+# sudo spctl --master-enable
+
+# Allow specific app (if blocked)
+# sudo spctl --add /path/to/app.app
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| App won't open, says "damaged" | Re-download from official source |
+| "Cannot check for malicious software" | Right-click > Open, or use System Settings |
+| App from trusted developer blocked | Check developer certificate validity |
+| Want to allow unsigned app | Use right-click method, not disable quarantine |
+| Attribute persists after allowing | This is normal; attribute tracks origin |
+
+## Compatibility
+
+- **macOS**: 10.5+ (Leopard) introduced quarantine
+- **Note**: Part of Gatekeeper system since 10.7.5
+- **Note**: Works with all download methods (browser, curl, etc.)
+- **Note**: Some apps may require additional verification
+- **Note**: XProtect works alongside quarantine
+
+## Source File
+
+**File**: [`defaults/system/gatekeeper.sh`](../../../../defaults/system/gatekeeper.sh)
+
+```bash
+run_defaults "com.apple.LaunchServices" "LSQuarantine" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Safely open apps on your Mac](https://support.apple.com/en-us/HT202491)
+- [Apple Support: About Gatekeeper](https://support.apple.com/guide/security/gatekeeper-and-runtime-protection-sec5599b66df/web)
+- [Apple Platform Security: App security overview](https://support.apple.com/guide/security/app-security-overview-sec35dd877d0/web)

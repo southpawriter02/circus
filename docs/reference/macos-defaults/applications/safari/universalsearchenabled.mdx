@@ -1,0 +1,307 @@
+# Safari Search Suggestions Privacy
+
+Control whether Safari sends search queries to Apple for suggestions.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `UniversalSearchEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Safari sends your keystrokes from the Smart Search Field to Apple's servers for generating search suggestions. When enabled, every character you type in the address bar is transmitted to Apple to provide real-time search suggestions, website recommendations, and Siri Suggestions. Disabling this keeps your searches private and prevents any data transmission to Apple until you explicitly submit the search.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enabled** (default) — Queries sent to Apple for suggestions |
+| `false` | **Disabled** — No data sent to Apple until search submitted |
+
+## Visual Demonstration
+
+### Search Suggestions Enabled (Default):
+```
++-------------------------------------------------------------+
+|  Safari Smart Search Field - Suggestions ON                  |
++-------------------------------------------------------------+
+|                                                              |
+|  As you type each letter:                                    |
+|  ┌─────────────────────────────────────────────────────────┐ |
+|  │ 🔍 how to c                                              │ |
+|  └─────────────────────────────────────────────────────────┘ |
+|           ↓                                                  |
+|  ┌─────────────────────────────────────────────────────────┐ |
+|  │ Your keystrokes: "how to c" → Apple Servers             │ |
+|  └─────────────────────────────────────────────────────────┘ |
+|           ↓                                                  |
+|  ┌─────────────────────────────────────────────────────────┐ |
+|  │   Suggested Searches:                                   │ |
+|  │   ● how to cook pasta                                   │ |
+|  │   ● how to change password                              │ |
+|  │   ● how to convert pdf                                  │ |
+|  │                                                          │ |
+|  │   Siri Suggestions:                                      │ |
+|  │   📍 How to Cook Everything (Book)                      │ |
+|  │   🌐 cooking.com                                        │ |
+|  └─────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  Privacy concern:                                            |
+|  * Every keystroke transmitted to Apple                     |
+|  * Searches logged (even if not submitted)                  |
+|  * May include sensitive/personal queries                   |
+|  * IP address and device info included                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Search Suggestions Disabled (Recommended):
+```
++-------------------------------------------------------------+
+|  Safari Smart Search Field - Suggestions OFF                 |
++-------------------------------------------------------------+
+|                                                              |
+|  As you type:                                                |
+|  ┌─────────────────────────────────────────────────────────┐ |
+|  │ 🔍 how to cook pasta                                     │ |
+|  └─────────────────────────────────────────────────────────┘ |
+|           ↓                                                  |
+|  ┌─────────────────────────────────────────────────────────┐ |
+|  │   History matches only:                                  │ |
+|  │   ● Previously visited: cooking.nytimes.com             │ |
+|  │   ● Bookmark: Mom's Pasta Recipe                        │ |
+|  │                                                          │ |
+|  │   No external suggestions (nothing sent to Apple)       │ |
+|  └─────────────────────────────────────────────────────────┘ |
+|           ↓                                                  |
+|  ┌─────────────────────────────────────────────────────────┐ |
+|  │   Press Enter to search                                 │ |
+|  │                                                          │ |
+|  │   Only then: Query sent to your search engine           │ |
+|  │   (Google, DuckDuckGo, etc.)                            │ |
+|  └─────────────────────────────────────────────────────────┘ |
+|                                                              |
+|  Privacy benefits:                                           |
+|  * No keystrokes sent until you submit                      |
+|  * Only your search engine sees the query                   |
+|  * Browsing history stays local                             |
+|  * No Siri profiling of search behavior                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Data Flow Comparison:
+```
++-------------------------------------------------------------+
+|  Data Transmission Comparison                                |
++-------------------------------------------------------------+
+|                                                              |
+|  ENABLED (UniversalSearchEnabled = true):                    |
+|                                                              |
+|  User types → Safari → Apple Servers → Suggestions           |
+|      ↓              ↓                                        |
+|  "h"              Sent: "h"                                  |
+|  "ho"             Sent: "ho"                                 |
+|  "how"            Sent: "how"                                |
+|  "how "           Sent: "how "                               |
+|  "how t"          Sent: "how t"                              |
+|  ...              ...                                        |
+|                                                              |
+|  Total transmissions: ~20+ per search query                 |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  DISABLED (UniversalSearchEnabled = false):                  |
+|                                                              |
+|  User types → Safari (local only) → No transmission          |
+|      ↓                                                       |
+|  Full query typed locally                                    |
+|  Press Enter                                                 |
+|      ↓                                                       |
+|  Query sent to search engine (Google, etc.)                 |
+|                                                              |
+|  Total transmissions: 1 (to search engine only)             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Security Implications
+
+| Aspect | Enabled | Disabled |
+|--------|---------|----------|
+| **Data to Apple** | Every keystroke | None |
+| **Query logging** | Partial searches logged | No logging until submit |
+| **IP tracking** | With each keystroke | Only with search engine |
+| **Profile building** | Siri learns patterns | No Siri involvement |
+| **Sensitive queries** | Exposed mid-typing | Never exposed |
+
+### Privacy Considerations
+
+When enabled:
+- Medical, financial, personal queries exposed to Apple
+- Typos and half-formed thoughts transmitted
+- Creates searchable pattern of interests
+- Tied to Apple ID if signed in
+
+When disabled:
+- Only your chosen search engine sees queries
+- Can use privacy-focused search (DuckDuckGo)
+- No Apple involvement in searching
+- Complete typing privacy
+
+## Our Configuration
+
+**Set to**: `false` — Disable search suggestions for privacy.
+
+### Why Disable?
+
+1. **Privacy** — No keystroke transmission to Apple
+2. **Security** — Sensitive queries stay private
+3. **Control** — Choose what you share
+4. **Simplicity** — History suggestions still work
+5. **Speed** — Slight reduction in network traffic
+
+### Why Keep Enabled?
+
+- Prefer convenient suggestions
+- Trust Apple's privacy practices
+- Use Siri Suggestions features
+- Want website recommendations
+- Like the autocomplete experience
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari UniversalSearchEnabled
+
+# Disable search suggestions (recommended for privacy)
+defaults write com.apple.Safari UniversalSearchEnabled -bool false
+
+# Enable search suggestions (default)
+defaults write com.apple.Safari UniversalSearchEnabled -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.Safari UniversalSearchEnabled
+```
+
+## UI Location
+
+**Safari** → **Settings** → **Search** → **Include Safari Suggestions**
+
+```
++-------------------------------------------------------------+
+|  Safari Settings > Search                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Search engine:  [Google                              v]    |
+|                                                              |
+|  [ ] Include search engine suggestions                       |
+|      (From your selected search engine)                      |
+|                                                              |
+|  [ ] Include Safari Suggestions                              |
+|      ^-- This setting                                        |
+|      (Powered by Apple - searches, Siri Knowledge,          |
+|       websites, iTunes Store, App Store)                     |
+|                                                              |
+|  [*] Enable Quick Website Search                             |
+|                                                              |
+|  [ ] Preload Top Hit in the background                       |
+|                                                              |
+|  Smart Search Field:                                         |
+|  [*] Show Favorites                                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Disable Safari Suggestions (this setting)
+defaults write com.apple.Safari UniversalSearchEnabled -bool false
+
+# Suppress search suggestions display
+defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+
+# Show full URL for security awareness
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+
+# Warn about fraudulent websites
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+
+# Disable preloading top hit (more privacy)
+defaults write com.apple.Safari PreloadTopHit -bool false
+```
+
+## Combined Privacy Configuration
+
+For maximum search privacy:
+```bash
+# Disable all Safari search features that send data to Apple
+defaults write com.apple.Safari UniversalSearchEnabled -bool false
+defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+defaults write com.apple.Safari PreloadTopHit -bool false
+
+# Then consider using DuckDuckGo as search engine (via Safari UI)
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No suggestions appearing | Expected behavior when disabled |
+| Want some suggestions | Keep search engine suggestions, disable Safari suggestions |
+| History not showing | History suggestions are separate, should still work |
+| Changes not applying | Restart Safari |
+| Setting reverts | Check parental controls or MDM profile |
+
+## Alternative: Search Engine Suggestions
+
+Even with Safari Suggestions disabled, you can still get suggestions from your search engine:
+
+```
++-------------------------------------------------------------+
+|  Two Types of Suggestions                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Safari Suggestions (UniversalSearchEnabled)              |
+|     → Sent to: Apple                                        |
+|     → Provides: Siri Knowledge, iTunes, App Store           |
+|     → Recommendation: Disable for privacy                   |
+|                                                              |
+|  2. Search Engine Suggestions (separate setting)            |
+|     → Sent to: Google, DuckDuckGo, etc.                     |
+|     → Provides: Search autocomplete                         |
+|     → Recommendation: Personal choice                       |
+|                                                              |
+|  You can disable Safari Suggestions while keeping           |
+|  search engine suggestions if desired.                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Note**: Takes effect immediately after restart
+- **Note**: Works alongside search engine suggestions setting
+- **Note**: Part of Safari's privacy protection features
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "UniversalSearchEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Browse privately in Safari](https://support.apple.com/guide/safari/browse-privately-ibrw1069/mac)
+- [Apple Support: Search the web in Safari](https://support.apple.com/guide/safari/search-the-web-ibrw1044/mac)
+- [Apple Privacy: Safari](https://www.apple.com/privacy/features/#safari)

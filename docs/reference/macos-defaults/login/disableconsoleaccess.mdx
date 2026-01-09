@@ -1,0 +1,318 @@
+# Login Window Disable Console Access
+
+Prevent command-line console login from the login window.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.loginwindow` |
+| **Key** | `DisableConsoleAccess` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether users can access the command-line console by typing `>console` as the username at the macOS login window. Console access provides a text-based login that bypasses the graphical interface, which can be used for troubleshooting or to circumvent certain security measures. Disabling this feature prevents unauthorized access to the console login.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Console access disabled** — Typing `>console` has no effect |
+| `false` | **Console access enabled** (default) — Can access console from login |
+
+## Visual Demonstration
+
+### Console Access Enabled (Default):
+```
++-------------------------------------------------------------+
+|  Login Window - Console Access Available                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Standard Login Screen:                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                     🍎 macOS                             │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────┐    │|
+|  │  │                                                  │    │|
+|  │  │  Name:     [>console                    ]       │    │|
+|  │  │  Password: [                            ]       │    │|
+|  │  │                                                  │    │|
+|  │  └─────────────────────────────────────────────────┘    │|
+|  │                                                          │|
+|  │                      [Log In]                            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  When you enter ">console" as username and press Enter:     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Darwin MacBook-Pro.local 23.0.0 Darwin Kernel          │|
+|  │                                                          │|
+|  │  login: _                                                │|
+|  │                                                          │|
+|  │  (Full-screen text console)                             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### What Console Access Provides:
+```
++-------------------------------------------------------------+
+|  Console Login Capabilities                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  LEGITIMATE USES:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|  • Troubleshooting GUI issues                               |
+|  • Fixing display problems                                  |
+|  • Running diagnostic commands                              |
+|  • Recovery when WindowServer fails                         |
+|  • System administration tasks                              |
+|                                                              |
+|  SECURITY CONCERNS:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  • Bypasses graphical login security features              |
+|  • May circumvent some MDM restrictions                     |
+|  • Provides lower-level system access                       |
+|  • Can be used to explore system before GUI loads          |
+|  • Obscure feature most users don't know about             |
+|                                                              |
+|  ⚠️ An attacker with physical access could use this to:    |
+|  • Attempt login without graphical security measures       |
+|  • Access system in different security context             |
+|  • Troubleshoot/explore without GUI logging                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Console Access Disabled (Recommended):
+```
++-------------------------------------------------------------+
+|  Login Window - Console Access Blocked                       |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                     🍎 macOS                             │|
+|  │                                                          │|
+|  │  ┌─────────────────────────────────────────────────┐    │|
+|  │  │                                                  │    │|
+|  │  │  Name:     [>console                    ]       │    │|
+|  │  │  Password: [                            ]       │    │|
+|  │  │                                                  │    │|
+|  │  └─────────────────────────────────────────────────┘    │|
+|  │                                                          │|
+|  │                      [Log In]                            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Result when pressing Enter:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │   ❌ The name or password you entered is not correct.   │|
+|  │                                                          │|
+|  │   (Treated as invalid username)                         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Console shortcut no longer works                        |
+|  ✓ Must use normal graphical login                         |
+|  ✓ Reduced attack surface                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Disable console access for improved security.
+
+### Why Disable Console Access?
+
+1. **Security hardening** — Reduces potential attack vectors
+2. **Standard practice** — Most enterprise deployments disable it
+3. **Unused feature** — Most users never need console login
+4. **Defense in depth** — Layers of security are better
+5. **Physical security** — Limits what someone with physical access can do
+
+### Why Enable Console Access?
+
+- System administrators who frequently troubleshoot
+- Developers who need low-level access
+- Single-user Macs with physical security
+- Testing and development environments
+- When GUI repeatedly fails to load
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.loginwindow DisableConsoleAccess
+
+# Disable console access (recommended)
+defaults write com.apple.loginwindow DisableConsoleAccess -bool true
+
+# Enable console access
+defaults write com.apple.loginwindow DisableConsoleAccess -bool false
+
+# Delete (reset to default - enabled)
+defaults delete com.apple.loginwindow DisableConsoleAccess
+```
+
+## UI Location
+
+This setting is not exposed in System Settings and can only be configured via the `defaults` command or MDM profiles.
+
+```
++-------------------------------------------------------------+
+|  Configuration Methods                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  DEFAULTS COMMAND (this method):                             |
+|  ─────────────────────────────────────────────────────────  |
+|  defaults write com.apple.loginwindow DisableConsoleAccess -bool true
+|                                                              |
+|  MDM PROFILE:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|  <key>DisableConsoleAccess</key>                            |
+|  <true/>                                                    |
+|                                                              |
+|  Note: No GUI option exists for this setting                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Alternative Console Access Methods
+
+```
++-------------------------------------------------------------+
+|  Other Ways to Access Terminal/Console                       |
++-------------------------------------------------------------+
+|                                                              |
+|  IF YOU NEED COMMAND-LINE ACCESS:                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. TERMINAL APP (after login)                               |
+|     Applications > Utilities > Terminal                     |
+|     Full command-line access with GUI running               |
+|                                                              |
+|  2. RECOVERY MODE (⌘R at boot)                              |
+|     Utilities > Terminal                                    |
+|     Access even when macOS won't boot normally              |
+|                                                              |
+|  3. SINGLE USER MODE (⌘S at boot)                           |
+|     Deprecated in newer macOS with Apple Silicon            |
+|     Still available on Intel Macs (if SIP allows)           |
+|                                                              |
+|  4. SSH (Remote Access)                                      |
+|     System Settings > General > Sharing > Remote Login      |
+|     Connect from another computer                           |
+|                                                              |
+|  5. SCREEN SHARING                                           |
+|     Connect from another Mac and use their Terminal         |
+|                                                              |
+|  Disabling >console doesn't prevent these alternatives      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Security Considerations
+
+```
++-------------------------------------------------------------+
+|  Security Analysis                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  THREAT MODEL:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Without physical access:                                    |
+|  • Console login not reachable remotely                     |
+|  • This setting has no effect                               |
+|                                                              |
+|  With physical access:                                       |
+|  • Attacker can boot to Recovery Mode anyway                |
+|  • FileVault is the real protection                         |
+|  • This is defense-in-depth, not primary security           |
+|                                                              |
+|  RECOMMENDED SECURITY STACK:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. FileVault encryption (PRIMARY - most important)         |
+|  2. Strong password                                         |
+|  3. Firmware password (Intel Macs)                          |
+|  4. Disable console access (this setting)                   |
+|  5. Disable guest account                                   |
+|  6. Disable auto-login                                      |
+|  7. Require password immediately after sleep               |
+|                                                              |
+|  This setting alone provides minimal security.               |
+|  Combined with others, it's part of a hardened system.      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Disable console access (this setting)
+defaults write com.apple.loginwindow DisableConsoleAccess -bool true
+
+# Disable guest account
+defaults write com.apple.loginwindow GuestEnabled -bool false
+
+# Show password field instead of user list
+defaults write com.apple.loginwindow SHOWFULLNAME -bool true
+
+# Disable power button on login screen
+defaults write com.apple.loginwindow PowerOffDisabled -bool true
+
+# Require password immediately
+defaults write com.apple.screensaver askForPasswordDelay -int 0
+
+# Disable external accounts
+defaults write com.apple.loginwindow EnableExternalAccounts -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Need console but it's disabled | Use Terminal app after normal login |
+| Can't login normally | Boot to Recovery Mode (⌘R) |
+| Setting not taking effect | Log out and back in; may need restart |
+| Need to troubleshoot display | Use Safe Mode (Shift at boot) instead |
+| GUI completely broken | Recovery Mode Terminal is the solution |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Setting applies to login window only
+- **Note**: Doesn't affect SSH or other remote access
+- **Note**: Recovery Mode Terminal always available
+- **Note**: MDM can enforce this setting
+
+## Source File
+
+**File**: [`defaults/system/login.sh`](../../../../defaults/system/login.sh)
+
+```bash
+run_defaults "com.apple.loginwindow" "DisableConsoleAccess" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Log in to your Mac](https://support.apple.com/guide/mac-help/log-in-to-your-mac-mh35843/mac)
+- [Apple Support: macOS Security Overview](https://support.apple.com/guide/security/welcome/web)
+- [Apple Platform Security Guide](https://support.apple.com/guide/security/)

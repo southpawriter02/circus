@@ -1,0 +1,395 @@
+# Hot Corners Configuration
+
+Trigger actions by moving mouse to screen corners.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Keys** | `wvous-tl-corner`, `wvous-tr-corner`, `wvous-bl-corner`, `wvous-br-corner` |
+| **Type** | Integer |
+| **Default Value** | `0` (disabled) |
+
+## Description
+
+Hot Corners allow you to trigger specific actions by moving your mouse cursor to any of the four screen corners. Each corner can be configured independently to perform actions like starting the screen saver, showing the desktop, launching Mission Control, or locking the screen. Optional modifier keys can be required to prevent accidental activation.
+
+## Hot Corner Positions
+
+```
++-------------------------------------------------------------+
+|  Screen Layout                                               |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌───────────────────────────────────────────────────────┐  |
+|  │TL                                                   TR│  |
+|  │ ●                                                   ● │  |
+|  │                                                       │  |
+|  │                                                       │  |
+|  │                     YOUR SCREEN                       │  |
+|  │                                                       │  |
+|  │                                                       │  |
+|  │                                                       │  |
+|  │ ●                                                   ● │  |
+|  │BL                                                   BR│  |
+|  └───────────────────────────────────────────────────────┘  |
+|                                                              |
+|  TL = Top Left     (wvous-tl-corner)                        |
+|  TR = Top Right    (wvous-tr-corner)                        |
+|  BL = Bottom Left  (wvous-bl-corner)                        |
+|  BR = Bottom Right (wvous-br-corner)                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Action Values
+
+| Value | Action | Description |
+|-------|--------|-------------|
+| `0` | **Disabled** | No action (default) |
+| `2` | **Mission Control** | Overview of all windows and Spaces |
+| `3` | **Application Windows** | Show windows for current app only |
+| `4` | **Desktop** | Reveal desktop by moving windows aside |
+| `5` | **Start Screen Saver** | Activate screen saver immediately |
+| `6` | **Disable Screen Saver** | Prevent screen saver from starting |
+| `10` | **Put Display to Sleep** | Turn off display |
+| `11` | **Launchpad** | Show application launcher grid |
+| `12` | **Notification Center** | Open notification panel |
+| `13` | **Lock Screen** | Lock screen immediately (macOS 10.13+) |
+| `14` | **Quick Note** | Create new note (macOS 12+) |
+
+## Modifier Key Values
+
+Each corner also has a modifier setting (`wvous-XX-modifier`):
+
+| Value | Modifier | Keyboard |
+|-------|----------|----------|
+| `0` | None | No modifier required |
+| `131072` | Shift | ⇧ |
+| `262144` | Control | ⌃ |
+| `524288` | Option | ⌥ |
+| `1048576` | Command | ⌘ |
+
+## Visual Demonstration
+
+### Our Configuration:
+```
++-------------------------------------------------------------+
+|  Configured Hot Corners                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌───────────────────────────────────────────────────────┐  |
+|  │                                                       │  |
+|  │ ● Screen Saver              Show Desktop ●            │  |
+|  │   (5)                            (4)                  │  |
+|  │                                                       │  |
+|  │                                                       │  |
+|  │                                                       │  |
+|  │                                                       │  |
+|  │ ● Mission Control               Disabled ●            │  |
+|  │   (2)                             (0)                 │  |
+|  │                                                       │  |
+|  └───────────────────────────────────────────────────────┘  |
+|                                                              |
+|  Top Left:     Start Screen Saver (quick lock)              |
+|  Top Right:    Show Desktop (access files quickly)          |
+|  Bottom Left:  Mission Control (window management)          |
+|  Bottom Right: Disabled (avoid accidental triggers)         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Using Hot Corners:
+```
++-------------------------------------------------------------+
+|  Hot Corner Activation                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Move cursor to corner (quickly or slowly)               |
+|                                                              |
+|     ↖ Cursor moves to               ┌────────────────────┐  |
+|       top-left corner       →       │●                   │  |
+|                                     │                    │  |
+|                                     │                    │  |
+|                                     └────────────────────┘  |
+|                                                              |
+|  2. Action triggers after brief pause (~0.5 seconds)        |
+|                                                              |
+|     ┌────────────────────────────────────────────────────┐  |
+|     │                                                    │  |
+|     │         ██████  SCREEN SAVER  ██████              │  |
+|     │                                                    │  |
+|     │              🌌 Your beautiful                     │  |
+|     │                screen saver                       │  |
+|     │                  appears                          │  |
+|     │                                                    │  |
+|     └────────────────────────────────────────────────────┘  |
+|                                                              |
+|  3. Move mouse away to cancel (if within delay)             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Modifier Keys:
+```
++-------------------------------------------------------------+
+|  Modifier Key Requirement                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Without modifier (wvous-XX-modifier = 0):                   |
+|  ─────────────────────────────────────────────────────────  |
+|  Just move cursor to corner → Action triggers               |
+|  ⚠️ Can trigger accidentally when reaching for menus        |
+|                                                              |
+|  With modifier (e.g., wvous-XX-modifier = 262144):           |
+|  ─────────────────────────────────────────────────────────  |
+|  Hold Control + move to corner → Action triggers            |
+|  ✓ Won't trigger accidentally                               |
+|                                                              |
+|  Example: Control + Top Right = Show Desktop                |
+|                                                              |
+|     Hold ⌃ Control  +  Move cursor to corner                |
+|              ↓                    ↓                          |
+|     ┌────────────────────────────────────────────────────┐  |
+|     │                                    [cursor] ●       │  |
+|     │                                                     │  |
+|     │              Desktop revealed                       │  |
+|     │                                                     │  |
+|     └────────────────────────────────────────────────────┘  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+```bash
+# Top Left: Start Screen Saver (quick lock)
+defaults write com.apple.dock wvous-tl-corner -int 5
+defaults write com.apple.dock wvous-tl-modifier -int 0
+
+# Top Right: Show Desktop (access files)
+defaults write com.apple.dock wvous-tr-corner -int 4
+defaults write com.apple.dock wvous-tr-modifier -int 0
+
+# Bottom Left: Mission Control
+defaults write com.apple.dock wvous-bl-corner -int 2
+defaults write com.apple.dock wvous-bl-modifier -int 0
+
+# Bottom Right: Disabled (prevent accidental triggers)
+defaults write com.apple.dock wvous-br-corner -int 0
+defaults write com.apple.dock wvous-br-modifier -int 0
+```
+
+### Why This Configuration?
+
+**Top Left - Screen Saver (5)**
+- Quick way to lock screen when leaving desk
+- Combined with "require password after sleep" = instant lock
+- Away from common cursor positions
+
+**Top Right - Desktop (4)**
+- Quick access to desktop files
+- Useful for drag-and-drop workflows
+- Natural corner for "revealing" content
+
+**Bottom Left - Mission Control (2)**
+- Window overview and Space switching
+- Easy access for window management
+- Complements trackpad gestures
+
+**Bottom Right - Disabled (0)**
+- Near Dock and window resize handles
+- Prone to accidental activation
+- Safer to leave disabled
+
+## Code Examples
+
+### Read Current Configuration
+
+```bash
+# Read all hot corner settings
+defaults read com.apple.dock | grep wvous
+
+# Read individual corner
+defaults read com.apple.dock wvous-tl-corner
+```
+
+### Set Hot Corners
+
+```bash
+# Screen Saver (good for quick lock)
+defaults write com.apple.dock wvous-tl-corner -int 5
+
+# Mission Control
+defaults write com.apple.dock wvous-bl-corner -int 2
+
+# Show Desktop
+defaults write com.apple.dock wvous-tr-corner -int 4
+
+# Lock Screen (macOS 10.13+)
+defaults write com.apple.dock wvous-br-corner -int 13
+
+# Disable a corner
+defaults write com.apple.dock wvous-br-corner -int 0
+
+# Apply changes
+killall Dock
+```
+
+### Add Modifier Requirements
+
+```bash
+# Require Control key for top-left corner
+defaults write com.apple.dock wvous-tl-modifier -int 262144
+
+# Require Command key for bottom-right corner
+defaults write com.apple.dock wvous-br-modifier -int 1048576
+
+# No modifier required (default)
+defaults write com.apple.dock wvous-tl-modifier -int 0
+```
+
+### Complete Setup Script
+
+```bash
+#!/bin/bash
+# Configure all hot corners
+
+# Top Left: Screen Saver
+defaults write com.apple.dock wvous-tl-corner -int 5
+defaults write com.apple.dock wvous-tl-modifier -int 0
+
+# Top Right: Desktop
+defaults write com.apple.dock wvous-tr-corner -int 4
+defaults write com.apple.dock wvous-tr-modifier -int 0
+
+# Bottom Left: Mission Control
+defaults write com.apple.dock wvous-bl-corner -int 2
+defaults write com.apple.dock wvous-bl-modifier -int 0
+
+# Bottom Right: Disabled
+defaults write com.apple.dock wvous-br-corner -int 0
+defaults write com.apple.dock wvous-br-modifier -int 0
+
+# Restart Dock to apply
+killall Dock
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Hot Corners...** (button at bottom)
+
+```
++-------------------------------------------------------------+
+|  System Settings > Desktop & Dock                            |
++-------------------------------------------------------------+
+|                                                              |
+|  Scroll to bottom...                                         |
+|                                                              |
+|  ┌──────────────────────────────────────────────────────┐   |
+|  │  [Hot Corners...]                                    │   |
+|  └──────────────────────────────────────────────────────┘   |
+|                                                              |
+|  Opens:                                                      |
+|  ┌──────────────────────────────────────────────────────┐   |
+|  │               Active Screen Corners                  │   |
+|  │                                                      │   |
+|  │  ┌─────────────────────────────────────────────┐    │   |
+|  │  │  [Start Screen Saver v]  [Show Desktop    v]│    │   |
+|  │  │                                             │    │   |
+|  │  │                                             │    │   |
+|  │  │  [Mission Control  v]    [—              v]│    │   |
+|  │  └─────────────────────────────────────────────┘    │   |
+|  │                                                      │   |
+|  │  Hold ⌘ to add modifier key requirement             │   |
+|  │                                                      │   |
+|  │                                    [Done]            │   |
+|  └──────────────────────────────────────────────────────┘   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Popular Hot Corner Setups
+
+### Security-Focused
+```bash
+# Top Left: Lock Screen (quick lock when leaving)
+defaults write com.apple.dock wvous-tl-corner -int 13
+
+# All others: Disabled
+defaults write com.apple.dock wvous-tr-corner -int 0
+defaults write com.apple.dock wvous-bl-corner -int 0
+defaults write com.apple.dock wvous-br-corner -int 0
+```
+
+### Productivity-Focused
+```bash
+# Top Left: Mission Control
+defaults write com.apple.dock wvous-tl-corner -int 2
+
+# Top Right: Desktop
+defaults write com.apple.dock wvous-tr-corner -int 4
+
+# Bottom Left: Application Windows
+defaults write com.apple.dock wvous-bl-corner -int 3
+
+# Bottom Right: Launchpad
+defaults write com.apple.dock wvous-br-corner -int 11
+```
+
+### Modifier-Protected (Prevent Accidents)
+```bash
+# All corners require Control key
+defaults write com.apple.dock wvous-tl-modifier -int 262144
+defaults write com.apple.dock wvous-tr-modifier -int 262144
+defaults write com.apple.dock wvous-bl-modifier -int 262144
+defaults write com.apple.dock wvous-br-modifier -int 262144
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Hot corners not working | Run `killall Dock` to apply changes |
+| Accidental triggering | Add modifier key or disable corner |
+| Lock screen not available | Update to macOS 10.13 or later |
+| Quick Note not available | Update to macOS 12 or later |
+| Conflicts with Dock | Disable bottom corners |
+| Settings reverting | Check for MDM profiles |
+
+## Compatibility
+
+- **macOS**: 10.3+ (Panther) for basic hot corners
+- **macOS**: 10.13+ (High Sierra) for Lock Screen action
+- **macOS**: 12.0+ (Monterey) for Quick Note action
+- **Note**: Requires Dock restart (`killall Dock`)
+- **Note**: Works with multiple displays
+
+## Source File
+
+**File**: [`defaults/interface/mission_control.sh`](../../../../defaults/interface/mission_control.sh)
+
+```bash
+# Top Left: Screen Saver
+run_defaults "com.apple.dock" "wvous-tl-corner" "-int" "5"
+run_defaults "com.apple.dock" "wvous-tl-modifier" "-int" "0"
+
+# Top Right: Show Desktop
+run_defaults "com.apple.dock" "wvous-tr-corner" "-int" "4"
+run_defaults "com.apple.dock" "wvous-tr-modifier" "-int" "0"
+
+# Bottom Left: Mission Control
+run_defaults "com.apple.dock" "wvous-bl-corner" "-int" "2"
+run_defaults "com.apple.dock" "wvous-bl-modifier" "-int" "0"
+
+# Bottom Right: Disabled
+run_defaults "com.apple.dock" "wvous-br-corner" "-int" "0"
+run_defaults "com.apple.dock" "wvous-br-modifier" "-int" "0"
+```
+
+## References
+
+- [Apple Support: Use Hot Corners on your Mac](https://support.apple.com/guide/mac-help/use-hot-corners-mchlp3000/mac)
+- [Apple Support: Mission Control preferences](https://support.apple.com/guide/mac-help/mh35599/mac)
+- [Apple Support: Lock your Mac screen](https://support.apple.com/guide/mac-help/lock-your-mac-screen-mchlp2901/mac)

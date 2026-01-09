@@ -1,0 +1,273 @@
+# AirDrop Discoverable Mode
+
+Control who can see your Mac when using AirDrop.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.sharingd` |
+| **Key** | `DiscoverableMode` |
+| **Type** | String |
+| **Default Value** | `Contacts Only` |
+| **Our Setting** | `Contacts Only` |
+
+## Description
+
+Controls who can discover your Mac when AirDrop is active. AirDrop uses Bluetooth to discover nearby devices and Wi-Fi for the actual file transfer. This setting determines your visibility to others—you can be invisible, visible only to people in your Contacts, or visible to everyone nearby.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `Off` | **No one** — Your Mac is invisible to AirDrop |
+| `Contacts Only` | **Contacts only** (default) — Only people in your Contacts can see you |
+| `Everyone` | **Everyone** — Any nearby Apple device can see you |
+
+## Visual Demonstration
+
+### AirDrop Visibility Modes:
+```
++-------------------------------------------------------------+
+|  AirDrop Visibility Options                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  OFF (Receiving Off):                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Your Mac    Other Devices                                   |
+|  ┌──────┐                                                   |
+|  │ 💻   │    ❌ Not visible to anyone                       |
+|  │ You  │    ❌ Cannot receive AirDrop files                |
+|  └──────┘                                                   |
+|                                                              |
+|  ✓ Maximum privacy                                          |
+|  ✗ Cannot receive files via AirDrop                        |
+|                                                              |
+|  CONTACTS ONLY (Recommended):                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Your Mac    Other Devices                                   |
+|  ┌──────┐    ┌──────┐ ┌──────┐ ┌──────┐                    |
+|  │ 💻   │    │ 📱   │ │ 📱   │ │ 📱   │                    |
+|  │ You  │←───│ Jane │ │ John │ │ ???  │                    |
+|  └──────┘ ✓  └──────┘ └──────┘ └──────┘                    |
+|           │   Contact   Contact  Stranger                   |
+|           │      ✓         ✓        ✗                      |
+|           Can send    Can send   Cannot see                 |
+|                                                              |
+|  ✓ Balanced security and convenience                       |
+|  ✓ Requires both devices signed into iCloud                |
+|                                                              |
+|  EVERYONE:                                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Your Mac    Other Devices                                   |
+|  ┌──────┐    ┌──────┐ ┌──────┐ ┌──────┐                    |
+|  │ 💻   │    │ 📱   │ │ 📱   │ │ 📱   │                    |
+|  │ You  │←───│ Jane │ │ John │ │ ???  │                    |
+|  └──────┘    └──────┘ └──────┘ └──────┘                    |
+|           ✓     ✓         ✓        ✓                       |
+|         All devices can see and send                        |
+|                                                              |
+|  ⚠️ Anyone nearby can see your Mac name                    |
+|  ⚠️ Could receive unwanted AirDrop requests                |
+|  ✓ Useful when receiving from non-contacts                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Security Considerations:
+```
++-------------------------------------------------------------+
+|  AirDrop Security                                            |
++-------------------------------------------------------------+
+|                                                              |
+|  "EVERYONE" MODE RISKS:                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. VISIBILITY                                               |
+|     Your Mac's name is broadcast to everyone nearby         |
+|     • In coffee shops, airports, conferences                |
+|     • Could reveal your identity                            |
+|                                                              |
+|  2. UNSOLICITED CONTENT                                      |
+|     Anyone can send you AirDrop requests                    |
+|     • "Cyber-flashing" — unwanted images                    |
+|     • Spam files                                            |
+|     • You still must Accept, but preview may show           |
+|                                                              |
+|  3. SOCIAL ENGINEERING                                       |
+|     Attackers can target specific individuals               |
+|     • "John's MacBook Pro" reveals your name                |
+|                                                              |
+|  RECOMMENDATIONS:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|  • Use "Contacts Only" for daily use                        |
+|  • Switch to "Everyone" only when needed                    |
+|  • Switch back immediately after                            |
+|  • Consider renaming your Mac to something generic          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `Contacts Only` — Balanced security.
+
+### Why Contacts Only (Recommended)?
+
+1. **Privacy** — Strangers can't see your Mac
+2. **Security** — Reduces unsolicited content
+3. **Convenience** — Friends/family can still send files
+4. **Automatic** — Works seamlessly with your contacts
+5. **iCloud integration** — Uses your Contacts list
+
+### Why Off?
+
+- Maximum privacy needed
+- Don't use AirDrop
+- Public environment, extra caution
+- Corporate security policy
+
+### Why Everyone?
+
+- Receiving from someone not in Contacts
+- Quick file transfer in meetings
+- Temporary setting for specific need
+- **Switch back after use!**
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.sharingd DiscoverableMode
+
+# Set to Off (not discoverable)
+defaults write com.apple.sharingd DiscoverableMode -string "Off"
+
+# Set to Contacts Only (recommended)
+defaults write com.apple.sharingd DiscoverableMode -string "Contacts Only"
+
+# Set to Everyone (use temporarily)
+defaults write com.apple.sharingd DiscoverableMode -string "Everyone"
+
+# Delete (reset to default)
+defaults delete com.apple.sharingd DiscoverableMode
+```
+
+## UI Location
+
+**Finder** > **AirDrop** or **Control Center**
+
+```
++-------------------------------------------------------------+
+|  AirDrop Settings Locations                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  METHOD 1: Finder                                            |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Open Finder                                             |
+|  2. Click "AirDrop" in sidebar (or ⌘⇧R)                    |
+|  3. Click "Allow me to be discovered by:" at bottom        |
+|  4. Select: No One / Contacts Only / Everyone               |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  AirDrop                                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  To share with someone using AirDrop, drag               │|
+|  │  files to their name in this window.                    │|
+|  │                                                          │|
+|  │  ┌───────┐  ┌───────┐  ┌───────┐                        │|
+|  │  │ 📱    │  │ 💻    │  │ 📱    │                        │|
+|  │  │ John  │  │ Jane  │  │ Mom   │                        │|
+|  │  └───────┘  └───────┘  └───────┘                        │|
+|  │                                                          │|
+|  │  Allow me to be discovered by: [Contacts Only ▼]        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  METHOD 2: Control Center                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Click Control Center in menu bar                        |
+|  2. Click AirDrop tile                                      |
+|  3. Select visibility option                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Requirements
+
+```
++-------------------------------------------------------------+
+|  AirDrop Requirements                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  FOR AIRDROP TO WORK:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ☐ Wi-Fi must be ON (doesn't need to be connected)         |
+|  ☐ Bluetooth must be ON                                     |
+|  ☐ Devices within ~30 feet (9 meters)                       |
+|  ☐ Personal Hotspot must be OFF                             |
+|                                                              |
+|  FOR "CONTACTS ONLY":                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ☐ Both devices signed into iCloud                          |
+|  ☐ Sender's email/phone in your Contacts                   |
+|  ☐ Your email/phone in sender's Contacts                   |
+|                                                              |
+|  If "Contacts Only" doesn't work, check:                    |
+|  • Both parties have each other in Contacts                 |
+|  • Contact info matches iCloud Apple ID                     |
+|  • Try "Everyone" temporarily                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# AirDrop visibility (this setting)
+defaults write com.apple.sharingd DiscoverableMode -string "Contacts Only"
+
+# Enable AirDrop over Ethernet (for older Macs)
+defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
+
+# Firewall settings (may affect AirDrop)
+# sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't see other devices | Check Wi-Fi and Bluetooth are ON |
+| Other devices can't see you | Check DiscoverableMode isn't "Off" |
+| Contacts Only not working | Verify both have each other in Contacts |
+| AirDrop very slow | Move devices closer together |
+| Receiving fails | Check available disk space |
+
+## Compatibility
+
+- **AirDrop**: macOS 10.7+ (Lion)
+- **Note**: Requires Wi-Fi and Bluetooth hardware
+- **Note**: Works between Mac, iPhone, iPad
+- **Note**: Some older Macs need BrowseAllInterfaces for Ethernet
+- **Note**: Setting is per-user, not system-wide
+
+## Source File
+
+**File**: [`defaults/system/airdrop.sh`](../../../../defaults/system/airdrop.sh)
+
+```bash
+run_defaults "com.apple.sharingd" "DiscoverableMode" "-string" "Contacts Only"
+```
+
+## References
+
+- [Apple Support: Use AirDrop on your Mac](https://support.apple.com/guide/mac-help/use-airdrop-mh35868/mac)
+- [Apple Support: AirDrop not working?](https://support.apple.com/en-us/HT203106)
+- [Apple Support: Share content with AirDrop](https://support.apple.com/en-us/HT204144)

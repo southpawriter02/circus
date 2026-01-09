@@ -1,0 +1,318 @@
+# Numbers Show Formula Warnings
+
+Display warnings in cells when formula errors are detected.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Numbers` |
+| **Key** | `TSShowFormulaWarnings` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Numbers displays warning indicators in cells that contain formula errors such as division by zero, circular references, invalid data types, or missing references. These visual warnings help identify calculation issues early, preventing errors from propagating through your spreadsheet. Keeping this enabled is essential for data accuracy.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show warnings** (default) — Display error indicators in cells |
+| `false` | **Hide warnings** — Errors not visually highlighted |
+
+## Visual Demonstration
+
+### With Warnings Enabled (Recommended):
+```
++-------------------------------------------------------------+
+|  Numbers - Formula Warnings Visible                          |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌───────────┬───────────┬───────────┬───────────┐         |
+|  │     A     │     B     │     C     │     D     │         |
+|  ├───────────┼───────────┼───────────┼───────────┤         |
+|  │ Product   │ Quantity  │ Price     │ Total     │         |
+|  ├───────────┼───────────┼───────────┼───────────┤         |
+|  │ Widget A  │    100    │   $5.00   │  $500.00  │         |
+|  ├───────────┼───────────┼───────────┼───────────┤         |
+|  │ Widget B  │      0    │   $7.50   │ ⚠️ #DIV/0 │ ←Warning |
+|  ├───────────┼───────────┼───────────┼───────────┤         |
+|  │ Widget C  │    xyz    │   $3.00   │ ⚠️ #VALUE │ ←Warning |
+|  ├───────────┼───────────┼───────────┼───────────┤         |
+|  │ (deleted) │    50     │   $2.00   │ ⚠️ #REF   │ ←Warning |
+|  └───────────┴───────────┴───────────┴───────────┘         |
+|                                                              |
+|  ⚠️ Warning Indicator = Click to see error details         |
+|                                                              |
+|  ✓ Errors immediately visible                               |
+|  ✓ Can click warning to see explanation                    |
+|  ✓ Prevents incorrect calculations from being used         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Formula Error Types:
+```
++-------------------------------------------------------------+
+|  Common Formula Error Codes                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  ERROR        MEANING                  EXAMPLE               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  #DIV/0!      Division by zero         =A1/0                |
+|               Result: Infinite                               |
+|               Fix: Check divisor cell                        |
+|                                                              |
+|  #VALUE!      Wrong data type          =A1+B1 (if B1="text")|
+|               Result: Can't compute                          |
+|               Fix: Ensure numeric values                     |
+|                                                              |
+|  #REF!        Invalid reference        Cell/row deleted     |
+|               Result: Reference broken                       |
+|               Fix: Update formula reference                  |
+|                                                              |
+|  #N/A         Value not available      VLOOKUP not found    |
+|               Result: No match                               |
+|               Fix: Check lookup table                        |
+|                                                              |
+|  #NAME?       Unknown function         =SUMX(A1:A5)         |
+|               Result: Function not recognized               |
+|               Fix: Check spelling                            |
+|                                                              |
+|  Circular     Self-referencing         A1=A1+1              |
+|               Result: Infinite loop                          |
+|               Fix: Remove circular dependency               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Warning Details Panel:
+```
++-------------------------------------------------------------+
+|  Clicking on a Warning                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  When you click on a warning indicator:                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌───────────────────────────────────────────────────────┐  |
+|  │  Cell D3                                              │  |
+|  │  ─────────────────────────────────────────────────    │  |
+|  │                                                       │  |
+|  │  Formula: =B3/C3                                      │  |
+|  │                                                       │  |
+|  │  ⚠️ Error: Division by zero                          │  |
+|  │                                                       │  |
+|  │  The formula is trying to divide by zero.            │  |
+|  │  Cell C3 contains 0.                                 │  |
+|  │                                                       │  |
+|  │  Suggestions:                                         │  |
+|  │  • Check if C3 should contain a number              │  |
+|  │  • Use IF function to handle zero cases             │  |
+|  │  • Example: =IF(C3=0, 0, B3/C3)                     │  |
+|  │                                                       │  |
+|  └───────────────────────────────────────────────────────┘  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Warnings (Not Recommended):
+```
++-------------------------------------------------------------+
+|  Numbers - Warnings Hidden                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  ⚠️ DANGER: Errors are invisible!                          |
+|                                                              |
+|  ┌───────────┬───────────┬───────────┬───────────┐         |
+|  │     A     │     B     │     C     │     D     │         |
+|  ├───────────┼───────────┼───────────┼───────────┤         |
+|  │ Product   │ Quantity  │ Price     │ Total     │         |
+|  ├───────────┼───────────┼───────────┼───────────┤         |
+|  │ Widget A  │    100    │   $5.00   │  $500.00  │         |
+|  ├───────────┼───────────┼───────────┼───────────┤         |
+|  │ Widget B  │      0    │   $7.50   │           │ ← Error?|
+|  ├───────────┼───────────┼───────────┼───────────┤         |
+|  │ Widget C  │    xyz    │   $3.00   │           │ ← Error?|
+|  ├───────────┼───────────┼───────────┼───────────┤         |
+|  │ (deleted) │    50     │   $2.00   │           │ ← Error?|
+|  └───────────┴───────────┴───────────┴───────────┘         |
+|                                                              |
+|  Cells may show blank or incorrect values with NO           |
+|  indication that there's a problem!                          |
+|                                                              |
+|  ✗ Errors not visible                                       |
+|  ✗ May use incorrect data without knowing                   |
+|  ✗ Can lead to serious calculation mistakes                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show formula warnings for data accuracy.
+
+### Why Show Warnings (Recommended)?
+
+1. **Accuracy** — Catch errors before they cause problems
+2. **Debugging** — Easily locate issues in formulas
+3. **Validation** — Confirm calculations are working
+4. **Learning** — Understand why formulas fail
+5. **Data integrity** — Don't use incorrect values unknowingly
+
+### Why Hide Warnings?
+
+- Presenting spreadsheets (hide temporary issues)
+- Known issues that can't be fixed yet
+- Printing without error indicators
+- Personal preference (not recommended)
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Numbers TSShowFormulaWarnings
+
+# Show formula warnings (recommended)
+defaults write com.apple.iWork.Numbers TSShowFormulaWarnings -bool true
+
+# Hide formula warnings (not recommended)
+defaults write com.apple.iWork.Numbers TSShowFormulaWarnings -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Numbers TSShowFormulaWarnings
+```
+
+## UI Location
+
+The warnings appear automatically in cells. The global preference is set via defaults command.
+
+```
++-------------------------------------------------------------+
+|  Numbers Settings (via defaults)                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Note: This setting is controlled via the defaults command  |
+|  and is not directly exposed in the Numbers preferences UI. |
+|                                                              |
+|  Related in-app controls:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Click warning icon in cell to see error details          |
+|  • Cell > Show Warnings can control per-cell visibility     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Fixing Common Errors
+
+```
++-------------------------------------------------------------+
+|  How to Fix Formula Errors                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  #DIV/0! - Division by Zero                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  Problem:  =A1/B1 where B1=0                                |
+|  Solution: =IF(B1=0, 0, A1/B1)                              |
+|            or =IFERROR(A1/B1, 0)                            |
+|                                                              |
+|  #VALUE! - Wrong Data Type                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  Problem:  =A1+B1 where B1="hello"                          |
+|  Solution: Clean data to ensure numeric values              |
+|            or =IFERROR(A1+B1, 0)                            |
+|                                                              |
+|  #REF! - Invalid Reference                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  Problem:  Row or column was deleted                        |
+|  Solution: Update formula to reference correct cells        |
+|            or undo the deletion                             |
+|                                                              |
+|  Circular Reference                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  Problem:  =A1+A1 or A1 refers to B1 which refers to A1    |
+|  Solution: Restructure formula to remove self-reference     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Best Practices
+
+```
++-------------------------------------------------------------+
+|  Formula Error Prevention                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Use IFERROR for robust formulas                          |
+|     =IFERROR(A1/B1, "N/A")                                  |
+|                                                              |
+|  2. Validate inputs with IF                                  |
+|     =IF(B1>0, A1/B1, 0)                                     |
+|                                                              |
+|  3. Use data validation on input cells                       |
+|     Format > Cell > Data Format                             |
+|                                                              |
+|  4. Test with edge cases                                     |
+|     Empty cells, zero, negative numbers                     |
+|                                                              |
+|  5. Keep warnings enabled during development                 |
+|     Only consider hiding for final presentations            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show formula warnings (this setting)
+defaults write com.apple.iWork.Numbers TSShowFormulaWarnings -bool true
+
+# Warn before deleting sheets
+defaults write com.apple.iWork.Numbers TSWarnBeforeDeletingSheets -bool true
+
+# Tab key behavior
+defaults write com.apple.iWork.Numbers TSInsertTabInsteadOfMoving -bool false
+
+# Auto-save
+defaults write com.apple.iWork.Numbers NSDocumentSavesInPlace -bool true
+
+# Use 1904 date system (Excel compatibility)
+defaults write com.apple.iWork.Numbers Use1904DateSystem -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Warnings not showing | Check TSShowFormulaWarnings is true |
+| Can't click warning | Click directly on the warning icon |
+| Warning persists after fix | Re-enter formula or refresh |
+| All cells show warnings | Check for circular references |
+| Want to hide one warning | Not possible - fix the formula instead |
+
+## Compatibility
+
+- **Numbers**: macOS 10.13+ (High Sierra)
+- **Note**: Warnings appear in all views (edit, print preview)
+- **Note**: Warnings don't appear in exported PDFs
+- **Note**: Setting persists across sessions
+- **Note**: Applies to all Numbers documents
+
+## Source File
+
+**File**: [`defaults/applications/numbers.sh`](../../../../../defaults/applications/numbers.sh)
+
+```bash
+run_defaults "com.apple.iWork.Numbers" "TSShowFormulaWarnings" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use formulas in Numbers](https://support.apple.com/guide/numbers/use-formulas-and-functions-tan4b2b0f66c/mac)
+- [Apple Support: Numbers User Guide](https://support.apple.com/guide/numbers/welcome/mac)
+- [Apple Support: Fix formula errors](https://support.apple.com/guide/numbers/fix-formula-errors-tan2ea76e6e5/mac)

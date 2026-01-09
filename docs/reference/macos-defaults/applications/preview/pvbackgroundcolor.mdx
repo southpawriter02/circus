@@ -1,0 +1,309 @@
+# Preview Background Color
+
+Control the background color of the viewing area in Preview.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Preview` |
+| **Key** | `PVBackgroundColor` |
+| **Type** | Integer |
+| **Default Value** | `0` |
+| **Our Setting** | `0` |
+
+## Description
+
+Controls the background color displayed around documents and images in Preview when they don't fill the entire window. This affects the visual appearance of the viewing area surrounding your content. The background is visible when viewing documents smaller than the window or when the document aspect ratio doesn't match the window.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Default gray** — Matches system window background |
+| `1` | **White** — Bright background |
+| `2` | **Black** — Dark background |
+
+## Visual Demonstration
+
+### Default Gray (0):
+```
++-------------------------------------------------------------+
+|  Preview - Default Gray Background                           |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Preview - Photo.jpg                          ⬜ ⬜ ✕   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░┌───────────────────────────────┐░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░│                                │░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░│         YOUR IMAGE            │░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░│                                │░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░│                                │░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░└───────────────────────────────┘░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Neutral, doesn't distract                               |
+|  ✓ Matches macOS window appearance                         |
+|  ✓ Works in both light and dark modes                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### White Background (1):
+```
++-------------------------------------------------------------+
+|  Preview - White Background                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Preview - Photo.jpg                          ⬜ ⬜ ✕   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │                                                          │|
+|  │          ┌───────────────────────────────┐              │|
+|  │          │                                │              │|
+|  │          │         YOUR IMAGE            │              │|
+|  │          │                                │              │|
+|  │          │                                │              │|
+|  │          └───────────────────────────────┘              │|
+|  │                                                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Bright, clean appearance                                |
+|  ✓ Good for documents meant for print                      |
+|  ✓ Simulates paper background                              |
+|  ✗ May be too bright in dark environments                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Black Background (2):
+```
++-------------------------------------------------------------+
+|  Preview - Black Background                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Preview - Photo.jpg                          ⬜ ⬜ ✕   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  ████████████████████████████████████████████████████████│|
+|  │  ████████████████████████████████████████████████████████│|
+|  │  ████████┌───────────────────────────────┐██████████████│|
+|  │  ████████│                                │██████████████│|
+|  │  ████████│         YOUR IMAGE            │██████████████│|
+|  │  ████████│                                │██████████████│|
+|  │  ████████│                                │██████████████│|
+|  │  ████████└───────────────────────────────┘██████████████│|
+|  │  ████████████████████████████████████████████████████████│|
+|  │  ████████████████████████████████████████████████████████│|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Great for photo viewing                                 |
+|  ✓ Makes colors pop                                        |
+|  ✓ Reduces eye strain in dark environments                 |
+|  ✓ Professional photo review appearance                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### When Background is Visible:
+```
++-------------------------------------------------------------+
+|  When You'll See the Background Color                        |
++-------------------------------------------------------------+
+|                                                              |
+|  BACKGROUND VISIBLE:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Image smaller than window                                |
+|  • PDF page doesn't fill window                             |
+|  • Zoomed out below 100%                                    |
+|  • Document with unusual aspect ratio                       |
+|  • Single page in large window                              |
+|                                                              |
+|  BACKGROUND NOT VISIBLE:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Document fills entire window                             |
+|  • Zoomed in past window boundaries                         |
+|  • Continuous scrolling mode (content always fills)         |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Small image in large window:                            │|
+|  │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░░░░░┌──────────────┐░░░░░░░░░░░░░░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░░░░░│   Image      │░░░░░░░░░░░░░░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░░░░░└──────────────┘░░░░░░░░░░░░░░░░░░░░░░░░░ │|
+|  │  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │|
+|  │          ↑ Background color visible here ↑              │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `0` — Default gray for neutral appearance.
+
+### Why Use Default Gray?
+
+1. **Neutral** — Doesn't bias color perception
+2. **Consistent** — Matches macOS interface
+3. **Comfortable** — Works in all lighting
+4. **Professional** — Standard viewing environment
+5. **Adaptive** — Works with light and dark modes
+
+### Why Use White?
+
+- Reviewing print documents
+- Need bright, clean workspace
+- Document design work
+- Simulating paper appearance
+
+### Why Use Black?
+
+- Photo review and editing
+- Viewing images in dark room
+- Making colors stand out
+- Movie/video frame review
+- Reducing screen glare
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Preview PVBackgroundColor
+
+# Set to default gray
+defaults write com.apple.Preview PVBackgroundColor -int 0
+
+# Set to white
+defaults write com.apple.Preview PVBackgroundColor -int 1
+
+# Set to black
+defaults write com.apple.Preview PVBackgroundColor -int 2
+
+# Delete (reset to default)
+defaults delete com.apple.Preview PVBackgroundColor
+```
+
+## UI Location
+
+Not directly accessible in Preview Settings. Configure via Terminal or adjust view temporarily using View menu options.
+
+```
++-------------------------------------------------------------+
+|  Configuration Note                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  No direct UI preference for background color.               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Options:                                                    |
+|                                                              |
+|  1. Use defaults command (permanent)                        |
+|     defaults write com.apple.Preview PVBackgroundColor -int 2|
+|                                                              |
+|  2. Full Screen mode has its own dark background            |
+|     View > Enter Full Screen (⌃⌘F)                         |
+|                                                              |
+|  3. Some zoom levels fill window (no background visible)    |
+|     Use ⌘+ to zoom in until content fills window           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Use Case Recommendations
+
+```
++-------------------------------------------------------------+
+|  Recommended Background by Use Case                          |
++-------------------------------------------------------------+
+|                                                              |
+|  PHOTOGRAPHY REVIEW:                                         |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: Black (2)                                     |
+|  Why: Colors appear more vibrant, professional look         |
+|                                                              |
+|  DOCUMENT READING:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: Default (0) or White (1)                      |
+|  Why: Neutral, comfortable for text                         |
+|                                                              |
+|  PRINT DESIGN:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: White (1)                                     |
+|  Why: Simulates paper, accurate preview                     |
+|                                                              |
+|  GENERAL USE:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: Default (0)                                   |
+|  Why: Versatile, matches system appearance                  |
+|                                                              |
+|  NIGHT/DARK ENVIRONMENT:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: Black (2)                                     |
+|  Why: Reduces eye strain, less bright                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Background color (this setting)
+defaults write com.apple.Preview PVBackgroundColor -int 0
+
+# Scale documents to fit
+defaults write com.apple.Preview PVScaleDocumentsToFit -bool true
+
+# Anti-alias images
+defaults write com.apple.Preview PVAntiAliasImages -bool true
+
+# PDF display mode
+defaults write com.apple.Preview PVPDFDisplayMode -int 1
+
+# Window open mode (1=New window, 2=Tabs)
+defaults write com.apple.Preview PVImageOpenMode -int 2
+
+# Sidebar mode for new documents
+defaults write com.apple.Preview PVSidebarViewModeForNewDocuments -int 1
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not applying | Quit and restart Preview |
+| Background not visible | Document may fill window; zoom out |
+| Colors look wrong | Black background can shift perception |
+| Want different per-document | Not supported; global setting |
+| Full screen different | Full screen has own dark background |
+
+## Compatibility
+
+- **Preview**: macOS 10.7+ (Lion)
+- **Note**: Affects both images and PDFs
+- **Note**: Full screen mode overrides with dark background
+- **Note**: Setting persists across sessions
+- **Note**: Does not sync via iCloud
+
+## Source File
+
+**File**: [`defaults/applications/preview.sh`](../../../../../defaults/applications/preview.sh)
+
+```bash
+run_defaults "com.apple.Preview" "PVBackgroundColor" "-int" "0"
+```
+
+## References
+
+- [Apple Support: Preview User Guide](https://support.apple.com/guide/preview/welcome/mac)
+- [Apple Support: Change Preview preferences](https://support.apple.com/guide/preview/change-preferences-prvw11793/mac)
+- [Apple Support: View images and PDFs in Preview](https://support.apple.com/guide/preview/view-images-and-pdfs-prvw1001/mac)

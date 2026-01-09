@@ -1,0 +1,277 @@
+# Dock Minimize to Application
+
+Minimize windows into their application icon instead of a separate section.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dock` |
+| **Key** | `minimize-to-application` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls where minimized windows appear in the Dock. When enabled, windows minimize directly into their parent application's icon, keeping them organized by app. When disabled, minimized windows appear as separate thumbnails in the right side of the Dock (near the Trash), which can clutter the Dock with many individual window previews.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** (default) — Minimized windows appear as separate thumbnails |
+| `true` | **Enabled** — Windows minimize into their app icon |
+
+## Visual Demonstration
+
+### Minimize to Application Disabled (Default):
+```
++-------------------------------------------------------------+
+|  Minimized Windows as Separate Thumbnails                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Multiple Safari windows minimized:                         |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                         DOCK                         |   |
+|  +------------------------------------------------------+   |
+|  |                                            |         |   |
+|  | [Finder] [Safari] [Mail] [Code] | [win1] [win2] [win3] [Trash] |
+|  |                                  |                   |   |
+|  |  Apps                            | Minimized windows |   |
+|  |                                  | (thumbnails)      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Problems:                                                   |
+|  * Dock becomes cluttered with window thumbnails            |
+|  * Hard to find which window belongs to which app           |
+|  * Takes up valuable Dock space                             |
+|  * Thumbnails are small and hard to distinguish             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Minimize to Application Enabled (Recommended):
+```
++-------------------------------------------------------------+
+|  Minimized Windows in App Icons                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Multiple Safari windows minimized:                         |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                         DOCK                         |   |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  | [Finder] [Safari*] [Mail] [Code]              [Trash]|   |
+|  |              ^                                       |   |
+|  |              |                                       |   |
+|  |     Windows minimized into Safari icon               |   |
+|  |     (indicated by * or hidden inside)                |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  To access minimized windows:                               |
+|  +------------------------------------------------------+   |
+|  |  Right-click or long-press Safari icon:              |   |
+|  |  +----------------------------------+                |   |
+|  |  | New Window                       |                |   |
+|  |  | New Private Window               |                |   |
+|  |  |----------------------------------|                |   |
+|  |  | Window 1 - Apple.com             |  <-- Minimized |   |
+|  |  | Window 2 - Google.com            |  <-- windows   |   |
+|  |  | Window 3 - GitHub.com            |  <-- here      |   |
+|  |  +----------------------------------+                |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Benefits:                                                   |
+|  * Clean, organized Dock                                    |
+|  * Windows grouped by app                                   |
+|  * More space for app icons                                 |
+|  * Professional appearance                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Accessing Minimized Windows:
+```
++-------------------------------------------------------------+
+|  How to Access Minimized Windows                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Method 1: Right-click (or Control-click) app icon          |
+|  +------------------------------------------------------+   |
+|  |  [Safari]                                             |   |
+|  |     |                                                 |   |
+|  |     v Right-click                                     |   |
+|  |  +----------------------------------+                 |   |
+|  |  | Options                        > |                 |   |
+|  |  |----------------------------------|                 |   |
+|  |  | Window - News                    |  Minimized      |   |
+|  |  | Window - Shopping                |  windows        |   |
+|  |  +----------------------------------+                 |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Method 2: Click and hold app icon                          |
+|  +------------------------------------------------------+   |
+|  |  [Safari]                                             |   |
+|  |     |                                                 |   |
+|  |     v Click and hold...                               |   |
+|  |  +----------------------------------+                 |   |
+|  |  | Options                        > |                 |   |
+|  |  |----------------------------------|                 |   |
+|  |  | Window - News                    |                 |   |
+|  |  | Window - Shopping                |                 |   |
+|  |  +----------------------------------+                 |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Method 3: Use App Exposé (Control + Down Arrow or gesture) |
+|  +------------------------------------------------------+   |
+|  |  Shows all windows for that app including minimized  |   |
+|  |  +--------+  +--------+  +--------+                   |   |
+|  |  | Win 1  |  | Win 2  |  | Win 3  |                   |   |
+|  |  | (min)  |  | (min)  |  |(active)|                   |   |
+|  |  +--------+  +--------+  +--------+                   |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Minimize into app icon for cleaner Dock.
+
+### Why Enable Minimize to Application?
+
+1. **Cleaner Dock** — No clutter from window thumbnails
+2. **Organization** — Windows grouped by their app
+3. **Space saving** — More room for app icons
+4. **Professional** — Looks tidier
+5. **Scalable** — Works well with many minimized windows
+
+### Why Keep Disabled?
+
+- Prefer visual preview of each window
+- Easier to click on specific window thumbnail
+- Don't minimize many windows
+- Like seeing all minimized windows at a glance
+- Familiar with traditional macOS behavior
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dock minimize-to-application
+
+# Enable minimize to application icon
+defaults write com.apple.dock minimize-to-application -bool true
+
+# Disable (default - separate thumbnails)
+defaults write com.apple.dock minimize-to-application -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dock minimize-to-application
+
+# Restart Dock to apply changes
+killall Dock
+```
+
+## UI Location
+
+**System Settings** > **Desktop & Dock**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Desktop & Dock                            |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Desktop & Dock                                  |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Dock                                            |       |
+|  |                                                  |       |
+|  |  Size                                            |       |
+|  |  Small |----------o------| Large                 |       |
+|  |                                                  |       |
+|  |  Magnification                                   |       |
+|  |  [ ] Enable                                      |       |
+|  |                                                  |       |
+|  |  Position on screen                              |       |
+|  |  [Bottom v]                                      |       |
+|  |                                                  |       |
+|  |  Minimize windows using                          |       |
+|  |  [Scale effect v]                                |       |
+|  |                                                  |       |
+|  |  [*] Minimize windows into application icon      |       |
+|  |      ^-- This setting                            |       |
+|  |                                                  |       |
+|  |  [ ] Automatically hide and show the Dock        |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Minimize to application (this setting)
+defaults write com.apple.dock minimize-to-application -bool true
+
+# Minimize animation effect
+defaults write com.apple.dock mineffect -string "scale"
+
+# Show recent applications in Dock
+defaults write com.apple.dock show-recents -bool false
+
+# Auto-hide Dock
+defaults write com.apple.dock autohide -bool false
+
+# Dock icon size
+defaults write com.apple.dock tilesize -int 48
+
+# Group windows in Mission Control
+defaults write com.apple.dock expose-group-apps -bool true
+```
+
+## Comparison with Other Window Features
+
+| Feature | What It Does |
+|---------|-------------|
+| Minimize to App | Windows go into their app icon |
+| Hide (⌘H) | All app windows hidden (not in Dock) |
+| Close (⌘W) | Window closed completely |
+| App Exposé | Shows all windows for an app |
+| Mission Control | Shows all windows across apps |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't find minimized windows | Right-click app icon in Dock |
+| Setting not working | Run `killall Dock` to restart Dock |
+| Windows still appearing separate | Verify setting, restart Dock |
+| Prefer old behavior | Set to false and restart Dock |
+| Windows not minimizing | Check window controls not disabled |
+
+## Compatibility
+
+- **macOS**: 10.5+ (Leopard)
+- **Note**: Requires Dock restart (`killall Dock`)
+- **Note**: Works with all minimize effects (genie, scale, suck)
+- **Note**: Complements "Show recents" setting
+
+## Source File
+
+**File**: [`defaults/interface/window_management.sh`](../../../../defaults/interface/window_management.sh)
+
+```bash
+run_defaults "com.apple.dock" "minimize-to-application" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use the Dock on your Mac](https://support.apple.com/guide/mac-help/open-apps-using-the-dock-mh35859/mac)
+- [Apple Support: Change Dock preferences](https://support.apple.com/guide/mac-help/change-dock-preferences-mchlp1119/mac)
+- [Apple Support: Minimize and hide windows](https://support.apple.com/guide/mac-help/minimize-and-expand-windows-mchlp2469/mac)

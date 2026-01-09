@@ -1,0 +1,329 @@
+# Activity Monitor Sort Column
+
+Set the default column for sorting processes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.ActivityMonitor` |
+| **Key** | `SortColumn` |
+| **Type** | String |
+| **Default Value** | `"CPUUsage"` |
+| **Our Setting** | `"CPUUsage"` |
+
+## Description
+
+Controls which column Activity Monitor uses to sort processes by default when the application opens. Sorting by CPU usage puts the most resource-intensive processes at the top, making it easy to immediately identify runaway processes or performance issues. Combined with descending sort direction, this creates an efficient workflow for troubleshooting.
+
+## Values
+
+| Value | Column | Description |
+|-------|--------|-------------|
+| `"CPUUsage"` | **% CPU** (default) | Current CPU percentage |
+| `"CPUTime"` | **CPU Time** | Total CPU time consumed |
+| `"ProcessName"` | **Process Name** | Alphabetical by name |
+| `"PID"` | **PID** | Process ID (numeric) |
+| `"User"` | **User** | Owner username |
+| `"%Mem"` | **Memory** | Memory percentage |
+| `"RealMem"` | **Real Memory** | Actual RAM usage |
+| `"Threads"` | **Threads** | Number of threads |
+| `"Ports"` | **Ports** | Open network ports |
+| `"bytesWritten"` | **Bytes Written** | Disk write activity |
+| `"bytesRead"` | **Bytes Read** | Disk read activity |
+
+## Visual Demonstration
+
+### Sorted by CPU Usage (Default):
+```
++-------------------------------------------------------------+
+|  Activity Monitor - Sorted by % CPU                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Sort: % CPU (Descending) ▼                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Process Name            PID      %CPU    Memory    User     |
+|  ─────────────────────────────────────────────────────────  |
+|  kernel_task            0        15.2%   1.8 GB    root      |
+|  ← Highest CPU first                                         |
+|  Safari                 1234     12.5%   1.2 GB    ryan      |
+|  WindowServer           158       8.4%   890 MB    _window   |
+|  mds_stores             201       5.1%   350 MB    root      |
+|  Spotlight              245       3.2%   280 MB    root      |
+|  Finder                 567       2.1%   180 MB    ryan      |
+|  Slack                  222       1.8%   450 MB    ryan      |
+|  ...                                                         |
+|  loginwindow            302       0.0%    35 MB    ryan      |
+|  ← Lowest CPU last                                           |
+|                                                              |
+|  ✓ Immediately see CPU-hungry processes                      |
+|  ✓ Quick identification of performance issues                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Sorted by Memory:
+```
++-------------------------------------------------------------+
+|  Activity Monitor - Sorted by Memory                         |
++-------------------------------------------------------------+
+|                                                              |
+|  Sort: Memory (Descending) ▼                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Process Name            PID      %CPU    Memory    User     |
+|  ─────────────────────────────────────────────────────────  |
+|  kernel_task            0        15.2%   1.8 GB    root      |
+|  ← Largest memory first                                      |
+|  Safari                 1234     12.5%   1.2 GB    ryan      |
+|  WindowServer           158       8.4%   890 MB    _window   |
+|  Slack                  222       1.8%   450 MB    ryan      |
+|  mds_stores             201       5.1%   350 MB    root      |
+|  ...                                                         |
+|  launchd                1         0.8%    45 MB    root      |
+|  ← Smallest memory last                                      |
+|                                                              |
+|  Use for: Finding memory leaks, RAM hogs                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Sorted by Process Name:
+```
++-------------------------------------------------------------+
+|  Activity Monitor - Sorted Alphabetically                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Sort: Process Name (Ascending) ▲                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Process Name            PID      %CPU    Memory    User     |
+|  ─────────────────────────────────────────────────────────  |
+|  accountsd              456       0.1%    25 MB    ryan      |
+|  Activity Monitor       789       0.5%    65 MB    ryan      |
+|  airportd               123       0.0%    12 MB    root      |
+|  AppleSpell             234       0.0%     8 MB    ryan      |
+|  ...                                                         |
+|  WindowServer           158       8.4%   890 MB    _window   |
+|  Xcode                  567      25.3%   2.1 GB    ryan      |
+|  zsh                    890       0.0%     4 MB    ryan      |
+|                                                              |
+|  Use for: Finding specific processes by name                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Sort Column Selection:
+```
++-------------------------------------------------------------+
+|  Available Sort Columns                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Click any column header to sort by that column:             |
+|                                                              |
+|  ┌──────────────────────────────────────────────────────┐   |
+|  │ Process  │ %CPU ▼ │ CPU Time │ Threads │ Memory │... │   |
+|  │ Name     │        │          │         │        │    │   |
+|  └──────────────────────────────────────────────────────┘   |
+|               ↑                                              |
+|        Click to sort                                         |
+|        ▼ = Descending (highest first)                        |
+|        ▲ = Ascending (lowest first)                          |
+|                                                              |
+|  Common troubleshooting sorts:                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  %CPU (desc)     Find processes using most CPU               |
+|  Memory (desc)   Find processes using most RAM               |
+|  Threads (desc)  Find processes with many threads            |
+|  Disk Write      Find processes writing to disk              |
+|  Network Sent    Find processes sending data                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `"CPUUsage"` — Sort by CPU for quick performance triage.
+
+### Why Sort by CPU Usage?
+
+1. **Performance** — Immediately see CPU-hungry processes
+2. **Troubleshooting** — Find runaway processes quickly
+3. **Standard** — Most common diagnostic workflow
+4. **Battery** — High CPU = high battery drain
+5. **Fan noise** — CPU usage often causes fan spin-up
+
+### Why Sort by Memory?
+
+- Diagnosing memory pressure issues
+- Finding memory leaks
+- System running out of RAM
+- After seeing "Your system has run out of memory"
+
+### Why Sort by Name?
+
+- Looking for a specific process
+- Verifying a process is running
+- Organizing process view alphabetically
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.ActivityMonitor SortColumn
+
+# Sort by CPU usage (recommended)
+defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
+
+# Sort by memory usage
+defaults write com.apple.ActivityMonitor SortColumn -string "RealMem"
+
+# Sort by process name
+defaults write com.apple.ActivityMonitor SortColumn -string "ProcessName"
+
+# Sort by PID
+defaults write com.apple.ActivityMonitor SortColumn -string "PID"
+
+# Sort by threads
+defaults write com.apple.ActivityMonitor SortColumn -string "Threads"
+
+# Delete (reset to default)
+defaults delete com.apple.ActivityMonitor SortColumn
+```
+
+## UI Location
+
+Click any column header in Activity Monitor to sort by that column.
+
+```
++-------------------------------------------------------------+
+|  Activity Monitor Window                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  CPU  Memory  Energy  Disk  Network                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────────────────────────────────────────────────┐   |
+|  │ Process  │ %CPU ▼ │ CPU Time │ Threads │ Memory     │   |
+|  │ Name     │ ←click │          │         │            │   |
+|  └──────────────────────────────────────────────────────┘   |
+|                                                              |
+|  Click column header:                                        |
+|  • First click: Sort descending (▼)                          |
+|  • Second click: Sort ascending (▲)                          |
+|  • Default sort column saved in SortColumn preference        |
+|                                                              |
+|  To change columns displayed:                                |
+|  View → Columns → [Select columns to show/hide]              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Sort column (this setting)
+defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
+
+# Sort direction (0=descending, 1=ascending)
+defaults write com.apple.ActivityMonitor SortDirection -int 0
+
+# Process filter view
+defaults write com.apple.ActivityMonitor ShowCategory -int 102
+
+# Default tab on launch
+defaults write com.apple.ActivityMonitor SelectedTab -int 0
+
+# Open main window on launch
+defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
+```
+
+## Sort Direction
+
+The `SortDirection` setting controls ascending vs descending order:
+
+```
++-------------------------------------------------------------+
+|  Sort Direction Setting                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  SortDirection = 0 (Descending):                             |
+|  ─────────────────────────────────────────────────────────  |
+|  Highest values at top                                       |
+|  100% CPU → 50% CPU → 10% CPU → 0% CPU                      |
+|  2.0 GB → 500 MB → 100 MB → 10 MB                           |
+|                                                              |
+|  Best for: Finding resource hogs (CPU, Memory, Disk, Net)    |
+|                                                              |
+|  SortDirection = 1 (Ascending):                              |
+|  ─────────────────────────────────────────────────────────  |
+|  Lowest values at top                                        |
+|  0% CPU → 10% CPU → 50% CPU → 100% CPU                      |
+|  10 MB → 100 MB → 500 MB → 2.0 GB                           |
+|                                                              |
+|  Best for: Alphabetical lists, finding lowest PID            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Tab-Specific Columns
+
+Different tabs have different relevant columns:
+
+```
++-------------------------------------------------------------+
+|  Columns by Tab                                              |
++-------------------------------------------------------------+
+|                                                              |
+|  CPU Tab:                                                    |
+|  • %CPU, CPU Time, Threads, Idle Wake Ups, PID              |
+|                                                              |
+|  Memory Tab:                                                 |
+|  • Memory, Real Memory, Private Memory, Shared Memory       |
+|  • Compressed, Purgeable, Virtual Memory                    |
+|                                                              |
+|  Energy Tab:                                                 |
+|  • Energy Impact, 12 hr Power, Preventing Sleep             |
+|  • App Nap, GPU                                              |
+|                                                              |
+|  Disk Tab:                                                   |
+|  • Bytes Read, Bytes Written, Disk Read, Disk Write         |
+|                                                              |
+|  Network Tab:                                                |
+|  • Sent Bytes, Rcvd Bytes, Sent Packets, Rcvd Packets       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Sort not persisting | Quit and reopen Activity Monitor |
+| Column not available | Switch to appropriate tab |
+| Want to see different columns | View → Columns |
+| Sort indicator not showing | Click column header |
+| Processes not sorting correctly | Check SortDirection setting |
+
+## Compatibility
+
+- **macOS**: 10.3+ (Panther)
+- **Note**: Requires restart of Activity Monitor for changes
+- **Note**: Column identifiers may vary slightly by macOS version
+- **Note**: Some columns only appear on certain tabs
+
+## Source File
+
+**File**: [`defaults/interface/activity_monitor.sh`](../../../../../defaults/interface/activity_monitor.sh)
+
+```bash
+run_defaults "com.apple.ActivityMonitor" "SortColumn" "-string" "CPUUsage"
+```
+
+## References
+
+- [Apple Support: Use Activity Monitor on your Mac](https://support.apple.com/guide/activity-monitor/welcome/mac)
+- [Apple Support: View CPU activity](https://support.apple.com/guide/activity-monitor/view-cpu-activity-actmntr43452/mac)
+- [Apple Support: View memory usage](https://support.apple.com/guide/activity-monitor/view-memory-usage-actmntr1004/mac)

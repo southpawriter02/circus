@@ -1,0 +1,346 @@
+# Mail Block Remote Content
+
+Block automatic loading of remote images and content in emails for privacy.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.mail` |
+| **Key** | `DisableURLLoading` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Mail automatically loads remote content (images, stylesheets, tracking pixels) embedded in emails. When enabled (`true`), Mail blocks all remote content by default, protecting your privacy by preventing senders from knowing when you opened their email or tracking your location via IP address. This is a critical privacy setting as tracking pixels are widely used in marketing emails.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Load remote content** (default) — Images and tracking pixels load automatically |
+| `true` | **Block remote content** — Remote content blocked until you explicitly allow it |
+
+## Security Implications
+
+```
++-------------------------------------------------------------+
+|  Privacy Risks of Remote Content Loading                     |
++-------------------------------------------------------------+
+|                                                              |
+|  When remote content loads automatically:                    |
+|                                                              |
+|  1. TRACKING PIXELS                                          |
+|     ┌─────────────────────────────────────────────────────┐ |
+|     │  <img src="track.com/pixel.gif?id=12345">           │ |
+|     │                    ↓                                 │ |
+|     │  Sender knows:                                       │ |
+|     │  • You opened the email                              │ |
+|     │  • When you opened it                                │ |
+|     │  • Your IP address (→ approximate location)          │ |
+|     │  • Your device type                                  │ |
+|     │  • Your email client                                 │ |
+|     └─────────────────────────────────────────────────────┘ |
+|                                                              |
+|  2. IP ADDRESS EXPOSURE                                      |
+|     ┌─────────────────────────────────────────────────────┐ |
+|     │  Your IP: 203.0.113.45                               │ |
+|     │           ↓                                          │ |
+|     │  Geolocation: San Francisco, CA                      │ |
+|     │  ISP: Comcast                                        │ |
+|     │  Network type: Residential                           │ |
+|     └─────────────────────────────────────────────────────┘ |
+|                                                              |
+|  3. MALICIOUS CONTENT                                        |
+|     • Exploit images targeting vulnerabilities              |
+|     • External resources from compromised servers           |
+|     • Dynamic content that changes after delivery           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Visual Demonstration
+
+### Remote Content Blocked:
+```
++-------------------------------------------------------------+
+|  Mail - Remote Content Blocked                               |
++-------------------------------------------------------------+
+|                                                              |
+|  From: newsletter@company.com                                |
+|  Subject: Weekly Update                                      |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ⚠️ This message contains remote content                 │|
+|  │                                                          │|
+|  │  [Load Remote Content]                                   │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Hello!                                                  │|
+|  │                                                          │|
+|  │  [  ?  ]  ← Image placeholder (not loaded)              │|
+|  │                                                          │|
+|  │  Check out our latest...                                │|
+|  │                                                          │|
+|  │  [  ?  ]  [  ?  ]  [  ?  ]                              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ No tracking — sender doesn't know you opened this        |
+|  ✓ Your IP address is protected                             |
+|  ✓ Click "Load Remote Content" to see images if needed      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Remote Content Allowed (Default):
+```
++-------------------------------------------------------------+
+|  Mail - Remote Content Loads Automatically                   |
++-------------------------------------------------------------+
+|                                                              |
+|  From: newsletter@company.com                                |
+|  Subject: Weekly Update                                      |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Hello!                                                  │|
+|  │                                                          │|
+|  │  ┌─────────┐  ← Image loads automatically               │|
+|  │  │  📷    │     (tracking pixel also loads!)           │|
+|  │  └─────────┘                                            │|
+|  │                                                          │|
+|  │  Check out our latest...                                │|
+|  │                                                          │|
+|  │  ┌────┐  ┌────┐  ┌────┐                                │|
+|  │  │ 📷 │  │ 📷 │  │ 📷 │                                │|
+|  │  └────┘  └────┘  └────┘                                │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ⚠️ Sender notified: Email opened at 2:34 PM                |
+|  ⚠️ Your IP address was logged                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### How Tracking Works:
+```
++-------------------------------------------------------------+
+|  Email Tracking Flow                                         |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Sender embeds invisible 1x1 pixel:                       |
+|     <img src="https://track.sender.com/open?                |
+|               email=user@example.com&                        |
+|               campaign=newsletter123">                       |
+|                                                              |
+|  2. You open the email:                                      |
+|                                                              |
+|     ┌──────────┐    Request image    ┌──────────────┐       |
+|     │   Your   │ ─────────────────→  │   Tracking   │       |
+|     │   Mac    │                     │    Server    │       |
+|     │          │ ←─────────────────  │              │       |
+|     └──────────┘    1x1 pixel        └──────────────┘       |
+|          │                                  │                |
+|          │                                  ↓                |
+|          │                          ┌──────────────┐        |
+|          │ Your IP: 203.0.113.45    │   Database   │        |
+|          │ Time: 2:34 PM            │              │        |
+|          │ Device: Mac              │  "user@ex... │        |
+|          └──────────────────────────│   opened at  │        |
+|                                     │   2:34 PM"   │        |
+|                                     └──────────────┘        |
+|                                                              |
+|  3. With DisableURLLoading = true:                           |
+|                                                              |
+|     ┌──────────┐                    ┌──────────────┐        |
+|     │   Your   │        ✗           │   Tracking   │        |
+|     │   Mac    │    No request      │    Server    │        |
+|     │          │                    │              │        |
+|     └──────────┘                    └──────────────┘        |
+|                                                              |
+|     Sender doesn't know if email was opened!                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Block remote content for maximum privacy.
+
+### Why Block Remote Content?
+
+1. **Privacy** — Prevent email open tracking
+2. **Location** — Hide your IP address from senders
+3. **Security** — Block potentially malicious content
+4. **Bandwidth** — Reduce data usage
+5. **Speed** — Emails load faster without images
+
+### Why Allow Remote Content?
+
+- Need to see images immediately
+- Trust all email senders
+- Email formatting depends on remote styles
+- Convenience over privacy preference
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.mail DisableURLLoading
+
+# Block remote content (recommended for privacy)
+defaults write com.apple.mail DisableURLLoading -bool true
+
+# Allow remote content (default)
+defaults write com.apple.mail DisableURLLoading -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.mail DisableURLLoading
+```
+
+## UI Location
+
+**Mail** → **Settings** → **Privacy**
+
+```
++-------------------------------------------------------------+
+|  Mail Settings > Privacy                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Privacy Protection                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [*] Protect Mail Activity                                   |
+|      Hide IP address and privately load remote content       |
+|                                                              |
+|  When Protect Mail Activity is disabled:                     |
+|                                                              |
+|  [ ] Hide IP Address                                         |
+|      ^-- Uses Apple relay to hide IP                         |
+|                                                              |
+|  [*] Block All Remote Content                                |
+|      ^-- This setting (DisableURLLoading)                    |
+|                                                              |
+|      Mail will ask before loading remote content from        |
+|      messages.                                               |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Note: macOS Monterey+ has "Protect Mail Activity"           |
+|  which provides even stronger protection by routing          |
+|  through Apple's servers                                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Block remote content (this setting)
+defaults write com.apple.mail DisableURLLoading -bool true
+
+# Protect Mail Activity (macOS Monterey+, routes through Apple)
+defaults write com.apple.mail ProtectMailActivityInICloud -bool true
+
+# Hide IP address via Apple relay
+defaults write com.apple.mail HideIPAddress -bool true
+
+# Load remote content only from contacts
+defaults write com.apple.mail LoadRemoteContentInMessages -int 1
+```
+
+## Per-Sender Control
+
+```
++-------------------------------------------------------------+
+|  Managing Remote Content Per Sender                          |
++-------------------------------------------------------------+
+|                                                              |
+|  When you receive an email with blocked content:             |
+|                                                              |
+|  Option 1: Load once                                         |
+|  Click "Load Remote Content" in the message                  |
+|  → Loads for this email only                                 |
+|                                                              |
+|  Option 2: Always load from this sender                      |
+|  Click dropdown arrow next to "Load Remote Content"          |
+|  → Select "Load Remote Content from [sender]"                |
+|  → Future emails from this sender load automatically         |
+|                                                              |
+|  Manage trusted senders:                                     |
+|  Mail → Settings → Privacy → "Manage Senders..."             |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Trusted Senders:                                        │|
+|  │  • newsletter@trustedsite.com                            │|
+|  │  • updates@mybank.com                                    │|
+|  │  • notifications@company.com                             │|
+|  │                                          [Remove] [Add]  │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Privacy Comparison
+
+```
++-------------------------------------------------------------+
+|  Mail Privacy Options Comparison                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Setting                    Tracking   IP Hidden   Method    |
+|  ─────────────────────────────────────────────────────────  |
+|  Default (no protection)    Exposed    Exposed     None      |
+|                                                              |
+|  DisableURLLoading=true     Blocked    Hidden*     Block     |
+|  (this setting)             (unless    (no req     all       |
+|                              clicked)   made)                |
+|                                                              |
+|  ProtectMailActivity=true   Masked     Hidden      Apple     |
+|  (macOS 12+)                (Apple     (routed     proxy     |
+|                              proxy)     through              |
+|                                        Apple)               |
+|                                                              |
+|  Both enabled               Maximum protection               |
+|                                                              |
+|  *IP hidden because no request is made at all               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Images not loading | Click "Load Remote Content" in message |
+| Always blocked even for trusted | Check trusted senders list in Settings |
+| Setting not applying | Restart Mail app |
+| Want some images to load | Add sender to trusted list |
+| Newsletter looks broken | Load remote content for that message |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Note**: Enhanced with "Protect Mail Activity" in macOS 12+
+- **Note**: Some newsletters may not display properly
+- **Note**: Does not affect attached images (only remote URLs)
+
+## Source File
+
+**File**: [`defaults/applications/mail.sh`](../../../../../defaults/applications/mail.sh)
+
+```bash
+run_defaults "com.apple.mail" "DisableURLLoading" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Protect your Mail activity on Mac](https://support.apple.com/guide/mail/protect-your-mail-activity-mlhl8cc579bc/mac)
+- [Apple Support: Mail Privacy Protection](https://support.apple.com/guide/mail/use-mail-privacy-protection-mlhl53366f9a/mac)
+- [EFF: How to Stop Email Tracking](https://www.eff.org/deeplinks/2019/01/stop-tracking-my-emails)

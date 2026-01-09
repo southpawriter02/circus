@@ -1,0 +1,314 @@
+# Displays Have Separate Spaces
+
+Control whether each monitor has independent virtual desktops.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.spaces` |
+| **Key** | `spans-displays` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls how Spaces (virtual desktops) work with multiple displays. When set to `false` (separate Spaces), each monitor has its own independent set of virtual desktops — you can have different apps in full-screen on different monitors simultaneously. When set to `true` (spanning), all monitors share a single Space, and switching Spaces changes all monitors at once.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Separate Spaces** (default) — Each display has independent Spaces |
+| `true` | **Spanning Spaces** — All displays share the same Space |
+
+## Visual Demonstration
+
+### Separate Spaces (spans-displays = false):
+```
++-------------------------------------------------------------+
+|  Separate Spaces Per Display                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Each monitor has its own set of Spaces:                     |
+|                                                              |
+|  Monitor 1 (Main)              Monitor 2 (External)          |
+|  ┌─────────────────────┐      ┌─────────────────────┐       |
+|  │ Space 1: Browser    │      │ Space 1: Slack      │       |
+|  │ Space 2: Code       │      │ Space 2: Terminal   │       |
+|  │ Space 3: Email      │      │ Space 3: Music      │       |
+|  └─────────────────────┘      └─────────────────────┘       |
+|         ↓                            ↓                       |
+|  Control+1: Switch M1 only    Independent switching          |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Full-screen apps work independently:                        |
+|                                                              |
+|  ┌─────────────────────┐      ┌─────────────────────┐       |
+|  │                     │      │                     │       |
+|  │  📺 Safari          │      │  📺 VS Code         │       |
+|  │  (Full Screen)      │      │  (Full Screen)      │       |
+|  │                     │      │                     │       |
+|  └─────────────────────┘      └─────────────────────┘       |
+|                                                              |
+|  ✓ Both monitors productive simultaneously                  |
+|  ✓ Switch each monitor's Space independently                |
+|  ✓ Full-screen on one doesn't affect the other              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Spanning Spaces (spans-displays = true):
+```
++-------------------------------------------------------------+
+|  Spaces Span All Displays                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  All monitors share the same Space:                          |
+|                                                              |
+|  ┌───────────────────────────────────────────────────────┐  |
+|  │                     Space 1                           │  |
+|  │  ┌─────────────────────┐   ┌─────────────────────┐   │  |
+|  │  │                     │   │                     │   │  |
+|  │  │    Monitor 1        │   │    Monitor 2        │   │  |
+|  │  │                     │   │                     │   │  |
+|  │  └─────────────────────┘   └─────────────────────┘   │  |
+|  └───────────────────────────────────────────────────────┘  |
+|                                                              |
+|  Switching Spaces changes ALL monitors:                      |
+|                                                              |
+|  Control+2: Both monitors switch to Space 2                 |
+|                                                              |
+|  ┌───────────────────────────────────────────────────────┐  |
+|  │                     Space 2                           │  |
+|  │  ┌─────────────────────┐   ┌─────────────────────┐   │  |
+|  │  │                     │   │                     │   │  |
+|  │  │    Different        │   │    Different        │   │  |
+|  │  │    Content          │   │    Content          │   │  |
+|  │  │                     │   │                     │   │  |
+|  │  └─────────────────────┘   └─────────────────────┘   │  |
+|  └───────────────────────────────────────────────────────┘  |
+|                                                              |
+|  ✓ Everything changes together                              |
+|  ✗ Full-screen app takes ALL monitors                       |
+|  ✗ Can't have different Spaces per monitor                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Full-Screen Behavior Comparison:
+```
++-------------------------------------------------------------+
+|  Full-Screen Apps: Separate vs Spanning                      |
++-------------------------------------------------------------+
+|                                                              |
+|  SEPARATE SPACES (spans-displays = false):                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Entering full-screen on Monitor 1:                          |
+|  ┌─────────────────────┐      ┌─────────────────────┐       |
+|  │                     │      │                     │       |
+|  │  📺 Safari          │      │  ← Unaffected      │       |
+|  │  FULL SCREEN        │      │    Keep working    │       |
+|  │                     │      │                     │       |
+|  └─────────────────────┘      └─────────────────────┘       |
+|  Monitor 1                     Monitor 2                     |
+|                                                              |
+|  ✓ Monitor 2 keeps its content                              |
+|  ✓ Both monitors remain usable                              |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  SPANNING SPACES (spans-displays = true):                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Entering full-screen on Monitor 1:                          |
+|  ┌─────────────────────┐      ┌─────────────────────┐       |
+|  │                     │      │                     │       |
+|  │  📺 Safari          │      │  ████████████████   │       |
+|  │  FULL SCREEN        │      │  ████ BLANK ██████  │       |
+|  │                     │      │  ████████████████   │       |
+|  └─────────────────────┘      └─────────────────────┘       |
+|  Monitor 1                     Monitor 2 (linen pattern)     |
+|                                                              |
+|  ✗ Monitor 2 becomes unusable (blank/linen background)      |
+|  ✗ Wastes second display                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Each display has its own Spaces.
+
+### Why Separate Spaces?
+
+1. **Productivity** — Use both monitors fully
+2. **Full-screen** — Apps don't take over all monitors
+3. **Independence** — Different workflows per screen
+4. **Flexibility** — Switch Spaces on one monitor only
+5. **Standard** — Apple's default recommendation
+
+### Why Spanning Spaces?
+
+- Prefer unified desktop experience
+- Use windows across multiple monitors
+- Drag windows between monitors freely
+- Single mental model for Spaces
+- Older workflow preference
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.spaces spans-displays
+
+# Separate Spaces per display (recommended)
+defaults write com.apple.spaces spans-displays -bool false
+
+# Spaces span all displays
+defaults write com.apple.spaces spans-displays -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.spaces spans-displays
+```
+
+**Important**: This setting requires logout/login to take effect!
+
+```bash
+# After changing, logout to apply
+osascript -e 'tell application "System Events" to log out'
+```
+
+## UI Location
+
+**System Settings** → **Desktop & Dock** → **Mission Control**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Desktop & Dock > Mission Control          |
++-------------------------------------------------------------+
+|                                                              |
+|  Mission Control                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [ ] Automatically rearrange Spaces based on most recent use|
+|                                                              |
+|  [*] When switching to an application, switch to a Space    |
+|      with open windows for the application                   |
+|                                                              |
+|  [*] Group windows by application                            |
+|                                                              |
+|  [*] Displays have separate Spaces                           |
+|      ^-- This setting (checked = false, unchecked = true)    |
+|                                                              |
+|  Note: UI checkbox is inverted from the defaults value!      |
+|  Checked = spans-displays false (separate)                  |
+|  Unchecked = spans-displays true (spanning)                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Separate Spaces (this setting)
+defaults write com.apple.spaces spans-displays -bool false
+
+# Don't auto-rearrange Spaces
+defaults write com.apple.dock mru-spaces -bool false
+
+# Group windows by app in Mission Control
+defaults write com.apple.dock expose-group-apps -bool true
+
+# Switch to app's Space when clicking Dock
+defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool true
+```
+
+## Multi-Monitor Workflow Tips
+
+```
++-------------------------------------------------------------+
+|  Recommended Multi-Monitor Setup                             |
++-------------------------------------------------------------+
+|                                                              |
+|  With separate Spaces (spans-displays = false):              |
+|                                                              |
+|  Monitor 1 (Primary):         Monitor 2 (Secondary):         |
+|  ┌─────────────────────┐     ┌─────────────────────┐        |
+|  │ Space 1: Main work  │     │ Space 1: Reference  │        |
+|  │   - Code editor     │     │   - Documentation   │        |
+|  │   - Terminal        │     │   - Browser         │        |
+|  │                     │     │                     │        |
+|  │ Space 2: Design     │     │ Space 2: Comms      │        |
+|  │   - Figma           │     │   - Slack           │        |
+|  │   - Photoshop       │     │   - Email           │        |
+|  │                     │     │                     │        |
+|  │ Space 3: Full-scr   │     │ Space 3: Media      │        |
+|  │   - Any app         │     │   - Music           │        |
+|  └─────────────────────┘     └─────────────────────┘        |
+|                                                              |
+|  Assign apps to specific Spaces:                             |
+|  Right-click Dock icon → Options → Assign to This Desktop   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not taking effect | Log out and log back in |
+| Full-screen blanks other monitor | Ensure spans-displays is `false` |
+| Can't drag windows between monitors | Expected with separate Spaces |
+| Spaces switching together | Setting may be `true` (spanning) |
+| Menu bar on wrong monitor | Drag menu bar in display arrangement |
+
+## Window Dragging Note
+
+```
++-------------------------------------------------------------+
+|  Dragging Windows Between Monitors                           |
++-------------------------------------------------------------+
+|                                                              |
+|  With separate Spaces (spans-displays = false):              |
+|                                                              |
+|  To move a window between monitors:                          |
+|                                                              |
+|  Option 1: Drag to edge and hold                            |
+|    Drag window to monitor edge → Wait → Window moves over   |
+|                                                              |
+|  Option 2: Move in Mission Control                          |
+|    Enter Mission Control → Drag window to other monitor     |
+|                                                              |
+|  Option 3: Keyboard shortcut                                |
+|    Hold window title → Press Control + Left/Right arrow     |
+|                                                              |
+|  Note: Windows can still move between monitors, it just     |
+|  requires a bit more intention than with spanning Spaces.   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Compatibility
+
+- **macOS**: 10.9+ (Mavericks)
+- **Note**: Requires logout/login to take effect
+- **Note**: Works with any number of displays
+- **Note**: Affects full-screen app behavior
+
+## Source File
+
+**File**: [`defaults/interface/mission_control.sh`](../../../../defaults/interface/mission_control.sh)
+
+```bash
+run_defaults "com.apple.spaces" "spans-displays" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Work in multiple spaces on Mac](https://support.apple.com/guide/mac-help/work-in-multiple-spaces-mh14112/mac)
+- [Apple Support: Use external displays with your Mac](https://support.apple.com/guide/mac-help/use-external-displays-mchl7c7ebe08/mac)
+- [Apple Support: Change Mission Control preferences](https://support.apple.com/guide/mac-help/mission-control-preferences-mchl92dfa2dc/mac)

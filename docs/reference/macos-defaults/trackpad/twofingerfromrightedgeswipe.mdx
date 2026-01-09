@@ -1,0 +1,285 @@
+# Trackpad Swipe Between Pages
+
+Swipe with two fingers from edge to navigate between pages.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AppleMultitouchTrackpad` |
+| **Key** | `TrackpadTwoFingerFromRightEdgeSwipeGesture` |
+| **Type** | Integer |
+| **Default Value** | `3` |
+| **Our Setting** | `3` |
+
+## Description
+
+Controls the gesture for navigating between pages in apps like Safari, Preview, and other document-based applications. This setting determines whether horizontal two-finger swipes trigger back/forward navigation and how the gesture behaves. This is one of the most commonly used trackpad gestures for web browsing.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Disabled** — No swipe navigation |
+| `2` | **Swipe with two fingers** — Horizontal swipe to navigate |
+| `3` | **Scroll with two or three fingers** (default) — Natural scroll-like navigation |
+
+## Visual Demonstration
+
+### Swipe Between Pages Gesture:
+```
++-------------------------------------------------------------+
+|  Swipe Between Pages in Safari                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Page 1: Google                     Page 2: Apple            |
+|  +------------------------+        +------------------------+|
+|  |                        |        |                        ||
+|  |     [Google Logo]      |  <---> |     [Apple Logo]       ||
+|  |                        |        |                        ||
+|  |     [Search Bar]       |        |     apple.com          ||
+|  |                        |        |                        ||
+|  +------------------------+        +------------------------+|
+|                                                              |
+|  Swipe gesture on trackpad:                                 |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |                                                      |   |
+|  |  SWIPE LEFT (Go Forward):    SWIPE RIGHT (Go Back):  |   |
+|  |                                                      |   |
+|  |  +--------+                  +--------+              |   |
+|  |  | ←  ←   | Two fingers     |   →  → | Two fingers  |   |
+|  |  | ←  ←   | moving left     |   →  → | moving right |   |
+|  |  +--------+                  +--------+              |   |
+|  |                                                      |   |
+|  |  Goes to next page          Goes to previous page    |   |
+|  |  in browsing history        in browsing history      |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Value Behavior Comparison:
+```
++-------------------------------------------------------------+
+|  Gesture Behavior Options                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  VALUE 0 (Disabled):                                        |
+|  +------------------------------------------------------+   |
+|  |  Swipe has no effect for navigation                  |   |
+|  |  Must use keyboard shortcuts or buttons              |   |
+|  |                                                      |   |
+|  |  Use ⌘[ for Back, ⌘] for Forward                    |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  VALUE 2 (Swipe with two fingers):                          |
+|  +------------------------------------------------------+   |
+|  |  Quick, distinct swipe gesture                       |   |
+|  |  +--------+                                          |   |
+|  |  | →→→→→→ | Fast horizontal swipe                    |   |
+|  |  | →→→→→→ |                                          |   |
+|  |  +--------+                                          |   |
+|  |                                                      |   |
+|  |  * Clear intentional gesture                         |   |
+|  |  * Different from scrolling                          |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  VALUE 3 (Scroll with two/three fingers) - DEFAULT:        |
+|  +------------------------------------------------------+   |
+|  |  Natural scroll-like behavior                        |   |
+|  |  +--------+                                          |   |
+|  |  | →  →   | Scroll horizontally at edge              |   |
+|  |  | →  →   |                                          |   |
+|  |  +--------+                                          |   |
+|  |                                                      |   |
+|  |  * More natural transition                           |   |
+|  |  * Shows page preview while dragging                 |   |
+|  |  * Rubber-band effect at page boundaries             |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Apps That Support This Gesture:
+```
++-------------------------------------------------------------+
+|  Supported Applications                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  BROWSERS:                                           |   |
+|  |  * Safari - Back/Forward in history                  |   |
+|  |  * Chrome - Back/Forward in history                  |   |
+|  |  * Firefox - Back/Forward in history                 |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  DOCUMENT VIEWERS:                                   |   |
+|  |  * Preview - Previous/Next page in PDF               |   |
+|  |  * Quick Look - Previous/Next file                   |   |
+|  |  * Photos - Previous/Next photo                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  OTHER APPS:                                         |   |
+|  |  * Finder - Back/Forward in folder history           |   |
+|  |  * Apple Books - Previous/Next page                  |   |
+|  |  * System Settings - Back in navigation              |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `3` — Scroll-like navigation for natural feel.
+
+### Why Use Scroll-Like (Value 3)?
+
+1. **Natural** — Feels like scrolling through pages
+2. **Preview** — See page sliding as you swipe
+3. **Control** — Can "peek" at previous page
+4. **Forgiving** — Rubber-band effect if you change mind
+5. **Default** — What Apple recommends
+
+### Why Use Distinct Swipe (Value 2)?
+
+- Clearer separation from scrolling
+- Faster page transitions
+- Less accidental triggers
+- More deliberate action
+- Prefer quick flick gesture
+
+### Why Disable (Value 0)?
+
+- Conflicts with other gestures
+- Accidental back/forward
+- Prefer keyboard shortcuts
+- Use mouse for navigation
+- App-specific issues
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AppleMultitouchTrackpad TrackpadTwoFingerFromRightEdgeSwipeGesture
+
+# Scroll with two or three fingers (default)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerFromRightEdgeSwipeGesture -int 3
+
+# Swipe with two fingers
+defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerFromRightEdgeSwipeGesture -int 2
+
+# Disable swipe navigation
+defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerFromRightEdgeSwipeGesture -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.AppleMultitouchTrackpad TrackpadTwoFingerFromRightEdgeSwipeGesture
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Trackpad** > **More Gestures**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Trackpad > More Gestures                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  More Gestures                                   |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Swipe between pages                             |       |
+|  |  [Scroll left or right with two fingers  v]      |       |
+|  |      ^-- This setting                            |       |
+|  |                                                  |       |
+|  |  Options:                                        |       |
+|  |  +--------------------------------------------+  |       |
+|  |  | Off                                        |  |       |
+|  |  | Swipe with two fingers                     |  |       |
+|  |  | Scroll left or right with two fingers      |  |       |
+|  |  | Swipe with three fingers                   |  |       |
+|  |  +--------------------------------------------+  |       |
+|  |                                                  |       |
+|  |  Swipe between full-screen apps                  |       |
+|  |  [Swipe left or right with four fingers  v]      |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Swipe between pages (this setting)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerFromRightEdgeSwipeGesture -int 3
+
+# Swipe between full-screen apps/Spaces
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2
+
+# Four-finger horizontal swipe
+defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerHorizSwipeGesture -int 2
+
+# Three-finger drag (may affect swipe gestures)
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+
+# Natural scrolling direction
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+```
+
+## Gesture Comparison
+
+| Gesture | Function |
+|---------|----------|
+| Two-finger horizontal scroll | Swipe between pages |
+| Three-finger horizontal swipe | Switch between Spaces |
+| Four-finger horizontal swipe | Switch between Spaces |
+| Two-finger vertical scroll | Scroll content |
+
+## Keyboard Alternatives
+
+If you disable this gesture:
+
+| Action | Keyboard Shortcut |
+|--------|------------------|
+| Go Back | ⌘[ or ⌘← |
+| Go Forward | ⌘] or ⌘→ |
+| Previous Page (PDF) | ← or Page Up |
+| Next Page (PDF) | → or Page Down |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Gesture not working | Check if enabled, logout/login |
+| Conflicts with scrolling | Try value 2 for distinct swipe |
+| Works in Safari not Chrome | Some apps have own settings |
+| Accidental triggers | Try value 2 or disable |
+| Three-finger conflicts | Disable three-finger drag |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Requires Multi-Touch trackpad
+- **Note**: May require logout for changes to take effect
+- **Note**: Works with Magic Trackpad 2
+
+## Source File
+
+**File**: [`defaults/input/trackpad_mouse.sh`](../../../../defaults/input/trackpad_mouse.sh)
+
+```bash
+run_defaults "com.apple.AppleMultitouchTrackpad" "TrackpadTwoFingerFromRightEdgeSwipeGesture" "-int" "3"
+```
+
+## References
+
+- [Apple Support: Use Multi-Touch gestures on your Mac](https://support.apple.com/en-us/102482)
+- [Apple Support: Change Trackpad preferences on Mac](https://support.apple.com/guide/mac-help/change-trackpad-preferences-mchlp1226/mac)
+- [Apple Support: Trackpad gestures](https://support.apple.com/guide/mac-help/trackpad-gestures-mchl708f5a1e/mac)

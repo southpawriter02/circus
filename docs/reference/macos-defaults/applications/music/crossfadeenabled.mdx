@@ -1,0 +1,290 @@
+# Music Crossfade Songs
+
+Enable seamless transitions between songs with audio crossfading.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Music` |
+| **Key** | `crossfadeEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Music app creates smooth transitions between songs by fading out the ending track while simultaneously fading in the next track. This creates a DJ-like mixing effect that eliminates silence between songs. While great for parties and continuous listening, it can cut off song endings and intros, which may not be desirable for albums meant to be heard as composed.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Crossfade enabled** — Songs blend into each other |
+| `false` | **Crossfade disabled** (default) — Natural gap between songs |
+
+## Visual Demonstration
+
+### Without Crossfade (Default):
+```
++-------------------------------------------------------------+
+|  Music Playback - No Crossfade                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Song 1: "Yesterday"                Song 2: "Let It Be"     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Volume                                                      |
+|    │                                                         |
+|  ▓▓█████████████████████████▓▓│     ▓▓███████████████████  |
+|    │                          │     │                       |
+|    └──────────────────────────┘     └─────────────────────  |
+|           Song 1 ends          Gap    Song 2 starts         |
+|                                 │                           |
+|                          ~0.5-1 second                      |
+|                           of silence                        |
+|                                                              |
+|  ✓ Hear complete song endings                               |
+|  ✓ Natural album flow preserved                             |
+|  ✓ Best for classical, live recordings, concept albums      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Crossfade Enabled:
+```
++-------------------------------------------------------------+
+|  Music Playback - Crossfade Active                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Song 1: "Yesterday"                Song 2: "Let It Be"     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Volume                                                      |
+|    │                                                         |
+|  ▓▓████████████████████▓▒░░│                                |
+|    │                    ╲   │                               |
+|    │                     ╲  │  Song 1 fading out            |
+|    │                      ╲ │                               |
+|    │                       ╲│                               |
+|    │                        │╲                              |
+|    │                   ░░▒▓█████████████████████████████   |
+|    │                        │                               |
+|    │                Song 2 fading in                        |
+|                                                              |
+|        └────────────────────┘                               |
+|         Crossfade overlap                                   |
+|           (~6 seconds)                                      |
+|                                                              |
+|  ✓ Seamless transitions                                     |
+|  ✓ No silence between tracks                                |
+|  ✓ Party/workout playlist friendly                          |
+|  ✗ May cut off song endings/intros                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Crossfade Duration:
+```
++-------------------------------------------------------------+
+|  Crossfade Duration Setting                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  The crossfade duration determines overlap length:           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Shorter (1-3 seconds):                                      |
+|  ┌──────────────────────┐┌──────────────────────┐           |
+|  │       Song 1         ││       Song 2         │           |
+|  └──────────────────────┘└──────────────────────┘           |
+|                        ↑↑                                   |
+|                   Quick blend                               |
+|                                                              |
+|  Longer (6-12 seconds):                                      |
+|  ┌──────────────────────┐                                   |
+|  │       Song 1         ╲                                   |
+|  └──────────────────────────────────────┐                   |
+|                     ┌───────────────────────────────────┐   |
+|                     ╲       Song 2                      │   |
+|                     └───────────────────────────────────┘   |
+|                     ↑───────────────────↑                   |
+|                     Extended DJ-style blend                  |
+|                                                              |
+|  Configure duration in Music > Settings > Playback          |
+|  (crossfadeDuration key, range: 1-12 seconds)               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Preserve natural song transitions.
+
+### Why Disable Crossfade?
+
+1. **Album integrity** — Albums are often mastered with intentional gaps
+2. **Song endings** — Hear complete fadeouts as artists intended
+3. **Classical music** — Movements need natural pauses
+4. **Live recordings** — Crowd noise and applause are part of experience
+5. **Concept albums** — Pink Floyd, The Beatles, etc. designed for gapless
+
+### Why Enable Crossfade?
+
+- Party playlists (continuous energy)
+- Workout playlists (no momentum breaks)
+- DJ-style listening experience
+- Curated playlists (not album-focused)
+- Background music (seamless ambience)
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Music crossfadeEnabled
+
+# Enable crossfade
+defaults write com.apple.Music crossfadeEnabled -bool true
+
+# Disable crossfade (default, recommended)
+defaults write com.apple.Music crossfadeEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Music crossfadeEnabled
+
+# Set crossfade duration (in seconds, 1-12)
+defaults write com.apple.Music crossfadeDuration -int 6
+```
+
+## UI Location
+
+**Music** → **Settings** (⌘,) → **Playback**
+
+```
++-------------------------------------------------------------+
+|  Music Settings > Playback                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Playback                                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [ ] Crossfade Songs                                         |
+|      ^-- This setting (crossfadeEnabled)                     |
+|                                                              |
+|      Seconds: [======●======] 6                              |
+|               1            12                                |
+|      ^-- crossfadeDuration (shown when enabled)              |
+|                                                              |
+|  [*] Sound Check                                             |
+|  [ ] Sound Enhancer                                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Gapless Playback vs Crossfade
+
+```
++-------------------------------------------------------------+
+|  Understanding Playback Modes                                |
++-------------------------------------------------------------+
+|                                                              |
+|  GAPLESS PLAYBACK (built-in):                                |
+|  ─────────────────────────────────────────────────────────  |
+|  • Music app automatically handles gapless playback          |
+|  • No setting needed - it's automatic for supported formats  |
+|  • Song 2 starts EXACTLY when Song 1 ends                   |
+|  • No overlap, no gap - seamless but not blended            |
+|                                                              |
+|  Song 1: ████████████████████|                              |
+|  Song 2:                     |████████████████████          |
+|                              ^ Instant transition            |
+|                                                              |
+|  CROSSFADE:                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  • Songs OVERLAP and blend together                          |
+|  • Cuts off end of Song 1 and beginning of Song 2           |
+|  • Creates continuous sound (DJ effect)                      |
+|                                                              |
+|  Song 1: ████████████████░░░░│                              |
+|  Song 2:              ░░░░████████████████████              |
+|                       │←──6s──→│                            |
+|                         Overlap                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Best Practices
+
+```
++-------------------------------------------------------------+
+|  When to Use Each Mode                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  Keep Crossfade OFF for:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|  • Album listening (full albums in order)                    |
+|  • Classical music, jazz, live recordings                    |
+|  • Concept albums (The Wall, Sgt. Pepper's, etc.)           |
+|  • Podcasts and audiobooks                                   |
+|  • Songs with spoken intros/outros                           |
+|                                                              |
+|  Enable Crossfade for:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  • Party/dance playlists                                     |
+|  • Workout/running playlists                                 |
+|  • Background music at events                                |
+|  • EDM, pop, and upbeat genre mixes                         |
+|  • "Vibe" playlists where flow matters                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Crossfade songs (this setting)
+defaults write com.apple.Music crossfadeEnabled -bool false
+
+# Crossfade duration (when enabled)
+defaults write com.apple.Music crossfadeDuration -int 6
+
+# Sound Check (volume normalization)
+defaults write com.apple.Music normalizeVolume -bool true
+
+# Sound Enhancer
+defaults write com.apple.Music soundEnhancerEnabled -bool false
+
+# Lossless audio
+defaults write com.apple.Music losslessEnabled -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Crossfade not working | Check setting is enabled in Playback |
+| Songs still have gaps | Some formats don't support crossfade |
+| Crossfade too long/short | Adjust duration slider (1-12 seconds) |
+| Cuts off too much | Reduce crossfade duration |
+| Want gapless, not crossfade | Disable crossfade - gapless is automatic |
+
+## Compatibility
+
+- **Music**: macOS 10.15+ (Catalina)
+- **Note**: Crossfade works with most audio formats
+- **Note**: May not work with some DRM-protected content
+- **Note**: Setting syncs via iCloud with Music settings
+- **Legacy**: iTunes used same setting (com.apple.iTunes crossfadeEnabled)
+
+## Source File
+
+**File**: [`defaults/applications/music.sh`](../../../../../defaults/applications/music.sh)
+
+```bash
+run_defaults "com.apple.Music" "crossfadeEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Change playback settings in Music](https://support.apple.com/guide/music/change-playback-preferences-mus7a8b90c6/mac)
+- [Apple Support: Use the Music app](https://support.apple.com/guide/music/welcome/mac)
+- [Apple Support: About gapless playback](https://support.apple.com/en-us/HT201185)

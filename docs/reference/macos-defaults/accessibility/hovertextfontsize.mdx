@@ -1,0 +1,249 @@
+# Hover Text Font Size
+
+Set the font size for the Hover Text accessibility feature.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `hoverTextFontSize` |
+| **Type** | Integer |
+| **Default Value** | `24` |
+| **Our Setting** | `24` |
+
+## Description
+
+Controls the font size used by the Hover Text accessibility feature. When Hover Text is enabled, pressing and holding the Command key while hovering over text displays a large, high-resolution version of the text near the cursor. This setting determines how large that magnified text appears. Larger font sizes improve readability for users with low vision.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `14` | **Small** — Minimal magnification |
+| `18` | **Medium-Small** — Light magnification |
+| `24` | **Medium** (default) — Balanced magnification |
+| `32` | **Large** — Strong magnification |
+| `48` | **Extra Large** — Maximum readability |
+| `64` | **Huge** — For severe vision impairment |
+
+## Visual Demonstration
+
+### Hover Text in Action:
+```
++-------------------------------------------------------------+
+|  Hover Text Feature                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  Normal View:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Welcome to System Settings                                  |
+|  ↑ Small text that may be hard to read                      |
+|                                                              |
+|  With Hover Text (Command + Hover):                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │        Welcome to System                                │|
+|  │            Settings                                      │|
+|  │                                                          │|
+|  │  ↑ Large, clear text appears near cursor               │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  The popup follows your cursor and updates as you move      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Font Size Comparison:
+```
++-------------------------------------------------------------+
+|  Hover Text Font Size Examples                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Size 14 (Small):                                            |
+|  ┌──────────────────────┐                                   |
+|  │ Hello World          │  ← Minimal magnification          |
+|  └──────────────────────┘                                   |
+|                                                              |
+|  Size 24 (Default):                                          |
+|  ┌──────────────────────────────┐                           |
+|  │                              │                           |
+|  │   Hello World               │  ← Balanced               |
+|  │                              │                           |
+|  └──────────────────────────────┘                           |
+|                                                              |
+|  Size 48 (Extra Large):                                      |
+|  ┌────────────────────────────────────────┐                 |
+|  │                                        │                 |
+|  │                                        │                 |
+|  │     Hello World                       │  ← Maximum      |
+|  │                                        │    readability  |
+|  │                                        │                 |
+|  └────────────────────────────────────────┘                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### When to Use Different Sizes:
+```
++-------------------------------------------------------------+
+|  Recommended Sizes by Use Case                               |
++-------------------------------------------------------------+
+|                                                              |
+|  MILD VISION DIFFICULTY:                                     |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: 18-24                                         |
+|  Use case: Occasional text magnification                    |
+|  Screen impact: Minimal popup size                          |
+|                                                              |
+|  MODERATE VISION IMPAIRMENT:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: 32-48                                         |
+|  Use case: Regular text magnification needed                |
+|  Screen impact: Medium popup covers more area               |
+|                                                              |
+|  SEVERE VISION IMPAIRMENT:                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  Recommended: 48-64                                         |
+|  Use case: Maximum magnification required                   |
+|  Screen impact: Large popup, very readable                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `24` — Default medium size for balanced magnification.
+
+### Why Use Default?
+
+1. **Balance** — Good magnification without excessive screen coverage
+2. **Readability** — Clear enough for most users
+3. **Efficiency** — Popup doesn't obstruct too much content
+4. **Flexibility** — Can be adjusted per-user as needed
+
+### Why Increase?
+
+- User has low vision requiring larger text
+- Working with very small text regularly
+- Prefer maximum readability over screen space
+- Severe vision impairment
+
+### Why Decrease?
+
+- Only need slight magnification
+- Prefer smaller, less obtrusive popup
+- Hover Text used occasionally
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess hoverTextFontSize
+
+# Set to default (24)
+defaults write com.apple.universalaccess hoverTextFontSize -int 24
+
+# Set to large (48)
+defaults write com.apple.universalaccess hoverTextFontSize -int 48
+
+# Set to extra large (64)
+defaults write com.apple.universalaccess hoverTextFontSize -int 64
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess hoverTextFontSize
+
+# Note: Also enable Hover Text itself
+defaults write com.apple.universalaccess hoverTextEnabled -bool true
+```
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Zoom** > **Hover Text**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Accessibility - Hover Text                |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Accessibility > Zoom                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Zoom                                                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [Zoom options...]                                       │|
+|  │                                                          │|
+|  │  Hover Text                                              │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [✓] Enable Hover Text                                  │|
+|  │                                                          │|
+|  │  Text size:                                              │|
+|  │  [──────────●──────────]        ← This setting          │|
+|  │  Small                    Large                          │|
+|  │                                                          │|
+|  │  Activation modifier:                                    │|
+|  │  [Command ⌘           ▼]                                │|
+|  │                                                          │|
+|  │  [Options...]   (Font, colors, entry location)          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Hover Text font size (this setting)
+defaults write com.apple.universalaccess hoverTextFontSize -int 24
+
+# Enable Hover Text feature
+defaults write com.apple.universalaccess hoverTextEnabled -bool true
+
+# Hover Text font name
+defaults write com.apple.universalaccess hoverTextFontName -string "System"
+
+# Hover Text activation delay (milliseconds)
+defaults write com.apple.universalaccess hoverTextDelay -float 0.25
+
+# Enable zoom feature (alternative to Hover Text)
+defaults write com.apple.universalaccess closeViewZoomDisplayID -int 1
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Hover Text not appearing | Enable Hover Text in System Settings; hold Command |
+| Text too small | Increase font size value |
+| Text too large | Decrease font size value |
+| Wrong font appearing | Check hoverTextFontName setting |
+| Feature not working | Ensure macOS 10.15+ and Hover Text enabled |
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina) for Hover Text feature
+- **Note**: Requires `hoverTextEnabled` to be true
+- **Note**: Works with most text in most applications
+- **Note**: May not work with custom-rendered text or images
+- **Note**: Default activation modifier is Command key
+
+## Source File
+
+**File**: [`defaults/accessibility/display.sh`](../../../../../defaults/accessibility/display.sh)
+
+```bash
+# Note: hoverTextFontSize is documented in the source but typically
+# configured via System Settings UI rather than script
+```
+
+## References
+
+- [Apple Support: Use Hover Text on Mac](https://support.apple.com/guide/mac-help/hover-text-mchl786f8670/mac)
+- [Apple Support: Change Zoom preferences](https://support.apple.com/guide/mac-help/change-zoom-preferences-mchlb203bc78/mac)
+- [Apple Support: Accessibility features on Mac](https://support.apple.com/guide/mac-help/accessibility-features-mh35884/mac)

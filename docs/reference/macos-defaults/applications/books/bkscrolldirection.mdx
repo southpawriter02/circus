@@ -1,0 +1,270 @@
+# Books Scroll Direction
+
+Control horizontal or vertical scrolling when reading in Books.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iBooksX` |
+| **Key** | `BKScrollDirection` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls the scrolling direction for reading content in the Books app. Horizontal scrolling (the default) mimics the experience of turning pages in a physical book, moving left to right through pages. Vertical scrolling provides a continuous scrolling experience similar to web pages or documents, which some readers prefer for longer reading sessions.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Vertical scrolling** — Scroll up/down through content continuously |
+| `1` | **Horizontal scrolling** (default) — Turn pages left/right like a book |
+
+## Visual Demonstration
+
+### Horizontal Scrolling (Page-Based):
+```
++-------------------------------------------------------------+
+|  Books - Horizontal Scrolling Mode                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Reading experience mimics physical book:                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌──────────────────┐     ┌──────────────────┐              |
+|  │                  │     │                  │              |
+|  │  Page 1          │ ──▶ │  Page 2          │              |
+|  │                  │     │                  │              |
+|  │  Chapter begins  │     │  Story continues │              |
+|  │  with the hero   │     │  as the hero     │              |
+|  │  setting off...  │     │  encounters...   │              |
+|  │                  │     │                  │              |
+|  └──────────────────┘     └──────────────────┘              |
+|                                                              |
+|  Navigation:                                                 |
+|  • Swipe left/right on trackpad                             |
+|  • Arrow keys (← →)                                         |
+|  • Click page edges                                         |
+|                                                              |
+|  ✓ Natural book-like feel                                   |
+|  ✓ Clear page boundaries                                    |
+|  ✓ Easy to track reading progress                           |
+|  ✓ Works well with page turn animation                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Vertical Scrolling (Continuous):
+```
++-------------------------------------------------------------+
+|  Books - Vertical Scrolling Mode                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Reading experience like a web page:                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                         ▲                                │|
+|  │                     Scroll up                            │|
+|  │                                                          │|
+|  │  Chapter 1                                               │|
+|  │                                                          │|
+|  │  The story begins on a cold winter morning. Snow         │|
+|  │  covered the landscape as far as the eye could see.      │|
+|  │  Our hero stepped outside, breath visible in the         │|
+|  │  crisp air, ready for the adventure ahead.               │|
+|  │                                                          │|
+|  │  "Today is the day," she whispered to herself,           │|
+|  │  adjusting her pack. The journey would be long,          │|
+|  │  but nothing worth having comes easy.                    │|
+|  │                                                          │|
+|  │  The path stretched before her, winding through          │|
+|  │  the forest that had been her home for...                │|
+|  │                                                          │|
+|  │                    Scroll down                           │|
+|  │                         ▼                                │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Navigation:                                                 |
+|  • Two-finger scroll on trackpad                            |
+|  • Scroll wheel                                             |
+|  • Arrow keys (↑ ↓) or Page Up/Down                         |
+|                                                              |
+|  ✓ Continuous reading flow                                  |
+|  ✓ No page interruptions                                    |
+|  ✓ Familiar web-style navigation                            |
+|  ✓ Better for long reading sessions                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Comparison Side by Side:
+```
++-------------------------------------------------------------+
+|  Horizontal vs Vertical Scrolling                            |
++-------------------------------------------------------------+
+|                                                              |
+|  HORIZONTAL (Default)         VERTICAL                       |
+|  ─────────────────────        ─────────────────────          |
+|  ┌────┐  ┌────┐  ┌────┐      ┌─────────────────────┐        |
+|  │ P1 │→ │ P2 │→ │ P3 │      │ Continuous scroll   │        |
+|  └────┘  └────┘  └────┘      │ ↑↓↑↓↑↓↑↓↑↓↑↓↑↓↑↓   │        |
+|  ← Previous  Next →          │ No page boundaries  │        |
+|                               └─────────────────────┘        |
+|                                                              |
+|  Best for:                    Best for:                      |
+|  • Fiction/narrative          • Technical documents          |
+|  • Traditional reading        • Reference material           |
+|  • Page-specific content      • Quick scanning               |
+|  • Comics/graphic novels      • Long-form articles           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1` — Horizontal scrolling for a book-like reading experience.
+
+### Why Horizontal Scrolling (Default)?
+
+1. **Natural feel** — Mimics turning pages in a physical book
+2. **Page awareness** — Clear boundaries help track progress
+3. **Animation support** — Works with page turn animations
+4. **Standard experience** — Most readers expect this behavior
+5. **Better for most content** — Optimal for fiction and formatted books
+
+### Why Use Vertical Scrolling?
+
+- Reading technical documentation
+- Long reference materials
+- Personal preference for continuous flow
+- Faster scanning through content
+- Web-style reading habit
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iBooksX BKScrollDirection
+
+# Set horizontal scrolling (default, book-like)
+defaults write com.apple.iBooksX BKScrollDirection -int 1
+
+# Set vertical scrolling (continuous)
+defaults write com.apple.iBooksX BKScrollDirection -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.iBooksX BKScrollDirection
+```
+
+## UI Location
+
+**View** menu while reading a book
+
+```
++-------------------------------------------------------------+
+|  Books View Menu                                             |
++-------------------------------------------------------------+
+|                                                              |
+|  View                                                        |
+|  ├── Actual Size                   ⌘0                       |
+|  ├── Zoom In                       ⌘+                       |
+|  ├── Zoom Out                      ⌘-                       |
+|  ├── ─────────────────                                      |
+|  ├── Scroll Vertical               ← This setting           |
+|  ├── Scroll Horizontal             ← This setting           |
+|  ├── ─────────────────                                      |
+|  ├── Two Pages                                              |
+|  ├── Turn Pages Animation                                   |
+|  └── ...                                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Content Type Recommendations
+
+```
++-------------------------------------------------------------+
+|  Best Scroll Direction by Content Type                       |
++-------------------------------------------------------------+
+|                                                              |
+|  CONTENT TYPE              RECOMMENDED        REASON         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Fiction/Novels            Horizontal         Page-based     |
+|                                               narrative      |
+|                                                              |
+|  Textbooks                 Either             Depends on     |
+|                                               reading style  |
+|                                                              |
+|  Technical Docs            Vertical           Quick          |
+|                                               reference      |
+|                                                              |
+|  Comics/Manga              Horizontal         Panel layout   |
+|                                               matters        |
+|                                                              |
+|  Poetry                    Horizontal         Page           |
+|                                               formatting     |
+|                                                              |
+|  Children's Books          Horizontal         Illustrated    |
+|                                               pages          |
+|                                                              |
+|  Academic Papers           Vertical           Continuous     |
+|                                               reading        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Scroll direction (this setting)
+defaults write com.apple.iBooksX BKScrollDirection -int 1
+
+# Page turn animation
+defaults write com.apple.iBooksX BKAnimatePageTurn -bool true
+
+# Two-page view
+defaults write com.apple.iBooksX BKTwoPageMode -bool false
+
+# Auto night theme
+defaults write com.apple.iBooksX BKAutoNightThemeEnabled -bool true
+
+# Show status bar while reading
+defaults write com.apple.iBooksX BKShowStatusBarWhileReading -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Scroll direction not changing | Restart Books app |
+| Can't find View menu option | Must be reading a book (not in library) |
+| Scroll feels inverted | Check System Settings trackpad natural scrolling |
+| Page animations not working | Horizontal mode needed for page animations |
+| Content layout looks wrong | Try switching direction for that book type |
+
+## Compatibility
+
+- **Books**: macOS 10.14+ (Mojave)
+- **Note**: Setting applies to all EPUB books
+- **Note**: PDFs have their own scroll behavior
+- **Note**: Comics may override with their own navigation
+- **Note**: Setting syncs via iCloud with Books settings
+
+## Source File
+
+**File**: [`defaults/applications/books.sh`](../../../../../defaults/applications/books.sh)
+
+```bash
+run_defaults "com.apple.iBooksX" "BKScrollDirection" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Read books in the Books app on Mac](https://support.apple.com/guide/books/read-books-ibksdc11e1b6/mac)
+- [Apple Support: Books User Guide](https://support.apple.com/guide/books/welcome/mac)
+- [Apple Support: Change Books settings](https://support.apple.com/guide/books/settings-ibks1016d5f5/mac)

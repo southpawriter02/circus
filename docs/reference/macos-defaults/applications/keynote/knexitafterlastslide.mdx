@@ -1,0 +1,321 @@
+# Keynote Exit After Last Slide
+
+Control what happens when a presentation reaches its final slide.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iWork.Keynote` |
+| **Key** | `KNExitAfterLastSlide` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Keynote automatically exits presentation mode after displaying the last slide, or shows a black screen and waits for manual exit. A black screen provides a clean ending that allows the presenter to conclude gracefully, answer questions, or navigate to specific slides. Automatic exit can feel abrupt and expose the editing interface to the audience.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Exit automatically** — Returns to edit view after last slide |
+| `false` | **Show black screen** (default) — Wait for presenter to exit |
+
+## Visual Demonstration
+
+### With Black Screen (Default - Recommended):
+```
++-------------------------------------------------------------+
+|  Keynote Presentation - Last Slide                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Slide 15 of 15:                                             |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                   Thank You!                             │|
+|  │                                                          │|
+|  │                   Questions?                             │|
+|  │                                                          │|
+|  │              contact@company.com                         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  [Presenter clicks to advance]                               |
+|                        ↓                                     |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                    [BLACK SCREEN]                        │|
+|  │                                                          │|
+|  │                                                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Clean, professional ending                               |
+|  ✓ Presenter can take questions                             |
+|  ✓ Press Esc or click to exit when ready                    |
+|  ✓ Can press ← to go back to previous slides               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Auto-Exit (Not Recommended):
+```
++-------------------------------------------------------------+
+|  Keynote Presentation - Auto Exit Behavior                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Slide 15 of 15:                                             |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                   Thank You!                             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  [Presenter clicks to advance]                               |
+|                        ↓                                     |
+|  IMMEDIATELY shows:                                          |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ◀ ▶  Thank You Presentation.key                  ⨉ ⊟ ⊡│|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │ ┌───┐ ┌───┐ ┌───┐ ┌───┐ ┌───┐ ┌───┐ ┌───┐             │|
+|  │ │ 1 │ │ 2 │ │ 3 │ │ 4 │ │ 5 │ │ 6 │ │...│             │|
+|  │ └───┘ └───┘ └───┘ └───┘ └───┘ └───┘ └───┘             │|
+|  │ ┌─────────────────────────────────────────────────────┐ │|
+|  │ │                                                      │ │|
+|  │ │           [EDIT VIEW EXPOSED!]                      │ │|
+|  │ │                                                      │ │|
+|  │ │  Audience can see:                                  │ │|
+|  │ │  • All slide thumbnails                             │ │|
+|  │ │  • Hidden slides                                    │ │|
+|  │ │  • Speaker notes                                    │ │|
+|  │ │  • Your toolbar and menus                          │ │|
+|  │ │                                                      │ │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ⚠️ Unprofessional - reveals behind-the-scenes             |
+|  ⚠️ Can expose confidential slides marked as skipped       |
+|  ⚠️ Abrupt ending breaks presentation flow                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Presenter Display Comparison:
+```
++-------------------------------------------------------------+
+|  What the Presenter Sees                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  WITH BLACK SCREEN (KNExitAfterLastSlide = false):           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Presenter Display:                                          |
+|  ┌─────────────────────────┬───────────────────────────────┐|
+|  │ Current: BLACK          │ Next: [End of presentation]   │|
+|  ├─────────────────────────┼───────────────────────────────┤|
+|  │                         │                                │|
+|  │ Press ESC to exit       │ ◀ Go back to previous slide   │|
+|  │                         │                                │|
+|  │ Timer: 45:32            │ Notes: "Thank audience"       │|
+|  └─────────────────────────┴───────────────────────────────┘|
+|                                                              |
+|  ✓ Clear indication that presentation ended                 |
+|  ✓ Can navigate back if needed                              |
+|  ✓ Timer still running for reference                        |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  WITH AUTO-EXIT (KNExitAfterLastSlide = true):               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Presenter suddenly sees edit view on BOTH screens!          |
+|  No graceful ending, no control.                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Show black screen after last slide.
+
+### Why Show Black Screen?
+
+1. **Professional** — Clean ending without exposing editing UI
+2. **Control** — Exit when you're ready, not automatically
+3. **Navigation** — Can go back to previous slides for questions
+4. **Q&A friendly** — Black screen while answering questions
+5. **No reveals** — Hidden slides stay hidden
+
+### Why Auto-Exit?
+
+- Presenting in a loop/kiosk setting
+- Quick informal presentations
+- Using Keynote as a simple slideshow
+- Personal preference
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iWork.Keynote KNExitAfterLastSlide
+
+# Show black screen after last slide (recommended)
+defaults write com.apple.iWork.Keynote KNExitAfterLastSlide -bool false
+
+# Exit automatically after last slide
+defaults write com.apple.iWork.Keynote KNExitAfterLastSlide -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.iWork.Keynote KNExitAfterLastSlide
+```
+
+## UI Location
+
+This setting can be configured per-presentation in **Document** settings during play:
+
+```
++-------------------------------------------------------------+
+|  Keynote Document Settings                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Document (⌘⌥I or Document > Document Settings)             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Slideshow Settings                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Presentation Type: [Normal                    ▼]            |
+|                                                              |
+|  [ ] Loop slideshow                                          |
+|                                                              |
+|  [ ] Restart show if idle for: [15] minutes                 |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Note: The exit behavior after last slide is controlled     |
+|  via the defaults command. The Loop slideshow option        |
+|  overrides the exit behavior.                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## End-of-Presentation Options
+
+```
++-------------------------------------------------------------+
+|  Controlling Presentation Ending                             |
++-------------------------------------------------------------+
+|                                                              |
+|  OPTION 1: Black Screen (KNExitAfterLastSlide = false)       |
+|  ─────────────────────────────────────────────────────────  |
+|  • Best for live presentations                               |
+|  • Press Esc to exit when ready                             |
+|  • Press ← to go back to any slide                          |
+|                                                              |
+|  OPTION 2: Auto-Exit (KNExitAfterLastSlide = true)           |
+|  ─────────────────────────────────────────────────────────  |
+|  • Quick informal presentations                              |
+|  • Returns to edit mode immediately                         |
+|                                                              |
+|  OPTION 3: Loop Presentation                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  • Document > Document Settings > Loop slideshow            |
+|  • Presentation repeats automatically                        |
+|  • Good for kiosks and displays                              |
+|                                                              |
+|  OPTION 4: Self-Playing Presentation                         |
+|  ─────────────────────────────────────────────────────────  |
+|  • Set slide durations in Document Settings                 |
+|  • Presentation advances automatically                       |
+|  • Can combine with Loop                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Exit after last slide (this setting)
+defaults write com.apple.iWork.Keynote KNExitAfterLastSlide -bool false
+
+# Show presenter notes in edit view
+defaults write com.apple.iWork.Keynote ShowPresenterNotes -bool true
+
+# Show pointer during presentation
+defaults write com.apple.iWork.Keynote KNShowPointerOnSlide -bool true
+
+# Enable remote control (Keynote Remote app)
+defaults write com.apple.iWork.Keynote KNRemoteEnabled -bool true
+
+# Auto-save documents
+defaults write com.apple.iWork.Keynote NSDocumentSavesInPlace -bool true
+```
+
+## Presenting Best Practices
+
+```
++-------------------------------------------------------------+
+|  Professional Presentation Endings                           |
++-------------------------------------------------------------+
+|                                                              |
+|  RECOMMENDED APPROACH:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Last Slide Design                                        |
+|     • Clear "Thank You" or closing message                  |
+|     • Contact information if appropriate                    |
+|     • Call to action if needed                              |
+|                                                              |
+|  2. Black Screen Transition                                  |
+|     • KNExitAfterLastSlide = false                          |
+|     • Provides visual cue that content is complete          |
+|                                                              |
+|  3. Q&A Period                                               |
+|     • Audience sees black screen                            |
+|     • Presenter can navigate back to specific slides        |
+|     • Use number keys to jump to slide numbers              |
+|                                                              |
+|  4. Graceful Exit                                            |
+|     • Wait for natural ending moment                        |
+|     • Press Esc to exit presentation mode                   |
+|     • Close laptop or switch to different content           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Edit view shown to audience | Set KNExitAfterLastSlide to false |
+| Can't go back after last slide | Press ← (arrow key), not Esc |
+| Presentation keeps looping | Disable Loop in Document Settings |
+| No black screen appears | Check setting is applied correctly |
+| Need to re-start presentation | Press Play (⌥⌘P) again |
+
+## Compatibility
+
+- **Keynote**: macOS 10.13+ (High Sierra)
+- **Note**: Setting is global preference
+- **Note**: Loop slideshow overrides this setting
+- **Note**: Self-playing presentations may behave differently
+- **Note**: Works with Keynote Remote app
+
+## Source File
+
+**File**: [`defaults/applications/keynote.sh`](../../../../../defaults/applications/keynote.sh)
+
+```bash
+run_defaults "com.apple.iWork.Keynote" "KNExitAfterLastSlide" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Play a Keynote presentation](https://support.apple.com/guide/keynote/play-a-presentation-tanb50f9d9f4/mac)
+- [Apple Support: Keynote User Guide](https://support.apple.com/guide/keynote/welcome/mac)
+- [Apple Support: Present on a separate display](https://support.apple.com/guide/keynote/present-on-a-separate-display-tan3b51db85c/mac)

@@ -1,0 +1,303 @@
+# VoiceOver Enable/Disable
+
+Master toggle for the VoiceOver screen reader accessibility feature.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `voiceOverOnOrOff` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether VoiceOver, Apple's built-in screen reader, is enabled. VoiceOver provides spoken descriptions of what's on screen, enabling blind and visually impaired users to use a Mac. When enabled, VoiceOver reads aloud text, describes images, announces UI elements, and provides audio cues for navigation. It completely changes how the Mac is operated, using keyboard commands and gestures instead of visual interaction.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **VoiceOver off** (default) — Standard visual interface |
+| `true` | **VoiceOver on** — Screen reader active with spoken feedback |
+
+## Visual Demonstration
+
+### VoiceOver Off (false - Default):
+```
++-------------------------------------------------------------+
+|  Standard Mac Interface                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  System Settings                             ⬜ ⬜ ✕   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [Sidebar]     │  General                               │|
+|  │  ─────────     │  ─────────────────────────             │|
+|  │  General       │                                        │|
+|  │  Appearance    │  About                                 │|
+|  │  Accessibility │  Software Update                       │|
+|  │  ...           │  Storage                               │|
+|  │                │  AirDrop & Handoff                     │|
+|  │                │                                        │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Standard visual navigation                              |
+|  ✓ Mouse/trackpad interaction                              |
+|  ✓ No audio descriptions                                   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### VoiceOver On (true):
+```
++-------------------------------------------------------------+
+|  VoiceOver Active Interface                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  System Settings                             ⬜ ⬜ ✕   │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [Sidebar]     │  General                               │|
+|  │  ─────────     │  ─────────────────────────             │|
+|  │  General       │                                        │|
+|  │ ┌───────────┐  │  About                                 │|
+|  │ │Appearance │← │  Software Update                       │|
+|  │ └───────────┘  │  Storage              VoiceOver cursor │|
+|  │  Accessibility │                       highlights item   │|
+|  │  ...           │                                        │|
+|  │                │                                        │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  🔊 "Appearance, button"                                    |
+|     ↑ VoiceOver speaks the focused item                    |
+|                                                              |
+|  ✓ Keyboard navigation (VO keys)                           |
+|  ✓ Spoken descriptions of all elements                     |
+|  ✓ Braille display support                                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### VoiceOver Interaction Model:
+```
++-------------------------------------------------------------+
+|  How VoiceOver Changes Interaction                           |
++-------------------------------------------------------------+
+|                                                              |
+|  WITHOUT VOICEOVER:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  User → Eyes → Screen → Mouse/Trackpad → Click             |
+|                                                              |
+|  WITH VOICEOVER:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  User → Ears → Audio → Keyboard → VoiceOver Commands       |
+|         └───→ Braille Display (optional)                   |
+|                                                              |
+|  KEY COMMANDS (VO = Control + Option):                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  VO + F1        VoiceOver Help                              |
+|  VO + →/←       Navigate items                              |
+|  VO + Space     Activate/click item                         |
+|  VO + A         Read all (from cursor)                      |
+|  VO + M         Open menu bar                               |
+|  VO + H H       Open VoiceOver Help                         |
+|                                                              |
+|  TOGGLE SHORTCUT:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|  Command + F5   Turn VoiceOver on/off                       |
+|  (Or Touch ID triple-press if enabled)                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### VoiceOver Caption Panel:
+```
++-------------------------------------------------------------+
+|  VoiceOver Caption Panel                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  When VoiceOver is on, an optional caption panel shows      |
+|  what VoiceOver is speaking:                                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  [VoiceOver Caption Panel]                              │|
+|  │  ┌──────────────────────────────────────────────────┐  │|
+|  │  │  Appearance, button                               │  │|
+|  │  │  You are currently on a button.                   │  │|
+|  │  │  To click this button, press VO-Space.            │  │|
+|  │  └──────────────────────────────────────────────────┘  │|
+|  │                                                          │|
+|  │  ↑ Shows text of what VoiceOver is speaking            │|
+|  │    Useful for sighted users learning VoiceOver          │|
+|  │    Or in noisy environments                             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — VoiceOver disabled by default.
+
+### Why Keep Disabled?
+
+1. **Standard use** — Most users navigate visually
+2. **Learning curve** — VoiceOver requires training to use effectively
+3. **Different workflow** — Completely changes Mac interaction
+4. **Toggle available** — Command + F5 enables when needed
+
+### Why Enable?
+
+- User is blind or has severe visual impairment
+- Testing VoiceOver compatibility of applications
+- Learning to use screen readers
+- Accessibility compliance testing
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess voiceOverOnOrOff
+
+# Enable VoiceOver
+defaults write com.apple.universalaccess voiceOverOnOrOff -bool true
+
+# Disable VoiceOver
+defaults write com.apple.universalaccess voiceOverOnOrOff -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess voiceOverOnOrOff
+
+# Note: The keyboard shortcut Command+F5 is the standard way to toggle
+# VoiceOver. Using defaults may require logout/restart.
+```
+
+## UI Location
+
+**System Settings** > **Accessibility** > **VoiceOver**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Accessibility - VoiceOver                 |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Accessibility > VoiceOver                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  VoiceOver                                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  VoiceOver                              [○ OFF]         │|
+|  │                                         ← This setting  │|
+|  │                                                          │|
+|  │  VoiceOver speaks items on the screen and             │|
+|  │  provides other auditory information.                   │|
+|  │                                                          │|
+|  │  Shortcut: Press Command-F5 to turn VoiceOver          │|
+|  │  on or off at any time.                                 │|
+|  │                                                          │|
+|  │  [Open VoiceOver Training...]                           │|
+|  │                                                          │|
+|  │  [Open VoiceOver Utility...]                            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## VoiceOver Training
+
+```
++-------------------------------------------------------------+
+|  Learning VoiceOver                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  BUILT-IN TRAINING:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. System Settings > Accessibility > VoiceOver             |
+|  2. Click "Open VoiceOver Training..."                      |
+|  3. Follow interactive lessons                              |
+|                                                              |
+|  TRAINING COVERS:                                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  • Basic navigation (VO+arrows)                            |
+|  • Interacting with items (VO+Space)                       |
+|  • Using the rotor (VO+U)                                  |
+|  • Web navigation                                          |
+|  • Document reading                                        |
+|  • Customizing VoiceOver                                   |
+|                                                              |
+|  PRACTICE TIP:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|  Start with VoiceOver in a simple app (Notes, TextEdit)    |
+|  before attempting complex applications                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# VoiceOver on/off (this setting)
+defaults write com.apple.universalaccess voiceOverOnOrOff -bool false
+
+# VoiceOver cursor size
+defaults write com.apple.universalaccess voiceOverCursorSize -int 1
+
+# Enable audio descriptions for video
+defaults write com.apple.universalaccess mediaAccessibilityAudioDescriptions -bool true
+
+# Speak selected text (alternative to VoiceOver)
+defaults write com.apple.universalaccess speakSelectedText -bool true
+
+# Speak announcements
+defaults write com.apple.universalaccess speakAnnouncements -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Can't turn off VoiceOver | Press Command+F5; or hold power button for options |
+| VoiceOver not speaking | Check volume; check System Settings audio output |
+| Wrong voice | Open VoiceOver Utility > Speech to change voice |
+| Commands not working | Ensure using Control+Option (VO) modifier |
+| Accidentally enabled | Press Command+F5 to toggle off |
+
+## Compatibility
+
+- **macOS**: 10.4+ (Tiger introduced VoiceOver)
+- **Note**: VoiceOver has significantly improved in each macOS version
+- **Note**: Works with most macOS applications
+- **Note**: Supports Braille displays via Bluetooth or USB
+- **Note**: Required for Apple's accessibility compliance
+
+## Source File
+
+**File**: [`defaults/accessibility/voiceover.sh`](../../../../../defaults/accessibility/voiceover.sh)
+
+```bash
+# VoiceOver is typically toggled via Command+F5 rather than defaults
+# This setting persists VoiceOver state across sessions
+```
+
+## References
+
+- [Apple Support: VoiceOver User Guide for Mac](https://support.apple.com/guide/voiceover/welcome/mac)
+- [Apple Support: Turn on VoiceOver](https://support.apple.com/guide/voiceover/turn-voiceover-on-or-off-vo2682/mac)
+- [Apple Developer: Making your app accessible](https://developer.apple.com/accessibility/)
+- [Apple Support: VoiceOver keyboard shortcuts](https://support.apple.com/guide/voiceover/keyboard-shortcuts-cpvokeyboardshortcuts/mac)

@@ -1,0 +1,289 @@
+# Zoom Follows Keyboard Focus
+
+Zoom window automatically follows keyboard focus.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `closeViewZoomFollowsFocus` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the zoom view automatically moves to follow the keyboard focus as you navigate through the interface. When enabled, the zoomed area shifts to keep the currently focused element (text field, button, menu item) visible on screen. This is essential for users who rely on both zoom and keyboard navigation, as it eliminates the need to manually reposition the zoom view while tabbing through interfaces.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** (default) — Zoom stays in place, manual repositioning needed |
+| `true` | **Enabled** — Zoom follows keyboard focus automatically |
+
+## Visual Demonstration
+
+### Zoom Follows Focus Enabled:
+```
++-------------------------------------------------------------+
+|  Zoom Follows Keyboard Focus                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Step 1: Focus on text field                                |
+|  +------------------------------------------------------+   |
+|  |  +-----------------------------------------+         |   |
+|  |  |  ZOOMED VIEW                            |         |   |
+|  |  |  +----------------------------------+   |         |   |
+|  |  |  | [First Name: ___________]        |   |         |   |
+|  |  |  |            ^                      |   |         |   |
+|  |  |  |    Keyboard focus here           |   |         |   |
+|  |  |  +----------------------------------+   |         |   |
+|  |  +-----------------------------------------+         |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Step 2: Press Tab - focus moves to next field             |
+|  +------------------------------------------------------+   |
+|  |  +-----------------------------------------+         |   |
+|  |  |  ZOOMED VIEW (automatically moved!)    |         |   |
+|  |  |  +----------------------------------+   |         |   |
+|  |  |  | [Last Name: ____________]        |   |         |   |
+|  |  |  |            ^                      |   |         |   |
+|  |  |  |    Focus followed here           |   |         |   |
+|  |  |  +----------------------------------+   |         |   |
+|  |  +-----------------------------------------+         |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Zoom pans automatically                                  |
+|  * No manual repositioning needed                           |
+|  * Works across entire screen                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Zoom Follows Focus Disabled:
+```
++-------------------------------------------------------------+
+|  Zoom Does NOT Follow Focus                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Step 1: Focus on text field (visible in zoom)              |
+|  +------------------------------------------------------+   |
+|  |  +-----------------------------------------+         |   |
+|  |  |  ZOOMED VIEW                            |         |   |
+|  |  |  +----------------------------------+   |         |   |
+|  |  |  | [First Name: ___________]        |   |         |   |
+|  |  |  |            ^                      |   |         |   |
+|  |  |  |    Keyboard focus here           |   |         |   |
+|  |  |  +----------------------------------+   |         |   |
+|  |  +-----------------------------------------+         |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Step 2: Press Tab - focus moves BUT zoom stays!           |
+|  +------------------------------------------------------+   |
+|  |  +-----------------------------------------+         |   |
+|  |  |  ZOOMED VIEW (hasn't moved)            |         |   |
+|  |  |  +----------------------------------+   |         |   |
+|  |  |  | [First Name: ___________]        |   |         |   |
+|  |  |  |                                  |   |         |   |
+|  |  |  |    Focus is now OFF SCREEN!      |   |         |   |
+|  |  |  +----------------------------------+   |         |   |
+|  |  +-----------------------------------------+         |   |
+|  |                                                      |   |
+|  |  Next field is somewhere else:                       |   |
+|  |                    [Last Name: ____]  <-- Focus here |   |
+|  |                    (not visible!)                    |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  * Must manually move zoom to see focus                     |
+|  * Interrupts keyboard workflow                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Use Cases:
+```
++-------------------------------------------------------------+
+|  When Zoom Follows Focus Helps                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Form Navigation:                                            |
+|  +------------------------------------------------------+   |
+|  |  Tab through form fields:                             |   |
+|  |  [Name] --> [Email] --> [Phone] --> [Submit]         |   |
+|  |     |          |           |           |              |   |
+|  |     v          v           v           v              |   |
+|  |  Zoom moves with each Tab press                       |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Menu Navigation:                                            |
+|  +------------------------------------------------------+   |
+|  |  Arrow through menus:                                 |   |
+|  |  File --> Edit --> View --> Window                   |   |
+|  |    |                                                  |   |
+|  |    v                                                  |   |
+|  |  Open --> Save --> Print                             |   |
+|  |  Zoom follows selection                               |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Dialog Navigation:                                          |
+|  +------------------------------------------------------+   |
+|  |  Tab through dialog buttons:                          |   |
+|  |  [Cancel] --> [Don't Save] --> [Save]                |   |
+|  |  Zoom shows each focused button                       |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Zoom follows keyboard focus for seamless navigation.
+
+### Why Enable Zoom Follows Focus?
+
+1. **Accessibility** — Essential for keyboard-only users who need zoom
+2. **Efficiency** — No interruption to reposition zoom view
+3. **Workflow** — Seamless form and dialog navigation
+4. **Reduced strain** — Less mouse movement needed
+5. **VoiceOver companion** — Works well with screen reader
+
+### Why Keep Disabled?
+
+- Prefer manual control of zoom position
+- Find automatic movement disorienting
+- Use mouse/trackpad for zoom navigation
+- Only use zoom occasionally for static content
+- Prefer predictable zoom behavior
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess closeViewZoomFollowsFocus
+
+# Enable zoom follows focus
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+
+# Disable zoom follows focus (default)
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess closeViewZoomFollowsFocus
+```
+
+Changes may require logout to take effect.
+
+## UI Location
+
+**System Settings** > **Accessibility** > **Zoom**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Zoom                      |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  Zoom                                            |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  Use keyboard shortcuts to zoom                  |       |
+|  |  [*] Enable                                      |       |
+|  |                                                  |       |
+|  |  Use scroll gesture with modifier keys to zoom   |       |
+|  |  [*] Enable                                      |       |
+|  |                                                  |       |
+|  |  Zoom style                                      |       |
+|  |  [Full Screen                               v]   |       |
+|  |                                                  |       |
+|  |  Advanced... (button)                            |       |
+|  |  +-----------------------------------------+     |       |
+|  |  |  Follow Focus:                          |     |       |
+|  |  |  [*] Follow the keyboard focus          |     |       |
+|  |  |      ^-- This setting                   |     |       |
+|  |  |  [ ] Follow the text insertion point    |     |       |
+|  |  +-----------------------------------------+     |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Zoom follows focus (this setting)
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+
+# Enable keyboard shortcuts for zoom
+defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool true
+
+# Enable scroll gesture zoom
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+# Smooth images when zoomed
+defaults write com.apple.universalaccess closeViewSmoothImages -bool true
+
+# Zoom style (0=full, 1=split, 2=PiP)
+defaults write com.apple.universalaccess closeViewZoomMode -int 0
+```
+
+## Keyboard Navigation + Zoom Workflow
+
+```
++-------------------------------------------------------------+
+|  Optimal Keyboard + Zoom Setup                               |
++-------------------------------------------------------------+
+|                                                              |
+|  1. Enable all zoom features:                               |
+|     * Keyboard shortcuts (⌥⌘8, ⌥⌘=, ⌥⌘-)                  |
+|     * Scroll gesture zoom                                   |
+|     * Zoom follows focus                                    |
+|                                                              |
+|  2. Keyboard workflow:                                       |
+|     +------------------------------------------------+      |
+|     |  ⌥⌘8     Toggle zoom on                        |      |
+|     |  Tab     Navigate to next element              |      |
+|     |          (zoom follows automatically)          |      |
+|     |  Space   Activate buttons                      |      |
+|     |  Return  Submit forms                          |      |
+|     |  Arrows  Navigate menus/lists                  |      |
+|     |  ⌥⌘8     Toggle zoom off when done             |      |
+|     +------------------------------------------------+      |
+|                                                              |
+|  3. Never need to manually move zoom view!                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Zoom not following focus | Verify setting, logout/login |
+| Follows slowly or lags | Reduce zoom level for smoother panning |
+| Doesn't follow in some apps | Some apps have non-standard focus |
+| Too jumpy/disorienting | Try split screen or PiP zoom mode |
+| Focus goes off screen | Enable both scroll gesture and follow focus |
+
+## Compatibility
+
+- **macOS**: 10.6+ (Snow Leopard)
+- **Note**: May require logout for changes to take effect
+- **Note**: Works best with Full Screen zoom mode
+- **Note**: Some older apps may not properly report focus
+
+## Source File
+
+**File**: [`defaults/accessibility/zoom.sh`](../../../../defaults/accessibility/zoom.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "closeViewZoomFollowsFocus" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Zoom in on the Mac screen](https://support.apple.com/guide/mac-help/zoom-in-on-the-mac-screen-mh35715/mac)
+- [Apple Support: Change Zoom preferences](https://support.apple.com/guide/mac-help/change-zoom-preferences-mchl70c97e7f/mac)
+- [Apple Support: Use keyboard navigation on Mac](https://support.apple.com/guide/mac-help/use-your-keyboard-like-a-mouse-mchlp1399/mac)

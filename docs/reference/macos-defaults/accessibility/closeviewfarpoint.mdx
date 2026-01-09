@@ -1,0 +1,270 @@
+# Accessibility Maximum Zoom Level
+
+Set the maximum magnification limit for screen zoom.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.universalaccess` |
+| **Key** | `closeViewFarPoint` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls the maximum zoom level (magnification) when using macOS's accessibility zoom feature. This sets the upper limit of how far you can zoom in on the screen. The value represents the minimum zoom state — confusingly named `FarPoint` because it's the "farthest out" (least zoomed) you can be when zoom is active. The complementary setting `closeViewNearPoint` sets the maximum zoom-in level.
+
+## Values
+
+| Value | Meaning |
+|-------|---------|
+| `1` | **1x** (default) — Normal size (100%), no zoom |
+| `2` | **2x** — Double size (200% magnification) |
+| `5` | **5x** — Five times normal |
+| `10` | **10x** — Ten times normal |
+| `20` | **20x** — Maximum useful zoom |
+| `40` | **40x** — Extreme zoom (rarely needed) |
+
+## Visual Demonstration
+
+### Zoom Level Comparison:
+```
++-------------------------------------------------------------+
+|  Screen Zoom Levels                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  1x (Normal - FarPoint = 1):                                 |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │ The quick brown fox jumps over the lazy dog.            │|
+|  │ Pack my box with five dozen liquor jugs.                │|
+|  │ How vexingly quick daft zebras jump!                    │|
+|  │ The five boxing wizards jump quickly.                   │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  2x Zoom:                                                    |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │    The quick brown fox                                   │|
+|  │    jumps over the lazy                                   │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  5x Zoom:                                                    |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │         brown                                            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  10x Zoom:                                                   |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │           ow                                             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Zoom Range Configuration:
+```
++-------------------------------------------------------------+
+|  Zoom Range Settings                                         |
++-------------------------------------------------------------+
+|                                                              |
+|  closeViewFarPoint = 1 (minimum/no zoom)                    |
+|  closeViewNearPoint = 20 (maximum zoom)                     |
+|                                                              |
+|  Zoom Range:                                                 |
+|  1x ←─────────────────────────────────────→ 20x             |
+|  │                                          │               |
+|  FarPoint                              NearPoint            |
+|  (zoomed out)                          (zoomed in)          |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Using keyboard shortcuts:                                   |
+|                                                              |
+|  ⌥⌘+  → Zoom in (toward NearPoint)                          |
+|  ⌥⌘-  → Zoom out (toward FarPoint)                          |
+|  ⌥⌘8  → Toggle zoom on/off                                  |
+|                                                              |
+|  Or with scroll gesture:                                     |
+|  Control + Scroll Up   → Zoom in                            |
+|  Control + Scroll Down → Zoom out                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Use Case Examples:
+```
++-------------------------------------------------------------+
+|  Recommended Zoom Settings by Use Case                       |
++-------------------------------------------------------------+
+|                                                              |
+|  Casual use (reading small text occasionally):               |
+|  FarPoint: 1    NearPoint: 5                                |
+|  Range: 1x to 5x (comfortable for quick magnification)      |
+|                                                              |
+|  Low vision accessibility:                                   |
+|  FarPoint: 1    NearPoint: 20                               |
+|  Range: 1x to 20x (full range for detailed viewing)         |
+|                                                              |
+|  Presentations/demos:                                        |
+|  FarPoint: 1    NearPoint: 10                               |
+|  Range: 1x to 10x (zoom for audience visibility)            |
+|                                                              |
+|  UI design/pixel work:                                       |
+|  FarPoint: 1    NearPoint: 40                               |
+|  Range: 1x to 40x (inspect individual pixels)               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1` — Normal size as the minimum zoom level.
+
+### Why 1x Minimum?
+
+1. **Standard** — Full screen visible at minimum zoom
+2. **Expected** — Matches normal screen behavior
+3. **Flexible** — Can zoom out completely
+4. **Usable** — See entire screen when needed
+5. **Default** — Apple's recommended setting
+
+### Why Higher Minimum?
+
+- Always need some magnification
+- Prevent accidental zoom-out
+- Vision requires constant zoom
+- Lock zoom to specific range
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.universalaccess closeViewFarPoint
+
+# Set minimum zoom to 1x (normal, recommended)
+defaults write com.apple.universalaccess closeViewFarPoint -int 1
+
+# Set minimum zoom to 2x (always some magnification)
+defaults write com.apple.universalaccess closeViewFarPoint -int 2
+
+# Delete (reset to default)
+defaults delete com.apple.universalaccess closeViewFarPoint
+```
+
+## UI Location
+
+**System Settings** → **Accessibility** → **Zoom**
+
+```
++-------------------------------------------------------------+
+|  System Settings > Accessibility > Zoom                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Zoom                                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [*] Use keyboard shortcuts to zoom                          |
+|  [*] Use scroll gesture with modifier keys to zoom           |
+|                                                              |
+|  Zoom style: [Full Screen                              v]   |
+|                                                              |
+|  [*] Smooth images                                           |
+|                                                              |
+|  Zoom range:                                                 |
+|  Minimum  |──────●─────────────────────────|  Maximum       |
+|           1x                              20x               |
+|           ↑                                                 |
+|     closeViewFarPoint               closeViewNearPoint      |
+|                                                              |
+|  [Advanced...]                                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Minimum zoom level (this setting)
+defaults write com.apple.universalaccess closeViewFarPoint -int 1
+
+# Maximum zoom level
+defaults write com.apple.universalaccess closeViewNearPoint -int 20
+
+# Enable keyboard shortcuts for zoom
+defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool true
+
+# Enable scroll gesture zoom
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+# Zoom style (0=full screen, 1=split, 2=pip)
+defaults write com.apple.universalaccess closeViewZoomMode -int 0
+
+# Smooth zoomed images
+defaults write com.apple.universalaccess closeViewSmoothImages -bool true
+```
+
+## Zoom Feature Overview
+
+```
++-------------------------------------------------------------+
+|  macOS Zoom Accessibility Features                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Keyboard Shortcuts (when enabled):                          |
+|  ─────────────────────────────────────────────────────────  |
+|  ⌥⌘8    Toggle zoom on/off                                  |
+|  ⌥⌘=    Zoom in                                             |
+|  ⌥⌘-    Zoom out                                            |
+|  ⌥⌘/    Toggle image smoothing                              |
+|                                                              |
+|  Scroll Gesture (when enabled):                              |
+|  ─────────────────────────────────────────────────────────  |
+|  Hold Control + Scroll → Zoom in/out                        |
+|  (Modifier key configurable)                                 |
+|                                                              |
+|  Zoom Styles:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|  Full Screen:    Entire screen magnifies                    |
+|  Split Screen:   Portion of screen shows zoomed view        |
+|  Picture-in-Picture: Floating window shows zoomed area      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Zoom not working | Enable zoom shortcuts in Accessibility settings |
+| Can't zoom out fully | Check closeViewFarPoint setting |
+| Zoom too pixelated | Enable "Smooth images" setting |
+| Zoom disorienting | Try split screen or PiP zoom style |
+| Settings not applying | May require logout or restart |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Part of accessibility features
+- **Note**: Works with all zoom styles
+- **Note**: Some changes may require logout
+
+## Source File
+
+**File**: [`defaults/accessibility/zoom.sh`](../../../../defaults/accessibility/zoom.sh)
+
+```bash
+run_defaults "com.apple.universalaccess" "closeViewFarPoint" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Zoom in on the Mac screen](https://support.apple.com/guide/mac-help/zoom-in-on-the-mac-screen-mh35715/mac)
+- [Apple Support: Change Zoom preferences](https://support.apple.com/guide/mac-help/change-zoom-preferences-mchl70c97e7f/mac)
+- [Apple Accessibility: Vision](https://www.apple.com/accessibility/vision/)

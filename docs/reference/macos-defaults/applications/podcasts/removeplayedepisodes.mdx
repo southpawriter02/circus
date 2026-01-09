@@ -1,0 +1,327 @@
+# Podcasts Remove Played Episodes
+
+Automatically delete downloaded episodes after playing.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Key** | `removePlayedEpisodes` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether the Podcasts app automatically removes downloaded episode files after they've been played. This helps manage storage space by removing episodes you've already listened to. The episode remains in your library (not deleted from subscription), but the downloaded audio file is removed from local storage.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Auto-remove** (default) — Delete download after playing |
+| `false` | **Keep all** — Downloaded episodes remain until manually deleted |
+
+## Visual Demonstration
+
+### Auto-Remove Enabled (true - Default):
+```
++-------------------------------------------------------------+
+|  Podcasts - Auto-Remove Played Episodes                      |
++-------------------------------------------------------------+
+|                                                              |
+|  BEFORE LISTENING:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  📁 Podcast Storage: 2.4 GB                                 |
+|                                                              |
+|  🎙️ The Daily                                               |
+|  ├── 📥 Episode 1 (Downloaded)         150 MB               |
+|  ├── 📥 Episode 2 (Downloaded)         145 MB               |
+|  └── 📥 Episode 3 (Downloaded)         160 MB               |
+|                                                              |
+|  AFTER PLAYING EPISODE 1:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  📁 Podcast Storage: 2.25 GB (saved 150 MB)                 |
+|                                                              |
+|  🎙️ The Daily                                               |
+|  ├── ✓ Episode 1 (Played - download removed)               |
+|  ├── 📥 Episode 2 (Downloaded)         145 MB               |
+|  └── 📥 Episode 3 (Downloaded)         160 MB               |
+|                                                              |
+|  ✓ Storage freed automatically                             |
+|  ✓ Episode still in library (can re-download)              |
+|  ✓ No manual cleanup needed                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Keep All (false):
+```
++-------------------------------------------------------------+
+|  Podcasts - Keep All Downloaded Episodes                     |
++-------------------------------------------------------------+
+|                                                              |
+|  OVER TIME:                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  📁 Podcast Storage: 15.7 GB (and growing)                  |
+|                                                              |
+|  🎙️ The Daily (subscribed 6 months)                         |
+|  ├── ✓ Episode 1 (Played)              150 MB               |
+|  ├── ✓ Episode 2 (Played)              145 MB               |
+|  ├── ✓ Episode 3 (Played)              160 MB               |
+|  ├── ✓ ... (180 played episodes)       ~25 GB              |
+|  └── 📥 Episode 184 (New)              155 MB               |
+|                                                              |
+|  ✗ Storage fills up over time                              |
+|  ✓ Can replay any episode instantly                        |
+|  ✗ Requires manual cleanup                                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Storage Impact:
+```
++-------------------------------------------------------------+
+|  Storage Usage Comparison                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  SCENARIO: 5 podcasts, 20 episodes/month, 6 months           |
+|  Average episode size: 100 MB                                |
+|                                                              |
+|  WITH AUTO-REMOVE (true):                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  Only unplayed episodes stored                              |
+|  Typical usage: 2-5 GB                                      |
+|                                                              |
+|  Storage: [████░░░░░░░░░░░░░░░░░░░░░░░░░░] ~5 GB           |
+|                                                              |
+|  WITHOUT AUTO-REMOVE (false):                                |
+|  ─────────────────────────────────────────────────────────  |
+|  All downloaded episodes kept forever                       |
+|  After 6 months: ~60 GB                                     |
+|                                                              |
+|  Storage: [████████████████████████████░░] ~60 GB          |
+|                                                              |
+|  Difference: ~55 GB saved with auto-remove!                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Automatically remove played episodes to save storage.
+
+### Why Auto-Remove?
+
+1. **Storage** — Prevents podcast buildup consuming disk space
+2. **Automatic** — No manual cleanup required
+3. **Re-downloadable** — Can always re-download if needed
+4. **Efficient** — Most episodes only listened to once
+5. **Default behavior** — What most users expect
+
+### Why Keep All?
+
+- Frequently re-listen to episodes
+- Reference podcast for work/study
+- Offline access important
+- Large storage available
+- Archiving specific shows
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.podcasts removePlayedEpisodes
+
+# Enable auto-remove (default, recommended)
+defaults write com.apple.podcasts removePlayedEpisodes -bool true
+
+# Disable auto-remove (keep all downloads)
+defaults write com.apple.podcasts removePlayedEpisodes -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.podcasts removePlayedEpisodes
+```
+
+## UI Location
+
+**Podcasts** > **Settings** > **General** > **Remove Played Downloads**
+
+```
++-------------------------------------------------------------+
+|  Podcasts Settings - General                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Podcasts > Settings (⌘,) > General                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [General] [Playback] [Files] [Advanced]                │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Downloads                                               │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Download Episodes:                                      │|
+|  │  [On ▼]                                                  │|
+|  │                                                          │|
+|  │  [✓] Remove Played Downloads    ← This setting          │|
+|  │                                                          │|
+|  │  Sync Library:                                           │|
+|  │  [✓] Sync subscriptions across devices                  │|
+|  │  [✓] Sync listening progress                            │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Episode Limits                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Limit Episodes:                                         │|
+|  │  [Off ▼]                                                 │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Combines With Episode Limits
+
+```
++-------------------------------------------------------------+
+|  Storage Management Strategies                               |
++-------------------------------------------------------------+
+|                                                              |
+|  STRATEGY 1: Auto-remove only (this setting)                 |
+|  ─────────────────────────────────────────────────────────  |
+|  • Downloaded episodes removed after playing                |
+|  • All unplayed episodes kept                               |
+|  • Good for: Regular listeners who stay current             |
+|                                                              |
+|  STRATEGY 2: Episode limits only                             |
+|  ─────────────────────────────────────────────────────────  |
+|  • Keep only X most recent episodes                         |
+|  • Older episodes auto-deleted (played or not)             |
+|  • Good for: Subscribers who miss episodes sometimes        |
+|                                                              |
+|  STRATEGY 3: Both combined (recommended)                     |
+|  ─────────────────────────────────────────────────────────  |
+|  • Played episodes removed immediately                      |
+|  • Unplayed episodes capped at limit                       |
+|  • Maximum storage efficiency                               |
+|                                                              |
+|  Settings:                                                   |
+|  removePlayedEpisodes = true                                |
+|  episodeLimit = 10                                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Per-Show Override
+
+```
++-------------------------------------------------------------+
+|  Override for Specific Podcasts                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Global setting applies to all podcasts by default.          |
+|  You can override for individual shows:                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  In Podcasts app:                                            |
+|  1. Select a podcast show                                   |
+|  2. Click ⓘ (info) or Settings icon                        |
+|  3. Choose "Custom Settings"                                |
+|  4. Toggle "Remove Played Downloads"                        |
+|                                                              |
+|  Example setup:                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  🎙️ Daily News Podcast       [Auto-remove: ON]              |
+|     Listen once, no need to keep                            |
+|                                                              |
+|  🎙️ Tech Reference Show      [Auto-remove: OFF]             |
+|     Want to reference past episodes                         |
+|                                                              |
+|  🎙️ Comedy Podcast           [Auto-remove: ON]              |
+|     Entertainment, listen once                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Remove played episodes (this setting)
+defaults write com.apple.podcasts removePlayedEpisodes -bool true
+
+# Episode limit per podcast (0 = no limit)
+defaults write com.apple.podcasts episodeLimit -int 10
+
+# Auto-download new episodes
+defaults write com.apple.podcasts downloadNewEpisodes -bool true
+
+# Sync podcasts across devices
+defaults write com.apple.podcasts syncPodcasts -bool true
+
+# Sync listening history
+defaults write com.apple.podcasts syncListeningHistory -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Episodes not being removed | Ensure fully played (not partially) |
+| Want to keep specific episode | Star/favorite it, or disable per-show |
+| Accidentally removed episode | Re-download from episode list |
+| Storage still high | Check per-show settings; review limits |
+| Synced device keeping episodes | Check setting on each device |
+
+## What Counts as "Played"?
+
+```
++-------------------------------------------------------------+
+|  When Episodes Are Considered "Played"                       |
++-------------------------------------------------------------+
+|                                                              |
+|  PLAYED (will be removed):                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  • Listened to completion (reached end)                     |
+|  • Manually marked as played                                |
+|  • Skipped via "Mark All as Played"                         |
+|                                                              |
+|  NOT PLAYED (will be kept):                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  • Partially listened (any progress < 100%)                 |
+|  • Downloaded but never started                             |
+|  • Starred/favorited episodes (protected)                   |
+|                                                              |
+|  Note: "Played" status syncs across devices if              |
+|  sync is enabled.                                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Compatibility
+
+- **Podcasts**: macOS 10.15+ (Catalina)
+- **Note**: Setting syncs via iCloud
+- **Note**: Per-show settings override global
+- **Note**: Starred episodes may be protected
+- **Note**: Restart Podcasts after changing setting
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../../defaults/applications/podcasts.sh)
+
+```bash
+run_defaults "com.apple.podcasts" "removePlayedEpisodes" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Change Podcasts settings on Mac](https://support.apple.com/guide/podcasts/change-settings-podb804dc5bd/mac)
+- [Apple Support: Download and save podcast episodes](https://support.apple.com/guide/podcasts/download-and-save-episodes-podb31576d08/mac)
+- [Apple Support: Podcasts User Guide](https://support.apple.com/guide/podcasts/welcome/mac)

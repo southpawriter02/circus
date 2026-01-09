@@ -1,0 +1,349 @@
+# Xcode Show Runtime Issues
+
+Display runtime warnings and issues during debugging.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.dt.Xcode` |
+| **Key** | `IDEShowRuntimeIssues` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Xcode displays runtime issues in the Issue Navigator during app execution. Runtime issues include Auto Layout constraint conflicts, memory access issues, Main Thread Checker violations, and other problems detected while your app is running. These issues appear as purple warnings and help catch bugs that only manifest at runtime.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Show runtime issues** (default) — Display purple warnings for runtime problems |
+| `false` | **Hide runtime issues** — Do not display runtime warnings |
+
+## Visual Demonstration
+
+### Runtime Issues Displayed:
+```
++-------------------------------------------------------------+
+|  Xcode - Runtime Issues in Issue Navigator                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Issue Navigator                                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ⚠️ Buildtime Issues (2)                                     |
+|  │                                                           |
+|  ├─ ⚠️ 'viewDidLoad()' should call super                     |
+|  │     ViewController.swift:25                               |
+|  │                                                           |
+|  └─ ⚠️ Unused variable 'temp'                                |
+|        DataManager.swift:42                                  |
+|                                                              |
+|  🟣 Runtime Issues (3)                                        |
+|  │                                                           |
+|  ├─ 🟣 Unable to simultaneously satisfy constraints           |
+|  │     Will attempt to recover by breaking constraint        |
+|  │     ┗━ View: UILabel 0x7f8...                            |
+|  │                                                           |
+|  ├─ 🟣 Main Thread Checker: UI API called on background      |
+|  │     -[UIView setNeedsLayout]                              |
+|  │     ┗━ NetworkManager.swift:89                           |
+|  │                                                           |
+|  └─ 🟣 Thread 1: EXC_BAD_ACCESS (detected)                   |
+|        Memory sanitizer found issue                          |
+|        ┗━ DataParser.swift:156                              |
+|                                                              |
+|  🟣 = Purple runtime issue (detected during execution)       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Runtime Issue Inline Annotation:
+```
++-------------------------------------------------------------+
+|  Xcode Editor - Runtime Issue Annotation                     |
++-------------------------------------------------------------+
+|                                                              |
+|  87 │   func updateUI() {                                    |
+|  88 │     DispatchQueue.global().async {                     |
+|  89 │       self.label.text = "Updated"                      |
+|     │       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                   |
+|     │  🟣 Main Thread Checker: UI API called on a            |
+|     │     background thread: -[UILabel setText:]             |
+|     │     PID: 12345, TID: 67890                             |
+|     │                                                        |
+|     │  ┌──────────────────────────────────────────────────┐ |
+|     │  │ UIKit methods must be called from main thread    │ |
+|     │  │                                                  │ |
+|     │  │ Fix: Wrap in DispatchQueue.main.async { }       │ |
+|     │  └──────────────────────────────────────────────────┘ |
+|  90 │     }                                                  |
+|  91 │   }                                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Types of Runtime Issues:
+```
++-------------------------------------------------------------+
+|  Runtime Issue Categories                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  🟣 MAIN THREAD CHECKER                                      |
+|  ─────────────────────────────────────────────────────────  |
+|  Detects UIKit/AppKit APIs called from background threads    |
+|                                                              |
+|  Example:                                                    |
+|  DispatchQueue.global().async {                              |
+|    self.tableView.reloadData()  // 🟣 Violation!            |
+|  }                                                           |
+|                                                              |
+|  🟣 AUTO LAYOUT                                               |
+|  ─────────────────────────────────────────────────────────  |
+|  Constraint conflicts that can't be satisfied                |
+|                                                              |
+|  Example:                                                    |
+|  "Unable to simultaneously satisfy constraints..."           |
+|  - View.width = 100                                          |
+|  - View.width = 200  // 🟣 Conflict!                         |
+|                                                              |
+|  🟣 MEMORY SANITIZER (ASan/UBSan)                            |
+|  ─────────────────────────────────────────────────────────  |
+|  Memory access violations and undefined behavior             |
+|                                                              |
+|  Example:                                                    |
+|  let ptr = UnsafeMutablePointer<Int>.allocate(capacity: 1)  |
+|  ptr.deallocate()                                            |
+|  ptr.pointee = 42  // 🟣 Use after free!                     |
+|                                                              |
+|  🟣 THREAD SANITIZER (TSan)                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  Data race conditions between threads                        |
+|                                                              |
+|  Example:                                                    |
+|  var count = 0                                               |
+|  Thread 1: count += 1  // 🟣 Data race!                      |
+|  Thread 2: count += 1  // 🟣 Data race!                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Issue Navigator Views:
+```
++-------------------------------------------------------------+
+|  Viewing Runtime Issues                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  Access Issue Navigator: ⌘5                                  |
+|                                                              |
+|  Filter options at bottom:                                   |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  [All] [Errors] [Warnings] [Analyzers] [Runtime]        │|
+|  │                                         ^^^^^^^^        │|
+|  │                                    Filter to runtime only│|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Click issue to:                                             |
+|  • Jump to source line                                       |
+|  • See backtrace (if available)                              |
+|  • View related issues                                       |
+|                                                              |
+|  Right-click for:                                            |
+|  • Reveal in Project Navigator                               |
+|  • Copy issue description                                    |
+|  • Show issue details                                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Show runtime issues for proactive bug detection.
+
+### Why Show Runtime Issues?
+
+1. **Early detection** — Catch bugs during development
+2. **Thread safety** — Identify main thread violations
+3. **Memory safety** — Detect memory issues before crashes
+4. **Layout issues** — Find constraint conflicts
+5. **Code quality** — Fix issues before users encounter them
+
+### Why Hide Runtime Issues?
+
+- Working with known issues temporarily
+- Debugging specific problem (reducing noise)
+- Third-party library generating many warnings
+- Performance testing (minimize overhead)
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.dt.Xcode IDEShowRuntimeIssues
+
+# Show runtime issues (recommended)
+defaults write com.apple.dt.Xcode IDEShowRuntimeIssues -bool true
+
+# Hide runtime issues
+defaults write com.apple.dt.Xcode IDEShowRuntimeIssues -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.dt.Xcode IDEShowRuntimeIssues
+```
+
+## UI Location
+
+**Xcode** → **Settings** (⌘,) → **General**
+
+```
++-------------------------------------------------------------+
+|  Xcode Settings > General                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Issues                                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [*] Show live issues                                        |
+|                                                              |
+|  [*] Show runtime issues                                     |
+|      ^-- This setting                                        |
+|                                                              |
+|  Continue building after errors:                             |
+|  [*] Enable                                                  |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Note: Runtime issues only appear while app is running       |
+|  in debug mode with appropriate sanitizers enabled          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Enabling Sanitizers
+
+To detect more runtime issues, enable sanitizers in your scheme:
+
+```
++-------------------------------------------------------------+
+|  Scheme Editor - Diagnostics Tab                             |
++-------------------------------------------------------------+
+|                                                              |
+|  Product → Scheme → Edit Scheme... (⌘<)                      |
+|  Select "Run" → "Diagnostics" tab                            |
+|                                                              |
+|  Runtime Sanitization:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [ ] Address Sanitizer                                       |
+|      Detect memory corruption, buffer overflows              |
+|                                                              |
+|  [ ] Thread Sanitizer                                        |
+|      Detect data races between threads                       |
+|                                                              |
+|  [*] Undefined Behavior Sanitizer                            |
+|      Detect undefined behavior (signed overflow, etc.)       |
+|                                                              |
+|  Runtime API Checking:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [*] Main Thread Checker                                     |
+|      Detect UIKit calls from background threads              |
+|                                                              |
+|  Memory Management:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [*] Zombie Objects                                          |
+|      Detect messages to deallocated objects                  |
+|                                                              |
+|  [*] Malloc Stack Logging                                    |
+|      Track memory allocations (for Instruments)              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Show runtime issues (this setting)
+defaults write com.apple.dt.Xcode IDEShowRuntimeIssues -bool true
+
+# Show live issues (real-time error checking)
+defaults write com.apple.dt.Xcode IDEShowLiveIssues -bool true
+
+# Continue building after errors
+defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool true
+
+# Show build duration
+defaults write com.apple.dt.Xcode ShowBuildOperationDuration -bool true
+```
+
+## Common Runtime Issues and Fixes
+
+```
++-------------------------------------------------------------+
+|  Fixing Common Runtime Issues                                |
++-------------------------------------------------------------+
+|                                                              |
+|  Main Thread Checker Violation:                              |
+|  ─────────────────────────────────────────────────────────  |
+|  Before:                                                     |
+|    DispatchQueue.global().async {                            |
+|      self.label.text = "Done"  // 🟣 Error                  |
+|    }                                                         |
+|                                                              |
+|  After:                                                      |
+|    DispatchQueue.global().async {                            |
+|      DispatchQueue.main.async {                              |
+|        self.label.text = "Done"  // ✓ Fixed                 |
+|      }                                                       |
+|    }                                                         |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Auto Layout Conflict:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  Before:                                                     |
+|    view.translatesAutoresizingMaskIntoConstraints = true     |
+|    NSLayoutConstraint.activate([...])  // 🟣 Conflict        |
+|                                                              |
+|  After:                                                      |
+|    view.translatesAutoresizingMaskIntoConstraints = false    |
+|    NSLayoutConstraint.activate([...])  // ✓ Fixed           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Runtime issues not showing | Enable in Settings → General |
+| Too many layout warnings | Fix constraints or use constraint priorities |
+| Main thread false positive | Check if third-party library issue |
+| Sanitizer slowing app | Disable during performance testing |
+| Issues disappear on restart | Runtime issues clear each session |
+
+## Compatibility
+
+- **Xcode**: 8.0+ (Main Thread Checker)
+- **Xcode**: 7.0+ (Address Sanitizer)
+- **Note**: Some sanitizers require specific architectures
+- **Note**: Sanitizers impact performance (debug only)
+- **Note**: Runtime issues require running app in Xcode
+
+## Source File
+
+**File**: [`defaults/applications/xcode.sh`](../../../../../defaults/applications/xcode.sh)
+
+```bash
+run_defaults "com.apple.dt.Xcode" "IDEShowRuntimeIssues" "-bool" "true"
+```
+
+## References
+
+- [Apple Developer: Diagnosing memory, thread, and crash issues](https://developer.apple.com/documentation/xcode/diagnosing-memory-thread-and-crash-issues-early)
+- [Apple Developer: Main Thread Checker](https://developer.apple.com/documentation/xcode/diagnosing-memory-thread-and-crash-issues-early)
+- [WWDC 2017: Finding Bugs Using Xcode Runtime Tools](https://developer.apple.com/videos/play/wwdc2017/406/)

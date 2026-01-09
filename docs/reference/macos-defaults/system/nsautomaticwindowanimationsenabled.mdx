@@ -1,0 +1,299 @@
+# Disable Window Opening Animations
+
+Control whether windows animate when opening documents.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `NSGlobalDomain` |
+| **Key** | `NSAutomaticWindowAnimationsEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether macOS displays animations when opening documents from Finder. When enabled, windows "zoom out" from the file icon to their full size with a brief animation. Disabling this makes windows appear instantly, creating a snappier feel especially when opening many documents throughout the day.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Animations enabled** (default) — Windows zoom open from file icon |
+| `false` | **Animations disabled** — Windows appear instantly |
+
+## Visual Demonstration
+
+### With Animations Enabled (Default):
+```
++-------------------------------------------------------------+
+|  Opening Document - Animation Flow                           |
++-------------------------------------------------------------+
+|                                                              |
+|  Step 1: Double-click file in Finder                         |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📁 Documents                                            │|
+|  │                                                          │|
+|  │     📄 Report.pdf  ← Double-click                       │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Step 2: Window begins to zoom from icon (0ms)               |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │           ┌────┐                                        │|
+|  │           │ 📄 │ ← Small window at icon position        │|
+|  │           └────┘                                        │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Step 3: Window expands with animation (~100ms)              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │      ┌──────────────────┐                               │|
+|  │      │ Report.pdf       │ ← Window growing              │|
+|  │      │                  │                               │|
+|  │      └──────────────────┘                               │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Step 4: Full-size window appears (~200ms total)             |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ┌────────────────────────────────────────────────────┐ │|
+|  │  │ Report.pdf                                    ⨉ ⊟ ⊡│ │|
+|  │  │                                                    │ │|
+|  │  │  [Document content displayed]                      │ │|
+|  │  │                                                    │ │|
+|  │  │                                                    │ │|
+|  │  └────────────────────────────────────────────────────┘ │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Total time: ~200-300ms per document                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Animations Disabled (Our Setting):
+```
++-------------------------------------------------------------+
+|  Opening Document - Instant                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Double-click file → Window appears immediately              |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📁 Documents                                            │|
+|  │                                                          │|
+|  │     📄 Report.pdf  ← Double-click                       │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                           ↓                                  |
+|                       INSTANT                                |
+|                           ↓                                  |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ┌────────────────────────────────────────────────────┐ │|
+|  │  │ Report.pdf                                    ⨉ ⊟ ⊡│ │|
+|  │  │                                                    │ │|
+|  │  │  [Document content displayed]                      │ │|
+|  │  │                                                    │ │|
+|  │  │                                                    │ │|
+|  │  └────────────────────────────────────────────────────┘ │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Total time: ~0ms (instant)                                 |
+|                                                              |
+|  ✓ No zoom animation                                        |
+|  ✓ Window appears at full size immediately                  |
+|  ✓ Saves ~200ms per document                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Time Savings Over a Workday:
+```
++-------------------------------------------------------------+
+|  Animation Time Impact                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  Assumption: Opening 50 documents/files per day              |
+|                                                              |
+|  With animations (200ms each):                               |
+|  50 × 200ms = 10,000ms = 10 seconds/day                     |
+|                                                              |
+|  Without animations (instant):                               |
+|  50 × 0ms = 0 seconds/day                                   |
+|                                                              |
+|  Annual savings: ~60 minutes of waiting                      |
+|                                                              |
+|  More importantly: PERCEIVED RESPONSIVENESS                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Even small delays (100-200ms) are noticeable to humans     |
+|  and create a "sluggish" feeling. Eliminating these delays  |
+|  makes your Mac feel significantly more responsive.          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable window animations for instant response.
+
+### Why Disable Animations?
+
+1. **Speed** — Windows appear instantly
+2. **Productivity** — No waiting for animations
+3. **Responsiveness** — System feels snappier
+4. **Focus** — Less visual distraction
+5. **Efficiency** — Smoother workflow
+
+### Why Keep Animations?
+
+- Enjoy the visual polish
+- Easier to track window positions
+- Prefer macOS default behavior
+- Visual continuity from icon to window
+- New to Mac (helps understand UI flow)
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read NSGlobalDomain NSAutomaticWindowAnimationsEnabled
+
+# Disable window animations (recommended)
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+
+# Enable window animations (default)
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool true
+
+# Delete (reset to default)
+defaults delete NSGlobalDomain NSAutomaticWindowAnimationsEnabled
+```
+
+## UI Location
+
+Not available in System Settings — terminal only setting.
+
+```
++-------------------------------------------------------------+
+|  No Direct UI Control                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  This setting is not exposed in System Settings.             |
+|                                                              |
+|  Related settings in:                                        |
+|  System Settings > Accessibility > Display                   |
+|                                                              |
+|  [ ] Reduce motion                                           |
+|      ^-- This reduces some animations but not window open    |
+|                                                              |
+|  For window opening animations specifically:                 |
+|  Use the defaults command                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Scope of Effect
+
+This setting affects document windows across all applications:
+
+```
++-------------------------------------------------------------+
+|  Applications Affected                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  ✓ Finder (opening files and folders)                       |
+|  ✓ Preview (opening PDFs, images)                           |
+|  ✓ TextEdit (opening text documents)                        |
+|  ✓ Pages, Numbers, Keynote (opening iWork documents)        |
+|  ✓ Most other standard macOS apps                           |
+|                                                              |
+|  May not affect:                                             |
+|  • Custom window implementations                             |
+|  • Some third-party apps with own animations                |
+|  • Electron apps (Chrome-based)                             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Disable window animations (this setting)
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+
+# Faster Dock animations
+defaults write com.apple.dock autohide-time-modifier -float 0.2
+
+# Faster Launchpad animations
+defaults write com.apple.dock springboard-show-duration -float 0.1
+defaults write com.apple.dock springboard-hide-duration -float 0.1
+
+# Faster Mission Control animations
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
+# Faster window resize (per-app, example: Terminal)
+defaults write com.apple.Terminal NSWindowResizeTime -float 0.001
+
+# System-wide reduce motion (less precise)
+defaults write com.apple.universalaccess reduceMotion -bool true
+```
+
+## Reduce Motion vs This Setting
+
+```
++-------------------------------------------------------------+
+|  Comparison: Reduce Motion vs Window Animations              |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Accessibility > Display > Reduce Motion   |
+|  ─────────────────────────────────────────────────────────  |
+|  • Affects: Full-screen transitions, parallax effects        |
+|  • Does NOT disable: Window opening animations               |
+|  • Purpose: Accessibility for motion sensitivity             |
+|                                                              |
+|  NSAutomaticWindowAnimationsEnabled (this setting)           |
+|  ─────────────────────────────────────────────────────────  |
+|  • Affects: Window opening/closing zoom animation            |
+|  • More targeted: Just document windows                      |
+|  • Purpose: Performance/efficiency improvement               |
+|                                                              |
+|  For maximum speed, use BOTH:                                |
+|  defaults write com.apple.universalaccess reduceMotion -bool true
+|  defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Setting not taking effect | Log out and back in |
+| Some apps still animate | Third-party apps may ignore setting |
+| Want partial animations | Use "Reduce Motion" instead |
+| Lost visual context | Re-enable setting |
+| Not sure if working | Open Preview on an image to test |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Affects system-wide document opening
+- **Note**: Some apps may override this behavior
+- **Note**: May require logout/login to fully apply
+
+## Source File
+
+**File**: [`defaults/interface/finder.sh`](../../../../../defaults/interface/finder.sh)
+
+```bash
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+```
+
+## References
+
+- [macos-defaults.com: Window animations](https://macos-defaults.com/misc/nsautomaticwindowanimationsenabled.html)
+- [Apple Human Interface Guidelines: Animation](https://developer.apple.com/design/human-interface-guidelines/animation)
+- [Apple Support: Change Accessibility Display settings](https://support.apple.com/guide/mac-help/change-accessibility-display-settings-mchlc03f7c72/mac)

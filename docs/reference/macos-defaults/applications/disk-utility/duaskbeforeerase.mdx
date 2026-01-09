@@ -1,0 +1,350 @@
+# Disk Utility Ask Before Erase
+
+Show confirmation dialog before erasing disks or volumes.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.DiskUtility` |
+| **Key** | `DUAskBeforeErase` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Disk Utility displays a confirmation dialog before erasing disks, partitions, or volumes. This is a critical safety feature that prevents accidental data loss from misclicks or selecting the wrong drive. Erasing a disk is an irreversible operation that permanently destroys all data on the target volume.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Ask before erasing** (default) — Show confirmation dialog |
+| `false` | **No confirmation** — Erase immediately without warning |
+
+## Visual Demonstration
+
+### With Confirmation Enabled (Recommended):
+```
++-------------------------------------------------------------+
+|  Disk Utility - Erase Confirmation Dialog                    |
++-------------------------------------------------------------+
+|                                                              |
+|  Step 1: Click Erase on a volume                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Disk Utility                                            │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  [First Aid] [Partition] [Erase] [Mount] [Info]         │|
+|  │                            ↑                             │|
+|  │                        Click Erase                       │|
+|  │                                                          │|
+|  │  Volume: External Drive                                  │|
+|  │  Capacity: 1 TB                                          │|
+|  │  Used: 750 GB                                            │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Step 2: Confirmation dialog appears                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │    ⚠️  Are you sure you want to erase                   │|
+|  │        "External Drive"?                                 │|
+|  │                                                          │|
+|  │    Erasing "External Drive" will delete all data        │|
+|  │    stored on it. This cannot be undone.                 │|
+|  │                                                          │|
+|  │    Name:    [External Drive          ]                  │|
+|  │    Format:  [APFS                   ▼]                  │|
+|  │    Scheme:  [GUID Partition Map     ▼]                  │|
+|  │                                                          │|
+|  │                         [Cancel]  [Erase]               │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ User must confirm before data destruction               |
+|  ✓ Shows what will be erased                               |
+|  ✓ Opportunity to verify target drive                      |
+|  ✓ Can cancel if wrong drive selected                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### The Danger of Disabling:
+```
++-------------------------------------------------------------+
+|  ⚠️ WARNING: Without Confirmation                           |
++-------------------------------------------------------------+
+|                                                              |
+|  If DUAskBeforeErase = false:                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  User clicks [Erase]                                    │|
+|  │         ↓                                                │|
+|  │  [DRIVE IMMEDIATELY ERASED!]                            │|
+|  │         ↓                                                │|
+|  │  💀 ALL DATA GONE - NO RECOVERY                         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  NIGHTMARE SCENARIOS:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Selected wrong drive in sidebar                         |
+|     • Intended: "Old USB Drive"                             |
+|     • Actually: "Work Backup Drive"                         |
+|     • Result: Years of work destroyed                       |
+|                                                              |
+|  2. Misclick on trackpad                                    |
+|     • Accidentally clicked Erase                            |
+|     • No chance to cancel                                   |
+|     • Instant data loss                                     |
+|                                                              |
+|  3. Similar drive names                                      |
+|     • "Backup" vs "Backup 1"                                |
+|     • Easy to confuse                                       |
+|     • No warning to verify                                  |
+|                                                              |
+|  ✗ NO CONFIRMATION = NO SAFETY NET                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### What Erase Actually Does:
+```
++-------------------------------------------------------------+
+|  Understanding Disk Erase Operations                         |
++-------------------------------------------------------------+
+|                                                              |
+|  QUICK ERASE (Default):                                      |
+|  ─────────────────────────────────────────────────────────  |
+|  • Removes file system metadata                             |
+|  • Marks all space as "available"                           |
+|  • Data technically remains (recovery possible)             |
+|  • Very fast (seconds)                                      |
+|                                                              |
+|  SECURE ERASE (Security Options):                            |
+|  ─────────────────────────────────────────────────────────  |
+|  • Overwrites actual data on disk                           |
+|  • Multiple passes available (1, 3, or 7 passes)            |
+|  • Data unrecoverable                                       |
+|  • Much slower (hours for large drives)                     |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  Erase Dialog - Security Options                         │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [Security Options...]                                   │|
+|  │                                                          │|
+|  │  ├──●─────────────────────────────────────────┤         │|
+|  │  Fastest                              Most Secure        │|
+|  │                                                          │|
+|  │  • Fastest: Don't overwrite data                        │|
+|  │  • Middle: 1-pass overwrite                             │|
+|  │  • Secure: 7-pass overwrite (DoD standard)              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: SSDs don't support traditional secure erase.         |
+|  Use FileVault encryption for SSD security.                 |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Always confirm before erasing for safety.
+
+### Why Enable Confirmation (Critical)?
+
+1. **Irreversible action** — Erased data is essentially gone
+2. **Multiple drives** — Easy to select wrong one
+3. **High stakes** — Could destroy critical backups
+4. **No undo** — Unlike deleting files, no Trash recovery
+5. **Industry standard** — All professional tools require confirmation
+
+### Why Would Anyone Disable This?
+
+- Automating disk preparation workflows
+- IT departments imaging many drives
+- Testing environments with disposable data
+- Scripts that handle confirmation differently
+- **NOT recommended for regular use**
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.DiskUtility DUAskBeforeErase
+
+# Enable erase confirmation (recommended)
+defaults write com.apple.DiskUtility DUAskBeforeErase -bool true
+
+# Disable erase confirmation (DANGEROUS)
+defaults write com.apple.DiskUtility DUAskBeforeErase -bool false
+
+# Delete (reset to default - which is true)
+defaults delete com.apple.DiskUtility DUAskBeforeErase
+```
+
+## UI Location
+
+The confirmation appears whenever you click the Erase button in Disk Utility.
+
+```
++-------------------------------------------------------------+
+|  Disk Utility Toolbar                                        |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  [First Aid]  [Partition]  [Erase]  [Mount]  [Info]     │|
+|  │                              ↑                           │|
+|  │                         This button                      │|
+|  │                         triggers the                     │|
+|  │                         confirmation                     │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Also accessible via:                                        |
+|  • Edit menu > Erase                                        |
+|  • Right-click volume > Erase                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Recovery Options After Accidental Erase
+
+```
++-------------------------------------------------------------+
+|  If You Accidentally Erased a Drive                          |
++-------------------------------------------------------------+
+|                                                              |
+|  ⚠️ ACT FAST - Don't write new data to the drive!          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  IMMEDIATE STEPS:                                            |
+|  1. DO NOT use the drive                                    |
+|  2. Disconnect it immediately                               |
+|  3. Don't try to "fix" it yourself                          |
+|                                                              |
+|  RECOVERY OPTIONS:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Option 1: Time Machine                                      |
+|  • If the erased drive was backed up                        |
+|  • Restore from most recent backup                          |
+|                                                              |
+|  Option 2: Data Recovery Software                            |
+|  • Disk Drill, Data Rescue, R-Studio                        |
+|  • May recover files from quick-erased drives               |
+|  • Less effective on SSDs                                   |
+|                                                              |
+|  Option 3: Professional Recovery                             |
+|  • DriveSavers, Ontrack, etc.                               |
+|  • Expensive ($500-$2000+)                                  |
+|  • Best chance for critical data                            |
+|                                                              |
+|  PREVENTION IS BETTER:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  • Keep DUAskBeforeErase enabled                            |
+|  • Always verify target drive                               |
+|  • Maintain regular backups                                 |
+|  • Use descriptive drive names                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Ask before erase (this setting)
+defaults write com.apple.DiskUtility DUAskBeforeErase -bool true
+
+# Show all devices in sidebar
+defaults write com.apple.DiskUtility SidebarShowAllDevices -bool true
+
+# Show APFS snapshots
+defaults write com.apple.DiskUtility DUShowAPFSSnapshots -bool true
+
+# Enable debug menu
+defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
+
+# Advanced image options
+defaults write com.apple.DiskUtility advanced-image-options -bool true
+```
+
+## Best Practices for Safe Disk Operations
+
+```
++-------------------------------------------------------------+
+|  Disk Utility Safety Checklist                               |
++-------------------------------------------------------------+
+|                                                              |
+|  BEFORE ERASING ANY DRIVE:                                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ☐ Verify you selected the correct drive                    |
+|      • Check capacity matches expected                      |
+|      • Check drive name is correct                          |
+|      • Use "Show All Devices" for clarity                   |
+|                                                              |
+|  ☐ Confirm backup exists                                    |
+|      • Time Machine backup current?                         |
+|      • Other backup of this data?                           |
+|      • Can you afford to lose this data?                    |
+|                                                              |
+|  ☐ Disconnect drives you're NOT erasing                     |
+|      • Removes them from possibility                        |
+|      • Can't accidentally erase the wrong one               |
+|                                                              |
+|  ☐ Double-check in confirmation dialog                      |
+|      • Read the drive name carefully                        |
+|      • Verify capacity shown                                |
+|      • Don't rush - take a moment                           |
+|                                                              |
+|  ☐ Consider physical labels                                 |
+|      • Label external drives clearly                        |
+|      • "BACKUP - DO NOT ERASE"                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Confirmation not appearing | Check DUAskBeforeErase setting is true |
+| Erase button grayed out | Volume may be in use; unmount first |
+| Can't erase startup disk | Boot from Recovery (⌘R at startup) |
+| Erase fails with error | Try First Aid first; check disk health |
+| Want to erase SSD securely | Use FileVault before erase; SSDs handle differently |
+
+## Compatibility
+
+- **Disk Utility**: macOS 10.11+ (El Capitan)
+- **Note**: Setting applies to all erase operations
+- **Note**: Affects both volumes and entire disks
+- **Note**: Also affects disk image creation (erase then create)
+- **Note**: Command-line `diskutil` has separate confirmation behavior
+
+## Source File
+
+**File**: [`defaults/applications/disk_utility.sh`](../../../../../defaults/applications/disk_utility.sh)
+
+```bash
+run_defaults "com.apple.DiskUtility" "DUAskBeforeErase" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Disk Utility User Guide](https://support.apple.com/guide/disk-utility/welcome/mac)
+- [Apple Support: Erase and reformat a storage device](https://support.apple.com/guide/disk-utility/erase-and-reformat-a-storage-device-dskutl14079/mac)
+- [Apple Support: How to erase a disk for Mac](https://support.apple.com/en-us/HT208496)

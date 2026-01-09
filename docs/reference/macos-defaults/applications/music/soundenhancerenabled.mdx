@@ -1,0 +1,305 @@
+# Music Sound Enhancer
+
+Add depth and presence to audio playback with sound enhancement processing.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Music` |
+| **Key** | `soundEnhancerEnabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Music app applies audio processing to add perceived depth, width, and bass enhancement to playback. Sound Enhancer modifies the original audio signal to create a more immersive listening experience, particularly noticeable on smaller speakers. However, audiophiles and professionals often prefer to hear audio as it was originally mastered, making this setting a matter of personal preference.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Sound Enhancer on** — Audio processing applied |
+| `false` | **Sound Enhancer off** (default) — Original audio preserved |
+
+## Visual Demonstration
+
+### Audio Processing Comparison:
+```
++-------------------------------------------------------------+
+|  Sound Enhancer Effect                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  ORIGINAL AUDIO (Sound Enhancer OFF):                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Frequency Response:                                         |
+|      │                                                       |
+|    dB│     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄                           |
+|      │   ▄▀                     ▀▄                          |
+|      │ ▄▀                         ▀▄                        |
+|      │▀                             ▀                       |
+|      └───────────────────────────────────                   |
+|       20Hz                         20kHz                    |
+|                                                              |
+|  Stereo Width:                                               |
+|      L ←──────┼──────→ R                                    |
+|            [normal]                                          |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ENHANCED AUDIO (Sound Enhancer ON):                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Frequency Response (boosted bass & treble):                 |
+|      │                                                       |
+|    dB│▄    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄    ▄                      |
+|      │█▄ ▄▀                     ▀▄ ▄█   ← Enhanced          |
+|      │ █▀                         █                         |
+|      │▀                             ▀                       |
+|      └───────────────────────────────────                   |
+|       20Hz   Bass boost    Treble boost  20kHz              |
+|                                                              |
+|  Stereo Width (expanded):                                    |
+|   L ←────────────┼────────────→ R                           |
+|              [widened]                                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Processing Effects:
+```
++-------------------------------------------------------------+
+|  What Sound Enhancer Does                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  1. BASS ENHANCEMENT                                         |
+|  ─────────────────────────────────────────────────────────  |
+|  • Boosts low frequencies (~60-120Hz)                        |
+|  • Adds perceived "punch" to music                           |
+|  • Compensates for small/laptop speakers                     |
+|                                                              |
+|  2. STEREO WIDENING                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  • Expands the stereo image                                  |
+|  • Creates more spacious sound                               |
+|  • Makes headphones feel more "open"                         |
+|                                                              |
+|  3. PRESENCE BOOST                                           |
+|  ─────────────────────────────────────────────────────────  |
+|  • Enhances mid-high frequencies                             |
+|  • Improves vocal clarity                                    |
+|  • Adds "shimmer" to cymbals and strings                    |
+|                                                              |
+|  4. DYNAMIC PROCESSING                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  • Light compression for consistent volume                   |
+|  • Brings out quiet details                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Intensity Slider:
+```
++-------------------------------------------------------------+
+|  Sound Enhancer Intensity                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  When enabled, adjust the intensity:                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Low ├──────●────────────────────────────────────┤ High     |
+|       │                                          │          |
+|       │  Subtle enhancement                      │ Heavy    |
+|       │  Minimal processing                      │ processing
+|       │  Closer to original                      │ More "fun"
+|       │                                          │          |
+|                                                              |
+|  Recommended: Keep it low if using at all                   |
+|  Reason: High settings can cause distortion and fatigue     |
+|                                                              |
+|  Settings key: soundEnhancerLevel (float, 0.0-1.0)          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Preserve original audio quality.
+
+### Why Disable Sound Enhancer?
+
+1. **Fidelity** — Hear music as the artist/producer intended
+2. **Mastering** — Professional recordings are already balanced
+3. **Quality headphones** — Good equipment doesn't need processing
+4. **Listening fatigue** — Enhanced audio can tire ears faster
+5. **Audiophile standards** — Purists prefer unprocessed audio
+
+### Why Enable Sound Enhancer?
+
+- Built-in Mac speakers (compensation for small drivers)
+- Older or lower-quality headphones
+- Prefer a more "exciting" sound signature
+- Quiet background listening
+- Genre preference (EDM, pop benefit from bass boost)
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Music soundEnhancerEnabled
+
+# Enable Sound Enhancer
+defaults write com.apple.Music soundEnhancerEnabled -bool true
+
+# Disable Sound Enhancer (recommended)
+defaults write com.apple.Music soundEnhancerEnabled -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.Music soundEnhancerEnabled
+
+# Set intensity level (0.0 to 1.0, when enabled)
+defaults write com.apple.Music soundEnhancerLevel -float 0.5
+```
+
+## UI Location
+
+**Music** → **Settings** (⌘,) → **Playback**
+
+```
++-------------------------------------------------------------+
+|  Music Settings > Playback                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  Playback                                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [ ] Crossfade Songs                                         |
+|      Seconds: [======○======]                                |
+|                                                              |
+|  [*] Sound Check                                             |
+|                                                              |
+|  [ ] Sound Enhancer                                          |
+|      ^-- This setting (soundEnhancerEnabled)                 |
+|                                                              |
+|      Low [========○========] High                            |
+|      ^-- soundEnhancerLevel (shown when enabled)             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Sound Enhancer vs Equalizer
+
+```
++-------------------------------------------------------------+
+|  Comparison: Sound Enhancer vs EQ                            |
++-------------------------------------------------------------+
+|                                                              |
+|  SOUND ENHANCER:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|  • One-click enhancement                                     |
+|  • Automatic processing                                      |
+|  • Includes stereo widening                                  |
+|  • Applies compression                                       |
+|  • Simple (on/off + intensity)                              |
+|                                                              |
+|  EQUALIZER (Window > Equalizer):                             |
+|  ─────────────────────────────────────────────────────────  |
+|  • Manual frequency control                                  |
+|  • 10-band frequency adjustment                              |
+|  • Presets for genres                                        |
+|  • No stereo processing                                      |
+|  • No compression                                            |
+|  • More precise control                                      |
+|                                                              |
+|  Recommendation:                                             |
+|  ─────────────────────────────────────────────────────────  |
+|  If you want to tweak sound, use EQ instead of              |
+|  Sound Enhancer for more control and less distortion.       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Audio Quality Considerations
+
+```
++-------------------------------------------------------------+
+|  Impact on Audio Quality                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  Original file → [Sound Enhancer] → Playback                |
+|                         │                                    |
+|                         ▼                                    |
+|                  Processing adds:                            |
+|                  • Phase shifts                              |
+|                  • Harmonic distortion                       |
+|                  • Compression artifacts                     |
+|                  • Potential clipping                        |
+|                                                              |
+|  For best quality:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Use lossless audio (ALAC/FLAC)                          |
+|  2. Keep Sound Enhancer OFF                                 |
+|  3. Use quality headphones/speakers                         |
+|  4. Use EQ only if needed                                   |
+|                                                              |
+|  Note: If using with Apple Music Lossless, Sound Enhancer   |
+|  processing may reduce the benefit of lossless audio.       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Sound Enhancer (this setting)
+defaults write com.apple.Music soundEnhancerEnabled -bool false
+
+# Sound Enhancer intensity
+defaults write com.apple.Music soundEnhancerLevel -float 0.5
+
+# Sound Check (volume normalization)
+defaults write com.apple.Music normalizeVolume -bool true
+
+# Crossfade songs
+defaults write com.apple.Music crossfadeEnabled -bool false
+
+# Lossless audio
+defaults write com.apple.Music losslessEnabled -bool true
+
+# Dolby Atmos
+defaults write com.apple.Music dolbyAtmosEnabled -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Audio sounds distorted | Disable Sound Enhancer or reduce intensity |
+| Music sounds muddy | Disable - enhancement may conflict with mastering |
+| Want more bass only | Use Equalizer instead (more control) |
+| Enhancement too subtle | Increase intensity slider (if enabled) |
+| Sounds "fake" or processed | Disable for natural sound |
+
+## Compatibility
+
+- **Music**: macOS 10.15+ (Catalina)
+- **Note**: Affects all audio playback in Music
+- **Note**: Does not affect AirPlay to other devices (processing is local)
+- **Note**: Works with all audio formats
+- **Legacy**: Same as iTunes Sound Enhancer
+
+## Source File
+
+**File**: [`defaults/applications/music.sh`](../../../../../defaults/applications/music.sh)
+
+```bash
+run_defaults "com.apple.Music" "soundEnhancerEnabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Change playback settings in Music](https://support.apple.com/guide/music/change-playback-preferences-mus7a8b90c6/mac)
+- [Apple Support: Use the equalizer in Music](https://support.apple.com/guide/music/use-the-equalizer-mus31d09e66/mac)
+- [Apple Support: About Apple Music audio quality](https://support.apple.com/en-us/HT212183)

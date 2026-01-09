@@ -1,0 +1,281 @@
+# Safari AutoFill Other Forms
+
+Automatically fill miscellaneous form data on websites.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Safari` |
+| **Key** | `AutoFillMiscellaneousForms` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Safari remembers and automatically fills data entered into web forms that don't fit into other AutoFill categories (contacts, passwords, credit cards). This includes form fields like search preferences, dropdown selections, custom text fields, and other miscellaneous input data. Safari learns from your previous entries and suggests them when you return to similar forms.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `false` | **Disabled** — No form data remembered (more private) |
+| `true` | **Enabled** (default) — Safari remembers form entries |
+
+## Visual Demonstration
+
+### AutoFill Other Forms Enabled (Default):
+```
++-------------------------------------------------------------+
+|  Web Form - AutoFill Enabled                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Search Preferences                                          |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  Company Name                                        |   |
+|  |  +------------------------------------------------+  |   |
+|  |  | Acme Corp                                  [v] |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |         ^                                            |   |
+|  |    Safari remembers previous entries                 |   |
+|  |                                                      |   |
+|  |  Dropdown shows previous entries:                   |   |
+|  |  +------------------------------------------------+  |   |
+|  |  | Acme Corp                                      |  |   |
+|  |  | Previous Company                               |  |   |
+|  |  | Another Entry                                  |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |                                                      |   |
+|  |  Preferred Language                                  |   |
+|  |  +------------------------------------------------+  |   |
+|  |  | English                                    [v] |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |         ^                                            |   |
+|  |    Last selection remembered                         |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### AutoFill Other Forms Disabled (Recommended):
+```
++-------------------------------------------------------------+
+|  Web Form - AutoFill Disabled                                |
++-------------------------------------------------------------+
+|                                                              |
+|  Search Preferences                                          |
+|                                                              |
+|  +------------------------------------------------------+   |
+|  |  Company Name                                        |   |
+|  |  +------------------------------------------------+  |   |
+|  |  |                                                |  |   |
+|  |  +------------------------------------------------+  |   |
+|  |         ^                                            |   |
+|  |    No suggestions shown                              |   |
+|  |                                                      |   |
+|  |  No previous entries remembered                     |   |
+|  |  Each visit starts fresh                            |   |
+|  |                                                      |   |
+|  +------------------------------------------------------+   |
+|                                                              |
+|  Benefits:                                                   |
+|  * No browsing history in forms                             |
+|  * Privacy on shared computers                              |
+|  * Clean form experience                                    |
+|  * No accidental data exposure                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### What Data Safari Remembers:
+```
++-------------------------------------------------------------+
+|  Miscellaneous Form Data Stored                              |
++-------------------------------------------------------------+
+|                                                              |
+|  Safari remembers entries in various form fields:           |
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  TEXT FIELDS:                                     |       |
+|  |  * Search queries                                 |       |
+|  |  * Custom input fields                            |       |
+|  |  * Comments and notes                             |       |
+|  |  * Company/organization names                     |       |
+|  +--------------------------------------------------+       |
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  SELECTIONS:                                      |       |
+|  |  * Dropdown menu choices                          |       |
+|  |  * Radio button preferences                       |       |
+|  |  * Checkbox states (some sites)                   |       |
+|  +--------------------------------------------------+       |
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  SITE-SPECIFIC:                                   |       |
+|  |  * Login usernames (separate from passwords)      |       |
+|  |  * Filter preferences                             |       |
+|  |  * Sort options                                   |       |
+|  +--------------------------------------------------+       |
+|                                                              |
+|  This data builds up over time and can reveal habits!      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Other forms AutoFill disabled for privacy.
+
+### Why Disable Other Forms AutoFill?
+
+1. **Privacy** — No record of form entries kept
+2. **Clean slate** — Each visit is fresh
+3. **Shared computers** — Previous entries won't appear
+4. **Minimal data storage** — Less information to leak
+5. **Browsing hygiene** — Reduces tracking surface
+
+### Why Keep Enabled?
+
+- Frequently use same search terms
+- Prefer remembering site preferences
+- Single-user personal Mac
+- Convenience of repeated entries
+- Sites with complex recurring forms
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Safari AutoFillMiscellaneousForms
+
+# Disable other forms AutoFill (more private)
+defaults write com.apple.Safari AutoFillMiscellaneousForms -bool false
+
+# Enable other forms AutoFill (default)
+defaults write com.apple.Safari AutoFillMiscellaneousForms -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.Safari AutoFillMiscellaneousForms
+```
+
+Restart Safari for changes to take effect.
+
+## UI Location
+
+**Safari** > **Settings** (Cmd + ,) > **AutoFill**
+
+```
++-------------------------------------------------------------+
+|  Safari Settings > AutoFill                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  +--------------------------------------------------+       |
+|  |  AutoFill                                        |       |
+|  |  ================================================|       |
+|  |                                                  |       |
+|  |  AutoFill web forms:                             |       |
+|  |                                                  |       |
+|  |  [ ] Using information from my contacts         |       |
+|  |      [Edit...]                                   |       |
+|  |                                                  |       |
+|  |  [ ] User names and passwords                   |       |
+|  |                                                  |       |
+|  |  [ ] Credit cards                               |       |
+|  |      [Edit...]                                   |       |
+|  |                                                  |       |
+|  |  [ ] Other forms                                |       |
+|  |      ^-- This setting                           |       |
+|  |                                                  |       |
+|  +--------------------------------------------------+       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Other forms AutoFill (this setting)
+defaults write com.apple.Safari AutoFillMiscellaneousForms -bool false
+
+# Contact info AutoFill
+defaults write com.apple.Safari AutoFillFromAddressBook -bool false
+
+# Password AutoFill
+defaults write com.apple.Safari AutoFillPasswords -bool false
+
+# Credit card AutoFill
+defaults write com.apple.Safari AutoFillCreditCardData -bool false
+
+# Disable all AutoFill at once
+for key in AutoFillFromAddressBook AutoFillPasswords AutoFillCreditCardData AutoFillMiscellaneousForms; do
+  defaults write com.apple.Safari "$key" -bool false
+done
+```
+
+## Privacy Considerations
+
+```
++-------------------------------------------------------------+
+|  Form Data Privacy Analysis                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  ENABLED:                        DISABLED:                   |
+|  +------------------------+     +------------------------+  |
+|  |  Safari stores:        |     |  Safari stores:        |  |
+|  |  * Search history      |     |  * (Nothing)           |  |
+|  |  * Form entries        |     |                        |  |
+|  |  * Site preferences    |     |  Each session:         |  |
+|  |                        |     |  * Starts fresh        |  |
+|  |  Could reveal:         |     |  * No suggestions      |  |
+|  |  * Shopping habits     |     |  * Manual entry only   |  |
+|  |  * Research topics     |     |                        |  |
+|  |  * Company names       |     |  Better for:           |  |
+|  |  * Personal interests  |     |  * Shared computers    |  |
+|  +------------------------+     |  * Privacy-focused     |  |
+|                                 +------------------------+  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## AutoFill Types Comparison
+
+| Type | Key | Risk Level | Recommendation |
+|------|-----|------------|----------------|
+| Credit Cards | `AutoFillCreditCardData` | High | Disable |
+| Passwords | `AutoFillPasswords` | High | Use password manager |
+| Contacts | `AutoFillFromAddressBook` | Medium | Disable |
+| Other Forms | `AutoFillMiscellaneousForms` | Low | Personal preference |
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Old entries still appearing | Clear Safari form data in history |
+| Setting not working | Restart Safari after changing |
+| Entries reappearing | Check iCloud sync settings |
+| Setting not persisting | Check MDM/profile restrictions |
+| Want to clear specific data | Safari > Clear History > All history |
+
+## Compatibility
+
+- **macOS**: 10.10+ (Yosemite)
+- **Note**: Restart Safari for changes to take effect
+- **Note**: Separate from password and credit card storage
+- **Note**: Can be managed via MDM profiles
+
+## Source File
+
+**File**: [`defaults/applications/safari.sh`](../../../../../defaults/applications/safari.sh)
+
+```bash
+run_defaults "com.apple.Safari" "AutoFillMiscellaneousForms" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: AutoFill web forms in Safari](https://support.apple.com/guide/safari/autofill-web-forms-ibrw1103/mac)
+- [Apple Support: Clear browsing history in Safari](https://support.apple.com/guide/safari/clear-your-browsing-history-sfri47acf5d6/mac)
+- [Apple Support: Safari privacy settings](https://support.apple.com/guide/safari/privacy-ibrw1074/mac)

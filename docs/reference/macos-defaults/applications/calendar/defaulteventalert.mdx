@@ -1,0 +1,252 @@
+# Calendar Default Event Alert
+
+Set the default reminder time for new calendar events.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iCal` |
+| **Key** | `DefaultEventAlert` |
+| **Type** | Integer |
+| **Default Value** | `-900` |
+| **Our Setting** | `-900` |
+
+## Description
+
+Controls the default reminder time for new timed events (not all-day events) in Calendar. The value is specified in seconds before the event, with negative values indicating time before. For example, `-900` means 15 minutes before the event. This default applies when creating new events; individual events can have their alerts customized.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **None** — No default alert |
+| `-300` | **5 minutes before** |
+| `-600` | **10 minutes before** |
+| `-900` | **15 minutes before** (default) |
+| `-1800` | **30 minutes before** |
+| `-3600` | **1 hour before** |
+| `-7200` | **2 hours before** |
+| `-86400` | **1 day before** |
+| `-604800` | **1 week before** |
+
+## Visual Demonstration
+
+### How Event Alerts Work:
+```
++-------------------------------------------------------------+
+|  Calendar Event Alert Timeline                               |
++-------------------------------------------------------------+
+|                                                              |
+|  DefaultEventAlert = -900 (15 minutes before)                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Time:  9:30 AM    9:45 AM              10:00 AM            |
+|         │          │                     │                   |
+|         │          │                     │                   |
+|  ───────┼──────────┼─────────────────────┼────────────▶     |
+|         │          │                     │                   |
+|         │          🔔 Alert!            📅 Meeting           |
+|         │          "Team Standup        "Team Standup        |
+|         │           in 15 minutes"       starts now"         |
+|         │                                                    |
+|    You're doing                                              |
+|    other work                                                |
+|                                                              |
+|  ✓ Get notified with time to prepare                       |
+|  ✓ Finish what you're working on                           |
+|  ✓ Join meeting on time                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Common Alert Times:
+```
++-------------------------------------------------------------+
+|  Recommended Alert Times by Event Type                       |
++-------------------------------------------------------------+
+|                                                              |
+|  SHORT MEETINGS (Video calls, standups):                     |
+|  ─────────────────────────────────────────────────────────  |
+|  -300 to -900 (5-15 minutes)                                |
+|  Why: Quick prep, join immediately                          |
+|                                                              |
+|  REGULAR MEETINGS (In-person, longer sessions):              |
+|  ─────────────────────────────────────────────────────────  |
+|  -900 to -1800 (15-30 minutes)                              |
+|  Why: Time to travel, gather materials                      |
+|                                                              |
+|  IMPORTANT EVENTS (Presentations, interviews):               |
+|  ─────────────────────────────────────────────────────────  |
+|  -3600 to -7200 (1-2 hours)                                 |
+|  Why: Final prep, calm nerves, handle emergencies           |
+|                                                              |
+|  APPOINTMENTS (Doctor, travel):                              |
+|  ─────────────────────────────────────────────────────────  |
+|  -86400 (1 day before)                                      |
+|  Why: Remember to prepare, check logistics                  |
+|                                                              |
+|  DEADLINES (Project due dates):                              |
+|  ─────────────────────────────────────────────────────────  |
+|  -604800 (1 week before)                                    |
+|  Why: Ensure time to complete work                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Alert Notification:
+```
++-------------------------------------------------------------+
+|  Calendar Alert Notification                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📅 Calendar                                   now      │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Team Standup in 15 minutes                             │|
+|  │                                                          │|
+|  │  Today at 10:00 AM                                      │|
+|  │  Zoom Meeting                                            │|
+|  │                                                          │|
+|  │  [Snooze]  [Join Meeting]                               │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Alert appears on:                                           |
+|  • Mac (Notification Center)                                |
+|  • iPhone/iPad (synced via iCloud)                          |
+|  • Apple Watch (if paired)                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `-900` — 15 minutes before (the default).
+
+### Why 15 Minutes?
+
+1. **Balance** — Enough time to prepare, not too early
+2. **Standard** — Common meeting reminder interval
+3. **Practical** — Finish current task, join on time
+4. **Flexible** — Works for most event types
+5. **Expected** — Matches typical workplace conventions
+
+### Other Recommended Values:
+
+- **5 minutes** (-300): Quick standups, familiar meetings
+- **30 minutes** (-1800): Meetings requiring travel/prep
+- **1 hour** (-3600): Important events
+- **No alert** (0): If you prefer checking calendar manually
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iCal DefaultEventAlert
+
+# Set to 15 minutes before (default)
+defaults write com.apple.iCal DefaultEventAlert -int -900
+
+# Set to 5 minutes before
+defaults write com.apple.iCal DefaultEventAlert -int -300
+
+# Set to 30 minutes before
+defaults write com.apple.iCal DefaultEventAlert -int -1800
+
+# Set to 1 hour before
+defaults write com.apple.iCal DefaultEventAlert -int -3600
+
+# Disable default alert
+defaults write com.apple.iCal DefaultEventAlert -int 0
+
+# Delete (reset to default)
+defaults delete com.apple.iCal DefaultEventAlert
+```
+
+## UI Location
+
+**Calendar** > **Settings** > **Alerts**
+
+```
++-------------------------------------------------------------+
+|  Calendar Settings - Alerts                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Calendar > Settings (⌘,) > Alerts                          |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Alerts                                                  │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Events:                                                 │|
+|  │  [15 minutes before ▼]     ← This setting               │|
+|  │                                                          │|
+|  │  All-day events:                                         │|
+|  │  [On day of event (9 AM) ▼]                             │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Time to Leave:                                          │|
+|  │  [✓] Turn on Time to Leave alerts                       │|
+|  │                                                          │|
+|  │  Shared Calendar Alerts:                                 │|
+|  │  [✓] Show shared calendar messages in Notification Center│|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Default event alert (this setting)
+defaults write com.apple.iCal DefaultEventAlert -int -900
+
+# All-day event alert (different setting)
+defaults write com.apple.iCal DefaultAllDayEventAlert -int -39600
+
+# Default event duration
+defaults write com.apple.iCal "Default duration in minutes for new event" -int 30
+
+# Time zone support
+defaults write com.apple.iCal "TimeZone support enabled" -bool true
+
+# Show week numbers
+defaults write com.apple.iCal "Show Week Numbers" -bool true
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Alerts not showing | Check Notification settings for Calendar |
+| Alert time wrong | Value is in seconds (negative = before) |
+| No sound with alert | Check sound settings in Notifications |
+| Alerts on wrong device | iCloud sync may take time |
+| All-day events different | Use DefaultAllDayEventAlert for those |
+
+## Compatibility
+
+- **Calendar**: macOS 10.8+ (Mountain Lion)
+- **Note**: Setting syncs via iCloud to iOS devices
+- **Note**: Individual events can override default
+- **Note**: Requires restart of Calendar app
+- **Note**: Works with shared calendars too
+
+## Source File
+
+**File**: [`defaults/applications/calendar.sh`](../../../../../defaults/applications/calendar.sh)
+
+```bash
+run_defaults "com.apple.iCal" "DefaultEventAlert" "-int" "-900"
+```
+
+## References
+
+- [Apple Support: Set up notifications for Calendar events](https://support.apple.com/guide/calendar/get-notifications-icl1018/mac)
+- [Apple Support: Change Calendar preferences](https://support.apple.com/guide/calendar/change-general-preferences-icl1023/mac)
+- [Apple Support: Calendar User Guide](https://support.apple.com/guide/calendar/welcome/mac)

@@ -1,0 +1,308 @@
+# Apple Personalized Advertising
+
+Control Apple's ability to deliver personalized advertisements.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AdLib` |
+| **Key** | `allowApplePersonalizedAdvertising` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether Apple can use your information to deliver personalized advertisements in Apple apps and services like the App Store, Apple News, and Stocks. When enabled, Apple uses data about you (demographics, device info, app usage) to show ads that might be more relevant to you. Disabling this doesn't reduce the number of ads—you'll still see ads, but they won't be based on your interests.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Personalized ads** (default) — Ads based on your interests |
+| `false` | **Generic ads** — Random/contextual ads only |
+
+## Visual Demonstration
+
+### Personalized Ads Enabled (true):
+```
++-------------------------------------------------------------+
+|  Personalized Advertising                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  HOW IT WORKS:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Apple Collects:                                             |
+|  ├── 📱 Device info (model, iOS version)                   |
+|  ├── 🌍 Region and language                                 |
+|  ├── 👤 Age range, gender (if provided)                    |
+|  ├── 📲 App Store browsing history                         |
+|  ├── 🔍 Search queries in Apple apps                       |
+|  └── 📰 News and Stocks reading habits                     |
+|                                                              |
+|  RESULT IN APP STORE:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  User interested in: Photography, Travel                     |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  You Might Like (Ad)                                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  📷 PhotoEditor Pro           "Perfect for travelers"   │|
+|  │  🗺️ TravelMap                 "Plan your adventures"    │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Ads may be more relevant                                |
+|  ✗ Apple builds interest profile                           |
+|  ✗ Privacy implications                                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Generic Ads (false - Recommended):
+```
++-------------------------------------------------------------+
+|  Non-Personalized Advertising                                |
++-------------------------------------------------------------+
+|                                                              |
+|  WHAT APPLE KNOWS:                                           |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Apple Uses:                                                 |
+|  ├── 📍 General location (country/region)                  |
+|  └── 📱 Device type only                                   |
+|                                                              |
+|  Apple Does NOT Use:                                         |
+|  ├── ✗ Browsing history                                    |
+|  ├── ✗ App downloads                                       |
+|  ├── ✗ Search queries                                      |
+|  ├── ✗ Demographic data                                    |
+|  └── ✗ Interest profiles                                   |
+|                                                              |
+|  RESULT IN APP STORE:                                        |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Suggested Apps (Ad)                                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  🎮 Popular Game            "Top charts this week"      │|
+|  │  📊 Business App            "Featured app"              │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Maximum privacy                                         |
+|  ✓ No interest profile built                               |
+|  ~ Ads may be less relevant (not necessarily bad)          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Where Personalized Ads Appear:
+```
++-------------------------------------------------------------+
+|  Apple Ad Locations                                          |
++-------------------------------------------------------------+
+|                                                              |
+|  APP STORE:                                                  |
+|  ─────────────────────────────────────────────────────────  |
+|  • Search results (Search Ads)                              |
+|  • "You Might Also Like" suggestions                        |
+|  • Featured app placements                                  |
+|  • "Today" tab sponsored content                            |
+|                                                              |
+|  APPLE NEWS:                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  • In-feed advertisements                                   |
+|  • Sponsored stories                                        |
+|  • News+ promotions                                         |
+|                                                              |
+|  STOCKS APP:                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  • News section ads                                         |
+|  • Featured content                                         |
+|                                                              |
+|  Note: Apple's ads are less intrusive than many platforms   |
+|  but still benefit from personalization when enabled        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Privacy Implications
+
+```
++-------------------------------------------------------------+
+|  Privacy Considerations                                      |
++-------------------------------------------------------------+
+|                                                              |
+|  WITH PERSONALIZATION ENABLED:                               |
+|  ─────────────────────────────────────────────────────────  |
+|  • Apple creates advertising profile from your activity     |
+|  • Profile includes inferred interests                      |
+|  • Data used to select which ads you see                   |
+|  • Profile stored on Apple servers                         |
+|                                                              |
+|  WITH PERSONALIZATION DISABLED:                              |
+|  ─────────────────────────────────────────────────────────  |
+|  • No advertising profile created                          |
+|  • Advertising Identifier not used                         |
+|  • Ads based on context only (what you're viewing)         |
+|  • Random ad selection from available pool                 |
+|                                                              |
+|  APPLE VS OTHER PLATFORMS:                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  • Apple doesn't sell data to third parties               |
+|  • Apple's data collection more limited than Google/FB     |
+|  • Still tracking within Apple ecosystem                   |
+|  • Disabling is easy and respected                         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Disable personalized advertising for privacy.
+
+### Why Disable?
+
+1. **Privacy** — No advertising profile built
+2. **No tracking** — Advertising Identifier not used
+3. **Data minimization** — Less information collected
+4. **No downside** — Ads continue, just generic
+5. **Principle** — Opt out of unnecessary tracking
+
+### Why Enable?
+
+- Prefer relevant ads over random ones
+- Support Apple's ad-supported services
+- Don't mind targeted advertising
+- Want app suggestions based on interests
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AdLib allowApplePersonalizedAdvertising
+
+# Disable personalized ads (recommended)
+defaults write com.apple.AdLib allowApplePersonalizedAdvertising -bool false
+
+# Enable personalized ads
+defaults write com.apple.AdLib allowApplePersonalizedAdvertising -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.AdLib allowApplePersonalizedAdvertising
+```
+
+## UI Location
+
+**System Settings** > **Privacy & Security** > **Apple Advertising**
+
+```
++-------------------------------------------------------------+
+|  System Settings - Apple Advertising                         |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Privacy & Security > Apple Advertising   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Apple Advertising                                       │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Personalized Ads                                        │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │  Allow Apple to use your information to deliver         │|
+|  │  relevant ads to you. If you turn this off, you         │|
+|  │  may still receive the same number of ads, but          │|
+|  │  they may be less relevant.                             │|
+|  │                                                          │|
+|  │  Personalized Ads                          [○ OFF]      │|
+|  │                                            ← Toggle off │|
+|  │                                                          │|
+|  │  [View Ad Targeting Information]                         │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Note: "View Ad Targeting Information" shows what Apple     |
+|  knows about you for advertising purposes.                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## View Ad Targeting Information
+
+```
++-------------------------------------------------------------+
+|  What Apple Knows (Ad Targeting)                             |
++-------------------------------------------------------------+
+|                                                              |
+|  System Settings > Privacy & Security > Apple Advertising   |
+|  > View Ad Targeting Information                             |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Shows:                                                      |
+|  • Age range (if provided during Apple ID setup)           |
+|  • Gender (if provided)                                    |
+|  • Region/country                                          |
+|  • Device type                                             |
+|  • Apple ID Account type                                   |
+|  • Apple News categories (if used)                         |
+|  • App Store interests (if personalization enabled)        |
+|                                                              |
+|  You can also reset your Advertising Identifier here,       |
+|  which disconnects your ad history from future ads.         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Disable personalized ads (this setting)
+defaults write com.apple.AdLib allowApplePersonalizedAdvertising -bool false
+
+# Force limit ad tracking
+defaults write com.apple.AdLib forceLimitAdTracking -bool true
+
+# Disable advertising identifier
+defaults write com.apple.AdLib allowIdentifierForAdvertising -bool false
+
+# Disable Siri data sharing
+defaults write com.apple.assistant.support "Siri Data Sharing Opt-In Status" -int 2
+
+# Disable app analytics sharing
+defaults write com.apple.assistant.support ShareAppAnalytics -bool false
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Still seeing ads | Disabling doesn't remove ads, just personalizes |
+| Setting not applying | Log out/in or restart; check System Settings |
+| Want to reset ad profile | System Settings > Apple Advertising > Reset Identifier |
+| Third-party apps tracking | Use "Ask App Not to Track" in iOS, separate setting |
+| Ads everywhere | This only affects Apple's ads, not third-party |
+
+## Compatibility
+
+- **macOS**: 10.14+ (Mojave) for current UI location
+- **Note**: Also affects iOS devices signed into same Apple ID
+- **Note**: Setting syncs across devices via iCloud
+- **Note**: Doesn't affect third-party app advertising
+- **Note**: Apple Search Ads may still use some context
+
+## Source File
+
+**File**: [`defaults/system/privacy.sh`](../../../../defaults/system/privacy.sh)
+
+```bash
+run_defaults "com.apple.AdLib" "allowApplePersonalizedAdvertising" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: About Apple Advertising & Privacy](https://support.apple.com/en-us/HT205223)
+- [Apple Support: Apple Advertising](https://support.apple.com/en-us/HT202074)
+- [Apple Privacy: Apple Advertising & Privacy](https://www.apple.com/legal/privacy/data/en/apple-advertising/)

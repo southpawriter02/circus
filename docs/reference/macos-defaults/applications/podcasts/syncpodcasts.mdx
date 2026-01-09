@@ -1,0 +1,287 @@
+# Podcasts Sync Across Devices
+
+Sync podcast subscriptions and progress via iCloud.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.podcasts` |
+| **Key** | `syncPodcasts` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether podcast subscriptions, listening progress, and episode status sync across all devices signed into the same Apple ID via iCloud. When enabled, you can start listening on your iPhone during a commute and continue exactly where you left off on your Mac at home. Subscriptions, played/unplayed status, and playback position all stay in sync.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Enabled** (default) — Sync subscriptions and progress across devices |
+| `false` | **Disabled** — Keep podcasts local to this device only |
+
+## Visual Demonstration
+
+### Sync Enabled:
+```
++-------------------------------------------------------------+
+|  Podcast Sync Across Devices                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  🎙️ "The Daily" Episode 247                                 |
+|                                                              |
+|  Morning Commute (iPhone):                                   |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ▶ Playing...                                           │|
+|  │  ━━━━━━━━━━━━━━━━━━━━━●━━━━━━━━━━━  18:45 / 32:00      │|
+|  │                                                          │|
+|  │  Paused at train station                                │|
+|  └─────────────────────────────────────────────────────────┘|
+|                    ↓                                         |
+|              ☁️ iCloud Sync                                  |
+|                    ↓                                         |
+|  At Home (Mac):                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  ▶ Ready to continue...                                 │|
+|  │  ━━━━━━━━━━━━━━━━━━━━━●━━━━━━━━━━━  18:45 / 32:00      │|
+|  │                                                          │|
+|  │  "Continue where you left off"                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Seamless experience across all your Apple devices          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### What Gets Synced:
+```
++-------------------------------------------------------------+
+|  Podcast Sync Data                                           |
++-------------------------------------------------------------+
+|                                                              |
+|  ✓ SYNCED (syncPodcasts = true):                            |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  📋 Subscriptions                                            |
+|     → All podcasts you follow                               |
+|     → Show artwork and metadata                             |
+|                                                              |
+|  ▶️ Playback Position                                        |
+|     → Exact timestamp where you paused                      |
+|     → Resume on any device                                  |
+|                                                              |
+|  ✓ Episode Status                                            |
+|     → Played/unplayed state                                 |
+|     → Saved/favorited episodes                              |
+|                                                              |
+|  ⚙️ Show Settings                                            |
+|     → Per-show download preferences                         |
+|     → Custom episode limits                                 |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ✗ NOT SYNCED (stays on each device):                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  📥 Downloaded Files                                         |
+|     → Audio files stay local                                |
+|     → Each device downloads separately                      |
+|                                                              |
+|  🔔 Notification Preferences                                 |
+|     → Per-device notification settings                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Sync Disabled:
+```
++-------------------------------------------------------------+
+|  Podcast Sync Disabled                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  iPhone:                          Mac:                       |
+|  ┌─────────────────────┐        ┌─────────────────────┐     |
+|  │  🎙️ Subscriptions:  │        │  🎙️ Subscriptions:  │     |
+|  │  • The Daily        │        │  • Tech Podcast     │     |
+|  │  • News Hour        │        │  • Music Weekly     │     |
+|  │  • Sports Talk      │        │  • Comedy Hour      │     |
+|  │                     │        │                     │     |
+|  │  ⚠️ Different       │        │  ⚠️ Different       │     |
+|  │    subscriptions!   │        │    subscriptions!   │     |
+|  └─────────────────────┘        └─────────────────────┘     |
+|                                                              |
+|  No connection between devices                               |
+|  • Must subscribe separately on each device                 |
+|  • Can't continue playback across devices                   |
+|  • Episode status not shared                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable sync for seamless multi-device experience.
+
+### Why Enable Sync?
+
+1. **Continuity** — Resume anywhere you left off
+2. **Consistency** — Same subscriptions everywhere
+3. **Convenience** — Subscribe once, available everywhere
+4. **Progress** — Never lose your place
+5. **Simplicity** — One library across devices
+
+### Why Disable Sync?
+
+- Different podcast preferences per device
+- Privacy concerns about iCloud data
+- Limited iCloud storage
+- Shared Apple ID situations
+- Work/personal device separation
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.podcasts syncPodcasts
+
+# Enable podcast sync (recommended)
+defaults write com.apple.podcasts syncPodcasts -bool true
+
+# Disable podcast sync
+defaults write com.apple.podcasts syncPodcasts -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.podcasts syncPodcasts
+```
+
+## UI Location
+
+**Podcasts** → **Settings** → **General**
+
+```
++-------------------------------------------------------------+
+|  Podcasts Settings > General                                 |
++-------------------------------------------------------------+
+|                                                              |
+|  Library                                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [*] Sync Library                                            |
+|      ^-- This setting                                        |
+|                                                              |
+|      Keep your podcast library updated across all your      |
+|      devices signed in with the same Apple ID.              |
+|                                                              |
+|  [*] Sync Listening History                                  |
+|                                                              |
+|      Keep your playback position and played status          |
+|      updated across all your devices.                       |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Note: Both work together for full sync experience          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Sync podcasts (this setting)
+defaults write com.apple.podcasts syncPodcasts -bool true
+
+# Sync listening history/progress
+defaults write com.apple.podcasts syncListeningHistory -bool true
+
+# Auto-download on all devices
+defaults write com.apple.podcasts downloadNewEpisodes -bool true
+
+# Episode limit (affects storage on each device)
+defaults write com.apple.podcasts episodeLimit -int 10
+```
+
+## Sync Requirements
+
+```
++-------------------------------------------------------------+
+|  Requirements for Podcast Sync                               |
++-------------------------------------------------------------+
+|                                                              |
+|  ✓ Apple ID signed in on all devices                        |
+|                                                              |
+|  ✓ iCloud enabled                                            |
+|                                                              |
+|  ✓ Same Apple ID across devices                              |
+|                                                              |
+|  ✓ Internet connection (for sync to occur)                   |
+|                                                              |
+|  ✓ Podcasts app version compatible                           |
+|    (macOS Catalina+ / iOS 13+)                              |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Check iCloud Status:                                        |
+|  System Settings > Apple ID > iCloud                        |
+|                                                              |
+|  Ensure "Podcasts" is enabled in iCloud settings            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Podcasts not syncing | Check iCloud settings, same Apple ID |
+| Progress not updating | Force quit and reopen Podcasts |
+| Subscriptions missing | Sign out/in to iCloud |
+| Sync is slow | Check internet connection |
+| Conflicts between devices | Let one device finish syncing first |
+| Old episodes reappearing | Sync may restore previously deleted |
+
+## iCloud Storage Consideration
+
+```
++-------------------------------------------------------------+
+|  iCloud Storage Impact                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  Podcast sync data is minimal:                               |
+|                                                              |
+|  • Subscription metadata: ~1 KB per show                    |
+|  • Episode status: ~100 bytes per episode                   |
+|  • Playback positions: ~50 bytes per episode                |
+|                                                              |
+|  Example: 20 podcasts × 50 episodes = ~100 KB               |
+|                                                              |
+|  Audio files are NOT synced (downloaded per device)         |
+|                                                              |
+|  Impact on 5GB free iCloud: Negligible                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Compatibility
+
+- **macOS**: 10.15+ (Catalina)
+- **iOS**: 13.0+
+- **Note**: Requires iCloud and same Apple ID
+- **Note**: Audio files download separately per device
+- **Note**: Works with Apple Watch podcast sync too
+
+## Source File
+
+**File**: [`defaults/applications/podcasts.sh`](../../../../../defaults/applications/podcasts.sh)
+
+```bash
+run_defaults "com.apple.podcasts" "syncPodcasts" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Use Podcasts on Mac](https://support.apple.com/guide/podcasts/welcome/mac)
+- [Apple Support: Keep podcasts updated across devices](https://support.apple.com/guide/podcasts/keep-podcasts-updated-across-devices-podbe0c2a2e6/mac)
+- [Apple Support: iCloud settings](https://support.apple.com/guide/mac-help/use-icloud-mh36834/mac)

@@ -1,0 +1,312 @@
+# Terminal Shell Exit Behavior
+
+Control what happens to Terminal windows when the shell exits.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.Terminal` |
+| **Key** | `ShellExitAction` |
+| **Type** | Integer |
+| **Default Value** | `1` |
+| **Our Setting** | `1` |
+
+## Description
+
+Controls what happens to a Terminal window or tab when its shell process exits. This determines whether the window closes automatically, stays open for review, or closes only if the shell exited successfully (exit code 0). Keeping windows open after non-zero exit codes helps debug failed commands by allowing you to review the output.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `0` | **Always close** — Close window regardless of exit status |
+| `1` | **Close on clean exit** (default) — Close only if exit code is 0 |
+| `2` | **Don't close** — Keep window open after shell exits |
+
+## Visual Demonstration
+
+### ShellExitAction = 0 (Always Close):
+```
++-------------------------------------------------------------+
+|  Terminal - Always Close on Exit                             |
++-------------------------------------------------------------+
+|                                                              |
+|  $ ./script.sh                                               |
+|  Error: File not found                                       |
+|  $ exit 1                                                    |
+|                                                              |
+|  [Window immediately closes]                                 |
+|                                                              |
+|  ⚠️ Can't review error output                                |
+|  ⚠️ Exit code lost                                           |
+|  ⚠️ Debug information gone                                   |
+|                                                              |
+|  Use case: Temporary windows, automated tasks                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### ShellExitAction = 1 (Close on Clean Exit - Default):
+```
++-------------------------------------------------------------+
+|  Terminal - Close Only on Success                            |
++-------------------------------------------------------------+
+|                                                              |
+|  SUCCESSFUL COMMAND (exit 0):                                |
+|  $ ./deploy.sh                                               |
+|  Deployment complete!                                        |
+|  $ exit 0                                                    |
+|                                                              |
+|  [Window closes automatically] ✓                             |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  FAILED COMMAND (exit 1):                                    |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Terminal — zsh — 80×24                             ⨉   │|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │  $ ./deploy.sh                                          │|
+|  │  Error: Database connection failed                      │|
+|  │  Error: Deployment aborted                              │|
+|  │                                                          │|
+|  │  [Process completed]                                    │|
+|  │                                                          │|
+|  │  ┌──────────────────────────────────────────────────┐  │|
+|  │  │ The process has exited with code 1.              │  │|
+|  │  │                                                  │  │|
+|  │  │ You can review the output above.                 │  │|
+|  │  └──────────────────────────────────────────────────┘  │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Window stays open for debugging                          |
+|  ✓ Can review error messages                                 |
+|  ✓ Alerts you to failed commands                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### ShellExitAction = 2 (Never Close):
+```
++-------------------------------------------------------------+
+|  Terminal - Never Close Window                               |
++-------------------------------------------------------------+
+|                                                              |
+|  ANY EXIT (success or failure):                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  Terminal — zsh — 80×24                             ⨉   │|
+|  ├─────────────────────────────────────────────────────────┤|
+|  │  $ ./script.sh                                          │|
+|  │  Processing...                                           │|
+|  │  Done!                                                   │|
+|  │                                                          │|
+|  │  [Process completed]                                    │|
+|  │                                                          │|
+|  │  ┌──────────────────────────────────────────────────┐  │|
+|  │  │ The shell has exited.                            │  │|
+|  │  │                                                  │  │|
+|  │  │ Close window manually or press any key to        │  │|
+|  │  │ restart shell.                                   │  │|
+|  │  └──────────────────────────────────────────────────┘  │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Use cases:                                                  |
+|  • Debugging scripts (always see output)                    |
+|  • Batch processing (review all results)                    |
+|  • Learning (see what commands produce)                     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Exit Codes Explained:
+```
++-------------------------------------------------------------+
+|  Shell Exit Codes                                            |
++-------------------------------------------------------------+
+|                                                              |
+|  Exit Code 0 = SUCCESS                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  • Command completed successfully                            |
+|  • No errors occurred                                        |
+|  • Window closes with ShellExitAction = 0 or 1               |
+|                                                              |
+|  Exit Code 1-255 = FAILURE                                   |
+|  ─────────────────────────────────────────────────────────  |
+|  1   = General error                                         |
+|  2   = Misuse of shell builtin                               |
+|  126 = Permission problem                                    |
+|  127 = Command not found                                     |
+|  128 = Invalid argument to exit                              |
+|  130 = Script terminated by Ctrl+C                           |
+|  137 = Process killed (SIGKILL)                              |
+|  255 = Exit status out of range                              |
+|                                                              |
+|  With ShellExitAction = 1:                                   |
+|  Exit 0: Window closes                                       |
+|  Exit 1-255: Window stays open for review                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `1` — Close on clean exit (keeps failed windows open).
+
+### Why Close on Clean Exit?
+
+1. **Debugging** — Failed commands leave window open for review
+2. **Awareness** — Non-closing window alerts to errors
+3. **Clean** — Successful commands don't leave orphan windows
+4. **Balance** — Best of both automatic and manual approaches
+5. **Standard** — Apple's default for good reason
+
+### Why Always Close?
+
+- Running many short-lived commands
+- Automated terminal workflows
+- Window clutter is bigger issue than debugging
+- Using external logging for errors
+
+### Why Never Close?
+
+- Learning command line (always see results)
+- Debugging complex scripts
+- Need to review all output
+- Running batch processes
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.Terminal ShellExitAction
+
+# Close only on clean exit (recommended)
+defaults write com.apple.Terminal ShellExitAction -int 1
+
+# Always close (regardless of exit status)
+defaults write com.apple.Terminal ShellExitAction -int 0
+
+# Never close (always keep window open)
+defaults write com.apple.Terminal ShellExitAction -int 2
+
+# Delete (reset to default)
+defaults delete com.apple.Terminal ShellExitAction
+```
+
+## UI Location
+
+**Terminal** → **Settings** (⌘,) → **Profiles** → **[Profile]** → **Shell**
+
+```
++-------------------------------------------------------------+
+|  Terminal Settings > Profiles > Shell                        |
++-------------------------------------------------------------+
+|                                                              |
+|  Shell                                                       |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Startup:                                                    |
+|  Run command: [                                        ]     |
+|  [ ] Run inside shell                                        |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  When the shell exits:                                       |
+|                                                              |
+|  ( ) Close the window                                        |
+|      ^-- ShellExitAction = 0                                 |
+|                                                              |
+|  (●) Close if the shell exited cleanly                       |
+|      ^-- ShellExitAction = 1 (our setting)                   |
+|                                                              |
+|  ( ) Don't close the window                                  |
+|      ^-- ShellExitAction = 2                                 |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Ask before closing:                                         |
+|  [*] Only if there are processes other than login shell     |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Shell exit behavior (this setting)
+defaults write com.apple.Terminal ShellExitAction -int 1
+
+# Secure keyboard entry
+defaults write com.apple.Terminal SecureKeyboardEntry -bool true
+
+# New tab working directory
+defaults write com.apple.Terminal NewTabWorkingDirectoryBehavior -int 2
+
+# Show line marks
+defaults write com.apple.Terminal ShowLineMarks -bool true
+
+# Window resize animation speed
+defaults write com.apple.Terminal NSWindowResizeTime -float 0.001
+```
+
+## Practical Scenarios
+
+```
++-------------------------------------------------------------+
+|  When Each Setting is Most Useful                            |
++-------------------------------------------------------------+
+|                                                              |
+|  ShellExitAction = 0 (Always Close):                         |
+|  ─────────────────────────────────────────────────────────  |
+|  • Opening Finder from Terminal: `open .`                    |
+|  • Quick one-off commands                                    |
+|  • Automated scripts with external logging                   |
+|  • SSH sessions where you want clean closure                 |
+|                                                              |
+|  ShellExitAction = 1 (Close on Clean Exit):                  |
+|  ─────────────────────────────────────────────────────────  |
+|  • Daily development work                                    |
+|  • Running build scripts                                     |
+|  • CI/CD testing locally                                     |
+|  • Any workflow where errors need attention                  |
+|                                                              |
+|  ShellExitAction = 2 (Never Close):                          |
+|  ─────────────────────────────────────────────────────────  |
+|  • Learning shell commands                                   |
+|  • Debugging complex pipelines                               |
+|  • Running scripts where you ALWAYS want to review output   |
+|  • Batch processing with manual review                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Window closes on error | Check ShellExitAction is not 0 |
+| Window never closes | Check ShellExitAction is not 2 |
+| Setting not applying | Restart Terminal |
+| Applies to wrong profile | Check which profile is default |
+| Need per-command behavior | Use subshells or expect scripts |
+
+## Compatibility
+
+- **Terminal**: macOS 10.5+ (Leopard)
+- **Note**: Setting is per-profile (can vary by profile)
+- **Note**: Restart Terminal to apply changes
+- **Note**: Works with all shell types (bash, zsh, fish)
+
+## Source File
+
+**File**: [`defaults/applications/terminal.sh`](../../../../../defaults/applications/terminal.sh)
+
+```bash
+run_defaults "com.apple.Terminal" "ShellExitAction" "-int" "1"
+```
+
+## References
+
+- [Apple Support: Terminal User Guide](https://support.apple.com/guide/terminal/welcome/mac)
+- [Apple Support: Set shell in Terminal](https://support.apple.com/guide/terminal/set-shell-in-terminal-trmlshell/mac)
+- [Bash Reference: Exit Status](https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html)

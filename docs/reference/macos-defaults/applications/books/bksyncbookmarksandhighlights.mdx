@@ -1,0 +1,335 @@
+# Books Sync Bookmarks and Highlights
+
+Sync your bookmarks, highlights, and annotations across all Apple devices.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.iBooksX` |
+| **Key** | `BKSyncBookmarksAndHighlights` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `true` |
+
+## Description
+
+Controls whether Books syncs your bookmarks, highlights, and text annotations across all devices signed into the same Apple ID via iCloud. When enabled, any highlight you make on your Mac appears on your iPhone and iPad, and vice versa. This creates a seamless reading experience across all your Apple devices.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Sync enabled** (default) — Annotations sync across all devices |
+| `false` | **Sync disabled** — Annotations stay local to each device |
+
+## Visual Demonstration
+
+### With Sync Enabled:
+```
++-------------------------------------------------------------+
+|  Books - Annotations Syncing Across Devices                  |
++-------------------------------------------------------------+
+|                                                              |
+|  Make a highlight on Mac:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  MacBook Pro - Books App                                 │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  "The most important thing in communication is          │|
+|  │   ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀            │|
+|  │   hearing what isn't said." — Peter Drucker             │|
+|  │   ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀              │|
+|  │                                                          │|
+|  │  [Yellow highlight added with note: "Great quote!"]     │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|                          ↓ iCloud Sync ↓                    |
+|                                                              |
+|  ┌───────────────────┐    ┌───────────────────┐            |
+|  │  📱 iPhone        │    │  📱 iPad          │            |
+|  │                   │    │                   │            |
+|  │  Same highlight   │    │  Same highlight   │            |
+|  │  appears here     │    │  appears here     │            |
+|  │  with note!       │    │  with note!       │            |
+|  │                   │    │                   │            |
+|  └───────────────────┘    └───────────────────┘            |
+|                                                              |
+|  ✓ All highlights sync automatically                        |
+|  ✓ Notes attached to highlights sync too                   |
+|  ✓ Bookmarks appear on all devices                         |
+|  ✓ Changes sync in near real-time                          |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### What Syncs:
+```
++-------------------------------------------------------------+
+|  Synced Annotation Types                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  📌 BOOKMARKS                                                |
+|  ─────────────────────────────────────────────────────────  |
+|  • Page bookmarks (flag icons)                              |
+|  • Quick access to saved pages                              |
+|  • Order preserved across devices                           |
+|                                                              |
+|  🖍️ HIGHLIGHTS                                               |
+|  ─────────────────────────────────────────────────────────  |
+|  • Yellow, Green, Blue, Pink, Purple colors                 |
+|  • Underline style highlights                               |
+|  • Position in text preserved exactly                       |
+|                                                              |
+|  📝 NOTES                                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  • Text notes attached to highlights                        |
+|  • Standalone notes on pages                                |
+|  • Note content syncs fully                                 |
+|                                                              |
+|  🔗 ALSO SYNCED (Related settings)                          |
+|  ─────────────────────────────────────────────────────────  |
+|  • Reading position (BKSyncReadingPosition)                 |
+|  • Collections/folders (BKSyncCollections)                  |
+|  • Reading progress percentage                              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Without Sync (Local Only):
+```
++-------------------------------------------------------------+
+|  Books - Annotations Stay Local                              |
++-------------------------------------------------------------+
+|                                                              |
+|  ⚠️ Each device has separate annotations:                   |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  MacBook Pro                                             │|
+|  │  Book: "Deep Work"                                       │|
+|  │  • 15 highlights                                         │|
+|  │  • 3 bookmarks                                           │|
+|  │  • 8 notes                                               │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|                      ✗ No sync ✗                            |
+|                                                              |
+|  ┌───────────────────┐    ┌───────────────────┐            |
+|  │  📱 iPhone        │    │  📱 iPad          │            |
+|  │                   │    │                   │            |
+|  │  Book: "Deep Work"│    │  Book: "Deep Work"│            |
+|  │  • 0 highlights   │    │  • 5 highlights   │            |
+|  │  • 0 bookmarks    │    │  • 1 bookmark     │            |
+|  │  • 0 notes        │    │  • 2 notes        │            |
+|  │                   │    │                   │            |
+|  │  (Different!)     │    │  (Different!)     │            |
+|  └───────────────────┘    └───────────────────┘            |
+|                                                              |
+|  ✗ Highlights don't appear on other devices                |
+|  ✗ Must re-highlight content on each device                |
+|  ✗ No way to merge annotations later                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `true` — Enable sync for seamless multi-device reading.
+
+### Why Enable Sync (Recommended)?
+
+1. **Continuity** — Start highlighting on Mac, continue on iPhone
+2. **Backup** — Annotations stored in iCloud (recoverable)
+3. **Study** — Review all highlights from any device
+4. **Convenience** — No duplicate effort across devices
+5. **Export** — All annotations available for export from any device
+
+### Why Disable Sync?
+
+- Privacy concerns about iCloud storage
+- Using different Apple IDs on devices
+- Want separate annotation sets per device
+- Limited iCloud storage
+- Shared device with other users
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.iBooksX BKSyncBookmarksAndHighlights
+
+# Enable annotation sync (recommended)
+defaults write com.apple.iBooksX BKSyncBookmarksAndHighlights -bool true
+
+# Disable annotation sync
+defaults write com.apple.iBooksX BKSyncBookmarksAndHighlights -bool false
+
+# Delete (reset to default)
+defaults delete com.apple.iBooksX BKSyncBookmarksAndHighlights
+```
+
+## UI Location
+
+**Books** > **Settings** > **General**
+
+```
++-------------------------------------------------------------+
+|  Books Settings                                              |
++-------------------------------------------------------------+
+|                                                              |
+|  General                                                     |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  iCloud                                                      |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │  [✓] Sync bookmarks, highlights, and collections        │|
+|  │       ^-- This setting                                   │|
+|  │                                                          │|
+|  │  [✓] Sync reading position                              │|
+|  │                                                          │|
+|  │  Your bookmarks, highlights, notes, and collections     │|
+|  │  will be available on all devices signed in with        │|
+|  │  the same Apple ID.                                      │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  Reading                                                     |
+|  ─────────────────────────────────────────────────────────  |
+|  ...                                                        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Accessing Your Annotations
+
+```
++-------------------------------------------------------------+
+|  Viewing All Annotations                                     |
++-------------------------------------------------------------+
+|                                                              |
+|  IN BOOKS APP:                                               |
+|  ─────────────────────────────────────────────────────────  |
+|  1. Open a book                                             |
+|  2. Click the Table of Contents icon (≡)                    |
+|  3. Select "Notes" tab                                      |
+|  4. View all highlights and notes for that book             |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  📖 Deep Work - Notes                                    │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  Chapter 1, Page 15                                      │|
+|  │  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀                       │|
+|  │  "Professional activities performed in a..."            │|
+|  │  📝 "Key definition of deep work"                       │|
+|  │                                                          │|
+|  │  Chapter 2, Page 34                                      │|
+|  │  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀                       │|
+|  │  "The ability to perform deep work is..."               │|
+|  │                                                          │|
+|  │  Chapter 3, Page 56                                      │|
+|  │  📌 Bookmark                                             │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  EXPORTING ANNOTATIONS:                                      |
+|  ─────────────────────────────────────────────────────────  |
+|  • Not available directly in Books                          |
+|  • Third-party tools can extract from iCloud                |
+|  • Copy/paste from Notes panel as workaround               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Sync bookmarks and highlights (this setting)
+defaults write com.apple.iBooksX BKSyncBookmarksAndHighlights -bool true
+
+# Sync reading position
+defaults write com.apple.iBooksX BKSyncReadingPosition -bool true
+
+# Sync collections
+defaults write com.apple.iBooksX BKSyncCollections -bool true
+
+# Page turn animation
+defaults write com.apple.iBooksX BKAnimatePageTurn -bool true
+
+# Auto night theme
+defaults write com.apple.iBooksX BKAutoNightThemeEnabled -bool true
+```
+
+## Sync Troubleshooting
+
+```
++-------------------------------------------------------------+
+|  If Annotations Aren't Syncing                               |
++-------------------------------------------------------------+
+|                                                              |
+|  CHECK THESE:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. Same Apple ID?                                           |
+|     System Settings > Apple ID                              |
+|     (Must be same on all devices)                           |
+|                                                              |
+|  2. iCloud Books enabled?                                    |
+|     System Settings > Apple ID > iCloud > Books             |
+|     (Toggle must be ON)                                      |
+|                                                              |
+|  3. Internet connection?                                     |
+|     Sync requires active internet                           |
+|                                                              |
+|  4. iCloud storage available?                                |
+|     System Settings > Apple ID > iCloud                     |
+|     (Check available space)                                  |
+|                                                              |
+|  5. Same book version?                                       |
+|     Different editions may not share annotations            |
+|                                                              |
+|  FORCE SYNC:                                                 |
+|  ─────────────────────────────────────────────────────────  |
+|  • Quit and reopen Books                                    |
+|  • Wait a few minutes (sync isn't instant)                  |
+|  • Sign out/in to iCloud (last resort)                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Annotations not syncing | Check iCloud settings, same Apple ID |
+| Missing highlights on device | Wait for sync; check internet connection |
+| Duplicate annotations | May occur with network issues; usually resolves |
+| Can't export annotations | Use Notes panel copy/paste or third-party tools |
+| Sync taking too long | Large libraries take time; be patient |
+
+## Compatibility
+
+- **Books**: macOS 10.14+ (Mojave)
+- **Note**: Requires iCloud account
+- **Note**: Syncs with iOS/iPadOS Books app
+- **Note**: PDFs from Books Store sync; sideloaded PDFs may not
+- **Note**: Annotations stored in iCloud, not local backup
+
+## Source File
+
+**File**: [`defaults/applications/books.sh`](../../../../../defaults/applications/books.sh)
+
+```bash
+run_defaults "com.apple.iBooksX" "BKSyncBookmarksAndHighlights" "-bool" "true"
+```
+
+## References
+
+- [Apple Support: Sync books across devices](https://support.apple.com/guide/books/sync-books-across-devices-ibksb1d2d1f5/mac)
+- [Apple Support: Books User Guide](https://support.apple.com/guide/books/welcome/mac)
+- [Apple Support: Change Books settings](https://support.apple.com/guide/books/settings-ibks1016d5f5/mac)

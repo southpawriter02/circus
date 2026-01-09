@@ -1,0 +1,309 @@
+# Crash Reporter Dialog
+
+Control the behavior of the crash report dialog when applications crash.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.CrashReporter` |
+| **Key** | `DialogType` |
+| **Type** | String |
+| **Default Value** | `crashreport` |
+| **Our Setting** | `none` |
+
+## Description
+
+Controls what happens when an application crashes on macOS. By default, a dialog appears asking if you want to send a crash report to Apple. This setting allows you to change this behavior—from showing the full dialog, to showing a minimal developer dialog, to silently logging crashes, to disabling the dialog entirely. Crash reports help developers fix bugs, but some users prefer an uninterrupted workflow.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `crashreport` | **Full dialog** (default) — Show dialog with report option |
+| `developer` | **Developer dialog** — Minimal dialog with dev options |
+| `server` | **Silent logging** — Log crash, no dialog |
+| `none` | **No dialog** — Disable crash reporting dialog entirely |
+
+## Visual Demonstration
+
+### Full Crash Report Dialog (crashreport - Default):
+```
++-------------------------------------------------------------+
+|  Crash Reporter - Standard Dialog                            |
++-------------------------------------------------------------+
+|                                                              |
+|  When an application crashes:                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │    ⚠️ "AppName" quit unexpectedly.                      │|
+|  │                                                          │|
+|  │    Click Reopen to open the application again.          │|
+|  │    Click Report... to see more detailed information     │|
+|  │    and send a report to Apple.                          │|
+|  │                                                          │|
+|  │    [Ignore]      [Report...]      [Reopen]              │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ User informed about crash                               |
+|  ✓ Option to report helps Apple/developers                 |
+|  ✓ Easy to reopen the app                                  |
+|  ✗ Can interrupt workflow                                  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Developer Dialog (developer):
+```
++-------------------------------------------------------------+
+|  Crash Reporter - Developer Mode                             |
++-------------------------------------------------------------+
+|                                                              |
+|  When an application crashes:                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │    "AppName" crashed.                                   │|
+|  │                                                          │|
+|  │    [Show in Finder]  [Terminate]  [Debug]               │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Quick access to debugging options                       |
+|  ✓ Can attach debugger                                     |
+|  ✓ Minimal interruption                                    |
+|  Best for: Developers debugging their own apps             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Silent Logging (server):
+```
++-------------------------------------------------------------+
+|  Crash Reporter - Silent Mode                                |
++-------------------------------------------------------------+
+|                                                              |
+|  When an application crashes:                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [No dialog appears]                                        |
+|                                                              |
+|  Behind the scenes:                                          |
+|  • Crash log written to ~/Library/Logs/DiagnosticReports/  |
+|  • Available for later review                               |
+|  • No user interaction required                             |
+|                                                              |
+|  ✓ No interruption                                         |
+|  ✓ Crash data preserved                                    |
+|  ✗ User may not notice crash occurred                      |
+|  Best for: Servers, kiosks, automated systems              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### No Dialog (none):
+```
++-------------------------------------------------------------+
+|  Crash Reporter - Disabled                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  When an application crashes:                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  [No dialog appears]                                        |
+|  [Crash may still be logged locally]                        |
+|                                                              |
+|  ✓ No interruption whatsoever                              |
+|  ✓ Workflow never disrupted                                |
+|  ✗ May miss knowing about crashes                          |
+|  ✗ Can't easily report bugs to Apple                       |
+|  Best for: Users who prefer uninterrupted workflow         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### What Gets Reported:
+```
++-------------------------------------------------------------+
+|  Crash Report Contents                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  When you click "Report...", Apple receives:                 |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  INCLUDED:                                                   |
+|  • Application name and version                             |
+|  • macOS version                                            |
+|  • Crash stack trace (where crash occurred)                |
+|  • Thread state at crash                                    |
+|  • Loaded libraries/frameworks                              |
+|  • System hardware info                                     |
+|  • Exception type and code                                  |
+|                                                              |
+|  NOT INCLUDED:                                               |
+|  • Personal documents or files                              |
+|  • User passwords or credentials                            |
+|  • Content you were working on                              |
+|  • Browsing history                                         |
+|                                                              |
+|  Crash reports are anonymized and help Apple improve macOS  |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `none` — Disable crash dialog for uninterrupted workflow.
+
+### Why Disable?
+
+1. **Workflow** — No interruptions when apps crash
+2. **Focus** — Stay in your work without dialogs
+3. **Privacy** — No data sent to Apple
+4. **Preference** — Some users find dialogs annoying
+5. **Autonomy** — Just close and reopen yourself
+
+### Why Keep Default?
+
+- Help Apple improve macOS and apps
+- Be notified when crashes occur
+- Easy way to reopen crashed apps
+- Support software quality improvement
+
+### Why Use Developer Mode?
+
+- Debugging your own applications
+- Need quick access to crash details
+- Want to attach debugger to crashed process
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.CrashReporter DialogType
+
+# Standard crash dialog (default)
+defaults write com.apple.CrashReporter DialogType -string "crashreport"
+
+# Developer mode dialog
+defaults write com.apple.CrashReporter DialogType -string "developer"
+
+# Silent logging (no dialog)
+defaults write com.apple.CrashReporter DialogType -string "server"
+
+# Disable crash reporter dialog entirely
+defaults write com.apple.CrashReporter DialogType -string "none"
+
+# Delete (reset to default)
+defaults delete com.apple.CrashReporter DialogType
+```
+
+## UI Location
+
+No direct UI option. Configure via Terminal only.
+
+```
++-------------------------------------------------------------+
+|  No GUI Setting Available                                    |
++-------------------------------------------------------------+
+|                                                              |
+|  This setting is not accessible through System Settings.     |
+|  Use Terminal commands to configure.                         |
+|                                                              |
+|  However, related settings exist in:                         |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  System Settings > Privacy & Security > Analytics & Improvements
+|                                                              |
+|  • Share Mac Analytics                                      |
+|  • Share with App Developers                                |
+|  • Improve Siri & Dictation                                 |
+|                                                              |
+|  These control whether crash data is shared with Apple,     |
+|  but don't control the dialog behavior itself.              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Viewing Crash Logs
+
+```
++-------------------------------------------------------------+
+|  Finding Crash Reports                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  Even with dialog disabled, crashes are logged:              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Location:                                                   |
+|  ~/Library/Logs/DiagnosticReports/                          |
+|  /Library/Logs/DiagnosticReports/  (system-wide)            |
+|                                                              |
+|  View in Console.app:                                        |
+|  1. Open Console.app                                        |
+|  2. Select "Crash Reports" in sidebar                       |
+|  3. Browse recent crashes                                   |
+|                                                              |
+|  Command line:                                               |
+|  ls -la ~/Library/Logs/DiagnosticReports/                   |
+|  cat ~/Library/Logs/DiagnosticReports/AppName_*.crash       |
+|                                                              |
+|  Useful for debugging even without the dialog               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Crash reporter dialog type (this setting)
+defaults write com.apple.CrashReporter DialogType -string "none"
+
+# Disable personalized ads (privacy)
+defaults write com.apple.AdLib allowApplePersonalizedAdvertising -bool false
+
+# Siri data sharing opt-out
+defaults write com.apple.assistant.support "Siri Data Sharing Opt-In Status" -int 2
+
+# Disable app analytics sharing
+defaults write com.apple.assistant.support ShareAppAnalytics -bool false
+
+# Note: These system analytics settings require System Settings UI:
+# System Settings > Privacy & Security > Analytics & Improvements
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Dialog still appearing | Log out and back in; check value is set |
+| Need to see crash details | View ~/Library/Logs/DiagnosticReports/ |
+| App keeps crashing | Check crash log for cause; reinstall app |
+| Want to report specific bug | Manually go to Apple's feedback site |
+| Developer mode not attaching | Ensure you have Xcode/dev tools installed |
+
+## Compatibility
+
+- **macOS**: 10.5+ (Leopard)
+- **Note**: Crashes are still logged regardless of dialog setting
+- **Note**: System crashes (kernel panics) handled differently
+- **Note**: Some system apps may ignore this setting
+- **Note**: No restart required; applies to future crashes
+
+## Source File
+
+**File**: [`defaults/system/privacy.sh`](../../../../defaults/system/privacy.sh)
+
+```bash
+run_defaults "com.apple.CrashReporter" "DialogType" "-string" "none"
+```
+
+## References
+
+- [Apple Support: If an app quits unexpectedly](https://support.apple.com/en-us/HT204397)
+- [Apple Support: Share analytics information](https://support.apple.com/guide/mac-help/share-analytics-information-mh27990/mac)
+- [Apple Developer: Diagnosing issues with crash reports](https://developer.apple.com/documentation/xcode/diagnosing-issues-using-crash-reports-and-device-logs)

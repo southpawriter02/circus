@@ -1,0 +1,303 @@
+# Login Window Power Off Disabled
+
+Control whether the power button is available on the login window.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.loginwindow` |
+| **Key** | `PowerOffDisabled` |
+| **Type** | Boolean |
+| **Default Value** | `false` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Shut Down button is visible and functional on the macOS login window. When disabled (hidden), users cannot power off or restart the Mac from the login screen without first logging in. This setting is commonly used in shared environments, labs, or kiosks where unauthorized shutdowns could disrupt services.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Power button hidden** — No shutdown/restart from login window |
+| `false` | **Power button visible** (default) — Can shutdown/restart from login |
+
+## Visual Demonstration
+
+### With Power Button Visible (Default):
+```
++-------------------------------------------------------------+
+|  Login Window - Power Options Available                      |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                     🍎 macOS                             │|
+|  │                                                          │|
+|  │        ┌───────┐  ┌───────┐  ┌───────┐                  │|
+|  │        │ 👤    │  │ 👤    │  │ 👤    │                  │|
+|  │        │ John  │  │ Jane  │  │ Admin │                  │|
+|  │        └───────┘  └───────┘  └───────┘                  │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  [Sleep]   [Restart]   [Shut Down]                      │|
+|  │     ^          ^            ^                            │|
+|  │     └──────────┴────────────┴── Power options visible   │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Users can shutdown without logging in                   |
+|  ✓ Convenient for personal Macs                            |
+|  ✓ Quick restart for updates                               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### With Power Button Hidden:
+```
++-------------------------------------------------------------+
+|  Login Window - Power Options Hidden                         |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │                                                          │|
+|  │                     🍎 macOS                             │|
+|  │                                                          │|
+|  │        ┌───────┐  ┌───────┐  ┌───────┐                  │|
+|  │        │ 👤    │  │ 👤    │  │ 👤    │                  │|
+|  │        │ John  │  │ Jane  │  │ Admin │                  │|
+|  │        └───────┘  └───────┘  └───────┘                  │|
+|  │                                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │              (No power options shown)                    │|
+|  │                                                          │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ✓ Prevents unauthorized shutdowns                         |
+|  ✓ Services continue running                               |
+|  ✓ Must login first to power off                           |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Use Cases for Hiding Power Button:
+```
++-------------------------------------------------------------+
+|  When to Hide Power Button                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  🏫 COMPUTER LABS:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  • Students can't power off machines                        |
+|  • Lab stays available for all users                        |
+|  • Admins control shutdown schedule                         |
+|                                                              |
+|  🖥️ KIOSK SYSTEMS:                                          |
+|  ─────────────────────────────────────────────────────────  |
+|  • Public terminals stay operational                        |
+|  • Can't be turned off by visitors                          |
+|  • Maintains service availability                           |
+|                                                              |
+|  🏢 SHARED WORKSTATIONS:                                    |
+|  ─────────────────────────────────────────────────────────  |
+|  • One user can't shut down affecting others               |
+|  • Background tasks continue running                        |
+|  • Remote access remains available                          |
+|                                                              |
+|  🖧 SERVERS (Mac Mini, etc.):                               |
+|  ─────────────────────────────────────────────────────────  |
+|  • Prevents accidental shutdown                             |
+|  • Services stay up even at login screen                   |
+|  • Only authorized admins can power off                    |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Allow power button for personal Mac convenience.
+
+### Why Keep Power Button Visible?
+
+1. **Convenience** — Easy shutdown without logging in
+2. **Personal Mac** — Owner should control power
+3. **Quick restarts** — Restart after updates from login
+4. **Frozen GUI** — Can still shutdown if login hangs
+5. **Standard behavior** — Users expect power options
+
+### Why Hide Power Button?
+
+- Shared/lab computers
+- Kiosk or public terminals
+- Servers that should stay running
+- Prevent accidental shutdowns
+- Enterprise/managed environments
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.loginwindow PowerOffDisabled
+
+# Hide power button (for labs/servers)
+defaults write com.apple.loginwindow PowerOffDisabled -bool true
+
+# Show power button (default)
+defaults write com.apple.loginwindow PowerOffDisabled -bool false
+
+# Delete (reset to default - visible)
+defaults delete com.apple.loginwindow PowerOffDisabled
+```
+
+## UI Location
+
+This setting is not exposed in System Settings and can only be configured via the `defaults` command or MDM profiles.
+
+```
++-------------------------------------------------------------+
+|  Configuration Methods                                       |
++-------------------------------------------------------------+
+|                                                              |
+|  DEFAULTS COMMAND (this method):                             |
+|  ─────────────────────────────────────────────────────────  |
+|  defaults write com.apple.loginwindow PowerOffDisabled -bool true
+|                                                              |
+|  MDM PROFILE:                                                |
+|  ─────────────────────────────────────────────────────────  |
+|  <key>PowerOffDisabled</key>                                |
+|  <true/>                                                    |
+|                                                              |
+|  Note: There is no GUI option for this setting              |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Alternative Shutdown Methods
+
+```
++-------------------------------------------------------------+
+|  How to Shutdown When Button is Hidden                       |
++-------------------------------------------------------------+
+|                                                              |
+|  IF POWER BUTTON IS HIDDEN:                                  |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  1. LOG IN FIRST                                             |
+|     Then use Apple menu > Shut Down                         |
+|     Or: Terminal: sudo shutdown -h now                      |
+|                                                              |
+|  2. KEYBOARD SHORTCUT                                        |
+|     Control + Power button (or Touch ID button)             |
+|     Shows shutdown dialog even at login screen              |
+|     Note: This may still work even with setting enabled     |
+|                                                              |
+|  3. HOLD POWER BUTTON                                        |
+|     Physical button hold (5-10 seconds)                     |
+|     Force shutdown - bypasses software                      |
+|     Use only as last resort                                 |
+|                                                              |
+|  4. REMOTE ACCESS                                            |
+|     SSH: sudo shutdown -h now                               |
+|     Apple Remote Desktop: Send shutdown command             |
+|                                                              |
+|  5. MDM COMMAND                                              |
+|     Enterprise: Send shutdown via MDM                       |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Power button on login (this setting)
+defaults write com.apple.loginwindow PowerOffDisabled -bool false
+
+# Sleep button on login
+defaults write com.apple.loginwindow SleepDisabled -bool false
+
+# Restart button on login
+defaults write com.apple.loginwindow RestartDisabled -bool false
+
+# All three together (hide all power options)
+defaults write com.apple.loginwindow PowerOffDisabled -bool true
+defaults write com.apple.loginwindow SleepDisabled -bool true
+defaults write com.apple.loginwindow RestartDisabled -bool true
+
+# Disable console access
+defaults write com.apple.loginwindow DisableConsoleAccess -bool true
+
+# Disable guest account
+defaults write com.apple.loginwindow GuestEnabled -bool false
+```
+
+## Power Button Matrix
+
+```
++-------------------------------------------------------------+
+|  Login Window Power Options Matrix                           |
++-------------------------------------------------------------+
+|                                                              |
+|  SETTING               EFFECT                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  PowerOffDisabled      Hides "Shut Down" button             |
+|  = true                                                      |
+|                                                              |
+|  SleepDisabled         Hides "Sleep" button                 |
+|  = true                                                      |
+|                                                              |
+|  RestartDisabled       Hides "Restart" button               |
+|  = true                                                      |
+|                                                              |
+|  COMMON CONFIGURATIONS:                                      |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Personal Mac:                                               |
+|  All = false           Show all buttons                     |
+|                                                              |
+|  Lab Computer:                                               |
+|  PowerOff = true       Hide shutdown                        |
+|  Sleep = false         Allow sleep (saves power)            |
+|  Restart = false       Allow restart (troubleshooting)      |
+|                                                              |
+|  Kiosk/Server:                                               |
+|  All = true            Hide all power options               |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Need to shutdown hidden button | Use physical power button (hold) |
+| Setting not taking effect | Log out; change applies at login window |
+| Keyboard shortcut still works | Physical buttons may bypass setting |
+| Need emergency shutdown | Hold power button 5-10 seconds |
+| Want to allow restart only | Set RestartDisabled=false, PowerOffDisabled=true |
+
+## Compatibility
+
+- **macOS**: 10.7+ (Lion)
+- **Note**: Setting applies to login window only
+- **Note**: Apple menu power options unaffected (require login)
+- **Note**: Physical power button always works
+- **Note**: MDM can enforce this setting
+
+## Source File
+
+**File**: [`defaults/system/login.sh`](../../../../defaults/system/login.sh)
+
+```bash
+run_defaults "com.apple.loginwindow" "PowerOffDisabled" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Log in to your Mac](https://support.apple.com/guide/mac-help/log-in-to-your-mac-mh35843/mac)
+- [Apple Support: Turn your Mac on or off](https://support.apple.com/guide/mac-help/turn-your-mac-on-or-off-mchlp1119/mac)
+- [Apple Configurator 2: Create login window payloads](https://support.apple.com/guide/apple-configurator-2/login-window-payload-settings-cad5b4a29d04/mac)

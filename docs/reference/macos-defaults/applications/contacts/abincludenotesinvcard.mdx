@@ -1,0 +1,315 @@
+# Contacts Include Notes in vCard Export
+
+Control whether notes are included when exporting contact vCards.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| **Domain** | `com.apple.AddressBook` |
+| **Key** | `ABIncludeNotesInVCard` |
+| **Type** | Boolean |
+| **Default Value** | `true` |
+| **Our Setting** | `false` |
+
+## Description
+
+Controls whether the Notes field content is included when exporting contacts as vCard (.vcf) files. Notes can contain sensitive personal information, meeting details, or private context about relationships. Disabling this option provides a privacy-conscious default when sharing contact information, ensuring personal notes aren't inadvertently shared.
+
+## Values
+
+| Value | Behavior |
+|-------|----------|
+| `true` | **Include notes** (default) — Notes exported with vCard |
+| `false` | **Exclude notes** — vCard contains only standard fields |
+
+## Visual Demonstration
+
+### Contact Card with Notes:
+```
++-------------------------------------------------------------+
+|  Contacts - Card with Notes                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  ┌─────────────────────────────────────────────────────────┐|
+|  │  👤 John Smith                                          │|
+|  │  ─────────────────────────────────────────────────────  │|
+|  │                                                          │|
+|  │  📱 mobile    (555) 123-4567                            │|
+|  │  ✉️ email     john@example.com                          │|
+|  │  🏠 address   123 Main St, City, ST 12345               │|
+|  │  🏢 company   Acme Corporation                          │|
+|  │                                                          │|
+|  │  📝 Notes                                                │|
+|  │  ┌──────────────────────────────────────────────────┐   │|
+|  │  │ Met at tech conference 2024. Interested in      │   │|
+|  │  │ partnership opportunities. Mentioned budget     │   │|
+|  │  │ around $50k. Wife's name is Sarah.              │   │|
+|  │  │ Prefers morning meetings.                        │   │|
+|  │  └──────────────────────────────────────────────────┘   │|
+|  │                                                          │|
+|  └─────────────────────────────────────────────────────────┘|
+|                                                              |
+|  ⚠️ Notes may contain sensitive/private information        |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Export WITH Notes Included:
+```
++-------------------------------------------------------------+
+|  vCard Export - Notes Included                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Exported file: john_smith.vcf                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  BEGIN:VCARD                                                 |
+|  VERSION:3.0                                                 |
+|  N:Smith;John;;;                                             |
+|  FN:John Smith                                               |
+|  TEL;TYPE=CELL:(555) 123-4567                               |
+|  EMAIL:john@example.com                                      |
+|  ADR;TYPE=HOME:;;123 Main St;City;ST;12345;                 |
+|  ORG:Acme Corporation                                        |
+|  NOTE:Met at tech conference 2024. Interested in            |
+|   partnership opportunities. Mentioned budget around         |
+|   $50k. Wife's name is Sarah. Prefers morning meetings.     |
+|  END:VCARD                                                   |
+|        ^                                                     |
+|        └── Notes included in export                          |
+|                                                              |
+|  ⚠️ PRIVACY RISK: Private details are now in the vCard     |
+|  ⚠️ Anyone receiving this file can read your notes         |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Export WITHOUT Notes (Our Setting):
+```
++-------------------------------------------------------------+
+|  vCard Export - Notes Excluded                               |
++-------------------------------------------------------------+
+|                                                              |
+|  Exported file: john_smith.vcf                               |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  BEGIN:VCARD                                                 |
+|  VERSION:3.0                                                 |
+|  N:Smith;John;;;                                             |
+|  FN:John Smith                                               |
+|  TEL;TYPE=CELL:(555) 123-4567                               |
+|  EMAIL:john@example.com                                      |
+|  ADR;TYPE=HOME:;;123 Main St;City;ST;12345;                 |
+|  ORG:Acme Corporation                                        |
+|  END:VCARD                                                   |
+|                                                              |
+|  ✓ No NOTE field - private information protected            |
+|  ✓ Only standard contact fields exported                    |
+|  ✓ Safe to share with others                                |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+### Privacy Risk Examples:
+```
++-------------------------------------------------------------+
+|  Types of Sensitive Note Content                             |
++-------------------------------------------------------------+
+|                                                              |
+|  PROFESSIONAL NOTES (could be awkward if shared):            |
+|  ─────────────────────────────────────────────────────────  |
+|  "Difficult to work with. Always late to meetings."         |
+|  "Lowball offers - negotiate firmly."                       |
+|  "Looking for new job, keep confidential."                   |
+|                                                              |
+|  PERSONAL NOTES (privacy violation if shared):               |
+|  ─────────────────────────────────────────────────────────  |
+|  "Birthday: March 15. Kids: Emma (8), Jake (5)"             |
+|  "Recovering from surgery - be sensitive."                   |
+|  "Going through divorce."                                    |
+|                                                              |
+|  FINANCIAL NOTES (security risk if shared):                  |
+|  ─────────────────────────────────────────────────────────  |
+|  "Account rep. Access code: 1234"                            |
+|  "Owes me $500 from last month."                            |
+|  "VIP client - gave 40% discount."                          |
+|                                                              |
+|  If ABIncludeNotesInVCard is true, ALL of this gets        |
+|  exported and potentially shared!                            |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Our Configuration
+
+**Set to**: `false` — Exclude notes from vCard exports for privacy.
+
+### Why Exclude Notes?
+
+1. **Privacy** — Notes often contain personal observations
+2. **Security** — May include access codes or sensitive info
+3. **Professionalism** — Candid notes not meant to be shared
+4. **GDPR/compliance** — Personal data shouldn't be shared carelessly
+5. **Default safety** — Better to exclude than accidentally share
+
+### Why Include Notes?
+
+- Transferring contacts to your own devices
+- Full backup of contact information
+- Notes contain only neutral information
+- Sharing with trusted family members
+
+## Code Examples
+
+```bash
+# Read current value
+defaults read com.apple.AddressBook ABIncludeNotesInVCard
+
+# Exclude notes from vCard (recommended for sharing)
+defaults write com.apple.AddressBook ABIncludeNotesInVCard -bool false
+
+# Include notes in vCard (default)
+defaults write com.apple.AddressBook ABIncludeNotesInVCard -bool true
+
+# Delete (reset to default)
+defaults delete com.apple.AddressBook ABIncludeNotesInVCard
+```
+
+## UI Location
+
+**Contacts** → **Settings** (⌘,) → **vCard**
+
+```
++-------------------------------------------------------------+
+|  Contacts Settings > vCard                                   |
++-------------------------------------------------------------+
+|                                                              |
+|  vCard Format                                                |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  vCard Format: [vCard 3.0              ▼]                   |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Export Options:                                             |
+|                                                              |
+|  [*] Export photos in vCards                                 |
+|                                                              |
+|  [ ] Export notes in vCards                                  |
+|      ^-- This setting (ABIncludeNotesInVCard)                |
+|                                                              |
+|  ─────────────────────────────────────────────────────────  |
+|                                                              |
+|  Note: These settings affect File > Export vCard             |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Export vs Drag-and-Drop
+
+```
++-------------------------------------------------------------+
+|  How Contacts Can Be Shared                                  |
++-------------------------------------------------------------+
+|                                                              |
+|  METHOD 1: File > Export vCard                               |
+|  ─────────────────────────────────────────────────────────  |
+|  • Uses settings from Preferences                            |
+|  • ABIncludeNotesInVCard setting APPLIES                    |
+|  • Exports selected contacts to .vcf file                   |
+|                                                              |
+|  METHOD 2: Drag contact to Finder/Desktop                    |
+|  ─────────────────────────────────────────────────────────  |
+|  • Creates .vcf file automatically                           |
+|  • ABIncludeNotesInVCard setting APPLIES                    |
+|                                                              |
+|  METHOD 3: Share > Mail/Messages/AirDrop                     |
+|  ─────────────────────────────────────────────────────────  |
+|  • Creates vCard on the fly                                 |
+|  • ABIncludeNotesInVCard setting APPLIES                    |
+|                                                              |
+|  METHOD 4: iCloud sync                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  • Notes ARE synced to all your devices                     |
+|  • This is your personal data, not sharing                  |
+|  • Setting does NOT affect iCloud sync                      |
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Related Settings
+
+```bash
+# Include notes in vCard (this setting)
+defaults write com.apple.AddressBook ABIncludeNotesInVCard -bool false
+
+# Include photos in vCard
+defaults write com.apple.AddressBook ABIncludePhotosInVCards -bool true
+
+# vCard format (2.1 compatibility for phone labels)
+defaults write com.apple.AddressBook ABUse21telephones -bool false
+
+# Sort order for contacts
+defaults write com.apple.AddressBook ABNameSortingFormat -string "sortingLastName sortingFirstName"
+
+# Show nickname
+defaults write com.apple.AddressBook ABShowNickname -bool true
+```
+
+## vCard Export Options
+
+```
++-------------------------------------------------------------+
+|  Complete vCard Export Configuration                         |
++-------------------------------------------------------------+
+|                                                              |
+|  For SHARING contacts:                                       |
+|  ─────────────────────────────────────────────────────────  |
+|  defaults write com.apple.AddressBook ABIncludeNotesInVCard -bool false
+|  defaults write com.apple.AddressBook ABIncludePhotosInVCards -bool true
+|                                                              |
+|  For BACKUP/TRANSFER (own devices):                          |
+|  ─────────────────────────────────────────────────────────  |
+|  defaults write com.apple.AddressBook ABIncludeNotesInVCard -bool true
+|  defaults write com.apple.AddressBook ABIncludePhotosInVCards -bool true
+|                                                              |
+|  For MINIMAL export (just contact info):                     |
+|  ─────────────────────────────────────────────────────────  |
+|  defaults write com.apple.AddressBook ABIncludeNotesInVCard -bool false
+|  defaults write com.apple.AddressBook ABIncludePhotosInVCards -bool false
+|                                                              |
++-------------------------------------------------------------+
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Notes still exported | Verify setting with `defaults read` |
+| Need notes for backup | Temporarily enable, export, then disable |
+| Notes missing on import | Original export excluded notes |
+| vCard too large | Disable photos export |
+| Can't find notes after import | Notes may have been excluded at source |
+
+## Compatibility
+
+- **Contacts**: macOS 10.8+ (Mountain Lion)
+- **Note**: Setting applies to all export methods
+- **Note**: Does not affect iCloud sync
+- **Note**: vCard 3.0 format supports notes
+- **Note**: Some apps may not import notes field
+
+## Source File
+
+**File**: [`defaults/applications/contacts.sh`](../../../../../defaults/applications/contacts.sh)
+
+```bash
+run_defaults "com.apple.AddressBook" "ABIncludeNotesInVCard" "-bool" "false"
+```
+
+## References
+
+- [Apple Support: Export contacts as vCards](https://support.apple.com/guide/contacts/export-contacts-adrbdcfd32e6/mac)
+- [Apple Support: Contacts User Guide](https://support.apple.com/guide/contacts/welcome/mac)
+- [RFC 6350: vCard Format Specification](https://tools.ietf.org/html/rfc6350)
