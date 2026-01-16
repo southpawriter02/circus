@@ -164,15 +164,14 @@ ditto -x -k file.zip ./     # Apple's ditto command
 
 ## Source File
 
-**File**: [`defaults/applications/archive_utility.sh`](../../../../defaults/applications/archive_utility.sh)
+**Note**: No dedicated source script exists for Archive Utility. Configure via defaults commands:
 
 ```bash
-run_defaults "com.apple.archiveutility" "dearchive-move-after" "-string" "$HOME/.Trash"
-run_defaults "com.apple.archiveutility" "dearchive-reveal-after" "-bool" "true"
+# Archive Utility dearchive behavior
+defaults write com.apple.archiveutility dearchive-move-after -string "$HOME/.Trash"
+defaults write com.apple.archiveutility dearchive-reveal-after -bool true
 ```
 
 ## References
 
 - [Apple Support: Compress and uncompress files](https://support.apple.com/guide/mac-help/compress-and-uncompress-files-mchlp2528/mac)
-</Parameter>
-<parameter name="Complexity">4

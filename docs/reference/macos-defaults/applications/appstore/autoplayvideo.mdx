@@ -6,7 +6,7 @@ Control automatic video playback in App Store listings.
 
 | Property | Value |
 |----------|-------|
-| **Domain** | `com.apple.appstore` |
+| **Domain** | `com.apple.AppStore` |
 | **Key** | `AutoPlayVideoSetting` |
 | **Type** | String |
 | **Default Value** | `on` |
@@ -46,16 +46,16 @@ Controls whether video previews in App Store app listings automatically start pl
 
 ```bash
 # Read current value
-defaults read com.apple.appstore AutoPlayVideoSetting
+defaults read com.apple.AppStore AutoPlayVideoSetting
 
 # Disable video auto-play (recommended)
-defaults write com.apple.appstore AutoPlayVideoSetting -string "off"
+defaults write com.apple.AppStore AutoPlayVideoSetting -string "off"
 
 # Enable video auto-play (Apple default)
-defaults write com.apple.appstore AutoPlayVideoSetting -string "on"
+defaults write com.apple.AppStore AutoPlayVideoSetting -string "on"
 
 # Delete (reset to default)
-defaults delete com.apple.appstore AutoPlayVideoSetting
+defaults delete com.apple.AppStore AutoPlayVideoSetting
 
 # Restart App Store to apply (close and reopen)
 killall "App Store"
@@ -73,13 +73,13 @@ Options:
 
 ```bash
 # Complete App Store configuration
-defaults write com.apple.appstore AutoPlayVideoSetting -string "off"
+defaults write com.apple.AppStore AutoPlayVideoSetting -string "off"
 
 # In-app ratings prompts (if you want to disable)
-defaults write com.apple.appstore InAppReviewEnabled -bool false
+defaults write com.apple.AppStore InAppReviewEnabled -bool false
 
 # Automatic downloads from other devices
-defaults write com.apple.appstore AutomaticallyDownloadApps -bool false
+defaults write com.apple.AppStore AutomaticallyDownloadApps -bool false
 ```
 
 ## App Store Behavior
@@ -116,10 +116,12 @@ Even with auto-play off, manually watching previews helps:
 
 ## Source File
 
-**File**: [`defaults/applications/appstore.sh`](../../../../defaults/applications/appstore.sh)
+**File**: [`defaults/profiles/privacy.sh`](../../../../../defaults/profiles/privacy.sh)
 
 ```bash
-run_defaults "com.apple.appstore" "AutoPlayVideoSetting" "-string" "off"
+# AutoPlayVideoSetting - not yet in source script
+# Configure via defaults command:
+defaults write com.apple.AppStore AutoPlayVideoSetting -string "off"
 ```
 
 ## References
