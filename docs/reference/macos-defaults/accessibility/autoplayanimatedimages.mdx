@@ -12,6 +12,8 @@ Control automatic playback of GIFs and animated images.
 | **Default Value** | `true` |
 | **Our Setting** | `true` |
 
+> **Note:** This preference key does not exist until explicitly set. The system defaults to auto-playing animated images (equivalent to `true`) when the key is absent.
+
 ## Description
 
 Controls whether animated images (GIFs, animated PNGs, WebP animations) play automatically in Safari and other apps. When disabled, animations are paused and must be manually started. This helps reduce distractions and can prevent motion sickness for sensitive users.
@@ -43,7 +45,7 @@ Controls whether animated images (GIFs, animated PNGs, WebP animations) play aut
 ## Code Examples
 
 ```bash
-# Read current value
+# Read current value (may show "does not exist" if never set)
 defaults read com.apple.universalaccess AutoPlayAnimatedImages
 
 # Enable auto-play (default)
@@ -108,19 +110,21 @@ Disabling auto-play improves performance on image-heavy pages.
 
 | Issue | Solution |
 |-------|----------|
+| `defaults read` shows "does not exist" | Normal if never set; system uses auto-play by default |
 | GIFs still playing | Restart browser |
 | Can't start animation | Some apps don't support manual play |
 | Videos still auto-playing | Separate setting (Safari preferences) |
 
 ## Compatibility
 
-- **macOS**: 10.14+
+- **macOS**: 14.0+ (Sonoma)
+- **Note**: This feature was introduced in macOS 14 Sonoma (September 2023)
 - **Affects**: Safari, Preview, Quick Look, most apps
 - **Note**: Third-party apps may ignore this setting
 
 ## Source File
 
-**File**: [`defaults/accessibility/display.sh`](../../../defaults/accessibility/display.sh)
+**File**: [`defaults/accessibility/display.sh`](../../../../../defaults/accessibility/display.sh)
 
 ```bash
 run_defaults "com.apple.universalaccess" "AutoPlayAnimatedImages" "-bool" "true"

@@ -115,6 +115,7 @@ The modifier key can be configured:
 
 | Modifier | Setting Value |
 |----------|---------------|
+| Shift (⇧) | `131072` |
 | Control (⌃) | `262144` (default) |
 | Option (⌥) | `524288` |
 | Command (⌘) | `1048576` |
@@ -172,7 +173,7 @@ defaults write com.apple.universalaccess closeViewMaxZoom -float 5.0
 defaults write com.apple.universalaccess closeViewMinZoom -float 1.0
 
 # Enable keyboard shortcuts for zoom
-defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool true
+defaults write com.apple.universalaccess closeViewHotkeysEnabled -bool true
 ```
 
 ## Zoom Styles
@@ -272,7 +273,7 @@ defaults write com.apple.AppleMultitouchTrackpad TrackpadPinchGesture -int 1
 
 ## Source File
 
-**File**: [`defaults/accessibility/zoom.sh`](../../defaults/accessibility/zoom.sh)
+**File**: [`defaults/accessibility/zoom.sh`](../../../../defaults/accessibility/zoom.sh)
 
 ```bash
 run_defaults "com.apple.universalaccess" "closeViewScrollWheelToggle" "-bool" "true"

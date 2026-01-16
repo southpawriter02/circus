@@ -1,4 +1,4 @@
-# Button Shapes Accessibility
+# Show Toolbar Button Shapes
 
 Show button outlines and shapes for better visibility.
 
@@ -7,14 +7,14 @@ Show button outlines and shapes for better visibility.
 | Property | Value |
 |----------|-------|
 | **Domain** | `com.apple.universalaccess` |
-| **Key** | `showButtonShapes` |
+| **Key** | `showToolbarButtonShapes` |
 | **Type** | Boolean |
 | **Default Value** | `false` |
 | **Our Setting** | `false` |
 
 ## Description
 
-Button Shapes adds visual outlines and underlines to buttons and interactive elements throughout macOS, making it easier to identify clickable items. This is particularly helpful for users who have difficulty distinguishing buttons from static text, or for those with visual impairments who benefit from clearer visual boundaries around interactive elements.
+Show Toolbar Button Shapes adds visible button outlines and borders to toolbar buttons and interactive elements throughout macOS, making it easier to identify clickable items. This is particularly helpful for users who have difficulty distinguishing buttons from static text, or for those with visual impairments who benefit from clearer visual boundaries around interactive elements.
 
 ## Values
 
@@ -145,30 +145,27 @@ Button Shapes adds visual outlines and underlines to buttons and interactive ele
 
 ```bash
 # Read current value
-defaults read com.apple.universalaccess showButtonShapes
+defaults read com.apple.universalaccess showToolbarButtonShapes
 
 # Enable button shapes
-defaults write com.apple.universalaccess showButtonShapes -bool true
+defaults write com.apple.universalaccess showToolbarButtonShapes -bool true
 
 # Disable button shapes (default)
-defaults write com.apple.universalaccess showButtonShapes -bool false
+defaults write com.apple.universalaccess showToolbarButtonShapes -bool false
 
 # Delete (reset to default)
-defaults delete com.apple.universalaccess showButtonShapes
+defaults delete com.apple.universalaccess showToolbarButtonShapes
 ```
 
 ## UI Location
 
-**System Settings** → **Accessibility** → **Display** → ☑ **Show Button Shapes**
-
-Alternatively:
-**System Settings** → **Accessibility** → **Display** → **Content** section
+**System Settings** → **Accessibility** → **Display** → ☑ **Show toolbar button shapes**
 
 ## Related Display Accessibility Settings
 
 ```bash
-# Show button shapes (this setting)
-defaults write com.apple.universalaccess showButtonShapes -bool true
+# Show toolbar button shapes (this setting)
+defaults write com.apple.universalaccess showToolbarButtonShapes -bool true
 
 # Differentiate without color
 defaults write com.apple.universalaccess differentiateWithoutColor -bool true
@@ -186,7 +183,7 @@ defaults write com.apple.universalaccess reduceMotion -bool true
 ## What Elements Are Affected
 
 | Element Type | With Button Shapes |
-|--------------|-------------------|
+|--------------|--------------------|
 | Text buttons | Outlined/underlined |
 | Toolbar buttons | Outlined |
 | Links in text | Underlined |
@@ -254,7 +251,7 @@ For maximum button visibility:
 
 ```bash
 # Full accessibility combo for button visibility
-defaults write com.apple.universalaccess showButtonShapes -bool true
+defaults write com.apple.universalaccess showToolbarButtonShapes -bool true
 defaults write com.apple.universalaccess increaseContrast -bool true
 defaults write com.apple.universalaccess differentiateWithoutColor -bool true
 ```
@@ -271,7 +268,7 @@ defaults write com.apple.universalaccess differentiateWithoutColor -bool true
 **File**: [`defaults/accessibility/display.sh`](../../defaults/accessibility/display.sh)
 
 ```bash
-run_defaults "com.apple.universalaccess" "showButtonShapes" "-bool" "false"
+run_defaults "com.apple.universalaccess" "showToolbarButtonShapes" "-bool" "false"
 ```
 
 ## References

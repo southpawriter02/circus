@@ -7,7 +7,7 @@ Enable keyboard shortcuts for screen zoom.
 | Property | Value |
 |----------|-------|
 | **Domain** | `com.apple.universalaccess` |
-| **Key** | `closeViewHotKeysEnabled` |
+| **Key** | `closeViewHotkeysEnabled` |
 | **Type** | Boolean |
 | **Default Value** | `false` |
 | **Our Setting** | `true` |
@@ -31,7 +31,7 @@ Enables keyboard shortcuts for controlling screen zoom accessibility features. W
 |  Zoom Keyboard Shortcuts                                     |
 +-------------------------------------------------------------+
 |                                                              |
-|  When enabled (closeViewHotKeysEnabled = true):             |
+|  When enabled (closeViewHotkeysEnabled = true):             |
 |                                                              |
 |  +------------------------------------------------------+   |
 |  |                                                      |   |
@@ -160,16 +160,16 @@ Enables keyboard shortcuts for controlling screen zoom accessibility features. W
 
 ```bash
 # Read current value
-defaults read com.apple.universalaccess closeViewHotKeysEnabled
+defaults read com.apple.universalaccess closeViewHotkeysEnabled
 
 # Enable zoom keyboard shortcuts
-defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool true
+defaults write com.apple.universalaccess closeViewHotkeysEnabled -bool true
 
 # Disable zoom keyboard shortcuts (default)
-defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool false
+defaults write com.apple.universalaccess closeViewHotkeysEnabled -bool false
 
 # Delete (reset to default)
-defaults delete com.apple.universalaccess closeViewHotKeysEnabled
+defaults delete com.apple.universalaccess closeViewHotkeysEnabled
 ```
 
 Changes may require logout to take effect.
@@ -223,7 +223,7 @@ Changes may require logout to take effect.
 
 ```bash
 # Keyboard shortcuts (this setting)
-defaults write com.apple.universalaccess closeViewHotKeysEnabled -bool true
+defaults write com.apple.universalaccess closeViewHotkeysEnabled -bool true
 
 # Scroll gesture zoom
 defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
@@ -289,10 +289,10 @@ defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
 
 ## Source File
 
-**File**: [`defaults/accessibility/zoom.sh`](../../defaults/accessibility/zoom.sh)
+**File**: [`defaults/accessibility/zoom.sh`](../../../../defaults/accessibility/zoom.sh)
 
 ```bash
-run_defaults "com.apple.universalaccess" "closeViewHotKeysEnabled" "-bool" "true"
+run_defaults "com.apple.universalaccess" "closeViewHotkeysEnabled" "-bool" "true"
 ```
 
 ## References

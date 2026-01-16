@@ -36,7 +36,7 @@ msg_info "Configuring zoom accessibility settings..."
 # ==============================================================================
 
 # --- Enable Keyboard Shortcuts for Zoom ---
-# Key:          closeViewZoomFollowsFocus
+# Key:          closeViewHotkeysEnabled
 # Domain:       com.apple.universalaccess
 # Description:  Enable zoom keyboard shortcuts:
 #               - Option + Cmd + 8: Toggle zoom
@@ -47,7 +47,7 @@ msg_info "Configuring zoom accessibility settings..."
 #               false = Disable keyboard zoom
 # Set to:       true (useful accessibility feature)
 # UI Location:  System Settings > Accessibility > Zoom > Use keyboard shortcuts to zoom
-run_defaults "com.apple.universalaccess" "closeViewZoomFollowsFocus" "-bool" "true"
+run_defaults "com.apple.universalaccess" "closeViewHotkeysEnabled" "-bool" "true"
 
 # --- Enable Scroll Gesture with Modifier Key ---
 # Key:          closeViewScrollWheelToggle
@@ -108,7 +108,7 @@ run_defaults "com.apple.universalaccess" "closeViewSmoothImages" "-bool" "true"
 # Key:          closeViewZoomFollowsFocus
 # Domain:       com.apple.universalaccess
 # Description:  Zoom window follows keyboard focus.
-# Default:      true
+# Default:      false
 # Options:      true = Follow keyboard focus
 #               false = Manual control only
 # Set to:       true (convenient for keyboard users)

@@ -9,8 +9,10 @@ Adjust left/right audio balance for hearing accessibility.
 | **Domain** | `com.apple.universalaccess` |
 | **Key** | `audioBalance` |
 | **Type** | Float |
-| **Default Value** | `0.0` |
+| **Default Value** | `0.0` (centered) |
 | **Our Setting** | `0.0` |
+
+> **Note:** This preference key does not exist until explicitly set. The system defaults to centered audio balance (equivalent to `0.0`) when the key is absent.
 
 ## Description
 
@@ -164,8 +166,10 @@ Controls the left/right audio balance for all system audio output. This accessib
 
 ## Code Examples
 
+### Method 1: defaults write (Preference Key)
+
 ```bash
-# Read current value
+# Read current value (may show "does not exist" if never set)
 defaults read com.apple.universalaccess audioBalance
 
 # Set centered (default)
@@ -188,6 +192,97 @@ defaults delete com.apple.universalaccess audioBalance
 ```
 
 Changes take effect immediately.
+
+### Method 2: AppleScript (GUI Automation)
+
+If `defaults write` doesn't work on your macOS version, use AppleScript to control the balance slider directly through System Settings:
+
+```applescript
+-- Set audio balance to centered (0.5 = center in slider terms)
+-- Value: 0.0 = full left, 0.5 = center, 1.0 = full right
+tell application "System Settings"
+    activate
+    delay 0.5
+    reveal anchor "Hearing" of pane id "com.apple.Accessibility-Settings.extension"
+end tell
+
+delay 1
+
+tell application "System Events"
+    tell process "System Settings"
+        -- Navigate to Audio section and find balance slider
+        -- The slider value is 0.0-1.0 where 0.5 is centered
+        set value of slider 1 of group 1 of scroll area 1 of group 1 of group 2 of splitter group 1 of group 1 of window 1 to 0.5
+    end tell
+end tell
+
+tell application "System Settings" to quit
+```
+
+**Run AppleScript from Terminal:**
+
+```bash
+# Set balance to center (0.5)
+osascript -e 'tell application "System Settings"
+    activate
+    delay 0.5
+    reveal anchor "Hearing" of pane id "com.apple.Accessibility-Settings.extension"
+end tell
+delay 1
+tell application "System Events"
+    tell process "System Settings"
+        set value of slider 1 of group 1 of scroll area 1 of group 1 of group 2 of splitter group 1 of group 1 of window 1 to 0.5
+    end tell
+end tell
+tell application "System Settings" to quit'
+
+# Set balance to left (0.25)
+osascript -e 'tell application "System Settings"
+    activate
+    delay 0.5
+    reveal anchor "Hearing" of pane id "com.apple.Accessibility-Settings.extension"
+end tell
+delay 1
+tell application "System Events"
+    tell process "System Settings"
+        set value of slider 1 of group 1 of scroll area 1 of group 1 of group 2 of splitter group 1 of group 1 of window 1 to 0.25
+    end tell
+end tell
+tell application "System Settings" to quit'
+
+# Set balance to right (0.75)
+osascript -e 'tell application "System Settings"
+    activate
+    delay 0.5
+    reveal anchor "Hearing" of pane id "com.apple.Accessibility-Settings.extension"
+end tell
+delay 1
+tell application "System Events"
+    tell process "System Settings"
+        set value of slider 1 of group 1 of scroll area 1 of group 1 of group 2 of splitter group 1 of group 1 of window 1 to 0.75
+    end tell
+end tell
+tell application "System Settings" to quit'
+```
+
+### AppleScript Value Mapping
+
+| Desired Balance | defaults write Value | AppleScript Slider Value |
+|-----------------|---------------------|-------------------------|
+| Full Left | `-1.0` | `0.0` |
+| Mostly Left | `-0.5` | `0.25` |
+| Centered | `0.0` | `0.5` |
+| Mostly Right | `0.5` | `0.75` |
+| Full Right | `1.0` | `1.0` |
+
+> **Note:** AppleScript requires Accessibility permissions. Grant access in **System Settings > Privacy & Security > Accessibility** for Terminal or your script runner.
+
+### Which Method to Use?
+
+| Method | Pros | Cons |
+|--------|------|------|
+| **defaults write** | Fast, scriptable, no GUI | May not work on all versions |
+| **AppleScript** | Reliable, uses actual UI | Slower, requires permissions, UI path may change |
 
 ## UI Location
 
@@ -279,23 +374,28 @@ defaults write com.apple.universalaccess HearingAidMode -bool false
 
 | Issue | Solution |
 |-------|----------|
-| Balance not changing | Ensure using system audio output |
+| Balance not changing | Ensure using system audio output; try AppleScript method |
+| `defaults read` shows "does not exist" | Normal if never set; system uses centered by default |
+| `defaults write` has no effect | Use AppleScript method or adjust via System Settings UI |
 | One side completely silent | Check speaker/headphone connection |
-| Balance resets | Setting should persist; check for MDM |
+| Balance resets unexpectedly | Known macOS bug; use [Balance Lock](https://www.tunabellysoftware.com/balance_lock/) app |
 | Sounds uneven at centered | May need non-zero value for your hearing |
 | Different in headphones vs speakers | Balance applies to selected output |
+| AppleScript permission denied | Grant Accessibility access in Privacy & Security settings |
+| AppleScript path not found | UI hierarchy changed; update the element path for your macOS version |
 
 ## Compatibility
 
-- **macOS**: 10.6+ (Snow Leopard)
+- **macOS**: 10.8+ (Mountain Lion and later)
 - **Note**: Takes effect immediately
 - **Note**: Applies to all audio output
 - **Note**: Works with headphones and speakers
 - **Note**: Per-app volume not affected (only L/R balance)
+- **Note**: If `defaults write` doesn't take effect, use AppleScript or UI instead
 
 ## Source File
 
-**File**: [`defaults/accessibility/audio.sh`](../../defaults/accessibility/audio.sh)
+**File**: [`defaults/accessibility/audio.sh`](../../../../../defaults/accessibility/audio.sh)
 
 ```bash
 run_defaults "com.apple.universalaccess" "audioBalance" "-float" "0.0"

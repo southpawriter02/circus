@@ -187,7 +187,7 @@ defaults delete com.apple.universalaccess differentiateWithoutColor
 defaults write com.apple.universalaccess differentiateWithoutColor -bool true
 
 # Show button shapes
-defaults write com.apple.universalaccess showButtonShapes -bool true
+defaults write com.apple.universalaccess showToolbarButtonShapes -bool true
 
 # Increase contrast
 defaults write com.apple.universalaccess increaseContrast -bool true
@@ -275,7 +275,7 @@ Test as a developer:
 
 ## Source File
 
-**File**: [`defaults/accessibility/display.sh`](../../defaults/accessibility/display.sh)
+**File**: [`defaults/accessibility/display.sh`](../../../../defaults/accessibility/display.sh)
 
 ```bash
 run_defaults "com.apple.universalaccess" "differentiateWithoutColor" "-bool" "false"

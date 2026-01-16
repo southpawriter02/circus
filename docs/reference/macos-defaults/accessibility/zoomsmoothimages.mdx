@@ -227,7 +227,7 @@ defaults write com.apple.universalaccess closeViewZoomMode -int 0
 # Enable scroll wheel zoom
 defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
 
-# Enable keyboard zoom shortcuts
+# Zoom follows keyboard focus
 defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
 
 # Flash screen on zoom toggle
@@ -273,7 +273,7 @@ For most modern Macs, the performance difference is negligible.
 
 ## Source File
 
-**File**: [`defaults/accessibility/zoom.sh`](../../defaults/accessibility/zoom.sh)
+**File**: [`defaults/accessibility/zoom.sh`](../../../../defaults/accessibility/zoom.sh)
 
 ```bash
 run_defaults "com.apple.universalaccess" "closeViewSmoothImages" "-bool" "true"

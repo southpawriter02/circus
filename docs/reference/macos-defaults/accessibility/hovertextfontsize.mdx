@@ -9,8 +9,8 @@ Set the font size for the Hover Text accessibility feature.
 | **Domain** | `com.apple.universalaccess` |
 | **Key** | `hoverTextFontSize` |
 | **Type** | Integer |
-| **Default Value** | `24` |
-| **Our Setting** | `24` |
+| **Default Value** | `32` |
+| **Our Setting** | `32` |
 
 ## Description
 
@@ -116,7 +116,7 @@ Controls the font size used by the Hover Text accessibility feature. When Hover 
 
 ## Our Configuration
 
-**Set to**: `24` — Default medium size for balanced magnification.
+**Set to**: `32` — Default medium size for balanced magnification.
 
 ### Why Use Default?
 
@@ -235,7 +235,7 @@ defaults write com.apple.universalaccess closeViewZoomDisplayID -int 1
 
 ## Source File
 
-**File**: [`defaults/accessibility/display.sh`](../../../../../defaults/accessibility/display.sh)
+**File**: [`defaults/accessibility/zoom.sh`](../../../../defaults/accessibility/zoom.sh)
 
 ```bash
 # Note: hoverTextFontSize is documented in the source but typically
