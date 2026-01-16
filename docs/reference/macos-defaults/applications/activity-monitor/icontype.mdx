@@ -133,10 +133,12 @@ defaults write com.apple.ActivityMonitor UpdatePeriod -int 2
 
 ## Source File
 
-**File**: [`defaults/applications/activity_monitor.sh`](../../../../defaults/applications/activity_monitor.sh)
+**File**: [`defaults/interface/activity_monitor.sh`](../../../../../defaults/interface/activity_monitor.sh)
 
 ```bash
-run_defaults "com.apple.ActivityMonitor" "IconType" "-int" "5"
+# IconType setting - display style for Dock icon
+# Not yet added to source script - configure via defaults command:
+defaults write com.apple.ActivityMonitor IconType -int 5
 ```
 
 ## References

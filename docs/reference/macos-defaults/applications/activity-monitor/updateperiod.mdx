@@ -277,10 +277,9 @@ defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
 **File**: [`defaults/interface/activity_monitor.sh`](../../../../../defaults/interface/activity_monitor.sh)
 
 ```bash
-# UpdatePeriod controls Activity Monitor refresh interval
-# Domain: com.apple.ActivityMonitor
-# Options: 1, 2, 5, 10 (seconds)
-# Lower values = more responsive but higher CPU usage
+# UpdatePeriod setting - how often Activity Monitor refreshes
+# Not yet added to source script - configure via defaults command:
+defaults write com.apple.ActivityMonitor UpdatePeriod -int 2
 ```
 
 ## References
