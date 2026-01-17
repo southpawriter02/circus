@@ -14,38 +14,75 @@ Display ISO week numbers in calendar views.
 
 ## Description
 
-Shows ISO 8601 week numbers in the calendar sidebar and week view. Week numbers (W1-W52) provide a standardized way to reference specific weeks of the year.
+Displays week numbers (1-52/53) in the calendar sidebar and month view. Week numbers follow ISO 8601 standard, making it easy to refer to specific weeks in scheduling conversations, project planning, and international business communications.
 
 ## Values
 
-| Value | Behavior |
-|-------|----------|
-| `true` | **Show week numbers** — W1, W2, W3... visible |
-| `false` | **Hide week numbers** (default) — Dates only |
+| Value | Display |
+|-------|---------|
+| `true` | **Show week numbers** — Numbers visible |
+| `false` | **Hide week numbers** (default) — Cleaner view |
 
-## Visual Example
+## Visual Demonstration
 
-**Month View with Week Numbers:**
+### With Week Numbers (true):
 ```
-January 2026
-W1  Mon  Tue  Wed  Thu  Fri  Sat  Sun
-         1    2    
-W2   5    6    7    8    9   10   11
-W3  12   13   14   15   16   17   18
-W4  19   20   21   22   23   24   25
-W5  26   27   28   29   30   31
+┌─────────────────────────────────────────────────────┐
+│  January 2025                                       │
+├────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┤
+│  # │ Mon  │ Tue  │ Wed  │ Thu  │ Fri  │ Sat  │ Sun  │
+├────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
+│  1 │      │      │  1   │  2   │  3   │  4   │  5   │
+│  2 │  6   │  7   │  8   │  9   │  10  │  11  │  12  │
+│  3 │  13  │  14  │  15  │  16  │  17  │  18  │  19  │
+│  4 │  20  │  21  │  22  │  23  │  24  │  25  │  26  │
+│  5 │  27  │  28  │  29  │  30  │  31  │      │      │
+└────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┘
+  ↑
+ Week numbers
+```
+
+### Without Week Numbers (false):
+```
+┌─────────────────────────────────────────────────┐
+│  January 2025                                   │
+├──────┬──────┬──────┬──────┬──────┬──────┬──────┤
+│ Mon  │ Tue  │ Wed  │ Thu  │ Fri  │ Sat  │ Sun  │
+├──────┼──────┼──────┼──────┼──────┼──────┼──────┤
+│      │      │  1   │  2   │  3   │  4   │  5   │
+└──────┴──────┴──────┴──────┴──────┴──────┴──────┘
 ```
 
 ## Our Configuration
 
-**Set to**: `true` — Show week numbers for planning.
+**Set to**: `true` — Show week numbers.
 
-### Use Cases
+### Why Show Week Numbers?
 
-1. **Project planning** — "Deadline is W12"
-2. **Sprint tracking** — "Sprint 5 = W10-W11"
-3. **Business scheduling** — Common in Europe
-4. **International coordination** — ISO 8601 standard
+1. **Project planning** — "Deadline is week 12"
+2. **International business** — Standard reference
+3. **Sprints** — Agile teams use week numbers
+4. **Quick reference** — Know where you are in the year
+5. **ISO 8601** — International standard
+
+### Why Hide Week Numbers?
+
+- Cleaner visual appearance
+- Personal calendars don't need them
+- Takes up sidebar space
+
+## ISO 8601 Week Numbering
+
+| Rule | Description |
+|------|-------------|
+| Week 1 | First week with Thursday in new year |
+| Weeks start | Monday |
+| Weeks per year | 52 or 53 |
+| Notation | "W01" through "W52/53" |
+
+Example:
+- 2024-12-30 (Monday) = Week 1 of 2025
+- 2025-01-01 (Wednesday) = Week 1 of 2025
 
 ## Code Examples
 
@@ -53,72 +90,114 @@ W5  26   27   28   29   30   31
 # Read current value
 defaults read com.apple.iCal "Show Week Numbers"
 
-# Show week numbers
+# Show week numbers (recommended)
 defaults write com.apple.iCal "Show Week Numbers" -bool true
 
-# Hide week numbers
+# Hide week numbers (default)
 defaults write com.apple.iCal "Show Week Numbers" -bool false
 
 # Delete (reset to default)
 defaults delete com.apple.iCal "Show Week Numbers"
-
-# Restart Calendar to apply
-killall Calendar
 ```
 
 ## UI Location
 
-**Calendar** → **Settings** (⌘,) → **Advanced** → **Show week numbers**
+**Calendar** → **Settings** (⌘,) → **General** → ☑ **Show week numbers**
 
-## ISO 8601 Week Rules
+## Week View Integration
 
-The ISO standard defines:
-- Week 1 contains January 4th (first week with majority of days in new year)
-- Weeks start on Monday
-- Year has 52 or 53 weeks
+In Calendar's week view:
+```
+              Week 15
+┌─────────────────────────────────────────────┐
+│ Mon 7  Tue 8  Wed 9  Thu 10  Fri 11  Sat Sun│
+│  ────   ────   ────   ────   ────    ─── ───│
+│                                              │
+│  9:00  Meeting                               │
+│                                              │
+│  14:00         Review                        │
+└─────────────────────────────────────────────┘
+```
 
-### Edge Cases
+The week number appears in the header.
 
-| Date | Week | Note |
-|------|------|------|
-| Jan 1, 2026 | W1 | First week |
-| Dec 31, 2026 | W53 | Some years have W53 |
-| Jan 1, 2025 | W1 2025 | Could be labeled previous year's week |
+## Using Week Numbers in Communication
+
+Professional scheduling:
+```
+✓ "Let's schedule the review for W12"
+✓ "Deliverable due end of week 45"
+✓ "I'm on vacation W30-W31"
+
+✗ "Let's meet the week of March 17th" (less precise)
+```
+
+## Cross-Year Considerations
+
+Week numbering at year boundaries:
+```
+2024:
+  Week 52: Dec 23-29
+  Week 1:  Dec 30 - Jan 5 (belongs to 2025!)
+
+2025:
+  Week 1:  Dec 30 (2024) - Jan 5 (2025)
+  Week 2:  Jan 6-12
+```
+
+Some days in December belong to Week 1 of next year.
 
 ## Related Settings
 
 ```bash
-# Start week on Monday (required for ISO weeks)
+# First day of week (should be Monday for ISO weeks)
 defaults write com.apple.iCal "first day of week" -int 1
 
-# Enable time zone support
-defaults write com.apple.iCal "TimeZone support enabled" -bool true
+# Show events in year view
+defaults write com.apple.iCal "Show year view" -bool true
 ```
 
-## Complete ISO-Compliant Setup
+## Week Number in Notification Center
 
+The Date widget in Notification Center can also show week numbers:
+- Click date in menu bar
+- Calendar widget appears
+- May show week numbers based on Calendar setting
+
+## Calculating Week Numbers
+
+Command line check:
 ```bash
-# ISO 8601 compliant calendar
-defaults write com.apple.iCal "first day of week" -int 1
-defaults write com.apple.iCal "Show Week Numbers" -bool true
+# Current week number
+date +%V
+
+# Week number for specific date
+date -j -f "%Y-%m-%d" "2025-03-15" +%V
 ```
+
+## Other Apps Using Week Numbers
+
+Setting affects Apple Calendar. For others:
+- Google Calendar: Has own week number setting
+- Outlook: Has own week number setting
+- Fantastical: Has own week number setting
 
 ## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| Week numbers not showing | Restart Calendar: `killall Calendar` |
-| Wrong week numbers | Check "first day of week" is set to Monday (1) |
-| W1 starts mid-January | ISO 8601 defines W1 as week containing Jan 4 |
+| Numbers not showing | Restart Calendar |
+| Wrong week number | Check first day of week setting |
+| Numbers differ from colleagues | Verify ISO 8601 compliance |
 
 ## Compatibility
 
-- **Calendar**: macOS 10.8+
-- **Syncs**: Local preference only
+- **macOS**: 10.8+ (Mountain Lion)
+- **Note**: Restart Calendar to apply
 
 ## Source File
 
-**File**: [`defaults/applications/calendar.sh`](../../../../defaults/applications/calendar.sh)
+**File**: [`defaults/applications/calendar.sh`](../../../../../defaults/applications/calendar.sh)
 
 ```bash
 run_defaults "com.apple.iCal" "Show Week Numbers" "-bool" "true"
@@ -126,6 +205,6 @@ run_defaults "com.apple.iCal" "Show Week Numbers" "-bool" "true"
 
 ## References
 
-- [Apple Support: Calendar advanced preferences](https://support.apple.com/guide/calendar/change-advanced-preferences-icl1027/mac)
-- [ISO 8601 Week Date](https://en.wikipedia.org/wiki/ISO_week_date)
-
+- [Apple Support: Calendar settings](https://support.apple.com/guide/calendar/change-general-preferences-icl1019/mac)
+- [ISO 8601: Week dates](https://en.wikipedia.org/wiki/ISO_8601#Week_dates)
+- [Week number calculator](https://www.epochconverter.com/weeks/)

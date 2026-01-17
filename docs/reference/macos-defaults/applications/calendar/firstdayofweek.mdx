@@ -1,6 +1,6 @@
-# Calendar First Day of Week
+# Calendar Week Start Day
 
-Set which day the week starts on.
+Set which day of the week calendars start on.
 
 ## Overview
 
@@ -9,51 +9,74 @@ Set which day the week starts on.
 | **Domain** | `com.apple.iCal` |
 | **Key** | `first day of week` |
 | **Type** | Integer |
-| **Default Value** | `0` |
-| **Our Setting** | `1` |
+| **Default Value** | `0` (Sunday) |
+| **Our Setting** | `1` (Monday) |
 
 ## Description
 
-Controls which day is displayed as the first day of the week in Calendar views. This affects both the week view layout and how weeks are displayed in month view.
+Controls which day of the week appears as the first column in Calendar's week and month views. This is a cultural preference — some regions start weeks on Sunday, others on Monday. Setting this correctly makes calendar navigation feel natural.
 
 ## Values
 
-| Value | Day |
-|-------|-----|
-| `0` | **Sunday** (default, US standard) |
-| `1` | **Monday** (ISO 8601, most of world) |
-| `2` | Tuesday |
-| `3` | Wednesday |
-| `4` | Thursday |
-| `5` | Friday |
-| `6` | Saturday |
+| Value | Day | Common Regions |
+|-------|-----|----------------|
+| `0` | **Sunday** (default) | US, Canada, Japan |
+| `1` | **Monday** | Europe, UK, Australia |
+| `2` | Tuesday | (rare) |
+| `3` | Wednesday | (rare) |
+| `4` | Thursday | (rare) |
+| `5` | Friday | (rare) |
+| `6` | **Saturday** | Some Middle Eastern countries |
+
+## Visual Comparison
+
+### Sunday Start (value 0):
+```
+┌─────────────────────────────────────────────────┐
+│  January 2025                                   │
+├──────┬──────┬──────┬──────┬──────┬──────┬──────┤
+│ Sun  │ Mon  │ Tue  │ Wed  │ Thu  │ Fri  │ Sat  │
+├──────┼──────┼──────┼──────┼──────┼──────┼──────┤
+│      │      │      │  1   │  2   │  3   │  4   │
+│  5   │  6   │  7   │  8   │  9   │  10  │  11  │
+│  12  │  13  │  14  │  15  │  16  │  17  │  18  │
+└──────┴──────┴──────┴──────┴──────┴──────┴──────┘
+        ↑                                    ↑
+     Week starts                        Week ends
+```
+
+### Monday Start (value 1):
+```
+┌─────────────────────────────────────────────────┐
+│  January 2025                                   │
+├──────┬──────┬──────┬──────┬──────┬──────┬──────┤
+│ Mon  │ Tue  │ Wed  │ Thu  │ Fri  │ Sat  │ Sun  │
+├──────┼──────┼──────┼──────┼──────┼──────┼──────┤
+│      │      │  1   │  2   │  3   │  4   │  5   │
+│  6   │  7   │  8   │  9   │  10  │  11  │  12  │
+│  13  │  14  │  15  │  16  │  17  │  18  │  19  │
+└──────┴──────┴──────┴──────┴──────┴──────┴──────┘
+        ↑                                    ↑
+     Week starts               Weekend together at end
+```
 
 ## Our Configuration
 
-**Set to**: `1` — Monday (ISO 8601 international standard).
+**Set to**: `1` — Monday start.
 
-### Regional Standards
+### Why Monday Start?
 
-| Region | First Day |
-|--------|-----------|
-| USA, Canada, Japan | Sunday |
-| Most of Europe | Monday |
-| Middle East | Saturday or Sunday |
-| ISO 8601 Standard | Monday |
+1. **ISO 8601** — International standard starts Monday
+2. **European convention** — Most of Europe uses Monday
+3. **Workweek logic** — Work Mon-Fri, weekend Sat-Sun together
+4. **Week numbers** — ISO weeks start Monday
+5. **Global business** — Many international standards
 
-## Visual Difference
+### Why Sunday Start?
 
-**Sunday Start (0):**
-```
-Sun  Mon  Tue  Wed  Thu  Fri  Sat
- 1    2    3    4    5    6    7
-```
-
-**Monday Start (1):**
-```
-Mon  Tue  Wed  Thu  Fri  Sat  Sun
- 1    2    3    4    5    6    7
-```
+- US cultural convention
+- Some religious calendars
+- Personal preference
 
 ## Code Examples
 
@@ -61,29 +84,61 @@ Mon  Tue  Wed  Thu  Fri  Sat  Sun
 # Read current value
 defaults read com.apple.iCal "first day of week"
 
-# Set Monday as first day (ISO 8601)
+# Set to Monday (recommended)
 defaults write com.apple.iCal "first day of week" -int 1
 
-# Set Sunday as first day (US default)
+# Set to Sunday (US default)
 defaults write com.apple.iCal "first day of week" -int 0
+
+# Set to Saturday
+defaults write com.apple.iCal "first day of week" -int 6
 
 # Delete (reset to default)
 defaults delete com.apple.iCal "first day of week"
-
-# Restart Calendar to apply
-killall Calendar
 ```
 
 ## UI Location
 
 **Calendar** → **Settings** (⌘,) → **General** → **Start week on**
 
-## Why Monday?
+Dropdown menu with all days available.
 
-1. **ISO 8601 compliance** — International date standard
-2. **Work week logic** — Mon-Fri naturally grouped
-3. **Weekend together** — Sat-Sun at week's end
-4. **International consistency** — Matches most countries
+## Week Numbers
+
+Combined with week start setting:
+```bash
+# Show week numbers
+defaults write com.apple.iCal "Show Week Numbers" -bool true
+```
+
+ISO week numbers assume Monday start for consistency.
+
+## Effects on Other Apps
+
+This setting primarily affects Apple Calendar. Other apps may:
+- Follow system locale settings
+- Have their own week start settings
+- Not be affected
+
+## System Locale vs App Setting
+
+macOS language/region settings suggest a week start, but Calendar's setting overrides:
+
+```
+System: Region → United States → Suggests Sunday
+Calendar: Setting → Monday → Uses Monday
+```
+
+App setting takes precedence.
+
+## iCloud Sync
+
+This preference syncs via iCloud to:
+- Other Macs (same Apple ID)
+- iOS devices
+- iPadOS devices
+
+All your calendars stay consistent.
 
 ## Related Settings
 
@@ -91,26 +146,32 @@ killall Calendar
 # Show week numbers
 defaults write com.apple.iCal "Show Week Numbers" -bool true
 
-# Scroll by week in week view
-defaults write com.apple.iCal "scroll by weeks in week view" -bool true
+# Work hours start
+defaults write com.apple.iCal "first minute of work hours" -int 540
+
+# Work hours end
+defaults write com.apple.iCal "last minute of work hours" -int 1080
+
+# Default event duration
+defaults write com.apple.iCal "Default duration in minutes for new event" -int 60
 ```
 
 ## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| Week still starts on Sunday | Restart Calendar: `killall Calendar` |
-| Setting not persisting | Check you're using quotes around key name |
-| Different on iPhone | iOS setting is separate: Settings → Calendar |
+| Setting not applying | Restart Calendar app |
+| Wrong day showing | Check value is correct (0-6) |
+| Synced devices differ | Check iCloud Calendar sync |
 
 ## Compatibility
 
-- **Calendar**: macOS 10.8+
-- **Syncs**: Local only (does NOT sync to iPhone)
+- **macOS**: 10.8+ (Mountain Lion)
+- **Note**: Restart Calendar to apply
 
 ## Source File
 
-**File**: [`defaults/applications/calendar.sh`](../../../../defaults/applications/calendar.sh)
+**File**: [`defaults/applications/calendar.sh`](../../../../../defaults/applications/calendar.sh)
 
 ```bash
 run_defaults "com.apple.iCal" "first day of week" "-int" "1"
@@ -118,6 +179,5 @@ run_defaults "com.apple.iCal" "first day of week" "-int" "1"
 
 ## References
 
-- [Apple Support: Calendar preferences](https://support.apple.com/guide/calendar/change-general-preferences-icl1023/mac)
-- [ISO 8601 Week Definition](https://en.wikipedia.org/wiki/ISO_8601)
-
+- [Apple Support: Calendar settings](https://support.apple.com/guide/calendar/change-general-preferences-icl1019/mac)
+- [ISO 8601: Week definition](https://en.wikipedia.org/wiki/ISO_8601#Week_dates)

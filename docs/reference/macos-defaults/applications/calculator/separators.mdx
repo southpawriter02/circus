@@ -146,10 +146,11 @@ Set via **System Settings** → **General** → **Language & Region**.
 
 ## Source File
 
-**File**: [`defaults/applications/calculator.sh`](../../../../defaults/applications/calculator.sh)
+**Note**: No dedicated source script exists for Calculator. Configure via defaults command:
 
 ```bash
-run_defaults "com.apple.calculator" "SeparatorsDefaultsKey" "-bool" "true"
+# Enable thousands separators in Calculator
+defaults write com.apple.calculator SeparatorsDefaultsKey -bool true
 ```
 
 ## References
