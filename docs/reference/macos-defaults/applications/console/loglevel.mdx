@@ -165,11 +165,16 @@ defaults write com.apple.Console AlwaysDisplayTimestamp -bool true
 
 ## Source File
 
-**File**: [`defaults/applications/console.sh`](../../../../defaults/applications/console.sh)
+> ⚠️ **Note**: No dedicated source script currently exists for Console settings.
+
+To apply these settings directly:
 
 ```bash
-run_defaults "com.apple.Console" "LogLevel" "-int" "1"
-run_defaults "com.apple.Console" "AlwaysDisplaySubsystem" "-bool" "true"
+# Set Info level logging
+defaults write com.apple.Console LogLevel -int 1
+
+# Show subsystem information
+defaults write com.apple.Console AlwaysDisplaySubsystem -bool true
 ```
 
 ## References
