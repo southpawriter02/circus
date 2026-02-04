@@ -1,0 +1,404 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-scaffold
+#
+# DESCRIPTION:  Project scaffolding tool for quickly creating new projects from
+#               templates. Supports built-in templates and custom user templates
+#               with variable substitution.
+#
+# USAGE:        fc scaffold <action> [options]
+#
+# ACTIONS:
+#   new <template> <name>   Create new project from template
+#   list                    List available templates
+#   show <template>         Show template details
+#   create-template <name>  Create new template from current directory
+#
+# OPTIONS:
+#   --author <name>   Set author name (default: git user.name)
+#   --dir <path>      Output directory (default: current)
+#   --force           Overwrite if exists
+#   --help            Show this help message
+#
+# EXAMPLES:
+#   fc scaffold list                    # List templates
+#   fc scaffold new python-cli myapp    # Create Python CLI project
+#   fc scaffold show react-app          # View template details
+#   fc scaffold create-template mytempl # Save current dir as template
+#
+# TEMPLATE VARIABLES:
+#   {{PROJECT_NAME}}      Name of the project
+#   {{PROJECT_NAME_UPPER}} Name in UPPER_SNAKE_CASE
+#   {{PROJECT_NAME_LOWER}} Name in lowercase
+#   {{AUTHOR}}            Author name
+#   {{YEAR}}              Current year
+#   {{DATE}}              Current date (YYYY-MM-DD)
+#
+# TEMPLATE LOCATIONS:
+#   Built-in:  $DOTFILES_ROOT/templates/projects/
+#   Custom:    ~/.config/circus/templates/
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# Template directories
+BUILTIN_TEMPLATES="${DOTFILES_ROOT}/templates/projects"
+USER_TEMPLATES="${HOME}/.config/circus/templates"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc scaffold <action> [options]"
+  echo ""
+  msg_info "Project scaffolding from templates."
+  echo ""
+  msg_info "Actions:"
+  echo "  new <template> <name>   Create new project"
+  echo "  list                    List available templates"
+  echo "  show <template>         View template details"
+  echo "  create-template <name>  Save current dir as template"
+  echo ""
+  msg_info "Options:"
+  echo "  --author <name>         Set author name"
+  echo "  --dir <path>            Output directory"
+  echo "  --force                 Overwrite existing"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Get all template directories
+get_template_dirs() {
+  local dirs=()
+  
+  if [[ -d "$BUILTIN_TEMPLATES" ]]; then
+    dirs+=("$BUILTIN_TEMPLATES")
+  fi
+  
+  if [[ -d "$USER_TEMPLATES" ]]; then
+    dirs+=("$USER_TEMPLATES")
+  fi
+  
+  echo "${dirs[@]}"
+}
+
+# Find template by name
+find_template() {
+  local name="$1"
+  
+  # Check user templates first (for overrides)
+  if [[ -d "$USER_TEMPLATES/$name" ]]; then
+    echo "$USER_TEMPLATES/$name"
+    return 0
+  fi
+  
+  # Check built-in templates
+  if [[ -d "$BUILTIN_TEMPLATES/$name" ]]; then
+    echo "$BUILTIN_TEMPLATES/$name"
+    return 0
+  fi
+  
+  return 1
+}
+
+# Get template description from template.conf
+get_template_desc() {
+  local template_path="$1"
+  local config_file="$template_path/template.conf"
+  
+  if [[ -f "$config_file" ]]; then
+    grep "^description=" "$config_file" 2>/dev/null | cut -d'=' -f2- | tr -d '"'
+  else
+    echo "No description"
+  fi
+}
+
+# Convert string to different cases
+to_upper_snake() {
+  echo "$1" | tr '[:lower:]-' '[:upper:]_'
+}
+
+to_lower() {
+  echo "$1" | tr '[:upper:]' '[:lower:]'
+}
+
+# Replace template variables in a string
+replace_vars() {
+  local content="$1"
+  local project_name="$2"
+  local author="$3"
+  
+  content="${content//\{\{PROJECT_NAME\}\}/$project_name}"
+  content="${content//\{\{PROJECT_NAME_UPPER\}\}/$(to_upper_snake "$project_name")}"
+  content="${content//\{\{PROJECT_NAME_LOWER\}\}/$(to_lower "$project_name")}"
+  content="${content//\{\{AUTHOR\}\}/$author}"
+  content="${content//\{\{YEAR\}\}/$(date +%Y)}"
+  content="${content//\{\{DATE\}\}/$(date +%Y-%m-%d)}"
+  
+  echo "$content"
+}
+
+# Process a template file
+process_file() {
+  local src="$1"
+  local dest="$2"
+  local project_name="$3"
+  local author="$4"
+  
+  # Replace vars in filename
+  local dest_name
+  dest_name=$(basename "$dest")
+  dest_name="${dest_name//PROJECT_NAME/$project_name}"
+  dest_name="${dest_name//\.template/}"
+  dest="$(dirname "$dest")/$dest_name"
+  
+  # Skip template config
+  if [[ "$(basename "$src")" == "template.conf" ]]; then
+    return 0
+  fi
+  
+  # Create directory
+  mkdir -p "$(dirname "$dest")"
+  
+  # Check if binary file
+  if file "$src" | grep -qE '(binary|executable|image|compressed)'; then
+    cp "$src" "$dest"
+  else
+    # Text file - replace variables
+    local content
+    content=$(cat "$src")
+    content=$(replace_vars "$content" "$project_name" "$author")
+    echo "$content" > "$dest"
+  fi
+  
+  # Preserve executable permission
+  if [[ -x "$src" ]]; then
+    chmod +x "$dest"
+  fi
+}
+
+# --- Action Functions -------------------------------------------------------
+
+# List available templates
+action_list() {
+  msg_info "Available Templates"
+  echo ""
+  
+  local found=0
+  
+  # Built-in templates
+  if [[ -d "$BUILTIN_TEMPLATES" ]]; then
+    for template_dir in "$BUILTIN_TEMPLATES"/*/; do
+      if [[ -d "$template_dir" ]]; then
+        local name
+        name=$(basename "$template_dir")
+        local desc
+        desc=$(get_template_desc "$template_dir")
+        printf "  %-20s %s\n" "$name" "$desc"
+        found=$((found + 1))
+      fi
+    done
+  fi
+  
+  # User templates
+  if [[ -d "$USER_TEMPLATES" ]]; then
+    if [[ $found -gt 0 ]]; then
+      echo ""
+      msg_info "Custom Templates:"
+    fi
+    
+    for template_dir in "$USER_TEMPLATES"/*/; do
+      if [[ -d "$template_dir" ]]; then
+        local name
+        name=$(basename "$template_dir")
+        local desc
+        desc=$(get_template_desc "$template_dir")
+        printf "  %-20s %s (custom)\n" "$name" "$desc"
+        found=$((found + 1))
+      fi
+    done
+  fi
+  
+  if [[ $found -eq 0 ]]; then
+    msg_warning "No templates found"
+    echo ""
+    msg_info "Create templates in:"
+    echo "  Built-in: $BUILTIN_TEMPLATES"
+    echo "  Custom:   $USER_TEMPLATES"
+  fi
+  
+  echo ""
+}
+
+# Show template details
+action_show() {
+  local template_name="$1"
+  
+  if [[ -z "$template_name" ]]; then
+    die "Usage: fc scaffold show <template-name>"
+  fi
+  
+  local template_path
+  template_path=$(find_template "$template_name") || die "Template not found: $template_name"
+  
+  msg_info "Template: $template_name"
+  echo "  Location: $template_path"
+  echo ""
+  
+  # Show config if exists
+  if [[ -f "$template_path/template.conf" ]]; then
+    msg_info "Configuration:"
+    cat "$template_path/template.conf" | sed 's/^/  /'
+    echo ""
+  fi
+  
+  # Show file tree
+  msg_info "Files:"
+  find "$template_path" -type f ! -name "template.conf" | sed "s|$template_path/||" | sed 's/^/  /'
+  echo ""
+}
+
+# Create new project from template
+action_new() {
+  local template_name="$1"
+  local project_name="$2"
+  local output_dir=""
+  local author=""
+  local force=false
+  
+  # Parse remaining args
+  shift 2 || true
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --author) author="$2"; shift 2 ;;
+      --dir) output_dir="$2"; shift 2 ;;
+      --force) force=true; shift ;;
+      *) shift ;;
+    esac
+  done
+  
+  if [[ -z "$template_name" ]] || [[ -z "$project_name" ]]; then
+    die "Usage: fc scaffold new <template> <project-name>"
+  fi
+  
+  # Get template
+  local template_path
+  template_path=$(find_template "$template_name") || die "Template not found: $template_name"
+  
+  # Set defaults
+  author="${author:-$(git config user.name 2>/dev/null || echo "Author")}"
+  output_dir="${output_dir:-.}/$project_name"
+  
+  # Check if exists
+  if [[ -d "$output_dir" ]] && ! $force; then
+    die "Directory already exists: $output_dir (use --force to overwrite)"
+  fi
+  
+  msg_info "Creating project: $project_name"
+  echo "  Template: $template_name"
+  echo "  Author:   $author"
+  echo "  Output:   $output_dir"
+  echo ""
+  
+  # Create output directory
+  mkdir -p "$output_dir"
+  
+  # Process all files
+  local file_count=0
+  while IFS= read -r -d '' src_file; do
+    local rel_path="${src_file#$template_path/}"
+    local dest_file="$output_dir/$rel_path"
+    
+    process_file "$src_file" "$dest_file" "$project_name" "$author"
+    file_count=$((file_count + 1))
+  done < <(find "$template_path" -type f -print0)
+  
+  msg_success "Created $file_count files"
+  echo ""
+  
+  # Show next steps if README exists
+  if [[ -f "$output_dir/README.md" ]]; then
+    msg_info "Next steps:"
+    echo "  cd $output_dir"
+    echo "  cat README.md"
+  fi
+}
+
+# Create template from current directory
+action_create_template() {
+  local template_name="$1"
+  
+  if [[ -z "$template_name" ]]; then
+    die "Usage: fc scaffold create-template <template-name>"
+  fi
+  
+  # Validate name
+  if [[ "$template_name" =~ [^a-zA-Z0-9_-] ]]; then
+    die "Template name can only contain letters, numbers, hyphens, and underscores"
+  fi
+  
+  local template_path="$USER_TEMPLATES/$template_name"
+  
+  if [[ -d "$template_path" ]]; then
+    die "Template already exists: $template_name"
+  fi
+  
+  mkdir -p "$template_path"
+  
+  # Copy current directory
+  msg_info "Creating template from current directory..."
+  
+  local file_count=0
+  find . -type f ! -path "./.git/*" ! -name ".DS_Store" | while read -r file; do
+    local dest="$template_path/${file#./}"
+    mkdir -p "$(dirname "$dest")"
+    cp "$file" "$dest"
+    file_count=$((file_count + 1))
+  done
+  
+  # Create template config
+  cat > "$template_path/template.conf" << EOF
+description="Custom template: $template_name"
+author="$(git config user.name 2>/dev/null || whoami)"
+version="1.0.0"
+EOF
+  
+  msg_success "Created template: $template_name"
+  echo "  Location: $template_path"
+  echo ""
+  msg_info "Edit files to add {{PROJECT_NAME}} and other variables"
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    list)
+      action_list "$@"
+      ;;
+    show)
+      action_show "$@"
+      ;;
+    new)
+      action_new "$@"
+      ;;
+    create-template)
+      action_create_template "$@"
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc scaffold --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

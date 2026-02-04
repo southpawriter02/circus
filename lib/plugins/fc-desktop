@@ -1,0 +1,553 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-desktop
+#
+# DESCRIPTION:  Desktop organization utility. Moves files from the desktop into
+#               date-stamped archive folders or organizes by file type. Helps
+#               keep your desktop clean without deleting anything.
+#
+# USAGE:        fc desktop <action> [options]
+#
+# ACTIONS:
+#   status        Show desktop statistics (file count, size)
+#   clean         Move files to dated archive folder
+#   organize      Organize files by type (Images, Documents, etc.)
+#   undo          Restore last archived files
+#   config        Show/edit configuration
+#
+# OPTIONS:
+#   --dry-run     Preview what would be moved
+#   --force       Skip confirmation prompts
+#   --keep-dirs   Don't move directories, only files
+#   --help        Show this help message
+#
+# EXAMPLES:
+#   fc desktop status              # See what's on desktop
+#   fc desktop clean               # Archive to dated folder
+#   fc desktop clean --dry-run     # Preview archive
+#   fc desktop organize            # Sort by file type
+#
+# ARCHIVE STRUCTURE:
+#   ~/Desktop/Archive/
+#   ├── 2024-01-15/           (dated folders)
+#   │   ├── file1.pdf
+#   │   └── screenshot.png
+#   └── 2024-01-20/
+#
+# ORGANIZATION FOLDERS (--organize):
+#   Images/      - jpg, png, gif, heic, webp, svg
+#   Documents/   - pdf, doc, docx, xls, xlsx, ppt, txt, md
+#   Screenshots/ - Files starting with "Screenshot"
+#   Videos/      - mp4, mov, avi, mkv
+#   Audio/       - mp3, wav, m4a, flac
+#   Archives/    - zip, tar, gz, rar, 7z
+#   Code/        - js, ts, py, rb, sh, json, yaml
+#   Other/       - Everything else
+#
+# CONFIGURATION:
+#   ~/.config/circus/desktop.conf
+#   - ARCHIVE_PATH: Where to store archived files
+#   - IGNORE_PATTERNS: Patterns to skip (e.g., "*.nosync")
+#   - KEEP_ALIASES: Don't move aliases/symlinks (default: true)
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# Configuration
+CONFIG_FILE="${HOME}/.config/circus/desktop.conf"
+DESKTOP_PATH="${HOME}/Desktop"
+DEFAULT_ARCHIVE_PATH="${DESKTOP_PATH}/Archive"
+UNDO_FILE="${HOME}/.config/circus/.desktop-undo"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc desktop <action> [options]"
+  echo ""
+  msg_info "Organize and clean up your desktop."
+  echo ""
+  msg_info "Actions:"
+  echo "  status          Show desktop statistics"
+  echo "  clean           Archive files to dated folder"
+  echo "  organize        Sort files by type"
+  echo "  undo            Restore last archived files"
+  echo "  config          View/edit configuration"
+  echo ""
+  msg_info "Options:"
+  echo "  --dry-run       Preview without moving"
+  echo "  --force         Skip confirmation"
+  echo "  --keep-dirs     Only move files, not folders"
+  echo ""
+  exit 0
+}
+
+# --- Configuration ----------------------------------------------------------
+
+# Load or create config
+load_config() {
+  ARCHIVE_PATH="$DEFAULT_ARCHIVE_PATH"
+  KEEP_ALIASES=true
+  IGNORE_PATTERNS=()
+  
+  if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+  fi
+}
+
+# File type categories
+declare -A FILE_CATEGORIES=(
+  ["Images"]="jpg jpeg png gif heic webp svg ico tiff bmp"
+  ["Documents"]="pdf doc docx xls xlsx ppt pptx txt md rtf pages numbers key"
+  ["Videos"]="mp4 mov avi mkv wmv flv webm m4v"
+  ["Audio"]="mp3 wav m4a flac aac ogg wma aiff"
+  ["Archives"]="zip tar gz rar 7z bz2 xz dmg iso pkg"
+  ["Code"]="js ts jsx tsx py rb sh bash zsh json yaml yml xml html css scss"
+)
+
+# --- Helper Functions -------------------------------------------------------
+
+# Get file extension (lowercase)
+get_extension() {
+  local file="$1"
+  local ext="${file##*.}"
+  echo "${ext,,}"
+}
+
+# Get category for a file
+get_file_category() {
+  local file="$1"
+  local basename
+  basename=$(basename "$file")
+  
+  # Check for screenshots first
+  if [[ "$basename" == Screenshot* ]] || [[ "$basename" == "Screen Shot"* ]]; then
+    echo "Screenshots"
+    return
+  fi
+  
+  local ext
+  ext=$(get_extension "$file")
+  
+  for category in "${!FILE_CATEGORIES[@]}"; do
+    if [[ " ${FILE_CATEGORIES[$category]} " =~ " ${ext} " ]]; then
+      echo "$category"
+      return
+    fi
+  done
+  
+  echo "Other"
+}
+
+# Check if file should be ignored
+should_ignore() {
+  local file="$1"
+  local basename
+  basename=$(basename "$file")
+  
+  # Skip dotfiles
+  if [[ "$basename" == .* ]]; then
+    return 0
+  fi
+  
+  # Skip the Archive folder itself
+  if [[ "$basename" == "Archive" ]]; then
+    return 0
+  fi
+  
+  # Skip aliases/symlinks if configured
+  if $KEEP_ALIASES && [[ -L "$file" ]]; then
+    return 0
+  fi
+  
+  # Check custom ignore patterns
+  for pattern in "${IGNORE_PATTERNS[@]}"; do
+    if [[ "$basename" == $pattern ]]; then
+      return 0
+    fi
+  done
+  
+  return 1
+}
+
+# Count files on desktop
+count_desktop_files() {
+  local count=0
+  for file in "$DESKTOP_PATH"/*; do
+    if [[ -e "$file" ]] && ! should_ignore "$file"; then
+      count=$((count + 1))
+    fi
+  done
+  echo "$count"
+}
+
+# Get desktop size
+get_desktop_size() {
+  du -sh "$DESKTOP_PATH" 2>/dev/null | awk '{print $1}'
+}
+
+# --- Action Functions -------------------------------------------------------
+
+# Show desktop status
+action_status() {
+  load_config
+  
+  msg_info "Desktop Status"
+  echo ""
+  
+  local file_count=0
+  local dir_count=0
+  local link_count=0
+  
+  for item in "$DESKTOP_PATH"/*; do
+    if [[ ! -e "$item" ]]; then
+      continue
+    fi
+    
+    local basename
+    basename=$(basename "$item")
+    
+    if [[ "$basename" == "Archive" ]]; then
+      continue
+    fi
+    
+    if [[ -L "$item" ]]; then
+      link_count=$((link_count + 1))
+    elif [[ -d "$item" ]]; then
+      dir_count=$((dir_count + 1))
+    else
+      file_count=$((file_count + 1))
+    fi
+  done
+  
+  printf "  %-20s %d\n" "Files:" "$file_count"
+  printf "  %-20s %d\n" "Folders:" "$dir_count"
+  printf "  %-20s %d\n" "Aliases/Links:" "$link_count"
+  printf "  %-20s %s\n" "Total Size:" "$(get_desktop_size)"
+  
+  echo ""
+  
+  # Check archive
+  if [[ -d "$ARCHIVE_PATH" ]]; then
+    local archive_count
+    archive_count=$(find "$ARCHIVE_PATH" -maxdepth 1 -type d | wc -l | tr -d ' ')
+    archive_count=$((archive_count - 1))
+    printf "  %-20s %d folders\n" "Archive contains:" "$archive_count"
+  fi
+  
+  echo ""
+  
+  if [[ $((file_count + dir_count)) -gt 0 ]]; then
+    msg_info "Run 'fc desktop clean' to archive these items"
+  else
+    msg_success "Desktop is clean!"
+  fi
+}
+
+# Archive desktop files to dated folder
+action_clean() {
+  load_config
+  
+  local dry_run=false
+  local force=false
+  local keep_dirs=false
+  
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --dry-run) dry_run=true; shift ;;
+      --force) force=true; shift ;;
+      --keep-dirs) keep_dirs=true; shift ;;
+      *) shift ;;
+    esac
+  done
+  
+  # Collect files to move
+  declare -a to_move
+  for item in "$DESKTOP_PATH"/*; do
+    if [[ ! -e "$item" ]]; then
+      continue
+    fi
+    
+    if should_ignore "$item"; then
+      continue
+    fi
+    
+    if $keep_dirs && [[ -d "$item" ]] && [[ ! -L "$item" ]]; then
+      continue
+    fi
+    
+    to_move+=("$item")
+  done
+  
+  if [[ ${#to_move[@]} -eq 0 ]]; then
+    msg_success "Desktop is already clean!"
+    return 0
+  fi
+  
+  # Create dated archive folder
+  local date_folder
+  date_folder=$(date +%Y-%m-%d)
+  local target_path="${ARCHIVE_PATH}/${date_folder}"
+  
+  msg_info "Desktop Cleanup"
+  echo ""
+  msg_info "Moving ${#to_move[@]} items to:"
+  echo "  $target_path"
+  echo ""
+  
+  # Preview items
+  for item in "${to_move[@]}"; do
+    local basename
+    basename=$(basename "$item")
+    if [[ -d "$item" ]]; then
+      echo "  📁 $basename/"
+    else
+      echo "  📄 $basename"
+    fi
+  done
+  
+  echo ""
+  
+  if $dry_run; then
+    msg_info "Dry run - no files moved"
+    return 0
+  fi
+  
+  # Confirm
+  if ! $force; then
+    msg_info "Move these items? (y/N):"
+    read -r confirm
+    if [[ "$confirm" != "y" ]] && [[ "$confirm" != "Y" ]]; then
+      msg_info "Cleanup cancelled."
+      return 0
+    fi
+  fi
+  
+  # Create archive folder
+  mkdir -p "$target_path"
+  
+  # Save undo info
+  echo "# Desktop cleanup $(date)" > "$UNDO_FILE"
+  echo "ARCHIVE_PATH=\"$target_path\"" >> "$UNDO_FILE"
+  echo "FILES=()" >> "$UNDO_FILE"
+  
+  # Move files
+  local moved_count=0
+  for item in "${to_move[@]}"; do
+    local basename
+    basename=$(basename "$item")
+    
+    # Handle duplicates
+    local dest="$target_path/$basename"
+    if [[ -e "$dest" ]]; then
+      local counter=1
+      local name="${basename%.*}"
+      local ext="${basename##*.}"
+      if [[ "$name" == "$ext" ]]; then
+        ext=""
+      fi
+      while [[ -e "$dest" ]]; do
+        if [[ -n "$ext" ]]; then
+          dest="$target_path/${name}-${counter}.${ext}"
+        else
+          dest="$target_path/${basename}-${counter}"
+        fi
+        counter=$((counter + 1))
+      done
+    fi
+    
+    if mv "$item" "$dest" 2>/dev/null; then
+      echo "FILES+=(\"$dest\")" >> "$UNDO_FILE"
+      moved_count=$((moved_count + 1))
+    else
+      msg_warning "Failed to move: $basename"
+    fi
+  done
+  
+  echo ""
+  msg_success "Moved $moved_count items to archive"
+  msg_info "Run 'fc desktop undo' to restore"
+}
+
+# Organize files by type
+action_organize() {
+  load_config
+  
+  local dry_run=false
+  local force=false
+  
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --dry-run) dry_run=true; shift ;;
+      --force) force=true; shift ;;
+      *) shift ;;
+    esac
+  done
+  
+  # Collect files and their categories
+  declare -A category_files
+  
+  for item in "$DESKTOP_PATH"/*; do
+    if [[ ! -e "$item" ]] || [[ -d "$item" ]]; then
+      continue
+    fi
+    
+    if should_ignore "$item"; then
+      continue
+    fi
+    
+    local category
+    category=$(get_file_category "$item")
+    category_files["$category"]+="$item"$'\n'
+  done
+  
+  if [[ ${#category_files[@]} -eq 0 ]]; then
+    msg_success "No files to organize!"
+    return 0
+  fi
+  
+  msg_info "Desktop Organization"
+  echo ""
+  
+  # Show preview by category
+  for category in "${!category_files[@]}"; do
+    local files="${category_files[$category]}"
+    local count
+    count=$(echo -n "$files" | grep -c '^')
+    echo "  $category/  ($count files)"
+  done
+  
+  echo ""
+  
+  if $dry_run; then
+    msg_info "Dry run - no files moved"
+    return 0
+  fi
+  
+  if ! $force; then
+    msg_info "Organize files into these folders? (y/N):"
+    read -r confirm
+    if [[ "$confirm" != "y" ]] && [[ "$confirm" != "Y" ]]; then
+      msg_info "Organization cancelled."
+      return 0
+    fi
+  fi
+  
+  # Move files
+  local total_moved=0
+  for category in "${!category_files[@]}"; do
+    local target_dir="$DESKTOP_PATH/$category"
+    mkdir -p "$target_dir"
+    
+    while IFS= read -r file; do
+      if [[ -n "$file" ]] && [[ -e "$file" ]]; then
+        mv "$file" "$target_dir/" 2>/dev/null && total_moved=$((total_moved + 1))
+      fi
+    done <<< "${category_files[$category]}"
+  done
+  
+  msg_success "Organized $total_moved files"
+}
+
+# Undo last cleanup
+action_undo() {
+  if [[ ! -f "$UNDO_FILE" ]]; then
+    msg_warning "No cleanup to undo"
+    return 1
+  fi
+  
+  source "$UNDO_FILE"
+  
+  if [[ ${#FILES[@]} -eq 0 ]]; then
+    msg_warning "No files to restore"
+    return 1
+  fi
+  
+  msg_info "Restoring ${#FILES[@]} files to Desktop..."
+  echo ""
+  
+  local restored=0
+  for file in "${FILES[@]}"; do
+    if [[ -e "$file" ]]; then
+      local basename
+      basename=$(basename "$file")
+      if mv "$file" "$DESKTOP_PATH/" 2>/dev/null; then
+        echo "  ↩ $basename"
+        restored=$((restored + 1))
+      fi
+    fi
+  done
+  
+  # Remove empty archive folder
+  rmdir "$ARCHIVE_PATH" 2>/dev/null || true
+  
+  rm -f "$UNDO_FILE"
+  
+  echo ""
+  msg_success "Restored $restored files"
+}
+
+# Show/create config
+action_config() {
+  if [[ ! -f "$CONFIG_FILE" ]]; then
+    mkdir -p "$(dirname "$CONFIG_FILE")"
+    cat > "$CONFIG_FILE" << 'EOF'
+# Desktop Organizer Configuration
+
+# Where to store archived files
+ARCHIVE_PATH="$HOME/Desktop/Archive"
+
+# Keep aliases/symlinks on desktop (don't move them)
+KEEP_ALIASES=true
+
+# Patterns to ignore (bash glob syntax)
+IGNORE_PATTERNS=(
+  "*.nosync"
+  ".DS_Store"
+  ".localized"
+)
+EOF
+    msg_success "Created config file: $CONFIG_FILE"
+  fi
+  
+  msg_info "Configuration:"
+  cat "$CONFIG_FILE"
+  
+  echo ""
+  msg_info "Edit with: \$EDITOR $CONFIG_FILE"
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    status)
+      action_status "$@"
+      ;;
+    clean)
+      action_clean "$@"
+      ;;
+    organize)
+      action_organize "$@"
+      ;;
+    undo)
+      action_undo "$@"
+      ;;
+    config)
+      action_config "$@"
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc desktop --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

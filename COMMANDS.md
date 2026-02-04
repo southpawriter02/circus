@@ -1694,3 +1694,344 @@ After installation, these commands are available in Raycast:
 
 See `docs/RAYCAST.md` for full documentation.
 
+---
+
+## `fc uninstall`
+
+Completely uninstall macOS applications including the app bundle, preferences, caches, containers, and support files.
+
+**Usage:**
+
+```bash
+fc uninstall <action> [options]
+```
+
+**Actions:**
+*   `<app-name>`: Uninstall the specified application (requires `--force`).
+*   `list <app>`: Preview files that would be removed (dry run).
+*   `scan`: Find installed applications and their disk usage.
+
+**Options:**
+*   `--force`: Actually delete files (required for uninstall).
+*   `--keep-prefs`: Keep preference files when uninstalling.
+
+**Cleanup Locations:**
+- `/Applications/<App>.app` (Application bundle)
+- `~/Library/Preferences/<bundle-id>.*` (Preference files)
+- `~/Library/Caches/<bundle-id>/` (Cache files)
+- `~/Library/Application Support/<App>/` (Support files)
+- `~/Library/Containers/<bundle-id>/` (Sandbox containers)
+- `~/Library/Saved Application State/` (Window state)
+
+**Examples:**
+
+```bash
+# Preview what would be removed
+fc uninstall list Slack
+
+# Actually uninstall the app
+fc uninstall Slack --force
+
+# List installed apps with sizes
+fc uninstall scan
+```
+
+> **Note:** Dry-run by default. System apps in `/System/Applications` are protected.
+
+---
+
+## `fc theme`
+
+Manage and switch between shell/terminal themes. Change colors, prompts, and shell appearance with a single command.
+
+**Usage:**
+
+```bash
+fc theme <action> [theme-name]
+```
+
+**Actions:**
+*   `list`: Show available themes.
+*   `current`: Show the currently active theme.
+*   `apply <name>`: Apply a theme.
+*   `preview <name>`: Preview theme colors without applying.
+*   `create <name>`: Create a new theme from template.
+
+**Built-in Themes:**
+*   `dark`: Dark color scheme with minimal prompt.
+*   `light`: Light color scheme for bright environments.
+
+**Examples:**
+
+```bash
+# List available themes
+fc theme list
+
+# Apply dark theme
+fc theme apply dark
+
+# Show current theme
+fc theme current
+
+# Create a custom theme
+fc theme create my-custom
+```
+
+**Theme Structure:**
+
+Themes are stored in `$DOTFILES_ROOT/themes/<name>/` with:
+- `theme.conf` - Theme metadata (name, description, author)
+- `colors.sh` - Color variable exports
+- `prompt.zsh` - Zsh prompt configuration
+
+---
+
+## `fc network`
+
+Network diagnostics and troubleshooting tool. Run comprehensive connectivity tests, check latency, verify DNS, and display local network configuration.
+
+**Usage:**
+
+```bash
+fc network <action> [options]
+```
+
+**Actions:**
+*   `status`: Quick connectivity overview (default).
+*   `diag`: Full diagnostic suite (6 tests).
+*   `info`: Show local network configuration.
+*   `latency [host]`: Ping test with statistics.
+*   `dns [domain]`: DNS resolution test.
+*   `trace [host]`: Traceroute to a host.
+*   `port <host> <port>`: Check if a port is open.
+*   `speed`: Run speed test (requires speedtest-cli).
+
+**Diagnostic Suite (`fc network diag`):**
+1. Local Info - IP address, gateway, DNS servers
+2. Gateway Ping - Local network health
+3. Internet Ping - 1.1.1.1, 8.8.8.8
+4. DNS Resolution - apple.com, google.com
+5. HTTPS Check - Verifies full HTTP connectivity
+6. Latency Summary
+
+**Examples:**
+
+```bash
+# Quick status check
+fc network
+
+# Full diagnostic suite
+fc network diag
+
+# Local network configuration
+fc network info
+
+# Check if GitHub HTTPS is reachable
+fc network port github.com 443
+
+# Trace route to Google DNS
+fc network trace 8.8.8.8
+```
+
+---
+
+## `fc docker`
+
+Docker cleanup utility for reclaiming disk space. Removes unused images, stopped containers, dangling volumes, and build cache.
+
+**Usage:**
+
+```bash
+fc docker <action> [options]
+```
+
+**Actions:**
+*   `status`: Show Docker disk usage summary.
+*   `clean`: Safe cleanup (dangling images/containers).
+*   `clean --all`: Aggressive cleanup (all unused).
+*   `clean --hard`: Nuclear option (everything including volumes).
+*   `images`: List and prune unused images.
+*   `containers`: List and prune stopped containers.
+*   `volumes`: List and prune unused volumes.
+*   `cache`: Clear build cache.
+
+**Options:**
+*   `--force`: Skip confirmation prompts.
+*   `--dry-run`: Show what would be removed.
+
+**Cleanup Levels:**
+
+| Level | What it removes |
+|-------|-----------------|
+| `clean` | Dangling images, stopped containers (safe) |
+| `clean --all` | ALL unused images, containers, networks |
+| `clean --hard` | Everything including volumes (DESTRUCTIVE) |
+
+**Examples:**
+
+```bash
+# Check Docker disk usage
+fc docker status
+
+# Safe cleanup
+fc docker clean
+
+# Preview aggressive cleanup
+fc docker clean --all --dry-run
+
+# Clear build cache
+fc docker cache
+```
+
+> **Warning:** The `--hard` option is destructive and will delete all Docker data including volumes.
+
+---
+
+## `fc desktop`
+
+Desktop organization utility. Move files from the desktop into date-stamped archive folders or organize by file type.
+
+**Usage:**
+
+```bash
+fc desktop <action> [options]
+```
+
+**Actions:**
+*   `status`: Show desktop statistics (file count, size).
+*   `clean`: Move files to dated archive folder.
+*   `organize`: Organize files by type (Images, Documents, etc.).
+*   `undo`: Restore last archived files.
+*   `config`: Show/edit configuration.
+
+**Options:**
+*   `--dry-run`: Preview what would be moved.
+*   `--force`: Skip confirmation prompts.
+*   `--keep-dirs`: Don't move directories, only files.
+
+**Organization Categories:**
+- `Images/` - jpg, png, gif, heic, webp, svg
+- `Documents/` - pdf, doc, docx, xls, txt, md
+- `Screenshots/` - Files starting with "Screenshot"
+- `Videos/` - mp4, mov, avi, mkv
+- `Audio/` - mp3, wav, m4a, flac
+- `Archives/` - zip, tar, gz, rar, 7z
+- `Code/` - js, ts, py, rb, sh, json
+- `Other/` - Everything else
+
+**Examples:**
+
+```bash
+# See what's on desktop
+fc desktop status
+
+# Archive to dated folder
+fc desktop clean
+
+# Preview archive
+fc desktop clean --dry-run
+
+# Organize by file type
+fc desktop organize
+
+# Restore last cleanup
+fc desktop undo
+```
+
+---
+
+## `fc history`
+
+Enhanced shell history search using fzf for interactive fuzzy finding.
+
+**Usage:**
+
+```bash
+fc history [action] [options]
+```
+
+**Actions:**
+*   `search`: Interactive fuzzy search (default).
+*   `stats`: Show history statistics.
+*   `top`: Show most used commands.
+*   `clean`: Remove duplicates from history.
+*   `setup`: Configure shell integration (Ctrl+R binding).
+
+**Options:**
+*   `--count N`: Number of results to show (for `top`).
+
+**Dependencies:** Requires `fzf` (`brew install fzf`).
+
+**Examples:**
+
+```bash
+# Interactive search (default)
+fc history
+
+# Show history statistics
+fc history stats
+
+# Top 20 most used commands
+fc history top --count 20
+
+# Remove duplicate entries
+fc history clean
+
+# Set up Ctrl+R integration
+fc history setup
+```
+
+---
+
+## `fc scaffold`
+
+Project scaffolding tool for quickly creating new projects from templates with variable substitution.
+
+**Usage:**
+
+```bash
+fc scaffold <action> [options]
+```
+
+**Actions:**
+*   `new <template> <name>`: Create new project from template.
+*   `list`: List available templates.
+*   `show <template>`: Show template details.
+*   `create-template <name>`: Create new template from current directory.
+
+**Options:**
+*   `--author <name>`: Set author name (default: git user.name).
+*   `--dir <path>`: Output directory (default: current).
+*   `--force`: Overwrite if exists.
+
+**Template Variables:**
+
+| Variable | Description |
+|----------|-------------|
+| `{{PROJECT_NAME}}` | Name of the project |
+| `{{PROJECT_NAME_UPPER}}` | Name in UPPER_SNAKE_CASE |
+| `{{PROJECT_NAME_LOWER}}` | Name in lowercase |
+| `{{AUTHOR}}` | Author name |
+| `{{YEAR}}` | Current year |
+| `{{DATE}}` | Current date (YYYY-MM-DD) |
+
+**Template Locations:**
+- Built-in: `$DOTFILES_ROOT/templates/projects/`
+- Custom: `~/.config/circus/templates/`
+
+**Examples:**
+
+```bash
+# List available templates
+fc scaffold list
+
+# Create Python CLI project
+fc scaffold new python-cli myapp
+
+# View template details
+fc scaffold show python-cli
+
+# Save current directory as template
+fc scaffold create-template my-template
+```
+

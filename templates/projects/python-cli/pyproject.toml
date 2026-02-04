@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{PROJECT_NAME_LOWER}}"
+version = "0.1.0"
+description = "{{PROJECT_NAME}} CLI"
+authors = [{name = "{{AUTHOR}}"}]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "black",
+    "ruff",
+]
+
+[project.scripts]
+{{PROJECT_NAME_LOWER}} = "{{PROJECT_NAME_LOWER}}.cli:main"

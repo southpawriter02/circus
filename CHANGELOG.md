@@ -7,7 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **7 New FC Commands** - Comprehensive additions to the `fc` command suite:
+
+  **Batch 1 - System & Network:**
+  - `fc uninstall` - Complete macOS app removal (app bundle, preferences, caches, containers)
+  - `fc theme` - Shell theme management with dark/light themes and custom theme support
+  - `fc network` - Network diagnostics suite (status, diag, latency, DNS, port check)
+
+  **Batch 2 - Productivity & Development:**
+  - `fc docker` - Docker cleanup utility (status, clean --all/--hard, resource management)
+  - `fc desktop` - Desktop organizer (archive to dated folders, organize by type, undo)
+  - `fc history` - Enhanced shell history search with fzf integration
+  - `fc scaffold` - Project scaffolding with template variable substitution
+
+  **Supporting Files:**
+  - Built-in themes: `themes/dark/`, `themes/light/`
+  - Python CLI template: `templates/projects/python-cli/`
+  - BATS tests for all 7 commands
+  - COMMANDS.md documentation (341 lines added)
+
 ## [1.5.2] - 2026-01-05
+
 
 ### Added
 

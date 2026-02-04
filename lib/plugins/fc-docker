@@ -1,0 +1,437 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-docker
+#
+# DESCRIPTION:  Docker cleanup utility for reclaiming disk space. Removes unused
+#               images, stopped containers, dangling volumes, and build cache.
+#               Provides safe, informative cleanup with space reclamation stats.
+#
+# USAGE:        fc docker <action> [options]
+#
+# ACTIONS:
+#   status        Show Docker disk usage summary
+#   clean         Safe cleanup (dangling images/containers)
+#   clean --all   Aggressive cleanup (all unused)
+#   clean --hard  Nuclear option (everything including volumes)
+#   images        List and prune unused images
+#   containers    List and prune stopped containers
+#   volumes       List and prune unused volumes
+#   cache         Clear build cache
+#
+# OPTIONS:
+#   --force       Skip confirmation prompts
+#   --dry-run     Show what would be removed
+#   --help        Show this help message
+#
+# EXAMPLES:
+#   fc docker status              # See disk usage
+#   fc docker clean               # Safe cleanup
+#   fc docker clean --all         # Remove all unused
+#   fc docker images --dry-run    # Preview image cleanup
+#
+# CLEANUP LEVELS:
+#   clean         Removes dangling images and stopped containers (safe)
+#   clean --all   Removes ALL unused images, containers, networks
+#   clean --hard  Removes everything including volumes (DESTRUCTIVE)
+#
+# DEPENDENCIES:
+#   Requires Docker to be installed and the daemon running.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc docker <action> [options]"
+  echo ""
+  msg_info "Docker cleanup and management utilities."
+  echo ""
+  msg_info "Actions:"
+  echo "  status          Show Docker disk usage"
+  echo "  clean           Safe cleanup (dangling resources)"
+  echo "  clean --all     Aggressive cleanup (all unused)"
+  echo "  clean --hard    Nuclear cleanup (including volumes)"
+  echo "  images          Manage and prune images"
+  echo "  containers      Manage and prune containers"
+  echo "  volumes         Manage and prune volumes"
+  echo "  cache           Clear build cache"
+  echo ""
+  msg_info "Options:"
+  echo "  --force         Skip confirmation"
+  echo "  --dry-run       Preview without removing"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Check if Docker is available
+check_docker() {
+  if ! command -v docker &>/dev/null; then
+    die "Docker is not installed. Install with: brew install --cask docker"
+  fi
+  
+  if ! docker info &>/dev/null; then
+    die "Docker daemon is not running. Please start Docker Desktop."
+  fi
+}
+
+# Parse size string to bytes (for comparison)
+parse_size() {
+  local size="$1"
+  local num="${size%[KMGTP]B}"
+  local unit="${size: -2:1}"
+  
+  case "$unit" in
+    K) echo $((${num%.*} * 1024)) ;;
+    M) echo $((${num%.*} * 1048576)) ;;
+    G) echo $((${num%.*} * 1073741824)) ;;
+    T) echo $((${num%.*} * 1099511627776)) ;;
+    *) echo "${num%.*}" ;;
+  esac
+}
+
+# Get total reclaimable space
+get_reclaimable() {
+  docker system df 2>/dev/null | tail -n +2 | awk '{sum += $4} END {print sum}' 2>/dev/null || echo "0"
+}
+
+# --- Action Functions -------------------------------------------------------
+
+# Show Docker disk usage
+action_status() {
+  check_docker
+  
+  msg_info "Docker Disk Usage"
+  echo ""
+  
+  docker system df
+  
+  echo ""
+  msg_info "Detailed breakdown:"
+  docker system df -v 2>/dev/null | head -50
+  
+  echo ""
+}
+
+# Clean dangling resources (safe)
+action_clean() {
+  check_docker
+  
+  local all_unused=false
+  local hard_mode=false
+  local force=false
+  local dry_run=false
+  
+  # Parse options
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --all)
+        all_unused=true
+        shift
+        ;;
+      --hard)
+        hard_mode=true
+        all_unused=true
+        shift
+        ;;
+      --force)
+        force=true
+        shift
+        ;;
+      --dry-run)
+        dry_run=true
+        shift
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+  
+  # Determine cleanup level
+  local level="safe"
+  local description="dangling images and stopped containers"
+  
+  if $hard_mode; then
+    level="hard"
+    description="ALL Docker resources including volumes"
+  elif $all_unused; then
+    level="all"
+    description="all unused images, containers, and networks"
+  fi
+  
+  msg_info "Docker Cleanup ($level)"
+  echo ""
+  
+  # Show current usage
+  msg_info "Current usage:"
+  docker system df 2>/dev/null | head -5
+  echo ""
+  
+  if $dry_run; then
+    msg_info "Dry run - showing what would be removed:"
+    echo ""
+    
+    if $hard_mode || $all_unused; then
+      msg_info "Unused images:"
+      docker images -f "dangling=true" -q | wc -l | xargs echo "  - Dangling images:"
+      if $all_unused; then
+        docker images --filter "reference=*" -q | wc -l | xargs echo "  - Total images:"
+      fi
+    fi
+    
+    msg_info "Stopped containers:"
+    docker ps -a --filter "status=exited" -q | wc -l | xargs echo "  - Stopped:"
+    
+    if $hard_mode; then
+      msg_info "Volumes:"
+      docker volume ls -q | wc -l | xargs echo "  - Total volumes:"
+    fi
+    
+    echo ""
+    msg_info "Run without --dry-run to perform cleanup"
+    return 0
+  fi
+  
+  # Confirmation
+  if ! $force; then
+    if $hard_mode; then
+      msg_warning "⚠️  HARD MODE: This will remove ALL Docker data including volumes!"
+      msg_warning "Type 'yes-delete-everything' to confirm:"
+      read -r confirm
+      if [[ "$confirm" != "yes-delete-everything" ]]; then
+        msg_info "Cleanup cancelled."
+        return 0
+      fi
+    else
+      msg_info "This will remove $description."
+      msg_info "Continue? (y/N):"
+      read -r confirm
+      if [[ "$confirm" != "y" ]] && [[ "$confirm" != "Y" ]]; then
+        msg_info "Cleanup cancelled."
+        return 0
+      fi
+    fi
+  fi
+  
+  # Perform cleanup
+  msg_info "Cleaning up..."
+  echo ""
+  
+  # Stop all containers if hard mode
+  if $hard_mode; then
+    msg_info "Stopping all containers..."
+    docker stop $(docker ps -q) 2>/dev/null || true
+  fi
+  
+  # Build prune command
+  local prune_args=""
+  if $all_unused; then
+    prune_args="-a"
+  fi
+  if $hard_mode; then
+    prune_args="-a --volumes"
+  fi
+  
+  # Run system prune
+  docker system prune $prune_args -f
+  
+  echo ""
+  msg_info "Disk usage after cleanup:"
+  docker system df 2>/dev/null | head -5
+  
+  echo ""
+  msg_success "Cleanup complete!"
+}
+
+# Manage images
+action_images() {
+  check_docker
+  
+  local dry_run=false
+  local force=false
+  
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --dry-run) dry_run=true; shift ;;
+      --force) force=true; shift ;;
+      *) shift ;;
+    esac
+  done
+  
+  msg_info "Docker Images"
+  echo ""
+  
+  # Show images
+  docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedSince}}"
+  
+  echo ""
+  
+  # Count dangling
+  local dangling_count
+  dangling_count=$(docker images -f "dangling=true" -q | wc -l | tr -d ' ')
+  
+  if [[ "$dangling_count" -gt 0 ]]; then
+    msg_info "Found $dangling_count dangling images"
+    
+    if $dry_run; then
+      msg_info "Would remove $dangling_count dangling images"
+    elif $force || { msg_info "Remove dangling images? (y/N):"; read -r confirm; [[ "$confirm" == "y" ]]; }; then
+      docker image prune -f
+      msg_success "Removed dangling images"
+    fi
+  else
+    msg_success "No dangling images"
+  fi
+}
+
+# Manage containers
+action_containers() {
+  check_docker
+  
+  local dry_run=false
+  local force=false
+  
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --dry-run) dry_run=true; shift ;;
+      --force) force=true; shift ;;
+      *) shift ;;
+    esac
+  done
+  
+  msg_info "Docker Containers"
+  echo ""
+  
+  # Show all containers
+  docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Image}}\t{{.Size}}"
+  
+  echo ""
+  
+  # Count stopped
+  local stopped_count
+  stopped_count=$(docker ps -a --filter "status=exited" -q | wc -l | tr -d ' ')
+  
+  if [[ "$stopped_count" -gt 0 ]]; then
+    msg_info "Found $stopped_count stopped containers"
+    
+    if $dry_run; then
+      msg_info "Would remove $stopped_count stopped containers"
+    elif $force || { msg_info "Remove stopped containers? (y/N):"; read -r confirm; [[ "$confirm" == "y" ]]; }; then
+      docker container prune -f
+      msg_success "Removed stopped containers"
+    fi
+  else
+    msg_success "No stopped containers"
+  fi
+}
+
+# Manage volumes
+action_volumes() {
+  check_docker
+  
+  local dry_run=false
+  local force=false
+  
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --dry-run) dry_run=true; shift ;;
+      --force) force=true; shift ;;
+      *) shift ;;
+    esac
+  done
+  
+  msg_info "Docker Volumes"
+  echo ""
+  
+  # Show volumes
+  docker volume ls
+  
+  echo ""
+  
+  # Count dangling volumes
+  local dangling_count
+  dangling_count=$(docker volume ls -f "dangling=true" -q | wc -l | tr -d ' ')
+  
+  if [[ "$dangling_count" -gt 0 ]]; then
+    msg_warning "Found $dangling_count unused volumes"
+    msg_warning "⚠️  Removing volumes will delete data permanently!"
+    
+    if $dry_run; then
+      msg_info "Would remove $dangling_count volumes"
+    elif $force || { msg_info "Remove unused volumes? (y/N):"; read -r confirm; [[ "$confirm" == "y" ]]; }; then
+      docker volume prune -f
+      msg_success "Removed unused volumes"
+    fi
+  else
+    msg_success "No unused volumes"
+  fi
+}
+
+# Clear build cache
+action_cache() {
+  check_docker
+  
+  local force=false
+  
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --force) force=true; shift ;;
+      *) shift ;;
+    esac
+  done
+  
+  msg_info "Docker Build Cache"
+  echo ""
+  
+  # Show cache usage
+  docker system df 2>/dev/null | grep -E "Build cache|TYPE"
+  
+  echo ""
+  
+  if $force || { msg_info "Clear build cache? (y/N):"; read -r confirm; [[ "$confirm" == "y" ]]; }; then
+    docker builder prune -f
+    msg_success "Build cache cleared"
+  fi
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    status)
+      action_status "$@"
+      ;;
+    clean)
+      action_clean "$@"
+      ;;
+    images)
+      action_images "$@"
+      ;;
+    containers)
+      action_containers "$@"
+      ;;
+    volumes)
+      action_volumes "$@"
+      ;;
+    cache)
+      action_cache "$@"
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc docker --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

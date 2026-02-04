@@ -1,0 +1,313 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-history
+#
+# DESCRIPTION:  Enhanced shell history search using fzf for interactive fuzzy
+#               finding. Provides better history navigation than default Ctrl+R.
+#
+# USAGE:        fc history [action] [options]
+#
+# ACTIONS:
+#   search        Interactive fuzzy search (default)
+#   stats         Show history statistics
+#   top           Show most used commands
+#   clean         Remove duplicates from history
+#   setup         Configure shell integration
+#
+# OPTIONS:
+#   --count N     Number of results to show (for 'top')
+#   --all         Include all history (ignore HISTIGNORE)
+#   --help        Show this help message
+#
+# EXAMPLES:
+#   fc history                    # Interactive search
+#   fc history stats              # Show statistics
+#   fc history top --count 20     # Top 20 commands
+#   fc history setup              # Configure Ctrl+R binding
+#
+# SHELL INTEGRATION:
+#   After running 'fc history setup', pressing Ctrl+R will launch
+#   the enhanced fuzzy history search. Features include:
+#   - Fuzzy matching on any part of command
+#   - Preview of full command
+#   - De-duplication of consecutive commands
+#   - Sorted by recency
+#
+# DEPENDENCIES:
+#   Required: fzf (brew install fzf)
+#   Optional: bat (for syntax highlighting in preview)
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc history [action] [options]"
+  echo ""
+  msg_info "Enhanced shell history search."
+  echo ""
+  msg_info "Actions:"
+  echo "  search          Interactive fuzzy search (default)"
+  echo "  stats           Show history statistics"
+  echo "  top             Show most used commands"
+  echo "  clean           Remove duplicates"
+  echo "  setup           Configure shell integration"
+  echo ""
+  msg_info "Options:"
+  echo "  --count N       Number of results for 'top'"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Get history file path
+get_history_file() {
+  if [[ -n "$ZSH_VERSION" ]] || [[ "$SHELL" == *"zsh"* ]]; then
+    echo "${HISTFILE:-$HOME/.zsh_history}"
+  else
+    echo "${HISTFILE:-$HOME/.bash_history}"
+  fi
+}
+
+# Check for fzf
+check_fzf() {
+  if ! command -v fzf &>/dev/null; then
+    die "fzf is not installed. Install with: brew install fzf"
+  fi
+}
+
+# Parse zsh history format
+parse_zsh_history() {
+  local history_file="$1"
+  
+  # Zsh history format: : timestamp:0;command
+  if [[ -f "$history_file" ]]; then
+    cat "$history_file" | \
+      sed 's/^: [0-9]*:[0-9]*;//' | \
+      grep -v '^$' | \
+      tac 2>/dev/null || tail -r
+  fi
+}
+
+# Parse bash history format
+parse_bash_history() {
+  local history_file="$1"
+  
+  if [[ -f "$history_file" ]]; then
+    tac "$history_file" 2>/dev/null || tail -r "$history_file"
+  fi
+}
+
+# Get parsed history
+get_history() {
+  local history_file
+  history_file=$(get_history_file)
+  
+  if [[ "$history_file" == *"zsh"* ]]; then
+    parse_zsh_history "$history_file"
+  else
+    parse_bash_history "$history_file"
+  fi
+}
+
+# --- Action Functions -------------------------------------------------------
+
+# Interactive fuzzy search
+action_search() {
+  check_fzf
+  
+  local history_file
+  history_file=$(get_history_file)
+  
+  local selected
+  selected=$(get_history | \
+    awk '!seen[$0]++' | \
+    fzf --height=40% \
+        --reverse \
+        --border \
+        --prompt="History > " \
+        --preview-window="down:3:wrap" \
+        --preview="echo {}" \
+        --bind="ctrl-y:execute-silent(echo -n {} | pbcopy)+abort" \
+        --header="Enter: copy to clipboard | Ctrl-Y: copy and close")
+  
+  if [[ -n "$selected" ]]; then
+    echo -n "$selected" | pbcopy
+    echo "$selected"
+    msg_info "Copied to clipboard"
+  fi
+}
+
+# Show history statistics
+action_stats() {
+  local history_file
+  history_file=$(get_history_file)
+  
+  msg_info "History Statistics"
+  echo ""
+  
+  if [[ ! -f "$history_file" ]]; then
+    msg_warning "History file not found: $history_file"
+    return 1
+  fi
+  
+  local total_lines unique_lines file_size
+  total_lines=$(wc -l < "$history_file" | tr -d ' ')
+  unique_lines=$(get_history | sort -u | wc -l | tr -d ' ')
+  file_size=$(du -h "$history_file" | awk '{print $1}')
+  
+  printf "  %-25s %s\n" "History file:" "$history_file"
+  printf "  %-25s %s\n" "File size:" "$file_size"
+  printf "  %-25s %s\n" "Total entries:" "$total_lines"
+  printf "  %-25s %s\n" "Unique commands:" "$unique_lines"
+  
+  # Calculate duplicate ratio
+  if [[ $total_lines -gt 0 ]]; then
+    local dup_ratio
+    dup_ratio=$(echo "scale=1; 100 - ($unique_lines * 100 / $total_lines)" | bc)
+    printf "  %-25s %s%%\n" "Duplicate ratio:" "$dup_ratio"
+  fi
+  
+  echo ""
+}
+
+# Show most used commands
+action_top() {
+  local count=10
+  
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --count) count="$2"; shift 2 ;;
+      *) shift ;;
+    esac
+  done
+  
+  msg_info "Top $count Commands"
+  echo ""
+  
+  get_history | \
+    awk '{print $1}' | \
+    sort | \
+    uniq -c | \
+    sort -rn | \
+    head -n "$count" | \
+    awk '{printf "  %5d  %s\n", $1, $2}'
+  
+  echo ""
+}
+
+# Remove duplicates from history
+action_clean() {
+  local history_file
+  history_file=$(get_history_file)
+  
+  if [[ ! -f "$history_file" ]]; then
+    msg_warning "History file not found"
+    return 1
+  fi
+  
+  local before_count after_count
+  before_count=$(wc -l < "$history_file" | tr -d ' ')
+  
+  msg_info "Cleaning history file..."
+  
+  # Create backup
+  cp "$history_file" "${history_file}.backup"
+  
+  # Remove duplicates while preserving order (keep last occurrence)
+  tac "$history_file" | awk '!seen[$0]++' | tac > "${history_file}.tmp"
+  mv "${history_file}.tmp" "$history_file"
+  
+  after_count=$(wc -l < "$history_file" | tr -d ' ')
+  local removed=$((before_count - after_count))
+  
+  msg_success "Removed $removed duplicate entries"
+  msg_info "Backup saved to: ${history_file}.backup"
+}
+
+# Setup shell integration
+action_setup() {
+  check_fzf
+  
+  local shell_rc=""
+  if [[ "$SHELL" == *"zsh"* ]]; then
+    shell_rc="$HOME/.zshrc"
+  else
+    shell_rc="$HOME/.bashrc"
+  fi
+  
+  msg_info "Shell Integration Setup"
+  echo ""
+  
+  local integration_code='
+# Enhanced history search with fzf (added by fc history setup)
+if command -v fzf &>/dev/null; then
+  # Ctrl+R for fuzzy history search
+  fzf-history-widget() {
+    local selected
+    selected=$(fc -l 1 | sed "s/^[[:space:]]*[0-9]*[[:space:]]*//" | fzf --tac --height=40% --reverse)
+    if [[ -n "$selected" ]]; then
+      LBUFFER="$selected"
+    fi
+    zle reset-prompt
+  }
+  zle -N fzf-history-widget
+  bindkey "^R" fzf-history-widget
+fi
+'
+
+  echo "Add this to your $shell_rc:"
+  echo ""
+  echo "$integration_code"
+  echo ""
+  
+  msg_info "Add automatically? (y/N):"
+  read -r confirm
+  
+  if [[ "$confirm" == "y" ]] || [[ "$confirm" == "Y" ]]; then
+    echo "$integration_code" >> "$shell_rc"
+    msg_success "Added to $shell_rc"
+    msg_info "Restart your shell or run: source $shell_rc"
+  else
+    msg_info "Copy the code above to your shell config"
+  fi
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  local action="${1:-search}"
+  
+  if [[ "$action" == "--help" ]]; then
+    usage
+  fi
+  
+  shift || true
+
+  case "$action" in
+    search)
+      action_search "$@"
+      ;;
+    stats)
+      action_stats "$@"
+      ;;
+    top)
+      action_top "$@"
+      ;;
+    clean)
+      action_clean "$@"
+      ;;
+    setup)
+      action_setup "$@"
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc history --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"
