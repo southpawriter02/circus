@@ -1,0 +1,198 @@
+# ==============================================================================
+#
+# FILE:         configs/privacy-hardening.yaml
+#
+# DESCRIPTION:  Privacy-focused macOS configuration.
+#               Minimizes data collection, tracking, and telemetry while
+#               maximizing control over personal information sharing.
+#
+# USAGE:
+#   fc config apply configs/privacy-hardening.yaml
+#
+# WARNING:
+#   Some settings may affect functionality. Review before applying.
+#
+# ==============================================================================
+
+metadata:
+  name: privacy-hardening
+  description: Privacy-focused macOS settings to minimize tracking and data collection
+  version: "1.0.0"
+
+packages:
+  brew:
+    # Privacy tools
+    - dnscrypt-proxy  # Encrypted DNS
+    - tor             # Anonymous network
+    - lynis           # Security auditing
+    
+  cask:
+    # Privacy browsers
+    - brave-browser   # Privacy-focused browser
+    - tor-browser     # Anonymous browsing
+    - firefox         # Open-source browser
+    
+    # VPN clients
+    - protonvpn       # Privacy-focused VPN
+    - cloudflare-warp # DNS privacy
+    
+    # Messaging
+    - signal          # Encrypted messaging
+
+defaults:
+  # === Safari Privacy ===
+  
+  - domain: com.apple.Safari
+    key: SendDoNotTrackHTTPHeader
+    type: bool
+    value: true
+    description: Send Do Not Track header to websites
+  
+  - domain: com.apple.Safari
+    key: UniversalSearchEnabled
+    type: bool
+    value: false
+    description: Disable unified search (prevents search queries from going to Apple)
+  
+  - domain: com.apple.Safari
+    key: SuppressSearchSuggestions
+    type: bool
+    value: true
+    description: Disable search suggestions (prevents typing from being sent)
+  
+  - domain: com.apple.Safari
+    key: WebKitPreferences.privateClickMeasurementEnabled
+    type: bool
+    value: false
+    description: Disable Privacy-Preserving Ad Measurement
+  
+  - domain: com.apple.Safari
+    key: ShowFavoritesUnderSmartSearchField
+    type: bool
+    value: false
+    description: Hide favorites in search (prevents accidental exposure)
+  
+  # === Siri & Spotlight Privacy ===
+  
+  - domain: com.apple.Siri
+    key: StatusMenuVisible
+    type: bool
+    value: false
+    description: Hide Siri from menu bar
+  
+  - domain: com.apple.lookup.shared
+    key: LookupSuggestionsDisabled
+    type: bool
+    value: true
+    description: Disable lookup suggestions
+  
+  # === Location Privacy ===
+  
+  - domain: com.apple.locationmenu
+    key: ShowSystemServices
+    type: bool
+    value: true
+    description: Show location icon when system services use location
+  
+  # === Analytics & Telemetry ===
+  
+  - domain: com.apple.CrashReporter
+    key: DialogType
+    type: string
+    value: none
+    description: Disable crash reporter dialog
+  
+  - domain: com.apple.appleseed.FeedbackAssistant
+    key: Autogather
+    type: bool
+    value: false
+    description: Disable automatic feedback gathering
+  
+  # === AirDrop Privacy ===
+  
+  - domain: com.apple.sharingd
+    key: DiscoverableMode
+    type: string
+    value: "Off"
+    description: Disable AirDrop discoverability by default
+  
+  # === Keyboard Privacy ===
+  
+  - domain: NSGlobalDomain
+    key: NSAutomaticCapitalizationEnabled
+    type: bool
+    value: false
+    description: Disable auto-capitalization
+  
+  - domain: NSGlobalDomain
+    key: NSAutomaticPeriodSubstitutionEnabled
+    type: bool
+    value: false
+    description: Disable double-space period
+  
+  - domain: NSGlobalDomain
+    key: NSAutomaticQuoteSubstitutionEnabled
+    type: bool
+    value: false
+    description: Disable smart quotes
+  
+  - domain: NSGlobalDomain
+    key: NSAutomaticDashSubstitutionEnabled
+    type: bool
+    value: false
+    description: Disable smart dashes
+  
+  - domain: NSGlobalDomain
+    key: NSAutomaticSpellingCorrectionEnabled
+    type: bool
+    value: false
+    description: Disable auto-correct (prevents typing data from being analyzed)
+  
+  # === Finder Privacy ===
+  
+  - domain: com.apple.finder
+    key: FXEnableExtensionChangeWarning
+    type: bool
+    value: true
+    description: Warn when changing file extensions
+  
+  # === Recent Items ===
+  
+  - domain: NSGlobalDomain
+    key: NSRecentDocumentsLimit
+    type: int
+    value: 0
+    description: Disable recent documents tracking
+  
+  # === Bluetooth ===
+  
+  - domain: com.apple.BluetoothFileExchange
+    key: IncomingFolderPath
+    type: string
+    value: "~/Downloads"
+    description: Set specific folder for Bluetooth transfers
+
+environment:
+  - name: HOMEBREW_NO_ANALYTICS
+    value: "1"
+  
+  - name: DOTNET_CLI_TELEMETRY_OPTOUT
+    value: "1"
+  
+  - name: SAM_CLI_TELEMETRY
+    value: "0"
+  
+  - name: AZURE_CORE_COLLECT_TELEMETRY
+    value: "0"
+  
+  - name: DO_NOT_TRACK
+    value: "1"
+
+aliases:
+  - name: flushdns
+    command: sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder
+    description: Flush DNS cache
+  
+  - name: killsiri
+    command: launchctl disable user/$UID/com.apple.Siri.agent
+    description: Disable Siri agent

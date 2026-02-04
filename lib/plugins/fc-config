@@ -1,0 +1,230 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-config
+#
+# DESCRIPTION:  Manage declarative YAML-based configurations for roles and
+#               system settings. Provides a command-line interface to the
+#               YAML configuration engine.
+#
+# REQUIRES:
+#   - yq (YAML processor)
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+source "$DOTFILES_ROOT/lib/yaml_config.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc config <action> [options]"
+  echo ""
+  msg_info "Manage declarative YAML configurations."
+  echo ""
+  msg_info "Actions:"
+  echo "  apply <file>       Apply a YAML configuration file"
+  echo "  validate <file>    Validate YAML configuration syntax"
+  echo "  show <file>        Display configuration summary"
+  echo "  convert <role>     Show how to convert a role to YAML"
+  echo "  list               List available YAML configs"
+  echo ""
+  msg_info "Options:"
+  echo "  --dry-run          Preview changes without applying"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc config apply roles/personal/config.yaml"
+  echo "  fc config validate roles/personal/config.yaml"
+  echo "  fc config show roles/personal/config.yaml"
+  echo "  fc config list"
+  echo ""
+  exit 0
+}
+
+# --- Actions ----------------------------------------------------------------
+
+do_apply() {
+  local config_file="$1"
+  local dry_run="$2"
+  
+  # Resolve relative paths
+  if [[ ! -f "$config_file" ]]; then
+    config_file="$DOTFILES_ROOT/$config_file"
+  fi
+  
+  if [[ ! -f "$config_file" ]]; then
+    die "Configuration file not found: $1"
+  fi
+  
+  apply_role_config "$config_file" "$dry_run"
+}
+
+do_validate() {
+  local config_file="$1"
+  
+  # Resolve relative paths
+  if [[ ! -f "$config_file" ]]; then
+    config_file="$DOTFILES_ROOT/$config_file"
+  fi
+  
+  if [[ ! -f "$config_file" ]]; then
+    die "Configuration file not found: $1"
+  fi
+  
+  validate_config "$config_file"
+}
+
+do_show() {
+  local config_file="$1"
+  
+  # Resolve relative paths
+  if [[ ! -f "$config_file" ]]; then
+    config_file="$DOTFILES_ROOT/$config_file"
+  fi
+  
+  if [[ ! -f "$config_file" ]]; then
+    die "Configuration file not found: $1"
+  fi
+  
+  if ! check_yq_installed; then
+    return 1
+  fi
+  
+  local name desc
+  name=$(yaml_get "$config_file" ".metadata.name")
+  desc=$(yaml_get "$config_file" ".metadata.description")
+  
+  echo ""
+  echo "📋 Configuration: $name"
+  echo "   $desc"
+  echo ""
+  
+  # Count items in each section
+  local brew_count cask_count mas_count defaults_count env_count alias_count
+  brew_count=$(yaml_array_length "$config_file" ".packages.brew")
+  cask_count=$(yaml_array_length "$config_file" ".packages.cask")
+  mas_count=$(yaml_array_length "$config_file" ".packages.mas")
+  defaults_count=$(yaml_array_length "$config_file" ".defaults")
+  env_count=$(yaml_array_length "$config_file" ".environment")
+  alias_count=$(yaml_array_length "$config_file" ".aliases")
+  
+  echo "📦 Packages:"
+  echo "   • Homebrew formulae: $brew_count"
+  echo "   • Homebrew casks:    $cask_count"
+  echo "   • Mac App Store:     $mas_count"
+  echo ""
+  echo "⚙️  Settings:"
+  echo "   • macOS defaults:    $defaults_count"
+  echo "   • Environment vars:  $env_count"
+  echo "   • Shell aliases:     $alias_count"
+  echo ""
+}
+
+do_list() {
+  msg_info "Available YAML configurations:"
+  echo ""
+  
+  local found=0
+  
+  # Search roles directory
+  for config in "$DOTFILES_ROOT"/roles/*/config.yaml; do
+    if [[ -f "$config" ]]; then
+      local role_name
+      role_name=$(basename "$(dirname "$config")")
+      echo "  📁 roles/$role_name/config.yaml"
+      ((found++))
+    fi
+  done
+  
+  if [[ $found -eq 0 ]]; then
+    msg_info "No YAML configuration files found."
+    msg_info "Create one in roles/<role>/config.yaml"
+  else
+    echo ""
+    msg_info "Found $found configuration(s)."
+  fi
+}
+
+do_convert() {
+  local role_name="$1"
+  
+  if [[ -z "$role_name" ]]; then
+    msg_info "Usage: fc config convert <role>"
+    msg_info "Shows guidance on converting a shell-based role to YAML."
+    return 1
+  fi
+  
+  local role_dir="$DOTFILES_ROOT/roles/$role_name"
+  
+  if [[ ! -d "$role_dir" ]]; then
+    die "Role not found: $role_name"
+  fi
+  
+  msg_info "Conversion Guide for Role: $role_name"
+  echo ""
+  echo "1. Create: roles/$role_name/config.yaml"
+  echo ""
+  echo "2. Add metadata section:"
+  echo "   metadata:"
+  echo "     name: $role_name"
+  echo "     description: Description of this role"
+  echo ""
+  
+  # Check for Brewfile
+  if [[ -f "$role_dir/Brewfile" ]]; then
+    echo "3. Convert Brewfile to packages section:"
+    echo "   Found: roles/$role_name/Brewfile"
+    echo ""
+    echo "   packages:"
+    echo "     brew:"
+    grep "^brew " "$role_dir/Brewfile" 2>/dev/null | head -3 | while read -r line; do
+      local pkg
+      pkg=$(echo "$line" | sed 's/brew "\([^"]*\)".*/\1/')
+      echo "       - $pkg"
+    done
+    echo "       # ... (see full Brewfile for more)"
+    echo ""
+  fi
+  
+  # Check for defaults
+  if [[ -d "$role_dir/defaults" ]]; then
+    echo "4. Convert defaults scripts to YAML:"
+    echo "   Found scripts in: roles/$role_name/defaults/"
+    ls "$role_dir/defaults/"*.sh 2>/dev/null | while read -r script; do
+      echo "     - $(basename "$script")"
+    done
+    echo ""
+    echo "   defaults:"
+    echo "     - domain: com.example.app"
+    echo "       key: SettingKey"
+    echo "       type: bool"
+    echo "       value: true"
+    echo ""
+  fi
+  
+  msg_info "See docs/YAML_CONFIGURATION.md for the full schema."
+}
+
+# --- Main -------------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+  
+  local action="$1"
+  shift
+  
+  case "$action" in
+    apply)    do_apply "$@" ;;
+    validate) do_validate "$1" ;;
+    show)     do_show "$1" ;;
+    list)     do_list ;;
+    convert)  do_convert "$1" ;;
+    *)
+      die "Unknown action '$action'. Run 'fc config --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

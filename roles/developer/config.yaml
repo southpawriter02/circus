@@ -1,0 +1,204 @@
+# ==============================================================================
+#
+# FILE:         roles/developer/config.yaml
+#
+# DESCRIPTION:  Declarative YAML configuration for the 'developer' role.
+#               Full development environment with languages, databases,
+#               containers, and development tools.
+#
+# ==============================================================================
+
+metadata:
+  name: developer
+  description: Full-stack development environment with languages, databases, and tools
+  version: "1.0.0"
+
+packages:
+  # Homebrew formulae (CLI tools)
+  brew:
+    # Languages & Runtimes
+    - nvm           # Node Version Manager
+    - pyenv         # Python version manager
+    - rbenv         # Ruby version manager
+    - rust          # Rust programming language
+    
+    # Databases
+    - postgresql    # PostgreSQL database
+    - mariadb       # MariaDB (MySQL-compatible)
+    - redis         # In-memory data store
+    - sqlite        # SQLite database
+    
+    # Build Tools
+    - ccache        # C compiler cache
+    - pkg-config    # Package config helper
+    - make          # GNU Make
+    - cmake         # CMake build system
+    
+    # Git Tools
+    - pre-commit    # Git hooks manager
+    - git-sizer     # Repository analyzer
+    - git-filter-repo  # History rewriter
+    - git-delta     # Diff with syntax highlighting
+    - gitui         # Interactive git UI
+    - git-crypt     # Repository encryption
+    
+    # Code Quality & Analysis
+    - bats-core     # Testing framework
+    - cloc          # Count lines of code
+    - colordiff     # Color diff output
+    - ctags         # Universal ctags
+    
+    # Terminal
+    - tmux          # Terminal multiplexer
+    
+    # Debugging & Analysis
+    - gdb           # GNU debugger
+    - binwalk       # Binary analysis tool
+    - binutils      # Binary utilities
+    
+    # Container Tools
+    - docker        # Docker CLI
+    - docker-compose # Docker Compose
+    - dive          # Docker image analyzer
+    
+    # HTTP & API Tools
+    - httpie        # HTTP client
+    - grpcurl       # API testing tool
+    
+    # Documentation
+    - glow          # Markdown renderer
+    - pandoc        # Universal document converter
+    
+    # Directory Navigation
+    - zoxide        # Smarter cd command
+    - jump          # Directory jumping
+    - direnv        # Auto-activate environments
+
+  # Homebrew casks (GUI applications)
+  cask:
+    # IDEs & Editors
+    - dotnet-sdk    # .NET/C# SDK
+    - rider         # JetBrains .NET IDE
+    
+    # Terminals
+    - warp          # Modern terminal with AI
+    
+    # Containers & Virtualization
+    - docker        # Container platform
+    - parallels     # Virtual machines
+    
+    # Version Control
+    - github        # GitHub desktop client
+    
+    # Security & Reverse Engineering
+    - ghidra        # Reverse engineering tool
+    
+    # System Tools
+    - imazing-profile-editor  # Profile editor
+    - launchcontrol     # Launch daemon manager
+    - fsmonitor         # File system monitor
+    
+    # Programming Fonts
+    - font-fira-code-nerd-font
+    - font-fira-mono
+    - font-fira-mono-nerd-font
+    - font-jetbrains-mono-nerd-font
+    - font-inconsolata-go-nerd-font
+    - font-hack
+    - font-hasklig
+    - font-monoid
+    - font-cascadia-code
+    - font-source-code-pro
+
+  # Mac App Store apps
+  mas:
+    - name: Xcode
+      id: 497799835
+    - name: Sequel Ace
+      id: 151803600
+    - name: Apple Configurator
+      id: 1037126344
+    - name: Actions
+      id: 1586435171
+
+defaults:
+  # Terminal preferences
+  - domain: com.apple.Terminal
+    key: SecureKeyboardEntry
+    type: bool
+    value: true
+    description: Enable secure keyboard entry for passwords
+  
+  # Xcode preferences
+  - domain: com.apple.dt.Xcode
+    key: ShowBuildOperationDuration
+    type: bool
+    value: true
+    description: Show build duration in Xcode
+  
+  # Finder - Show all file extensions
+  - domain: NSGlobalDomain
+    key: AppleShowAllExtensions
+    type: bool
+    value: true
+    description: Show all file extensions
+  
+  # Disable .DS_Store on network volumes
+  - domain: com.apple.desktopservices
+    key: DSDontWriteNetworkStores
+    type: bool
+    value: true
+    description: Prevent .DS_Store on network volumes
+  
+  # Disable .DS_Store on USB volumes
+  - domain: com.apple.desktopservices
+    key: DSDontWriteUSBStores
+    type: bool
+    value: true
+    description: Prevent .DS_Store on USB volumes
+
+environment:
+  - name: EDITOR
+    value: code --wait
+  
+  - name: GIT_EDITOR
+    value: code --wait
+  
+  - name: HOMEBREW_NO_ANALYTICS
+    value: "1"
+  
+  - name: DOCKER_CLI_HINTS
+    value: "false"
+
+aliases:
+  - name: g
+    command: git
+    description: Git shortcut
+  
+  - name: gs
+    command: git status -sb
+    description: Git status short
+  
+  - name: gd
+    command: git diff
+    description: Git diff
+  
+  - name: gc
+    command: git commit
+    description: Git commit
+  
+  - name: gp
+    command: git push
+    description: Git push
+  
+  - name: gl
+    command: git log --oneline -20
+    description: Git log (20 lines)
+  
+  - name: dc
+    command: docker-compose
+    description: Docker Compose shortcut
+  
+  - name: dps
+    command: docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+    description: Docker process status

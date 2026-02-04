@@ -37,6 +37,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `stealth-on/off` - Control stealth mode
   - `block-all/unblock-all` - Global connection blocking
 
+- **New `fc focus`** - Focus mode for distraction-free work (Feature #47):
+  - `start [duration]` - Start timed focus session (e.g., 30m, 2h)
+  - `stop` - End focus session early
+  - `status` - Show remaining time
+  - Blocks distracting websites via `/etc/hosts`
+  - Quits specified applications (configurable)
+  - Auto-restores when session ends
+
+- **New `fc config`** - Declarative YAML configuration system (Feature #17):
+  - `apply <file>` - Apply a YAML configuration file
+  - `validate <file>` - Validate YAML syntax
+  - `show <file>` - Display configuration summary
+  - `convert <role>` - Guide for converting shell roles to YAML
+  - New engine: `lib/yaml_config.sh`
+  - Proof-of-concept: `roles/personal/config.yaml`
+  - Guide: `docs/YAML_CONFIGURATION.md`
+
 ## [1.5.2] - 2026-01-05
 
 

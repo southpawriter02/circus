@@ -1,0 +1,160 @@
+# ==============================================================================
+#
+# FILE:         roles/work/config.yaml
+#
+# DESCRIPTION:  Declarative YAML configuration for the 'work' role.
+#               Professional environment with DevOps, cloud, and collaboration tools.
+#
+# ==============================================================================
+
+metadata:
+  name: work
+  description: Professional DevOps and cloud engineering environment
+  version: "1.0.0"
+
+packages:
+  # Homebrew formulae (CLI tools)
+  brew:
+    # Infrastructure & DevOps
+    - terraform       # Infrastructure as code
+    - ansible         # Configuration management
+    - kubernetes-cli  # Kubernetes CLI
+    - helm            # Kubernetes package manager
+    - awscli          # AWS CLI
+    
+    # Networking & Security
+    - openssh         # SSH connection manager
+    - openssl         # SSL/TLS toolkit
+    - nmap            # Network scanner
+    - certbot         # Certificate management
+    
+    # Monitoring & Logs
+    - logstash        # Log aggregation
+    - htop            # System monitoring
+    - iftop           # Network interface monitor
+    
+    # Data & APIs
+    - httpie          # HTTP testing tool
+    - oha             # API load testing
+    - dasel           # YAML/JSON/CSV processor
+    
+    # Documentation
+    - grip            # Markdown preview
+    - slides          # Terminal presentations
+
+  # Homebrew casks (GUI applications)
+  cask:
+    # Communication
+    - zoom            # Video conferencing
+    
+    # Productivity
+    - notion          # Note-taking and documentation
+    
+    # Development
+    - docker          # Container platform
+    - github          # GitHub desktop client
+    - warp            # Modern terminal with AI
+    
+    # Virtualization
+    - parallels       # Virtual machines
+    
+    # Professional Fonts
+    - font-ibm-plex   # IBM corporate font
+    - font-maven-pro  # Professional headings
+    - font-open-sans  # Readable body text
+    - font-roboto     # Clean UI font
+    - font-lato       # Elegant presentations
+
+  # Mac App Store apps
+  mas:
+    - name: Slack
+      id: 803453959
+    - name: Pages
+      id: 409201541
+    - name: Apple Configurator
+      id: 1037126344
+
+defaults:
+  # Disable automatic termination of inactive apps
+  - domain: NSGlobalDomain
+    key: NSDisableAutomaticTermination
+    type: bool
+    value: true
+    description: Keep background apps running
+  
+  # Expand save panel by default
+  - domain: NSGlobalDomain
+    key: NSNavPanelExpandedStateForSaveMode
+    type: bool
+    value: true
+    description: Expand save dialog by default
+  
+  - domain: NSGlobalDomain
+    key: NSNavPanelExpandedStateForSaveMode2
+    type: bool
+    value: true
+    description: Expand save dialog by default (secondary)
+  
+  # Expand print panel by default
+  - domain: NSGlobalDomain
+    key: PMPrintingExpandedStateForPrint
+    type: bool
+    value: true
+    description: Expand print dialog by default
+  
+  # Automatically quit printer app when done
+  - domain: com.apple.print.PrintingPrefs
+    key: "Quit When Finished"
+    type: bool
+    value: true
+    description: Auto-quit printer app
+  
+  # Resume apps after reboot
+  - domain: com.apple.systempreferences
+    key: NSQuitAlwaysKeepsWindows
+    type: bool
+    value: true
+    description: Restore windows on app relaunch
+
+environment:
+  - name: AWS_PAGER
+    value: ""
+  
+  - name: KUBE_EDITOR
+    value: code --wait
+  
+  - name: TERRAFORM_LOG
+    value: ""
+
+aliases:
+  - name: k
+    command: kubectl
+    description: Kubernetes shortcut
+  
+  - name: kns
+    command: kubectl config set-context --current --namespace
+    description: Set Kubernetes namespace
+  
+  - name: kgp
+    command: kubectl get pods
+    description: Get Kubernetes pods
+  
+  - name: tf
+    command: terraform
+    description: Terraform shortcut
+  
+  - name: tfi
+    command: terraform init
+    description: Terraform init
+  
+  - name: tfp
+    command: terraform plan
+    description: Terraform plan
+  
+  - name: tfa
+    command: terraform apply
+    description: Terraform apply
+  
+  - name: ans
+    command: ansible-playbook
+    description: Ansible playbook shortcut

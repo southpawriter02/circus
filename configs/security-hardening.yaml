@@ -1,0 +1,249 @@
+# ==============================================================================
+#
+# FILE:         configs/security-hardening.yaml
+#
+# DESCRIPTION:  Security-focused macOS configuration.
+#               Strengthens system security, enables protective features,
+#               and hardens the attack surface.
+#
+# USAGE:
+#   fc config apply configs/security-hardening.yaml
+#
+# WARNING:
+#   These settings increase security but may reduce convenience.
+#   Some require admin privileges or system restart.
+#
+# ==============================================================================
+
+metadata:
+  name: security-hardening
+  description: Security hardening settings to protect your Mac from threats
+  version: "1.0.0"
+
+packages:
+  brew:
+    # Security tools
+    - gnupg           # GPG encryption
+    - pinentry-mac    # GPG PIN entry
+    - lynis           # Security auditing
+    - clamav          # Antivirus
+    - openssl         # SSL/TLS toolkit
+    - pwgen           # Password generator
+    - age             # Modern encryption
+    - sops            # Secrets management
+    - 1password-cli   # Password manager CLI
+    
+  cask:
+    # Security apps
+    - 1password       # Password manager
+    - little-snitch   # Network monitor
+    - micro-snitch    # Microphone/camera monitor
+    - blockblock      # Persistence monitor
+    - knockknock      # Startup item scanner
+    - lulu            # Open-source firewall
+    
+    # Encryption
+    - veracrypt       # Disk encryption
+    - cryptomator     # Cloud encryption
+    
+    # VPN
+    - protonvpn       # Secure VPN
+
+defaults:
+  # === Firewall ===
+  
+  - domain: /Library/Preferences/com.apple.alf
+    key: globalstate
+    type: int
+    value: 1
+    description: Enable firewall
+  
+  - domain: /Library/Preferences/com.apple.alf
+    key: stealthenabled
+    type: int
+    value: 1
+    description: Enable stealth mode (don't respond to pings)
+  
+  # === Screen Lock ===
+  
+  - domain: com.apple.screensaver
+    key: askForPassword
+    type: int
+    value: 1
+    description: Require password after sleep/screensaver
+  
+  - domain: com.apple.screensaver
+    key: askForPasswordDelay
+    type: int
+    value: 0
+    description: Require password immediately (0 seconds)
+  
+  # === Login Window ===
+  
+  - domain: com.apple.loginwindow
+    key: GuestEnabled
+    type: bool
+    value: false
+    description: Disable guest account
+  
+  - domain: com.apple.loginwindow
+    key: DisableConsoleAccess
+    type: bool
+    value: true
+    description: Disable console login
+  
+  - domain: com.apple.loginwindow
+    key: RetriesUntilHint
+    type: int
+    value: 0
+    description: Never show password hints
+  
+  - domain: com.apple.loginwindow
+    key: SHOWFULLNAME
+    type: bool
+    value: true
+    description: Show name and password fields (not user list)
+  
+  # === Remote Access ===
+  
+  - domain: com.apple.RemoteManagement
+    key: ARD_AllLocalUsers
+    type: bool
+    value: false
+    description: Disable Remote Management for all users
+  
+  # === Auto-Login ===
+  
+  - domain: com.apple.loginwindow
+    key: autoLoginUser
+    type: string
+    value: ""
+    description: Disable automatic login
+  
+  # === Terminal Security ===
+  
+  - domain: com.apple.Terminal
+    key: SecureKeyboardEntry
+    type: bool
+    value: true
+    description: Enable secure keyboard entry (prevents keyloggers)
+  
+  # === Finder Security ===
+  
+  - domain: com.apple.finder
+    key: AppleShowAllExtensions
+    type: bool
+    value: true
+    description: Show all file extensions (prevents extension spoofing)
+  
+  - domain: com.apple.LaunchServices
+    key: LSQuarantine
+    type: bool
+    value: true
+    description: Keep quarantine attribute on downloads
+  
+  # === Safari Security ===
+  
+  - domain: com.apple.Safari
+    key: AutoOpenSafeDownloads
+    type: bool
+    value: false
+    description: Don't auto-open "safe" downloads
+  
+  - domain: com.apple.Safari
+    key: com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanAccessClipboard
+    type: bool
+    value: false
+    description: Disable JavaScript clipboard access
+  
+  # === Bluetooth Security ===
+  
+  - domain: com.apple.Bluetooth
+    key: PrefKeyServicesEnabled
+    type: bool
+    value: false
+    description: Disable Bluetooth services when not needed
+  
+  # === Network Security ===
+  
+  - domain: com.apple.NetworkBrowser
+    key: BrowseAllInterfaces
+    type: bool
+    value: false
+    description: Limit network browsing to specific interfaces
+  
+  # === Disk Images ===
+  
+  - domain: com.apple.frameworks.diskimages
+    key: skip-verify
+    type: bool
+    value: false
+    description: Always verify disk images (don't skip)
+  
+  - domain: com.apple.frameworks.diskimages
+    key: skip-verify-locked
+    type: bool
+    value: false
+    description: Always verify locked disk images
+  
+  - domain: com.apple.frameworks.diskimages
+    key: skip-verify-remote
+    type: bool
+    value: false
+    description: Always verify remote disk images
+  
+  # === Time Machine ===
+  
+  - domain: com.apple.TimeMachine
+    key: DoNotOfferNewDisksForBackup
+    type: bool
+    value: true
+    description: Don't prompt to use new disks for backup
+  
+  # === Power & Sleep Security ===
+  
+  - domain: com.apple.PowerManagement
+    key: DestroyFVKeyOnStandby
+    type: bool
+    value: true
+    description: Destroy FileVault key on standby (hibernation security)
+
+environment:
+  - name: HISTCONTROL
+    value: ignoreboth
+  
+  - name: HISTFILESIZE
+    value: "0"
+
+aliases:
+  - name: secaudit
+    command: sudo lynis audit system
+    description: Run security audit
+  
+  - name: fwstatus
+    command: sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+    description: Check firewall status
+  
+  - name: fwenable
+    command: sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+    description: Enable firewall
+  
+  - name: fwstealth
+    command: sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+    description: Enable stealth mode
+  
+  - name: checkgatekeeper
+    command: spctl --status
+    description: Check Gatekeeper status
+  
+  - name: checksip
+    command: csrutil status
+    description: Check System Integrity Protection status
+  
+  - name: checkfv
+    command: fdesetup status
+    description: Check FileVault status
+  
+  - name: lockscreen
+    command: pmset displaysleepnow
+    description: Lock screen immediately

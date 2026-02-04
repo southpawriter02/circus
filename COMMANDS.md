@@ -2084,3 +2084,154 @@ fc scaffold show python-cli
 fc scaffold create-template my-template
 ```
 
+---
+
+## `fc focus`
+
+Focus mode for distraction-free work. Blocks distracting websites via `/etc/hosts` and quits specified applications during focus sessions.
+
+**Usage:**
+
+```bash
+fc focus <action> [options]
+```
+
+**Actions:**
+
+| Action | Description |
+|--------|-------------|
+| `start [duration]` | Start a focus session (e.g., 30m, 2h, 90) |
+| `stop` | Stop the current focus session |
+| `status` | Show current focus session status |
+| `setup` | Create configuration file |
+| `list` | List blocked sites and apps from config |
+
+**Duration Formats:**
+- `30m` - 30 minutes
+- `2h` - 2 hours  
+- `90` - 90 minutes (number only = minutes)
+
+**Options:**
+- `--no-apps` - Don't quit applications
+- `--no-sites` - Don't block websites
+
+**Examples:**
+
+```bash
+# Start 30-minute focus session
+fc focus start 30m
+
+# Start 2-hour session without quitting apps
+fc focus start 2h --no-apps
+
+# Check status
+fc focus status
+
+# End session early
+fc focus stop
+
+# Create/edit configuration
+fc focus setup
+fc focus list
+```
+
+**Configuration:**
+
+Edit `~/.config/circus/focus.conf`:
+
+```ini
+[sites]
+facebook.com
+www.facebook.com
+twitter.com
+reddit.com
+
+[apps]
+Slack
+Discord
+Messages
+```
+
+**Notes:**
+- Requires `sudo` for modifying `/etc/hosts`
+- Auto-restores hosts file when session ends
+- Background timer handles cleanup if terminal closes
+- macOS notification when session ends
+
+---
+
+## `fc config`
+
+Declarative YAML configuration management for roles and system settings.
+
+**Usage:**
+
+```bash
+fc config <action> [options]
+```
+
+**Actions:**
+
+| Action | Description |
+|--------|-------------|
+| `apply <file>` | Apply a YAML configuration file |
+| `validate <file>` | Validate YAML syntax and structure |
+| `show <file>` | Display configuration summary |
+| `list` | List available YAML configs |
+| `convert <role>` | Show guide for converting a role to YAML |
+
+**Options:**
+- `--dry-run` - Preview changes without applying
+
+**Examples:**
+
+```bash
+# List available configurations
+fc config list
+
+# Validate before applying
+fc config validate roles/personal/config.yaml
+
+# Preview changes
+fc config apply roles/personal/config.yaml --dry-run
+
+# Apply configuration
+fc config apply roles/personal/config.yaml
+
+# Get conversion guidance
+fc config convert developer
+```
+
+**Configuration Schema:**
+
+```yaml
+metadata:
+  name: my-config
+  description: My custom configuration
+
+packages:
+  brew: [git, wget, htop]
+  cask: [firefox, slack]
+  mas:
+    - name: Xcode
+      id: 497799835
+
+defaults:
+  - domain: com.apple.finder
+    key: AppleShowAllFiles
+    type: bool
+    value: true
+
+environment:
+  - name: EDITOR
+    value: vim
+
+aliases:
+  - name: ll
+    command: ls -lah
+```
+
+**Notes:**
+- Requires `yq` — install with `brew install yq`
+- See [YAML Configuration Guide](docs/YAML_CONFIGURATION.md) for full schema
+- Shell-based configs continue to work alongside YAML

@@ -1,0 +1,181 @@
+# ==============================================================================
+#
+# FILE:         roles/personal/config.yaml
+#
+# DESCRIPTION:  Declarative YAML configuration for the 'personal' role.
+#               This is a proof-of-concept demonstrating the YAML configuration
+#               format. It can be applied using:
+#
+#               source "$DOTFILES_ROOT/lib/yaml_config.sh"
+#               apply_role_config "$DOTFILES_ROOT/roles/personal/config.yaml"
+#
+# ==============================================================================
+
+# --- Metadata ---------------------------------------------------------------
+# Describes this configuration for logging and documentation purposes.
+
+metadata:
+  name: personal
+  description: Personal productivity and entertainment configuration
+  author: Ryan
+  version: "1.0.0"
+
+# --- Packages ---------------------------------------------------------------
+# Defines software to install via Homebrew and Mac App Store.
+
+packages:
+  # Homebrew formulae (CLI tools)
+  brew:
+    # Media & Graphics
+    - imagemagick
+    - optipng
+    - pngcrush
+    - webp
+    - chafa
+    - catimg
+    
+    # File Management
+    - ranger
+    - lf
+    - ncdu
+    - duf
+    
+    # System Monitoring
+    - htop
+    - lnav
+    - pstree
+    
+    # Security & Privacy
+    - pwgen
+    - gnupg
+    - pinentry-mac
+    - lynis
+    - clamav
+    
+    # Networking
+    - mtr
+    - iftop
+    - nmap
+    
+    # Backup & Sync
+    - rsync
+    - rclone
+
+  # Homebrew casks (GUI applications)
+  cask:
+    # Entertainment
+    - spotify
+    - vlc
+    - discord
+    - battle-net
+    
+    # Privacy
+    - brave-browser
+    - cloudflare-warp
+    - protonvpn
+    - proton-drive
+    
+    # Productivity
+    - rectangle
+    - notion
+    - setapp
+    
+    # Fonts
+    - font-roboto
+    - font-roboto-mono
+    - font-open-sans
+    - font-lato
+    - font-montserrat
+    - font-ubuntu
+    - font-cantarell
+    - font-oxygen
+    - font-oxygen-mono
+
+  # Mac App Store apps (requires mas-cli)
+  mas:
+    - name: Cardhop
+      id: 1290358394
+    - name: Hyperduck
+      id: 2145267525
+    - name: Pages
+      id: 409201541
+
+# --- macOS Defaults ---------------------------------------------------------
+# System preferences to apply using the `defaults` command.
+
+defaults:
+  # AirDrop settings
+  - domain: com.apple.sharingd
+    key: DiscoverableMode
+    type: string
+    value: "Contacts Only"
+    description: AirDrop visibility - Contacts Only for privacy
+
+  - domain: com.apple.NetworkBrowser
+    key: BrowseAllInterfaces
+    type: bool
+    value: true
+    description: Enable AirDrop over Ethernet for older Macs
+
+  # Finder preferences
+  - domain: com.apple.finder
+    key: AppleShowAllFiles
+    type: bool
+    value: false
+    description: Hide hidden files by default for cleaner view
+
+  - domain: com.apple.finder
+    key: ShowPathbar
+    type: bool
+    value: true
+    description: Show path bar at bottom of Finder windows
+
+  # Dock settings
+  - domain: com.apple.dock
+    key: autohide
+    type: bool
+    value: true
+    description: Auto-hide the Dock
+
+  - domain: com.apple.dock
+    key: autohide-delay
+    type: float
+    value: 0.1
+    description: Reduce Dock auto-hide delay
+
+# --- Environment Variables --------------------------------------------------
+# Environment variables to set in the shell.
+
+environment:
+  - name: EDITOR
+    value: vim
+
+  - name: VISUAL
+    value: code
+
+  - name: HOMEBREW_NO_ANALYTICS
+    value: "1"
+
+# --- Aliases ----------------------------------------------------------------
+# Shell aliases to create.
+
+aliases:
+  - name: ll
+    command: ls -lah
+    description: Long list with hidden files
+
+  - name: ..
+    command: cd ..
+    description: Go up one directory
+
+  - name: ...
+    command: cd ../..
+    description: Go up two directories
+
+  - name: update
+    command: fc update --all
+    description: Update everything
+
+  - name: cleanup
+    command: fc clean --all --yes
+    description: Clean up system caches and logs

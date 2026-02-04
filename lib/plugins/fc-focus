@@ -1,0 +1,521 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-focus
+#
+# DESCRIPTION:  Focus mode - block distracting websites and quit apps to help
+#               concentrate. Modifies /etc/hosts to block sites and can quit
+#               specified applications during focus sessions.
+#
+# REQUIRES:
+#   - macOS or Linux
+#   - sudo privileges for hosts file modification
+#
+# CONFIGURATION:
+#   ~/.config/circus/focus.conf - Define blocked sites and apps
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ----------------------------------------------------------
+readonly FOCUS_CONFIG="$HOME/.config/circus/focus.conf"
+readonly HOSTS_FILE="/etc/hosts"
+readonly HOSTS_BACKUP="/tmp/hosts.focus.backup.$$"
+readonly FOCUS_STATE_FILE="$HOME/.config/circus/.focus_active"
+
+# Focus markers in hosts file
+readonly FOCUS_MARKER_START="# === CIRCUS FOCUS MODE START ==="
+readonly FOCUS_MARKER_END="# === CIRCUS FOCUS MODE END ==="
+
+# Default blocked sites (used if no config)
+DEFAULT_BLOCKED_SITES=(
+  "facebook.com"
+  "www.facebook.com"
+  "twitter.com"
+  "www.twitter.com"
+  "x.com"
+  "www.x.com"
+  "instagram.com"
+  "www.instagram.com"
+  "reddit.com"
+  "www.reddit.com"
+  "youtube.com"
+  "www.youtube.com"
+  "tiktok.com"
+  "www.tiktok.com"
+  "news.ycombinator.com"
+)
+
+# Default apps to quit
+DEFAULT_QUIT_APPS=(
+  "Slack"
+  "Discord"
+  "Messages"
+  "Mail"
+)
+
+# Loaded from config
+BLOCKED_SITES=()
+QUIT_APPS=()
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc focus <action> [options]"
+  echo ""
+  msg_info "Create a distraction-free work environment by blocking websites"
+  msg_info "and quitting distracting applications."
+  echo ""
+  msg_info "Actions:"
+  echo "  start [duration]   Start a focus session (e.g., 30m, 2h, 90)"
+  echo "  stop               Stop the current focus session"
+  echo "  status             Show current focus session status"
+  echo "  setup              Create configuration file"
+  echo "  list               List blocked sites and apps from config"
+  echo ""
+  msg_info "Duration formats:"
+  echo "  30m    - 30 minutes"
+  echo "  2h     - 2 hours"
+  echo "  90     - 90 minutes (number only = minutes)"
+  echo ""
+  msg_info "Options:"
+  echo "  --no-apps          Don't quit applications"
+  echo "  --no-sites         Don't block websites"
+  echo ""
+  msg_info "Configuration: $FOCUS_CONFIG"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc focus start 30m      # Focus for 30 minutes"
+  echo "  fc focus start 2h       # Focus for 2 hours"
+  echo "  fc focus stop           # End focus session early"
+  echo "  fc focus status         # Check if focus is active"
+  echo ""
+  exit 0
+}
+
+# --- Configuration Loading --------------------------------------------------
+
+load_config() {
+  # Start with defaults
+  BLOCKED_SITES=("${DEFAULT_BLOCKED_SITES[@]}")
+  QUIT_APPS=("${DEFAULT_QUIT_APPS[@]}")
+  
+  if [[ -f "$FOCUS_CONFIG" ]]; then
+    local in_sites=false
+    local in_apps=false
+    local custom_sites=()
+    local custom_apps=()
+    
+    while IFS= read -r line || [[ -n "$line" ]]; do
+      # Skip comments and empty lines
+      [[ "$line" =~ ^[[:space:]]*# ]] && continue
+      [[ -z "${line// }" ]] && continue
+      
+      # Trim whitespace
+      line="${line#"${line%%[![:space:]]*}"}"
+      line="${line%"${line##*[![:space:]]}"}"
+      
+      # Check for section headers
+      if [[ "$line" == "[sites]" ]]; then
+        in_sites=true
+        in_apps=false
+        continue
+      elif [[ "$line" == "[apps]" ]]; then
+        in_sites=false
+        in_apps=true
+        continue
+      fi
+      
+      # Add to appropriate array
+      if [[ "$in_sites" == true ]]; then
+        custom_sites+=("$line")
+      elif [[ "$in_apps" == true ]]; then
+        custom_apps+=("$line")
+      fi
+    done < "$FOCUS_CONFIG"
+    
+    # Use custom values if found
+    if [[ ${#custom_sites[@]} -gt 0 ]]; then
+      BLOCKED_SITES=("${custom_sites[@]}")
+    fi
+    if [[ ${#custom_apps[@]} -gt 0 ]]; then
+      QUIT_APPS=("${custom_apps[@]}")
+    fi
+  fi
+}
+
+# --- Duration Parsing -------------------------------------------------------
+
+parse_duration() {
+  local input="$1"
+  local minutes=0
+  
+  if [[ "$input" =~ ^([0-9]+)h$ ]]; then
+    minutes=$((${BASH_REMATCH[1]} * 60))
+  elif [[ "$input" =~ ^([0-9]+)m$ ]]; then
+    minutes=${BASH_REMATCH[1]}
+  elif [[ "$input" =~ ^([0-9]+)$ ]]; then
+    minutes=${BASH_REMATCH[1]}
+  else
+    die "Invalid duration format: $input. Use formats like '30m', '2h', or '90'."
+  fi
+  
+  if [[ $minutes -lt 1 ]]; then
+    die "Duration must be at least 1 minute."
+  fi
+  
+  if [[ $minutes -gt 480 ]]; then
+    msg_warning "Duration is over 8 hours. Are you sure?"
+  fi
+  
+  echo "$minutes"
+}
+
+# --- Focus Session Management -----------------------------------------------
+
+is_focus_active() {
+  [[ -f "$FOCUS_STATE_FILE" ]]
+}
+
+get_focus_end_time() {
+  if [[ -f "$FOCUS_STATE_FILE" ]]; then
+    cat "$FOCUS_STATE_FILE"
+  else
+    echo "0"
+  fi
+}
+
+# --- Hosts File Management --------------------------------------------------
+
+backup_hosts() {
+  if ! sudo cp "$HOSTS_FILE" "$HOSTS_BACKUP"; then
+    die "Failed to backup hosts file."
+  fi
+}
+
+restore_hosts() {
+  if [[ -f "$HOSTS_BACKUP" ]]; then
+    if sudo cp "$HOSTS_BACKUP" "$HOSTS_FILE"; then
+      rm -f "$HOSTS_BACKUP"
+      return 0
+    fi
+  fi
+  
+  # Fallback: remove focus block from hosts
+  remove_focus_block
+}
+
+add_focus_block() {
+  local temp_hosts="/tmp/hosts.focus.new.$$"
+  
+  # Create new hosts content
+  {
+    # Copy existing hosts without any previous focus blocks
+    grep -v "$FOCUS_MARKER_START" "$HOSTS_FILE" 2>/dev/null | \
+      grep -v "$FOCUS_MARKER_END" | \
+      grep -v "# focus-mode-block"
+    
+    echo ""
+    echo "$FOCUS_MARKER_START"
+    for site in "${BLOCKED_SITES[@]}"; do
+      echo "127.0.0.1 $site # focus-mode-block"
+    done
+    echo "$FOCUS_MARKER_END"
+  } > "$temp_hosts"
+  
+  if sudo cp "$temp_hosts" "$HOSTS_FILE"; then
+    rm -f "$temp_hosts"
+    # Flush DNS cache
+    flush_dns_cache
+    return 0
+  else
+    rm -f "$temp_hosts"
+    return 1
+  fi
+}
+
+remove_focus_block() {
+  local temp_hosts="/tmp/hosts.focus.clean.$$"
+  
+  # Remove focus block lines
+  grep -v "$FOCUS_MARKER_START" "$HOSTS_FILE" 2>/dev/null | \
+    grep -v "$FOCUS_MARKER_END" | \
+    grep -v "# focus-mode-block" > "$temp_hosts"
+  
+  if sudo cp "$temp_hosts" "$HOSTS_FILE"; then
+    rm -f "$temp_hosts"
+    flush_dns_cache
+    return 0
+  else
+    rm -f "$temp_hosts"
+    return 1
+  fi
+}
+
+flush_dns_cache() {
+  if is_macos; then
+    sudo dscacheutil -flushcache 2>/dev/null
+    sudo killall -HUP mDNSResponder 2>/dev/null
+  elif command -v systemd-resolve &>/dev/null; then
+    sudo systemd-resolve --flush-caches 2>/dev/null
+  fi
+}
+
+# --- Application Management -------------------------------------------------
+
+quit_apps() {
+  if ! is_macos; then
+    msg_warning "Application quitting only supported on macOS."
+    return
+  fi
+  
+  for app in "${QUIT_APPS[@]}"; do
+    if pgrep -xq "$app" 2>/dev/null; then
+      osascript -e "tell application \"$app\" to quit" 2>/dev/null || true
+      msg_info "Quit: $app"
+    fi
+  done
+}
+
+# --- Actions ----------------------------------------------------------------
+
+do_setup() {
+  local config_dir
+  config_dir=$(dirname "$FOCUS_CONFIG")
+  
+  if [[ -f "$FOCUS_CONFIG" ]]; then
+    msg_info "Configuration file already exists: $FOCUS_CONFIG"
+    return 0
+  fi
+  
+  mkdir -p "$config_dir"
+  
+  cat > "$FOCUS_CONFIG" << 'EOF'
+# Focus Mode Configuration
+# =========================
+# Define websites to block and applications to quit during focus sessions.
+#
+# Sections:
+#   [sites] - Websites to block (one per line, include www variants)
+#   [apps]  - Applications to quit (macOS app names)
+
+[sites]
+facebook.com
+www.facebook.com
+twitter.com
+www.twitter.com
+x.com
+www.x.com
+instagram.com
+www.instagram.com
+reddit.com
+www.reddit.com
+youtube.com
+www.youtube.com
+tiktok.com
+www.tiktok.com
+news.ycombinator.com
+
+[apps]
+Slack
+Discord
+Messages
+Mail
+Twitter
+EOF
+
+  chmod 600 "$FOCUS_CONFIG"
+  msg_success "Configuration file created: $FOCUS_CONFIG"
+  msg_info "Edit the file to customize blocked sites and apps."
+}
+
+do_list() {
+  load_config
+  
+  msg_info "Blocked Websites (${#BLOCKED_SITES[@]} sites):"
+  echo ""
+  for site in "${BLOCKED_SITES[@]}"; do
+    echo "  🚫 $site"
+  done
+  
+  echo ""
+  msg_info "Applications to Quit (${#QUIT_APPS[@]} apps):"
+  echo ""
+  for app in "${QUIT_APPS[@]}"; do
+    echo "  📱 $app"
+  done
+  echo ""
+}
+
+do_status() {
+  if ! is_focus_active; then
+    msg_info "Focus mode is not active."
+    return 0
+  fi
+  
+  local end_time
+  end_time=$(get_focus_end_time)
+  local current_time
+  current_time=$(date +%s)
+  
+  if [[ $end_time -gt $current_time ]]; then
+    local remaining=$((end_time - current_time))
+    local remaining_min=$((remaining / 60))
+    local remaining_sec=$((remaining % 60))
+    
+    echo ""
+    echo "  🎯 FOCUS MODE ACTIVE"
+    echo ""
+    echo "  Time remaining: ${remaining_min}m ${remaining_sec}s"
+    echo "  End time: $(date -r "$end_time" '+%H:%M:%S')"
+    echo ""
+  else
+    msg_info "Focus session has expired. Cleaning up..."
+    do_stop
+  fi
+}
+
+do_start() {
+  local duration_input="${1:-30m}"
+  local block_sites=true
+  local quit_apps_flag=true
+  
+  # Parse additional flags
+  shift || true
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --no-sites) block_sites=false ;;
+      --no-apps) quit_apps_flag=false ;;
+      *) ;;
+    esac
+    shift
+  done
+  
+  # Check if already active
+  if is_focus_active; then
+    msg_error "Focus mode is already active."
+    do_status
+    msg_info "Run 'fc focus stop' to end the current session first."
+    return 1
+  fi
+  
+  # Parse duration
+  local duration_min
+  duration_min=$(parse_duration "$duration_input")
+  local duration_sec=$((duration_min * 60))
+  
+  load_config
+  
+  msg_info "Starting focus session for ${duration_min} minutes..."
+  echo ""
+  
+  # Create state directory
+  mkdir -p "$(dirname "$FOCUS_STATE_FILE")"
+  
+  # Calculate end time
+  local end_time
+  end_time=$(($(date +%s) + duration_sec))
+  echo "$end_time" > "$FOCUS_STATE_FILE"
+  
+  # Block websites
+  if [[ "$block_sites" == true ]]; then
+    msg_info "Blocking ${#BLOCKED_SITES[@]} distracting websites..."
+    backup_hosts
+    if add_focus_block; then
+      echo "  ✅ Websites blocked"
+    else
+      msg_warning "Failed to block websites (continuing anyway)"
+    fi
+  fi
+  
+  # Quit apps
+  if [[ "$quit_apps_flag" == true ]] && is_macos; then
+    msg_info "Quitting distracting applications..."
+    quit_apps
+  fi
+  
+  echo ""
+  msg_success "🎯 Focus mode activated!"
+  echo ""
+  echo "  Duration: ${duration_min} minutes"
+  echo "  End time: $(date -r "$end_time" '+%H:%M:%S')"
+  echo ""
+  msg_info "Stay focused! Run 'fc focus stop' to end early."
+  
+  # Set up background timer to auto-stop (optional)
+  # Note: This runs in background and will clean up when time expires
+  (
+    sleep "$duration_sec"
+    if [[ -f "$FOCUS_STATE_FILE" ]]; then
+      # Only clean up if we're still the active session
+      local stored_end
+      stored_end=$(cat "$FOCUS_STATE_FILE" 2>/dev/null || echo "0")
+      if [[ "$stored_end" == "$end_time" ]]; then
+        remove_focus_block 2>/dev/null
+        rm -f "$FOCUS_STATE_FILE"
+        # Notify user if possible
+        if is_macos && command -v osascript &>/dev/null; then
+          osascript -e 'display notification "Your focus session has ended!" with title "Focus Mode"' 2>/dev/null || true
+        fi
+      fi
+    fi
+  ) &>/dev/null &
+  disown
+}
+
+do_stop() {
+  if ! is_focus_active; then
+    msg_info "Focus mode is not currently active."
+    return 0
+  fi
+  
+  msg_info "Stopping focus session..."
+  
+  # Remove website blocks
+  if remove_focus_block; then
+    echo "  ✅ Website blocks removed"
+  else
+    msg_warning "Failed to remove website blocks"
+  fi
+  
+  # Remove state file
+  rm -f "$FOCUS_STATE_FILE"
+  
+  echo ""
+  msg_success "Focus mode deactivated."
+  msg_info "Websites are now accessible again."
+}
+
+# Cleanup trap
+cleanup_on_exit() {
+  # This runs if the script is interrupted
+  if [[ -f "$HOSTS_BACKUP" ]]; then
+    restore_hosts
+  fi
+}
+trap cleanup_on_exit EXIT
+
+# --- Main -------------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+  
+  local action="$1"
+  shift
+  
+  case "$action" in
+    start)      do_start "$@" ;;
+    stop)       do_stop ;;
+    status)     do_status ;;
+    setup)      do_setup ;;
+    list)       do_list ;;
+    *)
+      die "Unknown action '$action'. Run 'fc focus --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"
