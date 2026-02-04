@@ -36,6 +36,7 @@ This directory contains **51 feature proposals** for the Dotfiles Flying Circus 
 | [35](35-enhanced-fc-info.md) | Enhanced `fc info` | ✅ | `fc info` |
 | [41](41-system-maintenance-command.md) | System Maintenance | ✅ | `fc maintenance` |
 | [42](42-self-update-mechanism.md) | Self-Update Mechanism | ✅ | `fc self-update` |
+| — | **System Snapshotting** | ✅ | `fc snapshot` |
 
 ### 🔐 Security & Privacy
 

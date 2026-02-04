@@ -91,6 +91,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Configurable via `~/.config/circus/notify.conf`
   - Actions: `test`, `config`, `enable`, `disable`
 
+- **New `fc snapshot`** - APFS snapshot management for safe rollbacks:
+  - `create [name]` - Create snapshot before major changes
+  - `list` / `list-all` - View managed and system snapshots
+  - `delete <timestamp>` - Remove specific snapshots
+  - `status` - Show settings and disk usage
+  - `auto on|off` - Toggle auto-snapshot before `fc config apply`
+  - Auto-integrates with `fc config` and `fc app-settings`
+
 ## [1.5.2] - 2026-01-05
 
 

@@ -22,6 +22,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
         *   ~~`42-self-update-mechanism`~~: **DONE** - Enhanced `fc update` with `--check`, `--version`, `--dry-run`, `--skip-migrations` flags, migration system in `migrations/`, version tracking via `.version` file, `CHANGELOG.md`, and `docs/UPDATING.md`.
     *   **Configuration:**
         *   ~~`09-externalize-fc-sync-configuration`~~: **DONE** - External config file at `~/.config/circus/sync.conf`, template in `lib/templates/sync.conf.template`, `setup` subcommand for easy configuration, security checks for file permissions.
+        *   ~~`17-configuration-management`~~: **DONE** - `fc config` command for declarative YAML-based configuration. Supports role-based configs (`roles/personal/config.yaml`), validation, and conversion from legacy shell scripts. Engine in `lib/yaml_config.sh`. Documentation in `docs/YAML_CONFIGURATION.md`.
 
 ---
 
@@ -36,6 +37,7 @@ This roadmap organizes the proposed features from the `docs/features/` directory
     *   **Backup and Restore:**
         *   ~~`02-scheduled-backups`~~: **DONE** - `fc fc-schedule` command with `install`, `uninstall`, `status`, and `run` subcommands. Uses macOS launchd for reliable scheduling. Supports daily/weekly frequencies. Added `--no-confirm` flag to `fc-sync` for automated execution. Documentation in `COMMANDS.md`.
     *   **System & Application Management:**
+        *   ~~`40-application-settings-management`~~: **DONE** - `fc app-settings` command for managing macOS defaults via category-based scripts. Supports applying, listing, and previewing settings for system, apps, interface, and accessibility. Documentation in `COMMANDS.md`.
         *   ~~`21-automated-application-installation`~~: **DONE** - `fc fc-apps` command with `setup`, `list`, `install`, and `add` subcommands. Brewfile-compatible config at `~/.config/circus/apps.conf`. Supports Homebrew formulae, casks, and Mac App Store apps. Added `mas` to base Brewfile. Documentation in `COMMANDS.md`.
         *   ~~`22-system-update-command`~~: **DONE** - Extended `fc update` with `--os`, `--packages`, `--self`, `--all` flags. Updates Homebrew (formulae, casks), Mac App Store apps, macOS, and dotfiles repository. Dry-run mode for previewing. Documentation in `COMMANDS.md`.
         *   ~~`41-system-maintenance-command`~~: **DONE** - `fc fc-maintenance` command with `setup`, `list`, and `run` subcommands. 11 maintenance tasks including brew cleanup, cache clearing, log rotation, DNS flush, and more. Configurable via `~/.config/circus/maintenance.conf`. Dry-run mode and safe defaults. Documentation in `COMMANDS.md`.
@@ -65,6 +67,10 @@ This roadmap organizes the proposed features from the `docs/features/` directory
         *   ~~`40-raycast-script-commands`~~: **DONE** - `fc raycast` command with `install`, `uninstall`, and `status` subcommands. 27 individual script commands for quick-access to fc functionality. Matches Alfred workflow feature parity. Script commands source in `etc/raycast/scripts/`. Documentation in `docs/RAYCAST.md` and `COMMANDS.md`.
     *   **Power-User Features:**
         *   ~~`45-vm-management`~~: **DONE** - `fc vm` command for managing Lima and Colima VMs. Provider abstraction in `lib/vm_backends/`. Subcommands: list, start, stop, status, shell, delete, create, ip, provider. Documentation in `docs/VIRTUAL_MACHINES.md`.
+    *   **Hardware & Peripherals:**
+        *   ~~`34-power-management-profiles`~~: **DONE** - `fc power` command for switching between performance and battery profiles. Uses `pmset`.
+        *   ~~`49-audio-device-control`~~: **DONE** - `fc audio` command for volume control and device switching. Supports `switchaudio-osx` and fuzzy matching.
+        *   ~~`50-display-management`~~: **DONE** - `fc display` command for managing resolutions, mirroring, and saving/restoring layouts with `displayplacer`.
 
 ---
 
@@ -80,7 +86,8 @@ This roadmap organizes the proposed features from the `docs/features/` directory
         *   ~~`23-interactive-fc-command`~~: **DONE** (v1.1.7) - `fc -i` launches fzf-powered interactive menu with command previews
         *   ~~`11-interactive-role-creation`~~: **DONE** (v1.1.8) - `fc profile create` launches 4-step wizard with fzf component selection
     *   **Quality-of-Life Improvements:**
-        *   ~~`43-macos-notification-integration`~~: **DONE** (v1.1.8) - `lib/notify.sh` with osascript/notify-send support
+    *   **Quality-of-Life Improvements:**
+        *   ~~`43-macos-notification-integration`~~: **DONE** - `fc notify` command. Supports `terminal-notifier` and `osascript` with success/error/warning presets and click actions. Configurable via `~/.config/circus/notify.conf`.
         *   ~~`35-enhanced-fc-info`~~: **DONE** (v1.1.8) - Visual banner, health indicators, tool status, `--json` output
         *   And many of the other smaller utilities and enhancements (`theme-management`, `focus-mode`, etc.).
 
@@ -95,3 +102,42 @@ A great roadmap is only useful if it's visible and actionable. Here are the reco
 2.  **A `ROADMAP.md` File (This File!):** A simple and transparent solution. The roadmap lives as a version-controlled Markdown file in the repository. It's easy to access and update via pull requests, giving you a version-controlled history of the roadmap.
 
 3.  **Third-Party Project Management Tool (e.g., Trello, Linear, Jira):** These tools offer powerful features for tracking complex projects, but come at the cost of being disconnected from the code and potentially introducing subscription fees.
+
+---
+
+## Feature Candidates for Future Phases
+
+This section lists proposed features that are not yet part of the official phased roadmap. They are candidates for future development, prioritized based on their potential impact and alignment with the project's goals.
+
+### 🛡️ Safety & Reliability (Priority 1)
+| Feature | Functionality / User Story | Difficulty | Status |
+| :--- | :--- | :--- | :--- |
+| **System Snapshotting** | As a user, I want `circus` to automatically take an APFS snapshot before applying major changes so that I can easily revert my system if something goes wrong. | Medium | ✅ Done |
+| **Disaster Recovery Mode** | As a user, I want an `fc recover --from <source>` command to perform a full system restore from a `circus` backup. | Hard | ⏳ Planned |
+| **Time Machine Mgmt** | As a user, I want to manage Time Machine backups (start/stop/status/exclude) from the CLI (Feature #28). | Medium | ⏳ Planned |
+| **Configuration Auditing** | As a user, I want to run `fc audit` to check my live system state against my configuration files and report any drift. | Medium | ⏳ Planned |
+| **Undo Last Action**| As a user, I want an `fc undo` command that reverts the last major operation, potentially by restoring an APFS snapshot. | Hard | ⏳ Planned |
+
+### 🛠️ Core Management Enhancements (Priority 2)
+| Feature | Functionality / User Story | Difficulty | Status |
+| :--- | :--- | :--- | :--- |
+| **Cloud CLI Managers** | As a user, I want to manage authentication and configuration for AWS, GCP, and Azure CLIs consistently (Feature #46). | Medium | ⏳ Planned |
+| **Network Profiles** | As a user, I want to switch network sets (DNS, Proxy, WiFi) with `fc network switch home/work`. | Medium | ⏳ Planned |
+| **App Data Cleanup** | As a user, I want to run `fc clean --app-data <app>` to deeply remove all associated cache and configuration files (beyond what `fc uninstall` does). | Medium | ⏳ Planned |
+| **Secrets Rotation** | As a user, I want `fc secrets rotate` to integrate with services like Vault to rotate secrets automatically. | Hard | ⏳ Planned |
+
+### 🚀 User Experience & Integrations (Priority 3)
+| Feature | Functionality / User Story | Difficulty | Status |
+| :--- | :--- | :--- | :--- |
+| **Web UI Dashboard** | As a user, I want to view system status, health, and configuration from a local web dashboard (Feature #24). | Hard | ⏳ Planned |
+| **CLI Note Taking** | As a user, I want a quick way to capture notes/snippets from the terminal `fc note "fix this later"` (Feature #37). | Easy | ⏳ Planned |
+| **Unified Theme Mgmt** | As a user, I want `fc theme set <theme>` to apply the theme consistently across macOS, iTerm2, VSCode, and Alfred. | Medium | ⏳ Planned |
+| **Natural Language CLI** | As a user, I want to type commands like `fc install chrome` and have the tool translate it. | Hard | ⏳ Planned |
+| **Plugin Marketplace** | As a user, I want to browse and install community plugins. | Hard | ⏳ Planned |
+
+### 💻 Developer Experience (Priority 4)
+| Feature | Functionality / User Story | Difficulty | Status |
+| :--- | :--- | :--- | :--- |
+| **Windows (WSL2)** | As a user, I want `circus` to provide experimental support for WSL2 (Feature #25 extension). | Hard | ⏳ Planned |
+| **Test Coverage** | As a developer, I want `bats` test runs to generate coverage reports. | Medium | ⏳ Planned |
+| **Auto-Docs** | As a developer, I want documentation to be generated from source comments. | Medium | ⏳ Planned |

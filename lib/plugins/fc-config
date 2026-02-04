@@ -16,6 +16,7 @@
 # --- Initialization ---------------------------------------------------------
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 source "$DOTFILES_ROOT/lib/yaml_config.sh"
+source "$DOTFILES_ROOT/lib/snapshot.sh"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
@@ -32,6 +33,7 @@ usage() {
   echo ""
   msg_info "Options:"
   echo "  --dry-run          Preview changes without applying"
+  echo "  --no-snapshot      Skip auto-snapshot before apply"
   echo ""
   msg_info "Examples:"
   echo "  fc config apply roles/personal/config.yaml"
@@ -47,6 +49,7 @@ usage() {
 do_apply() {
   local config_file="$1"
   local dry_run="$2"
+  local skip_snapshot="$3"
   
   # Resolve relative paths
   if [[ ! -f "$config_file" ]]; then
@@ -55,6 +58,11 @@ do_apply() {
   
   if [[ ! -f "$config_file" ]]; then
     die "Configuration file not found: $1"
+  fi
+  
+  # Create snapshot before applying (unless dry-run or skipped)
+  if [[ "$dry_run" != "true" ]] && [[ "$skip_snapshot" != "true" ]]; then
+    snapshot_before_operation "config-apply"
   fi
   
   apply_role_config "$config_file" "$dry_run"

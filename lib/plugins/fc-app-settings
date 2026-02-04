@@ -11,6 +11,7 @@
 
 # --- Initialization ---------------------------------------------------------
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+source "$DOTFILES_ROOT/lib/snapshot.sh"
 
 # --- Configuration ----------------------------------------------------------
 readonly DEFAULTS_DIR="$DOTFILES_ROOT/defaults"
@@ -169,6 +170,11 @@ do_show() {
 do_apply() {
   local category="$1"
   local app="$2"
+  
+  # Create snapshot before bulk apply (category or all)
+  if [[ -z "$app" ]]; then
+    snapshot_before_operation "app-settings"
+  fi
   
   if [[ -z "$category" ]]; then
     # Apply all

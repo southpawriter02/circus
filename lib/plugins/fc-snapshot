@@ -1,0 +1,249 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-snapshot
+#
+# DESCRIPTION:  APFS snapshot management for the Circus framework.
+#               Create, list, delete, and restore local snapshots.
+#
+# REQUIRES:     macOS with APFS filesystem, tmutil
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+source "$DOTFILES_ROOT/lib/snapshot.sh"
+
+# --- Configuration ----------------------------------------------------------
+readonly SNAPSHOT_CONFIG="$HOME/.config/circus/snapshot.conf"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc snapshot <action> [options]"
+  echo ""
+  msg_info "Manage APFS local snapshots for safe system changes."
+  echo ""
+  msg_info "Actions:"
+  echo "  create [name]      Create a new snapshot (optional context name)"
+  echo "  list               List Circus-managed snapshots"
+  echo "  list-all           List all local snapshots (including system)"
+  echo "  delete <timestamp> Delete a specific snapshot"
+  echo "  delete-all         Delete all Circus-managed snapshots"
+  echo "  status             Show snapshot settings and disk usage"
+  echo "  auto on|off        Enable or disable auto-snapshots"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc snapshot create                # Create with auto-generated name"
+  echo "  fc snapshot create pre-update     # Create with context name"
+  echo "  fc snapshot list                  # List managed snapshots"
+  echo "  fc snapshot delete 2026-02-04-081500"
+  echo "  fc snapshot auto on               # Enable auto-snapshots"
+  echo ""
+  msg_info "Auto-Snapshot:"
+  echo "  When enabled, snapshots are created before:"
+  echo "    - fc config apply"
+  echo "    - fc app-settings apply"
+  echo "    - fc bootstrap"
+  echo ""
+  exit 0
+}
+
+# --- Actions ----------------------------------------------------------------
+
+do_create() {
+  local context="${1:-manual}"
+  
+  # Check APFS
+  if ! _is_apfs_volume "/"; then
+    die "Root volume is not APFS. Snapshots are not supported."
+  fi
+  
+  echo ""
+  msg_info "Creating APFS snapshot..."
+  echo ""
+  
+  if snapshot_create "$context"; then
+    echo ""
+    msg_info "Tip: Snapshots use copy-on-write and take minimal space initially."
+    msg_info "Run 'fc snapshot list' to see all managed snapshots."
+  fi
+}
+
+do_list() {
+  echo ""
+  msg_info "Circus-Managed Snapshots:"
+  echo ""
+  
+  snapshot_list
+  
+  echo ""
+  local count
+  count=$(snapshot_count)
+  echo "Total: $count snapshot(s)"
+  echo ""
+}
+
+do_list_all() {
+  echo ""
+  msg_info "All Local Snapshots:"
+  echo ""
+  
+  tmutil listlocalsnapshots / 2>/dev/null || echo "No snapshots found."
+  echo ""
+}
+
+do_delete() {
+  local timestamp="$1"
+  
+  if [[ -z "$timestamp" ]]; then
+    die "Please specify a snapshot timestamp. Run 'fc snapshot list' to see available snapshots."
+  fi
+  
+  echo ""
+  msg_warning "This will permanently delete the snapshot: $timestamp"
+  read -p "Are you sure? (y/N) " -n 1 -r
+  echo ""
+  
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    snapshot_delete "$timestamp"
+  else
+    msg_info "Cancelled."
+  fi
+}
+
+do_delete_all() {
+  local count
+  count=$(snapshot_count)
+  
+  if [[ "$count" -eq 0 ]]; then
+    msg_info "No Circus-managed snapshots to delete."
+    return 0
+  fi
+  
+  echo ""
+  msg_warning "This will delete ALL $count Circus-managed snapshot(s)."
+  read -p "Are you sure? (y/N) " -n 1 -r
+  echo ""
+  
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    snapshot_delete_all
+  else
+    msg_info "Cancelled."
+  fi
+}
+
+do_status() {
+  echo ""
+  msg_info "Snapshot Configuration:"
+  echo ""
+  
+  # Settings
+  local auto_status
+  if snapshot_is_enabled; then
+    auto_status="✅ Enabled"
+  else
+    auto_status="❌ Disabled"
+  fi
+  
+  echo "  Auto-Snapshot:     $auto_status"
+  echo "  Max Snapshots:     ${SNAPSHOT_MAX_COUNT:-5}"
+  echo "  Config File:       $SNAPSHOT_CONFIG"
+  echo "  Metadata File:     $SNAPSHOT_METADATA"
+  echo ""
+  
+  # Statistics
+  local count
+  count=$(snapshot_count)
+  local disk_usage
+  disk_usage=$(snapshot_disk_usage)
+  
+  msg_info "Statistics:"
+  echo ""
+  echo "  Managed Snapshots: $count"
+  echo "  Purgeable Space:   $disk_usage"
+  echo ""
+  
+  # Volume info
+  local volume_info
+  volume_info=$(diskutil info / 2>/dev/null | grep "File System Personality" | awk -F: '{print $2}' | xargs)
+  echo "  File System:       ${volume_info:-Unknown}"
+  echo ""
+  
+  if [[ ! -f "$SNAPSHOT_CONFIG" ]]; then
+    msg_info "No config file found. Using defaults."
+    echo ""
+    echo "  Create config with:"
+    echo "    mkdir -p ~/.config/circus"
+    echo "    echo 'SNAPSHOT_AUTO_ENABLED=true' > ~/.config/circus/snapshot.conf"
+    echo "    echo 'SNAPSHOT_MAX_COUNT=5' >> ~/.config/circus/snapshot.conf"
+  fi
+}
+
+do_auto() {
+  local setting="$1"
+  
+  case "$setting" in
+    on|true|yes|1)
+      mkdir -p "$(dirname "$SNAPSHOT_CONFIG")"
+      if [[ -f "$SNAPSHOT_CONFIG" ]]; then
+        if grep -q "SNAPSHOT_AUTO_ENABLED" "$SNAPSHOT_CONFIG"; then
+          sed -i '' 's/SNAPSHOT_AUTO_ENABLED=.*/SNAPSHOT_AUTO_ENABLED=true/' "$SNAPSHOT_CONFIG"
+        else
+          echo "SNAPSHOT_AUTO_ENABLED=true" >> "$SNAPSHOT_CONFIG"
+        fi
+      else
+        echo "SNAPSHOT_AUTO_ENABLED=true" > "$SNAPSHOT_CONFIG"
+        echo "SNAPSHOT_MAX_COUNT=5" >> "$SNAPSHOT_CONFIG"
+      fi
+      msg_success "Auto-snapshot enabled."
+      msg_info "Snapshots will be created before major operations."
+      ;;
+    off|false|no|0)
+      mkdir -p "$(dirname "$SNAPSHOT_CONFIG")"
+      if [[ -f "$SNAPSHOT_CONFIG" ]]; then
+        if grep -q "SNAPSHOT_AUTO_ENABLED" "$SNAPSHOT_CONFIG"; then
+          sed -i '' 's/SNAPSHOT_AUTO_ENABLED=.*/SNAPSHOT_AUTO_ENABLED=false/' "$SNAPSHOT_CONFIG"
+        else
+          echo "SNAPSHOT_AUTO_ENABLED=false" >> "$SNAPSHOT_CONFIG"
+        fi
+      else
+        echo "SNAPSHOT_AUTO_ENABLED=false" > "$SNAPSHOT_CONFIG"
+      fi
+      msg_success "Auto-snapshot disabled."
+      ;;
+    *)
+      die "Usage: fc snapshot auto on|off"
+      ;;
+  esac
+}
+
+# --- Main -------------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+    usage
+  fi
+  
+  # Check for macOS
+  if [[ "$(uname)" != "Darwin" ]]; then
+    die "APFS snapshots are only supported on macOS."
+  fi
+  
+  local action="$1"
+  shift
+  
+  case "$action" in
+    create)     do_create "$@" ;;
+    list)       do_list ;;
+    list-all)   do_list_all ;;
+    delete)     do_delete "$@" ;;
+    delete-all) do_delete_all ;;
+    status)     do_status ;;
+    auto)       do_auto "$@" ;;
+    *)
+      die "Unknown action '$action'. Run 'fc snapshot --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"
