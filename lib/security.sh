@@ -391,6 +391,8 @@ validate_url() {
   return 0
 }
 
+# --- S10: Root Execution Block ----------------------------------------------
+
 # Check if running as root (and optionally block)
 # Usage: if check_not_root; then ... (returns 1 if root)
 check_not_root() {
@@ -400,6 +402,65 @@ check_not_root() {
     return 1
   fi
   return 0
+}
+
+# Block execution if running as root - exits immediately (S10)
+# Usage: die_if_root (call at script start)
+die_if_root() {
+  if [[ $EUID -eq 0 ]]; then
+    echo ""
+    echo "╔═══════════════════════════════════════════════════════════════╗"
+    echo "║  ⛔ ERROR: Running as root is not allowed                     ║"
+    echo "╠═══════════════════════════════════════════════════════════════╣"
+    echo "║  This framework should NEVER be run as root or with sudo.    ║"
+    echo "║                                                               ║"
+    echo "║  Running as root:                                             ║"
+    echo "║  • Bypasses important security checks                         ║"
+    echo "║  • Could damage system files                                  ║"
+    echo "║  • Violates principle of least privilege                      ║"
+    echo "║                                                               ║"
+    echo "║  Please run as a regular user:                                ║"
+    echo "║  $ fc <command>                                               ║"
+    echo "║                                                               ║"
+    echo "║  sudo will be requested only when absolutely necessary.       ║"
+    echo "╚═══════════════════════════════════════════════════════════════╝"
+    echo ""
+    
+    security_log "critical" "Blocked root execution attempt" "EUID=0"
+    
+    exit 1
+  fi
+}
+
+# Check if running as root (silent, for conditionals)
+# Usage: if is_root; then ...
+is_root() {
+  [[ $EUID -eq 0 ]]
+}
+
+# Require non-root with custom message
+# Usage: require_non_root "Custom error message"
+require_non_root() {
+  local message="${1:-This operation cannot be run as root.}"
+  
+  if is_root; then
+    msg_error "$message"
+    security_log "warning" "Root execution blocked" "$message"
+    return 1
+  fi
+  return 0
+}
+
+# Get effective user (even when running under sudo)
+# Usage: real_user=$(get_real_user)
+get_real_user() {
+  if [[ -n "${SUDO_USER:-}" ]]; then
+    echo "$SUDO_USER"
+  elif [[ -n "${USER:-}" ]]; then
+    echo "$USER"
+  else
+    whoami
+  fi
 }
 
 # Validate a defaults write value for safety
@@ -1097,4 +1158,5 @@ export -f sudo_confirm is_destructive_command require_confirmation
 export -f sudo_drop sudo_has_credentials sudo_status
 export -f with_sudo_scope sudo_scope_start sudo_scope_end sudo_register_cleanup
 export -f sudoers_hash sudoers_baseline_save sudoers_check sudoers_verify_before sudoers_baseline_info
+export -f die_if_root is_root require_non_root get_real_user
 export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE

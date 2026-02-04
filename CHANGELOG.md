@@ -163,6 +163,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `sudoers_check()` - Verify against baseline
     - `sudoers_verify_before()` - Check before privileged ops
     - Hashes main sudoers + sudoers.d/* files
+  - **S10 Root Execution Block**:
+    - `die_if_root()` - Block framework if EUID=0
+    - `is_root()` / `require_non_root()` - Helpers
+    - Integrated into `bin/fc` main entry point
+    - Clear error message with security rationale
 
 ## [1.5.2] - 2026-01-05
 

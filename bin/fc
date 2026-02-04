@@ -22,6 +22,9 @@
 # Source the centralized initialization script to set up the environment.
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/init.sh"
 
+# --- Security: Block root execution (S10) ----------------------------------
+die_if_root
+
 # --- Configuration ----------------------------------------------------------
 # Define the absolute path to the directory where plugins are stored.
 readonly PLUGIN_DIR="$DOTFILES_ROOT/lib/plugins"
