@@ -142,6 +142,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `sanitize_package_name()` - Alphanumeric + `-_@/` patterns
     - Integrated into `yaml_config.sh` for brew/cask/mas
     - MAS app IDs validated as numeric only
+  - **S06 Sudo Audit Logging**:
+    - `sudo_audit()` - Wrapper with automatic logging
+    - Logs timestamp, user, command, and result
+    - `sudo_audit_view()` - View recent log entries
+    - `sudo_audit_stats()` - Show success/failure statistics
+    - Integrated into `lib/os/macos.sh` for firewall/DNS
 
 ## [1.5.2] - 2026-01-05
 

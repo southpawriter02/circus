@@ -633,6 +633,119 @@ security_log() {
   echo "[$timestamp] [$level] $message${context:+ | context: $context}" >> "$log_file"
 }
 
+# --- Privilege Escalation Protection (S06-S10) ------------------------------
+
+# Sudo audit log file
+SUDO_AUDIT_LOG="${CIRCUS_SUDO_LOG:-$HOME/.circus/sudo_audit.log}"
+
+# Run a command with sudo and log the invocation (S06)
+# Usage: sudo_audit "description" command [args...]
+# Example: sudo_audit "Enabling firewall" /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+sudo_audit() {
+  local description="$1"
+  shift
+  local cmd="$*"
+  
+  local timestamp
+  timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+  local user="${USER:-$(whoami)}"
+  local pwd_dir="${PWD:-unknown}"
+  
+  # Create log directory if needed
+  mkdir -p "$(dirname "$SUDO_AUDIT_LOG")" 2>/dev/null
+  
+  # Log the sudo invocation BEFORE executing
+  {
+    echo "============================================================"
+    echo "Timestamp:   $timestamp"
+    echo "User:        $user"
+    echo "Directory:   $pwd_dir"
+    echo "Description: $description"
+    echo "Command:     sudo $cmd"
+    echo "------------------------------------------------------------"
+  } >> "$SUDO_AUDIT_LOG"
+  
+  # Execute the sudo command
+  local exit_code
+  if sudo "$@"; then
+    exit_code=0
+    echo "Result:      SUCCESS (exit code: 0)" >> "$SUDO_AUDIT_LOG"
+  else
+    exit_code=$?
+    echo "Result:      FAILED (exit code: $exit_code)" >> "$SUDO_AUDIT_LOG"
+  fi
+  
+  echo "" >> "$SUDO_AUDIT_LOG"
+  
+  return $exit_code
+}
+
+# Run sudo without audit logging (for non-sensitive operations)
+# Usage: sudo_quiet command [args...]
+sudo_quiet() {
+  sudo "$@"
+}
+
+# View sudo audit log
+# Usage: sudo_audit_view [lines]
+sudo_audit_view() {
+  local lines="${1:-50}"
+  
+  if [[ -f "$SUDO_AUDIT_LOG" ]]; then
+    msg_info "Last $lines lines of sudo audit log:"
+    tail -n "$lines" "$SUDO_AUDIT_LOG"
+  else
+    msg_warning "No sudo audit log found at: $SUDO_AUDIT_LOG"
+  fi
+}
+
+# Clear sudo audit log (with confirmation)
+# Usage: sudo_audit_clear
+sudo_audit_clear() {
+  if [[ -f "$SUDO_AUDIT_LOG" ]]; then
+    local count
+    count=$(grep -c "^Timestamp:" "$SUDO_AUDIT_LOG" 2>/dev/null || echo "0")
+    
+    msg_warning "This will clear $count sudo audit entries."
+    read -r -p "Are you sure? [y/N] " confirm
+    
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+      # Archive before clearing
+      local archive="${SUDO_AUDIT_LOG}.$(date +%Y%m%d_%H%M%S).bak"
+      cp "$SUDO_AUDIT_LOG" "$archive"
+      > "$SUDO_AUDIT_LOG"
+      msg_success "Audit log cleared. Backup: $archive"
+    else
+      msg_info "Cancelled."
+    fi
+  else
+    msg_info "No audit log to clear."
+  fi
+}
+
+# Get sudo audit statistics
+# Usage: sudo_audit_stats
+sudo_audit_stats() {
+  if [[ ! -f "$SUDO_AUDIT_LOG" ]]; then
+    msg_info "No sudo audit log found."
+    return 0
+  fi
+  
+  local total success failed
+  total=$(grep -c "^Timestamp:" "$SUDO_AUDIT_LOG" 2>/dev/null || echo "0")
+  success=$(grep -c "Result:.*SUCCESS" "$SUDO_AUDIT_LOG" 2>/dev/null || echo "0")
+  failed=$(grep -c "Result:.*FAILED" "$SUDO_AUDIT_LOG" 2>/dev/null || echo "0")
+  
+  echo ""
+  msg_info "📊 Sudo Audit Statistics"
+  echo "   Total invocations: $total"
+  echo "   ✅ Successful:     $success"
+  echo "   ❌ Failed:         $failed"
+  echo ""
+  echo "   Log file: $SUDO_AUDIT_LOG"
+  echo "   Log size: $(du -h "$SUDO_AUDIT_LOG" 2>/dev/null | cut -f1)"
+}
+
 # --- Exports ----------------------------------------------------------------
 
 export -f sanitize_string escape_for_shell sanitize_domain
@@ -642,3 +755,5 @@ export -f security_log
 export -f validate_path resolve_path_secure is_within_allowed_paths
 export -f check_symlink_target is_path_safe validate_config_path
 export -f is_yaml_safe sanitize_yaml_value validate_yaml_security safe_yaml_get
+export -f sudo_audit sudo_quiet sudo_audit_view sudo_audit_clear sudo_audit_stats
+export SUDO_AUDIT_LOG

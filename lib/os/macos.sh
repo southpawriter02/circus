@@ -130,7 +130,7 @@ os_get_active_network_service() {
 os_set_dns() {
     local service="$1"
     shift
-    sudo networksetup -setdnsservers "$service" "$@"
+    sudo_audit "Setting DNS for $service" networksetup -setdnsservers "$service" "$@"
 }
 
 #
@@ -138,7 +138,7 @@ os_set_dns() {
 # @param $1 Network service name
 #
 os_clear_dns() {
-    sudo networksetup -setdnsservers "$1" "Empty"
+    sudo_audit "Clearing DNS for $1" networksetup -setdnsservers "$1" "Empty"
 }
 
 #
@@ -194,14 +194,14 @@ os_get_sleep_status() {
 # @description Enable firewall
 #
 os_firewall_on() {
-    sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+    sudo_audit "Enabling macOS firewall" /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
 }
 
 #
 # @description Disable firewall
 #
 os_firewall_off() {
-    sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
+    sudo_audit "Disabling macOS firewall" /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
 }
 
 #

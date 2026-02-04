@@ -158,7 +158,7 @@ Security features to protect against CLI exploitation, privilege escalation, and
 #### Privilege Escalation Protection
 | # | Feature | Risk Mitigated | Difficulty | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| S06 | **Sudo Audit Logging** | Log all `sudo` invocations with timestamp, user, command | Medium | ⏳ Planned |
+| S06 | **Sudo Audit Logging** | Log all `sudo` invocations with timestamp, user, command | Medium | ✅ Done |
 | S07 | **Sudo Prompt Confirmation** | Require explicit `--yes` for destructive sudo operations | Easy | ⏳ Planned |
 | S08 | **Privilege Drop After Use** | Ensure scripts don't retain elevated privileges unnecessarily | Medium | ⏳ Planned |
 | S09 | **sudoers Integrity Check** | Detect modifications to `/etc/sudoers` before privileged commands | Hard | ⏳ Planned |
