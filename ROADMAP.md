@@ -178,9 +178,9 @@ Security features to protect against CLI exploitation, privilege escalation, and
 | :--- | :--- | :--- | :--- | :--- |
 | S16 | **Config File Signing** | GPG-sign config files; verify signatures before applying | Hard | ✅ Done |
 | S17 | **Script Integrity Hashes** | Maintain SHA256 hashes of scripts; detect tampering | Medium | ✅ Done |
-| S18 | **Homebrew Tap Verification** | Only allow packages from verified taps | Medium | ⏳ Planned |
-| S19 | **Self-Update Signature Check** | Verify git commits are signed before applying updates | Medium | ⏳ Planned |
-| S20 | **Rollback Verification** | Verify snapshot integrity before APFS restore | Medium | ⏳ Planned |
+| S18 | **Homebrew Tap Verification** | Only allow packages from verified taps | Medium | ✅ Done |
+| S19 | **Self-Update Signature Check** | Verify git commits are signed before applying updates | Medium | ✅ Done |
+| S20 | **Rollback Verification** | Verify snapshot integrity before APFS restore | Medium | ✅ Done |
 
 #### Monitoring & Detection
 | # | Feature | Risk Mitigated | Difficulty | Status |

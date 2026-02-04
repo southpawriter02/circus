@@ -203,6 +203,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `verify_script_integrity()` - Check all scripts
     - `verify_single_script()` - Check individual file
     - `update_script_hash()` - Update after edits
+  - **S18 Homebrew Tap Verification**:
+    - `is_trusted_tap()` / `add_trusted_tap()` - Manage trust
+    - `verify_brew_package()` - Check package tap
+    - `scan_brewfile_taps()` - Audit Brewfile
+  - **S19 Self-Update Signature Check**:
+    - `is_commit_signed()` - Check GPG signature
+    - `verify_update_signature()` - Verify before pull
+    - `safe_self_update()` - Update with verification
+    - `show_commit_signatures()` - Audit commit history
+  - **S20 Rollback Verification**:
+    - `list_rollback_snapshots()` - List APFS snapshots
+    - `verify_snapshot_exists()` - Validate before restore
+    - `safe_rollback()` - Confirmed rollback
+    - `create_safety_snapshot()` - Pre-change snapshots
 
 ## [1.5.2] - 2026-01-05
 

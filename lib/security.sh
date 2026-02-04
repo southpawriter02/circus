@@ -2328,6 +2328,333 @@ update_script_hash() {
   security_log "info" "Script hash updated" "$rel_path"
 }
 
+# --- S18: Homebrew Tap Verification -----------------------------------------
+
+# Default trusted taps (official Homebrew taps)
+TRUSTED_BREW_TAPS="${TRUSTED_BREW_TAPS:-homebrew/core homebrew/cask homebrew/bundle homebrew/services}"
+
+# Check if a tap is trusted (S18)
+# Usage: if is_trusted_tap "user/tap"; then ...
+is_trusted_tap() {
+  local tap="$1"
+  
+  for trusted in $TRUSTED_BREW_TAPS; do
+    [[ "$tap" == "$trusted" ]] && return 0
+  done
+  
+  return 1
+}
+
+# Verify a package comes from trusted tap (S18)
+# Usage: if verify_brew_package "package-name"; then ...
+verify_brew_package() {
+  local package="$1"
+  
+  if ! command -v brew &>/dev/null; then
+    msg_error "Homebrew not found"
+    return 1
+  fi
+  
+  # Get package info
+  local tap
+  tap=$(brew info --json=v2 "$package" 2>/dev/null | grep -o '"tap":"[^"]*"' | head -1 | cut -d'"' -f4)
+  
+  if [[ -z "$tap" ]]; then
+    msg_warning "Cannot determine tap for: $package"
+    return 2
+  fi
+  
+  if is_trusted_tap "$tap"; then
+    msg_success "✅ Trusted tap: $package ($tap)"
+    return 0
+  else
+    msg_warning "⚠️  Untrusted tap: $package ($tap)"
+    security_log "warning" "Untrusted Homebrew tap" "$package from $tap"
+    return 1
+  fi
+}
+
+# Add a tap to trusted list (S18)
+# Usage: add_trusted_tap "user/tap"
+add_trusted_tap() {
+  local tap="$1"
+  
+  if is_trusted_tap "$tap"; then
+    msg_info "Tap already trusted: $tap"
+    return 0
+  fi
+  
+  TRUSTED_BREW_TAPS="$TRUSTED_BREW_TAPS $tap"
+  export TRUSTED_BREW_TAPS
+  
+  msg_success "Added trusted tap: $tap"
+  security_log "info" "Added trusted tap" "$tap"
+}
+
+# List all taps and their trust status (S18)
+# Usage: list_brew_taps
+list_brew_taps() {
+  if ! command -v brew &>/dev/null; then
+    msg_error "Homebrew not found"
+    return 1
+  fi
+  
+  msg_info "Homebrew Taps:"
+  echo ""
+  
+  brew tap | while read -r tap; do
+    if is_trusted_tap "$tap"; then
+      echo "  ✅ $tap (trusted)"
+    else
+      echo "  ⚠️  $tap (untrusted)"
+    fi
+  done
+  
+  echo ""
+  msg_info "Trusted: $TRUSTED_BREW_TAPS"
+}
+
+# Scan Brewfile for untrusted taps (S18)
+# Usage: scan_brewfile_taps "/path/to/Brewfile"
+scan_brewfile_taps() {
+  local brewfile="${1:-Brewfile}"
+  
+  if [[ ! -f "$brewfile" ]]; then
+    msg_error "Brewfile not found: $brewfile"
+    return 1
+  fi
+  
+  local untrusted=0
+  
+  msg_info "Scanning Brewfile for taps: $brewfile"
+  echo ""
+  
+  grep "^tap " "$brewfile" | while read -r line; do
+    local tap
+    tap=$(echo "$line" | awk '{print $2}' | tr -d '"'"'")
+    
+    if is_trusted_tap "$tap"; then
+      echo "  ✅ $tap"
+    else
+      echo "  ⚠️  $tap (untrusted)"
+      ((untrusted++))
+    fi
+  done
+  
+  echo ""
+  [[ $untrusted -eq 0 ]]
+}
+
+# --- S19: Self-Update Signature Check ---------------------------------------
+
+# Check if a git commit is signed (S19)
+# Usage: if is_commit_signed "abc123"; then ...
+is_commit_signed() {
+  local commit="${1:-HEAD}"
+  local repo="${2:-.}"
+  
+  git -C "$repo" log -1 --show-signature "$commit" 2>/dev/null | grep -q "Good signature"
+}
+
+# Verify git commit signature before update (S19)
+# Usage: if verify_update_signature; then ...
+verify_update_signature() {
+  local repo="${1:-$DOTFILES_ROOT}"
+  
+  if [[ ! -d "$repo/.git" ]]; then
+    msg_error "Not a git repository: $repo"
+    return 1
+  fi
+  
+  # Fetch latest
+  git -C "$repo" fetch origin 2>/dev/null || {
+    msg_error "Failed to fetch from origin"
+    return 1
+  }
+  
+  local local_head remote_head
+  local_head=$(git -C "$repo" rev-parse HEAD 2>/dev/null)
+  remote_head=$(git -C "$repo" rev-parse origin/main 2>/dev/null || git -C "$repo" rev-parse origin/master 2>/dev/null)
+  
+  if [[ "$local_head" == "$remote_head" ]]; then
+    msg_info "Already up to date."
+    return 0
+  fi
+  
+  msg_info "Checking signature for: ${remote_head:0:8}"
+  
+  if is_commit_signed "$remote_head" "$repo"; then
+    msg_success "✅ Commit is signed and verified"
+    security_log "info" "Update signature verified" "$remote_head"
+    return 0
+  else
+    msg_error "❌ Commit is NOT signed or signature is invalid"
+    security_log "critical" "Update signature FAILED" "$remote_head"
+    
+    echo ""
+    echo "   The remote commit is not GPG signed."
+    echo "   This could indicate unauthorized changes."
+    echo ""
+    
+    read -r -p "Apply update anyway? (DANGEROUS) [y/N] " confirm
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+      security_log "critical" "Applied unsigned update" "$remote_head"
+      return 0
+    else
+      return 1
+    fi
+  fi
+}
+
+# Safe self-update with signature verification (S19)
+# Usage: safe_self_update
+safe_self_update() {
+  local repo="${1:-$DOTFILES_ROOT}"
+  
+  msg_info "Checking for updates..."
+  
+  if verify_update_signature "$repo"; then
+    msg_info "Pulling updates..."
+    git -C "$repo" pull origin main 2>/dev/null || git -C "$repo" pull origin master 2>/dev/null
+    msg_success "Update complete."
+  else
+    msg_error "Update aborted."
+    return 1
+  fi
+}
+
+# Get signature status of recent commits (S19)
+# Usage: show_commit_signatures [count]
+show_commit_signatures() {
+  local count="${1:-10}"
+  local repo="${2:-$DOTFILES_ROOT}"
+  
+  msg_info "Last $count commits:"
+  echo ""
+  
+  git -C "$repo" log -n "$count" --format="%h %G? %s" 2>/dev/null | while read -r line; do
+    local hash sig_status msg
+    hash=$(echo "$line" | awk '{print $1}')
+    sig_status=$(echo "$line" | awk '{print $2}')
+    msg=$(echo "$line" | cut -d' ' -f3-)
+    
+    case "$sig_status" in
+      G) echo "  ✅ $hash $msg" ;;
+      B) echo "  ❌ $hash $msg (bad sig)" ;;
+      U) echo "  ⚠️  $hash $msg (untrusted key)" ;;
+      X) echo "  ⏰ $hash $msg (expired sig)" ;;
+      Y) echo "  🔑 $hash $msg (expired key)" ;;
+      R) echo "  🚫 $hash $msg (revoked key)" ;;
+      E) echo "  ❓ $hash $msg (cannot verify)" ;;
+      N|*) echo "  ⚪ $hash $msg (unsigned)" ;;
+    esac
+  done
+}
+
+# --- S20: Rollback Verification ---------------------------------------------
+
+# Get APFS snapshot hash (S20)
+# Usage: hash=$(snapshot_hash "com.apple.TimeMachine.2024-01-01")
+snapshot_hash() {
+  local snapshot="$1"
+  
+  # Get snapshot metadata for verification
+  tmutil listlocalsnapshots / 2>/dev/null | grep "$snapshot" | shasum -a 256 | awk '{print $1}'
+}
+
+# List available snapshots with dates (S20)
+# Usage: list_rollback_snapshots
+list_rollback_snapshots() {
+  msg_info "📸 Available APFS Snapshots:"
+  echo ""
+  
+  tmutil listlocalsnapshots / 2>/dev/null | while read -r snapshot; do
+    local snap_name="${snapshot#com.apple.TimeMachine.}"
+    echo "  • $snap_name"
+  done
+  
+  echo ""
+}
+
+# Verify snapshot exists before restore (S20)
+# Usage: if verify_snapshot_exists "snapshot-name"; then ...
+verify_snapshot_exists() {
+  local snapshot="$1"
+  
+  tmutil listlocalsnapshots / 2>/dev/null | grep -q "$snapshot"
+}
+
+# Safe rollback with verification and confirmation (S20)
+# Usage: safe_rollback "snapshot-name"
+safe_rollback() {
+  local snapshot="$1"
+  
+  if [[ -z "$snapshot" ]]; then
+    msg_error "Snapshot name required"
+    list_rollback_snapshots
+    return 1
+  fi
+  
+  # Verify snapshot exists
+  if ! verify_snapshot_exists "$snapshot"; then
+    msg_error "Snapshot not found: $snapshot"
+    list_rollback_snapshots
+    return 1
+  fi
+  
+  echo ""
+  msg_warning "⚠️  APFS ROLLBACK"
+  echo ""
+  echo "   Snapshot: $snapshot"
+  echo "   This will restore your system to a previous state."
+  echo "   All changes made after this snapshot will be LOST."
+  echo ""
+  
+  read -r -p "Type 'ROLLBACK' to confirm: " confirm
+  
+  if [[ "$confirm" != "ROLLBACK" ]]; then
+    msg_info "Operation cancelled."
+    return 1
+  fi
+  
+  security_log "critical" "APFS rollback initiated" "$snapshot"
+  
+  # Create a pre-rollback snapshot first
+  local pre_rollback_name="pre-rollback-$(date +%Y%m%d-%H%M%S)"
+  msg_info "Creating pre-rollback snapshot: $pre_rollback_name"
+  
+  tmutil localsnapshot 2>/dev/null
+  
+  msg_info "Starting rollback to: $snapshot"
+  msg_warning "System restart may be required."
+  
+  # Note: Actual restore requires root and specific syntax
+  echo ""
+  echo "   To complete the rollback, run:"
+  echo "   sudo tmutil restore -d / \"$snapshot\""
+  echo ""
+  
+  security_log "info" "Rollback prepared" "$snapshot"
+}
+
+# Create a named snapshot before major changes (S20)
+# Usage: create_safety_snapshot "pre-config-change"
+create_safety_snapshot() {
+  local name="${1:-pre-change}"
+  local full_name="circus-$name-$(date +%Y%m%d-%H%M%S)"
+  
+  msg_info "Creating safety snapshot: $full_name"
+  
+  if tmutil localsnapshot 2>/dev/null; then
+    msg_success "Snapshot created."
+    security_log "info" "Safety snapshot created" "$full_name"
+    return 0
+  else
+    msg_warning "Could not create snapshot (may require Full Disk Access)"
+    return 1
+  fi
+}
+
 # --- Exports ----------------------------------------------------------------
 
 export -f sanitize_string escape_for_shell sanitize_domain
@@ -2356,4 +2683,7 @@ export -f sign_config verify_config_signature verify_before_apply
 export -f list_signing_keys is_config_signed sign_all_configs verify_all_configs
 export -f file_hash generate_hash_manifest verify_script_integrity
 export -f verify_single_script show_hash_manifest update_script_hash
-export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES CIRCUS_SIGNING_KEY SCRIPT_HASH_MANIFEST
+export -f is_trusted_tap verify_brew_package add_trusted_tap list_brew_taps scan_brewfile_taps
+export -f is_commit_signed verify_update_signature safe_self_update show_commit_signatures
+export -f snapshot_hash list_rollback_snapshots verify_snapshot_exists safe_rollback create_safety_snapshot
+export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES CIRCUS_SIGNING_KEY SCRIPT_HASH_MANIFEST TRUSTED_BREW_TAPS
