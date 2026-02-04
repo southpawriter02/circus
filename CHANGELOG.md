@@ -99,6 +99,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `auto on|off` - Toggle auto-snapshot before `fc config apply`
   - Auto-integrates with `fc config` and `fc app-settings`
 
+- **New `fc timemachine`** - Time Machine management (Feature #28):
+  - `status` - Show current backup phase and progress
+  - `start` / `stop` - Control backups
+  - `list` / `latest` - View backup history
+  - `exclude` / `include` - Manage path exclusions
+  - `destinations` - Show configured backup disks
+  - `enable` / `disable` - Toggle automatic backups
+
+- **New `fc config-audit`** - Configuration drift detection:
+  - Compare live system against YAML config files
+  - Audit packages (brew/cask/mas), defaults, env vars, aliases
+  - Reports ✅ OK / ❌ drift / ⚠️ extra items
+  - Filterable with `--packages`, `--defaults`, etc.
+
 ## [1.5.2] - 2026-01-05
 
 

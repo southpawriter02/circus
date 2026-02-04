@@ -114,8 +114,8 @@ This section lists proposed features that are not yet part of the official phase
 | :--- | :--- | :--- | :--- |
 | **System Snapshotting** | As a user, I want `circus` to automatically take an APFS snapshot before applying major changes so that I can easily revert my system if something goes wrong. | Medium | ✅ Done |
 | **Disaster Recovery Mode** | As a user, I want an `fc recover --from <source>` command to perform a full system restore from a `circus` backup. | Hard | ⏳ Planned |
-| **Time Machine Mgmt** | As a user, I want to manage Time Machine backups (start/stop/status/exclude) from the CLI (Feature #28). | Medium | ⏳ Planned |
-| **Configuration Auditing** | As a user, I want to run `fc audit` to check my live system state against my configuration files and report any drift. | Medium | ⏳ Planned |
+| **Time Machine Mgmt** | As a user, I want to manage Time Machine backups (start/stop/status/exclude) from the CLI (Feature #28). | Medium | ✅ Done |
+| **Configuration Auditing** | As a user, I want to run `fc config-audit` to check my live system state against my configuration files and report any drift. | Medium | ✅ Done |
 | **Undo Last Action**| As a user, I want an `fc undo` command that reverts the last major operation, potentially by restoring an APFS snapshot. | Hard | ⏳ Planned |
 
 ### 🛠️ Core Management Enhancements (Priority 2)

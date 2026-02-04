@@ -1,0 +1,328 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-timemachine
+#
+# DESCRIPTION:  Time Machine management for macOS.
+#               A user-friendly wrapper around tmutil.
+#
+# REQUIRES:     macOS with Time Machine
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc timemachine <action> [options]"
+  echo ""
+  msg_info "Manage macOS Time Machine backups from the command line."
+  echo ""
+  msg_info "Actions:"
+  echo "  status             Show current backup status"
+  echo "  start              Start a new backup"
+  echo "  stop               Stop running backup"
+  echo "  list               List available backups"
+  echo "  latest             Show path to latest backup"
+  echo "  destinations       Show backup destinations"
+  echo "  exclude <path>     Add path to exclusions"
+  echo "  include <path>     Remove path from exclusions"
+  echo "  exclusions         List excluded paths"
+  echo "  enable             Enable automatic backups"
+  echo "  disable            Disable automatic backups"
+  echo ""
+  msg_info "Options:"
+  echo "  --block            Wait for backup to complete (with start)"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc timemachine status"
+  echo "  fc timemachine start --block"
+  echo "  fc timemachine exclude ~/Downloads"
+  echo "  fc timemachine list"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+require_sudo() {
+  local action="$1"
+  if [[ $EUID -ne 0 ]]; then
+    msg_info "This action requires administrator privileges."
+    echo "  Action: $action"
+    echo ""
+  fi
+}
+
+check_time_machine() {
+  if ! command -v tmutil &>/dev/null; then
+    die "tmutil not found. This command requires macOS with Time Machine."
+  fi
+}
+
+# --- Actions ----------------------------------------------------------------
+
+do_status() {
+  echo ""
+  msg_info "Time Machine Status:"
+  echo ""
+  
+  # Current phase
+  local phase
+  phase=$(tmutil currentphase 2>/dev/null)
+  echo "  Current Phase: $phase"
+  
+  # If backup is running, show progress
+  if [[ "$phase" != "BackupNotRunning" ]]; then
+    echo ""
+    msg_info "Backup Progress:"
+    tmutil status 2>/dev/null | grep -E "Percent|bytes|Running" | sed 's/^/    /'
+  fi
+  
+  # Last backup
+  local latest
+  latest=$(tmutil latestbackup 2>/dev/null)
+  if [[ -n "$latest" ]]; then
+    local backup_date
+    backup_date=$(basename "$latest")
+    echo ""
+    echo "  Latest Backup: $backup_date"
+  fi
+  
+  # Auto-backup status
+  local auto_enabled
+  auto_enabled=$(defaults read /Library/Preferences/com.apple.TimeMachine AutoBackup 2>/dev/null)
+  if [[ "$auto_enabled" == "1" ]]; then
+    echo "  Auto-Backup:   ✅ Enabled"
+  else
+    echo "  Auto-Backup:   ❌ Disabled"
+  fi
+  echo ""
+}
+
+do_start() {
+  local block_mode="$1"
+  
+  require_sudo "Start Time Machine backup"
+  
+  msg_info "Starting Time Machine backup..."
+  
+  if [[ "$block_mode" == "--block" ]]; then
+    msg_info "Waiting for backup to complete..."
+    sudo tmutil startbackup --block
+    msg_success "Backup completed."
+  else
+    sudo tmutil startbackup
+    msg_success "Backup started."
+    msg_info "Run 'fc timemachine status' to check progress."
+  fi
+}
+
+do_stop() {
+  require_sudo "Stop Time Machine backup"
+  
+  local phase
+  phase=$(tmutil currentphase 2>/dev/null)
+  
+  if [[ "$phase" == "BackupNotRunning" ]]; then
+    msg_info "No backup is currently running."
+    return 0
+  fi
+  
+  msg_info "Stopping Time Machine backup..."
+  sudo tmutil stopbackup
+  msg_success "Backup stopped."
+}
+
+do_list() {
+  echo ""
+  msg_info "Available Time Machine Backups:"
+  echo ""
+  
+  local backups
+  backups=$(tmutil listbackups 2>/dev/null)
+  
+  if [[ -z "$backups" ]]; then
+    msg_info "No backups found."
+  else
+    echo "$backups" | while read -r backup; do
+      local name
+      name=$(basename "$backup")
+      echo "  📦 $name"
+    done
+    
+    local count
+    count=$(echo "$backups" | wc -l | tr -d ' ')
+    echo ""
+    echo "  Total: $count backup(s)"
+  fi
+  echo ""
+}
+
+do_latest() {
+  local latest
+  latest=$(tmutil latestbackup 2>/dev/null)
+  
+  if [[ -z "$latest" ]]; then
+    msg_info "No backups found."
+    return 1
+  fi
+  
+  echo ""
+  msg_info "Latest Backup:"
+  echo "  $latest"
+  echo ""
+}
+
+do_destinations() {
+  echo ""
+  msg_info "Time Machine Destinations:"
+  echo ""
+  
+  tmutil destinationinfo 2>/dev/null | sed 's/^/  /'
+  echo ""
+}
+
+do_exclude() {
+  local path="$1"
+  
+  if [[ -z "$path" ]]; then
+    die "Usage: fc timemachine exclude <path>"
+  fi
+  
+  # Expand to absolute path
+  if [[ ! "$path" = /* ]]; then
+    path="$(cd "$(dirname "$path")" && pwd)/$(basename "$path")"
+  fi
+  
+  if [[ ! -e "$path" ]]; then
+    die "Path does not exist: $path"
+  fi
+  
+  require_sudo "Add Time Machine exclusion"
+  
+  msg_info "Adding exclusion: $path"
+  sudo tmutil addexclusion -p "$path"
+  msg_success "Path excluded from Time Machine backups."
+}
+
+do_include() {
+  local path="$1"
+  
+  if [[ -z "$path" ]]; then
+    die "Usage: fc timemachine include <path>"
+  fi
+  
+  # Expand to absolute path
+  if [[ ! "$path" = /* ]]; then
+    path="$(cd "$(dirname "$path")" && pwd)/$(basename "$path")"
+  fi
+  
+  require_sudo "Remove Time Machine exclusion"
+  
+  msg_info "Removing exclusion: $path"
+  sudo tmutil removeexclusion -p "$path"
+  msg_success "Path will now be included in Time Machine backups."
+}
+
+do_exclusions() {
+  echo ""
+  msg_info "Time Machine Exclusions:"
+  echo ""
+  
+  # Fixed-path exclusions (from preferences)
+  local skip_paths
+  skip_paths=$(defaults read /Library/Preferences/com.apple.TimeMachine SkipPaths 2>/dev/null)
+  
+  if [[ -n "$skip_paths" && "$skip_paths" != "()" ]]; then
+    echo "Fixed-Path Exclusions:"
+    echo "$skip_paths" | tr ',' '\n' | sed 's/[()]//g' | sed 's/^[[:space:]]*/  /'
+    echo ""
+  fi
+  
+  # Check common directories for sticky exclusions
+  msg_info "Checking common directories for exclusions..."
+  echo ""
+  
+  local common_dirs=(
+    "$HOME/Downloads"
+    "$HOME/Library/Caches"
+    "$HOME/.Trash"
+    "/private/var/vm"
+    "/private/tmp"
+  )
+  
+  for dir in "${common_dirs[@]}"; do
+    if [[ -e "$dir" ]]; then
+      local excluded
+      excluded=$(tmutil isexcluded "$dir" 2>/dev/null)
+      if echo "$excluded" | grep -q "\[Excluded\]"; then
+        echo "  ❌ $dir (excluded)"
+      fi
+    fi
+  done
+  
+  echo ""
+  msg_info "To check a specific path: tmutil isexcluded <path>"
+}
+
+do_enable() {
+  require_sudo "Enable automatic backups"
+  
+  msg_info "Enabling automatic Time Machine backups..."
+  sudo tmutil enable
+  msg_success "Automatic backups enabled."
+}
+
+do_disable() {
+  require_sudo "Disable automatic backups"
+  
+  msg_warning "Disabling automatic backups means your data won't be protected."
+  read -p "Are you sure? (y/N) " -n 1 -r
+  echo ""
+  
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    sudo tmutil disable
+    msg_success "Automatic backups disabled."
+  else
+    msg_info "Cancelled."
+  fi
+}
+
+# --- Main -------------------------------------------------------------------
+main() {
+  # Check for macOS
+  if [[ "$(uname)" != "Darwin" ]]; then
+    die "Time Machine is only available on macOS."
+  fi
+  
+  check_time_machine
+  
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+    usage
+  fi
+  
+  local action="$1"
+  shift
+  
+  case "$action" in
+    status)       do_status ;;
+    start)        do_start "$1" ;;
+    stop)         do_stop ;;
+    list)         do_list ;;
+    latest)       do_latest ;;
+    destinations) do_destinations ;;
+    exclude)      do_exclude "$1" ;;
+    include)      do_include "$1" ;;
+    exclusions)   do_exclusions ;;
+    enable)       do_enable ;;
+    disable)      do_disable ;;
+    *)
+      die "Unknown action '$action'. Run 'fc timemachine --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

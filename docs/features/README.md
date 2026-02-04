@@ -32,7 +32,7 @@ This directory contains **51 feature proposals** for the Dotfiles Flying Circus 
 |---|---------|--------|-------------|
 | [05](05-system-health-check.md) | System Health Check | ✅ | `fc healthcheck` |
 | [22](22-system-update-command.md) | System Update Command | ✅ | `fc maintenance` |
-| [28](28-time-machine-management-command.md) | Time Machine Management | ⏳ | Planned |
+| [28](28-time-machine-management-command.md) | Time Machine Management | ✅ | `fc timemachine` |
 | [35](35-enhanced-fc-info.md) | Enhanced `fc info` | ✅ | `fc info` |
 | [41](41-system-maintenance-command.md) | System Maintenance | ✅ | `fc maintenance` |
 | [42](42-self-update-mechanism.md) | Self-Update Mechanism | ✅ | `fc self-update` |
