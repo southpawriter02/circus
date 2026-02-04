@@ -198,6 +198,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `verify_config_signature()` - Verify signature
     - `verify_before_apply()` - Block if invalid
     - `sign_all_configs()` / `verify_all_configs()` - Batch ops
+  - **S17 Script Integrity Hashes**:
+    - `generate_hash_manifest()` - Create SHA256 manifest
+    - `verify_script_integrity()` - Check all scripts
+    - `verify_single_script()` - Check individual file
+    - `update_script_hash()` - Update after edits
 
 ## [1.5.2] - 2026-01-05
 

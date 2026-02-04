@@ -2115,6 +2115,219 @@ verify_all_configs() {
   [[ $invalid -eq 0 ]]
 }
 
+# --- S17: Script Integrity Hashes -------------------------------------------
+
+# Default hash manifest file location
+SCRIPT_HASH_MANIFEST="${CIRCUS_HASH_MANIFEST:-$HOME/.circus/script_hashes.sha256}"
+
+# Calculate SHA256 hash of a file (S17)
+# Usage: hash=$(file_hash "/path/to/script.sh")
+file_hash() {
+  local file="$1"
+  
+  if [[ ! -f "$file" ]]; then
+    return 1
+  fi
+  
+  shasum -a 256 "$file" 2>/dev/null | awk '{print $1}'
+}
+
+# Generate hash manifest for all scripts (S17)
+# Usage: generate_hash_manifest "/path/to/scripts" [output_file]
+generate_hash_manifest() {
+  local dir="${1:-$DOTFILES_ROOT}"
+  local output="${2:-$SCRIPT_HASH_MANIFEST}"
+  
+  if [[ ! -d "$dir" ]]; then
+    msg_error "Directory not found: $dir"
+    return 1
+  fi
+  
+  mkdir -p "$(dirname "$output")"
+  
+  {
+    echo "# Script Integrity Manifest"
+    echo "# Generated: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "# Directory: $dir"
+    echo "#"
+    
+    # Hash all shell scripts
+    find "$dir" -type f \( -name "*.sh" -o -name "fc-*" \) -not -path "*/.git/*" | sort | while read -r file; do
+      local hash
+      hash=$(file_hash "$file")
+      if [[ -n "$hash" ]]; then
+        # Store relative path from dir
+        local rel_path="${file#$dir/}"
+        echo "$hash  $rel_path"
+      fi
+    done
+  } > "$output"
+  
+  chmod 600 "$output"
+  
+  local count
+  count=$(grep -v "^#" "$output" | wc -l | tr -d ' ')
+  
+  msg_success "Generated hash manifest: $output ($count files)"
+  security_log "info" "Hash manifest generated" "$output ($count files)"
+}
+
+# Verify scripts against hash manifest (S17)
+# Usage: if verify_script_integrity; then ...
+verify_script_integrity() {
+  local dir="${1:-$DOTFILES_ROOT}"
+  local manifest="${2:-$SCRIPT_HASH_MANIFEST}"
+  
+  if [[ ! -f "$manifest" ]]; then
+    msg_warning "No hash manifest found: $manifest"
+    msg_info "Generate one with: generate_hash_manifest"
+    return 2
+  fi
+  
+  local modified=0
+  local missing=0
+  local verified=0
+  
+  msg_info "Verifying script integrity..."
+  
+  while IFS= read -r line; do
+    # Skip comments
+    [[ "$line" =~ ^# ]] && continue
+    [[ -z "$line" ]] && continue
+    
+    local stored_hash file_path
+    stored_hash=$(echo "$line" | awk '{print $1}')
+    file_path=$(echo "$line" | awk '{print $2}')
+    
+    local full_path="$dir/$file_path"
+    
+    if [[ ! -f "$full_path" ]]; then
+      msg_warning "  MISSING: $file_path"
+      ((missing++))
+      continue
+    fi
+    
+    local current_hash
+    current_hash=$(file_hash "$full_path")
+    
+    if [[ "$current_hash" == "$stored_hash" ]]; then
+      ((verified++))
+    else
+      msg_error "  MODIFIED: $file_path"
+      ((modified++))
+    fi
+  done < "$manifest"
+  
+  echo ""
+  msg_info "Results: $verified verified, $modified modified, $missing missing"
+  
+  if [[ $modified -gt 0 ]]; then
+    security_log "critical" "Script integrity check FAILED" "$modified modified files"
+    return 1
+  elif [[ $missing -gt 0 ]]; then
+    security_log "warning" "Script integrity check incomplete" "$missing missing files"
+    return 1
+  else
+    security_log "info" "Script integrity verified" "$verified files OK"
+    return 0
+  fi
+}
+
+# Verify a single script against manifest (S17)
+# Usage: if verify_single_script "/path/to/script.sh"; then ...
+verify_single_script() {
+  local file="$1"
+  local manifest="${2:-$SCRIPT_HASH_MANIFEST}"
+  local dir="${3:-$DOTFILES_ROOT}"
+  
+  if [[ ! -f "$file" ]]; then
+    msg_error "File not found: $file"
+    return 1
+  fi
+  
+  if [[ ! -f "$manifest" ]]; then
+    return 2  # No manifest
+  fi
+  
+  local rel_path="${file#$dir/}"
+  local stored_hash
+  stored_hash=$(grep "  $rel_path$" "$manifest" | awk '{print $1}')
+  
+  if [[ -z "$stored_hash" ]]; then
+    msg_warning "Script not in manifest: $file"
+    return 2
+  fi
+  
+  local current_hash
+  current_hash=$(file_hash "$file")
+  
+  if [[ "$current_hash" == "$stored_hash" ]]; then
+    return 0
+  else
+    msg_error "Script integrity FAILED: $file"
+    security_log "critical" "Single script integrity FAILED" "$file"
+    return 1
+  fi
+}
+
+# Show manifest info (S17)
+# Usage: show_hash_manifest
+show_hash_manifest() {
+  local manifest="${1:-$SCRIPT_HASH_MANIFEST}"
+  
+  if [[ ! -f "$manifest" ]]; then
+    msg_info "No hash manifest found."
+    echo "   Generate with: generate_hash_manifest"
+    return 0
+  fi
+  
+  echo ""
+  msg_info "📋 Script Hash Manifest"
+  echo ""
+  grep "^#" "$manifest" | sed 's/^# /   /'
+  echo ""
+  
+  local count
+  count=$(grep -v "^#" "$manifest" | wc -l | tr -d ' ')
+  echo "   Total files: $count"
+  echo "   Location: $manifest"
+}
+
+# Update hash for a single modified script (S17)
+# Usage: update_script_hash "/path/to/script.sh"
+update_script_hash() {
+  local file="$1"
+  local manifest="${2:-$SCRIPT_HASH_MANIFEST}"
+  local dir="${3:-$DOTFILES_ROOT}"
+  
+  if [[ ! -f "$file" ]]; then
+    msg_error "File not found: $file"
+    return 1
+  fi
+  
+  if [[ ! -f "$manifest" ]]; then
+    msg_error "No manifest found. Generate one first."
+    return 1
+  fi
+  
+  local rel_path="${file#$dir/}"
+  local new_hash
+  new_hash=$(file_hash "$file")
+  
+  # Check if entry exists
+  if grep -q "  $rel_path$" "$manifest"; then
+    # Update existing entry
+    sed -i '' "s|^[a-f0-9]*  $rel_path$|$new_hash  $rel_path|" "$manifest"
+    msg_success "Updated hash: $rel_path"
+  else
+    # Add new entry
+    echo "$new_hash  $rel_path" >> "$manifest"
+    msg_success "Added hash: $rel_path"
+  fi
+  
+  security_log "info" "Script hash updated" "$rel_path"
+}
+
 # --- Exports ----------------------------------------------------------------
 
 export -f sanitize_string escape_for_shell sanitize_domain
@@ -2141,4 +2354,6 @@ export -f get_secure_delete_tool secure_delete secure_delete_dir
 export -f secure_clear secure_delete_confirm
 export -f sign_config verify_config_signature verify_before_apply
 export -f list_signing_keys is_config_signed sign_all_configs verify_all_configs
-export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES CIRCUS_SIGNING_KEY
+export -f file_hash generate_hash_manifest verify_script_integrity
+export -f verify_single_script show_hash_manifest update_script_hash
+export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES CIRCUS_SIGNING_KEY SCRIPT_HASH_MANIFEST
