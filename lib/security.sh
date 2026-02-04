@@ -1391,6 +1391,157 @@ get_real_path() {
   echo "$(cd "$(dirname "$current")" 2>/dev/null && pwd -P)/$(basename "$current")"
 }
 
+# --- S13: Config File Permissions Check -------------------------------------
+
+# Check if file has insecure permissions (S13)
+# Usage: if is_world_writable "/path/to/file"; then ...
+is_world_writable() {
+  local file="$1"
+  
+  if [[ ! -e "$file" ]]; then
+    return 1
+  fi
+  
+  # Get permissions - macOS uses stat -f, Linux uses stat -c
+  local perms
+  perms=$(stat -f "%Lp" "$file" 2>/dev/null || stat -c "%a" "$file" 2>/dev/null)
+  
+  # Check if world-writable (last digit is 2, 3, 6, or 7)
+  local world_perm="${perms: -1}"
+  [[ "$world_perm" =~ [2367] ]]
+}
+
+# Check if file is group-writable (S13)
+# Usage: if is_group_writable "/path/to/file"; then ...
+is_group_writable() {
+  local file="$1"
+  
+  if [[ ! -e "$file" ]]; then
+    return 1
+  fi
+  
+  local perms
+  perms=$(stat -f "%Lp" "$file" 2>/dev/null || stat -c "%a" "$file" 2>/dev/null)
+  
+  # Check if group-writable (middle digit is 2, 3, 6, or 7)
+  local group_perm="${perms:1:1}"
+  [[ "$group_perm" =~ [2367] ]]
+}
+
+# Check config file permissions and warn if insecure (S13)
+# Usage: check_config_permissions "/path/to/config.yaml"
+# Returns 0 if secure, 1 if warnings found
+check_config_permissions() {
+  local file="$1"
+  local warnings=0
+  
+  if [[ ! -f "$file" ]]; then
+    msg_error "File not found: $file"
+    return 2
+  fi
+  
+  local perms
+  perms=$(stat -f "%Lp" "$file" 2>/dev/null || stat -c "%a" "$file" 2>/dev/null)
+  
+  # Check world-writable
+  if is_world_writable "$file"; then
+    msg_warning "⚠️  Config file is WORLD-WRITABLE: $file (perms: $perms)"
+    security_log "warning" "World-writable config file" "$file ($perms)"
+    ((warnings++))
+  fi
+  
+  # Check group-writable
+  if is_group_writable "$file"; then
+    msg_warning "⚠️  Config file is group-writable: $file (perms: $perms)"
+    security_log "info" "Group-writable config file" "$file ($perms)"
+    ((warnings++))
+  fi
+  
+  # Check for recommended permissions (600 or 644)
+  if [[ ! "$perms" =~ ^(600|644|640)$ ]]; then
+    msg_info "   Recommended: chmod 600 or 644 for config files"
+  fi
+  
+  [[ $warnings -eq 0 ]]
+}
+
+# Scan directory for insecure config files (S13)
+# Usage: scan_config_permissions "/path/to/configs" [extension]
+scan_config_permissions() {
+  local dir="$1"
+  local ext="${2:-yaml}"
+  local issues=0
+  
+  if [[ ! -d "$dir" ]]; then
+    msg_error "Directory not found: $dir"
+    return 2
+  fi
+  
+  msg_info "Scanning for insecure config permissions in: $dir"
+  echo ""
+  
+  while IFS= read -r -d '' file; do
+    if ! check_config_permissions "$file"; then
+      ((issues++))
+    fi
+  done < <(find "$dir" -name "*.$ext" -print0 2>/dev/null)
+  
+  echo ""
+  if [[ $issues -gt 0 ]]; then
+    msg_warning "Found $issues file(s) with insecure permissions."
+    return 1
+  else
+    msg_success "All config files have secure permissions."
+    return 0
+  fi
+}
+
+# Fix insecure permissions on config file (S13)
+# Usage: fix_config_permissions "/path/to/config.yaml" [mode]
+fix_config_permissions() {
+  local file="$1"
+  local mode="${2:-600}"
+  
+  if [[ ! -f "$file" ]]; then
+    msg_error "File not found: $file"
+    return 1
+  fi
+  
+  local old_perms
+  old_perms=$(stat -f "%Lp" "$file" 2>/dev/null || stat -c "%a" "$file" 2>/dev/null)
+  
+  chmod "$mode" "$file" || {
+    msg_error "Failed to change permissions on: $file"
+    return 1
+  }
+  
+  msg_success "Fixed permissions: $file ($old_perms -> $mode)"
+  security_log "info" "Fixed config permissions" "$file ($old_perms -> $mode)"
+}
+
+# Verify config file is owned by current user (S13)
+# Usage: if check_config_owner "/path/to/config"; then ...
+check_config_owner() {
+  local file="$1"
+  
+  if [[ ! -e "$file" ]]; then
+    return 1
+  fi
+  
+  local file_owner
+  file_owner=$(stat -f "%Su" "$file" 2>/dev/null || stat -c "%U" "$file" 2>/dev/null)
+  local current_user
+  current_user=$(get_real_user)
+  
+  if [[ "$file_owner" != "$current_user" ]]; then
+    msg_warning "Config file owned by '$file_owner', not '$current_user': $file"
+    security_log "warning" "Config file ownership mismatch" "$file (owner: $file_owner)"
+    return 1
+  fi
+  
+  return 0
+}
+
 # --- Exports ----------------------------------------------------------------
 
 export -f sanitize_string escape_for_shell sanitize_domain
@@ -1409,4 +1560,6 @@ export -f die_if_root is_root require_non_root get_real_user
 export -f secure_mktemp secure_mktemp_dir secure_temp_cleanup secure_temp_register_cleanup
 export -f with_secure_temp verify_temp_permissions
 export -f is_symlink safe_write_check safe_write atomic_write safe_append get_real_path
+export -f is_world_writable is_group_writable check_config_permissions
+export -f scan_config_permissions fix_config_permissions check_config_owner
 export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES

@@ -178,6 +178,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `safe_write()` / `safe_append()` - Protected writes
     - `atomic_write()` - Write-to-temp-then-move pattern
     - Detects TOCTOU race conditions
+  - **S13 Config File Permissions Check**:
+    - `is_world_writable()` / `is_group_writable()` - Detection
+    - `check_config_permissions()` - Warn on insecure perms
+    - `scan_config_permissions()` - Audit entire directory
+    - `fix_config_permissions()` - Auto-fix to 600
 
 ## [1.5.2] - 2026-01-05
 
