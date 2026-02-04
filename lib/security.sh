@@ -746,6 +746,343 @@ sudo_audit_stats() {
   echo "   Log size: $(du -h "$SUDO_AUDIT_LOG" 2>/dev/null | cut -f1)"
 }
 
+# --- S07: Sudo Prompt Confirmation -------------------------------------------
+
+# Destructive operation patterns that require confirmation
+SUDO_DESTRUCTIVE_PATTERNS=(
+  "rm -rf"
+  "rm -r"
+  "mkfs"
+  "dd if="
+  "diskutil eraseDisk"
+  "diskutil eraseVolume"
+  "srm"
+  "shred"
+  "wipefs"
+  "> /dev/"
+  "chmod -R 777"
+  "chown -R"
+)
+
+# Run a destructive sudo command with explicit confirmation (S07)
+# Usage: sudo_confirm "description" [--yes] command [args...]
+# If --yes is provided, skips confirmation. Otherwise prompts user.
+sudo_confirm() {
+  local description="$1"
+  shift
+  
+  local skip_confirm=false
+  if [[ "$1" == "--yes" ]] || [[ "$1" == "-y" ]]; then
+    skip_confirm=true
+    shift
+  fi
+  
+  local cmd="$*"
+  
+  # Check if this is a destructive operation
+  local is_destructive=false
+  for pattern in "${SUDO_DESTRUCTIVE_PATTERNS[@]}"; do
+    if [[ "$cmd" == *"$pattern"* ]]; then
+      is_destructive=true
+      break
+    fi
+  done
+  
+  # If destructive and no --yes flag, require confirmation
+  if [[ "$is_destructive" == "true" ]] && [[ "$skip_confirm" == "false" ]]; then
+    echo ""
+    msg_warning "⚠️  DESTRUCTIVE OPERATION DETECTED"
+    echo ""
+    echo "   Description: $description"
+    echo "   Command:     sudo $cmd"
+    echo ""
+    msg_warning "This operation may cause irreversible changes."
+    echo ""
+    
+    # Require typing 'yes' for destructive operations
+    read -r -p "Type 'yes' to confirm, or anything else to cancel: " confirm
+    
+    if [[ "$confirm" != "yes" ]]; then
+      msg_info "Operation cancelled."
+      security_log "info" "Destructive operation cancelled by user" "$cmd"
+      return 1
+    fi
+    
+    security_log "warning" "Destructive operation confirmed" "$cmd"
+  fi
+  
+  # Execute with audit logging
+  sudo_audit "$description" "$@"
+}
+
+# Check if a command is considered destructive
+# Usage: if is_destructive_command "rm -rf /"; then ...
+is_destructive_command() {
+  local cmd="$*"
+  
+  for pattern in "${SUDO_DESTRUCTIVE_PATTERNS[@]}"; do
+    if [[ "$cmd" == *"$pattern"* ]]; then
+      return 0
+    fi
+  done
+  
+  return 1
+}
+
+# Require --yes flag for a command, or prompt
+# Usage: require_confirmation "This will delete files" "$@"
+require_confirmation() {
+  local message="$1"
+  shift
+  
+  # Check for --yes in remaining args
+  local has_yes=false
+  for arg in "$@"; do
+    if [[ "$arg" == "--yes" ]] || [[ "$arg" == "-y" ]]; then
+      has_yes=true
+      break
+    fi
+  done
+  
+  if [[ "$has_yes" == "false" ]]; then
+    echo ""
+    msg_warning "$message"
+    echo ""
+    read -r -p "Continue? [y/N] " confirm
+    
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+      msg_info "Operation cancelled."
+      return 1
+    fi
+  fi
+  
+  return 0
+}
+
+# --- S08: Privilege Drop After Use ------------------------------------------
+
+# Drop sudo credentials immediately (S08)
+# Usage: sudo_drop
+# This invalidates the sudo timestamp, requiring password on next sudo
+sudo_drop() {
+  if sudo -n true 2>/dev/null; then
+    sudo -k
+    security_log "info" "Sudo credentials dropped" "manual"
+    msg_debug "Sudo credentials invalidated."
+  fi
+}
+
+# Check if we currently have valid sudo credentials
+# Usage: if sudo_has_credentials; then ...
+sudo_has_credentials() {
+  sudo -n true 2>/dev/null
+}
+
+# Get sudo credential status
+# Usage: sudo_status
+sudo_status() {
+  if sudo_has_credentials; then
+    echo "active"
+    return 0
+  else
+    echo "inactive"
+    return 1
+  fi
+}
+
+# Run commands with automatic privilege drop after completion (S08)
+# Usage: with_sudo_scope "description" command [args...]
+# Automatically drops sudo credentials when the command completes
+with_sudo_scope() {
+  local description="$1"
+  shift
+  
+  local exit_code
+  
+  # Execute with audit logging
+  sudo_audit "$description" "$@"
+  exit_code=$?
+  
+  # Always drop privileges after
+  sudo_drop
+  
+  return $exit_code
+}
+
+# Run a block of sudo commands with automatic cleanup
+# Usage: sudo_scope_start; ..commands..; sudo_scope_end
+# Tracks scope depth for nested operations
+SUDO_SCOPE_DEPTH=0
+
+sudo_scope_start() {
+  ((SUDO_SCOPE_DEPTH++))
+  security_log "info" "Sudo scope started" "depth=$SUDO_SCOPE_DEPTH"
+}
+
+sudo_scope_end() {
+  ((SUDO_SCOPE_DEPTH--))
+  
+  # Only drop credentials when we exit the outermost scope
+  if [[ $SUDO_SCOPE_DEPTH -le 0 ]]; then
+    SUDO_SCOPE_DEPTH=0
+    sudo_drop
+    security_log "info" "Sudo scope ended, credentials dropped" ""
+  fi
+}
+
+# Register cleanup on script exit (call once at script start)
+# Usage: sudo_register_cleanup
+sudo_register_cleanup() {
+  trap 'sudo_drop' EXIT INT TERM
+  security_log "info" "Sudo cleanup trap registered" ""
+}
+
+# --- S09: sudoers Integrity Check -------------------------------------------
+
+# Baseline file for sudoers hash
+SUDOERS_BASELINE="${CIRCUS_SUDOERS_BASELINE:-$HOME/.circus/sudoers_baseline}"
+
+# Calculate hash of sudoers file(s)
+# Usage: sudoers_hash
+# Returns SHA256 hash of /etc/sudoers and /etc/sudoers.d/* combined
+sudoers_hash() {
+  local hash_input=""
+  
+  # Hash main sudoers file
+  if [[ -r /etc/sudoers ]]; then
+    hash_input+=$(sudo cat /etc/sudoers 2>/dev/null | shasum -a 256)
+  fi
+  
+  # Hash sudoers.d directory contents
+  if [[ -d /etc/sudoers.d ]]; then
+    for file in /etc/sudoers.d/*; do
+      if [[ -f "$file" && -r "$file" ]]; then
+        hash_input+=$(sudo cat "$file" 2>/dev/null | shasum -a 256)
+      fi
+    done
+  fi
+  
+  # Return combined hash
+  echo "$hash_input" | shasum -a 256 | awk '{print $1}'
+}
+
+# Save current sudoers hash as baseline (S09)
+# Usage: sudoers_baseline_save
+sudoers_baseline_save() {
+  mkdir -p "$(dirname "$SUDOERS_BASELINE")" 2>/dev/null
+  
+  local current_hash
+  current_hash=$(sudoers_hash)
+  
+  if [[ -z "$current_hash" ]]; then
+    msg_error "Failed to calculate sudoers hash"
+    return 1
+  fi
+  
+  # Save with timestamp
+  {
+    echo "# Sudoers baseline - DO NOT EDIT"
+    echo "# Created: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "# User: ${USER:-$(whoami)}"
+    echo "hash=$current_hash"
+  } > "$SUDOERS_BASELINE"
+  
+  chmod 600 "$SUDOERS_BASELINE"
+  
+  msg_success "Sudoers baseline saved."
+  security_log "info" "Sudoers baseline created" "hash=$current_hash"
+}
+
+# Check if sudoers has been modified since baseline (S09)
+# Usage: if sudoers_check; then ... (returns 0 if unchanged, 1 if modified)
+sudoers_check() {
+  if [[ ! -f "$SUDOERS_BASELINE" ]]; then
+    msg_warning "No sudoers baseline found. Run 'sudoers_baseline_save' first."
+    return 2
+  fi
+  
+  local baseline_hash current_hash
+  baseline_hash=$(grep "^hash=" "$SUDOERS_BASELINE" 2>/dev/null | cut -d= -f2)
+  current_hash=$(sudoers_hash)
+  
+  if [[ -z "$baseline_hash" ]]; then
+    msg_error "Invalid baseline file"
+    return 2
+  fi
+  
+  if [[ "$current_hash" == "$baseline_hash" ]]; then
+    return 0  # Unchanged
+  else
+    return 1  # Modified
+  fi
+}
+
+# Verify sudoers integrity before running a privileged command (S09)
+# Usage: sudoers_verify_before "description" command [args...]
+# Aborts if sudoers has been modified since baseline
+sudoers_verify_before() {
+  local description="$1"
+  shift
+  
+  # Skip check if no baseline exists
+  if [[ ! -f "$SUDOERS_BASELINE" ]]; then
+    msg_debug "No sudoers baseline - skipping integrity check"
+    sudo_audit "$description" "$@"
+    return $?
+  fi
+  
+  # Check integrity
+  if ! sudoers_check; then
+    echo ""
+    msg_error "⚠️  SUDOERS FILE MODIFIED"
+    echo ""
+    echo "   The /etc/sudoers file has been modified since the baseline was saved."
+    echo "   This could indicate unauthorized access or tampering."
+    echo ""
+    echo "   Options:"
+    echo "   1. Investigate the changes before proceeding"
+    echo "   2. Run 'sudoers_baseline_save' to update baseline if changes are expected"
+    echo ""
+    
+    security_log "critical" "Sudoers integrity check FAILED" "$description"
+    
+    read -r -p "Continue anyway? [y/N] " confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+      msg_info "Operation aborted."
+      return 1
+    fi
+    
+    security_log "warning" "User bypassed sudoers integrity check" "$description"
+  fi
+  
+  sudo_audit "$description" "$@"
+}
+
+# Show sudoers baseline info
+# Usage: sudoers_baseline_info
+sudoers_baseline_info() {
+  if [[ ! -f "$SUDOERS_BASELINE" ]]; then
+    msg_info "No sudoers baseline found."
+    echo "   Run 'sudoers_baseline_save' to create one."
+    return 0
+  fi
+  
+  echo ""
+  msg_info "📋 Sudoers Baseline Info"
+  echo ""
+  grep -v "^#" "$SUDOERS_BASELINE" | head -5
+  echo ""
+  echo "   Baseline file: $SUDOERS_BASELINE"
+  echo "   Created: $(grep "^# Created:" "$SUDOERS_BASELINE" | cut -d: -f2-)"
+  echo ""
+  
+  if sudoers_check; then
+    msg_success "✅ Sudoers unchanged since baseline"
+  else
+    msg_warning "⚠️  Sudoers has been MODIFIED since baseline"
+  fi
+}
+
 # --- Exports ----------------------------------------------------------------
 
 export -f sanitize_string escape_for_shell sanitize_domain
@@ -756,4 +1093,8 @@ export -f validate_path resolve_path_secure is_within_allowed_paths
 export -f check_symlink_target is_path_safe validate_config_path
 export -f is_yaml_safe sanitize_yaml_value validate_yaml_security safe_yaml_get
 export -f sudo_audit sudo_quiet sudo_audit_view sudo_audit_clear sudo_audit_stats
-export SUDO_AUDIT_LOG
+export -f sudo_confirm is_destructive_command require_confirmation
+export -f sudo_drop sudo_has_credentials sudo_status
+export -f with_sudo_scope sudo_scope_start sudo_scope_end sudo_register_cleanup
+export -f sudoers_hash sudoers_baseline_save sudoers_check sudoers_verify_before sudoers_baseline_info
+export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE

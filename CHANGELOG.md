@@ -148,6 +148,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `sudo_audit_view()` - View recent log entries
     - `sudo_audit_stats()` - Show success/failure statistics
     - Integrated into `lib/os/macos.sh` for firewall/DNS
+  - **S07 Sudo Prompt Confirmation**:
+    - `sudo_confirm()` - Require `--yes` for destructive operations
+    - Detects `rm -rf`, `mkfs`, `dd`, `diskutil erase*`, etc.
+    - `is_destructive_command()` - Check if command is destructive
+    - `require_confirmation()` - Generic confirmation helper
+  - **S08 Privilege Drop After Use**:
+    - `sudo_drop()` - Invalidate sudo credentials immediately
+    - `with_sudo_scope()` - Auto-drop after command
+    - `sudo_scope_start/end()` - Nested scope tracking
+    - `sudo_register_cleanup()` - Drop on script exit
+  - **S09 sudoers Integrity Check**:
+    - `sudoers_baseline_save()` - Save hash of /etc/sudoers
+    - `sudoers_check()` - Verify against baseline
+    - `sudoers_verify_before()` - Check before privileged ops
+    - Hashes main sudoers + sudoers.d/* files
 
 ## [1.5.2] - 2026-01-05
 
