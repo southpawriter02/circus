@@ -4,91 +4,486 @@
 #
 # FILE:         fc-firewall
 #
-# DESCRIPTION:  Manage the system firewall from the command line.
-#               Provides simple on/off control and status checking.
-#
-# CROSS-PLATFORM:
-#   - macOS: Uses socketfilterfw (Application Firewall)
-#   - Linux: Uses ufw or firewalld
+# DESCRIPTION:  Manage the macOS application firewall from the command line.
+#               Provides on/off control, status checking, and granular per-app
+#               rule management through socketfilterfw.
 #
 # REQUIRES:
-#   - macOS 10.5.1+ or Linux with ufw/firewalld
-#   - Administrator privileges (sudo) for all operations
+#   - macOS 10.5.1+ (Application Firewall)
+#   - Administrator privileges (sudo) for most operations
 #
-# ACTIONS:
-#   on      - Turn the firewall on
-#   off     - Turn the firewall off
-#   status  - Show current firewall state
-#
-# EXAMPLES:
-#   fc firewall on        # Enable firewall
-#   fc firewall off       # Disable firewall
-#   fc firewall status    # Check if firewall is enabled
-#
-# NOTES:
-#   - macOS: Application-level firewall (incoming connections only)
-#   - Linux: ufw or firewalld (full packet filtering)
-#   - All operations require sudo/administrator privileges
+# CONFIGURATION:
+#   ~/.config/circus/firewall.conf - Define persistent app rules
 #
 # ==============================================================================
 
 # --- Initialization ---------------------------------------------------------
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
+# --- Configuration ----------------------------------------------------------
+readonly FIREWALL_CONFIG="$HOME/.config/circus/firewall.conf"
+readonly FIREWALL_TOOL="/usr/libexec/ApplicationFirewall/socketfilterfw"
+
 # --- Help and Usage ---------------------------------------------------------
 usage() {
-  msg_info "Usage: fc firewall <action>"
+  msg_info "Usage: fc firewall <action> [options]"
   echo ""
-  msg_info "Manages the system firewall."
-  msg_info "This command requires administrator privileges."
+  msg_info "Manages the macOS application firewall."
+  msg_info "Most actions require administrator privileges (sudo)."
   echo ""
-  msg_info "Actions:"
-  echo "  on      - Turn the firewall on."
-  echo "  off     - Turn the firewall off."
-  echo "  status  - Show the current firewall status."
+  msg_info "Basic Actions:"
+  echo "  on              Turn the firewall on"
+  echo "  off             Turn the firewall off"
+  echo "  status          Show current firewall state"
+  echo ""
+  msg_info "App Rule Management:"
+  echo "  list-apps       List all applications with firewall rules"
+  echo "  add <app>       Add an application (blocks incoming by default)"
+  echo "  remove <app>    Remove an application from the firewall"
+  echo "  allow <app>     Allow incoming connections for an app"
+  echo "  block <app>     Block incoming connections for an app"
+  echo ""
+  msg_info "Configuration:"
+  echo "  apply-rules     Apply rules from $FIREWALL_CONFIG"
+  echo "  export          Export current rules to stdout"
+  echo "  setup           Create configuration file template"
+  echo ""
+  msg_info "Advanced Options:"
+  echo "  stealth-on      Enable stealth mode (don't respond to probes)"
+  echo "  stealth-off     Disable stealth mode"
+  echo "  block-all       Block all incoming connections"
+  echo "  unblock-all     Allow signed apps to receive connections"
   echo ""
   msg_info "Examples:"
-  echo "  fc firewall on       # Enable firewall"
-  echo "  fc firewall status   # Check current state"
+  echo "  fc firewall on"
+  echo "  fc firewall add /Applications/Firefox.app"
+  echo "  fc firewall allow /Applications/Slack.app"
+  echo "  fc firewall list-apps"
   echo ""
-  if is_linux; then
-    msg_info "Linux: Requires ufw or firewalld"
-  fi
   exit 0
+}
+
+# --- Validation -------------------------------------------------------------
+
+# Check if running on macOS
+check_macos() {
+  if ! is_macos; then
+    die "fc-firewall currently only supports macOS."
+  fi
+}
+
+# Check if socketfilterfw exists
+check_firewall_tool() {
+  if [[ ! -x "$FIREWALL_TOOL" ]]; then
+    die "Firewall tool not found at $FIREWALL_TOOL"
+  fi
+}
+
+# Validate app path
+validate_app_path() {
+  local app_path="$1"
+  
+  if [[ -z "$app_path" ]]; then
+    die "Application path is required."
+  fi
+  
+  # Expand ~ if present
+  app_path="${app_path/#\~/$HOME}"
+  
+  # Check if path exists
+  if [[ ! -e "$app_path" ]]; then
+    die "Application not found: $app_path"
+  fi
+  
+  # Check if it's an app bundle or executable
+  if [[ ! -d "$app_path" && ! -x "$app_path" ]]; then
+    die "Path must be an .app bundle or executable: $app_path"
+  fi
+  
+  echo "$app_path"
+}
+
+# --- Firewall Commands ------------------------------------------------------
+
+# Get firewall status
+do_status() {
+  msg_info "Firewall Status"
+  echo ""
+  
+  # Global state
+  local global_state
+  global_state=$(sudo "$FIREWALL_TOOL" --getglobalstate 2>/dev/null)
+  if echo "$global_state" | grep -q "enabled"; then
+    echo "  Firewall:        ✅ Enabled"
+  else
+    echo "  Firewall:        ❌ Disabled"
+  fi
+  
+  # Stealth mode
+  local stealth
+  stealth=$(sudo "$FIREWALL_TOOL" --getstealthmode 2>/dev/null)
+  if echo "$stealth" | grep -q "enabled"; then
+    echo "  Stealth Mode:    ✅ Enabled"
+  else
+    echo "  Stealth Mode:    ❌ Disabled"
+  fi
+  
+  # Block all mode
+  local blockall
+  blockall=$(sudo "$FIREWALL_TOOL" --getblockall 2>/dev/null)
+  if echo "$blockall" | grep -q "enabled"; then
+    echo "  Block All:       ✅ Enabled (all incoming blocked)"
+  else
+    echo "  Block All:       ❌ Disabled"
+  fi
+  
+  # Allow signed
+  local allowsigned
+  allowsigned=$(sudo "$FIREWALL_TOOL" --getallowsigned 2>/dev/null)
+  if echo "$allowsigned" | grep -q "enabled"; then
+    echo "  Allow Signed:    ✅ Enabled"
+  else
+    echo "  Allow Signed:    ❌ Disabled"
+  fi
+  
+  # Count apps with rules
+  local app_count
+  app_count=$(sudo "$FIREWALL_TOOL" --listapps 2>/dev/null | grep -c "^[0-9]" || echo "0")
+  echo "  Managed Apps:    $app_count"
+  echo ""
+}
+
+# Turn firewall on
+do_on() {
+  msg_info "Turning the firewall on..."
+  if sudo "$FIREWALL_TOOL" --setglobalstate on >/dev/null 2>&1; then
+    msg_success "Firewall is now enabled."
+  else
+    die "Failed to enable firewall."
+  fi
+}
+
+# Turn firewall off
+do_off() {
+  msg_info "Turning the firewall off..."
+  if sudo "$FIREWALL_TOOL" --setglobalstate off >/dev/null 2>&1; then
+    msg_success "Firewall is now disabled."
+  else
+    die "Failed to disable firewall."
+  fi
+}
+
+# List all apps with rules
+do_list_apps() {
+  msg_info "Applications with Firewall Rules"
+  echo ""
+  
+  local output
+  output=$(sudo "$FIREWALL_TOOL" --listapps 2>/dev/null)
+  
+  if [[ -z "$output" ]] || echo "$output" | grep -q "No applications"; then
+    msg_info "No applications have firewall rules configured."
+    return 0
+  fi
+  
+  # Parse and display in a cleaner format
+  echo "$output" | while IFS= read -r line; do
+    if [[ "$line" =~ ^[0-9]+: ]]; then
+      # Extract app path
+      local app_path
+      app_path=$(echo "$line" | sed 's/^[0-9]*: //')
+      printf "  📦 %s\n" "$app_path"
+    elif [[ "$line" =~ \(Allow\) ]]; then
+      echo "     └─ ✅ Allow incoming connections"
+    elif [[ "$line" =~ \(Block\) ]]; then
+      echo "     └─ 🚫 Block incoming connections"
+    fi
+  done
+  echo ""
+}
+
+# Add an application to the firewall
+do_add() {
+  local app_path
+  app_path=$(validate_app_path "$1")
+  
+  msg_info "Adding application to firewall: $app_path"
+  
+  if sudo "$FIREWALL_TOOL" --add "$app_path" >/dev/null 2>&1; then
+    msg_success "Application added (incoming connections blocked by default)."
+    msg_info "Use 'fc firewall allow \"$app_path\"' to allow connections."
+  else
+    die "Failed to add application to firewall."
+  fi
+}
+
+# Remove an application from the firewall
+do_remove() {
+  local app_path
+  app_path=$(validate_app_path "$1")
+  
+  msg_info "Removing application from firewall: $app_path"
+  
+  if sudo "$FIREWALL_TOOL" --remove "$app_path" >/dev/null 2>&1; then
+    msg_success "Application removed from firewall."
+  else
+    die "Failed to remove application from firewall."
+  fi
+}
+
+# Allow incoming connections for an app
+do_allow() {
+  local app_path
+  app_path=$(validate_app_path "$1")
+  
+  msg_info "Allowing incoming connections for: $app_path"
+  
+  # First ensure app is added, then unblock
+  sudo "$FIREWALL_TOOL" --add "$app_path" >/dev/null 2>&1
+  
+  if sudo "$FIREWALL_TOOL" --unblockapp "$app_path" >/dev/null 2>&1; then
+    msg_success "Incoming connections are now allowed."
+  else
+    die "Failed to allow connections for application."
+  fi
+}
+
+# Block incoming connections for an app
+do_block() {
+  local app_path
+  app_path=$(validate_app_path "$1")
+  
+  msg_info "Blocking incoming connections for: $app_path"
+  
+  # First ensure app is added, then block
+  sudo "$FIREWALL_TOOL" --add "$app_path" >/dev/null 2>&1
+  
+  if sudo "$FIREWALL_TOOL" --blockapp "$app_path" >/dev/null 2>&1; then
+    msg_success "Incoming connections are now blocked."
+  else
+    die "Failed to block connections for application."
+  fi
+}
+
+# Enable stealth mode
+do_stealth_on() {
+  msg_info "Enabling stealth mode..."
+  if sudo "$FIREWALL_TOOL" --setstealthmode on >/dev/null 2>&1; then
+    msg_success "Stealth mode enabled. Your Mac will not respond to ICMP probes."
+  else
+    die "Failed to enable stealth mode."
+  fi
+}
+
+# Disable stealth mode
+do_stealth_off() {
+  msg_info "Disabling stealth mode..."
+  if sudo "$FIREWALL_TOOL" --setstealthmode off >/dev/null 2>&1; then
+    msg_success "Stealth mode disabled."
+  else
+    die "Failed to disable stealth mode."
+  fi
+}
+
+# Block all incoming connections
+do_block_all() {
+  msg_info "Blocking all incoming connections..."
+  msg_warning "This will block all incoming connections except essential services."
+  
+  if sudo "$FIREWALL_TOOL" --setblockall on >/dev/null 2>&1; then
+    msg_success "All incoming connections are now blocked."
+  else
+    die "Failed to enable block-all mode."
+  fi
+}
+
+# Allow signed apps
+do_unblock_all() {
+  msg_info "Allowing signed applications to receive connections..."
+  
+  if sudo "$FIREWALL_TOOL" --setblockall off >/dev/null 2>&1; then
+    msg_success "Signed applications can now receive connections."
+  else
+    die "Failed to disable block-all mode."
+  fi
+}
+
+# Setup configuration file
+do_setup() {
+  local config_dir
+  config_dir=$(dirname "$FIREWALL_CONFIG")
+  
+  if [[ -f "$FIREWALL_CONFIG" ]]; then
+    msg_info "Configuration file already exists: $FIREWALL_CONFIG"
+    return 0
+  fi
+  
+  mkdir -p "$config_dir"
+  
+  cat > "$FIREWALL_CONFIG" << 'EOF'
+# Firewall Rules Configuration
+# =============================
+# This file defines application firewall rules for 'fc firewall apply-rules'.
+#
+# Format: <action> <path_to_app>
+#   action: allow | block
+#   path: Full path to .app bundle or executable
+#
+# Lines starting with # are comments.
+# Empty lines are ignored.
+#
+# Examples:
+# allow /Applications/Slack.app
+# block /Applications/Suspicious.app
+# allow /usr/local/bin/myserver
+
+# --- Development Tools ---
+# allow /Applications/Visual Studio Code.app
+# allow /Applications/Docker.app
+
+# --- Communication ---
+# allow /Applications/Slack.app
+# allow /Applications/Zoom.app
+
+# --- Browsers ---
+# block /Applications/Firefox.app
+EOF
+
+  chmod 600 "$FIREWALL_CONFIG"
+  msg_success "Configuration file created: $FIREWALL_CONFIG"
+  msg_info "Edit the file to define your firewall rules."
+  msg_info "Then run: fc firewall apply-rules"
+}
+
+# Apply rules from config file
+do_apply_rules() {
+  if [[ ! -f "$FIREWALL_CONFIG" ]]; then
+    msg_error "Configuration file not found: $FIREWALL_CONFIG"
+    msg_info "Run 'fc firewall setup' to create it."
+    return 1
+  fi
+  
+  msg_info "Applying firewall rules from: $FIREWALL_CONFIG"
+  echo ""
+  
+  local success_count=0
+  local fail_count=0
+  local line_num=0
+  
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    ((line_num++))
+    
+    # Skip comments and empty lines
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "${line// }" ]] && continue
+    
+    # Parse action and path
+    local action app_path
+    action=$(echo "$line" | awk '{print $1}')
+    app_path=$(echo "$line" | cut -d' ' -f2-)
+    
+    # Trim whitespace
+    app_path="${app_path#"${app_path%%[![:space:]]*}"}"
+    app_path="${app_path%"${app_path##*[![:space:]]}"}"
+    
+    # Validate action
+    if [[ "$action" != "allow" && "$action" != "block" ]]; then
+      msg_warning "Line $line_num: Invalid action '$action' (use allow/block)"
+      ((fail_count++))
+      continue
+    fi
+    
+    # Check if app exists
+    if [[ ! -e "$app_path" ]]; then
+      msg_warning "Line $line_num: App not found: $app_path"
+      ((fail_count++))
+      continue
+    fi
+    
+    # Apply the rule
+    case "$action" in
+      allow)
+        sudo "$FIREWALL_TOOL" --add "$app_path" >/dev/null 2>&1
+        if sudo "$FIREWALL_TOOL" --unblockapp "$app_path" >/dev/null 2>&1; then
+          echo "  ✅ Allow: $(basename "$app_path")"
+          ((success_count++))
+        else
+          echo "  ❌ Failed: $(basename "$app_path")"
+          ((fail_count++))
+        fi
+        ;;
+      block)
+        sudo "$FIREWALL_TOOL" --add "$app_path" >/dev/null 2>&1
+        if sudo "$FIREWALL_TOOL" --blockapp "$app_path" >/dev/null 2>&1; then
+          echo "  🚫 Block: $(basename "$app_path")"
+          ((success_count++))
+        else
+          echo "  ❌ Failed: $(basename "$app_path")"
+          ((fail_count++))
+        fi
+        ;;
+    esac
+  done < "$FIREWALL_CONFIG"
+  
+  echo ""
+  msg_info "Applied $success_count rules ($fail_count failed)"
+}
+
+# Export current rules
+do_export() {
+  echo "# Firewall Rules Export"
+  echo "# Generated: $(date)"
+  echo ""
+  
+  sudo "$FIREWALL_TOOL" --listapps 2>/dev/null | while IFS= read -r line; do
+    if [[ "$line" =~ ^[0-9]+: ]]; then
+      current_app=$(echo "$line" | sed 's/^[0-9]*: //')
+    elif [[ "$line" =~ \(Allow\) ]]; then
+      echo "allow $current_app"
+    elif [[ "$line" =~ \(Block\) ]]; then
+      echo "block $current_app"
+    fi
+  done
 }
 
 # --- Main Logic -------------------------------------------------------------
 main() {
-  if [ -z "$1" ] || [ "$1" == "--help" ]; then
+  check_macos
+  check_firewall_tool
+  
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
     usage
   fi
-
-  ACTION="$1"
-
-  case "$ACTION" in
-
-    # --- Action: on ---------------------------------------------------------
-    on)
-      msg_info "Turning the firewall on..."
-      os_firewall_on
-      msg_success "Firewall is now on."
-      ;;
-
-    # --- Action: off --------------------------------------------------------
-    off)
-      msg_info "Turning the firewall off..."
-      os_firewall_off
-      msg_success "Firewall is now off."
-      ;;
-
-    # --- Action: status -----------------------------------------------------
-    status)
-      msg_info "Checking firewall status..."
-      os_firewall_status
-      ;;
-
+  
+  local action="$1"
+  shift
+  
+  case "$action" in
+    # Basic actions
+    on)           do_on ;;
+    off)          do_off ;;
+    status)       do_status ;;
+    
+    # App management
+    list-apps)    do_list_apps ;;
+    add)          do_add "$1" ;;
+    remove)       do_remove "$1" ;;
+    allow)        do_allow "$1" ;;
+    block)        do_block "$1" ;;
+    
+    # Configuration
+    apply-rules)  do_apply_rules ;;
+    export)       do_export ;;
+    setup)        do_setup ;;
+    
+    # Advanced
+    stealth-on)   do_stealth_on ;;
+    stealth-off)  do_stealth_off ;;
+    block-all)    do_block_all ;;
+    unblock-all)  do_unblock_all ;;
+    
     *)
-      die "Unknown action '$ACTION'. Run 'fc firewall --help' for available actions."
+      die "Unknown action '$action'. Run 'fc firewall --help' for available actions."
       ;;
   esac
 }

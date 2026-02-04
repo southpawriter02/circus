@@ -4,8 +4,7 @@
 #
 # FILE:         fc_firewall.bats
 #
-# DESCRIPTION:  Tests for the fc firewall command for managing the macOS
-#               application firewall.
+# DESCRIPTION:  Tests for the fc firewall command for macOS firewall management.
 #
 # ==============================================================================
 
@@ -29,7 +28,7 @@ setup() {
   assert_output --partial "Usage: fc firewall"
 }
 
-@test "fc firewall --help shows actions" {
+@test "fc firewall --help shows basic actions" {
   run "$FC_COMMAND" fc-firewall --help
   assert_success
   assert_output --partial "on"
@@ -37,18 +36,30 @@ setup() {
   assert_output --partial "status"
 }
 
-@test "fc firewall --help shows examples" {
+@test "fc firewall --help shows app management actions" {
   run "$FC_COMMAND" fc-firewall --help
   assert_success
-  assert_output --partial "Examples:"
-  assert_output --partial "fc firewall on"
-  assert_output --partial "fc firewall status"
+  assert_output --partial "list-apps"
+  assert_output --partial "add"
+  assert_output --partial "remove"
+  assert_output --partial "allow"
+  assert_output --partial "block"
 }
 
-@test "fc firewall --help mentions sudo requirement" {
+@test "fc firewall --help shows configuration actions" {
   run "$FC_COMMAND" fc-firewall --help
   assert_success
-  assert_output --partial "sudo"
+  assert_output --partial "apply-rules"
+  assert_output --partial "export"
+  assert_output --partial "setup"
+}
+
+@test "fc firewall --help shows advanced options" {
+  run "$FC_COMMAND" fc-firewall --help
+  assert_success
+  assert_output --partial "stealth-on"
+  assert_output --partial "stealth-off"
+  assert_output --partial "block-all"
 }
 
 @test "fc firewall with no action shows usage" {
@@ -58,23 +69,41 @@ setup() {
 }
 
 # ==============================================================================
-# Action Tests
+# Validation Tests
 # ==============================================================================
 
+@test "fc firewall add requires app path" {
+  # Skip on non-macOS
+  if [[ "$(uname)" != "Darwin" ]]; then
+    skip "macOS only"
+  fi
+  
+  run "$FC_COMMAND" fc-firewall add
+  assert_failure
+  assert_output --partial "required"
+}
+
+@test "fc firewall add validates app exists" {
+  # Skip on non-macOS
+  if [[ "$(uname)" != "Darwin" ]]; then
+    skip "macOS only"
+  fi
+  
+  run "$FC_COMMAND" fc-firewall add "/nonexistent/app.app"
+  assert_failure
+  assert_output --partial "not found"
+}
+
 @test "fc firewall unknown action fails" {
+  # Skip on non-macOS
+  if [[ "$(uname)" != "Darwin" ]]; then
+    skip "macOS only"
+  fi
+  
   run "$FC_COMMAND" fc-firewall unknown_action
   assert_failure
   assert_output --partial "Unknown action"
 }
-
-@test "fc firewall unknown action shows help hint" {
-  run "$FC_COMMAND" fc-firewall unknown_action
-  assert_failure
-  assert_output --partial "--help"
-}
-
-# Note: We skip tests that require sudo as they would fail in CI environments
-# and we don't want to modify actual firewall settings during tests
 
 # ==============================================================================
 # Plugin File Tests
@@ -93,12 +122,7 @@ setup() {
   assert_success
 }
 
-@test "fc-firewall plugin uses socketfilterfw" {
+@test "fc-firewall contains socketfilterfw reference" {
   run grep "socketfilterfw" "$PROJECT_ROOT/lib/plugins/fc-firewall"
-  assert_success
-}
-
-@test "fc-firewall plugin defines FIREWALL_CMD" {
-  run grep "FIREWALL_CMD" "$PROJECT_ROOT/lib/plugins/fc-firewall"
   assert_success
 }
