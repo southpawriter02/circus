@@ -28,6 +28,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - BATS tests for all 7 commands
   - COMMANDS.md documentation (341 lines added)
 
+- **Enhanced `fc firewall`** - Granular per-app firewall rule management (Feature #29):
+  - `list-apps` - List all applications with firewall rules
+  - `add/remove <app>` - Add or remove apps from firewall
+  - `allow/block <app>` - Control incoming connections per app
+  - `apply-rules` - Apply rules from `~/.config/circus/firewall.conf`
+  - `export` - Export current rules to stdout
+  - `stealth-on/off` - Control stealth mode
+  - `block-all/unblock-all` - Global connection blocking
+
 ## [1.5.2] - 2026-01-05
 
 

@@ -337,37 +337,86 @@ fc dns clear
 
 ## `fc firewall`
 
-Manage the macOS application firewall from the command line. Controls incoming connections to applications on your Mac.
+Manage the macOS application firewall from the command line. Provides granular per-app rule management through `socketfilterfw`.
 
 **Usage:**
 
 ```bash
-fc firewall <action>
+fc firewall <action> [options]
 ```
 
-**Actions:**
-*   `on`: Turn the application firewall on.
-*   `off`: Turn the application firewall off.
-*   `status`: Show the current firewall state.
+**Basic Actions:**
+
+| Action | Description |
+|--------|-------------|
+| `on` | Turn the firewall on |
+| `off` | Turn the firewall off |
+| `status` | Show firewall state, stealth mode, and app count |
+
+**App Rule Management:**
+
+| Action | Description |
+|--------|-------------|
+| `list-apps` | List all applications with firewall rules |
+| `add <app>` | Add an application (blocks incoming by default) |
+| `remove <app>` | Remove an application from the firewall |
+| `allow <app>` | Allow incoming connections for an app |
+| `block <app>` | Block incoming connections for an app |
+
+**Configuration:**
+
+| Action | Description |
+|--------|-------------|
+| `apply-rules` | Apply rules from `~/.config/circus/firewall.conf` |
+| `export` | Export current rules to stdout |
+| `setup` | Create configuration file template |
+
+**Advanced Options:**
+
+| Action | Description |
+|--------|-------------|
+| `stealth-on` | Enable stealth mode (don't respond to ICMP probes) |
+| `stealth-off` | Disable stealth mode |
+| `block-all` | Block all incoming connections |
+| `unblock-all` | Allow signed apps to receive connections |
 
 **Examples:**
 
 ```bash
-# Enable the firewall
+# Basic on/off control
 fc firewall on
-
-# Disable the firewall
-fc firewall off
-
-# Check current state
 fc firewall status
+
+# Per-app rules
+fc firewall add /Applications/Firefox.app
+fc firewall allow /Applications/Slack.app
+fc firewall block /Applications/Suspicious.app
+fc firewall list-apps
+
+# Configuration-based management
+fc firewall setup          # Create config file
+fc firewall apply-rules    # Apply rules from config
+fc firewall export > my-rules.conf  # Backup rules
+
+# Security hardening
+fc firewall stealth-on     # Hide from port scans
+```
+
+**Configuration File Format:**
+
+```bash
+# ~/.config/circus/firewall.conf
+# Format: <action> <path_to_app>
+
+allow /Applications/Slack.app
+allow /Applications/Visual Studio Code.app
+block /Applications/Firefox.app
 ```
 
 **Notes:**
 - All actions require administrator (sudo) privileges
-- The macOS firewall is an application-level firewall, not a packet filter
-- It controls incoming connections to applications
-- It does NOT filter outgoing connections
+- The macOS firewall is an application-level firewall (incoming connections only)
+- Apps added with `add` are blocked by default; use `allow` to permit connections
 - Can also be configured in System Settings > Network > Firewall
 
 ---
