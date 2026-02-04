@@ -70,42 +70,97 @@ run_defaults "com.apple.controlcenter" "Bluetooth" "-int" "2"
 # Audio Codec Settings
 # ==============================================================================
 
-# --- Increase Bluetooth Audio Quality ---
+# Bluetooth Audio Codec Overview:
+#
+# macOS uses A2DP (Advanced Audio Distribution Profile) for high-quality
+# stereo audio streaming to headphones and speakers. Within A2DP, the actual
+# audio encoding uses one of several codecs:
+#
+# CODEC            QUALITY    LATENCY    SUPPORT
+# ─────────────────────────────────────────────────────
+# SBC (default)    Moderate   ~200ms     Universal (all devices)
+# AAC              Good       ~120ms     Apple devices, some others
+# aptX             Good       ~70ms      Qualcomm devices (not Apple Silicon)
+# LDAC             Excellent  ~200ms     Sony devices (limited macOS support)
+#
+# macOS on Apple Silicon primarily uses AAC for Apple devices and SBC for
+# others. These bitpool settings affect SBC encoding quality.
+#
+# Understanding Bitpool:
+# - Bitpool is a parameter in SBC that controls audio quality vs stability
+# - Range: 2 (worst) to 64 (best possible with SBC)
+# - Higher bitpool = more bits per audio frame = better quality
+# - Higher bitpool = more bandwidth = potential for audio dropouts
+#
+# Source:       https://www.bluetooth.com/specifications/specs/advanced-audio-distribution-profile-1-4/
+# See also:     man BluetoothAudioAgent
+
+# --- Bluetooth Audio Quality (Minimum) ---
 # Key:          Apple Bitpool Min (editable)
 # Domain:       com.apple.BluetoothAudioAgent
-# Description:  Controls the minimum bitpool for A2DP Bluetooth audio.
-#               Higher values can improve audio quality at the cost of
-#               connection stability.
-# Default:      2
-# Options:      2 (conservative) to 64 (highest quality)
-# Set to:       40 (good balance of quality and stability)
-# Note:         This affects all Bluetooth audio devices
-# Warning:      Very high values may cause audio dropouts
+# Description:  Sets the floor for SBC audio quality. macOS negotiates bitpool
+#               with the connected device, starting from the initial value and
+#               adjusting between min and max based on connection quality.
+#
+#               If audio is cutting out, the system reduces bitpool toward min.
+#               Setting min too high prevents adaptation to poor conditions.
+#
+# Default:      2 (allows full adaptation range)
+# Options:      2 (most adaptive) to 64 (locks to high quality)
+# Set to:       40 (good balance - maintains quality, allows some adaptation)
+# UI Location:  Not available in UI (terminal only)
+# Note:         If you experience audio dropouts, lower this value.
+#               40 provides noticeably better quality than default 2.
 run_defaults "com.apple.BluetoothAudioAgent" "Apple Bitpool Min (editable)" "-int" "40"
 
 # --- Bluetooth Audio Quality (Maximum) ---
 # Key:          Apple Bitpool Max (editable)
 # Domain:       com.apple.BluetoothAudioAgent
-# Description:  Controls the maximum bitpool for A2DP Bluetooth audio.
-#               Higher values provide better audio quality but may reduce
-#               connection stability with some devices.
-# Default:      64
-# Options:      2 (lowest) to 64 (highest quality)
-# Set to:       53 (balance quality and stability)
-# Note:         This affects all Bluetooth audio devices
-# Warning:      Very high values may cause audio dropouts on some devices
+# Description:  Sets the ceiling for SBC audio quality. The actual bitpool used
+#               will be between min and max, depending on signal quality and
+#               device capabilities. Most devices support up to 53 reliably.
+#
+#               Why not 64 (maximum)?
+#               - 64 is often unstable with many devices
+#               - 53 is the "middle quality" sweet spot for SBC
+#               - Some devices have firmware bugs above 53
+#
+# Default:      64 (maximum possible)
+# Options:      2 (lowest) to 64 (highest SBC quality)
+# Set to:       53 (reliable high quality without dropouts)
+# UI Location:  Not available in UI (terminal only)
+# Note:         If audio sounds fine, you can try increasing to 58-64.
+#               Reduce if you experience crackling or dropouts.
 run_defaults "com.apple.BluetoothAudioAgent" "Apple Bitpool Max (editable)" "-int" "53"
 
 # --- Bluetooth Audio Initial Bitpool ---
 # Key:          Apple Initial Bitpool (editable)
 # Domain:       com.apple.BluetoothAudioAgent
-# Description:  Sets the initial bitpool value when establishing a Bluetooth
-#               audio connection. The connection negotiates up or down from here.
-# Default:      35
-# Options:      2-64
-# Set to:       40 (start with good quality)
-# Note:         Starting higher allows for better initial quality
+# Description:  Sets the starting bitpool value when establishing a new
+#               Bluetooth audio connection. The system negotiates from this
+#               starting point. A higher initial value means better quality
+#               from the first audio frame.
+#
+# Default:      35 (middle ground)
+# Options:      2 to 64 (should be between min and max settings)
+# Set to:       40 (start with good quality, match min setting)
+# UI Location:  Not available in UI (terminal only)
+# Note:         Starting at 40 avoids the "initial low quality" period that
+#               can occur when starting from the default 35 and negotiating up.
 run_defaults "com.apple.BluetoothAudioAgent" "Apple Initial Bitpool (editable)" "-int" "40"
+
+# --- Negotiated Bitpool (Read Only) ---
+# Key:          Apple Bitpool (editable)
+# Domain:       com.apple.BluetoothAudioAgent
+# Description:  This is the CURRENT negotiated bitpool value for an active
+#               connection. It's determined by the min/max/initial values above
+#               and the connected device's capabilities. This is informational.
+#
+# Check current negotiated value:
+#   defaults read com.apple.BluetoothAudioAgent "Apple Bitpool (editable)"
+#
+# If this value is consistently low despite high min setting, your device
+# may have limited Bluetooth bandwidth or interference issues.
 
 # ==============================================================================
 # Device Behavior

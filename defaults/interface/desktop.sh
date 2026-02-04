@@ -29,6 +29,69 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# Desktop Architecture
+# ==============================================================================
+
+# The macOS desktop is a special Finder window that displays ~/Desktop.
+# It's deeply integrated with Finder, not a separate process.
+#
+# DESKTOP = FINDER:
+#   - Desktop icons are rendered by Finder.app
+#   - ~/Desktop folder appears both in Finder and on screen
+#   - Desktop preferences are stored in com.apple.finder.plist
+#
+# DESKTOP LAYERS:
+#   ┌─────────────────────────────────────────────────────────────────┐
+#   │ Menu Bar                                                       │
+#   ├─────────────────────────────────────────────────────────────────┤
+#   │                                                                 │
+#   │           Wallpaper (managed by desktoppicture.db)             │
+#   │                                                                 │
+#   │     ┌──────┐  ┌──────┐  ┌──────┐                              │
+#   │     │ Icon │  │ Icon │  │Stack │  ← Desktop icons (Finder)     │
+#   │     └──────┘  └──────┘  └──────┘                              │
+#   │                                                                 │
+#   │           Windows (WindowServer)                               │
+#   │                                                                 │
+#   ├─────────────────────────────────────────────────────────────────┤
+#   │ Dock                                                           │
+#   └─────────────────────────────────────────────────────────────────┘
+#
+# STACKS (macOS Mojave+):
+#   Stacks automatically group desktop files by type, date, or tag.
+#   
+#   Enable via: Right-click Desktop > Use Stacks
+#   
+#   Stack grouping options:
+#   - Kind: Group by file type (Documents, Images, Screenshots, etc.)
+#   - Date Last Opened: Group by when you last opened them
+#   - Date Added: Group by when they appeared on desktop
+#   - Date Modified: Group by when they were last changed
+#   - Date Created: Group by creation date
+#   - Tags: Group by Finder tags
+#
+# WALLPAPER APIs:
+#   macOS stores wallpaper preferences in:
+#   ~/Library/Application Support/Dock/desktoppicture.db (SQLite)
+#   
+#   Set wallpaper via Terminal:
+#   # Set static image
+#   osascript -e 'tell application "Finder" to set desktop picture to POSIX file "/path/to/image.jpg"'
+#   
+#   # Set for specific display (requires more complex AppleScript)
+#   # For per-Space wallpapers, use System Settings
+#   
+#   # Read current wallpaper
+#   osascript -e 'tell application "Finder" to get POSIX path of (desktop picture as alias)'
+#
+# DYNAMIC WALLPAPERS:
+#   .heic files can contain multiple images for time-of-day changes.
+#   Located in: /System/Library/Desktop Pictures/
+#   Custom dynamic wallpapers require special HEIC metadata.
+#
+# Source:       https://support.apple.com/guide/mac-help/use-desktop-stacks-mh35851/mac
+
 msg_info "Configuring desktop settings..."
 
 # ==============================================================================

@@ -32,6 +32,48 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# pmset Architecture Overview
+# ==============================================================================
+
+# pmset (Power Management Settings) is macOS's unified power management tool.
+# It controls everything from screen dimming to deep hibernation.
+#
+# Power Sources (flags for pmset commands):
+#   -b    Battery power only
+#   -c    Charger/AC power only  ("c" = "charger")
+#   -u    UPS power only
+#   -a    All power sources
+#
+# Power States on macOS (from shallowest to deepest sleep):
+#
+#   AWAKE           → Normal operation, full power
+#       ↓
+#   DISPLAY SLEEP   → Screen off, system running (displaysleep)
+#       ↓
+#   IDLE SLEEP      → Light sleep, RAM powered, fast wake (sleep)
+#       ↓
+#   STANDBY         → Deeper sleep, RAM saved to disk, slow wake (standby)
+#       ↓
+#   HIBERNATE       → Deepest, RAM contents on disk, very slow wake (hibernatemode)
+#
+# Apple Silicon vs Intel:
+#   Apple Silicon Macs use a different low-power architecture:
+#   - More aggressive power gating
+#   - Background activity even in "sleep" (for notifications)
+#   - Some pmset options may be ignored or behave differently
+#   - Use `pmset -g cap` to see what your Mac supports
+#
+# Viewing Current Settings:
+#   pmset -g                    # Current settings
+#   pmset -g custom             # Settings per power source
+#   pmset -g cap                # Capabilities of your Mac
+#   pmset -g assertions        # What's preventing sleep
+#   pmset -g sched              # Scheduled wake/sleep events
+#
+# Source:       man pmset
+# See also:     https://support.apple.com/guide/mac-help/set-sleep-and-wake-settings-mchle41a6ccd/mac
+
 msg_info "Configuring energy and power management settings..."
 
 # ==============================================================================
@@ -40,10 +82,22 @@ msg_info "Configuring energy and power management settings..."
 
 # --- Display Sleep Timeout (Battery) ---
 # Command:      pmset -b displaysleep
-# Description:  Time in minutes before the display sleeps when on battery.
-#               Shorter times save battery life.
-# Default:      2 minutes
-# Set to:       5 minutes (balance between usability and battery)
+# Description:  Time in minutes before the display turns off when running on
+#               battery. The display is the largest power consumer, so shorter
+#               timeout = longer battery life. System remains awake and working.
+#
+#               Power Impact (typical):
+#               - Display ON:  5-10 watts
+#               - Display OFF: 1-3 watts (system still running)
+#               - Full sleep:  <0.5 watts
+#
+# Default:      2 minutes (Apple default for battery)
+# Options:      0 = Never (not recommended on battery)
+#               1-180 = Minutes until display sleeps
+# Set to:       5 minutes (balance between usability and battery life)
+# UI Location:  System Settings > Displays > Advanced > Battery
+# Source:       man pmset
+# Note:         The display can wake instantly on any input (keyboard, mouse).
 sudo pmset -b displaysleep 5
 
 # --- Display Sleep Timeout (AC Power) ---

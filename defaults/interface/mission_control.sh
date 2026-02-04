@@ -46,6 +46,59 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# Mission Control Architecture & History
+# ==============================================================================
+
+# Mission Control (introduced in macOS Lion) evolved from:
+# - Exposé (Mac OS X 10.3 Panther, 2003): Show all windows
+# - Spaces (Mac OS X 10.5 Leopard, 2007): Virtual desktops
+# - Dashboard (Mac OS X 10.4 Tiger, 2005): Widgets overlay
+#
+# These were unified into Mission Control in macOS Lion (10.7, 2011).
+#
+# HOW SPACES WORK:
+#
+#   ┌─────────────────────────────────────────────────────────────────┐
+#   │ Mission Control View (^↑ or F3)                                 │
+#   ├─────────────────────────────────────────────────────────────────┤
+#   │ Desktop 1 │ Desktop 2 │ Desktop 3 │ + │                        │
+#   │ (Code)    │ (Browser) │ (Comms)   │   │  ← Add new Space       │
+#   ├─────────────────────────────────────────────────────────────────┤
+#   │                                                                 │
+#   │  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐                        │
+#   │  │ App1 │  │ App2 │  │ App3 │  │ App4 │  ← Window thumbnails   │
+#   │  └──────┘  └──────┘  └──────┘  └──────┘                        │
+#   │                                                                 │
+#   └─────────────────────────────────────────────────────────────────┘
+#
+# KEYBOARD SHORTCUTS:
+#   ^↑ or F3        Mission Control (overview)
+#   ^↓ or F4        App Exposé (windows of current app)
+#   ^←              Move to Space on left
+#   ^→              Move to Space on right
+#   ^1, ^2, ^3...   Jump to Space 1, 2, 3... (enable in System Settings)
+#   ^⇧←             Move current window to Space on left
+#   ^⇧→             Move current window to Space on right
+#
+# WINDOW MANAGEMENT PROCESS:
+#   The WindowServer process manages all window drawing and compositing.
+#   Mission Control and Spaces are features of the Dock process.
+#
+#   Key processes:
+#   - WindowServer: Core window compositing (runs as root)
+#   - Dock: Mission Control, Spaces, Launchpad, Hot Corners
+#   - SystemUIServer: Menu bar, menu extras
+#
+# TRACKPAD GESTURES:
+#   - 3-finger swipe up: Mission Control
+#   - 3-finger swipe left/right: Switch Spaces
+#   - Spread thumb and 3 fingers: Show Desktop
+#   - Pinch thumb and 3 fingers: Launchpad
+#
+# Source:       man defaults
+# See also:     https://support.apple.com/en-us/102556
+
 # A helper function to run `defaults write` commands or print them in dry run mode.
 run_defaults() {
   local domain="$1"

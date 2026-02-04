@@ -6,7 +6,7 @@ Configure Dropbox sync and behavior settings.
 
 | Property | Value |
 |----------|-------|
-| **Domain** | `com.dropbox.Dropbox` |
+| **Domain** | `com.getdropbox.dropbox` |
 | **Keys** | Various |
 | **Type** | Mixed |
 | **Dropbox Folder** | `~/Dropbox` or custom |
@@ -30,7 +30,7 @@ Dropbox preferences can be partially configured via macOS defaults, though most 
 
 ```bash
 # Read Dropbox preferences
-defaults read com.dropbox.Dropbox
+defaults read com.getdropbox.dropbox
 
 # Note: Most settings are in Dropbox's internal database, not defaults
 ```
@@ -155,7 +155,7 @@ Enable at: **Dropbox** → **Preferences** → **General** → **Enable Finder i
 
 ## Source File
 
-**File**: [`defaults/applications/dropbox.sh`](../../../../defaults/applications/dropbox.sh)
+**File**: [`defaults/applications/dropbox.sh`](../../../../../defaults/applications/dropbox.sh)
 
 ```bash
 # Dropbox configuration is primarily managed through the app

@@ -37,33 +37,55 @@ msg_info "Configuring Spotlight settings..."
 # Description:  Controls which categories appear in Spotlight results and their
 #               order. Each item has an 'enabled' key and 'name' key.
 # UI Location:  System Settings > Spotlight
+# Source:       https://support.apple.com/guide/mac-help/spotlight-mchlp1008/mac
 # Note:         This is a complex plist array - using individual toggles below
 
-# --- Disable Spotlight Suggestions ---
-# Key:          SuggestionsEnabled
+# --- Disable Spotlight Suggestions (Siri Suggestions) ---
+# Key:          LookupSuggestionsDisabled
 # Domain:       com.apple.lookup.shared
-# Description:  Controls whether Spotlight shows suggestions from the internet
-#               including Wikipedia, news, iTunes, and web searches.
-# Default:      true
-# Options:      true = Show internet suggestions
-#               false = Disable internet suggestions
-# Set to:       false (privacy-focused, local search only)
-# Security:     Prevents search queries from being sent to Apple
+# Description:  Controls whether Spotlight shows suggestions from the internet,
+#               including Wikipedia articles, news, iTunes Store content, App Store
+#               apps, nearby locations, and web search results. When enabled, these
+#               suggestions are disabled and Spotlight searches only local content.
+#               Disabling suggestions also prevents your search queries from being
+#               sent to Apple servers.
+# Default:      false (suggestions enabled - searches sent to Apple)
+# Options:      true = Disable internet suggestions (local search only)
+#               false = Enable internet suggestions (queries sent to Apple)
+# Set to:       true (privacy-focused; prevents search queries from being
+#               transmitted to Apple servers for suggestion generation)
+# UI Location:  System Settings > Spotlight > "Siri Suggestions" toggle
+#               System Settings > Spotlight > Search Results > uncheck categories
+# Source:       https://support.apple.com/guide/mac-help/spotlight-mchlp1008/mac
+# Security:     When suggestions are enabled, your search queries are sent to
+#               Apple to generate relevant suggestions. Disable for privacy.
+# See also:     https://support.apple.com/en-us/102441
 run_defaults "com.apple.lookup.shared" "LookupSuggestionsDisabled" "-bool" "true"
 
 # ==============================================================================
 # Indexing Behavior
 # ==============================================================================
 
-# --- Disable Spotlight on External Drives ---
+# --- Disable Spotlight Indexing on External Volumes ---
 # Key:          ExternalVolumes
 # Domain:       com.apple.spotlight
-# Description:  Controls whether Spotlight indexes external and network volumes.
-#               Disabling can improve performance and privacy.
+# Description:  Controls whether Spotlight indexes external and network-mounted
+#               volumes. When disabled, external drives, USB sticks, and network
+#               shares are not indexed, which can improve performance during
+#               large file transfers and preserve privacy of removable media.
 # Default:      true (index external volumes)
-# Options:      true = Index external volumes
-#               false = Skip external volumes
-# Set to:       false (don't index external drives by default)
+# Options:      true = Index external and network volumes (searchable)
+#               false = Skip indexing external volumes (not searchable)
+# Set to:       false (improves performance with external drives and preserves
+#               privacy of removable media; use `mdfind -onlyin /Volumes/...`
+#               for manual searches when needed)
+# UI Location:  System Settings > Spotlight > Search Results > External disks
+#               Also: Privacy tab to exclude specific volumes
+# Source:       https://support.apple.com/guide/mac-help/spotlight-mchlp1008/mac
+# Note:         To prevent indexing of specific volumes, you can also add them
+#               to the Privacy list in System Settings > Spotlight, or create a
+#               .metadata_never_index file in the volume root.
+# See also:     man mdutil, man mdfind
 run_defaults "com.apple.spotlight" "ExternalVolumes" "-bool" "false"
 
 # ==============================================================================

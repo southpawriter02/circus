@@ -32,6 +32,64 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# Finder Architecture & Hidden Features
+# ==============================================================================
+
+# Finder is deeply integrated with macOS and manages:
+# - File browsing and management
+# - Desktop icons and wallpaper
+# - Trash management
+# - AirDrop (in recent macOS versions)
+# - Quick Look previews
+# - Spotlight integration
+# - iCloud Drive sync
+#
+# FINDER PREFERENCE LOCATIONS:
+#   ~/Library/Preferences/com.apple.finder.plist   - User preferences
+#   ~/Library/Preferences/com.apple.desktopservices.plist - Desktop behavior
+#   ~/Library/Saved Application State/com.apple.finder.savedState/ - Window state
+#
+# USEFUL KEYBOARD SHORTCUTS:
+#   ⌘⇧.         Toggle hidden files visibility (quick toggle)
+#   ⌘⌥P         Toggle path bar
+#   ⌘/          Toggle status bar
+#   ⌘D          Duplicate selected item
+#   ⌘⇧G         Go to folder (enter path directly)
+#   ⌘⇧A         Go to Applications folder
+#   ⌘⇧H         Go to Home folder
+#   ⌘⇧D         Go to Desktop folder
+#   ⌘I          Get Info for selected item
+#   Space       Quick Look preview
+#
+# HIDDEN FINDER FEATURES:
+#   # Enable "Quit Finder" menu item
+#   defaults write com.apple.finder QuitMenuItem -bool true
+#
+#   # Show full POSIX path in title bar
+#   defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+#
+#   # Disable window animations and Get Info animations
+#   defaults write com.apple.finder DisableAllAnimations -bool true
+#
+#   # Expand save panel by default
+#   defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+#
+# TROUBLESHOOTING:
+#   # Reset Finder to defaults
+#   defaults delete com.apple.finder
+#   killall Finder
+#
+#   # Force Finder to show all volumes on desktop
+#   defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+#   defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
+#
+#   # Clear "Open With" duplicates
+#   /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
+#
+# Source:       man defaults
+# See also:     https://github.com/mathiasbynens/dotfiles/blob/main/.macos
+
 # A helper function to run `defaults write` commands or print them in dry run mode.
 run_defaults() {
   local domain="$1"

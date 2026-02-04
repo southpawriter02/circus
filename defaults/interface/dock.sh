@@ -29,6 +29,54 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# Dock Architecture
+# ==============================================================================
+
+# The Dock is managed by the `Dock.app` process and stores its configuration
+# in ~/Library/Preferences/com.apple.dock.plist.
+#
+# DOCK STRUCTURE:
+#
+#   ┌────────────────────────────────────────────────────────────────────────┐
+#   │  Apps (left)              │ Divider │  Stacks/Files  │  Trash │       │
+#   │  Finder, Safari, etc.     │    |    │  Downloads     │   🗑   │       │
+#   └────────────────────────────────────────────────────────────────────────┘
+#
+# The plist contains two main arrays:
+#   - persistent-apps: Applications pinned to the left side
+#   - persistent-others: Folders/files/stacks on the right side
+#
+# MODIFYING THE DOCK:
+#   1. dockutil (recommended) - Safe, version-compatible manipulation
+#   2. defaults write - Direct plist editing (can corrupt if wrong format)
+#   3. PlistBuddy - Low-level plist editing (for advanced use)
+#
+# HIDDEN DOCK SETTINGS:
+#   Many Dock behaviors can only be changed via `defaults write`:
+#
+#   # Single-app mode (hides all apps except focused one)
+#   defaults write com.apple.dock single-app -bool true
+#
+#   # Add spacers between Dock icons
+#   defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="spacer-tile";}'
+#
+#   # Highlight hidden apps (dimmed icons)
+#   defaults write com.apple.dock showhidden -bool true
+#
+#   # Spring-loaded Dock folders (drag hover to open)
+#   defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
+#
+#   # Scroll to Exposé for app's windows (hover + scroll)
+#   defaults write com.apple.dock scroll-to-open -bool true
+#
+# DOCK DATABASE:
+#   On modern macOS, Dock state is also tracked in:
+#   ~/Library/Application Support/Dock/
+#
+# Source:       man defaults
+# See also:     https://www.defaults-write.com/tag/dock/
+
 # A helper function to run `defaults write` commands or print them in dry run mode.
 run_defaults() {
   local domain="$1"

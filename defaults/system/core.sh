@@ -61,39 +61,113 @@ run_systemsetup() {
 # Network Time Protocol (NTP) Settings
 # ==============================================================================
 
+# Why Accurate Time Matters:
+#
+# Accurate time is critical for many system functions:
+#
+# 1. SECURITY (TLS/SSL Certificates)
+#    - Certificates have validity windows (Not Before / Not After)
+#    - If your clock is wrong, valid certs may appear expired
+#    - Attackers can't replay old signed content on time-synced systems
+#
+# 2. FILE TIMESTAMPS (Make, Git, Backups)
+#    - Build systems rely on modification times
+#    - Version control tracks when changes occurred
+#    - Time Machine needs accurate file dates
+#
+# 3. LOGS & AUDITING
+#    - Correlating events across systems requires synchronized time
+#    - Compliance requirements often mandate accurate timestamps
+#
+# 4. KERBEROS AUTHENTICATION
+#    - Active Directory/SSO requires clocks within 5 minutes
+#    - Time skew breaks enterprise authentication
+#
+# NTP Architecture:
+#   NTP uses a hierarchy of time sources called "strata":
+#   - Stratum 0: Atomic clocks, GPS receivers (reference clocks)
+#   - Stratum 1: Servers directly connected to Stratum 0
+#   - Stratum 2: Servers synced to Stratum 1 (time.apple.com is here)
+#   - Stratum 3+: Further downstream servers
+#
+# Source:       https://support.apple.com/guide/mac-help/set-the-date-and-time-automatically-mchlp2996/mac
+
 # --- Set Network Time Server ---
 # Command:      systemsetup -setnetworktimeserver <server>
-# Description:  Sets the server used for network time synchronization.
-#               Apple's time server is reliable and well-maintained.
-# Default:      time.apple.com
-# Possible:     Any valid NTP server (e.g., time.google.com, pool.ntp.org)
-# Set to:       time.apple.com
-# Reference:    System Preferences > Date & Time > Date & Time
+# Description:  Specifies which NTP server macOS uses for time synchronization.
+#               Apple's time.apple.com is a reliable, geographically distributed
+#               pool that provides low-latency responses worldwide.
+#
+#               Alternative NTP Servers:
+#               - time.apple.com    (Apple's default, anycast, worldwide)
+#               - time.google.com   (Google's smeared leap-second pool)
+#               - pool.ntp.org      (Volunteer pool, variable quality)
+#               - time.windows.com  (Microsoft, for mixed environments)
+#               - time.cloudflare.com (Cloudflare, low latency)
+#
+#               Enterprise Considerations:
+#               - Many enterprises run internal NTP servers
+#               - This ensures time sync even if internet is down
+#               - Reduces external dependencies
+#
+# Default:      time.apple.com (Apple's anycast NTP pool)
+# Set to:       time.apple.com (reliable, low-latency, anycast)
+# UI Location:  System Settings > General > Date & Time > Source
+# Source:       man systemsetup
+# Security:     Using a trusted NTP source prevents time-based attacks.
+#               Rogue NTP servers could manipulate certificate validation.
 run_systemsetup "-setnetworktimeserver" "time.apple.com"
 
-# --- Enable Network Time ---
+# --- Enable Network Time Synchronization ---
 # Command:      systemsetup -setusingnetworktime <on|off>
-# Description:  Enables or disables automatic time synchronization with
-#               the configured NTP server. Accurate time is important for
-#               security (certificate validation), file timestamps, and
-#               collaboration tools.
-# Default:      on
-# Possible:     on, off
-# Set to:       on
+# Description:  Enables automatic time synchronization with the configured
+#               NTP server. When enabled, macOS periodically queries the time
+#               server and adjusts the local clock to match.
+#
+#               How Often macOS Syncs:
+#               - Initial sync at boot
+#               - Periodic sync every few hours (frequency varies)
+#               - On network change (e.g., waking from sleep, new WiFi)
+#
+# Default:      on (automatic time sync enabled)
+# Options:      on = Automatically sync with NTP server
+#               off = Use manual time only (NOT recommended)
+# Set to:       on (essential for security and system function)
+# UI Location:  System Settings > General > Date & Time > Set date and time automatically
+# Security:     Disabling NTP can cause TLS certificate errors and break
+#               Kerberos authentication. Only disable for air-gapped systems.
 run_systemsetup "-setusingnetworktime" "on"
 
 # ==============================================================================
 # Timezone Settings
 # ==============================================================================
 
-# --- Enable Location Services for Timezone ---
+# --- Enable Location-Based Timezone ---
 # Command:      systemsetup -setusinglocationservices <on|off>
-# Description:  Allows macOS to automatically determine and set the timezone
-#               based on the Mac's current geographic location.
-# Default:      Varies
-# Possible:     on, off
-# Set to:       on (automatic timezone is convenient for travelers)
-# Note:         This requires Location Services to be enabled in System Preferences
+# Description:  Allows macOS to automatically determine and update the timezone
+#               based on the Mac's geographic location (using Wi-Fi positioning,
+#               IP geolocation, or GPS on supported hardware).
+#
+#               How Location-Based Timezone Works:
+#               - Uses Wi-Fi access point database for positioning
+#               - Falls back to IP geolocation if Wi-Fi unavailable
+#               - Updates timezone when you travel to new time zones
+#
+#               Privacy Trade-off:
+#               - Pro: Automatic timezone when traveling
+#               - Con: Requires Location Services for "Set Time Zone"
+#               - Apple receives location data (see Privacy Policy)
+#
+# Default:      Varies by region and setup choices
+# Options:      on = Automatic timezone (uses location)
+#               off = Manual timezone (you set it once)
+# Set to:       on (convenient for travelers; disable for privacy)
+# UI Location:  System Settings > General > Date & Time > Set time zone automatically
+# Note:         Requires Location Services enabled for "System Services" >
+#               "Setting Time Zone" in System Settings > Privacy & Security
+# Privacy:      If you prefer not to share location, set timezone manually:
+#               sudo systemsetup -settimezone "America/Los_Angeles"
+#               Use `systemsetup -listtimezones` to see all options.
 run_systemsetup "-setusinglocationservices" "on"
 
 # ==============================================================================

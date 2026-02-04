@@ -29,6 +29,53 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# macOS Audio Architecture
+# ==============================================================================
+
+# macOS uses CoreAudio as its low-level audio framework. System sounds are
+# handled separately from application audio.
+#
+# AUDIO LAYERS:
+#
+#   Application Audio
+#        ↓
+#   AVFoundation / AudioToolbox
+#        ↓
+#   Audio Units (effects, processing)
+#        ↓
+#   CoreAudio (HAL - Hardware Abstraction Layer)
+#        ↓
+#   Audio Hardware (speakers, headphones, etc.)
+#
+# SYSTEM SOUND CATEGORIES:
+#
+#   1. ALERT SOUNDS (beeps)
+#      - Domain: NSGlobalDomain, com.apple.sound.beep.*
+#      - Used for: Errors, warnings, empty trash, notifications
+#      - Can have separate volume from system audio
+#
+#   2. UI SOUNDS
+#      - Domain: NSGlobalDomain, com.apple.sound.uiaudio.*
+#      - Used for: Clicks, navigation, screenshot sounds
+#      - Toggle on/off separately from alerts
+#
+#   3. STARTUP SOUND
+#      - Domain: com.apple.systemsound, NVRAM
+#      - The classic Mac chime (or lack thereof on modern Macs)
+#
+# SOUND FILE LOCATIONS:
+#   /System/Library/Sounds/        # Built-in system sounds (read-only)
+#   ~/Library/Sounds/              # Custom user sounds (add yours here)
+#   /Library/Sounds/               # System-wide custom sounds
+#
+# ADDING CUSTOM ALERT SOUNDS:
+#   1. Convert audio to .aiff format (44.1kHz, 16-bit recommended)
+#   2. Copy to ~/Library/Sounds/
+#   3. Sound appears in System Settings > Sound > Alert sound
+#
+# Source:       https://developer.apple.com/documentation/coreaudio
+
 msg_info "Configuring sound settings..."
 
 # ==============================================================================
@@ -38,26 +85,56 @@ msg_info "Configuring sound settings..."
 # --- Alert Sound Volume ---
 # Key:          com.apple.sound.beep.volume
 # Domain:       NSGlobalDomain
-# Description:  Controls the volume of alert sounds (beeps, notifications).
-#               Value is a float between 0.0 (muted) and 1.0 (full volume).
-# Default:      1.0 (full volume)
-# Options:      0.0 to 1.0
-# Set to:       0.5 (moderate alert volume)
-# UI Location:  System Settings > Sound > Alert volume
+# Description:  Controls the volume level for system alert sounds. This is
+#               independent of the main system volume, allowing you to have
+#               quiet alerts while music plays at full volume, or vice versa.
+#
+#               Value Range:
+#               0.0 = Completely muted (no alert sounds)
+#               0.5 = Half volume (a good default)
+#               1.0 = Full volume (matches output volume slider)
+#
+# Default:      1.0 (full volume relative to system volume)
+# Options:      Float from 0.0 (muted) to 1.0 (max)
+# Set to:       0.5 (moderate - audible but not startling)
+# UI Location:  System Settings > Sound > Alert volume slider
+# Note:         This scales the alert relative to your output volume.
+#               At 0.5, alerts play at 50% of your current volume setting.
 run_defaults "NSGlobalDomain" "com.apple.sound.beep.volume" "-float" "0.5"
 
 # --- Alert Sound Selection ---
 # Key:          com.apple.sound.beep.sound
 # Domain:       NSGlobalDomain
-# Description:  Path to the alert sound file. Built-in sounds are in
-#               /System/Library/Sounds/. Custom sounds can be placed in
-#               ~/Library/Sounds/.
+# Description:  Path to the audio file used for system alerts. macOS includes
+#               several built-in sounds, and you can add custom sounds by
+#               placing .aiff files in ~/Library/Sounds/.
+#
+#               Built-in Sounds (in /System/Library/Sounds/):
+#               ┌─────────────┬────────────────────────────────────┐
+#               │ Sound       │ Character                          │
+#               ├─────────────┼────────────────────────────────────┤
+#               │ Basso       │ Deep, ominous                      │
+#               │ Blow        │ Soft, airy                         │
+#               │ Bottle      │ Hollow pop                         │
+#               │ Frog        │ Ribbit                             │
+#               │ Funk        │ Funky bass hit                     │
+#               │ Glass       │ Bright, crystalline                │
+#               │ Hero        │ Triumphant fanfare                 │
+#               │ Morse       │ Morse code beep                    │
+#               │ Ping        │ Clean, minimal                     │
+#               │ Pop         │ Quick bubble pop                   │
+#               │ Purr        │ Soft vibration                     │
+#               │ Sosumi      │ Classic Mac "So sue me" (historic) │
+#               │ Submarine   │ Sonar ping                         │
+#               │ Tink        │ Light tap (default)                │
+#               └─────────────┴────────────────────────────────────┘
+#
 # Default:      /System/Library/Sounds/Tink.aiff
-# Options:      Any valid .aiff file path
-# Set to:       Default (Tink) - uncomment below to change
+# Options:      Path to any valid .aiff sound file
+# Set to:       Default (Tink) - uncomment and modify to change
 # UI Location:  System Settings > Sound > Alert sound
-# Available sounds: Basso, Blow, Bottle, Frog, Funk, Glass, Hero, Morse,
-#                   Ping, Pop, Purr, Sosumi, Submarine, Tink
+# Note:         Custom sounds must be in AIFF format. Convert with:
+#               afconvert input.mp3 -o ~/Library/Sounds/custom.aiff -f AIFF
 # run_defaults "NSGlobalDomain" "com.apple.sound.beep.sound" "-string" "/System/Library/Sounds/Tink.aiff"
 
 # ==============================================================================

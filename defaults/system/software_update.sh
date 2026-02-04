@@ -31,6 +31,63 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# macOS Software Update Architecture
+# ==============================================================================
+
+# Apple delivers updates through several mechanisms:
+#
+# UPDATE TYPES:
+#
+#   1. MAJOR RELEASES (e.g., Sonoma → Sequoia)
+#      - Full OS upgrades, typically yearly
+#      - Requires user consent
+#      - Large download (10-15 GB)
+#      - Always requires restart
+#
+#   2. MINOR UPDATES (e.g., 14.1 → 14.2)
+#      - Feature improvements, bug fixes
+#      - Monthly release cadence typically
+#      - Moderate download (1-5 GB)
+#      - Usually requires restart
+#
+#   3. RAPID SECURITY RESPONSES (RSR)
+#      - Emergency security patches
+#      - Small, targeted fixes (usually < 500 MB)
+#      - Named like "macOS 14.1 (a)", "14.1 (b)"
+#      - Can often apply without restart
+#      - Removed when you install next full update
+#
+#   4. SYSTEM DATA FILES
+#      - XProtect (malware signatures)
+#      - Gatekeeper data (notarization cache)
+#      - MRT (Malware Removal Tool updates)
+#      - Certificate trust updates
+#      - Applied silently in background
+#
+# HOW UPDATES WORK:
+#
+#   1. Check: macOS contacts Apple's catalog server
+#   2. Download: Delta updates downloaded in background
+#   3. Prepare: System creates sealed snapshot
+#   4. Install: On restart, new snapshot activated
+#   5. Verify: cryptexes and sealed system volume validated
+#
+# COMMAND LINE TOOLS:
+#   softwareupdate --list                    # Show available updates
+#   softwareupdate --download --all          # Download all updates
+#   softwareupdate --install --all           # Install all updates
+#   softwareupdate --install --recommended   # Install recommended only
+#   softwareupdate --history                 # Show update history
+#
+# ENTERPRISE/MDM:
+#   Managed Macs can defer updates via MDM profiles:
+#   - forceDelayedSoftwareUpdates (true/false)
+#   - enforcedSoftwareUpdateDelay (days, max 90)
+#   - See: https://developer.apple.com/documentation/devicemanagement/softwareupdate
+#
+# Source:       https://support.apple.com/en-us/102582
+
 # A helper function to run `defaults write` commands or print them in dry run mode.
 run_defaults() {
   local domain="$1"

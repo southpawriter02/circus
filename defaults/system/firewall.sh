@@ -61,27 +61,94 @@ run_sudo_defaults() {
 }
 
 # ==============================================================================
+# macOS Firewall Architecture
+# ==============================================================================
+
+# The macOS Application Level Firewall (ALF) is a socket filter firewall that
+# operates at Layer 7 (Application Layer) rather than Layer 3/4 (Network Layer).
+#
+# How ALF Differs from Traditional Firewalls:
+#
+#   Traditional Firewall (iptables, pf):
+#   - Filters by IP address, port, protocol
+#   - Rules: "Block port 22" or "Allow 192.168.1.0/24"
+#   - Cannot distinguish which application owns a connection
+#
+#   macOS ALF:
+#   - Filters by application identity (code signature)
+#   - Rules: "Allow Safari" or "Block SomeApp.app"
+#   - Knows which app is making/receiving each connection
+#   - Integrates with Gatekeeper for trust decisions
+#
+# ALF + pf (Packet Filter):
+#   macOS actually has TWO firewalls:
+#   1. ALF (Application Level Firewall) - User-facing, app-based (this script)
+#   2. pf (Packet Filter) - Low-level, BSD packet filter (off by default)
+#
+#   For network-level blocking (IP addresses, ports), use pf:
+#     man pf.conf
+#     sudo pfctl -e              # Enable pf
+#     sudo pfctl -d              # Disable pf
+#     cat /etc/pf.conf           # View default rules
+#
+# Source:       https://support.apple.com/guide/security/firewall-sec5a7cc02ce/web
+
+# ==============================================================================
 # Firewall State Configuration
 # ==============================================================================
 
-# --- Enable Firewall ---
+# --- Enable Application Level Firewall ---
 # Key:          globalstate
 # Domain:       /Library/Preferences/com.apple.alf
 # Description:  Controls the overall state of the macOS Application Level
 #               Firewall (ALF). When enabled, macOS monitors incoming network
-#               connections and can block unauthorized applications from
-#               receiving connections. The firewall operates at the application
-#               level, meaning it controls which apps can accept connections.
-# Default:      0 (Off - firewall is disabled on most Macs)
+#               connections and blocks unauthorized applications from receiving
+#               connections based on code signing and user preferences.
+#
+#               What Happens When ALF is Enabled:
+#               1. All signed Apple applications are automatically allowed
+#               2. Signed third-party apps may be allowed based on settings
+#               3. Unsigned apps trigger a "Allow or Deny" prompt on first connection
+#               4. Denied apps are blocked silently thereafter
+#               5. Rules are stored per-application in the firewall database
+#
+#               What ALF Does NOT Do:
+#               - Does NOT filter outgoing connections (apps can always connect out)
+#               - Does NOT block by IP address or port (use pf for that)
+#               - Does NOT protect against malware already running as you
+#
+# Default:      0 (Off - firewall disabled on consumer Macs)
 # Options:      0 = Off (firewall disabled, all incoming connections allowed)
-#               1 = On (firewall enabled, per-app control)
-#               2 = On (block all incoming connections except essential services)
-# Set to:       1 (enabled with per-app control for balanced security)
+#               1 = On (standard mode, per-app control with prompts)
+#               2 = On (Block All Incoming - only essential services allowed)
+#
+#               Mode 2 Details (Block All Incoming):
+#               - Blocks ALL incoming connections except:
+#                 • DHCP (getting an IP address)
+#                 • Bonjour (for AirDrop, Handoff on local network)
+#                 • IPSec (VPN connections)
+#               - Useful for untrusted networks (airports, coffee shops)
+#               - Will break: Screen Sharing, File Sharing, SSH, etc.
+#
+# Set to:       1 (enabled with per-app control - balanced security)
 # UI Location:  System Settings > Network > Firewall
 # Source:       https://support.apple.com/en-us/102445
 # See also:     https://support.apple.com/guide/mac-help/block-connections-to-your-mac-with-a-firewall-mh34041/mac
-# Security:     The firewall is essential for Macs used on public networks
-#               (coffee shops, airports) to prevent unauthorized access.
+#
+# Security:     The firewall is ESSENTIAL for Macs used on public networks.
+#               Without it, any network service your Mac runs (intentionally or
+#               not) is exposed to everyone on the same network.
+#
+#               Attack Scenario Without Firewall:
+#               1. You enable Screen Sharing to help a friend
+#               2. You forget to disable it
+#               3. You connect to coffee shop Wi-Fi
+#               4. Anyone on that network can attempt to connect to your Mac
+#
+# Enterprise:   For managed Macs, enforce via MDM configuration profile:
+#               - Profile domain: com.apple.applicationfirewall
+#               - Key: EnableFirewall (true/false)
+#               - Key: BlockAllIncoming (true/false)
 run_sudo_defaults "/Library/Preferences/com.apple.alf" "globalstate" "-int" "1"
 
 # --- Enable Stealth Mode ---

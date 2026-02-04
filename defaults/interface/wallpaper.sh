@@ -26,11 +26,75 @@
 #
 # ==============================================================================
 
-msg_info "Configuring wallpaper settings..."
+# ==============================================================================
+# Wallpaper Architecture
+# ==============================================================================
 
-# ==============================================================================
-# Wallpaper Setting Methods
-# ==============================================================================
+# Unlike most macOS preferences, wallpaper settings are stored in a
+# SQLite database, NOT in plist files or defaults.
+#
+# WALLPAPER DATA STORAGE:
+#
+#   DATABASE LOCATION:
+#   ~/Library/Application Support/Dock/desktoppicture.db
+#
+#   This is a SQLite database containing:
+#   - data: Image path and settings per display/Space
+#   - displays: Display identifiers
+#   - pictures: Wallpaper configurations
+#   - spaces: Per-Space wallpaper associations
+#
+# VIEW DATABASE CONTENTS:
+#   sqlite3 ~/Library/Application\ Support/Dock/desktoppicture.db ".schema"
+#   sqlite3 ~/Library/Application\ Support/Dock/desktoppicture.db "SELECT * FROM data"
+#
+# WALLPAPER SET METHODS (by reliability):
+#
+#   METHOD                      │ RELIABILITY │ NOTES
+#   ────────────────────────────┼─────────────┼──────────────────────────
+#   System Settings GUI         │ ★★★★★       │ Most reliable, per-Space
+#   osascript (System Events)   │ ★★★★☆       │ Works well, see examples
+#   Direct database edit        │ ★★★☆☆       │ Requires Dock restart
+#   defaults write              │ ★★☆☆☆       │ Often doesn't persist
+#
+# MULTI-DISPLAY HANDLING:
+#   - Each display can have different wallpaper
+#   - Each Space can have different wallpaper
+#   - Settings are per display UUID in the database
+#
+# DYNAMIC WALLPAPER (HEIC FORMAT):
+#
+#   Dynamic Desktop wallpapers use HEIC files with multiple images and
+#   metadata specifying when each frame should appear.
+#
+#   HEIC Structure for Dynamic Wallpapers:
+#   ┌─────────────────────────────────────────────────────────────────┐
+#   │ HEIC Container (.heic file)                                    │
+#   ├─────────────────────────────────────────────────────────────────┤
+#   │ Frame 0 (Dawn - 5:00 AM)                                       │
+#   │ Frame 1 (Morning - 8:00 AM)                                    │
+#   │ Frame 2 (Midday - 12:00 PM)                                    │
+#   │ Frame 3 (Afternoon - 3:00 PM)                                  │
+#   │ Frame 4 (Sunset - 6:00 PM)                                     │
+#   │ Frame 5 (Night - 9:00 PM)                                      │
+#   │ ... (16 frames typical for Apple's dynamic wallpapers)         │
+#   ├─────────────────────────────────────────────────────────────────┤
+#   │ Metadata: solar position or time-based triggers                │
+#   └─────────────────────────────────────────────────────────────────┘
+#
+#   Dynamic wallpapers can be:
+#   - Time-based: Change at specific times
+#   - Solar-based: Change based on sun position (requires location)
+#   - Appearance-based: Light/Dark variants only
+#
+# SONOMA FEATURES (macOS 14+):
+#   - Slow-motion video wallpapers (aerial views, abstract, etc.)
+#   - Shuffle wallpapers on a schedule
+#   - Photo library integration
+#
+# Source:       https://support.apple.com/guide/mac-help/mchlp3013/mac
+
+msg_info "Configuring wallpaper settings..."
 
 # Note: The most reliable way to set wallpaper is via osascript or
 # the desktoppicture database. Direct defaults are less reliable.

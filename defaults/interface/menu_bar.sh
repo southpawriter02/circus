@@ -17,6 +17,8 @@
 #     https://support.apple.com/guide/mac-help/use-the-menu-bar-mchlp1446/mac
 #   - Apple Support: Change Date & Time preferences
 #     https://support.apple.com/guide/mac-help/change-date-time-preferences-mchlp2996/mac
+#   - ICU Date Format Patterns
+#     https://unicode-org.github.io/icu/userguide/format_parse/datetime/
 #
 # DOMAIN:
 #   com.apple.menuextra.clock
@@ -29,6 +31,70 @@
 #   - Some legacy MenuExtras paths may not work on newer macOS versions
 #
 # ==============================================================================
+
+# ==============================================================================
+# Menu Bar Architecture
+# ==============================================================================
+
+# The menu bar is managed by multiple processes:
+#
+#   - SystemUIServer: Core menu bar management, menu extras
+#   - ControlCenter: Control Center modules (Big Sur+)
+#   - Finder: Apple menu and some menu items
+#   - WindowServer: Visual rendering
+#
+# MENU BAR LAYOUT:
+#
+#   ┌────────────────────────────────────────────────────────────────────────┐
+#   │ │Apple│File│Edit│View│...│            │🔋│📶│🔊│⊞│🔍│⏰│
+#   │ │Menu │                   │   Spacer   │Menu Extras    │Clock│
+#   └────────────────────────────────────────────────────────────────────────┘
+#
+# MENU EXTRAS (Icons on the right):
+#   - macOS manages built-in extras (battery, WiFi, Bluetooth, etc.)
+#   - Third-party apps add their own (Bartender, 1Password, etc.)
+#   - ⌘-drag to reorder menu extras
+#   - ⌘-drag off the menu bar to remove (some items)
+#
+# NOTCH CONSIDERATIONS (MacBook Pro 14"/16"):
+#   - Menu bar items may be hidden behind the notch
+#   - macOS automatically hides overflow items
+#   - Third-party apps like Bartender can help manage notch overflow
+#
+# CLOCK CUSTOMIZATION:
+#   The menu bar clock uses ICU (International Components for Unicode)
+#   format patterns. Common pattern elements:
+#
+#   PATTERN │ EXAMPLE    │ DESCRIPTION
+#   ────────┼────────────┼─────────────────────────
+#   E       │ Mon        │ Abbreviated weekday
+#   EE      │ Mon        │ Same as E
+#   EEEE    │ Monday     │ Full weekday name
+#   d       │ 5          │ Day of month
+#   dd      │ 05         │ Day with leading zero
+#   M       │ 1          │ Month number
+#   MM      │ 01         │ Month with leading zero
+#   MMM     │ Jan        │ Abbreviated month name
+#   MMMM    │ January    │ Full month name
+#   y       │ 2024       │ Year
+#   yy      │ 24         │ Two-digit year
+#   h       │ 1          │ Hour (12-hour)
+#   hh      │ 01         │ Hour 12h with zero
+#   H       │ 13         │ Hour (24-hour)
+#   HH      │ 13         │ Hour 24h with zero
+#   m       │ 5          │ Minute
+#   mm      │ 05         │ Minute with zero
+#   s       │ 9          │ Second
+#   ss      │ 09         │ Second with zero
+#   a       │ PM         │ AM/PM marker
+#
+# EXAMPLE DATE FORMATS:
+#   "EEE MMM d  h:mm a"     → Mon Jan 5  1:23 PM
+#   "EEE d MMM  HH:mm:ss"   → Mon 5 Jan  13:23:45
+#   "EEEE, MMMM d, yyyy"    → Monday, January 5, 2024
+#   "HH:mm"                 → 13:23 (minimal 24h)
+#
+# Source:       https://unicode-org.github.io/icu/userguide/format_parse/datetime/
 
 msg_info "Configuring menu bar settings..."
 

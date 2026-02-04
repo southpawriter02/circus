@@ -25,6 +25,71 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# Stage Manager: Visual Overview
+# ==============================================================================
+
+# Stage Manager (introduced in macOS Ventura, 2022) provides an alternative
+# to traditional window management with a focus on reducing clutter.
+#
+# TRADITIONAL DESKTOP vs STAGE MANAGER:
+#
+#   Traditional Desktop:
+#   ┌─────────────────────────────────────────────────────────────────┐
+#   │ Menu Bar                                                       │
+#   ├─────────────────────────────────────────────────────────────────┤
+#   │  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐                           │
+#   │  │App 1│  │App 2│  │App 3│  │App 4│   All windows visible     │
+#   │  └─────┘  └─────┘  └─────┘  └─────┘   (can overlap)           │
+#   └─────────────────────────────────────────────────────────────────┘
+#
+#   Stage Manager:
+#   ┌─────────────────────────────────────────────────────────────────┐
+#   │ Menu Bar                                                       │
+#   ├──────┬──────────────────────────────────────────────────────────┤
+#   │ ┌──┐ │                                                         │
+#   │ │A1│ │         ┌─────────────────────┐                         │
+#   │ └──┘ │         │                     │                         │
+#   │ ┌──┐ │         │   Active Window     │  Center stage:          │
+#   │ │A2│ │         │                     │  focused work           │
+#   │ └──┘ │         │                     │                         │
+#   │ ┌──┐ │         └─────────────────────┘                         │
+#   │ │A3│ │                                                         │
+#   │ └──┘ │  Recent apps on left                                    │
+#   └──────┴──────────────────────────────────────────────────────────┘
+#
+# HOW STAGE MANAGER WORKS:
+#   1. Only the active app's windows are fully visible ("on stage")
+#   2. Other recent apps appear as thumbnails on the left
+#   3. Click a thumbnail to bring that app to center stage
+#   4. Apps can be grouped together into "stages"
+#
+# ACTIVATION METHODS:
+#   1. Control Center > Stage Manager toggle
+#   2. System Settings > Desktop & Dock > Stage Manager
+#   3. Command: defaults write com.apple.WindowManager GloballyEnabled -bool true
+#   4. Keyboard: No default shortcut (assign via System Settings > Keyboard)
+#
+# STAGE MANAGER KEY SETTINGS:
+#   GloballyEnabled        Master on/off toggle
+#   AutoHide               Hide/show the recent apps strip
+#   HideDesktop            Show/hide desktop icons
+#   AppWindowGrouping...   Group windows by app or show each separately
+#   StandardHideWidgets    Hide widgets when Stage Manager active
+#
+# WHEN TO USE STAGE MANAGER:
+#   ✓ Focused work with few apps
+#   ✓ Reducing visual clutter
+#   ✓ Quick app switching via thumbnails
+#   ✓ Working on smaller screens (reduces overlap)
+#
+# WHEN TO AVOID:
+#   ✗ Multi-window workflows (comparing documents side-by-side)
+#   ✗ Drag-and-drop between many apps
+#   ✗ Reference-heavy work (need many windows visible)
+#
+# Source:       https://support.apple.com/guide/mac-help/mchl534ba392/mac
+
 msg_info "Configuring Stage Manager settings..."
 
 # ==============================================================================

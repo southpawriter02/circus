@@ -29,19 +29,74 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# Control Center Architecture
+# ==============================================================================
+
+# Control Center was introduced in macOS Big Sur (11.0, 2020), bringing
+# iOS/iPadOS-style quick toggles to the Mac.
+#
+# HISTORY OF MENU BAR ITEMS:
+#
+#   Pre-Big Sur (Menu Extras):
+#   - Managed via SystemUIServer
+#   - Configured by adding/removing from ~/Library/Preferences/com.apple.systemuiserver.plist
+#   - Items lived in /System/Library/CoreServices/Menu Extras/*.menu
+#
+#   Big Sur+ (Control Center):
+#   - Unified Control Center panel
+#   - Individual modules can be pinned to menu bar
+#   - Modern SwiftUI-based interface
+#
+# MENU BAR STRUCTURE:
+#
+#   ┌────────────────────────────────────────────────────────────────────────┐
+#   │ App Menu │ App Menus... │        │ Menu Extras │ Spotlight │ CC │ Time│
+#   │          │              │ spacer │ (WiFi, etc) │     🔍     │ ⊞  │     │
+#   └────────────────────────────────────────────────────────────────────────┘
+#
+#   From left to right:
+#   1. Apple menu (always present)
+#   2. App menus (owned by frontmost app)
+#   3. Flexible space (grows/shrinks)
+#   4. Menu extras (system + third-party)
+#   5. Spotlight icon
+#   6. Control Center button
+#   7. Clock/Date
+#
+# CONTROL CENTER MODULES:
+#   Each module can appear in three places:
+#   - Control Center (always, for most modules)
+#   - Menu Bar (optional, via visibility setting)
+#   - Neither (hidden completely)
+#
+# PROCESSES:
+#   - ControlCenter.app: The Control Center panel
+#   - SystemUIServer: Menu bar management
+#   - To restart: killall ControlCenter; killall SystemUIServer
+#
+# Source:       https://support.apple.com/guide/mac-help/control-center-mchl50f94f8f/mac
+
 msg_info "Configuring Control Center settings..."
 
 # ==============================================================================
 # Module Visibility Values
 #
 # Each Control Center module can have one of these visibility settings:
-#   0  = Not in menu bar or Control Center (disabled)
-#   2  = Always show in menu bar
-#   8  = Show in menu bar when active/in-use
-#   18 = Show in Control Center only (default for most)
-#   24 = Don't show anywhere
 #
-# Some modules are always visible in Control Center regardless of setting.
+#   VALUE   │ MENU BAR        │ CONTROL CENTER
+#   ────────┼─────────────────┼────────────────
+#   0       │ Hidden          │ Hidden
+#   2       │ Always show     │ Always show
+#   8       │ When active     │ Always show
+#   18      │ Hidden          │ Always show (default for most)
+#   24      │ Hidden          │ Hidden
+#
+# "When active" means the icon only appears when the feature is in use
+# (e.g., AirPlay when mirroring, Now Playing when media plays).
+#
+# Some modules (WiFi, Bluetooth, Sound) are always in Control Center,
+# regardless of the visibility setting.
 #
 # ==============================================================================
 

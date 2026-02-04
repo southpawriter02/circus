@@ -18,6 +18,8 @@
 #     https://support.apple.com/guide/mac-help/change-notifications-preferences-mh40583/mac
 #   - Apple Support: Use Focus on your Mac
 #     https://support.apple.com/guide/mac-help/turn-a-focus-on-or-off-mchl613dc43f/mac
+#   - Apple Developer: UNUserNotificationCenter
+#     https://developer.apple.com/documentation/usernotifications/unusernotificationcenter
 #
 # DOMAIN:
 #   com.apple.ncprefs
@@ -30,6 +32,75 @@
 #   - Notification Center history is stored in a database
 #
 # ==============================================================================
+
+# ==============================================================================
+# Notification Center Architecture
+# ==============================================================================
+
+# macOS notifications are managed by several components:
+#
+# PROCESSES:
+#   - usernoted: User notification daemon (manages delivery)
+#   - NotificationCenter: The UI for viewing notifications
+#   - UserNotificationCenter: Framework for apps to post notifications
+#
+# NOTIFICATION FLOW:
+#
+#   ┌──────────────┐    ┌──────────────┐    ┌──────────────────┐
+#   │     App      │───▶│   usernoted  │───▶│ NotificationCenter│
+#   │ (posts note) │    │ (routes/stores)│   │ (displays banner) │
+#   └──────────────┘    └──────────────┘    └──────────────────┘
+#                              │
+#                              ▼
+#                       ┌────────────┐
+#                       │  Database  │
+#                       │ (history)  │
+#                       └────────────┘
+#
+# DATA LOCATIONS:
+#   ~/Library/Preferences/com.apple.ncprefs.plist
+#     - Notification preferences
+#
+#   ~/Library/Application Support/NotificationCenter/
+#     - Notification history database
+#
+#   ~/Library/DoNotDisturb/DB/
+#     - Focus (DND) state and assertions
+#
+#   ~/Library/Group Containers/group.com.apple.usernoted/
+#     - User notification daemon data
+#
+# NOTIFICATION TYPES:
+#   BANNER    Appears at top right, auto-dismisses
+#   ALERT     Appears at top right, requires action
+#   BADGE     App icon badge (number)
+#   SOUND     Audio notification
+#   NONE      Silent delivery to Notification Center
+#
+# DEBUGGING COMMANDS:
+#
+#   # View notification database (requires Full Disk Access)
+#   sqlite3 ~/Library/Group\ Containers/group.com.apple.usernoted/db2/db
+#
+#   # Check Focus (DND) status
+#   plutil -p ~/Library/DoNotDisturb/DB/Assertions.json 2>/dev/null
+#
+#   # Clear notification history
+#   rm -rf ~/Library/Application\ Support/NotificationCenter/*
+#   killall NotificationCenter
+#
+#   # Test notification from command line
+#   osascript -e 'display notification "Test message" with title "Test"'
+#
+#   # List apps with notification permissions
+#   defaults read com.apple.ncprefs apps
+#
+# FOCUS MODES (macOS Monterey+):
+#   Focus modes (Do Not Disturb, Work, Personal, etc.) are synced via
+#   iCloud and stored in complex plist/database structures that aren't
+#   easily modified via defaults. Use System Settings or Shortcuts.
+#
+# Source:       https://developer.apple.com/documentation/usernotifications
 
 # A helper function to run `defaults write` commands or print them in dry run mode.
 run_defaults() {

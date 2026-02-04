@@ -25,6 +25,74 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# Window Management Architecture
+# ==============================================================================
+
+# macOS window management has evolved significantly, with major features
+# added in Sequoia (macOS 15, 2024).
+#
+# WINDOW MANAGEMENT COMPONENTS:
+#
+#   COMPONENT          │ ROLE
+#   ───────────────────┼──────────────────────────────────────────
+#   WindowServer       │ Core window compositing (runs as root)
+#   Dock               │ Minimize, app switching, Stage Manager
+#   Mission Control    │ Spaces, window overview
+#   Window Manager     │ Stage Manager, tiling (Sequoia+)
+#
+# KEYBOARD SHORTCUTS FOR WINDOWS:
+#
+#   SHORTCUT    │ ACTION
+#   ────────────┼────────────────────────────
+#   ⌘M          │ Minimize window
+#   ⌘H          │ Hide application
+#   ⌘⌥H         │ Hide others
+#   ⌘W          │ Close window
+#   ⌘Q          │ Quit application
+#   ⌘`          │ Cycle windows of current app
+#   ⌘Tab        │ App switcher
+#   ^↓          │ App Exposé
+#   ⌃⌘F         │ Toggle fullscreen
+#   ^⌘← / →     │ Tile left/right (Sequoia+)
+#
+# WINDOW TILING (macOS Sequoia+):
+#
+#   macOS Sequoia introduced native window tiling:
+#   
+#   ┌─────────────────┬─────────────────┐
+#   │                 │                 │
+#   │  Left Half      │  Right Half     │   ← Drag to edge or use shortcut
+#   │  (50%)          │  (50%)          │
+#   │                 │                 │
+#   └─────────────────┴─────────────────┘
+#
+#   Tiling options:
+#   - Drag window to screen edge
+#   - Hold window title bar, options appear
+#   - Keyboard: ⌃⌘← (left half), ⌃⌘→ (right half)
+#   - Window menu > Move & Resize
+#
+# THIRD-PARTY WINDOW MANAGERS:
+#   For more powerful tiling, consider:
+#   - Rectangle (free): rectangleapp.com
+#   - Magnet (paid): App Store
+#   - Amethyst (free, tiling WM): github.com/ianyh/Amethyst
+#   - yabai (advanced): github.com/koekeishiya/yabai
+#
+# MINIMIZE EFFECTS COMPARISON:
+#
+#   EFFECT   │ SPEED    │ VISUAL
+#   ─────────┼──────────┼─────────────────────
+#   genie    │ Slower   │ Classic, morphs into Dock
+#   scale    │ Faster   │ Simple shrink animation
+#   suck     │ Fast     │ Hidden, dramatic suction effect
+#
+#   The "suck" effect is hidden but cool:
+#   defaults write com.apple.dock mineffect -string "suck"; killall Dock
+#
+# Source:       https://support.apple.com/guide/mac-help/change-dock-preferences-mh35859/mac
+
 msg_info "Configuring window management settings..."
 
 # ==============================================================================

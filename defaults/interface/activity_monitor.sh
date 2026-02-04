@@ -48,6 +48,63 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# Activity Monitor: Under the Hood
+# ==============================================================================
+
+# Activity Monitor provides a GUI for macOS's process monitoring system.
+# Understanding the underlying concepts helps interpret the data.
+#
+# PROCESS HIERARCHY:
+#   ┌─────────────────────────────────────────────────────────────────┐
+#   │ kernel_task (PID 0)                                            │
+#   │   └─ launchd (PID 1) ─ The root of all user processes          │
+#   │       ├─ Finder.app                                            │
+#   │       ├─ Dock.app                                               │
+#   │       ├─ Your apps...                                          │
+#   │       └─ Background daemons...                                 │
+#   └─────────────────────────────────────────────────────────────────┘
+#
+# COMMAND-LINE ALTERNATIVES:
+#   These tools provide similar information via Terminal:
+#
+#   TOOL          │ PURPOSE
+#   ──────────────┼────────────────────────────────────────
+#   top           │ Real-time process monitor (like Activity Monitor)
+#   htop          │ Enhanced top (install via Homebrew)
+#   ps aux        │ Snapshot of all processes
+#   vm_stat       │ Virtual memory statistics
+#   iostat        │ Disk I/O statistics
+#   netstat       │ Network connections
+#   lsof          │ List open files/network connections
+#   fs_usage      │ File system activity (requires sudo)
+#   powermetrics  │ Energy/power consumption (requires sudo)
+#
+# MEMORY PRESSURE EXPLAINED:
+#   The Memory tab shows a "Memory Pressure" graph:
+#
+#   COLOR   │ MEANING              │ ACTION NEEDED
+#   ────────┼──────────────────────┼────────────────────────
+#   Green   │ Plenty of RAM free   │ None
+#   Yellow  │ Memory being managed │ Monitor, may slow down
+#   Red     │ RAM exhausted        │ Close apps, may need more RAM
+#
+#   Key memory metrics:
+#   - App Memory: RAM used by apps
+#   - Wired Memory: RAM that can't be swapped (kernel, drivers)
+#   - Compressed: RAM compressed to save space (huge win for performance)
+#   - Swap Used: Data paged to SSD (slower than RAM)
+#
+# DOCK ICON MONITORING:
+#   Activity Monitor can show live graphs in its Dock icon:
+#   - View > Dock Icon > Show CPU Usage
+#   - View > Dock Icon > Show CPU History
+#   - View > Dock Icon > Show Network Usage
+#   - View > Dock Icon > Show Disk Activity
+#
+# Source:       https://support.apple.com/guide/activity-monitor/welcome/mac
+# See also:     man top, man ps, man vm_stat
+
 # A helper function to run `defaults write` commands or print them in dry run mode.
 run_defaults() {
   local domain="$1"

@@ -1,0 +1,87 @@
+# ==============================================================================
+# Context Configuration Template
+#
+# This file defines a development context - a collection of environment
+# settings, runtime versions, and identity overrides for a specific project.
+#
+# USAGE:
+#   1. Copy this template to ~/.config/circus/contexts/<name>.conf
+#   2. Edit the values for your project
+#   3. Activate with: fc context switch <name>
+#
+# SECTIONS:
+#   - Environment Variables: Project-specific env vars
+#   - Version Managers: Runtime versions (Node, Python, Go, etc.)
+#   - Git Identity: Override Git user for this context
+#   - Custom Commands: Scripts to run on activate/deactivate
+#
+# SECRETS:
+#   Use "from-secrets:op://vault/item/field" to load values from 1Password.
+#   Example: export API_KEY="from-secrets:op://Personal/github/token"
+#
+# ==============================================================================
+
+# --- Environment Variables ---
+# Add project-specific environment variables here.
+# These are exported when the context is activated.
+
+# export AWS_PROFILE="my-project"
+# export AWS_REGION="us-west-2"
+# export DATABASE_URL="postgres://localhost/myproject_dev"
+# export REDIS_URL="redis://localhost:6379/0"
+# export API_KEY="from-secrets:op://Personal/myproject/api-key"
+
+# --- Version Managers ---
+# Specify runtime versions. When the context is activated,
+# the appropriate version manager command will be run.
+#
+# Supported:
+#   - NODE_VERSION: Uses nvm (nvm use <version>)
+#   - PYTHON_VERSION: Uses pyenv (pyenv local <version>)
+#   - GO_VERSION: Uses goenv (goenv local <version>)
+#   - RUBY_VERSION: Uses rbenv (rbenv local <version>)
+
+# NODE_VERSION="18"
+# PYTHON_VERSION="3.11"
+# GO_VERSION="1.21"
+# RUBY_VERSION="3.2"
+
+# --- Git Identity ---
+# Override Git user.name and user.email for commits in this context.
+# Useful when working with different identities (work vs personal).
+#
+# These set GIT_AUTHOR_NAME, GIT_COMMITTER_NAME, GIT_AUTHOR_EMAIL,
+# and GIT_COMMITTER_EMAIL environment variables.
+
+# GIT_USER_NAME="Your Name"
+# GIT_USER_EMAIL="your.email@example.com"
+
+# --- Custom Commands ---
+# Commands to run when activating or deactivating this context.
+# Use for project-specific setup that doesn't fit elsewhere.
+#
+# Examples:
+#   - Start local services
+#   - Set additional env vars dynamically
+#   - Change to project directory
+
+# ON_ACTIVATE="cd ~/Projects/myproject && docker-compose up -d"
+# ON_DEACTIVATE="docker-compose down"
+
+# ==============================================================================
+# Tips:
+#
+# 1. Keep sensitive values in 1Password and reference with from-secrets:
+#    export SECRET="from-secrets:op://vault/item/field"
+#
+# 2. Contexts are complementary to profiles:
+#    - Profile (fc profile): Machine-wide settings (developer, work, personal)
+#    - Context (fc context): Project-specific settings
+#
+# 3. You can have multiple contexts active via subshells:
+#    fc context shell project-a  # Opens subshell with project-a context
+#
+# 4. Export contexts to share with teammates:
+#    fc context export myproject  # Creates myproject.context file
+#
+# ==============================================================================

@@ -1,0 +1,920 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-context
+#
+# DESCRIPTION:  Development context switcher for managing project-specific
+#               environments. Contexts store environment variables, version
+#               manager settings, Git identities, and custom activation scripts.
+#
+# REQUIRES:
+#   - macOS 10.15 or later
+#   - Bash 4.0 or later (zsh compatible)
+#
+# DEPENDENCIES:
+#   - Optional: nvm, pyenv, rbenv, goenv for version management
+#   - Optional: fzf for interactive selection
+#   - Optional: fc-secrets for secret integration
+#
+# REFERENCES:
+#   - direnv: https://direnv.net (similar concept)
+#   - nvm: https://github.com/nvm-sh/nvm
+#   - pyenv: https://github.com/pyenv/pyenv
+#
+# SUBCOMMANDS:
+#   list              - List all defined contexts
+#   current           - Show the active context
+#   switch <name>     - Switch to a context
+#   create [name]     - Create a new context (interactive wizard)
+#   edit <name>       - Edit an existing context
+#   delete <name>     - Delete a context
+#   export <name>     - Export context as shareable file
+#   import <file>     - Import context from file
+#   shell             - Open subshell with context loaded
+#   off               - Deactivate current context
+#
+# EXAMPLES:
+#   fc context list                    # Show all contexts
+#   fc context create project-alpha    # Create a new context
+#   fc context switch project-alpha    # Activate a context
+#   fc context current                 # Show active context
+#   fc context off                     # Deactivate current context
+#
+# NOTES:
+#   - Contexts are stored in ~/.config/circus/contexts/
+#   - The current context is tracked in ~/.config/circus/current_context
+#   - Contexts complement roles: roles are machine-wide, contexts are per-project
+#   - Secrets can be loaded via "from-secrets:op://..." syntax
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ----------------------------------------------------------
+readonly CONTEXTS_DIR="$HOME/.config/circus/contexts"
+readonly CURRENT_CONTEXT_FILE="$HOME/.config/circus/current_context"
+readonly CONTEXT_ENV_FILE="$HOME/.circus/context_env.sh"
+readonly CONTEXT_TEMPLATE="$DOTFILES_ROOT/lib/templates/context.conf.template"
+
+# Markers for managed environment file
+readonly CONTEXT_MARKER_START="# --- fc-context managed (DO NOT EDIT BELOW) ---"
+readonly CONTEXT_MARKER_END="# --- fc-context end ---"
+
+# --- Help and Usage ---------------------------------------------------------
+
+usage() {
+  msg_info "Usage: fc context <subcommand> [options]"
+  echo ""
+  msg_info "Development context switcher for project-specific environments."
+  echo ""
+  msg_info "Subcommands:"
+  echo "  list              - List all defined contexts"
+  echo "  current           - Show the active context"
+  echo "  switch <name>     - Switch to a context"
+  echo "  create [name]     - Create a new context (interactive wizard)"
+  echo "  edit <name>       - Open context file in editor"
+  echo "  delete <name>     - Delete a context"
+  echo "  export <name>     - Export context as shareable file"
+  echo "  import <file>     - Import context from file"
+  echo "  shell             - Open subshell with context loaded"
+  echo "  off               - Deactivate current context"
+  echo ""
+  msg_info "Options:"
+  echo "  --help            - Show this help message"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc context create project-alpha    # Create new context"
+  echo "  fc context switch project-alpha    # Activate context"
+  echo "  fc context current                 # Show active context"
+  echo "  fc context off                     # Deactivate context"
+  echo ""
+  msg_info "Configuration: $CONTEXTS_DIR/"
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+#
+# @description Ensure the contexts directory exists
+#
+ensure_contexts_dir() {
+  if [[ ! -d "$CONTEXTS_DIR" ]]; then
+    mkdir -p "$CONTEXTS_DIR"
+    chmod 700 "$CONTEXTS_DIR"
+  fi
+}
+
+#
+# @description Get list of available contexts
+#
+get_available_contexts() {
+  local contexts=()
+  if [[ -d "$CONTEXTS_DIR" ]]; then
+    for file in "$CONTEXTS_DIR"/*.conf; do
+      [[ -f "$file" ]] || continue
+      local name
+      name=$(basename "$file" .conf)
+      contexts+=("$name")
+    done
+  fi
+  printf '%s\n' "${contexts[@]}"
+}
+
+#
+# @description Get the current active context
+#
+get_current_context() {
+  if [[ -f "$CURRENT_CONTEXT_FILE" ]]; then
+    cat "$CURRENT_CONTEXT_FILE"
+  else
+    echo ""
+  fi
+}
+
+#
+# @description Set the current context
+#
+set_current_context() {
+  local context="$1"
+  mkdir -p "$(dirname "$CURRENT_CONTEXT_FILE")"
+  echo "$context" > "$CURRENT_CONTEXT_FILE"
+}
+
+#
+# @description Clear the current context
+#
+clear_current_context() {
+  rm -f "$CURRENT_CONTEXT_FILE"
+  rm -f "$CONTEXT_ENV_FILE"
+}
+
+#
+# @description Check if a context exists
+#
+context_exists() {
+  local name="$1"
+  [[ -f "$CONTEXTS_DIR/${name}.conf" ]]
+}
+
+#
+# @description Get context file path
+#
+get_context_file() {
+  local name="$1"
+  echo "$CONTEXTS_DIR/${name}.conf"
+}
+
+#
+# @description Parse a value from context file
+# @param $1 - context name
+# @param $2 - key to find
+#
+get_context_value() {
+  local context_file="$1"
+  local key="$2"
+  grep "^${key}=" "$context_file" 2>/dev/null | head -1 | cut -d'=' -f2- | sed 's/^"//;s/"$//'
+}
+
+#
+# @description Resolve secrets in value (from-secrets:op://...)
+#
+resolve_secrets() {
+  local value="$1"
+
+  if [[ "$value" == from-secrets:* ]]; then
+    local secret_uri="${value#from-secrets:}"
+    # Check if fc-secrets is available
+    if [[ -x "$DOTFILES_ROOT/lib/plugins/fc-secrets" ]]; then
+      local resolved
+      resolved=$("$DOTFILES_ROOT/lib/plugins/fc-secrets" get "$secret_uri" 2>/dev/null)
+      if [[ $? -eq 0 && -n "$resolved" ]]; then
+        echo "$resolved"
+        return 0
+      fi
+    fi
+    msg_warning "Could not resolve secret: $secret_uri" >&2
+    echo ""
+    return 1
+  fi
+
+  echo "$value"
+}
+
+#
+# @description Generate the context environment file
+#
+generate_context_env() {
+  local context_name="$1"
+  local context_file
+  context_file=$(get_context_file "$context_name")
+
+  if [[ ! -f "$context_file" ]]; then
+    die "Context not found: $context_name"
+  fi
+
+  mkdir -p "$(dirname "$CONTEXT_ENV_FILE")"
+
+  cat > "$CONTEXT_ENV_FILE" << EOF
+# Auto-generated by fc context switch
+# Context: $context_name
+# Generated: $(date)
+# DO NOT EDIT - changes will be overwritten
+
+$CONTEXT_MARKER_START
+
+EOF
+
+  # Parse and add environment variables
+  local in_env_section=false
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    # Skip comments
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "${line// }" ]] && continue
+
+    # Check for section markers
+    if [[ "$line" == "# --- Environment Variables ---"* ]]; then
+      in_env_section=true
+      continue
+    fi
+
+    if [[ "$line" == "# ---"* ]] && [[ "$line" != "# --- Environment"* ]]; then
+      in_env_section=false
+    fi
+
+    # Process export statements
+    if [[ "$line" == export\ * ]]; then
+      # Extract variable name and value
+      local var_name value
+      var_name=$(echo "$line" | sed 's/^export //' | cut -d'=' -f1)
+      value=$(echo "$line" | cut -d'=' -f2- | sed 's/^"//;s/"$//')
+
+      # Resolve secrets if needed
+      local resolved_value
+      resolved_value=$(resolve_secrets "$value")
+
+      echo "export ${var_name}=\"${resolved_value}\"" >> "$CONTEXT_ENV_FILE"
+    fi
+  done < "$context_file"
+
+  # Add version manager commands
+  local node_version python_version go_version ruby_version
+  node_version=$(get_context_value "$context_file" "NODE_VERSION")
+  python_version=$(get_context_value "$context_file" "PYTHON_VERSION")
+  go_version=$(get_context_value "$context_file" "GO_VERSION")
+  ruby_version=$(get_context_value "$context_file" "RUBY_VERSION")
+
+  if [[ -n "$node_version" ]]; then
+    echo "" >> "$CONTEXT_ENV_FILE"
+    echo "# Node.js version" >> "$CONTEXT_ENV_FILE"
+    echo "export FC_CONTEXT_NODE_VERSION=\"$node_version\"" >> "$CONTEXT_ENV_FILE"
+  fi
+
+  if [[ -n "$python_version" ]]; then
+    echo "" >> "$CONTEXT_ENV_FILE"
+    echo "# Python version" >> "$CONTEXT_ENV_FILE"
+    echo "export FC_CONTEXT_PYTHON_VERSION=\"$python_version\"" >> "$CONTEXT_ENV_FILE"
+  fi
+
+  if [[ -n "$go_version" ]]; then
+    echo "" >> "$CONTEXT_ENV_FILE"
+    echo "# Go version" >> "$CONTEXT_ENV_FILE"
+    echo "export FC_CONTEXT_GO_VERSION=\"$go_version\"" >> "$CONTEXT_ENV_FILE"
+  fi
+
+  if [[ -n "$ruby_version" ]]; then
+    echo "" >> "$CONTEXT_ENV_FILE"
+    echo "# Ruby version" >> "$CONTEXT_ENV_FILE"
+    echo "export FC_CONTEXT_RUBY_VERSION=\"$ruby_version\"" >> "$CONTEXT_ENV_FILE"
+  fi
+
+  # Add Git identity
+  local git_name git_email
+  git_name=$(get_context_value "$context_file" "GIT_USER_NAME")
+  git_email=$(get_context_value "$context_file" "GIT_USER_EMAIL")
+
+  if [[ -n "$git_name" || -n "$git_email" ]]; then
+    echo "" >> "$CONTEXT_ENV_FILE"
+    echo "# Git identity" >> "$CONTEXT_ENV_FILE"
+    [[ -n "$git_name" ]] && echo "export GIT_AUTHOR_NAME=\"$git_name\"" >> "$CONTEXT_ENV_FILE"
+    [[ -n "$git_name" ]] && echo "export GIT_COMMITTER_NAME=\"$git_name\"" >> "$CONTEXT_ENV_FILE"
+    [[ -n "$git_email" ]] && echo "export GIT_AUTHOR_EMAIL=\"$git_email\"" >> "$CONTEXT_ENV_FILE"
+    [[ -n "$git_email" ]] && echo "export GIT_COMMITTER_EMAIL=\"$git_email\"" >> "$CONTEXT_ENV_FILE"
+  fi
+
+  # Add context tracking variable
+  echo "" >> "$CONTEXT_ENV_FILE"
+  echo "# Context tracking" >> "$CONTEXT_ENV_FILE"
+  echo "export FC_ACTIVE_CONTEXT=\"$context_name\"" >> "$CONTEXT_ENV_FILE"
+
+  echo "" >> "$CONTEXT_ENV_FILE"
+  echo "$CONTEXT_MARKER_END" >> "$CONTEXT_ENV_FILE"
+
+  chmod 600 "$CONTEXT_ENV_FILE"
+}
+
+#
+# @description Run version manager commands
+#
+run_version_managers() {
+  local context_file="$1"
+
+  local node_version python_version go_version ruby_version
+  node_version=$(get_context_value "$context_file" "NODE_VERSION")
+  python_version=$(get_context_value "$context_file" "PYTHON_VERSION")
+  go_version=$(get_context_value "$context_file" "GO_VERSION")
+  ruby_version=$(get_context_value "$context_file" "RUBY_VERSION")
+
+  # nvm
+  if [[ -n "$node_version" ]] && command -v nvm &>/dev/null; then
+    echo "  Setting Node.js to v$node_version..."
+    nvm use "$node_version" --silent 2>/dev/null || nvm install "$node_version" --silent
+  fi
+
+  # pyenv
+  if [[ -n "$python_version" ]] && command -v pyenv &>/dev/null; then
+    echo "  Setting Python to v$python_version..."
+    pyenv local "$python_version" 2>/dev/null || pyenv install "$python_version"
+  fi
+
+  # goenv
+  if [[ -n "$go_version" ]] && command -v goenv &>/dev/null; then
+    echo "  Setting Go to v$go_version..."
+    goenv local "$go_version" 2>/dev/null
+  fi
+
+  # rbenv
+  if [[ -n "$ruby_version" ]] && command -v rbenv &>/dev/null; then
+    echo "  Setting Ruby to v$ruby_version..."
+    rbenv local "$ruby_version" 2>/dev/null
+  fi
+}
+
+#
+# @description Run custom activation command
+#
+run_activation_command() {
+  local context_file="$1"
+  local on_activate
+  on_activate=$(get_context_value "$context_file" "ON_ACTIVATE")
+
+  if [[ -n "$on_activate" ]]; then
+    echo "  Running activation command..."
+    eval "$on_activate"
+  fi
+}
+
+# --- Subcommands ------------------------------------------------------------
+
+#
+# @description List all available contexts
+#
+do_list() {
+  msg_info "Available contexts:"
+  echo ""
+
+  ensure_contexts_dir
+
+  local contexts
+  contexts=$(get_available_contexts)
+
+  if [[ -z "$contexts" ]]; then
+    echo "  (no contexts defined)"
+    echo ""
+    msg_info "Create a context with: fc context create <name>"
+    return 0
+  fi
+
+  local current
+  current=$(get_current_context)
+
+  while IFS= read -r context; do
+    [[ -z "$context" ]] && continue
+    if [[ "$context" == "$current" ]]; then
+      printf "  ${UI_SUCCESS}*${UI_RESET} %s ${UI_MUTED}(active)${UI_RESET}\n" "$context"
+    else
+      echo "    $context"
+    fi
+  done <<< "$contexts"
+
+  echo ""
+}
+
+#
+# @description Show the current active context
+#
+do_current() {
+  local current
+  current=$(get_current_context)
+
+  if [[ -z "$current" ]]; then
+    msg_info "No context is currently active."
+    echo ""
+    msg_info "Use 'fc context list' to see available contexts."
+    msg_info "Use 'fc context switch <name>' to activate one."
+    return 0
+  fi
+
+  msg_info "Current context: ${UI_SUCCESS}$current${UI_RESET}"
+  echo ""
+
+  local context_file
+  context_file=$(get_context_file "$current")
+
+  if [[ -f "$context_file" ]]; then
+    # Show key settings
+    local node_version python_version aws_profile git_email
+    node_version=$(get_context_value "$context_file" "NODE_VERSION")
+    python_version=$(get_context_value "$context_file" "PYTHON_VERSION")
+    aws_profile=$(get_context_value "$context_file" "AWS_PROFILE")
+    git_email=$(get_context_value "$context_file" "GIT_USER_EMAIL")
+
+    msg_info "Settings:"
+    [[ -n "$node_version" ]] && echo "  Node.js:    v$node_version"
+    [[ -n "$python_version" ]] && echo "  Python:     v$python_version"
+    [[ -n "$aws_profile" ]] && echo "  AWS Profile: $aws_profile"
+    [[ -n "$git_email" ]] && echo "  Git Email:   $git_email"
+
+    # Count environment variables
+    local env_count
+    env_count=$(grep -c "^export " "$context_file" 2>/dev/null || echo "0")
+    [[ "$env_count" -gt 0 ]] && echo "  Env Vars:    $env_count defined"
+  fi
+
+  echo ""
+  msg_info "File: $context_file"
+}
+
+#
+# @description Switch to a context
+#
+do_switch() {
+  local target_context="$1"
+
+  if [[ -z "$target_context" ]]; then
+    # Interactive selection if fzf is available
+    if command -v fzf &>/dev/null; then
+      local contexts
+      contexts=$(get_available_contexts)
+      if [[ -z "$contexts" ]]; then
+        die "No contexts available. Create one with: fc context create <name>"
+      fi
+      target_context=$(echo "$contexts" | fzf --height=40% --layout=reverse --border=rounded \
+          --prompt="Select context: " --header="Choose a context to switch to")
+      [[ -z "$target_context" ]] && { msg_info "Cancelled."; return 0; }
+    else
+      die "Usage: fc context switch <name>\n\nRun 'fc context list' to see available contexts."
+    fi
+  fi
+
+  if ! context_exists "$target_context"; then
+    die "Context not found: $target_context\n\nRun 'fc context list' to see available contexts."
+  fi
+
+  local current
+  current=$(get_current_context)
+
+  if [[ "$current" == "$target_context" ]]; then
+    msg_info "Context '$target_context' is already active."
+    return 0
+  fi
+
+  msg_info "Switching to context: $target_context"
+  echo ""
+
+  local context_file
+  context_file=$(get_context_file "$target_context")
+
+  # Generate environment file
+  echo "  Generating environment..."
+  generate_context_env "$target_context"
+
+  # Run version managers
+  run_version_managers "$context_file"
+
+  # Run activation command
+  run_activation_command "$context_file"
+
+  # Save current context
+  set_current_context "$target_context"
+
+  echo ""
+  msg_success "Context switched to: $target_context"
+  msg_info "Reload your shell or run: source $CONTEXT_ENV_FILE"
+}
+
+#
+# @description Deactivate the current context
+#
+do_off() {
+  local current
+  current=$(get_current_context)
+
+  if [[ -z "$current" ]]; then
+    msg_info "No context is currently active."
+    return 0
+  fi
+
+  msg_info "Deactivating context: $current"
+
+  # Run deactivation command if defined
+  local context_file
+  context_file=$(get_context_file "$current")
+  if [[ -f "$context_file" ]]; then
+    local on_deactivate
+    on_deactivate=$(get_context_value "$context_file" "ON_DEACTIVATE")
+    if [[ -n "$on_deactivate" ]]; then
+      echo "  Running deactivation command..."
+      eval "$on_deactivate"
+    fi
+  fi
+
+  clear_current_context
+
+  msg_success "Context deactivated."
+  msg_info "Start a new shell to clear environment variables."
+}
+
+#
+# @description Create a new context
+#
+do_create() {
+  local context_name="$1"
+
+  ensure_contexts_dir
+
+  echo ""
+  msg_info "╔════════════════════════════════════════╗"
+  msg_info "║   Development Context Creation Wizard  ║"
+  msg_info "╚════════════════════════════════════════╝"
+  echo ""
+
+  # Step 1: Get context name
+  if [[ -z "$context_name" ]]; then
+    msg_info "Step 1/5: Context Name"
+    echo ""
+    echo "  What would you like to call this context?"
+    echo "  Examples: project-alpha, client-xyz, personal-blog"
+    echo ""
+    read -rp "  Context name: " context_name
+
+    if [[ -z "$context_name" ]]; then
+      die "Context name is required."
+    fi
+  else
+    msg_info "Creating context: $context_name"
+  fi
+
+  # Validate name
+  if [[ ! "$context_name" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]]; then
+    die "Invalid context name. Use letters, numbers, hyphens, and underscores only."
+  fi
+
+  if context_exists "$context_name"; then
+    die "Context '$context_name' already exists."
+  fi
+
+  local context_file
+  context_file=$(get_context_file "$context_name")
+
+  echo ""
+
+  # Step 2: Description
+  msg_info "Step 2/5: Description"
+  echo ""
+  echo "  Briefly describe this context (optional):"
+  read -rp "  Description: " context_desc
+
+  echo ""
+
+  # Step 3: Version managers
+  msg_info "Step 3/5: Runtime Versions"
+  echo ""
+  echo "  Specify runtime versions (leave blank to skip):"
+  echo ""
+  read -rp "  Node.js version (e.g., 18, 20, lts): " node_version
+  read -rp "  Python version (e.g., 3.11, 3.12): " python_version
+  read -rp "  Go version (e.g., 1.21, 1.22): " go_version
+
+  echo ""
+
+  # Step 4: Environment variables
+  msg_info "Step 4/5: Environment Variables"
+  echo ""
+  echo "  Common variables (leave blank to skip):"
+  echo ""
+  read -rp "  AWS_PROFILE: " aws_profile
+  read -rp "  DATABASE_URL: " database_url
+
+  echo ""
+
+  # Step 5: Git identity
+  msg_info "Step 5/5: Git Identity"
+  echo ""
+  echo "  Override Git identity for this context (leave blank to use default):"
+  echo ""
+  read -rp "  Git name: " git_name
+  read -rp "  Git email: " git_email
+
+  echo ""
+
+  # Confirmation
+  msg_info "Summary:"
+  echo ""
+  echo "  Name:        $context_name"
+  [[ -n "$context_desc" ]] && echo "  Description: $context_desc"
+  [[ -n "$node_version" ]] && echo "  Node.js:     v$node_version"
+  [[ -n "$python_version" ]] && echo "  Python:      v$python_version"
+  [[ -n "$go_version" ]] && echo "  Go:          v$go_version"
+  [[ -n "$aws_profile" ]] && echo "  AWS Profile: $aws_profile"
+  [[ -n "$git_email" ]] && echo "  Git Email:   $git_email"
+  echo ""
+
+  read -rp "  Create this context? [Y/n] " confirm
+  if [[ "$confirm" =~ ^[Nn] ]]; then
+    msg_info "Cancelled."
+    return 0
+  fi
+
+  # Create the context file
+  echo ""
+  msg_info "Creating context..."
+
+  cat > "$context_file" << EOF
+# ==============================================================================
+# Context: $context_name
+# ${context_desc:-No description}
+# Created: $(date +%Y-%m-%d)
+# ==============================================================================
+
+# --- Environment Variables ---
+# Add project-specific environment variables here.
+# Use "from-secrets:op://vault/item/field" to load from 1Password.
+
+EOF
+
+  [[ -n "$aws_profile" ]] && echo "export AWS_PROFILE=\"$aws_profile\"" >> "$context_file"
+  [[ -n "$database_url" ]] && echo "export DATABASE_URL=\"$database_url\"" >> "$context_file"
+
+  cat >> "$context_file" << EOF
+
+# --- Version Managers ---
+# Specify runtime versions. These will be activated on context switch.
+
+EOF
+
+  [[ -n "$node_version" ]] && echo "NODE_VERSION=\"$node_version\"" >> "$context_file"
+  [[ -n "$python_version" ]] && echo "PYTHON_VERSION=\"$python_version\"" >> "$context_file"
+  [[ -n "$go_version" ]] && echo "GO_VERSION=\"$go_version\"" >> "$context_file"
+
+  cat >> "$context_file" << EOF
+
+# --- Git Identity ---
+# Override Git user for this context.
+
+EOF
+
+  [[ -n "$git_name" ]] && echo "GIT_USER_NAME=\"$git_name\"" >> "$context_file"
+  [[ -n "$git_email" ]] && echo "GIT_USER_EMAIL=\"$git_email\"" >> "$context_file"
+
+  cat >> "$context_file" << EOF
+
+# --- Custom Commands ---
+# Commands to run when activating/deactivating this context.
+
+# ON_ACTIVATE=""
+# ON_DEACTIVATE=""
+EOF
+
+  chmod 600 "$context_file"
+
+  echo ""
+  msg_success "Context '$context_name' created successfully!"
+  echo ""
+  msg_info "Next steps:"
+  echo "  1. Edit the context: fc context edit $context_name"
+  echo "  2. Activate it:      fc context switch $context_name"
+  echo ""
+}
+
+#
+# @description Edit an existing context
+#
+do_edit() {
+  local context_name="$1"
+
+  if [[ -z "$context_name" ]]; then
+    die "Usage: fc context edit <name>"
+  fi
+
+  if ! context_exists "$context_name"; then
+    die "Context not found: $context_name"
+  fi
+
+  local context_file
+  context_file=$(get_context_file "$context_name")
+
+  local editor="${EDITOR:-vim}"
+  msg_info "Opening $context_name in $editor..."
+  "$editor" "$context_file"
+
+  # Regenerate env if this is the active context
+  local current
+  current=$(get_current_context)
+  if [[ "$current" == "$context_name" ]]; then
+    msg_info "Regenerating environment for active context..."
+    generate_context_env "$context_name"
+    msg_info "Reload your shell to apply changes."
+  fi
+}
+
+#
+# @description Delete a context
+#
+do_delete() {
+  local context_name="$1"
+
+  if [[ -z "$context_name" ]]; then
+    die "Usage: fc context delete <name>"
+  fi
+
+  if ! context_exists "$context_name"; then
+    die "Context not found: $context_name"
+  fi
+
+  local current
+  current=$(get_current_context)
+
+  if [[ "$current" == "$context_name" ]]; then
+    msg_warning "This is the currently active context."
+    read -rp "Deactivate and delete? [y/N] " confirm
+    if [[ ! "$confirm" =~ ^[Yy] ]]; then
+      msg_info "Cancelled."
+      return 0
+    fi
+    clear_current_context
+  else
+    read -rp "Delete context '$context_name'? [y/N] " confirm
+    if [[ ! "$confirm" =~ ^[Yy] ]]; then
+      msg_info "Cancelled."
+      return 0
+    fi
+  fi
+
+  local context_file
+  context_file=$(get_context_file "$context_name")
+  rm -f "$context_file"
+
+  msg_success "Context '$context_name' deleted."
+}
+
+#
+# @description Export a context to a shareable file
+#
+do_export() {
+  local context_name="$1"
+  local output_file="$2"
+
+  if [[ -z "$context_name" ]]; then
+    die "Usage: fc context export <name> [output-file]"
+  fi
+
+  if ! context_exists "$context_name"; then
+    die "Context not found: $context_name"
+  fi
+
+  local context_file
+  context_file=$(get_context_file "$context_name")
+
+  output_file="${output_file:-${context_name}.context}"
+
+  cp "$context_file" "$output_file"
+
+  msg_success "Context exported to: $output_file"
+  msg_info "Share this file and import with: fc context import $output_file"
+}
+
+#
+# @description Import a context from file
+#
+do_import() {
+  local import_file="$1"
+  local context_name="$2"
+
+  if [[ -z "$import_file" ]]; then
+    die "Usage: fc context import <file> [name]"
+  fi
+
+  if [[ ! -f "$import_file" ]]; then
+    die "File not found: $import_file"
+  fi
+
+  ensure_contexts_dir
+
+  # Extract name from file or use provided name
+  if [[ -z "$context_name" ]]; then
+    context_name=$(basename "$import_file" .context)
+    context_name=$(basename "$context_name" .conf)
+  fi
+
+  if context_exists "$context_name"; then
+    read -rp "Context '$context_name' already exists. Overwrite? [y/N] " confirm
+    if [[ ! "$confirm" =~ ^[Yy] ]]; then
+      msg_info "Cancelled."
+      return 0
+    fi
+  fi
+
+  local context_file
+  context_file=$(get_context_file "$context_name")
+
+  cp "$import_file" "$context_file"
+  chmod 600 "$context_file"
+
+  msg_success "Context imported as: $context_name"
+  msg_info "Activate with: fc context switch $context_name"
+}
+
+#
+# @description Open a subshell with context loaded
+#
+do_shell() {
+  local context_name="$1"
+
+  # Use current context if none specified
+  if [[ -z "$context_name" ]]; then
+    context_name=$(get_current_context)
+  fi
+
+  if [[ -z "$context_name" ]]; then
+    die "No context specified and no active context.\n\nUsage: fc context shell <name>"
+  fi
+
+  if ! context_exists "$context_name"; then
+    die "Context not found: $context_name"
+  fi
+
+  msg_info "Opening subshell with context: $context_name"
+  msg_info "Type 'exit' to return to normal shell."
+  echo ""
+
+  # Generate env file
+  generate_context_env "$context_name"
+
+  # Start subshell with context
+  export FC_CONTEXT_SUBSHELL=1
+  export FC_ACTIVE_CONTEXT="$context_name"
+
+  # Source the env and start shell
+  ZDOTDIR="$HOME" zsh -c "source '$CONTEXT_ENV_FILE'; exec zsh"
+}
+
+# --- Main -------------------------------------------------------------------
+
+main() {
+  if [[ -z "${1:-}" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+    usage
+  fi
+
+  local subcommand="$1"
+  shift
+
+  case "$subcommand" in
+    list)
+      do_list "$@"
+      ;;
+    current)
+      do_current "$@"
+      ;;
+    switch)
+      do_switch "$@"
+      ;;
+    create)
+      do_create "$@"
+      ;;
+    edit)
+      do_edit "$@"
+      ;;
+    delete)
+      do_delete "$@"
+      ;;
+    export)
+      do_export "$@"
+      ;;
+    import)
+      do_import "$@"
+      ;;
+    shell)
+      do_shell "$@"
+      ;;
+    off)
+      do_off "$@"
+      ;;
+    *)
+      die "Unknown subcommand: $subcommand\nRun 'fc context --help' for usage."
+      ;;
+  esac
+}
+
+main "$@"

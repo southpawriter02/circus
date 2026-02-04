@@ -32,6 +32,68 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# NSGlobalDomain: The System-Wide Defaults Domain
+# ==============================================================================
+
+# NSGlobalDomain (also accessible as "-g" or "-globalDomain") contains
+# preferences that apply to ALL applications, not just specific apps.
+#
+# COMMON NSGlobalDomain KEYS:
+#
+#   KEY                          │ CONTROLS
+#   ─────────────────────────────┼─────────────────────────────────────
+#   AppleInterfaceStyle          │ nil = Light, "Dark" = Dark mode
+#   AppleInterfaceStyleSwitch... │ Auto-switch dark mode based on time
+#   AppleShowScrollBars          │ Scrollbar visibility
+#   AppleHighlightColor          │ Accent color for selections
+#   AppleAccentColor             │ Accent color (integer)
+#   AppleReduceDesktopTinting    │ Reduce window tint in dark mode
+#   AppleReduceMotion            │ Reduce animations
+#   AppleReduceTransparency      │ Reduce transparency effects
+#   NSTableViewDefaultSizeMode   │ Sidebar icon size (1=S, 2=M, 3=L)
+#   AppleShowAllExtensions       │ Show file extensions in Finder
+#   NSAutomaticCapitalizat...    │ Auto-capitalize words
+#   NSAutomaticDashSubstit...    │ Convert -- to em dash
+#   NSAutomaticPeriodSubst...    │ Double-space inserts period
+#   NSAutomaticQuoteSubsti...    │ Smart quotes
+#   NSAutomaticSpellingCor...    │ Auto-correct spelling
+#   NSAutomaticTextComple...     │ Text completion suggestions
+#
+# READING NSGlobalDomain:
+#   defaults read NSGlobalDomain
+#   defaults read -g  # shorthand
+#
+# QUARANTINE: Gatekeeper's Download Protection
+#
+#   When you download an app from the internet, macOS adds a quarantine
+#   extended attribute (com.apple.quarantine) to the file.
+#
+#   View quarantine status:
+#   xattr -l /path/to/downloaded.app | grep quarantine
+#
+#   Remove quarantine (risky - bypasses warning):
+#   xattr -dr com.apple.quarantine /path/to/app.app
+#
+#   The quarantine dialog shows:
+#   - "Safari.app" downloaded this file on <date>
+#   - Opens dialog asking if you want to open it
+#   - Gives option to Move to Trash or Open
+#
+#   LSQuarantine controls whether LaunchServices shows this warning.
+#   Even if disabled, Gatekeeper (code signing) still functions.
+#
+# APPEARANCE MODES (macOS Mojave+):
+#
+#   MODE            │ SETTING
+#   ────────────────┼──────────────────────────────
+#   Light Mode      │ defaults delete NSGlobalDomain AppleInterfaceStyle
+#   Dark Mode       │ defaults write NSGlobalDomain AppleInterfaceStyle -string "Dark"
+#   Auto (dynamic)  │ Set via System Settings only (complex plist)
+#
+# Source:       man defaults
+# See also:     https://github.com/mathiasbynens/dotfiles/blob/main/.macos
+
 # A helper function to run `defaults write` commands or print them in dry run mode.
 # This version always writes to NSGlobalDomain since these are global settings.
 run_defaults() {

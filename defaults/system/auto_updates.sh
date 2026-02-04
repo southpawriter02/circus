@@ -32,6 +32,46 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# launchd Architecture
+# ==============================================================================
+
+# launchd is macOS's init system and service manager. It replaces the older
+# Unix init, cron, and inetd systems with a unified framework.
+#
+# AGENTS vs DAEMONS:
+#
+#   LaunchAgent                          LaunchDaemon
+#   ────────────────────────────────────────────────────────────────────
+#   Location: ~/Library/LaunchAgents/    /Library/LaunchDaemons/
+#             /Library/LaunchAgents/     /System/Library/LaunchDaemons/
+#   Runs as:  The logged-in user         root (or specified user)
+#   Context:  Per-user session           System-wide
+#   Access:   User's files, GUI apps     System resources only
+#   Use for:  User automation, syncs     Services, servers, startup tasks
+#
+# PLIST STRUCTURE:
+#   A launchd plist is an XML property list containing:
+#
+#   <key>Label</key>             Unique identifier (reverse DNS style)
+#   <key>Program</key>           Path to executable OR
+#   <key>ProgramArguments</key>  Array of command + arguments
+#   <key>StartInterval</key>     Run every N seconds
+#   <key>StartCalendarInterval</key>  Cron-like scheduling (Hour, Minute, etc.)
+#   <key>RunAtLoad</key>         Run immediately when loaded (true/false)
+#   <key>KeepAlive</key>         Restart if crashes (true/false)
+#   <key>StandardOutPath</key>   Log file for stdout
+#   <key>StandardErrorPath</key> Log file for stderr
+#
+# DEBUGGING COMMANDS:
+#   launchctl list                       # Show all loaded jobs
+#   launchctl list | grep circus         # Find our job
+#   launchctl print gui/$(id -u)/com.southpawriter02.circus.update
+#   log show --predicate 'subsystem == "com.apple.launchd"' --last 1h
+#
+# Source:       man launchd.plist
+# See also:     https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html
+
 msg_info "Configuring automated daily updates..."
 
 # --- Configuration ---

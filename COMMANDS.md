@@ -1223,6 +1223,107 @@ See `docs/PROFILES.md` for detailed documentation on the profile system.
 
 ---
 
+## `fc context`
+
+Manage development contexts for project-specific environments. Contexts store environment variables, runtime versions, Git identities, and custom activation scripts to quickly switch between different project configurations.
+
+**Usage:**
+
+```bash
+fc context <subcommand> [options]
+```
+
+**Subcommands:**
+*   `list`: List all defined contexts.
+*   `current`: Show the active context and its settings.
+*   `switch <name>`: Switch to a context (loads env vars, runs version managers).
+*   `create [name]`: Create a new context with interactive wizard.
+*   `edit <name>`: Open context file in your editor.
+*   `delete <name>`: Delete a context.
+*   `export <name>`: Export context as shareable file.
+*   `import <file>`: Import context from file.
+*   `shell`: Open subshell with context loaded.
+*   `off`: Deactivate the current context.
+
+**Examples:**
+
+```bash
+# List available contexts
+fc context list
+
+# Create a new context interactively
+fc context create project-alpha
+
+# Switch to a context
+fc context switch project-alpha
+
+# See current context and settings
+fc context current
+
+# Deactivate context
+fc context off
+
+# Open subshell with context
+fc context shell project-alpha
+
+# Export for sharing
+fc context export project-alpha
+fc context import project-alpha.context
+```
+
+### How Contexts Work
+
+Contexts are project-specific configurations that complement profiles:
+- **Profiles** (`fc profile`): Machine-wide settings (developer, work, personal)
+- **Contexts** (`fc context`): Project-specific settings
+
+When you switch to a context:
+1. Environment variables are loaded from `~/.config/circus/contexts/<name>.conf`
+2. Version managers are called (nvm, pyenv, goenv, rbenv)
+3. Git identity is set via environment variables
+4. Custom activation commands run
+5. Context state is saved to `~/.config/circus/current_context`
+
+### Context Configuration File
+
+Contexts are stored in `~/.config/circus/contexts/<name>.conf`:
+
+```bash
+# --- Environment Variables ---
+export AWS_PROFILE="project-alpha-dev"
+export DATABASE_URL="postgres://localhost/alpha_dev"
+export API_KEY="from-secrets:op://Personal/alpha/api-key"
+
+# --- Version Managers ---
+NODE_VERSION="18"
+PYTHON_VERSION="3.11"
+GO_VERSION="1.21"
+
+# --- Git Identity ---
+GIT_USER_NAME="Ryan Developer"
+GIT_USER_EMAIL="ryan@alpha-project.com"
+
+# --- Custom Commands ---
+ON_ACTIVATE="docker-compose up -d"
+ON_DEACTIVATE="docker-compose down"
+```
+
+### Secrets Integration
+
+Use `from-secrets:` prefix to load values from 1Password:
+
+```bash
+export API_KEY="from-secrets:op://Personal/myproject/api-key"
+```
+
+This integrates with `fc secrets` to resolve secrets at context activation time.
+
+### Shell Integration
+
+Contexts are automatically loaded in new shells when the circus plugin sources `~/.circus/context_env.sh`. The `FC_ACTIVE_CONTEXT` environment variable indicates the current context.
+
+---
+
 ## `fc audit`
 
 Run security audits to check system protection settings.

@@ -31,6 +31,49 @@
 #
 # ==============================================================================
 
+# ==============================================================================
+# Time Machine Architecture
+# ==============================================================================
+
+# Time Machine uses different technologies depending on macOS version:
+#
+# Modern macOS (Big Sur+):
+#   - APFS snapshots for local backups
+#   - Snapshots are space-efficient (copy-on-write)
+#   - Local snapshots: stored on your Mac's drive
+#   - Remote backups: sent to Time Machine volume
+#
+# Backup Frequency:
+#   - Local snapshots: Every hour (when plugged in)
+#   - External backup: Every hour when disk is connected
+#   - Local snapshots kept: 24 hours worth
+#   - External backups kept: All that fit on the drive
+#
+# How Exclusions Work:
+#   Time Machine has TWO types of exclusions:
+#
+#   1. FIXED EXCLUSIONS (tmutil addexclusion -p path)
+#      - Stored in Time Machine preferences
+#      - Path-based: if you move the folder, it's no longer excluded
+#      - Survives across reboots
+#      - Use for: system directories, specific project caches
+#
+#   2. STICKY EXCLUSIONS (tmutil addexclusion path)
+#      - Stored as extended attribute on the file/folder
+#      - The exclusion moves WITH the file
+#      - Even works on newly created files if parent has attribute
+#      - Use for: node_modules, build directories, caches
+#
+# This script uses STICKY exclusions (without -p) so newly created directories
+# matching these patterns in sub-projects will also be excluded.
+#
+# View Current Exclusions:
+#   tmutil isexcluded /path/to/check
+#   mdfind "com_apple_backup_excludeItem = 'com.apple.backupd'"
+#
+# Source:       man tmutil
+# See also:     https://support.apple.com/en-us/104984
+
 # --- Sudo Check & Re-invocation ---------------------------------------------
 if [ "$EUID" -ne 0 ] && [ "$DRY_RUN_MODE" = false ]; then
   msg_info "Time Machine configuration requires administrative privileges."
@@ -46,12 +89,25 @@ msg_info "Configuring Time Machine settings..."
 # Developer-Focused Exclusions
 # ==============================================================================
 #
-# These directories contain files that are:
-# 1. Easily regenerated (npm install, pip install, etc.)
+# Exclusion Strategy:
+# We exclude directories that are:
+# 1. Easily regenerated (npm install, pip install, cargo build, etc.)
 # 2. Cache files that change frequently and inflate backup size
 # 3. Temporary system files that don't need to be backed up
+# 4. Large binary blobs (VM images, container layers)
 #
-# Adding these exclusions can significantly reduce backup time and storage usage.
+# What happens if you need these files?
+# - Package caches (npm, pip, cargo): Just reinstall packages
+# - Build artifacts: Rebuild with your build tool
+# - System caches: macOS will regenerate them
+#
+# Space Savings Example (typical developer machine):
+#   ~/node_modules:      2-10 GB across projects
+#   ~/.npm:              1-5 GB
+#   ~/Library/Caches:    5-20 GB
+#   ~/.docker:           10-50 GB
+#   TOTAL SAVED:         18-85 GB per backup
+#
 
 exclusions=(
   # --- Package Manager Caches ---

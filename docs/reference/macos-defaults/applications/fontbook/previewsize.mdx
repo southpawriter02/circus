@@ -160,10 +160,16 @@ defaults read com.apple.FontBook | grep -i column
 
 ## Source File
 
-**File**: [`defaults/applications/fontbook.sh`](../../../../defaults/applications/fontbook.sh)
+> ⚠️ **Note**: No dedicated source script currently exists for Font Book settings.
+
+To apply these settings directly:
 
 ```bash
-run_defaults "com.apple.FontBook" "FBPreviewSize" "-float" "48.0"
+# Set larger preview size
+defaults write com.apple.FontBook FBPreviewSize -float 48.0
+
+# Set custom preview text
+defaults write com.apple.FontBook FBPreviewText -string "The quick brown fox jumps over the lazy dog."
 ```
 
 ## References

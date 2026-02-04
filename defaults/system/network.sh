@@ -35,11 +35,19 @@ msg_info "Configuring network settings..."
 # --- Bonjour Discovery ---
 # Key:          BrowseAllInterfaces
 # Domain:       com.apple.NetworkBrowser
-# Description:  Controls Bonjour browsing across all network interfaces.
-#               Enables discovery of services on all connected networks.
-# Default:      true
-# Options:      true = Browse all interfaces
-#               false = Limited browsing
+# Description:  Controls whether Bonjour (zero-configuration networking) browses
+#               for services across all network interfaces. When enabled, your Mac
+#               can discover printers, file shares, AirPlay devices, and other
+#               Bonjour-advertised services on any connected network (Wi-Fi,
+#               Ethernet, Thunderbolt Bridge, etc.).
+# Default:      true (browse all interfaces)
+# Options:      true = Discover Bonjour services on all connected networks
+#               false = Limited Bonjour browsing (primary interface only)
+# Set to:       true (ensures comprehensive service discovery across all networks;
+#               essential for multi-interface setups like docked laptops)
+# UI Location:  Not exposed in System Settings UI; command-line only
+# Source:       https://support.apple.com/guide/mac-help/bonjour-mchlp1011/mac
+# See also:     https://developer.apple.com/bonjour/
 run_defaults "com.apple.NetworkBrowser" "BrowseAllInterfaces" "-bool" "true"
 
 # ==============================================================================
@@ -47,10 +55,17 @@ run_defaults "com.apple.NetworkBrowser" "BrowseAllInterfaces" "-bool" "true"
 # ==============================================================================
 
 # --- Wake for Network Access ---
-# Note: This is best managed via System Preferences > Energy Saver
-#       or via pmset command:
-#   sudo pmset -a womp 1   # Enable Wake-on-LAN
-#   sudo pmset -a womp 0   # Disable Wake-on-LAN
+# Key:          womp (via pmset, not defaults)
+# Description:  Allows the Mac to wake from sleep when it receives a Wake-on-LAN
+#               (WoL) magic packet. Useful for remote access and management.
+# Default:      1 on desktop Macs, 0 on laptops (battery conservation)
+# Options:      1 = Enable Wake-on-LAN
+#               0 = Disable Wake-on-LAN
+# UI Location:  System Settings > Energy Saver > Wake for network access
+# Source:       https://support.apple.com/guide/mac-help/mchlp1205/mac
+# Note:         Use pmset command instead of defaults:
+#                 sudo pmset -a womp 1   # Enable Wake-on-LAN
+#                 sudo pmset -a womp 0   # Disable Wake-on-LAN
 
 msg_info "Wake-on-LAN: Use 'sudo pmset -a womp 1|0'"
 
@@ -58,15 +73,24 @@ msg_info "Wake-on-LAN: Use 'sudo pmset -a womp 1|0'"
 # Bonjour Sleep Proxy
 # ==============================================================================
 
-# --- Disable Bonjour Sleep Proxy ---
+# --- Disable Bonjour Multicast Advertisements ---
 # Key:          NoMulticastAdvertisements
 # Domain:       com.apple.mDNSResponder
-# Description:  Controls Bonjour multicast advertisements when sleeping.
-#               Disabling can improve network security but breaks some features.
-# Default:      false (allow advertisements)
-# Options:      true = Disable multicast ads
-#               false = Allow multicast ads
-# Set to:       false (keep Bonjour working)
+# Description:  Controls whether mDNSResponder sends multicast DNS advertisements
+#               when the Mac is sleeping via a Bonjour Sleep Proxy. When disabled
+#               (the default), an Apple TV or AirPort base station acting as a
+#               sleep proxy can respond to Bonjour queries on behalf of your
+#               sleeping Mac, enabling features like Back to My Mac and AirPlay.
+# Default:      false (allow multicast advertisements via sleep proxy)
+# Options:      true = Disable multicast advertisements (breaks sleep proxy)
+#               false = Allow multicast advertisements (enables sleep proxy)
+# Set to:       false (preserves Bonjour functionality; AirDrop, AirPlay, printer
+#               discovery, and Wake-on-Demand all depend on mDNS)
+# UI Location:  Not exposed in System Settings UI; command-line only
+# Source:       https://developer.apple.com/library/archive/qa/qa1312/_index.html
+# Security:     Enabling (true) can improve privacy by preventing your Mac from
+#               being discoverable while sleeping, but breaks many macOS features.
+# See also:     man mDNSResponder
 run_defaults "com.apple.mDNSResponder" "NoMulticastAdvertisements" "-bool" "false"
 
 # ==============================================================================
