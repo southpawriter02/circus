@@ -168,6 +168,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `is_root()` / `require_non_root()` - Helpers
     - Integrated into `bin/fc` main entry point
     - Clear error message with security rationale
+  - **S11 Secure Temp Files**:
+    - `secure_mktemp()` - Files with 0600 permissions
+    - `secure_mktemp_dir()` - Directories with 0700
+    - `secure_temp_cleanup()` - Remove tracked temps
+    - `secure_temp_register_cleanup()` - Auto-cleanup on exit
 
 ## [1.5.2] - 2026-01-05
 

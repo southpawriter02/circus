@@ -1144,6 +1144,121 @@ sudoers_baseline_info() {
   fi
 }
 
+# --- S11: Secure Temp Files -------------------------------------------------
+
+# Global array to track temp files for cleanup
+declare -a SECURE_TEMP_FILES=()
+
+# Create a secure temp file with restrictive permissions (S11)
+# Usage: tmpfile=$(secure_mktemp)
+# Creates file with 0600 permissions (owner read/write only)
+secure_mktemp() {
+  local prefix="${1:-circus}"
+  local tmpfile
+  
+  # Create temp file
+  tmpfile=$(mktemp -t "${prefix}.XXXXXXXXXX") || {
+    msg_error "Failed to create secure temp file"
+    return 1
+  }
+  
+  # Set restrictive permissions (owner read/write only)
+  chmod 600 "$tmpfile" || {
+    rm -f "$tmpfile"
+    msg_error "Failed to set permissions on temp file"
+    return 1
+  }
+  
+  # Track for cleanup
+  SECURE_TEMP_FILES+=("$tmpfile")
+  
+  echo "$tmpfile"
+}
+
+# Create a secure temp directory with restrictive permissions (S11)
+# Usage: tmpdir=$(secure_mktemp_dir)
+# Creates directory with 0700 permissions (owner only)
+secure_mktemp_dir() {
+  local prefix="${1:-circus}"
+  local tmpdir
+  
+  # Create temp directory
+  tmpdir=$(mktemp -d -t "${prefix}.XXXXXXXXXX") || {
+    msg_error "Failed to create secure temp directory"
+    return 1
+  }
+  
+  # Set restrictive permissions (owner only)
+  chmod 700 "$tmpdir" || {
+    rm -rf "$tmpdir"
+    msg_error "Failed to set permissions on temp directory"
+    return 1
+  }
+  
+  # Track for cleanup
+  SECURE_TEMP_FILES+=("$tmpdir")
+  
+  echo "$tmpdir"
+}
+
+# Clean up all tracked temp files/directories
+# Usage: secure_temp_cleanup
+secure_temp_cleanup() {
+  local item
+  for item in "${SECURE_TEMP_FILES[@]}"; do
+    if [[ -e "$item" ]]; then
+      rm -rf "$item" 2>/dev/null
+    fi
+  done
+  SECURE_TEMP_FILES=()
+}
+
+# Register automatic temp file cleanup on script exit
+# Usage: secure_temp_register_cleanup (call once at script start)
+secure_temp_register_cleanup() {
+  trap 'secure_temp_cleanup' EXIT INT TERM
+}
+
+# Create a temp file that auto-cleans on subshell exit
+# Usage: with_secure_temp varname command
+# Example: with_secure_temp MYTEMP cat "$MYTEMP"
+with_secure_temp() {
+  local -n _var_ref="$1"
+  shift
+  
+  _var_ref=$(secure_mktemp)
+  local _tmpfile="$_var_ref"
+  
+  # Run command
+  "$@"
+  local _exit_code=$?
+  
+  # Cleanup
+  rm -f "$_tmpfile" 2>/dev/null
+  
+  return $_exit_code
+}
+
+# Verify temp file has correct permissions
+# Usage: if verify_temp_permissions "$file"; then ...
+verify_temp_permissions() {
+  local file="$1"
+  local perms
+  
+  if [[ ! -e "$file" ]]; then
+    return 1
+  fi
+  
+  # Get permissions in octal
+  if [[ -d "$file" ]]; then
+    perms=$(stat -f "%Lp" "$file" 2>/dev/null || stat -c "%a" "$file" 2>/dev/null)
+    [[ "$perms" == "700" ]]
+  else
+    perms=$(stat -f "%Lp" "$file" 2>/dev/null || stat -c "%a" "$file" 2>/dev/null)
+    [[ "$perms" == "600" ]]
+  fi
+}
+
 # --- Exports ----------------------------------------------------------------
 
 export -f sanitize_string escape_for_shell sanitize_domain
@@ -1159,4 +1274,6 @@ export -f sudo_drop sudo_has_credentials sudo_status
 export -f with_sudo_scope sudo_scope_start sudo_scope_end sudo_register_cleanup
 export -f sudoers_hash sudoers_baseline_save sudoers_check sudoers_verify_before sudoers_baseline_info
 export -f die_if_root is_root require_non_root get_real_user
-export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE
+export -f secure_mktemp secure_mktemp_dir secure_temp_cleanup secure_temp_register_cleanup
+export -f with_secure_temp verify_temp_permissions
+export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES

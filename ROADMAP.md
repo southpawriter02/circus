@@ -167,7 +167,7 @@ Security features to protect against CLI exploitation, privilege escalation, and
 #### File System Security
 | # | Feature | Risk Mitigated | Difficulty | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| S11 | **Secure Temp Files** | Use `mktemp` with restrictive permissions (0600) | Easy | ⏳ Planned |
+| S11 | **Secure Temp Files** | Use `mktemp` with restrictive permissions (0600) | Easy | ✅ Done |
 | S12 | **Symlink Attack Prevention** | Check if target paths are symlinks before writing (TOCTOU) | Medium | ⏳ Planned |
 | S13 | **Config File Permissions Check** | Warn if config files are world-writable | Easy | ⏳ Planned |
 | S14 | **Backup Encryption** | Encrypt sensitive backup files at rest | Hard | ⏳ Planned |
