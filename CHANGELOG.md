@@ -121,6 +121,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `validate_url()` - HTTPS enforcement
   - Integrated into `yaml_config.sh` for defaults protection
   - Security event logging to `~/.circus/security.log`
+  - **S01 Path Traversal Guard**:
+    - `validate_path()` - Strict path validation with allowed directories
+    - `resolve_path_secure()` - Safe path resolution
+    - `check_symlink_target()` - Symlink target validation
+    - `validate_config_path()` - Config file path validation
+    - Integrated into `fc-config` and `fc-config-audit`
 
 ## [1.5.2] - 2026-01-05
 

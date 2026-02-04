@@ -161,6 +161,194 @@ sanitize_path() {
   return 0
 }
 
+# --- Enhanced Path Validation (S01) -----------------------------------------
+
+# Allowed base directories for path operations
+# These are the only directories where file operations are permitted
+SECURITY_ALLOWED_PATHS=(
+  "$HOME"
+  "${DOTFILES_ROOT:-$HOME/.dotfiles}"
+  "/tmp"
+  "/var/folders"
+  "/usr/local"
+  "/opt/homebrew"
+)
+
+# Strict path validator with comprehensive security checks
+# Usage: if validate_path "/path/to/file"; then ...
+# Returns: 0 if path is safe, 1 if blocked
+validate_path() {
+  local path="$1"
+  local operation="${2:-access}"  # Optional: operation type for logging
+  
+  # Check for empty input
+  if [[ -z "$path" ]]; then
+    security_log "error" "Empty path provided" "$operation"
+    return 1
+  fi
+  
+  # Check for null bytes (can bypass extension checks)
+  if [[ "$path" == *$'\0'* ]]; then
+    security_log "critical" "Null byte injection attempt" "$path"
+    msg_error "Security: Null byte detected in path"
+    return 1
+  fi
+  
+  # Check for shell metacharacters in path
+  if [[ "$path" =~ [\`\$\(\)\{\}\|\;\&\<\>] ]]; then
+    security_log "critical" "Shell metacharacters in path" "$path"
+    msg_error "Security: Invalid characters in path"
+    return 1
+  fi
+  
+  # Resolve to absolute path
+  local resolved
+  resolved=$(resolve_path_secure "$path")
+  if [[ $? -ne 0 ]] || [[ -z "$resolved" ]]; then
+    security_log "warning" "Failed to resolve path" "$path"
+    return 1
+  fi
+  
+  # Check if resolved path is within allowed directories
+  if ! is_within_allowed_paths "$resolved"; then
+    security_log "critical" "Path outside allowed directories" "$path -> $resolved"
+    msg_error "Security: Path not in allowed directories: $resolved"
+    return 1
+  fi
+  
+  # If path exists and is a symlink, validate the target
+  if [[ -L "$resolved" ]]; then
+    if ! check_symlink_target "$resolved"; then
+      security_log "critical" "Symlink target outside allowed paths" "$resolved"
+      msg_error "Security: Symlink target not allowed"
+      return 1
+    fi
+  fi
+  
+  echo "$resolved"
+  return 0
+}
+
+# Securely resolve a path to its absolute form
+# Usage: resolved=$(resolve_path_secure "$path")
+resolve_path_secure() {
+  local path="$1"
+  local resolved
+  
+  # Expand tilde
+  path="${path/#\~/$HOME}"
+  
+  # Convert to absolute if relative
+  if [[ "$path" != /* ]]; then
+    path="$(pwd)/$path"
+  fi
+  
+  # Normalize: remove /./, //, and resolve parent refs carefully
+  # Use a loop to resolve .. safely
+  local -a parts=()
+  local IFS='/'
+  read -ra segments <<< "$path"
+  
+  for segment in "${segments[@]}"; do
+    case "$segment" in
+      ''|'.')
+        # Skip empty and current dir
+        ;;
+      '..')
+        # Go up one level (remove last element)
+        if [[ ${#parts[@]} -gt 0 ]]; then
+          unset 'parts[-1]'
+        fi
+        ;;
+      *)
+        # Add segment
+        parts+=("$segment")
+        ;;
+    esac
+  done
+  
+  # Reconstruct path
+  resolved="/${parts[*]}"
+  resolved="${resolved// //}"  # Remove spaces from IFS join
+  
+  # Fix: properly join with /
+  printf -v resolved '/%s' "${parts[@]}"
+  
+  echo "$resolved"
+}
+
+# Check if a path is within allowed directories
+# Usage: if is_within_allowed_paths "/path/to/check"; then ...
+is_within_allowed_paths() {
+  local path="$1"
+  
+  for allowed in "${SECURITY_ALLOWED_PATHS[@]}"; do
+    # Expand any variables in allowed path
+    allowed=$(eval echo "$allowed" 2>/dev/null)
+    
+    if [[ -n "$allowed" ]] && [[ "$path" == "$allowed"* ]]; then
+      return 0
+    fi
+  done
+  
+  return 1
+}
+
+# Validate that a symlink's target is within allowed paths
+# Usage: if check_symlink_target "/path/to/symlink"; then ...
+check_symlink_target() {
+  local symlink="$1"
+  
+  # Not a symlink? OK
+  if [[ ! -L "$symlink" ]]; then
+    return 0
+  fi
+  
+  # Resolve the symlink target
+  local target
+  target=$(readlink -f "$symlink" 2>/dev/null)
+  
+  if [[ -z "$target" ]]; then
+    # Broken symlink - allow (let other checks handle)
+    return 0
+  fi
+  
+  # Check if target is within allowed paths
+  if is_within_allowed_paths "$target"; then
+    return 0
+  fi
+  
+  msg_warning "Security: Symlink $symlink points to disallowed location: $target"
+  return 1
+}
+
+# Quick boolean check for path safety
+# Usage: if is_path_safe "/path/to/check"; then ...
+is_path_safe() {
+  validate_path "$1" >/dev/null 2>&1
+}
+
+# Validate a config file path specifically
+# Usage: if validate_config_path "$config_file"; then ...
+validate_config_path() {
+  local config_file="$1"
+  
+  # Must have valid extension
+  case "$config_file" in
+    *.yaml|*.yml|*.conf|*.json|*.sh)
+      # Valid config extension
+      ;;
+    *)
+      msg_warning "Security: Invalid config file extension: $config_file"
+      security_log "warning" "Invalid config extension" "$config_file"
+      return 1
+      ;;
+  esac
+  
+  # Run standard path validation
+  validate_path "$config_file" "config"
+}
+
 # Validate a URL (HTTPS preferred)
 # Usage: if validate_url "https://example.com"; then ...
 validate_url() {
@@ -307,3 +495,5 @@ export -f sanitize_string escape_for_shell sanitize_domain
 export -f sanitize_package_name sanitize_path validate_url
 export -f check_not_root sanitize_defaults_value security_check_input
 export -f security_log
+export -f validate_path resolve_path_secure is_within_allowed_paths
+export -f check_symlink_target is_path_safe validate_config_path

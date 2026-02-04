@@ -340,6 +340,14 @@ main() {
     die "Configuration file not found: $1"
   fi
   
+  # Security: Validate config file path
+  local safe_path
+  safe_path=$(validate_config_path "$config_file")
+  if [[ $? -ne 0 ]]; then
+    die "Security: Invalid or unsafe config file path"
+  fi
+  config_file="$safe_path"
+  
   if ! check_yq_installed; then
     die "yq is required. Install with: brew install yq"
   fi

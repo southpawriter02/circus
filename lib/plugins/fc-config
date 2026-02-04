@@ -60,6 +60,14 @@ do_apply() {
     die "Configuration file not found: $1"
   fi
   
+  # Security: Validate config file path
+  local safe_path
+  safe_path=$(validate_config_path "$config_file")
+  if [[ $? -ne 0 ]]; then
+    die "Security: Invalid or unsafe config file path"
+  fi
+  config_file="$safe_path"
+  
   # Create snapshot before applying (unless dry-run or skipped)
   if [[ "$dry_run" != "true" ]] && [[ "$skip_snapshot" != "true" ]]; then
     snapshot_before_operation "config-apply"
