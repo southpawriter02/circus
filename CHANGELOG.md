@@ -183,6 +183,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `check_config_permissions()` - Warn on insecure perms
     - `scan_config_permissions()` - Audit entire directory
     - `fix_config_permissions()` - Auto-fix to 600
+  - **S14 Backup Encryption**:
+    - `encrypt_backup()` / `decrypt_backup()` - GPG AES256
+    - `encrypt_and_shred()` - Encrypt + secure delete
+    - `create_encrypted_backup()` - Tar + encrypt directory
+    - `restore_encrypted_backup()` - Decrypt + extract
 
 ## [1.5.2] - 2026-01-05
 

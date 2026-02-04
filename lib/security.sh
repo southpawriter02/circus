@@ -1542,6 +1542,184 @@ check_config_owner() {
   return 0
 }
 
+# --- S14: Backup Encryption -------------------------------------------------
+
+# Check if GPG is available
+# Usage: if has_gpg; then ...
+has_gpg() {
+  command -v gpg &>/dev/null
+}
+
+# Encrypt a file using GPG symmetric encryption (S14)
+# Usage: encrypt_backup "/path/to/file" [output_path]
+# Creates .gpg encrypted file, removes original by default
+encrypt_backup() {
+  local input="$1"
+  local output="${2:-${input}.gpg}"
+  
+  if [[ ! -f "$input" ]]; then
+    msg_error "File not found: $input"
+    return 1
+  fi
+  
+  if ! has_gpg; then
+    msg_error "GPG not found. Install with: brew install gnupg"
+    return 1
+  fi
+  
+  # Use symmetric encryption with AES256
+  if gpg --symmetric --cipher-algo AES256 --batch --yes -o "$output" "$input"; then
+    chmod 600 "$output"
+    msg_success "Encrypted: $input -> $output"
+    security_log "info" "Backup encrypted" "$input"
+    return 0
+  else
+    msg_error "Encryption failed: $input"
+    security_log "error" "Backup encryption failed" "$input"
+    return 1
+  fi
+}
+
+# Decrypt a GPG-encrypted backup file (S14)
+# Usage: decrypt_backup "/path/to/file.gpg" [output_path]
+decrypt_backup() {
+  local input="$1"
+  local output="${2:-${input%.gpg}}"
+  
+  if [[ ! -f "$input" ]]; then
+    msg_error "Encrypted file not found: $input"
+    return 1
+  fi
+  
+  if ! has_gpg; then
+    msg_error "GPG not found. Install with: brew install gnupg"
+    return 1
+  fi
+  
+  if gpg --decrypt --batch --yes -o "$output" "$input"; then
+    chmod 600 "$output"
+    msg_success "Decrypted: $input -> $output"
+    security_log "info" "Backup decrypted" "$input"
+    return 0
+  else
+    msg_error "Decryption failed: $input"
+    security_log "error" "Backup decryption failed" "$input"
+    return 1
+  fi
+}
+
+# Encrypt a backup and securely delete original (S14)
+# Usage: encrypt_and_shred "/path/to/sensitive_file"
+encrypt_and_shred() {
+  local input="$1"
+  local output="${2:-${input}.gpg}"
+  
+  if encrypt_backup "$input" "$output"; then
+    # Securely delete original
+    if command -v srm &>/dev/null; then
+      srm -z "$input"
+    elif command -v shred &>/dev/null; then
+      shred -u -z "$input"
+    else
+      # Fallback: overwrite with zeros, then delete
+      dd if=/dev/zero of="$input" bs=1k count=$(( $(stat -f%z "$input" 2>/dev/null || stat -c%s "$input" 2>/dev/null) / 1024 + 1 )) 2>/dev/null
+      rm -f "$input"
+    fi
+    msg_success "Original securely deleted: $input"
+    security_log "info" "Encrypted and shredded" "$input"
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Create encrypted backup archive (S14)
+# Usage: create_encrypted_backup "/path/to/dir_or_file" "/path/to/output.tar.gpg"
+create_encrypted_backup() {
+  local source="$1"
+  local output="$2"
+  
+  if [[ ! -e "$source" ]]; then
+    msg_error "Source not found: $source"
+    return 1
+  fi
+  
+  if ! has_gpg; then
+    msg_error "GPG not found. Install with: brew install gnupg"
+    return 1
+  fi
+  
+  local tmpfile
+  tmpfile=$(secure_mktemp "backup")
+  
+  # Create tar archive
+  if tar -czf "$tmpfile" -C "$(dirname "$source")" "$(basename "$source")"; then
+    # Encrypt the archive
+    if encrypt_backup "$tmpfile" "$output"; then
+      rm -f "$tmpfile"
+      msg_success "Created encrypted backup: $output"
+      return 0
+    fi
+  fi
+  
+  rm -f "$tmpfile"
+  msg_error "Failed to create encrypted backup"
+  return 1
+}
+
+# Restore from encrypted backup archive (S14)
+# Usage: restore_encrypted_backup "/path/to/backup.tar.gpg" "/path/to/restore_dir"
+restore_encrypted_backup() {
+  local input="$1"
+  local dest="$2"
+  
+  if [[ ! -f "$input" ]]; then
+    msg_error "Backup file not found: $input"
+    return 1
+  fi
+  
+  if ! has_gpg; then
+    msg_error "GPG not found"
+    return 1
+  fi
+  
+  local tmpfile
+  tmpfile=$(secure_mktemp "restore")
+  
+  # Decrypt the archive
+  if decrypt_backup "$input" "$tmpfile"; then
+    # Extract to destination
+    mkdir -p "$dest"
+    if tar -xzf "$tmpfile" -C "$dest"; then
+      rm -f "$tmpfile"
+      msg_success "Restored backup to: $dest"
+      security_log "info" "Backup restored" "$input -> $dest"
+      return 0
+    fi
+  fi
+  
+  rm -f "$tmpfile"
+  msg_error "Failed to restore backup"
+  return 1
+}
+
+# Check if a file is GPG encrypted (S14)
+# Usage: if is_encrypted "/path/to/file"; then ...
+is_encrypted() {
+  local file="$1"
+  
+  if [[ ! -f "$file" ]]; then
+    return 1
+  fi
+  
+  # Check file magic bytes for GPG
+  local magic
+  magic=$(head -c 3 "$file" 2>/dev/null | od -A n -t x1 | tr -d ' ')
+  
+  # GPG encrypted files start with specific bytes
+  [[ "$magic" == "8c0d04" ]] || [[ "$magic" == "850104" ]] || [[ "${file##*.}" == "gpg" ]]
+}
+
 # --- Exports ----------------------------------------------------------------
 
 export -f sanitize_string escape_for_shell sanitize_domain
@@ -1562,4 +1740,6 @@ export -f with_secure_temp verify_temp_permissions
 export -f is_symlink safe_write_check safe_write atomic_write safe_append get_real_path
 export -f is_world_writable is_group_writable check_config_permissions
 export -f scan_config_permissions fix_config_permissions check_config_owner
+export -f has_gpg encrypt_backup decrypt_backup encrypt_and_shred
+export -f create_encrypted_backup restore_encrypted_backup is_encrypted
 export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES
