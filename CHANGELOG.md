@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-02-04
+
+**Security Hardening & Framework Enhancement Release**
+
+This major release introduces a comprehensive security framework with 30 hardening features across 6 categories, plus 7 new fc commands and significant infrastructure improvements.
+
+### Highlights
+
+- 🛡️ **Complete Security Framework** - 30 security features (S01-S30) in `lib/security.sh`
+- 🔧 **7 New FC Commands** - uninstall, theme, network, docker, desktop, history, scaffold
+- 📋 **Declarative YAML Configuration** - `fc config` with drift detection
+- ⚡ **Power & Audio Control** - Hardware management commands
+- 🔒 **APFS Snapshot Integration** - Safe rollback support
+
 ### Added
 
 - **7 New FC Commands** - Comprehensive additions to the `fc` command suite:
