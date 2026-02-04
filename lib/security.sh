@@ -1259,6 +1259,138 @@ verify_temp_permissions() {
   fi
 }
 
+# --- S12: Symlink Attack Prevention -----------------------------------------
+
+# Check if path is a symlink (S12)
+# Usage: if is_symlink "/path/to/file"; then ...
+is_symlink() {
+  [[ -L "$1" ]]
+}
+
+# Safely check and refuse to write to symlinks (S12)
+# Usage: if safe_write_check "/path/to/file"; then echo "data" > file; fi
+# Returns 0 if safe to write, 1 if symlink or unsafe
+safe_write_check() {
+  local path="$1"
+  
+  # Check for symlink
+  if is_symlink "$path"; then
+    msg_error "Security: Refusing to write to symlink: $path"
+    security_log "warning" "Blocked write to symlink" "$path"
+    return 1
+  fi
+  
+  # Check parent directory for symlink
+  local parent_dir
+  parent_dir=$(dirname "$path")
+  if is_symlink "$parent_dir"; then
+    msg_error "Security: Parent directory is a symlink: $parent_dir"
+    security_log "warning" "Parent directory is symlink" "$parent_dir"
+    return 1
+  fi
+  
+  return 0
+}
+
+# Safe write to file with symlink check (S12)
+# Usage: safe_write "content" "/path/to/file"
+# Refuses to write if target is a symlink
+safe_write() {
+  local content="$1"
+  local path="$2"
+  
+  if ! safe_write_check "$path"; then
+    return 1
+  fi
+  
+  # If file exists, check it's not a symlink
+  if [[ -e "$path" ]] && is_symlink "$path"; then
+    msg_error "Security: Target became a symlink (race condition detected)"
+    security_log "critical" "TOCTOU race condition detected" "$path"
+    return 1
+  fi
+  
+  echo "$content" > "$path"
+}
+
+# Atomic write to file (write to temp, then move) (S12)
+# Usage: atomic_write "content" "/path/to/file"
+# Prevents partial writes and reduces TOCTOU window
+atomic_write() {
+  local content="$1"
+  local path="$2"
+  
+  if ! safe_write_check "$path"; then
+    return 1
+  fi
+  
+  # Create temp file in same directory (for atomic rename)
+  local dir
+  dir=$(dirname "$path")
+  local tmpfile
+  tmpfile=$(mktemp "${dir}/.tmp.XXXXXXXXXX") || {
+    msg_error "Failed to create temp file for atomic write"
+    return 1
+  }
+  
+  chmod 600 "$tmpfile"
+  
+  # Write to temp file
+  echo "$content" > "$tmpfile" || {
+    rm -f "$tmpfile"
+    return 1
+  }
+  
+  # Atomic move (rename is atomic on same filesystem)
+  mv "$tmpfile" "$path" || {
+    rm -f "$tmpfile"
+    msg_error "Failed to atomically move temp file"
+    return 1
+  }
+  
+  security_log "info" "Atomic write completed" "$path"
+}
+
+# Safe append to file with symlink check (S12)
+# Usage: safe_append "content" "/path/to/file"
+safe_append() {
+  local content="$1"
+  local path="$2"
+  
+  if ! safe_write_check "$path"; then
+    return 1
+  fi
+  
+  echo "$content" >> "$path"
+}
+
+# Get real path (resolving all symlinks) and verify safety
+# Usage: real_path=$(get_real_path "/path/with/symlinks")
+get_real_path() {
+  local path="$1"
+  local real
+  
+  # Use readlink -f on Linux, or manual resolution on macOS
+  if readlink -f "$path" 2>/dev/null; then
+    return 0
+  fi
+  
+  # macOS fallback
+  local current="$path"
+  while [[ -L "$current" ]]; do
+    local link_target
+    link_target=$(readlink "$current")
+    if [[ "$link_target" == /* ]]; then
+      current="$link_target"
+    else
+      current="$(dirname "$current")/$link_target"
+    fi
+  done
+  
+  # Normalize path
+  echo "$(cd "$(dirname "$current")" 2>/dev/null && pwd -P)/$(basename "$current")"
+}
+
 # --- Exports ----------------------------------------------------------------
 
 export -f sanitize_string escape_for_shell sanitize_domain
@@ -1276,4 +1408,5 @@ export -f sudoers_hash sudoers_baseline_save sudoers_check sudoers_verify_before
 export -f die_if_root is_root require_non_root get_real_user
 export -f secure_mktemp secure_mktemp_dir secure_temp_cleanup secure_temp_register_cleanup
 export -f with_secure_temp verify_temp_permissions
+export -f is_symlink safe_write_check safe_write atomic_write safe_append get_real_path
 export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES

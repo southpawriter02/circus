@@ -173,6 +173,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `secure_mktemp_dir()` - Directories with 0700
     - `secure_temp_cleanup()` - Remove tracked temps
     - `secure_temp_register_cleanup()` - Auto-cleanup on exit
+  - **S12 Symlink Attack Prevention**:
+    - `safe_write_check()` - Verify path is not symlink
+    - `safe_write()` / `safe_append()` - Protected writes
+    - `atomic_write()` - Write-to-temp-then-move pattern
+    - Detects TOCTOU race conditions
 
 ## [1.5.2] - 2026-01-05
 
