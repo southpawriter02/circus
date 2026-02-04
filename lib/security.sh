@@ -1720,6 +1720,194 @@ is_encrypted() {
   [[ "$magic" == "8c0d04" ]] || [[ "$magic" == "850104" ]] || [[ "${file##*.}" == "gpg" ]]
 }
 
+# --- S15: Secure Delete for Secrets -----------------------------------------
+
+# Check which secure delete tool is available
+# Usage: tool=$(get_secure_delete_tool)
+get_secure_delete_tool() {
+  if command -v srm &>/dev/null; then
+    echo "srm"
+  elif command -v shred &>/dev/null; then
+    echo "shred"
+  elif command -v gshred &>/dev/null; then
+    echo "gshred"
+  else
+    echo "fallback"
+  fi
+}
+
+# Securely delete a file (S15)
+# Usage: secure_delete "/path/to/secret_file"
+# Overwrites file content before deletion
+secure_delete() {
+  local file="$1"
+  local passes="${2:-3}"
+  
+  if [[ ! -f "$file" ]]; then
+    msg_error "File not found: $file"
+    return 1
+  fi
+  
+  local tool
+  tool=$(get_secure_delete_tool)
+  
+  case "$tool" in
+    srm)
+      # macOS secure remove (if installed via brew)
+      srm -z "$file" && {
+        msg_success "Securely deleted (srm): $file"
+        security_log "info" "Secure delete (srm)" "$file"
+        return 0
+      }
+      ;;
+    shred|gshred)
+      # GNU shred
+      "$tool" -u -z -n "$passes" "$file" && {
+        msg_success "Securely deleted (shred): $file"
+        security_log "info" "Secure delete (shred)" "$file"
+        return 0
+      }
+      ;;
+    fallback)
+      # Manual overwrite fallback
+      _secure_delete_fallback "$file" "$passes" && {
+        msg_success "Securely deleted (fallback): $file"
+        security_log "info" "Secure delete (fallback)" "$file"
+        return 0
+      }
+      ;;
+  esac
+  
+  msg_error "Secure delete failed: $file"
+  security_log "error" "Secure delete failed" "$file"
+  return 1
+}
+
+# Fallback secure delete implementation (S15)
+# Overwrites with random data, zeros, then deletes
+_secure_delete_fallback() {
+  local file="$1"
+  local passes="${2:-3}"
+  
+  if [[ ! -f "$file" ]]; then
+    return 1
+  fi
+  
+  local size
+  size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
+  
+  if [[ -z "$size" || "$size" -eq 0 ]]; then
+    rm -f "$file"
+    return 0
+  fi
+  
+  # Multiple overwrite passes
+  for ((i = 1; i <= passes; i++)); do
+    # Overwrite with random data
+    dd if=/dev/urandom of="$file" bs=1 count="$size" conv=notrunc 2>/dev/null
+  done
+  
+  # Final zero pass
+  dd if=/dev/zero of="$file" bs=1 count="$size" conv=notrunc 2>/dev/null
+  
+  # Delete the file
+  rm -f "$file"
+}
+
+# Securely delete a directory recursively (S15)
+# Usage: secure_delete_dir "/path/to/secret_dir"
+secure_delete_dir() {
+  local dir="$1"
+  local passes="${2:-3}"
+  
+  if [[ ! -d "$dir" ]]; then
+    msg_error "Directory not found: $dir"
+    return 1
+  fi
+  
+  local errors=0
+  
+  # First, securely delete all files
+  while IFS= read -r -d '' file; do
+    if ! secure_delete "$file" "$passes"; then
+      ((errors++))
+    fi
+  done < <(find "$dir" -type f -print0 2>/dev/null)
+  
+  # Then remove empty directories
+  rm -rf "$dir" 2>/dev/null
+  
+  if [[ $errors -eq 0 ]]; then
+    msg_success "Securely deleted directory: $dir"
+    security_log "info" "Secure delete directory" "$dir"
+    return 0
+  else
+    msg_warning "Deleted with $errors errors: $dir"
+    return 1
+  fi
+}
+
+# Securely clear file contents without deleting (S15)
+# Usage: secure_clear "/path/to/secret_file"
+secure_clear() {
+  local file="$1"
+  local passes="${2:-3}"
+  
+  if [[ ! -f "$file" ]]; then
+    msg_error "File not found: $file"
+    return 1
+  fi
+  
+  local size
+  size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
+  
+  if [[ -z "$size" || "$size" -eq 0 ]]; then
+    return 0
+  fi
+  
+  # Overwrite passes
+  for ((i = 1; i <= passes; i++)); do
+    dd if=/dev/urandom of="$file" bs=1 count="$size" conv=notrunc 2>/dev/null
+  done
+  
+  # Truncate to zero
+  : > "$file"
+  
+  msg_success "Securely cleared: $file"
+  security_log "info" "Secure clear" "$file"
+}
+
+# Secure delete with confirmation (S15)
+# Usage: secure_delete_confirm "/path/to/file"
+secure_delete_confirm() {
+  local file="$1"
+  
+  if [[ ! -e "$file" ]]; then
+    msg_error "File not found: $file"
+    return 1
+  fi
+  
+  echo ""
+  msg_warning "⚠️  SECURE DELETE"
+  echo ""
+  echo "   Target: $file"
+  echo "   This will permanently and irrecoverably delete this file."
+  echo ""
+  
+  read -r -p "Type 'DELETE' to confirm: " confirm
+  
+  if [[ "$confirm" != "DELETE" ]]; then
+    msg_info "Operation cancelled."
+    return 1
+  fi
+  
+  if [[ -d "$file" ]]; then
+    secure_delete_dir "$file"
+  else
+    secure_delete "$file"
+  fi
+}
+
 # --- Exports ----------------------------------------------------------------
 
 export -f sanitize_string escape_for_shell sanitize_domain
@@ -1742,4 +1930,6 @@ export -f is_world_writable is_group_writable check_config_permissions
 export -f scan_config_permissions fix_config_permissions check_config_owner
 export -f has_gpg encrypt_backup decrypt_backup encrypt_and_shred
 export -f create_encrypted_backup restore_encrypted_backup is_encrypted
+export -f get_secure_delete_tool secure_delete secure_delete_dir
+export -f secure_clear secure_delete_confirm
 export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES

@@ -188,6 +188,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `encrypt_and_shred()` - Encrypt + secure delete
     - `create_encrypted_backup()` - Tar + encrypt directory
     - `restore_encrypted_backup()` - Decrypt + extract
+  - **S15 Secure Delete for Secrets**:
+    - `secure_delete()` - Multi-pass overwrite + delete
+    - `secure_delete_dir()` - Recursive directory wipe
+    - `secure_clear()` - Overwrite without deleting
+    - Supports srm, shred, gshred, or fallback
 
 ## [1.5.2] - 2026-01-05
 

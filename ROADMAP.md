@@ -171,7 +171,7 @@ Security features to protect against CLI exploitation, privilege escalation, and
 | S12 | **Symlink Attack Prevention** | Check if target paths are symlinks before writing (TOCTOU) | Medium | ✅ Done |
 | S13 | **Config File Permissions Check** | Warn if config files are world-writable | Easy | ✅ Done |
 | S14 | **Backup Encryption** | Encrypt sensitive backup files at rest | Hard | ✅ Done |
-| S15 | **Secure Delete for Secrets** | Use secure overwrite when deleting sensitive files | Medium | ⏳ Planned |
+| S15 | **Secure Delete for Secrets** | Use secure overwrite when deleting sensitive files | Medium | ✅ Done |
 
 #### Integrity & Authenticity
 | # | Feature | Risk Mitigated | Difficulty | Status |
