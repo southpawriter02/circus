@@ -1,0 +1,384 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-theme
+#
+# DESCRIPTION:  Manage and switch between shell/terminal themes. Provides a
+#               simple way to change the look and feel of your terminal
+#               environment with a single command.
+#
+# USAGE:        fc theme <action> [theme-name]
+#
+# ACTIONS:
+#   list          Show available themes
+#   current       Show the currently active theme
+#   apply <name>  Apply a theme
+#   preview <name> Preview a theme without applying
+#   create <name> Create a new theme from current settings
+#
+# OPTIONS:
+#   --help        Show this help message
+#
+# EXAMPLES:
+#   fc theme list                  # List available themes
+#   fc theme apply dark            # Switch to dark theme
+#   fc theme current               # Show active theme
+#   fc theme create my-custom      # Create theme from current
+#
+# THEME STRUCTURE:
+#   Themes are stored in $DOTFILES_ROOT/themes/<name>/
+#   Each theme can contain:
+#     theme.conf     - Theme metadata (name, description, author)
+#     colors.sh      - Color variable exports
+#     prompt.zsh     - Zsh prompt configuration
+#     aliases.sh     - Theme-specific aliases
+#
+# INTEGRATION:
+#   The active theme is symlinked to ~/.config/circus/active-theme
+#   Shell configs source ~/.config/circus/theme.zsh if it exists
+#
+# BUILT-IN THEMES:
+#   dark       - Dark color scheme with minimal prompt
+#   light      - Light color scheme for bright environments
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# Theme directories
+THEMES_DIR="${DOTFILES_ROOT}/themes"
+CONFIG_DIR="${HOME}/.config/circus"
+ACTIVE_THEME_LINK="${CONFIG_DIR}/active-theme"
+THEME_ZSH="${CONFIG_DIR}/theme.zsh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc theme <action> [theme-name]"
+  echo ""
+  msg_info "Manage shell and terminal themes."
+  echo ""
+  msg_info "Actions:"
+  echo "  list              List available themes"
+  echo "  current           Show the currently active theme"
+  echo "  apply <name>      Apply a theme"
+  echo "  preview <name>    Preview theme colors without applying"
+  echo "  create <name>     Create a new theme"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc theme list"
+  echo "  fc theme apply dark"
+  echo "  fc theme create my-custom"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Ensure config directory exists
+ensure_config_dir() {
+  mkdir -p "$CONFIG_DIR"
+}
+
+# Get theme path
+get_theme_path() {
+  local name="$1"
+  echo "${THEMES_DIR}/${name}"
+}
+
+# Check if theme exists
+theme_exists() {
+  local name="$1"
+  [[ -d "$(get_theme_path "$name")" ]]
+}
+
+# Get current theme name
+get_current_theme() {
+  if [[ -L "$ACTIVE_THEME_LINK" ]]; then
+    basename "$(readlink "$ACTIVE_THEME_LINK")"
+  else
+    echo "none"
+  fi
+}
+
+# Read theme config value
+get_theme_config() {
+  local theme_path="$1"
+  local key="$2"
+  local config_file="${theme_path}/theme.conf"
+  
+  if [[ -f "$config_file" ]]; then
+    grep "^${key}=" "$config_file" 2>/dev/null | cut -d'=' -f2- | tr -d '"'
+  fi
+}
+
+# --- Action Functions -------------------------------------------------------
+
+# List available themes
+action_list() {
+  msg_info "Available Themes"
+  echo ""
+  
+  if [[ ! -d "$THEMES_DIR" ]]; then
+    msg_warning "No themes directory found at $THEMES_DIR"
+    return 1
+  fi
+  
+  local current
+  current=$(get_current_theme)
+  
+  printf "  %-20s %-40s %s\n" "Name" "Description" "Status"
+  printf "  %-20s %-40s %s\n" "----" "-----------" "------"
+  
+  for theme_dir in "$THEMES_DIR"/*/; do
+    if [[ -d "$theme_dir" ]]; then
+      local name
+      name=$(basename "$theme_dir")
+      local desc
+      desc=$(get_theme_config "$theme_dir" "description")
+      desc="${desc:-No description}"
+      
+      local status=""
+      if [[ "$name" == "$current" ]]; then
+        status="✓ Active"
+      fi
+      
+      printf "  %-20s %-40s %s\n" "$name" "$desc" "$status"
+    fi
+  done
+  
+  echo ""
+}
+
+# Show current theme
+action_current() {
+  local current
+  current=$(get_current_theme)
+  
+  if [[ "$current" == "none" ]]; then
+    msg_info "No theme currently active"
+  else
+    msg_info "Current theme: $current"
+    
+    local theme_path
+    theme_path=$(get_theme_path "$current")
+    local desc
+    desc=$(get_theme_config "$theme_path" "description")
+    if [[ -n "$desc" ]]; then
+      echo "  Description: $desc"
+    fi
+    
+    local author
+    author=$(get_theme_config "$theme_path" "author")
+    if [[ -n "$author" ]]; then
+      echo "  Author: $author"
+    fi
+  fi
+}
+
+# Preview theme colors
+action_preview() {
+  local name="$1"
+  
+  if [[ -z "$name" ]]; then
+    die "Usage: fc theme preview <theme-name>"
+  fi
+  
+  if ! theme_exists "$name"; then
+    die "Theme not found: $name"
+  fi
+  
+  local theme_path
+  theme_path=$(get_theme_path "$name")
+  local colors_file="${theme_path}/colors.sh"
+  
+  msg_info "Preview: $name"
+  echo ""
+  
+  if [[ -f "$colors_file" ]]; then
+    # Source the colors temporarily
+    source "$colors_file"
+    
+    # Show color swatches
+    echo "  Color palette:"
+    echo ""
+    
+    # Display color blocks using ANSI codes
+    for i in {0..7}; do
+      printf "\033[4${i}m  \033[0m"
+    done
+    echo ""
+    for i in {0..7}; do
+      printf "\033[10${i}m  \033[0m"
+    done
+    echo ""
+    echo ""
+  fi
+  
+  msg_info "To apply this theme, run: fc theme apply $name"
+}
+
+# Apply a theme
+action_apply() {
+  local name="$1"
+  
+  if [[ -z "$name" ]]; then
+    die "Usage: fc theme apply <theme-name>"
+  fi
+  
+  if ! theme_exists "$name"; then
+    die "Theme not found: $name"
+  fi
+  
+  ensure_config_dir
+  
+  local theme_path
+  theme_path=$(get_theme_path "$name")
+  
+  # Remove old symlink
+  rm -f "$ACTIVE_THEME_LINK"
+  
+  # Create new symlink
+  ln -s "$theme_path" "$ACTIVE_THEME_LINK"
+  
+  # Generate theme.zsh that sources theme files
+  cat > "$THEME_ZSH" << 'EOF'
+# Auto-generated by fc theme - do not edit directly
+# This file is sourced by your shell config to load the active theme
+
+CIRCUS_THEME_DIR="${HOME}/.config/circus/active-theme"
+
+if [[ -d "$CIRCUS_THEME_DIR" ]]; then
+  # Load colors
+  [[ -f "$CIRCUS_THEME_DIR/colors.sh" ]] && source "$CIRCUS_THEME_DIR/colors.sh"
+  
+  # Load prompt (zsh only)
+  if [[ -n "$ZSH_VERSION" ]]; then
+    [[ -f "$CIRCUS_THEME_DIR/prompt.zsh" ]] && source "$CIRCUS_THEME_DIR/prompt.zsh"
+  fi
+  
+  # Load aliases
+  [[ -f "$CIRCUS_THEME_DIR/aliases.sh" ]] && source "$CIRCUS_THEME_DIR/aliases.sh"
+fi
+EOF
+  
+  msg_success "Applied theme: $name"
+  msg_info "Restart your shell or run 'source ~/.zshrc' to see changes"
+}
+
+# Create a new theme
+action_create() {
+  local name="$1"
+  
+  if [[ -z "$name" ]]; then
+    die "Usage: fc theme create <theme-name>"
+  fi
+  
+  # Validate name
+  if [[ "$name" =~ [^a-zA-Z0-9_-] ]]; then
+    die "Theme name can only contain letters, numbers, hyphens, and underscores"
+  fi
+  
+  if theme_exists "$name"; then
+    die "Theme already exists: $name"
+  fi
+  
+  local theme_path
+  theme_path=$(get_theme_path "$name")
+  
+  # Create theme directory
+  mkdir -p "$theme_path"
+  
+  # Create theme.conf
+  cat > "${theme_path}/theme.conf" << EOF
+name="$name"
+description="Custom theme"
+author="$(whoami)"
+version="1.0.0"
+EOF
+  
+  # Create colors.sh template
+  cat > "${theme_path}/colors.sh" << 'EOF'
+#!/usr/bin/env bash
+# Theme color definitions
+# These are exported for use by prompts and other tools
+
+# Base colors (customize these)
+export THEME_FG="#c0c0c0"
+export THEME_BG="#1a1a1a"
+export THEME_ACCENT="#7aa2f7"
+export THEME_SUCCESS="#9ece6a"
+export THEME_WARNING="#e0af68"
+export THEME_ERROR="#f7768e"
+
+# LS_COLORS for colored directory listings
+export LSCOLORS="GxFxCxDxBxegedabagaced"
+EOF
+  
+  # Create prompt.zsh template
+  cat > "${theme_path}/prompt.zsh" << 'EOF'
+#!/usr/bin/env zsh
+# Zsh prompt configuration for this theme
+
+# Simple prompt with directory and git info
+PROMPT='%F{cyan}%~%f %F{green}❯%f '
+
+# Right prompt with git branch (if in repo)
+autoload -Uz vcs_info
+precmd() { vcs_info }
+zstyle ':vcs_info:git:*' formats '%F{yellow}(%b)%f'
+RPROMPT='${vcs_info_msg_0_}'
+EOF
+  
+  # Create aliases.sh template
+  cat > "${theme_path}/aliases.sh" << 'EOF'
+#!/usr/bin/env bash
+# Theme-specific aliases (optional)
+# Add any aliases that complement this theme
+EOF
+  
+  msg_success "Created theme: $name"
+  msg_info "Theme location: $theme_path"
+  echo ""
+  msg_info "Files created:"
+  echo "  theme.conf  - Theme metadata"
+  echo "  colors.sh   - Color definitions"
+  echo "  prompt.zsh  - Zsh prompt"
+  echo "  aliases.sh  - Optional aliases"
+  echo ""
+  msg_info "Edit these files, then run: fc theme apply $name"
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    list)
+      action_list "$@"
+      ;;
+    current)
+      action_current "$@"
+      ;;
+    apply)
+      action_apply "$@"
+      ;;
+    preview)
+      action_preview "$@"
+      ;;
+    create)
+      action_create "$@"
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc theme --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

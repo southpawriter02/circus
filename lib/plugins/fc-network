@@ -1,0 +1,527 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-network
+#
+# DESCRIPTION:  Network diagnostics and troubleshooting tool. Provides a suite
+#               of tests to diagnose connectivity issues, check latency, verify
+#               DNS resolution, and display local network configuration.
+#
+# USAGE:        fc network <action> [options]
+#
+# ACTIONS:
+#   status        Quick connectivity overview (default)
+#   diag          Full diagnostic suite (all tests)
+#   info          Show local network configuration
+#   latency [h]   Ping test with statistics (default: 1.1.1.1)
+#   dns [domain]  DNS resolution test (default: apple.com)
+#   trace [host]  Traceroute to a host (default: 1.1.1.1)
+#   port <h> <p>  Check if a port is open on a host
+#   speed         Run speed test (requires speedtest-cli)
+#
+# OPTIONS:
+#   --host <h>    Specify target host for tests
+#   --count <n>   Number of pings for latency test (default: 5)
+#   --help        Show this help message
+#
+# EXAMPLES:
+#   fc network                          # Quick status check
+#   fc network diag                     # Full diagnostic suite
+#   fc network info                     # Local IP, gateway, DNS
+#   fc network latency google.com       # Ping google.com
+#   fc network port github.com 443      # Check HTTPS port
+#   fc network trace 8.8.8.8            # Trace to Google DNS
+#
+# DIAGNOSTIC SUITE (fc network diag):
+#   1. Local Network Info - IP address, gateway, DNS servers
+#   2. Gateway Ping - Tests local network connectivity
+#   3. Internet Ping - Tests internet connectivity (1.1.1.1, 8.8.8.8)
+#   4. DNS Resolution - Verifies DNS is working
+#   5. HTTPS Check - Verifies full HTTP connectivity
+#   6. Latency Summary - Shows min/avg/max ping times
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# Default test targets
+DEFAULT_PING_HOST="1.1.1.1"
+DEFAULT_DNS_DOMAIN="apple.com"
+SECONDARY_PING_HOST="8.8.8.8"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc network <action> [options]"
+  echo ""
+  msg_info "Network diagnostics and troubleshooting."
+  echo ""
+  msg_info "Actions:"
+  echo "  status          Quick connectivity check (default)"
+  echo "  diag            Full diagnostic suite"
+  echo "  info            Show local network configuration"
+  echo "  latency [host]  Ping test with statistics"
+  echo "  dns [domain]    DNS resolution test"
+  echo "  trace [host]    Traceroute to a host"
+  echo "  port <h> <p>    Check if a port is open"
+  echo "  speed           Run speed test (requires speedtest-cli)"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc network diag"
+  echo "  fc network latency google.com"
+  echo "  fc network port github.com 443"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Get primary network interface
+get_primary_interface() {
+  route -n get default 2>/dev/null | grep 'interface:' | awk '{print $2}'
+}
+
+# Get local IP address
+get_local_ip() {
+  local iface
+  iface=$(get_primary_interface)
+  if [[ -n "$iface" ]]; then
+    ipconfig getifaddr "$iface" 2>/dev/null
+  fi
+}
+
+# Get gateway IP
+get_gateway() {
+  route -n get default 2>/dev/null | grep 'gateway:' | awk '{print $2}'
+}
+
+# Get DNS servers
+get_dns_servers() {
+  scutil --dns 2>/dev/null | grep 'nameserver\[' | awk '{print $3}' | head -3 | tr '\n' ' '
+}
+
+# Get active network service name
+get_network_service() {
+  local iface
+  iface=$(get_primary_interface)
+  if [[ -n "$iface" ]]; then
+    networksetup -listnetworkserviceorder | grep -A1 "$iface" | head -1 | sed 's/^([0-9]*) //'
+  fi
+}
+
+# Ping test with latency extraction
+ping_test() {
+  local host="$1"
+  local count="${2:-3}"
+  
+  local result
+  result=$(ping -c "$count" -t 5 "$host" 2>&1)
+  local exit_code=$?
+  
+  if [[ $exit_code -eq 0 ]]; then
+    local latency
+    latency=$(echo "$result" | grep 'avg' | awk -F'/' '{print $5}')
+    echo "OK:${latency}ms"
+  else
+    echo "FAIL:unreachable"
+  fi
+}
+
+# DNS resolution test
+dns_test() {
+  local domain="$1"
+  local start_time end_time duration
+  
+  start_time=$(gdate +%s%3N 2>/dev/null || date +%s)
+  local result
+  result=$(dig +short "$domain" 2>&1 | head -1)
+  end_time=$(gdate +%s%3N 2>/dev/null || date +%s)
+  
+  if [[ -n "$result" ]] && [[ "$result" != *"error"* ]]; then
+    # Calculate duration (rough if gdate not available)
+    if command -v gdate &>/dev/null; then
+      duration=$((end_time - start_time))
+    else
+      duration="<1000"
+    fi
+    echo "OK:${result}:${duration}ms"
+  else
+    echo "FAIL:no resolution"
+  fi
+}
+
+# Port check
+port_check() {
+  local host="$1"
+  local port="$2"
+  
+  # Use nc (netcat) for port check
+  if nc -z -w 3 "$host" "$port" 2>/dev/null; then
+    echo "OK:open"
+  else
+    echo "FAIL:closed or filtered"
+  fi
+}
+
+# Print status line with icon
+print_status() {
+  local status="$1"
+  local label="$2"
+  local value="$3"
+  
+  if [[ "$status" == "OK" ]]; then
+    printf "  ✓ %-20s %s\n" "$label" "$value"
+  elif [[ "$status" == "WARN" ]]; then
+    printf "  ⚠ %-20s %s\n" "$label" "$value"
+  else
+    printf "  ✗ %-20s %s\n" "$label" "$value"
+  fi
+}
+
+# --- Action Functions -------------------------------------------------------
+
+# Quick connectivity status
+action_status() {
+  msg_info "Network Status"
+  echo ""
+  
+  # Local IP
+  local ip
+  ip=$(get_local_ip)
+  if [[ -n "$ip" ]]; then
+    print_status "OK" "Local IP" "$ip"
+  else
+    print_status "FAIL" "Local IP" "Not connected"
+    return 1
+  fi
+  
+  # Gateway
+  local gateway
+  gateway=$(get_gateway)
+  if [[ -n "$gateway" ]]; then
+    print_status "OK" "Gateway" "$gateway"
+  else
+    print_status "FAIL" "Gateway" "No gateway"
+  fi
+  
+  # Internet
+  local ping_result
+  ping_result=$(ping_test "$DEFAULT_PING_HOST" 1)
+  if [[ "$ping_result" == OK* ]]; then
+    local latency="${ping_result#OK:}"
+    print_status "OK" "Internet" "$DEFAULT_PING_HOST ($latency)"
+  else
+    print_status "FAIL" "Internet" "Not reachable"
+  fi
+  
+  # DNS
+  local dns_result
+  dns_result=$(dns_test "$DEFAULT_DNS_DOMAIN")
+  if [[ "$dns_result" == OK* ]]; then
+    print_status "OK" "DNS" "Resolving"
+  else
+    print_status "FAIL" "DNS" "Not resolving"
+  fi
+  
+  echo ""
+}
+
+# Full diagnostic suite
+action_diag() {
+  msg_info "Network Diagnostics"
+  echo "═══════════════════════════════════════════════════"
+  echo ""
+  
+  local passed=0
+  local failed=0
+  
+  # 1. Local Network Info
+  msg_info "Local Configuration"
+  local ip gateway dns service
+  ip=$(get_local_ip)
+  gateway=$(get_gateway)
+  dns=$(get_dns_servers)
+  service=$(get_network_service)
+  
+  if [[ -n "$ip" ]]; then
+    print_status "OK" "Local IP" "$ip"
+    passed=$((passed + 1))
+  else
+    print_status "FAIL" "Local IP" "Not connected"
+    failed=$((failed + 1))
+  fi
+  
+  if [[ -n "$gateway" ]]; then
+    print_status "OK" "Gateway" "$gateway"
+    passed=$((passed + 1))
+  else
+    print_status "FAIL" "Gateway" "Not found"
+    failed=$((failed + 1))
+  fi
+  
+  if [[ -n "$dns" ]]; then
+    print_status "OK" "DNS Servers" "$dns"
+    passed=$((passed + 1))
+  else
+    print_status "WARN" "DNS Servers" "None configured"
+  fi
+  
+  if [[ -n "$service" ]]; then
+    print_status "OK" "Network Service" "$service"
+  fi
+  
+  echo ""
+  
+  # 2. Gateway Ping
+  msg_info "Gateway Connectivity"
+  if [[ -n "$gateway" ]]; then
+    local gw_ping
+    gw_ping=$(ping_test "$gateway" 3)
+    if [[ "$gw_ping" == OK* ]]; then
+      local gw_latency="${gw_ping#OK:}"
+      print_status "OK" "Gateway Ping" "$gateway ($gw_latency)"
+      passed=$((passed + 1))
+    else
+      print_status "FAIL" "Gateway Ping" "Gateway unreachable"
+      failed=$((failed + 1))
+    fi
+  else
+    print_status "WARN" "Gateway Ping" "Skipped (no gateway)"
+  fi
+  echo ""
+  
+  # 3. Internet Ping
+  msg_info "Internet Connectivity"
+  local inet_ping
+  inet_ping=$(ping_test "$DEFAULT_PING_HOST" 3)
+  if [[ "$inet_ping" == OK* ]]; then
+    local inet_latency="${inet_ping#OK:}"
+    print_status "OK" "Primary ($DEFAULT_PING_HOST)" "$inet_latency"
+    passed=$((passed + 1))
+  else
+    print_status "FAIL" "Primary ($DEFAULT_PING_HOST)" "Unreachable"
+    failed=$((failed + 1))
+  fi
+  
+  inet_ping=$(ping_test "$SECONDARY_PING_HOST" 3)
+  if [[ "$inet_ping" == OK* ]]; then
+    local inet_latency="${inet_ping#OK:}"
+    print_status "OK" "Secondary ($SECONDARY_PING_HOST)" "$inet_latency"
+    passed=$((passed + 1))
+  else
+    print_status "FAIL" "Secondary ($SECONDARY_PING_HOST)" "Unreachable"
+    failed=$((failed + 1))
+  fi
+  echo ""
+  
+  # 4. DNS Resolution
+  msg_info "DNS Resolution"
+  local dns_result
+  dns_result=$(dns_test "$DEFAULT_DNS_DOMAIN")
+  if [[ "$dns_result" == OK* ]]; then
+    IFS=: read -r _ resolved timing <<< "$dns_result"
+    print_status "OK" "$DEFAULT_DNS_DOMAIN" "$resolved ($timing)"
+    passed=$((passed + 1))
+  else
+    print_status "FAIL" "$DEFAULT_DNS_DOMAIN" "Failed to resolve"
+    failed=$((failed + 1))
+  fi
+  
+  dns_result=$(dns_test "google.com")
+  if [[ "$dns_result" == OK* ]]; then
+    IFS=: read -r _ resolved timing <<< "$dns_result"
+    print_status "OK" "google.com" "$resolved ($timing)"
+    passed=$((passed + 1))
+  else
+    print_status "FAIL" "google.com" "Failed to resolve"
+    failed=$((failed + 1))
+  fi
+  echo ""
+  
+  # 5. HTTPS Check
+  msg_info "HTTPS Connectivity"
+  if curl -s --max-time 5 -o /dev/null -w "%{http_code}" "https://www.apple.com" | grep -q "200\|301\|302"; then
+    print_status "OK" "apple.com" "HTTPS working"
+    passed=$((passed + 1))
+  else
+    print_status "FAIL" "apple.com" "HTTPS failed"
+    failed=$((failed + 1))
+  fi
+  echo ""
+  
+  # Summary
+  echo "───────────────────────────────────────────────────"
+  if [[ $failed -eq 0 ]]; then
+    msg_success "All $passed tests passed"
+  else
+    msg_warning "$passed passed, $failed failed"
+  fi
+  echo ""
+}
+
+# Show local network info
+action_info() {
+  msg_info "Network Configuration"
+  echo ""
+  
+  local iface ip gateway dns service
+  iface=$(get_primary_interface)
+  ip=$(get_local_ip)
+  gateway=$(get_gateway)
+  dns=$(get_dns_servers)
+  service=$(get_network_service)
+  
+  printf "  %-20s %s\n" "Interface:" "${iface:-Unknown}"
+  printf "  %-20s %s\n" "Network Service:" "${service:-Unknown}"
+  printf "  %-20s %s\n" "Local IP:" "${ip:-Not connected}"
+  printf "  %-20s %s\n" "Gateway:" "${gateway:-None}"
+  printf "  %-20s %s\n" "DNS Servers:" "${dns:-None}"
+  
+  # Get public IP
+  echo ""
+  msg_info "Public IP:"
+  local public_ip
+  public_ip=$(curl -s --max-time 5 https://api.ipify.org 2>/dev/null)
+  if [[ -n "$public_ip" ]]; then
+    printf "  %-20s %s\n" "External IP:" "$public_ip"
+  else
+    printf "  %-20s %s\n" "External IP:" "Could not determine"
+  fi
+  
+  echo ""
+}
+
+# Latency test
+action_latency() {
+  local host="${1:-$DEFAULT_PING_HOST}"
+  local count="${2:-5}"
+  
+  msg_info "Latency Test: $host"
+  echo ""
+  
+  ping -c "$count" "$host"
+  echo ""
+}
+
+# DNS resolution test
+action_dns() {
+  local domain="${1:-$DEFAULT_DNS_DOMAIN}"
+  
+  msg_info "DNS Resolution: $domain"
+  echo ""
+  
+  # Show DNS server being used
+  echo "Using DNS servers: $(get_dns_servers)"
+  echo ""
+  
+  # Full dig output
+  dig "$domain" +noall +answer
+  echo ""
+  
+  # Also show timing
+  local result
+  result=$(dns_test "$domain")
+  if [[ "$result" == OK* ]]; then
+    IFS=: read -r _ resolved timing <<< "$result"
+    msg_success "Resolved to $resolved in $timing"
+  else
+    msg_warning "Resolution failed"
+  fi
+  echo ""
+}
+
+# Traceroute
+action_trace() {
+  local host="${1:-$DEFAULT_PING_HOST}"
+  
+  msg_info "Traceroute: $host"
+  echo ""
+  
+  traceroute -m 20 "$host" 2>&1
+  echo ""
+}
+
+# Port check
+action_port() {
+  local host="$1"
+  local port="$2"
+  
+  if [[ -z "$host" ]] || [[ -z "$port" ]]; then
+    die "Usage: fc network port <host> <port>"
+  fi
+  
+  msg_info "Port Check: $host:$port"
+  echo ""
+  
+  local result
+  result=$(port_check "$host" "$port")
+  
+  if [[ "$result" == OK* ]]; then
+    msg_success "Port $port is OPEN on $host"
+  else
+    msg_warning "Port $port is CLOSED or FILTERED on $host"
+  fi
+  echo ""
+}
+
+# Speed test
+action_speed() {
+  if ! command -v speedtest-cli &>/dev/null && ! command -v speedtest &>/dev/null; then
+    msg_warning "speedtest-cli not installed"
+    msg_info "Install with: brew install speedtest-cli"
+    return 1
+  fi
+  
+  msg_info "Running Speed Test..."
+  echo ""
+  
+  if command -v speedtest-cli &>/dev/null; then
+    speedtest-cli
+  else
+    speedtest
+  fi
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  local action="${1:-status}"
+  
+  if [[ "$action" == "--help" ]]; then
+    usage
+  fi
+  
+  shift || true
+
+  case "$action" in
+    status)
+      action_status "$@"
+      ;;
+    diag)
+      action_diag "$@"
+      ;;
+    info)
+      action_info "$@"
+      ;;
+    latency|ping)
+      action_latency "$@"
+      ;;
+    dns)
+      action_dns "$@"
+      ;;
+    trace|traceroute)
+      action_trace "$@"
+      ;;
+    port)
+      action_port "$@"
+      ;;
+    speed)
+      action_speed "$@"
+      ;;
+    *)
+      die "Unknown action '$action'. Run 'fc network --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

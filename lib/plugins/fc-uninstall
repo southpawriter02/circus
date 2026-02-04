@@ -1,0 +1,435 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-uninstall
+#
+# DESCRIPTION:  Completely uninstall macOS applications including the app bundle,
+#               preferences, caches, application support files, containers, and
+#               saved state. Provides a thorough cleanup that goes beyond simply
+#               dragging an app to the Trash.
+#
+# USAGE:        fc uninstall <app-name> [options]
+#               fc uninstall list <app-name>
+#               fc uninstall scan
+#
+# ACTIONS:
+#   <app-name>    Uninstall the specified application (requires --force)
+#   list <app>    Preview files that would be removed (dry run)
+#   scan          Find installed applications and their disk usage
+#
+# OPTIONS:
+#   --force       Actually delete files (without this, only shows what would be removed)
+#   --keep-prefs  Keep preference files when uninstalling
+#   --help        Show this help message
+#
+# EXAMPLES:
+#   fc uninstall list Slack               # See what would be removed
+#   fc uninstall Slack --force            # Actually uninstall Slack
+#   fc uninstall scan                     # List installed apps with sizes
+#
+# CLEANUP LOCATIONS:
+#   This command searches for and removes files from:
+#   - /Applications/<App>.app             (Application bundle)
+#   - ~/Library/Preferences/<bundle-id>.* (Preference files)
+#   - ~/Library/Caches/<bundle-id>/       (Cache files)
+#   - ~/Library/Application Support/<App> (Support files)
+#   - ~/Library/Containers/<bundle-id>/   (Sandbox containers)
+#   - ~/Library/Saved Application State/  (Window state)
+#   - ~/Library/HTTPStorages/<bundle-id>/ (HTTP storage)
+#   - ~/Library/WebKit/<bundle-id>/       (WebKit data)
+#
+# SAFETY:
+#   - Dry-run by default: Shows what would be deleted without --force
+#   - System apps protected: Cannot uninstall apps from /System/Applications
+#   - Confirmation required: Prompts before deletion even with --force
+#
+# NOTES:
+#   - Some apps may require quitting before uninstall
+#   - Sandboxed apps store most data in ~/Library/Containers
+#   - Login items and launch agents are NOT automatically removed
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc uninstall <app-name> [options]"
+  echo ""
+  msg_info "Completely uninstall macOS applications and their associated files."
+  echo ""
+  msg_info "Actions:"
+  echo "  <app-name>        Uninstall the specified application"
+  echo "  list <app-name>   Preview what would be removed (dry run)"
+  echo "  scan              Find installed applications with disk usage"
+  echo ""
+  msg_info "Options:"
+  echo "  --force           Actually delete files (required for uninstall)"
+  echo "  --keep-prefs      Keep preference files when uninstalling"
+  echo "  --help            Show this help message"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc uninstall list Slack        # Preview removal"
+  echo "  fc uninstall Slack --force     # Uninstall Slack completely"
+  echo "  fc uninstall scan              # List apps with sizes"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+# Get bundle identifier from app
+get_bundle_id() {
+  local app_path="$1"
+  if [[ -f "$app_path/Contents/Info.plist" ]]; then
+    /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$app_path/Contents/Info.plist" 2>/dev/null
+  fi
+}
+
+# Get app name from path
+get_app_name() {
+  local app_path="$1"
+  basename "$app_path" .app
+}
+
+# Find app in Applications folders
+find_app() {
+  local app_name="$1"
+  local app_path=""
+  
+  # Try exact match first
+  if [[ -d "/Applications/${app_name}.app" ]]; then
+    echo "/Applications/${app_name}.app"
+    return 0
+  fi
+  
+  if [[ -d "$HOME/Applications/${app_name}.app" ]]; then
+    echo "$HOME/Applications/${app_name}.app"
+    return 0
+  fi
+  
+  # Try case-insensitive search
+  app_path=$(find /Applications -maxdepth 1 -iname "${app_name}.app" -type d 2>/dev/null | head -n 1)
+  if [[ -n "$app_path" ]]; then
+    echo "$app_path"
+    return 0
+  fi
+  
+  app_path=$(find "$HOME/Applications" -maxdepth 1 -iname "${app_name}.app" -type d 2>/dev/null | head -n 1)
+  if [[ -n "$app_path" ]]; then
+    echo "$app_path"
+    return 0
+  fi
+  
+  return 1
+}
+
+# Get size of a path in human-readable format
+get_size() {
+  local path="$1"
+  if [[ -e "$path" ]]; then
+    du -sh "$path" 2>/dev/null | awk '{print $1}'
+  else
+    echo "0"
+  fi
+}
+
+# Find all files associated with an app
+find_app_files() {
+  local app_path="$1"
+  local bundle_id="$2"
+  local app_name="$3"
+  
+  declare -a found_files
+  declare -a found_sizes
+  local total_bytes=0
+  
+  # App bundle itself
+  if [[ -d "$app_path" ]]; then
+    echo "APP:$app_path:$(get_size "$app_path")"
+  fi
+  
+  # Preferences
+  for plist in "$HOME/Library/Preferences/${bundle_id}"* "$HOME/Library/Preferences/${bundle_id}."*; do
+    if [[ -e "$plist" ]]; then
+      echo "PREF:$plist:$(get_size "$plist")"
+    fi
+  done
+  
+  # Caches
+  if [[ -d "$HOME/Library/Caches/${bundle_id}" ]]; then
+    echo "CACHE:$HOME/Library/Caches/${bundle_id}:$(get_size "$HOME/Library/Caches/${bundle_id}")"
+  fi
+  
+  # Also check app name in caches
+  if [[ -d "$HOME/Library/Caches/${app_name}" ]]; then
+    echo "CACHE:$HOME/Library/Caches/${app_name}:$(get_size "$HOME/Library/Caches/${app_name}")"
+  fi
+  
+  # Application Support
+  if [[ -d "$HOME/Library/Application Support/${app_name}" ]]; then
+    echo "SUPPORT:$HOME/Library/Application Support/${app_name}:$(get_size "$HOME/Library/Application Support/${app_name}")"
+  fi
+  
+  # Containers (sandboxed apps)
+  if [[ -d "$HOME/Library/Containers/${bundle_id}" ]]; then
+    echo "CONTAINER:$HOME/Library/Containers/${bundle_id}:$(get_size "$HOME/Library/Containers/${bundle_id}")"
+  fi
+  
+  # Group Containers
+  for container in "$HOME/Library/Group Containers/"*"${bundle_id}"*; do
+    if [[ -d "$container" ]]; then
+      echo "GROUP:$container:$(get_size "$container")"
+    fi
+  done
+  
+  # Saved Application State
+  if [[ -d "$HOME/Library/Saved Application State/${bundle_id}.savedState" ]]; then
+    echo "STATE:$HOME/Library/Saved Application State/${bundle_id}.savedState:$(get_size "$HOME/Library/Saved Application State/${bundle_id}.savedState")"
+  fi
+  
+  # HTTP Storages
+  if [[ -d "$HOME/Library/HTTPStorages/${bundle_id}" ]]; then
+    echo "HTTP:$HOME/Library/HTTPStorages/${bundle_id}:$(get_size "$HOME/Library/HTTPStorages/${bundle_id}")"
+  fi
+  
+  # WebKit
+  if [[ -d "$HOME/Library/WebKit/${bundle_id}" ]]; then
+    echo "WEBKIT:$HOME/Library/WebKit/${bundle_id}:$(get_size "$HOME/Library/WebKit/${bundle_id}")"
+  fi
+  
+  # Logs
+  if [[ -d "$HOME/Library/Logs/${app_name}" ]]; then
+    echo "LOGS:$HOME/Library/Logs/${app_name}:$(get_size "$HOME/Library/Logs/${app_name}")"
+  fi
+}
+
+# Check if app is a system app
+is_system_app() {
+  local app_path="$1"
+  [[ "$app_path" == /System/* ]] || [[ "$app_path" == /Library/* ]]
+}
+
+# Check if app is running
+is_app_running() {
+  local app_name="$1"
+  pgrep -xq "$app_name" 2>/dev/null
+}
+
+# --- Action Functions -------------------------------------------------------
+
+# List files that would be removed (dry run)
+action_list() {
+  local app_name="$1"
+  
+  if [[ -z "$app_name" ]]; then
+    die "Usage: fc uninstall list <app-name>"
+  fi
+  
+  local app_path
+  app_path=$(find_app "$app_name") || die "Application not found: $app_name"
+  
+  local bundle_id
+  bundle_id=$(get_bundle_id "$app_path")
+  local display_name
+  display_name=$(get_app_name "$app_path")
+  
+  msg_info "Files associated with $display_name:"
+  echo ""
+  
+  if [[ -z "$bundle_id" ]]; then
+    msg_warning "Could not determine bundle identifier"
+    bundle_id="$app_name"
+  fi
+  
+  printf "  %-12s %-50s %10s\n" "Type" "Path" "Size"
+  printf "  %-12s %-50s %10s\n" "----" "----" "----"
+  
+  local total_count=0
+  while IFS=: read -r type path size; do
+    local short_path="${path/#$HOME/~}"
+    if [[ ${#short_path} -gt 48 ]]; then
+      short_path="...${short_path: -45}"
+    fi
+    printf "  %-12s %-50s %10s\n" "$type" "$short_path" "$size"
+    total_count=$((total_count + 1))
+  done < <(find_app_files "$app_path" "$bundle_id" "$display_name")
+  
+  echo ""
+  msg_info "Found $total_count items"
+  echo ""
+  msg_info "To uninstall, run: fc uninstall \"$display_name\" --force"
+}
+
+# Scan for installed applications
+action_scan() {
+  msg_info "Scanning installed applications..."
+  echo ""
+  
+  printf "  %-40s %10s\n" "Application" "Size"
+  printf "  %-40s %10s\n" "-----------" "----"
+  
+  # Scan /Applications
+  for app in /Applications/*.app; do
+    if [[ -d "$app" ]]; then
+      local name
+      name=$(basename "$app" .app)
+      local size
+      size=$(get_size "$app")
+      printf "  %-40s %10s\n" "$name" "$size"
+    fi
+  done | sort
+  
+  echo ""
+  
+  # Also scan ~/Applications if it exists
+  if [[ -d "$HOME/Applications" ]]; then
+    msg_info "User Applications:"
+    for app in "$HOME/Applications"/*.app; do
+      if [[ -d "$app" ]]; then
+        local name
+        name=$(basename "$app" .app)
+        local size
+        size=$(get_size "$app")
+        printf "  %-40s %10s\n" "$name" "$size"
+      fi
+    done | sort
+    echo ""
+  fi
+}
+
+# Uninstall an application
+action_uninstall() {
+  local app_name="$1"
+  local force=false
+  local keep_prefs=false
+  
+  # Parse options
+  shift || true
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --force)
+        force=true
+        shift
+        ;;
+      --keep-prefs)
+        keep_prefs=true
+        shift
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+  
+  if [[ -z "$app_name" ]]; then
+    die "Usage: fc uninstall <app-name> [--force]"
+  fi
+  
+  local app_path
+  app_path=$(find_app "$app_name") || die "Application not found: $app_name"
+  
+  # Check for system app
+  if is_system_app "$app_path"; then
+    die "Cannot uninstall system application: $app_path"
+  fi
+  
+  local bundle_id
+  bundle_id=$(get_bundle_id "$app_path")
+  local display_name
+  display_name=$(get_app_name "$app_path")
+  
+  if [[ -z "$bundle_id" ]]; then
+    bundle_id="$app_name"
+  fi
+  
+  # Check if running
+  if is_app_running "$display_name"; then
+    msg_warning "$display_name is running. Please quit the application first."
+    msg_info "Run: osascript -e 'tell application \"$display_name\" to quit'"
+    if ! $force; then
+      exit 1
+    fi
+  fi
+  
+  # Collect files to remove
+  declare -a files_to_remove
+  while IFS=: read -r type path size; do
+    if $keep_prefs && [[ "$type" == "PREF" ]]; then
+      continue
+    fi
+    files_to_remove+=("$path")
+  done < <(find_app_files "$app_path" "$bundle_id" "$display_name")
+  
+  if [[ ${#files_to_remove[@]} -eq 0 ]]; then
+    msg_warning "No files found to remove"
+    return 1
+  fi
+  
+  # Show what will be removed
+  msg_warning "The following will be permanently deleted:"
+  echo ""
+  for file in "${files_to_remove[@]}"; do
+    echo "  ${file/#$HOME/~}"
+  done
+  echo ""
+  
+  if ! $force; then
+    msg_info "This is a dry run. To actually uninstall, add --force"
+    return 0
+  fi
+  
+  # Confirm
+  msg_info "Are you sure you want to uninstall $display_name? (y/N):"
+  read -r confirm
+  
+  if [[ "$confirm" != "y" ]] && [[ "$confirm" != "Y" ]]; then
+    msg_info "Uninstall cancelled."
+    return 0
+  fi
+  
+  # Perform removal
+  msg_info "Uninstalling $display_name..."
+  
+  local removed_count=0
+  for file in "${files_to_remove[@]}"; do
+    if [[ -e "$file" ]]; then
+      if rm -rf "$file" 2>/dev/null; then
+        msg_success "Removed: ${file/#$HOME/~}"
+        removed_count=$((removed_count + 1))
+      else
+        msg_warning "Failed to remove: ${file/#$HOME/~}"
+      fi
+    fi
+  done
+  
+  echo ""
+  msg_success "Uninstalled $display_name ($removed_count items removed)"
+}
+
+# --- Main Logic -------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+
+  local action="$1"
+  shift
+
+  case "$action" in
+    list)
+      action_list "$@"
+      ;;
+    scan)
+      action_scan "$@"
+      ;;
+    *)
+      # Default action is uninstall
+      action_uninstall "$action" "$@"
+      ;;
+  esac
+}
+
+main "$@"
