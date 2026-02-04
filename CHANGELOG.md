@@ -113,6 +113,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Reports ✅ OK / ❌ drift / ⚠️ extra items
   - Filterable with `--packages`, `--defaults`, etc.
 
+- **New `lib/security.sh`** - Security hardening library (S03):
+  - `sanitize_string()` - Strip shell metacharacters
+  - `sanitize_domain()` - Validate macOS preference domains
+  - `sanitize_path()` - Prevent path traversal attacks
+  - `sanitize_package_name()` - Validate brew/cask names
+  - `validate_url()` - HTTPS enforcement
+  - Integrated into `yaml_config.sh` for defaults protection
+  - Security event logging to `~/.circus/security.log`
+
 ## [1.5.2] - 2026-01-05
 
 

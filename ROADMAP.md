@@ -141,3 +141,66 @@ This section lists proposed features that are not yet part of the official phase
 | **Windows (WSL2)** | As a user, I want `circus` to provide experimental support for WSL2 (Feature #25 extension). | Hard | ⏳ Planned |
 | **Test Coverage** | As a developer, I want `bats` test runs to generate coverage reports. | Medium | ⏳ Planned |
 | **Auto-Docs** | As a developer, I want documentation to be generated from source comments. | Medium | ⏳ Planned |
+
+### 🔐 Security Hardening (Priority 0 - Critical)
+
+Security features to protect against CLI exploitation, privilege escalation, and malicious input.
+
+#### Input Validation & Sanitization
+| # | Feature | Risk Mitigated | Difficulty | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| S01 | **Path Traversal Guard** | Validate file paths to prevent `../` or symlink attacks | Medium | ⏳ Planned |
+| S02 | **YAML Injection Prevention** | Sanitize YAML values before passing to `defaults write` or `eval` | Medium | ⏳ Planned |
+| S03 | **Command Injection Filter** | Escape/validate all user inputs passed to shell commands | High | ✅ Done |
+| S04 | **URL Validation** | Validate remote URLs before `curl`/`wget` (prevent SSRF-like attacks) | Easy | ⏳ Planned |
+| S05 | **Package Name Allowlist** | Validate brew/cask/mas package names (no shell metacharacters) | Easy | ⏳ Planned |
+
+#### Privilege Escalation Protection
+| # | Feature | Risk Mitigated | Difficulty | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| S06 | **Sudo Audit Logging** | Log all `sudo` invocations with timestamp, user, command | Medium | ⏳ Planned |
+| S07 | **Sudo Prompt Confirmation** | Require explicit `--yes` for destructive sudo operations | Easy | ⏳ Planned |
+| S08 | **Privilege Drop After Use** | Ensure scripts don't retain elevated privileges unnecessarily | Medium | ⏳ Planned |
+| S09 | **sudoers Integrity Check** | Detect modifications to `/etc/sudoers` before privileged commands | Hard | ⏳ Planned |
+| S10 | **Root Execution Block** | Refuse to run entire framework as root | Easy | ⏳ Planned |
+
+#### File System Security
+| # | Feature | Risk Mitigated | Difficulty | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| S11 | **Secure Temp Files** | Use `mktemp` with restrictive permissions (0600) | Easy | ⏳ Planned |
+| S12 | **Symlink Attack Prevention** | Check if target paths are symlinks before writing (TOCTOU) | Medium | ⏳ Planned |
+| S13 | **Config File Permissions Check** | Warn if config files are world-writable | Easy | ⏳ Planned |
+| S14 | **Backup Encryption** | Encrypt sensitive backup files at rest | Hard | ⏳ Planned |
+| S15 | **Secure Delete for Secrets** | Use secure overwrite when deleting sensitive files | Medium | ⏳ Planned |
+
+#### Integrity & Authenticity
+| # | Feature | Risk Mitigated | Difficulty | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| S16 | **Config File Signing** | GPG-sign config files; verify signatures before applying | Hard | ⏳ Planned |
+| S17 | **Script Integrity Hashes** | Maintain SHA256 hashes of scripts; detect tampering | Medium | ⏳ Planned |
+| S18 | **Homebrew Tap Verification** | Only allow packages from verified taps | Medium | ⏳ Planned |
+| S19 | **Self-Update Signature Check** | Verify git commits are signed before applying updates | Medium | ⏳ Planned |
+| S20 | **Rollback Verification** | Verify snapshot integrity before APFS restore | Medium | ⏳ Planned |
+
+#### Monitoring & Detection
+| # | Feature | Risk Mitigated | Difficulty | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| S21 | **Command History Logging** | Log all `fc` commands to immutable audit trail | Medium | ⏳ Planned |
+| S22 | **Anomaly Detection** | Alert on unusual patterns (mass deletions, rapid changes) | Hard | ⏳ Planned |
+| S23 | **Failed Auth Tracking** | Log and alert on repeated sudo failures | Medium | ⏳ Planned |
+| S24 | **Cron Job Auditor** | `fc audit cron` to detect unauthorized scheduled tasks | Medium | ⏳ Planned |
+| S25 | **LaunchAgent Scanner** | Scan for suspicious persistence in ~/Library/LaunchAgents | Medium | ⏳ Planned |
+
+#### Network Security
+| # | Feature | Risk Mitigated | Difficulty | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| S26 | **Outbound Connection Logging** | Log all network requests made by `fc` commands | Medium | ⏳ Planned |
+| S27 | **TLS Certificate Pinning** | Pin certificates for known update/download URLs | Hard | ⏳ Planned |
+| S28 | **Proxy-Aware Secure Requests** | Ensure HTTPS and validate certs for all requests | Easy | ⏳ Planned |
+
+#### Runtime Hardening
+| # | Feature | Risk Mitigated | Difficulty | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| S29 | **Environment Variable Sanitization** | Clear sensitive env vars before subprocesses | Medium | ⏳ Planned |
+| S30 | **Restricted Shell Mode** | Option to block dangerous operations | Hard | ⏳ Planned |
+

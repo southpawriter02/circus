@@ -182,7 +182,23 @@ apply_macos_defaults() {
     description=$(yaml_get "$config_file" ".defaults[$i].description")
     
     if [[ -n "$domain" && "$domain" != "null" && -n "$key" && "$key" != "null" ]]; then
-      msg_debug "  Setting $domain $key = $value"
+      # Security: Validate domain format
+      if ! sanitize_domain "$domain" >/dev/null 2>&1; then
+        msg_warning "  ⚠ Skipping invalid domain: $domain"
+        security_log "warning" "Invalid domain in config" "$domain"
+        continue
+      fi
+      
+      # Security: Sanitize the value
+      local safe_value
+      safe_value=$(sanitize_defaults_value "$value" "$type")
+      if [[ $? -ne 0 ]]; then
+        msg_warning "  ⚠ Skipping unsafe value for: $domain.$key"
+        security_log "warning" "Unsafe value blocked" "$domain.$key=$value"
+        continue
+      fi
+      
+      msg_debug "  Setting $domain $key = $safe_value"
       
       # Map YAML types to defaults types
       local defaults_type
@@ -196,8 +212,8 @@ apply_macos_defaults() {
         *)            defaults_type="-string" ;;
       esac
       
-      # Apply the default
-      if defaults write "$domain" "$key" "$defaults_type" "$value" 2>/dev/null; then
+      # Apply the default with sanitized values
+      if defaults write "$domain" "$key" "$defaults_type" "$safe_value" 2>/dev/null; then
         msg_debug "    ✓ Applied: $description"
       else
         msg_warning "    ✗ Failed to set: $domain $key"

@@ -49,3 +49,6 @@ fi
 
 # 5. Source notification helpers for long-running tasks.
 source "$DOTFILES_ROOT/lib/notify.sh"
+
+# 6. Source security library for input sanitization.
+source "$DOTFILES_ROOT/lib/security.sh"
