@@ -85,6 +85,13 @@ apply_brew_formulae() {
     formula=$(yaml_get "$config_file" ".packages.brew[$i]")
     
     if [[ -n "$formula" && "$formula" != "null" ]]; then
+      # Security: Validate package name (S05)
+      if ! sanitize_package_name "$formula" >/dev/null 2>&1; then
+        msg_warning "  ⚠ Skipping invalid package name: $formula"
+        security_log "warning" "Invalid brew formula name blocked" "$formula"
+        continue
+      fi
+      
       if brew list "$formula" &>/dev/null; then
         msg_debug "Formula already installed: $formula"
       else
@@ -113,6 +120,13 @@ apply_brew_casks() {
     cask=$(yaml_get "$config_file" ".packages.cask[$i]")
     
     if [[ -n "$cask" && "$cask" != "null" ]]; then
+      # Security: Validate package name (S05)
+      if ! sanitize_package_name "$cask" >/dev/null 2>&1; then
+        msg_warning "  ⚠ Skipping invalid cask name: $cask"
+        security_log "warning" "Invalid cask name blocked" "$cask"
+        continue
+      fi
+      
       if brew list --cask "$cask" &>/dev/null; then
         msg_debug "Cask already installed: $cask"
       else
@@ -148,6 +162,13 @@ apply_mas_apps() {
     app_name=$(yaml_get "$config_file" ".packages.mas[$i].name")
     
     if [[ -n "$app_id" && "$app_id" != "null" ]]; then
+      # Security: Validate app ID is numeric only (S05)
+      if [[ ! "$app_id" =~ ^[0-9]+$ ]]; then
+        msg_warning "  ⚠ Skipping invalid MAS app ID: $app_id"
+        security_log "warning" "Invalid MAS app ID blocked" "$app_id"
+        continue
+      fi
+      
       if mas list | grep -q "^$app_id"; then
         msg_debug "App already installed: $app_name ($app_id)"
       else

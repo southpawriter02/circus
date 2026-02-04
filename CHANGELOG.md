@@ -134,6 +134,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `safe_yaml_get()` - Secure wrapper for yq
     - Blocks template injection ({{...}}, {%...%})
     - Pre-apply validation in `fc-config`
+  - **S04 URL Validation**:
+    - `validate_url()` - HTTPS enforcement, hostname validation
+    - Blocks dangerous characters in URLs
+    - Available for custom URL validation needs
+  - **S05 Package Name Allowlist**:
+    - `sanitize_package_name()` - Alphanumeric + `-_@/` patterns
+    - Integrated into `yaml_config.sh` for brew/cask/mas
+    - MAS app IDs validated as numeric only
 
 ## [1.5.2] - 2026-01-05
 
