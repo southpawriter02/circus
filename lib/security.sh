@@ -1908,6 +1908,213 @@ secure_delete_confirm() {
   fi
 }
 
+# --- S16: Config File Signing -----------------------------------------------
+
+# Default trusted key ID for signing (can be overridden)
+CIRCUS_SIGNING_KEY="${CIRCUS_SIGNING_KEY:-}"
+
+# Sign a config file with GPG (S16)
+# Usage: sign_config "/path/to/config.yaml"
+# Creates a detached signature file: config.yaml.sig
+sign_config() {
+  local file="$1"
+  local key="${2:-$CIRCUS_SIGNING_KEY}"
+  
+  if [[ ! -f "$file" ]]; then
+    msg_error "File not found: $file"
+    return 1
+  fi
+  
+  if ! has_gpg; then
+    msg_error "GPG not found. Install with: brew install gnupg"
+    return 1
+  fi
+  
+  local sig_file="${file}.sig"
+  local gpg_args=(--detach-sign --armor -o "$sig_file")
+  
+  # Use specific key if provided
+  if [[ -n "$key" ]]; then
+    gpg_args+=(--local-user "$key")
+  fi
+  
+  if gpg "${gpg_args[@]}" "$file"; then
+    chmod 644 "$sig_file"
+    msg_success "Signed: $file -> $sig_file"
+    security_log "info" "Config file signed" "$file"
+    return 0
+  else
+    msg_error "Signing failed: $file"
+    security_log "error" "Config signing failed" "$file"
+    return 1
+  fi
+}
+
+# Verify a config file signature (S16)
+# Usage: if verify_config_signature "/path/to/config.yaml"; then ...
+# Looks for config.yaml.sig in same directory
+verify_config_signature() {
+  local file="$1"
+  local sig_file="${2:-${file}.sig}"
+  
+  if [[ ! -f "$file" ]]; then
+    msg_error "File not found: $file"
+    return 1
+  fi
+  
+  if [[ ! -f "$sig_file" ]]; then
+    msg_warning "No signature file found: $sig_file"
+    return 2
+  fi
+  
+  if ! has_gpg; then
+    msg_error "GPG not found"
+    return 1
+  fi
+  
+  if gpg --verify "$sig_file" "$file" 2>/dev/null; then
+    msg_success "✅ Signature valid: $file"
+    security_log "info" "Config signature verified" "$file"
+    return 0
+  else
+    msg_error "❌ INVALID SIGNATURE: $file"
+    security_log "critical" "Config signature INVALID" "$file"
+    return 1
+  fi
+}
+
+# Verify signature before applying config (S16)
+# Usage: verify_before_apply "/path/to/config.yaml" apply_function
+# Aborts if signature is missing or invalid (unless bypassed)
+verify_before_apply() {
+  local file="$1"
+  shift
+  
+  local sig_file="${file}.sig"
+  
+  # Check if signature exists
+  if [[ ! -f "$sig_file" ]]; then
+    msg_warning "⚠️  No signature found for: $file"
+    echo ""
+    echo "   This config file is not signed."
+    echo "   To sign: sign_config \"$file\""
+    echo ""
+    
+    read -r -p "Apply unsigned config? [y/N] " confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+      msg_info "Operation cancelled."
+      return 1
+    fi
+    
+    security_log "warning" "Applied unsigned config" "$file"
+    "$@"
+    return $?
+  fi
+  
+  # Verify signature
+  if verify_config_signature "$file" "$sig_file"; then
+    "$@"
+    return $?
+  else
+    echo ""
+    msg_error "SIGNATURE VERIFICATION FAILED"
+    echo ""
+    echo "   File: $file"
+    echo "   The signature is invalid or the file has been modified."
+    echo "   This could indicate tampering."
+    echo ""
+    
+    read -r -p "Apply anyway? (DANGEROUS) [y/N] " confirm
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+      security_log "critical" "Applied config with INVALID signature" "$file"
+      "$@"
+      return $?
+    else
+      msg_info "Operation cancelled."
+      return 1
+    fi
+  fi
+}
+
+# List GPG keys available for signing (S16)
+# Usage: list_signing_keys
+list_signing_keys() {
+  if ! has_gpg; then
+    msg_error "GPG not found"
+    return 1
+  fi
+  
+  msg_info "Available signing keys:"
+  echo ""
+  gpg --list-secret-keys --keyid-format LONG 2>/dev/null
+}
+
+# Check if a config file is signed (S16)
+# Usage: if is_config_signed "/path/to/config.yaml"; then ...
+is_config_signed() {
+  local file="$1"
+  [[ -f "${file}.sig" ]]
+}
+
+# Sign all config files in a directory (S16)
+# Usage: sign_all_configs "/path/to/configs" [key_id]
+sign_all_configs() {
+  local dir="$1"
+  local key="${2:-$CIRCUS_SIGNING_KEY}"
+  
+  if [[ ! -d "$dir" ]]; then
+    msg_error "Directory not found: $dir"
+    return 1
+  fi
+  
+  local signed=0
+  local failed=0
+  
+  while IFS= read -r -d '' file; do
+    if sign_config "$file" "$key"; then
+      ((signed++))
+    else
+      ((failed++))
+    fi
+  done < <(find "$dir" -name "*.yaml" -o -name "*.yml" | tr '\n' '\0')
+  
+  echo ""
+  msg_info "Signed $signed config file(s), $failed failed."
+}
+
+# Verify all config signatures in a directory (S16)
+# Usage: verify_all_configs "/path/to/configs"
+verify_all_configs() {
+  local dir="$1"
+  
+  if [[ ! -d "$dir" ]]; then
+    msg_error "Directory not found: $dir"
+    return 1
+  fi
+  
+  local verified=0
+  local unsigned=0
+  local invalid=0
+  
+  while IFS= read -r -d '' file; do
+    if [[ -f "${file}.sig" ]]; then
+      if verify_config_signature "$file" "${file}.sig"; then
+        ((verified++))
+      else
+        ((invalid++))
+      fi
+    else
+      msg_info "Unsigned: $file"
+      ((unsigned++))
+    fi
+  done < <(find "$dir" -name "*.yaml" -o -name "*.yml" | tr '\n' '\0')
+  
+  echo ""
+  msg_info "Results: $verified verified, $unsigned unsigned, $invalid invalid"
+  
+  [[ $invalid -eq 0 ]]
+}
+
 # --- Exports ----------------------------------------------------------------
 
 export -f sanitize_string escape_for_shell sanitize_domain
@@ -1932,4 +2139,6 @@ export -f has_gpg encrypt_backup decrypt_backup encrypt_and_shred
 export -f create_encrypted_backup restore_encrypted_backup is_encrypted
 export -f get_secure_delete_tool secure_delete secure_delete_dir
 export -f secure_clear secure_delete_confirm
-export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES
+export -f sign_config verify_config_signature verify_before_apply
+export -f list_signing_keys is_config_signed sign_all_configs verify_all_configs
+export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES CIRCUS_SIGNING_KEY

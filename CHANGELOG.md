@@ -193,6 +193,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `secure_delete_dir()` - Recursive directory wipe
     - `secure_clear()` - Overwrite without deleting
     - Supports srm, shred, gshred, or fallback
+  - **S16 Config File Signing**:
+    - `sign_config()` - GPG detached signatures (.sig)
+    - `verify_config_signature()` - Verify signature
+    - `verify_before_apply()` - Block if invalid
+    - `sign_all_configs()` / `verify_all_configs()` - Batch ops
 
 ## [1.5.2] - 2026-01-05
 
