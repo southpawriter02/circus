@@ -1,0 +1,282 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-audio
+#
+# DESCRIPTION:  Audio device control for macOS.
+#               Manage volume, mute, and switch between input/output devices.
+#
+# REQUIRES:
+#   - macOS
+#   - switchaudio-osx (brew install switchaudio-osx) for device switching
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc audio <action> [options]"
+  echo ""
+  msg_info "Control audio devices, volume, and mute settings."
+  echo ""
+  msg_info "Actions:"
+  echo "  volume [level]     Get or set volume (0-100)"
+  echo "  mute               Mute system audio"
+  echo "  unmute             Unmute system audio"
+  echo "  toggle             Toggle mute"
+  echo "  list-outputs       List available output devices"
+  echo "  list-inputs        List available input devices"
+  echo "  set-output <name>  Set default output device"
+  echo "  set-input <name>   Set default input device"
+  echo "  current            Show current audio devices"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc audio volume 50        # Set volume to 50%"
+  echo "  fc audio mute             # Mute audio"
+  echo "  fc audio set-output AirPods  # Switch to AirPods"
+  echo "  fc audio list-outputs     # List all output devices"
+  echo ""
+  exit 0
+}
+
+# --- Dependency Check -------------------------------------------------------
+
+check_switchaudio() {
+  if ! command -v SwitchAudioSource &>/dev/null; then
+    msg_error "switchaudio-osx is required for device switching."
+    msg_info "Install with: brew install switchaudio-osx"
+    return 1
+  fi
+  return 0
+}
+
+# --- Volume Control ---------------------------------------------------------
+
+get_volume() {
+  osascript -e "output volume of (get volume settings)"
+}
+
+set_volume() {
+  local level="$1"
+  
+  if [[ ! "$level" =~ ^[0-9]+$ ]] || [[ "$level" -lt 0 ]] || [[ "$level" -gt 100 ]]; then
+    die "Volume must be a number between 0 and 100."
+  fi
+  
+  osascript -e "set volume output volume $level"
+  msg_success "Volume set to $level%"
+}
+
+# --- Mute Control -----------------------------------------------------------
+
+get_mute_status() {
+  osascript -e "output muted of (get volume settings)"
+}
+
+do_mute() {
+  osascript -e "set volume output muted true"
+  msg_success "Audio muted."
+}
+
+do_unmute() {
+  osascript -e "set volume output muted false"
+  msg_success "Audio unmuted."
+}
+
+do_toggle_mute() {
+  local current
+  current=$(get_mute_status)
+  
+  if [[ "$current" == "true" ]]; then
+    do_unmute
+  else
+    do_mute
+  fi
+}
+
+# --- Device Listing ---------------------------------------------------------
+
+do_list_outputs() {
+  if ! check_switchaudio; then
+    # Fallback to system_profiler
+    msg_info "Output Devices (limited info without switchaudio-osx):"
+    system_profiler SPAudioDataType 2>/dev/null | grep -A 2 "Output:" || echo "  (unable to list)"
+    return
+  fi
+  
+  echo ""
+  msg_info "Available Output Devices:"
+  echo ""
+  
+  local current
+  current=$(SwitchAudioSource -c 2>/dev/null || echo "")
+  
+  SwitchAudioSource -a -t output 2>/dev/null | while read -r device; do
+    if [[ "$device" == "$current" ]]; then
+      echo "  ▶ $device (current)"
+    else
+      echo "    $device"
+    fi
+  done
+  echo ""
+}
+
+do_list_inputs() {
+  if ! check_switchaudio; then
+    msg_info "Input Devices (limited info without switchaudio-osx):"
+    system_profiler SPAudioDataType 2>/dev/null | grep -A 2 "Input:" || echo "  (unable to list)"
+    return
+  fi
+  
+  echo ""
+  msg_info "Available Input Devices:"
+  echo ""
+  
+  local current
+  current=$(SwitchAudioSource -c -t input 2>/dev/null || echo "")
+  
+  SwitchAudioSource -a -t input 2>/dev/null | while read -r device; do
+    if [[ "$device" == "$current" ]]; then
+      echo "  ▶ $device (current)"
+    else
+      echo "    $device"
+    fi
+  done
+  echo ""
+}
+
+# --- Device Switching -------------------------------------------------------
+
+do_set_output() {
+  local device_name="$1"
+  
+  if [[ -z "$device_name" ]]; then
+    die "Please specify an output device name."
+  fi
+  
+  if ! check_switchaudio; then
+    return 1
+  fi
+  
+  # Try exact match first
+  if SwitchAudioSource -s "$device_name" 2>/dev/null; then
+    msg_success "Output device set to: $device_name"
+    return 0
+  fi
+  
+  # Try fuzzy match
+  local match
+  match=$(SwitchAudioSource -a -t output 2>/dev/null | grep -i "$device_name" | head -1)
+  
+  if [[ -n "$match" ]]; then
+    if SwitchAudioSource -s "$match" 2>/dev/null; then
+      msg_success "Output device set to: $match"
+      return 0
+    fi
+  fi
+  
+  msg_error "Device not found: $device_name"
+  msg_info "Run 'fc audio list-outputs' to see available devices."
+  return 1
+}
+
+do_set_input() {
+  local device_name="$1"
+  
+  if [[ -z "$device_name" ]]; then
+    die "Please specify an input device name."
+  fi
+  
+  if ! check_switchaudio; then
+    return 1
+  fi
+  
+  # Try exact match first
+  if SwitchAudioSource -s "$device_name" -t input 2>/dev/null; then
+    msg_success "Input device set to: $device_name"
+    return 0
+  fi
+  
+  # Try fuzzy match
+  local match
+  match=$(SwitchAudioSource -a -t input 2>/dev/null | grep -i "$device_name" | head -1)
+  
+  if [[ -n "$match" ]]; then
+    if SwitchAudioSource -s "$match" -t input 2>/dev/null; then
+      msg_success "Input device set to: $match"
+      return 0
+    fi
+  fi
+  
+  msg_error "Device not found: $device_name"
+  msg_info "Run 'fc audio list-inputs' to see available devices."
+  return 1
+}
+
+# --- Current Status ---------------------------------------------------------
+
+do_current() {
+  echo ""
+  msg_info "Current Audio Status:"
+  echo ""
+  
+  # Volume
+  local volume
+  volume=$(get_volume 2>/dev/null || echo "?")
+  local muted
+  muted=$(get_mute_status 2>/dev/null || echo "?")
+  
+  echo "  Volume: ${volume}%"
+  echo "  Muted:  $muted"
+  echo ""
+  
+  # Devices
+  if command -v SwitchAudioSource &>/dev/null; then
+    local output_device
+    output_device=$(SwitchAudioSource -c 2>/dev/null || echo "Unknown")
+    local input_device
+    input_device=$(SwitchAudioSource -c -t input 2>/dev/null || echo "Unknown")
+    
+    echo "  Output: $output_device"
+    echo "  Input:  $input_device"
+  else
+    echo "  (Install switchaudio-osx for device info)"
+  fi
+  echo ""
+}
+
+# --- Main -------------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+  
+  local action="$1"
+  shift
+  
+  case "$action" in
+    volume)
+      if [[ -z "$1" ]]; then
+        echo "Current volume: $(get_volume)%"
+      else
+        set_volume "$1"
+      fi
+      ;;
+    mute)        do_mute ;;
+    unmute)      do_unmute ;;
+    toggle)      do_toggle_mute ;;
+    list-outputs) do_list_outputs ;;
+    list-inputs)  do_list_inputs ;;
+    set-output)   do_set_output "$1" ;;
+    set-input)    do_set_input "$1" ;;
+    current)      do_current ;;
+    *)
+      die "Unknown action '$action'. Run 'fc audio --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

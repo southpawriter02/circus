@@ -1,0 +1,272 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-app-settings
+#
+# DESCRIPTION:  Application settings management for macOS.
+#               Apply, list, and manage defaults scripts for applications.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ----------------------------------------------------------
+readonly DEFAULTS_DIR="$DOTFILES_ROOT/defaults"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc app-settings <action> [options]"
+  echo ""
+  msg_info "Manage macOS application settings via defaults scripts."
+  echo ""
+  msg_info "Actions:"
+  echo "  apply [category] [app]   Apply settings (all, category, or specific app)"
+  echo "  list [category]          List available settings scripts"
+  echo "  show <category> <app>    Show what a settings script does"
+  echo "  categories               List available categories"
+  echo ""
+  msg_info "Categories:"
+  echo "  applications    Application-specific settings (38+)"
+  echo "  system          System-level settings"
+  echo "  interface       UI and appearance settings"
+  echo "  accessibility   Accessibility settings"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc app-settings list                    # List all"
+  echo "  fc app-settings list applications       # List app settings"
+  echo "  fc app-settings apply applications finder"
+  echo "  fc app-settings apply system            # Apply all system settings"
+  echo "  fc app-settings show applications safari"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+get_script_description() {
+  local script="$1"
+  # Extract description from file header
+  grep -m1 "^# DESCRIPTION:" "$script" 2>/dev/null | sed 's/# DESCRIPTION:[[:space:]]*//' || echo "No description"
+}
+
+count_defaults_commands() {
+  local script="$1"
+  grep -c "defaults write\|defaults delete" "$script" 2>/dev/null || echo "0"
+}
+
+# --- Actions ----------------------------------------------------------------
+
+do_categories() {
+  echo ""
+  msg_info "Available Categories:"
+  echo ""
+  
+  for dir in "$DEFAULTS_DIR"/*/; do
+    if [[ -d "$dir" ]]; then
+      local category
+      category=$(basename "$dir")
+      local count
+      count=$(find "$dir" -name "*.sh" -type f 2>/dev/null | wc -l | tr -d ' ')
+      echo "  📁 $category ($count scripts)"
+    fi
+  done
+  echo ""
+}
+
+do_list() {
+  local category="$1"
+  
+  echo ""
+  
+  if [[ -z "$category" ]]; then
+    # List all categories and their scripts
+    msg_info "Available Settings Scripts:"
+    echo ""
+    
+    for dir in "$DEFAULTS_DIR"/*/; do
+      if [[ -d "$dir" ]]; then
+        local cat_name
+        cat_name=$(basename "$dir")
+        echo "📁 $cat_name:"
+        
+        for script in "$dir"*.sh; do
+          if [[ -f "$script" ]]; then
+            local name
+            name=$(basename "$script" .sh)
+            local cmd_count
+            cmd_count=$(count_defaults_commands "$script")
+            printf "    %-25s (%s settings)\n" "$name" "$cmd_count"
+          fi
+        done
+        echo ""
+      fi
+    done
+  else
+    # List scripts in specific category
+    local category_dir="$DEFAULTS_DIR/$category"
+    
+    if [[ ! -d "$category_dir" ]]; then
+      die "Category '$category' not found. Run 'fc app-settings categories' to see available categories."
+    fi
+    
+    msg_info "Settings in '$category':"
+    echo ""
+    
+    for script in "$category_dir"/*.sh; do
+      if [[ -f "$script" ]]; then
+        local name
+        name=$(basename "$script" .sh)
+        local desc
+        desc=$(get_script_description "$script")
+        local cmd_count
+        cmd_count=$(count_defaults_commands "$script")
+        printf "  %-20s %s (%s settings)\n" "$name" "$desc" "$cmd_count"
+      fi
+    done
+    echo ""
+  fi
+}
+
+do_show() {
+  local category="$1"
+  local app="$2"
+  
+  if [[ -z "$category" ]] || [[ -z "$app" ]]; then
+    die "Usage: fc app-settings show <category> <app>"
+  fi
+  
+  local script="$DEFAULTS_DIR/$category/$app.sh"
+  
+  if [[ ! -f "$script" ]]; then
+    die "Script not found: $script"
+  fi
+  
+  echo ""
+  msg_info "Settings script: $category/$app.sh"
+  echo ""
+  
+  # Show description
+  local desc
+  desc=$(get_script_description "$script")
+  echo "Description: $desc"
+  echo ""
+  
+  # Show defaults commands
+  msg_info "Defaults commands:"
+  grep -E "^[[:space:]]*(defaults write|defaults delete)" "$script" | \
+    sed 's/^[[:space:]]*/  /' | head -30
+  
+  local total
+  total=$(count_defaults_commands "$script")
+  if [[ "$total" -gt 30 ]]; then
+    echo "  ... and $((total - 30)) more"
+  fi
+  echo ""
+}
+
+do_apply() {
+  local category="$1"
+  local app="$2"
+  
+  if [[ -z "$category" ]]; then
+    # Apply all
+    msg_info "Applying ALL settings..."
+    echo ""
+    
+    local count=0
+    for dir in "$DEFAULTS_DIR"/*/; do
+      if [[ -d "$dir" ]]; then
+        for script in "$dir"*.sh; do
+          if [[ -f "$script" ]] && [[ -x "$script" ]]; then
+            local name
+            name=$(basename "$script" .sh)
+            local cat_name
+            cat_name=$(basename "$dir")
+            echo "  Applying $cat_name/$name..."
+            if bash "$script" 2>/dev/null; then
+              ((count++))
+            fi
+          fi
+        done
+      fi
+    done
+    
+    echo ""
+    msg_success "Applied $count settings scripts."
+    msg_info "Some changes may require logout or app restart."
+    
+  elif [[ -z "$app" ]]; then
+    # Apply entire category
+    local category_dir="$DEFAULTS_DIR/$category"
+    
+    if [[ ! -d "$category_dir" ]]; then
+      die "Category '$category' not found."
+    fi
+    
+    msg_info "Applying all '$category' settings..."
+    echo ""
+    
+    local count=0
+    for script in "$category_dir"/*.sh; do
+      if [[ -f "$script" ]]; then
+        local name
+        name=$(basename "$script" .sh)
+        echo "  Applying $name..."
+        if bash "$script" 2>/dev/null; then
+          ((count++))
+        fi
+      fi
+    done
+    
+    echo ""
+    msg_success "Applied $count settings scripts from '$category'."
+    
+  else
+    # Apply specific app
+    local script="$DEFAULTS_DIR/$category/$app.sh"
+    
+    if [[ ! -f "$script" ]]; then
+      die "Script not found: $script"
+    fi
+    
+    msg_info "Applying settings for $app..."
+    
+    if bash "$script"; then
+      msg_success "Settings applied for $app."
+    else
+      msg_error "Failed to apply settings for $app."
+      return 1
+    fi
+  fi
+  
+  # Suggest refreshing
+  echo ""
+  msg_info "To see changes, you may need to:"
+  echo "  killall Finder    # For Finder settings"
+  echo "  killall Dock      # For Dock settings"
+  echo "  Log out/in        # For system settings"
+}
+
+# --- Main -------------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+  
+  local action="$1"
+  shift
+  
+  case "$action" in
+    apply)      do_apply "$@" ;;
+    list)       do_list "$@" ;;
+    show)       do_show "$@" ;;
+    categories) do_categories ;;
+    *)
+      die "Unknown action '$action'. Run 'fc app-settings --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

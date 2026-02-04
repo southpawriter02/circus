@@ -1,0 +1,284 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-self-update
+#
+# DESCRIPTION:  Self-update mechanism for the Dotfiles Flying Circus.
+#               Safely updates the framework with stash, migration, and
+#               dependency handling.
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ----------------------------------------------------------
+readonly MIGRATIONS_DIR="$DOTFILES_ROOT/migrations"
+readonly VERSION_FILE="$DOTFILES_ROOT/VERSION"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc self-update [options]"
+  echo ""
+  msg_info "Update the Dotfiles Flying Circus framework."
+  echo ""
+  msg_info "Options:"
+  echo "  --check       Check if an update is available"
+  echo "  --force       Force update even with uncommitted changes"
+  echo "  --no-deps     Skip dependency installation"
+  echo "  --dry-run     Show what would be done without making changes"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc self-update           # Perform full update"
+  echo "  fc self-update --check   # Check for updates"
+  echo "  fc self-update --force   # Update with local changes"
+  echo ""
+  exit 0
+}
+
+# --- Helper Functions -------------------------------------------------------
+
+get_current_version() {
+  if [[ -f "$VERSION_FILE" ]]; then
+    cat "$VERSION_FILE"
+  else
+    git -C "$DOTFILES_ROOT" describe --tags --always 2>/dev/null || echo "unknown"
+  fi
+}
+
+get_remote_version() {
+  git -C "$DOTFILES_ROOT" fetch --tags --quiet 2>/dev/null
+  git -C "$DOTFILES_ROOT" describe --tags origin/main 2>/dev/null || \
+    git -C "$DOTFILES_ROOT" rev-parse --short origin/main 2>/dev/null || echo "unknown"
+}
+
+has_uncommitted_changes() {
+  [[ -n "$(git -C "$DOTFILES_ROOT" status --porcelain 2>/dev/null)" ]]
+}
+
+get_commits_behind() {
+  git -C "$DOTFILES_ROOT" rev-list HEAD..origin/main --count 2>/dev/null || echo "0"
+}
+
+# --- Actions ----------------------------------------------------------------
+
+do_check() {
+  msg_info "Checking for updates..."
+  echo ""
+  
+  # Fetch latest
+  git -C "$DOTFILES_ROOT" fetch --quiet 2>/dev/null
+  
+  local current_version
+  current_version=$(get_current_version)
+  local remote_version
+  remote_version=$(get_remote_version)
+  local commits_behind
+  commits_behind=$(get_commits_behind)
+  
+  echo "  Current version: $current_version"
+  echo "  Remote version:  $remote_version"
+  echo "  Commits behind:  $commits_behind"
+  echo ""
+  
+  if [[ "$commits_behind" -eq 0 ]]; then
+    msg_success "You are up to date!"
+    return 0
+  else
+    msg_info "Update available: $commits_behind commits behind."
+    echo ""
+    
+    # Show recent commits
+    msg_info "Recent changes:"
+    git -C "$DOTFILES_ROOT" log HEAD..origin/main --oneline -10 2>/dev/null | sed 's/^/  /'
+    echo ""
+    
+    msg_info "Run 'fc self-update' to update."
+    return 1
+  fi
+}
+
+do_update() {
+  local force="$1"
+  local no_deps="$2"
+  local dry_run="$3"
+  
+  msg_info "Starting self-update..."
+  echo ""
+  
+  # Check for uncommitted changes
+  if has_uncommitted_changes; then
+    if [[ "$force" != "true" ]]; then
+      msg_warning "You have uncommitted changes:"
+      git -C "$DOTFILES_ROOT" status --short | sed 's/^/  /'
+      echo ""
+      msg_error "Commit or stash your changes first, or use --force to stash automatically."
+      return 1
+    else
+      msg_info "Stashing uncommitted changes..."
+      if [[ "$dry_run" != "true" ]]; then
+        git -C "$DOTFILES_ROOT" stash push -m "fc-self-update auto-stash $(date +%Y%m%d-%H%M%S)"
+      fi
+    fi
+  fi
+  
+  # Fetch latest
+  msg_info "Fetching latest changes..."
+  if [[ "$dry_run" != "true" ]]; then
+    git -C "$DOTFILES_ROOT" fetch --all --prune --quiet
+  fi
+  
+  # Check if update needed
+  local commits_behind
+  commits_behind=$(get_commits_behind)
+  
+  if [[ "$commits_behind" -eq 0 ]]; then
+    msg_success "Already up to date!"
+    return 0
+  fi
+  
+  # Get current version for migrations
+  local old_version
+  old_version=$(get_current_version)
+  
+  # Show what will be updated
+  msg_info "Changes to apply ($commits_behind commits):"
+  git -C "$DOTFILES_ROOT" log HEAD..origin/main --oneline | sed 's/^/  /'
+  echo ""
+  
+  if [[ "$dry_run" == "true" ]]; then
+    msg_info "[DRY RUN] Would pull changes and run migrations."
+    return 0
+  fi
+  
+  # Pull changes
+  msg_info "Pulling changes..."
+  if ! git -C "$DOTFILES_ROOT" pull --rebase origin main; then
+    msg_error "Pull failed. You may need to resolve conflicts manually."
+    msg_info "Run 'git -C $DOTFILES_ROOT status' to see the issue."
+    return 1
+  fi
+  
+  # Get new version
+  local new_version
+  new_version=$(get_current_version)
+  
+  # Run migrations
+  if [[ -d "$MIGRATIONS_DIR" ]]; then
+    msg_info "Checking for migrations..."
+    run_migrations "$old_version" "$new_version"
+  fi
+  
+  # Install new dependencies
+  if [[ "$no_deps" != "true" ]]; then
+    msg_info "Checking for new dependencies..."
+    
+    # Check if Brewfile changed
+    if git -C "$DOTFILES_ROOT" diff "$old_version..$new_version" --name-only 2>/dev/null | grep -q "Brewfile"; then
+      msg_info "Brewfile changed. Installing new dependencies..."
+      if command -v brew &>/dev/null; then
+        brew bundle --file="$DOTFILES_ROOT/Brewfile" --no-lock 2>/dev/null || true
+      fi
+    fi
+  fi
+  
+  # Pop stashed changes if we stashed
+  if [[ "$force" == "true" ]] && has_uncommitted_changes; then
+    echo ""
+    msg_info "Restoring stashed changes..."
+    git -C "$DOTFILES_ROOT" stash pop --quiet 2>/dev/null || \
+      msg_warning "Could not auto-restore stash. Run 'git stash pop' manually."
+  fi
+  
+  echo ""
+  msg_success "Update complete!"
+  echo ""
+  echo "  Previous version: $old_version"
+  echo "  Current version:  $new_version"
+  echo ""
+  
+  # Show CHANGELOG excerpt if available
+  if [[ -f "$DOTFILES_ROOT/CHANGELOG.md" ]]; then
+    msg_info "Recent changes (from CHANGELOG.md):"
+    head -50 "$DOTFILES_ROOT/CHANGELOG.md" | grep -A 20 "^## \[" | head -25 | sed 's/^/  /'
+  fi
+}
+
+run_migrations() {
+  local old_version="$1"
+  local new_version="$2"
+  
+  if [[ ! -d "$MIGRATIONS_DIR" ]]; then
+    return 0
+  fi
+  
+  # Find and run migrations between versions
+  local migration_count=0
+  
+  for migration in "$MIGRATIONS_DIR"/*.sh; do
+    if [[ -f "$migration" ]] && [[ -x "$migration" ]]; then
+      local migration_name
+      migration_name=$(basename "$migration")
+      
+      msg_info "  Running migration: $migration_name"
+      if bash "$migration"; then
+        ((migration_count++))
+      else
+        msg_warning "  Migration $migration_name had issues (non-fatal)"
+      fi
+    fi
+  done
+  
+  if [[ $migration_count -gt 0 ]]; then
+    msg_success "Ran $migration_count migrations."
+  fi
+}
+
+# --- Main -------------------------------------------------------------------
+main() {
+  local check_only=false
+  local force=false
+  local no_deps=false
+  local dry_run=false
+  
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --help)
+        usage
+        ;;
+      --check)
+        check_only=true
+        shift
+        ;;
+      --force)
+        force=true
+        shift
+        ;;
+      --no-deps)
+        no_deps=true
+        shift
+        ;;
+      --dry-run)
+        dry_run=true
+        shift
+        ;;
+      *)
+        die "Unknown option '$1'. Run 'fc self-update --help' for usage."
+        ;;
+    esac
+  done
+  
+  # Ensure we're in a git repo
+  if ! git -C "$DOTFILES_ROOT" rev-parse --git-dir &>/dev/null; then
+    die "Not a git repository. Cannot self-update."
+  fi
+  
+  if [[ "$check_only" == "true" ]]; then
+    do_check
+  else
+    do_update "$force" "$no_deps" "$dry_run"
+  fi
+}
+
+main "$@"

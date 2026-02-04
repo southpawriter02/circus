@@ -1,0 +1,282 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-display
+#
+# DESCRIPTION:  Display management for macOS.
+#               Manage resolutions, arrangements, and save/restore layouts.
+#
+# REQUIRES:
+#   - macOS
+#   - displayplacer (brew install displayplacer) for advanced control
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ----------------------------------------------------------
+readonly DISPLAY_CONFIG="$HOME/.config/circus/displays.conf"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc display <action> [options]"
+  echo ""
+  msg_info "Manage display settings, resolutions, and layouts."
+  echo ""
+  msg_info "Actions:"
+  echo "  list               List connected displays"
+  echo "  info               Show detailed display information"
+  echo "  set-resolution <display> <resolution>  Set resolution"
+  echo "  save-layout <name> Save current layout as profile"
+  echo "  apply-layout <name> Apply a saved layout"
+  echo "  list-layouts       List saved layouts"
+  echo "  mirror             Mirror all displays"
+  echo "  extend             Extend desktop to all displays"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc display list"
+  echo "  fc display save-layout work"
+  echo "  fc display apply-layout work"
+  echo "  fc display info"
+  echo ""
+  exit 0
+}
+
+# --- Dependency Check -------------------------------------------------------
+
+check_displayplacer() {
+  if ! command -v displayplacer &>/dev/null; then
+    return 1
+  fi
+  return 0
+}
+
+# --- Display Information ----------------------------------------------------
+
+do_list() {
+  echo ""
+  msg_info "Connected Displays:"
+  echo ""
+  
+  if check_displayplacer; then
+    displayplacer list 2>/dev/null | grep -E "^Persistent|^Resolution|^Type" | \
+      sed 's/Persistent screen id: /Display: /' | \
+      sed 's/Resolution: /  Resolution: /' | \
+      sed 's/Type: /  Type: /'
+  else
+    # Fallback to system_profiler
+    system_profiler SPDisplaysDataType 2>/dev/null | \
+      grep -E "Display Type:|Resolution:|Main Display:|Mirror:|Retina" | \
+      sed 's/^[ ]*/  /'
+  fi
+  echo ""
+}
+
+do_info() {
+  echo ""
+  msg_info "Display Information:"
+  echo ""
+  
+  if check_displayplacer; then
+    displayplacer list 2>/dev/null
+  else
+    system_profiler SPDisplaysDataType 2>/dev/null
+  fi
+  echo ""
+  
+  if ! check_displayplacer; then
+    echo ""
+    msg_info "Tip: Install displayplacer for more control:"
+    echo "  brew install displayplacer"
+  fi
+}
+
+# --- Layout Management ------------------------------------------------------
+
+do_save_layout() {
+  local name="$1"
+  
+  if [[ -z "$name" ]]; then
+    die "Please specify a name for the layout."
+  fi
+  
+  if ! check_displayplacer; then
+    msg_error "displayplacer is required to save layouts."
+    msg_info "Install with: brew install displayplacer"
+    return 1
+  fi
+  
+  mkdir -p "$(dirname "$DISPLAY_CONFIG")"
+  
+  # Get current layout command
+  local layout_cmd
+  layout_cmd=$(displayplacer list 2>/dev/null | grep "displayplacer" | tail -1)
+  
+  if [[ -z "$layout_cmd" ]]; then
+    die "Could not capture current display layout."
+  fi
+  
+  # Remove existing layout with same name
+  if [[ -f "$DISPLAY_CONFIG" ]]; then
+    sed -i.bak "/^\[$name\]/,/^\[/d" "$DISPLAY_CONFIG" 2>/dev/null || true
+    rm -f "${DISPLAY_CONFIG}.bak"
+  fi
+  
+  # Save layout
+  {
+    echo "[$name]"
+    echo "# Saved on $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "command=$layout_cmd"
+    echo ""
+  } >> "$DISPLAY_CONFIG"
+  
+  msg_success "Layout '$name' saved."
+}
+
+do_apply_layout() {
+  local name="$1"
+  
+  if [[ -z "$name" ]]; then
+    die "Please specify a layout name."
+  fi
+  
+  if ! check_displayplacer; then
+    msg_error "displayplacer is required to apply layouts."
+    msg_info "Install with: brew install displayplacer"
+    return 1
+  fi
+  
+  if [[ ! -f "$DISPLAY_CONFIG" ]]; then
+    die "No saved layouts found. Use 'fc display save-layout <name>' first."
+  fi
+  
+  # Find layout command
+  local layout_cmd
+  layout_cmd=$(grep -A 2 "^\[$name\]" "$DISPLAY_CONFIG" 2>/dev/null | grep "^command=" | cut -d= -f2-)
+  
+  if [[ -z "$layout_cmd" ]]; then
+    die "Layout '$name' not found. Run 'fc display list-layouts' to see available layouts."
+  fi
+  
+  msg_info "Applying layout: $name"
+  
+  # Execute the displayplacer command
+  eval "$layout_cmd"
+  
+  msg_success "Layout '$name' applied."
+}
+
+do_list_layouts() {
+  echo ""
+  msg_info "Saved Display Layouts:"
+  echo ""
+  
+  if [[ ! -f "$DISPLAY_CONFIG" ]]; then
+    echo "  No layouts saved yet."
+    echo "  Use 'fc display save-layout <name>' to save a layout."
+  else
+    grep "^\[" "$DISPLAY_CONFIG" 2>/dev/null | tr -d '[]' | while read -r layout; do
+      echo "  📺 $layout"
+    done
+  fi
+  echo ""
+}
+
+# --- Display Modes ----------------------------------------------------------
+
+do_mirror() {
+  if ! check_displayplacer; then
+    msg_warning "displayplacer not installed. Using system preferences..."
+    msg_info "Opening System Preferences > Displays..."
+    open "x-apple.systempreferences:com.apple.preference.displays"
+    return 0
+  fi
+  
+  msg_info "Enabling display mirroring..."
+  
+  # Get main display ID
+  local main_display
+  main_display=$(displayplacer list 2>/dev/null | grep "Persistent screen id" | head -1 | awk '{print $NF}')
+  
+  if [[ -n "$main_display" ]]; then
+    displayplacer "id:$main_display mirror:on" 2>/dev/null || \
+      msg_warning "Mirror command may not be supported on this configuration."
+  fi
+  
+  msg_success "Mirror mode enabled (if supported)."
+}
+
+do_extend() {
+  if ! check_displayplacer; then
+    msg_warning "displayplacer not installed. Using system preferences..."
+    open "x-apple.systempreferences:com.apple.preference.displays"
+    return 0
+  fi
+  
+  msg_info "Extending desktop to all displays..."
+  
+  # Get main display ID
+  local main_display
+  main_display=$(displayplacer list 2>/dev/null | grep "Persistent screen id" | head -1 | awk '{print $NF}')
+  
+  if [[ -n "$main_display" ]]; then
+    displayplacer "id:$main_display mirror:off" 2>/dev/null || \
+      msg_warning "Extend command may not be supported on this configuration."
+  fi
+  
+  msg_success "Extended desktop mode enabled."
+}
+
+do_set_resolution() {
+  local display_id="$1"
+  local resolution="$2"
+  
+  if [[ -z "$display_id" ]] || [[ -z "$resolution" ]]; then
+    die "Usage: fc display set-resolution <display_id> <resolution>"
+  fi
+  
+  if ! check_displayplacer; then
+    msg_error "displayplacer is required to change resolutions."
+    msg_info "Install with: brew install displayplacer"
+    return 1
+  fi
+  
+  msg_info "Setting display $display_id to resolution $resolution..."
+  
+  displayplacer "id:$display_id res:$resolution" 2>/dev/null
+  
+  if [[ $? -eq 0 ]]; then
+    msg_success "Resolution changed."
+  else
+    msg_error "Failed to change resolution. Check display ID and resolution are valid."
+    msg_info "Run 'fc display info' to see available options."
+  fi
+}
+
+# --- Main -------------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+  
+  local action="$1"
+  shift
+  
+  case "$action" in
+    list)           do_list ;;
+    info)           do_info ;;
+    set-resolution) do_set_resolution "$1" "$2" ;;
+    save-layout)    do_save_layout "$1" ;;
+    apply-layout)   do_apply_layout "$1" ;;
+    list-layouts)   do_list_layouts ;;
+    mirror)         do_mirror ;;
+    extend)         do_extend ;;
+    *)
+      die "Unknown action '$action'. Run 'fc display --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

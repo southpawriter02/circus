@@ -54,6 +54,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Proof-of-concept: `roles/personal/config.yaml`
   - Guide: `docs/YAML_CONFIGURATION.md`
 
+- **New `fc power`** - Power management profiles (Feature #34):
+  - `switch <profile>` - Switch power profile (default, battery-saver, max-performance, presentation)
+  - `status` - Show current power settings
+  - `save <name>` - Save custom profile
+  - Uses `pmset` for system power control
+
+- **New `fc audio`** - Audio device control (Feature #49):
+  - `volume [level]` - Get or set volume (0-100)
+  - `mute/unmute/toggle` - Mute control
+  - `set-output/set-input <device>` - Switch audio devices with fuzzy matching
+  - Requires `switchaudio-osx` for device switching
+
+- **New `fc display`** - Display management (Feature #50):
+  - `list/info` - Show connected displays
+  - `save-layout/apply-layout <name>` - Save and restore monitor arrangements
+  - `mirror/extend` - Display modes
+  - Requires `displayplacer` for advanced features
+
+- **New `fc app-settings`** - Application settings management (Feature #40):
+  - `apply [category] [app]` - Apply defaults scripts
+  - `list [category]` - List available settings
+  - `show <category> <app>` - Preview what a script does
+  - `categories` - List categories (applications, system, interface, accessibility)
+
+- **New `fc self-update`** - Framework self-update mechanism (Feature #42):
+  - `--check` - Check for available updates
+  - `--force` - Update even with uncommitted changes
+  - `--dry-run` - Preview without changing
+  - Handles stashing, migrations, and dependency updates
+
+- **New `fc notify`** - macOS notification integration (Feature #43):
+  - Send native macOS notifications from scripts
+  - Supports terminal-notifier and osascript backends
+  - Style presets: `--success`, `--error`, `--warning`
+  - Configurable via `~/.config/circus/notify.conf`
+  - Actions: `test`, `config`, `enable`, `disable`
+
 ## [1.5.2] - 2026-01-05
 
 

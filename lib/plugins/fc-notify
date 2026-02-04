@@ -1,0 +1,341 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-notify
+#
+# DESCRIPTION:  macOS notification integration for the Circus framework.
+#               Send native notifications from scripts and long-running commands.
+#
+# BACKENDS:     Supports multiple notification methods:
+#               1. terminal-notifier (best, install with: brew install terminal-notifier)
+#               2. osascript (built-in, basic)
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ----------------------------------------------------------
+readonly NOTIFY_CONFIG="$HOME/.config/circus/notify.conf"
+readonly NOTIFY_ICON="$DOTFILES_ROOT/assets/icon.png"
+
+# Default settings
+NOTIFY_ENABLED="${NOTIFY_ENABLED:-true}"
+NOTIFY_SOUND="${NOTIFY_SOUND:-default}"
+
+# Load config if exists
+if [[ -f "$NOTIFY_CONFIG" ]]; then
+  # shellcheck source=/dev/null
+  source "$NOTIFY_CONFIG"
+fi
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc notify [options] <message>"
+  echo ""
+  msg_info "Send macOS notifications from the command line."
+  echo ""
+  msg_info "Options:"
+  echo "  -t, --title <title>      Notification title (default: 'Circus')"
+  echo "  -s, --subtitle <text>    Subtitle text"
+  echo "  -m, --message <text>     Message body (also accepts as positional arg)"
+  echo "  --sound <name>           Sound name (default, Basso, Blow, etc.)"
+  echo "  --no-sound               Disable notification sound"
+  echo "  --success                Use success styling"
+  echo "  --error                  Use error styling"
+  echo "  --warning                Use warning styling"
+  echo "  --open <url>             URL to open when clicked"
+  echo "  --execute <command>      Command to run when clicked"
+  echo ""
+  msg_info "Actions:"
+  echo "  test                     Send a test notification"
+  echo "  config                   Show current configuration"
+  echo "  enable                   Enable notifications"
+  echo "  disable                  Disable notifications"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc notify 'Backup complete!'"
+  echo "  fc notify -t 'Build' -m 'Compilation finished' --success"
+  echo "  fc notify --error 'Deploy failed' --sound Basso"
+  echo "  fc notify -t 'Task Done' --open 'https://example.com'"
+  echo ""
+  exit 0
+}
+
+# --- Backend Detection ------------------------------------------------------
+
+get_notification_backend() {
+  if command -v terminal-notifier &>/dev/null; then
+    echo "terminal-notifier"
+  else
+    echo "osascript"
+  fi
+}
+
+# --- Notification Functions -------------------------------------------------
+
+send_terminal_notifier() {
+  local title="$1"
+  local subtitle="$2"
+  local message="$3"
+  local sound="$4"
+  local open_url="$5"
+  local execute_cmd="$6"
+  
+  local args=()
+  args+=(-title "$title")
+  
+  [[ -n "$subtitle" ]] && args+=(-subtitle "$subtitle")
+  [[ -n "$message" ]] && args+=(-message "$message")
+  [[ -n "$sound" ]] && args+=(-sound "$sound")
+  [[ -n "$open_url" ]] && args+=(-open "$open_url")
+  [[ -n "$execute_cmd" ]] && args+=(-execute "$execute_cmd")
+  
+  # Add icon if it exists
+  if [[ -f "$NOTIFY_ICON" ]]; then
+    args+=(-appIcon "$NOTIFY_ICON")
+  fi
+  
+  # Add group for bundling related notifications
+  args+=(-group "circus")
+  
+  terminal-notifier "${args[@]}" &>/dev/null
+}
+
+send_osascript() {
+  local title="$1"
+  local subtitle="$2"
+  local message="$3"
+  local sound="$4"
+  
+  # Build notification text
+  local full_message="$message"
+  if [[ -n "$subtitle" ]]; then
+    full_message="$subtitle: $message"
+  fi
+  
+  # Send notification via AppleScript
+  osascript -e "display notification \"$full_message\" with title \"$title\"${sound:+ sound name \"$sound\"}" 2>/dev/null
+}
+
+send_notification() {
+  local title="$1"
+  local subtitle="$2"
+  local message="$3"
+  local sound="$4"
+  local open_url="$5"
+  local execute_cmd="$6"
+  
+  # Check if notifications are enabled
+  if [[ "$NOTIFY_ENABLED" != "true" ]]; then
+    return 0
+  fi
+  
+  local backend
+  backend=$(get_notification_backend)
+  
+  case "$backend" in
+    terminal-notifier)
+      send_terminal_notifier "$title" "$subtitle" "$message" "$sound" "$open_url" "$execute_cmd"
+      ;;
+    osascript)
+      send_osascript "$title" "$subtitle" "$message" "$sound"
+      ;;
+  esac
+}
+
+# --- Preset Notifications ---------------------------------------------------
+
+notify_success() {
+  local message="$1"
+  send_notification "✅ Circus" "" "$message" "${NOTIFY_SOUND:-default}" "" ""
+}
+
+notify_error() {
+  local message="$1"
+  send_notification "❌ Circus" "" "$message" "Basso" "" ""
+}
+
+notify_warning() {
+  local message="$1"
+  send_notification "⚠️ Circus" "" "$message" "Purr" "" ""
+}
+
+# --- Actions ----------------------------------------------------------------
+
+do_test() {
+  local backend
+  backend=$(get_notification_backend)
+  
+  msg_info "Testing notification system..."
+  echo "  Backend: $backend"
+  echo "  Enabled: $NOTIFY_ENABLED"
+  echo ""
+  
+  send_notification "Circus Test" "Notification System" "If you see this, notifications work!" "$NOTIFY_SOUND" "" ""
+  
+  msg_success "Test notification sent!"
+  
+  if [[ "$backend" == "osascript" ]]; then
+    echo ""
+    msg_info "Tip: Install terminal-notifier for better notifications:"
+    echo "  brew install terminal-notifier"
+  fi
+}
+
+do_config() {
+  echo ""
+  msg_info "Notification Configuration:"
+  echo ""
+  
+  local backend
+  backend=$(get_notification_backend)
+  
+  echo "  Backend:  $backend"
+  echo "  Enabled:  $NOTIFY_ENABLED"
+  echo "  Sound:    ${NOTIFY_SOUND:-default}"
+  echo "  Config:   $NOTIFY_CONFIG"
+  echo ""
+  
+  if [[ ! -f "$NOTIFY_CONFIG" ]]; then
+    msg_info "No config file. Using defaults."
+    echo ""
+    echo "  Create config with:"
+    echo "    mkdir -p ~/.config/circus"
+    echo "    echo 'NOTIFY_ENABLED=true' > ~/.config/circus/notify.conf"
+    echo "    echo 'NOTIFY_SOUND=default' >> ~/.config/circus/notify.conf"
+  fi
+  echo ""
+}
+
+do_enable() {
+  mkdir -p "$(dirname "$NOTIFY_CONFIG")"
+  
+  if [[ -f "$NOTIFY_CONFIG" ]]; then
+    sed -i '' 's/NOTIFY_ENABLED=.*/NOTIFY_ENABLED=true/' "$NOTIFY_CONFIG" 2>/dev/null || \
+      echo "NOTIFY_ENABLED=true" >> "$NOTIFY_CONFIG"
+  else
+    echo "NOTIFY_ENABLED=true" > "$NOTIFY_CONFIG"
+  fi
+  
+  msg_success "Notifications enabled."
+}
+
+do_disable() {
+  mkdir -p "$(dirname "$NOTIFY_CONFIG")"
+  
+  if [[ -f "$NOTIFY_CONFIG" ]]; then
+    sed -i '' 's/NOTIFY_ENABLED=.*/NOTIFY_ENABLED=false/' "$NOTIFY_CONFIG" 2>/dev/null || \
+      echo "NOTIFY_ENABLED=false" >> "$NOTIFY_CONFIG"
+  else
+    echo "NOTIFY_ENABLED=false" > "$NOTIFY_CONFIG"
+  fi
+  
+  msg_success "Notifications disabled."
+}
+
+# --- Main -------------------------------------------------------------------
+main() {
+  # Handle help
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+    usage
+  fi
+  
+  # Handle actions
+  case "$1" in
+    test)   do_test; return ;;
+    config) do_config; return ;;
+    enable) do_enable; return ;;
+    disable) do_disable; return ;;
+  esac
+  
+  # Parse options
+  local title="Circus"
+  local subtitle=""
+  local message=""
+  local sound="$NOTIFY_SOUND"
+  local open_url=""
+  local execute_cmd=""
+  local style=""
+  
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -t|--title)
+        title="$2"
+        shift 2
+        ;;
+      -s|--subtitle)
+        subtitle="$2"
+        shift 2
+        ;;
+      -m|--message)
+        message="$2"
+        shift 2
+        ;;
+      --sound)
+        sound="$2"
+        shift 2
+        ;;
+      --no-sound)
+        sound=""
+        shift
+        ;;
+      --success)
+        style="success"
+        shift
+        ;;
+      --error)
+        style="error"
+        shift
+        ;;
+      --warning)
+        style="warning"
+        shift
+        ;;
+      --open)
+        open_url="$2"
+        shift 2
+        ;;
+      --execute)
+        execute_cmd="$2"
+        shift 2
+        ;;
+      -*)
+        die "Unknown option: $1"
+        ;;
+      *)
+        # Positional argument is the message
+        if [[ -z "$message" ]]; then
+          message="$1"
+        fi
+        shift
+        ;;
+    esac
+  done
+  
+  if [[ -z "$message" ]]; then
+    die "Please provide a message."
+  fi
+  
+  # Apply style presets
+  case "$style" in
+    success)
+      title="✅ $title"
+      sound="${sound:-default}"
+      ;;
+    error)
+      title="❌ $title"
+      sound="${sound:-Basso}"
+      ;;
+    warning)
+      title="⚠️ $title"
+      sound="${sound:-Purr}"
+      ;;
+  esac
+  
+  # Send notification
+  send_notification "$title" "$subtitle" "$message" "$sound" "$open_url" "$execute_cmd"
+}
+
+main "$@"

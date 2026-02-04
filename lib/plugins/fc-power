@@ -1,0 +1,257 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#
+# FILE:         fc-power
+#
+# DESCRIPTION:  Power management profiles for macOS.
+#               Quickly switch between performance and battery-saving modes.
+#
+# REQUIRES:
+#   - macOS (uses pmset)
+#   - sudo privileges for changing power settings
+#
+# ==============================================================================
+
+# --- Initialization ---------------------------------------------------------
+source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
+
+# --- Configuration ----------------------------------------------------------
+readonly POWER_CONFIG="$HOME/.config/circus/power.conf"
+
+# --- Help and Usage ---------------------------------------------------------
+usage() {
+  msg_info "Usage: fc power <action> [options]"
+  echo ""
+  msg_info "Manage power profiles for performance and battery optimization."
+  echo ""
+  msg_info "Actions:"
+  echo "  switch <profile>   Switch to a power profile"
+  echo "  status             Show current power settings"
+  echo "  list               List available profiles"
+  echo "  save <name>        Save current settings as custom profile"
+  echo ""
+  msg_info "Built-in Profiles:"
+  echo "  default            Standard macOS power settings"
+  echo "  battery-saver      Maximize battery life"
+  echo "  max-performance    Maximum performance (plugged in)"
+  echo "  presentation       Prevent sleep during presentations"
+  echo ""
+  msg_info "Examples:"
+  echo "  fc power switch battery-saver"
+  echo "  fc power switch max-performance"
+  echo "  fc power status"
+  echo ""
+  exit 0
+}
+
+# --- Profile Definitions ----------------------------------------------------
+
+apply_default_profile() {
+  msg_info "Applying default power profile..."
+  
+  # Reset to macOS defaults
+  sudo pmset -a displaysleep 10
+  sudo pmset -a disksleep 10
+  sudo pmset -a sleep 0
+  sudo pmset -a womp 1           # Wake on network access
+  sudo pmset -a powernap 1       # Power Nap on
+  
+  # Battery-specific
+  sudo pmset -b lowpowermode 0   # Low power mode off on battery
+  sudo pmset -b lessbright 1     # Slightly dim on battery
+  
+  # Charger-specific
+  sudo pmset -c lowpowermode 0   # Low power mode off on charger
+  
+  msg_success "Default profile applied."
+}
+
+apply_battery_saver_profile() {
+  msg_info "Applying battery-saver profile..."
+  
+  # Aggressive power saving
+  sudo pmset -a displaysleep 2   # Display sleep after 2 min
+  sudo pmset -a disksleep 5      # Disk sleep after 5 min
+  sudo pmset -a sleep 10         # System sleep after 10 min
+  sudo pmset -a womp 0           # Disable wake on network
+  sudo pmset -a powernap 0       # Disable Power Nap
+  
+  # Battery-specific
+  sudo pmset -b lowpowermode 1   # Enable low power mode
+  sudo pmset -b lessbright 1     # Dim display on battery
+  sudo pmset -b halfdim 1        # Half brightness before sleep
+  
+  msg_success "Battery-saver profile applied."
+  msg_info "Tip: Display will dim quickly to save power."
+}
+
+apply_max_performance_profile() {
+  msg_info "Applying max-performance profile..."
+  
+  # Performance settings
+  sudo pmset -a displaysleep 0   # Never sleep display
+  sudo pmset -a disksleep 0      # Never sleep disk
+  sudo pmset -a sleep 0          # Never sleep system
+  sudo pmset -a womp 1           # Wake on network
+  sudo pmset -a powernap 1       # Power Nap enabled
+  
+  # Disable power saving
+  sudo pmset -a lowpowermode 0   # Disable low power mode
+  sudo pmset -a lessbright 0     # Don't dim on battery
+  sudo pmset -a halfdim 0        # No half-dim
+  
+  msg_success "Max-performance profile applied."
+  msg_warning "Battery will drain faster. Consider plugging in."
+}
+
+apply_presentation_profile() {
+  msg_info "Applying presentation profile..."
+  
+  # Prevent interruptions
+  sudo pmset -a displaysleep 0   # Never sleep display
+  sudo pmset -a disksleep 0      # Never sleep disk
+  sudo pmset -a sleep 0          # Never sleep system
+  
+  # Keep current performance settings
+  
+  msg_success "Presentation profile applied."
+  msg_info "Display will stay on. Run 'fc power switch default' when done."
+}
+
+# --- Actions ----------------------------------------------------------------
+
+do_switch() {
+  local profile="$1"
+  
+  if [[ -z "$profile" ]]; then
+    msg_error "Please specify a profile."
+    echo "Available profiles: default, battery-saver, max-performance, presentation"
+    return 1
+  fi
+  
+  case "$profile" in
+    default)         apply_default_profile ;;
+    battery-saver)   apply_battery_saver_profile ;;
+    max-performance) apply_max_performance_profile ;;
+    presentation)    apply_presentation_profile ;;
+    *)
+      # Check for custom profile
+      if [[ -f "$POWER_CONFIG" ]]; then
+        local custom_settings
+        custom_settings=$(grep "^\[$profile\]" -A 100 "$POWER_CONFIG" 2>/dev/null | tail -n +2 | sed '/^\[/,$d')
+        if [[ -n "$custom_settings" ]]; then
+          msg_info "Applying custom profile: $profile"
+          eval "$custom_settings"
+          msg_success "Custom profile applied."
+          return 0
+        fi
+      fi
+      die "Unknown profile '$profile'. Run 'fc power list' to see available profiles."
+      ;;
+  esac
+}
+
+do_status() {
+  echo ""
+  echo "=== Current Power Settings ==="
+  echo ""
+  
+  # Get current power source
+  local power_source
+  if pmset -g ps | grep -q "AC Power"; then
+    power_source="AC Power (Plugged In)"
+  else
+    power_source="Battery"
+  fi
+  echo "Power Source: $power_source"
+  echo ""
+  
+  # Show battery info if available
+  if command -v pmset &>/dev/null; then
+    local battery_pct
+    battery_pct=$(pmset -g batt | grep -Eo "[0-9]+%" | head -1)
+    if [[ -n "$battery_pct" ]]; then
+      echo "Battery: $battery_pct"
+    fi
+  fi
+  echo ""
+  
+  echo "--- Active Settings ---"
+  pmset -g custom | head -30
+  echo ""
+}
+
+do_list() {
+  echo ""
+  msg_info "Available Power Profiles:"
+  echo ""
+  echo "  Built-in:"
+  echo "    default          - Standard macOS power settings"
+  echo "    battery-saver    - Aggressive power saving"
+  echo "    max-performance  - Maximum performance (no sleep)"
+  echo "    presentation     - Keep display awake"
+  echo ""
+  
+  # List custom profiles
+  if [[ -f "$POWER_CONFIG" ]]; then
+    local custom_profiles
+    custom_profiles=$(grep "^\[" "$POWER_CONFIG" | tr -d '[]')
+    if [[ -n "$custom_profiles" ]]; then
+      echo "  Custom (from $POWER_CONFIG):"
+      echo "$custom_profiles" | while read -r profile; do
+        echo "    $profile"
+      done
+      echo ""
+    fi
+  fi
+}
+
+do_save() {
+  local name="$1"
+  
+  if [[ -z "$name" ]]; then
+    msg_error "Please specify a name for the profile."
+    return 1
+  fi
+  
+  mkdir -p "$(dirname "$POWER_CONFIG")"
+  
+  # Get current settings
+  local current_settings
+  current_settings=$(pmset -g custom)
+  
+  {
+    echo ""
+    echo "[$name]"
+    echo "# Saved on $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "# To apply manually: pmset ..."
+    echo "# Current settings snapshot:"
+    echo "$current_settings" | sed 's/^/# /'
+  } >> "$POWER_CONFIG"
+  
+  msg_success "Profile '$name' saved to $POWER_CONFIG"
+  msg_info "Note: Custom profiles currently save as reference. Edit the file to add pmset commands."
+}
+
+# --- Main -------------------------------------------------------------------
+main() {
+  if [[ -z "$1" ]] || [[ "$1" == "--help" ]]; then
+    usage
+  fi
+  
+  local action="$1"
+  shift
+  
+  case "$action" in
+    switch)  do_switch "$1" ;;
+    status)  do_status ;;
+    list)    do_list ;;
+    save)    do_save "$1" ;;
+    *)
+      die "Unknown action '$action'. Run 'fc power --help' for available actions."
+      ;;
+  esac
+}
+
+main "$@"

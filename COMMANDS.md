@@ -2235,3 +2235,127 @@ aliases:
 - Requires `yq` — install with `brew install yq`
 - See [YAML Configuration Guide](docs/YAML_CONFIGURATION.md) for full schema
 - Shell-based configs continue to work alongside YAML
+
+---
+
+## `fc power`
+
+Power management profiles for optimizing performance or battery life.
+
+**Usage:**
+
+```bash
+fc power <action> [options]
+```
+
+**Actions:**
+
+| Action | Description |
+|--------|-------------|
+| `switch <profile>` | Switch to a power profile |
+| `status` | Show current power settings |
+| `list` | List available profiles |
+| `save <name>` | Save current settings as custom profile |
+
+**Built-in Profiles:**
+
+| Profile | Description |
+|---------|-------------|
+| `default` | Standard macOS settings |
+| `battery-saver` | Aggressive power saving |
+| `max-performance` | Maximum performance (no sleep) |
+| `presentation` | Prevent display sleep |
+
+**Examples:**
+
+```bash
+fc power switch battery-saver
+fc power switch max-performance
+fc power status
+fc power list
+```
+
+**Notes:**
+- Requires `sudo` for changing power settings
+- Custom profiles saved to `~/.config/circus/power.conf`
+
+---
+
+## `fc audio`
+
+Audio device control and volume management.
+
+**Usage:**
+
+```bash
+fc audio <action> [options]
+```
+
+**Actions:**
+
+| Action | Description |
+|--------|-------------|
+| `volume [level]` | Get or set volume (0-100) |
+| `mute` | Mute system audio |
+| `unmute` | Unmute system audio |
+| `toggle` | Toggle mute |
+| `list-outputs` | List output devices |
+| `list-inputs` | List input devices |
+| `set-output <name>` | Set output device |
+| `set-input <name>` | Set input device |
+| `current` | Show current audio status |
+
+**Examples:**
+
+```bash
+fc audio volume 50
+fc audio mute
+fc audio set-output "AirPods Pro"
+fc audio list-outputs
+fc audio current
+```
+
+**Notes:**
+- Volume uses osascript (no dependencies)
+- Device switching requires `switchaudio-osx`: `brew install switchaudio-osx`
+- Supports fuzzy matching for device names
+
+---
+
+## `fc display`
+
+Display management and layout profiles.
+
+**Usage:**
+
+```bash
+fc display <action> [options]
+```
+
+**Actions:**
+
+| Action | Description |
+|--------|-------------|
+| `list` | List connected displays |
+| `info` | Show detailed display info |
+| `set-resolution <id> <res>` | Set display resolution |
+| `save-layout <name>` | Save current layout |
+| `apply-layout <name>` | Apply saved layout |
+| `list-layouts` | List saved layouts |
+| `mirror` | Mirror all displays |
+| `extend` | Extend desktop to all displays |
+
+**Examples:**
+
+```bash
+fc display list
+fc display save-layout work
+fc display apply-layout work
+fc display info
+fc display mirror
+```
+
+**Notes:**
+- Advanced features require `displayplacer`: `brew install displayplacer`
+- Layouts saved to `~/.config/circus/displays.conf`
+- Basic listing works without dependencies
