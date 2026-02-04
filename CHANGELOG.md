@@ -127,6 +127,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `check_symlink_target()` - Symlink target validation
     - `validate_config_path()` - Config file path validation
     - Integrated into `fc-config` and `fc-config-audit`
+  - **S02 YAML Injection Prevention**:
+    - `is_yaml_safe()` - Detect YAML injection patterns
+    - `sanitize_yaml_value()` - Clean dangerous characters from values
+    - `validate_yaml_security()` - Scan configs for !!python, !!ruby, $(), etc.
+    - `safe_yaml_get()` - Secure wrapper for yq
+    - Blocks template injection ({{...}}, {%...%})
+    - Pre-apply validation in `fc-config`
 
 ## [1.5.2] - 2026-01-05
 

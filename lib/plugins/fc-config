@@ -68,6 +68,11 @@ do_apply() {
   fi
   config_file="$safe_path"
   
+  # Security: Scan YAML for injection attempts
+  if ! validate_yaml_security "$config_file"; then
+    die "Security: YAML security validation failed"
+  fi
+  
   # Create snapshot before applying (unless dry-run or skipped)
   if [[ "$dry_run" != "true" ]] && [[ "$skip_snapshot" != "true" ]]; then
     snapshot_before_operation "config-apply"

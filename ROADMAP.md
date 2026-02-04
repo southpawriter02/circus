@@ -150,7 +150,7 @@ Security features to protect against CLI exploitation, privilege escalation, and
 | # | Feature | Risk Mitigated | Difficulty | Status |
 | :--- | :--- | :--- | :--- | :--- |
 | S01 | **Path Traversal Guard** | Validate file paths to prevent `../` or symlink attacks | Medium | ✅ Done |
-| S02 | **YAML Injection Prevention** | Sanitize YAML values before passing to `defaults write` or `eval` | Medium | ⏳ Planned |
+| S02 | **YAML Injection Prevention** | Sanitize YAML values before passing to `defaults write` or `eval` | Medium | ✅ Done |
 | S03 | **Command Injection Filter** | Escape/validate all user inputs passed to shell commands | High | ✅ Done |
 | S04 | **URL Validation** | Validate remote URLs before `curl`/`wget` (prevent SSRF-like attacks) | Easy | ⏳ Planned |
 | S05 | **Package Name Allowlist** | Validate brew/cask/mas package names (no shell metacharacters) | Easy | ⏳ Planned |

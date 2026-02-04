@@ -442,6 +442,150 @@ sanitize_defaults_value() {
   return 0
 }
 
+# --- YAML Injection Prevention (S02) ----------------------------------------
+
+# YAML injection patterns to detect
+readonly YAML_INJECTION_PATTERNS=(
+  '!!python'     # Python execution
+  '!!ruby'       # Ruby execution
+  '!!bash'       # Bash execution
+  '!!perl'       # Perl execution
+  '!include'     # File inclusion
+  '!ruby/object' # Ruby object instantiation
+  '{{.*}}'       # Template injection
+  '{%.*%}'       # Jinja2/template injection
+)
+
+# Check YAML value for injection attempts
+# Usage: if is_yaml_safe "$value"; then ...
+is_yaml_safe() {
+  local value="$1"
+  
+  # Check for empty
+  if [[ -z "$value" ]]; then
+    return 0
+  fi
+  
+  # Check for YAML-specific injection patterns
+  for pattern in "${YAML_INJECTION_PATTERNS[@]}"; do
+    if [[ "$value" =~ $pattern ]]; then
+      security_log "critical" "YAML injection pattern detected" "$pattern in: $value"
+      msg_error "Security: YAML injection attempt blocked"
+      return 1
+    fi
+  done
+  
+  # Check for shell command injection patterns
+  if [[ "$value" =~ \$\( ]] || [[ "$value" =~ \`.*\` ]]; then
+    security_log "critical" "Shell injection in YAML value" "$value"
+    msg_error "Security: Shell command injection blocked"
+    return 1
+  fi
+  
+  # Check for environment variable expansion attempts
+  if [[ "$value" =~ \$\{[A-Z_]+\} ]] && [[ "$value" != *'$HOME'* ]] && [[ "$value" != *'$USER'* ]]; then
+    security_log "warning" "Suspicious env var in YAML" "$value"
+    # Allow but warn - some env vars are legitimate
+  fi
+  
+  return 0
+}
+
+# Sanitize a YAML value for safe use
+# Usage: safe=$(sanitize_yaml_value "$value")
+sanitize_yaml_value() {
+  local value="$1"
+  
+  # Check for injection first
+  if ! is_yaml_safe "$value"; then
+    return 1
+  fi
+  
+  # Remove dangerous patterns
+  local safe="$value"
+  
+  # Remove backticks
+  safe="${safe//\`/}"
+  
+  # Remove $() command substitution
+  safe=$(echo "$safe" | sed 's/\$([^)]*)//g')
+  
+  # Remove ${} variable expansion (except safe ones)
+  safe=$(echo "$safe" | sed 's/\${[^}]*}//g')
+  
+  # Remove semicolons (command chaining)
+  safe="${safe//;/}"
+  
+  # Remove pipes (command piping)
+  safe="${safe//|/}"
+  
+  # Remove redirections
+  safe="${safe//>/}"
+  safe="${safe//</}"
+  
+  echo "$safe"
+}
+
+# Validate a YAML config file for security issues
+# Usage: if validate_yaml_security "$config_file"; then ...
+validate_yaml_security() {
+  local config_file="$1"
+  local issues=0
+  
+  # Check file exists
+  if [[ ! -f "$config_file" ]]; then
+    return 1
+  fi
+  
+  # Check for dangerous YAML constructs in the raw file
+  for pattern in "${YAML_INJECTION_PATTERNS[@]}"; do
+    if grep -q "$pattern" "$config_file" 2>/dev/null; then
+      msg_error "Security: Dangerous YAML pattern found: $pattern"
+      security_log "critical" "Dangerous YAML pattern in config" "$pattern in $config_file"
+      ((issues++))
+    fi
+  done
+  
+  # Check for shell injection in values
+  if grep -E '\$\(|`.*`' "$config_file" 2>/dev/null | grep -v '^#' | grep -q .; then
+    msg_error "Security: Shell command found in YAML values"
+    security_log "critical" "Shell commands in YAML config" "$config_file"
+    ((issues++))
+  fi
+  
+  if [[ $issues -gt 0 ]]; then
+    msg_error "Security: $issues security issue(s) found in $config_file"
+    return 1
+  fi
+  
+  return 0
+}
+
+# Safe wrapper for yq that validates output
+# Usage: value=$(safe_yaml_get "$file" ".path.to.key")
+safe_yaml_get() {
+  local file="$1"
+  local path="$2"
+  local value
+  
+  value=$(yq eval "$path" "$file" 2>/dev/null)
+  
+  # Null or empty is OK
+  if [[ -z "$value" ]] || [[ "$value" == "null" ]]; then
+    echo "$value"
+    return 0
+  fi
+  
+  # Validate the value
+  if ! is_yaml_safe "$value"; then
+    security_log "warning" "Unsafe YAML value blocked" "$path in $file"
+    echo ""
+    return 1
+  fi
+  
+  echo "$value"
+}
+
 # Comprehensive input check combining multiple validations
 # Usage: if security_check_input "$input" "package"; then ...
 security_check_input() {
@@ -497,3 +641,4 @@ export -f check_not_root sanitize_defaults_value security_check_input
 export -f security_log
 export -f validate_path resolve_path_secure is_within_allowed_paths
 export -f check_symlink_target is_path_safe validate_config_path
+export -f is_yaml_safe sanitize_yaml_value validate_yaml_security safe_yaml_get
