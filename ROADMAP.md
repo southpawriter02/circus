@@ -185,11 +185,11 @@ Security features to protect against CLI exploitation, privilege escalation, and
 #### Monitoring & Detection
 | # | Feature | Risk Mitigated | Difficulty | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| S21 | **Command History Logging** | Log all `fc` commands to immutable audit trail | Medium | ⏳ Planned |
-| S22 | **Anomaly Detection** | Alert on unusual patterns (mass deletions, rapid changes) | Hard | ⏳ Planned |
-| S23 | **Failed Auth Tracking** | Log and alert on repeated sudo failures | Medium | ⏳ Planned |
-| S24 | **Cron Job Auditor** | `fc audit cron` to detect unauthorized scheduled tasks | Medium | ⏳ Planned |
-| S25 | **LaunchAgent Scanner** | Scan for suspicious persistence in ~/Library/LaunchAgents | Medium | ⏳ Planned |
+| S21 | **Command History Logging** | Log all `fc` commands to immutable audit trail | Medium | ✅ Done |
+| S22 | **Anomaly Detection** | Alert on unusual patterns (mass deletions, rapid changes) | Hard | ✅ Done |
+| S23 | **Failed Auth Tracking** | Log and alert on repeated sudo failures | Medium | ✅ Done |
+| S24 | **Cron Job Auditor** | `fc audit cron` to detect unauthorized scheduled tasks | Medium | ✅ Done |
+| S25 | **LaunchAgent Scanner** | Scan for suspicious persistence in ~/Library/LaunchAgents | Medium | ✅ Done |
 
 #### Network Security
 | # | Feature | Risk Mitigated | Difficulty | Status |

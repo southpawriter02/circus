@@ -2655,6 +2655,494 @@ create_safety_snapshot() {
   fi
 }
 
+# --- S21: Security Event Logging --------------------------------------------
+
+# Security audit log path
+SECURITY_AUDIT_LOG="${CIRCUS_SECURITY_LOG:-$HOME/.circus/security_audit.log}"
+
+# Log a security event with structured format (S21)
+# Usage: security_event "category" "action" "details" [severity]
+security_event() {
+  local category="$1"
+  local action="$2"
+  local details="$3"
+  local severity="${4:-info}"
+  
+  mkdir -p "$(dirname "$SECURITY_AUDIT_LOG")"
+  
+  local timestamp
+  timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+  local user
+  user=$(get_real_user 2>/dev/null || whoami)
+  
+  # JSON-like structured log entry
+  printf '[%s] [%s] [%s] user=%s category=%s action=%s details="%s"\n' \
+    "$timestamp" "$severity" "$$" "$user" "$category" "$action" "$details" \
+    >> "$SECURITY_AUDIT_LOG"
+  
+  # Also log critical events to system log on macOS
+  if [[ "$severity" == "critical" ]] && command -v logger &>/dev/null; then
+    logger -t "circus-security" "[$severity] $category: $action - $details"
+  fi
+}
+
+# View security audit log (S21)
+# Usage: security_audit_view [lines]
+security_audit_view() {
+  local lines="${1:-50}"
+  
+  if [[ ! -f "$SECURITY_AUDIT_LOG" ]]; then
+    msg_info "No security audit log found."
+    return 0
+  fi
+  
+  msg_info "📜 Security Audit Log (last $lines entries):"
+  echo ""
+  tail -n "$lines" "$SECURITY_AUDIT_LOG"
+}
+
+# Filter security events by severity (S21)
+# Usage: security_events_by_severity "critical"
+security_events_by_severity() {
+  local severity="$1"
+  
+  if [[ ! -f "$SECURITY_AUDIT_LOG" ]]; then
+    return 0
+  fi
+  
+  grep "\[$severity\]" "$SECURITY_AUDIT_LOG"
+}
+
+# Get security event statistics (S21)
+# Usage: security_event_stats
+security_event_stats() {
+  if [[ ! -f "$SECURITY_AUDIT_LOG" ]]; then
+    msg_info "No security audit log found."
+    return 0
+  fi
+  
+  msg_info "📊 Security Event Statistics:"
+  echo ""
+  echo "   Critical: $(grep -c '\[critical\]' "$SECURITY_AUDIT_LOG" 2>/dev/null || echo 0)"
+  echo "   Warning:  $(grep -c '\[warning\]' "$SECURITY_AUDIT_LOG" 2>/dev/null || echo 0)"
+  echo "   Info:     $(grep -c '\[info\]' "$SECURITY_AUDIT_LOG" 2>/dev/null || echo 0)"
+  echo ""
+  echo "   Total:    $(wc -l < "$SECURITY_AUDIT_LOG" | tr -d ' ')"
+  echo "   Log file: $SECURITY_AUDIT_LOG"
+}
+
+# --- S22: Config Change Detection -------------------------------------------
+
+# Config hash baseline file
+CONFIG_HASH_BASELINE="${CIRCUS_CONFIG_BASELINE:-$HOME/.circus/config_baseline.sha256}"
+
+# Generate baseline hashes for config files (S22)
+# Usage: config_baseline_save [dir]
+config_baseline_save() {
+  local dir="${1:-$DOTFILES_ROOT}"
+  
+  mkdir -p "$(dirname "$CONFIG_HASH_BASELINE")"
+  
+  {
+    echo "# Config Baseline"
+    echo "# Generated: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "#"
+    
+    find "$dir" -name "*.yaml" -o -name "*.yml" -o -name "config" 2>/dev/null | \
+      grep -v ".git" | sort | while read -r file; do
+      local hash
+      hash=$(file_hash "$file")
+      if [[ -n "$hash" ]]; then
+        local rel_path="${file#$dir/}"
+        echo "$hash  $rel_path"
+      fi
+    done
+  } > "$CONFIG_HASH_BASELINE"
+  
+  chmod 600 "$CONFIG_HASH_BASELINE"
+  
+  local count
+  count=$(grep -v "^#" "$CONFIG_HASH_BASELINE" | wc -l | tr -d ' ')
+  
+  msg_success "Config baseline saved: $count files"
+  security_event "config" "baseline_saved" "$count files"
+}
+
+# Check configs against baseline (S22)
+# Usage: if config_change_check; then ...
+config_change_check() {
+  local dir="${1:-$DOTFILES_ROOT}"
+  
+  if [[ ! -f "$CONFIG_HASH_BASELINE" ]]; then
+    msg_warning "No config baseline found."
+    msg_info "Create one with: config_baseline_save"
+    return 2
+  fi
+  
+  local modified=0
+  local new_files=0
+  
+  msg_info "Checking config files for changes..."
+  
+  while IFS= read -r line; do
+    [[ "$line" =~ ^# ]] && continue
+    [[ -z "$line" ]] && continue
+    
+    local stored_hash file_path
+    stored_hash=$(echo "$line" | awk '{print $1}')
+    file_path=$(echo "$line" | awk '{print $2}')
+    
+    local full_path="$dir/$file_path"
+    
+    if [[ ! -f "$full_path" ]]; then
+      continue
+    fi
+    
+    local current_hash
+    current_hash=$(file_hash "$full_path")
+    
+    if [[ "$current_hash" != "$stored_hash" ]]; then
+      msg_warning "  ⚠️  MODIFIED: $file_path"
+      security_event "config" "modified" "$file_path" "warning"
+      ((modified++))
+    fi
+  done < "$CONFIG_HASH_BASELINE"
+  
+  if [[ $modified -gt 0 ]]; then
+    msg_error "Detected $modified modified config file(s)!"
+    security_event "config" "changes_detected" "$modified files" "critical"
+    return 1
+  else
+    msg_success "All config files match baseline."
+    return 0
+  fi
+}
+
+# --- S23: Failed Operation Alerting -----------------------------------------
+
+# Failed operations tracking file
+FAILED_OPS_LOG="${CIRCUS_FAILED_OPS:-$HOME/.circus/failed_ops.log}"
+FAILED_OPS_THRESHOLD="${CIRCUS_FAILED_THRESHOLD:-5}"
+
+# Log a failed operation (S23)
+# Usage: log_failed_operation "category" "details"
+log_failed_operation() {
+  local category="$1"
+  local details="$2"
+  
+  mkdir -p "$(dirname "$FAILED_OPS_LOG")"
+  
+  local timestamp
+  timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+  
+  echo "[$timestamp] $category: $details" >> "$FAILED_OPS_LOG"
+  
+  # Check for repeated failures
+  check_failure_threshold "$category"
+}
+
+# Check if failures exceed threshold (S23)
+# Usage: check_failure_threshold "category"
+check_failure_threshold() {
+  local category="$1"
+  local window_minutes="${2:-10}"
+  
+  if [[ ! -f "$FAILED_OPS_LOG" ]]; then
+    return 0
+  fi
+  
+  # Count recent failures in category
+  local cutoff
+  cutoff=$(date -v-${window_minutes}M '+%Y-%m-%d %H:%M:%S' 2>/dev/null || date '+%Y-%m-%d %H:%M:%S')
+  
+  local count
+  count=$(grep "$category:" "$FAILED_OPS_LOG" | tail -n 20 | wc -l | tr -d ' ')
+  
+  if [[ $count -ge $FAILED_OPS_THRESHOLD ]]; then
+    msg_error "⚠️  ALERT: $count failed $category operations detected!"
+    security_event "alert" "threshold_exceeded" "$category: $count failures" "critical"
+    
+    # Optional: send notification
+    if command -v osascript &>/dev/null; then
+      osascript -e "display notification \"$count failed $category operations\" with title \"Security Alert\" sound name \"Basso\"" 2>/dev/null
+    fi
+    
+    return 1
+  fi
+  
+  return 0
+}
+
+# View failed operations (S23)
+# Usage: view_failed_operations [lines]
+view_failed_operations() {
+  local lines="${1:-20}"
+  
+  if [[ ! -f "$FAILED_OPS_LOG" ]]; then
+    msg_info "No failed operations logged."
+    return 0
+  fi
+  
+  msg_info "📋 Recent Failed Operations:"
+  echo ""
+  tail -n "$lines" "$FAILED_OPS_LOG"
+}
+
+# Clear failed operations log (S23)
+# Usage: clear_failed_operations
+clear_failed_operations() {
+  if [[ -f "$FAILED_OPS_LOG" ]]; then
+    rm -f "$FAILED_OPS_LOG"
+    msg_success "Failed operations log cleared."
+  fi
+}
+
+# --- S24: Startup Security Checks -------------------------------------------
+
+# Run security audit on fc initialization (S24)
+# Usage: startup_security_check
+startup_security_check() {
+  local issues=0
+  
+  # Check 1: Not running as root
+  if is_root; then
+    msg_error "⛔ Running as root!"
+    ((issues++))
+  fi
+  
+  # Check 2: Config file permissions
+  if [[ -f "$HOME/.circus/config.yaml" ]]; then
+    if is_world_writable "$HOME/.circus/config.yaml"; then
+      msg_warning "⚠️  Config file is world-writable"
+      ((issues++))
+    fi
+  fi
+  
+  # Check 3: Script integrity (if manifest exists)
+  if [[ -f "$SCRIPT_HASH_MANIFEST" ]]; then
+    if ! verify_script_integrity "$DOTFILES_ROOT" "$SCRIPT_HASH_MANIFEST" 2>/dev/null; then
+      msg_warning "⚠️  Script integrity check failed"
+      ((issues++))
+    fi
+  fi
+  
+  # Check 4: sudoers integrity (if baseline exists)
+  if [[ -f "$SUDOERS_BASELINE" ]]; then
+    if ! sudoers_check 2>/dev/null; then
+      msg_warning "⚠️  sudoers file has been modified"
+      ((issues++))
+    fi
+  fi
+  
+  # Check 5: Config baseline (if exists)
+  if [[ -f "$CONFIG_HASH_BASELINE" ]]; then
+    if ! config_change_check "$DOTFILES_ROOT" 2>/dev/null; then
+      msg_warning "⚠️  Config files have been modified"
+      ((issues++))
+    fi
+  fi
+  
+  if [[ $issues -gt 0 ]]; then
+    security_event "startup" "issues_found" "$issues issues" "warning"
+    return 1
+  else
+    security_event "startup" "clean" "All checks passed" "info"
+    return 0
+  fi
+}
+
+# Quick security status (S24)
+# Usage: security_status
+security_status() {
+  echo ""
+  msg_info "🛡️  Security Status"
+  echo ""
+  
+  # Root check
+  if is_root; then
+    echo "  ❌ Running as root"
+  else
+    echo "  ✅ Not running as root"
+  fi
+  
+  # GPG available
+  if has_gpg; then
+    echo "  ✅ GPG available"
+  else
+    echo "  ⚪ GPG not installed"
+  fi
+  
+  # Script integrity baseline
+  if [[ -f "$SCRIPT_HASH_MANIFEST" ]]; then
+    echo "  ✅ Script hash manifest exists"
+  else
+    echo "  ⚪ No script hash manifest"
+  fi
+  
+  # Config baseline
+  if [[ -f "$CONFIG_HASH_BASELINE" ]]; then
+    echo "  ✅ Config baseline exists"
+  else
+    echo "  ⚪ No config baseline"
+  fi
+  
+  # sudoers baseline
+  if [[ -f "$SUDOERS_BASELINE" ]]; then
+    echo "  ✅ sudoers baseline exists"
+  else
+    echo "  ⚪ No sudoers baseline"
+  fi
+  
+  echo ""
+}
+
+# --- S25: Periodic Health Reports -------------------------------------------
+
+# Generate comprehensive security health report (S25)
+# Usage: security_health_report [output_file]
+security_health_report() {
+  local output="${1:-}"
+  local report=""
+  
+  report+="# Security Health Report\n"
+  report+="Generated: $(date '+%Y-%m-%d %H:%M:%S')\n"
+  report+="Host: $(hostname)\n"
+  report+="User: $(get_real_user)\n"
+  report+="\n"
+  
+  # Section: Overview
+  report+="## Overview\n\n"
+  report+="| Check | Status |\n"
+  report+="|-------|--------|\n"
+  
+  # Root check
+  if is_root; then
+    report+="| Root execution | ❌ Running as root |\n"
+  else
+    report+="| Root execution | ✅ Normal user |\n"
+  fi
+  
+  # GPG
+  if has_gpg; then
+    report+="| GPG | ✅ Available |\n"
+  else
+    report+="| GPG | ⚪ Not installed |\n"
+  fi
+  
+  report+="\n"
+  
+  # Section: Baselines
+  report+="## Security Baselines\n\n"
+  
+  if [[ -f "$SCRIPT_HASH_MANIFEST" ]]; then
+    local script_count
+    script_count=$(grep -v "^#" "$SCRIPT_HASH_MANIFEST" | wc -l | tr -d ' ')
+    report+="- Script hash manifest: $script_count files\n"
+  else
+    report+="- Script hash manifest: Not created\n"
+  fi
+  
+  if [[ -f "$CONFIG_HASH_BASELINE" ]]; then
+    local config_count
+    config_count=$(grep -v "^#" "$CONFIG_HASH_BASELINE" | wc -l | tr -d ' ')
+    report+="- Config baseline: $config_count files\n"
+  else
+    report+="- Config baseline: Not created\n"
+  fi
+  
+  if [[ -f "$SUDOERS_BASELINE" ]]; then
+    report+="- sudoers baseline: Created\n"
+  else
+    report+="- sudoers baseline: Not created\n"
+  fi
+  
+  report+="\n"
+  
+  # Section: Recent Events
+  report+="## Recent Security Events\n\n"
+  
+  if [[ -f "$SECURITY_AUDIT_LOG" ]]; then
+    local critical_count warning_count
+    critical_count=$(grep -c '\[critical\]' "$SECURITY_AUDIT_LOG" 2>/dev/null || echo 0)
+    warning_count=$(grep -c '\[warning\]' "$SECURITY_AUDIT_LOG" 2>/dev/null || echo 0)
+    report+="- Critical events: $critical_count\n"
+    report+="- Warnings: $warning_count\n"
+  else
+    report+="- No security events logged\n"
+  fi
+  
+  report+="\n"
+  
+  # Section: Failed Operations
+  report+="## Failed Operations\n\n"
+  
+  if [[ -f "$FAILED_OPS_LOG" ]]; then
+    local fail_count
+    fail_count=$(wc -l < "$FAILED_OPS_LOG" | tr -d ' ')
+    report+="- Total failed operations: $fail_count\n"
+  else
+    report+="- No failed operations logged\n"
+  fi
+  
+  report+="\n"
+  
+  # Section: Recommendations
+  report+="## Recommendations\n\n"
+  
+  if [[ ! -f "$SCRIPT_HASH_MANIFEST" ]]; then
+    report+="- [ ] Create script hash manifest: \`generate_hash_manifest\`\n"
+  fi
+  
+  if [[ ! -f "$CONFIG_HASH_BASELINE" ]]; then
+    report+="- [ ] Create config baseline: \`config_baseline_save\`\n"
+  fi
+  
+  if [[ ! -f "$SUDOERS_BASELINE" ]]; then
+    report+="- [ ] Create sudoers baseline: \`sudoers_baseline_save\`\n"
+  fi
+  
+  if ! has_gpg; then
+    report+="- [ ] Install GPG: \`brew install gnupg\`\n"
+  fi
+  
+  # Output
+  if [[ -n "$output" ]]; then
+    echo -e "$report" > "$output"
+    msg_success "Health report saved to: $output"
+  else
+    echo -e "$report"
+  fi
+}
+
+# Schedule periodic health check (S25)
+# Usage: schedule_health_check [interval_hours]
+schedule_health_check() {
+  local interval="${1:-24}"
+  local last_check_file="$HOME/.circus/.last_health_check"
+  
+  mkdir -p "$(dirname "$last_check_file")"
+  
+  # Check if enough time has passed
+  if [[ -f "$last_check_file" ]]; then
+    local last_check
+    last_check=$(cat "$last_check_file")
+    local now
+    now=$(date +%s)
+    local diff=$(( (now - last_check) / 3600 ))
+    
+    if [[ $diff -lt $interval ]]; then
+      return 0  # Not time yet
+    fi
+  fi
+  
+  # Run health check
+  msg_info "Running periodic security health check..."
+  startup_security_check
+  
+  # Update last check time
+  date +%s > "$last_check_file"
+}
+
 # --- Exports ----------------------------------------------------------------
 
 export -f sanitize_string escape_for_shell sanitize_domain
@@ -2686,4 +3174,10 @@ export -f verify_single_script show_hash_manifest update_script_hash
 export -f is_trusted_tap verify_brew_package add_trusted_tap list_brew_taps scan_brewfile_taps
 export -f is_commit_signed verify_update_signature safe_self_update show_commit_signatures
 export -f snapshot_hash list_rollback_snapshots verify_snapshot_exists safe_rollback create_safety_snapshot
+export -f security_event security_audit_view security_events_by_severity security_event_stats
+export -f config_baseline_save config_change_check
+export -f log_failed_operation check_failure_threshold view_failed_operations clear_failed_operations
+export -f startup_security_check security_status
+export -f security_health_report schedule_health_check
 export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES CIRCUS_SIGNING_KEY SCRIPT_HASH_MANIFEST TRUSTED_BREW_TAPS
+export SECURITY_AUDIT_LOG CONFIG_HASH_BASELINE FAILED_OPS_LOG FAILED_OPS_THRESHOLD

@@ -217,6 +217,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `verify_snapshot_exists()` - Validate before restore
     - `safe_rollback()` - Confirmed rollback
     - `create_safety_snapshot()` - Pre-change snapshots
+  - **S21 Security Event Logging**:
+    - `security_event()` - Structured event logging
+    - `security_audit_view()` - View audit log
+    - `security_event_stats()` - Event statistics
+    - Logs to `~/.circus/security_audit.log`
+  - **S22 Config Change Detection**:
+    - `config_baseline_save()` - Hash config files
+    - `config_change_check()` - Detect modifications
+    - Alerts on unexpected config changes
+  - **S23 Failed Operation Alerting**:
+    - `log_failed_operation()` - Track failures
+    - `check_failure_threshold()` - Detect brute-force
+    - macOS notification on threshold exceeded
+  - **S24 Startup Security Checks**:
+    - `startup_security_check()` - Automated audit
+    - `security_status()` - Quick status display
+    - Checks root, permissions, integrity baselines
+  - **S25 Periodic Health Reports**:
+    - `security_health_report()` - Comprehensive report
+    - `schedule_health_check()` - Periodic checks
+    - Markdown report with recommendations
 
 ## [1.5.2] - 2026-01-05
 
