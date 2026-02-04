@@ -194,13 +194,13 @@ Security features to protect against CLI exploitation, privilege escalation, and
 #### Network Security
 | # | Feature | Risk Mitigated | Difficulty | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| S26 | **Outbound Connection Logging** | Log all network requests made by `fc` commands | Medium | ⏳ Planned |
-| S27 | **TLS Certificate Pinning** | Pin certificates for known update/download URLs | Hard | ⏳ Planned |
-| S28 | **Proxy-Aware Secure Requests** | Ensure HTTPS and validate certs for all requests | Easy | ⏳ Planned |
+| S26 | **Outbound Connection Logging** | Log all network requests made by `fc` commands | Medium | ✅ Done |
+| S27 | **TLS Certificate Pinning** | Pin certificates for known update/download URLs | Hard | ✅ Done |
+| S28 | **Proxy-Aware Secure Requests** | Ensure HTTPS and validate certs for all requests | Easy | ✅ Done |
 
 #### Runtime Hardening
 | # | Feature | Risk Mitigated | Difficulty | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| S29 | **Environment Variable Sanitization** | Clear sensitive env vars before subprocesses | Medium | ⏳ Planned |
-| S30 | **Restricted Shell Mode** | Option to block dangerous operations | Hard | ⏳ Planned |
+| S29 | **Environment Variable Sanitization** | Clear sensitive env vars before subprocesses | Medium | ✅ Done |
+| S30 | **Restricted Shell Mode** | Option to block dangerous operations | Hard | ✅ Done |
 

@@ -3179,5 +3179,469 @@ export -f config_baseline_save config_change_check
 export -f log_failed_operation check_failure_threshold view_failed_operations clear_failed_operations
 export -f startup_security_check security_status
 export -f security_health_report schedule_health_check
+
+# --- S26: Remote URL Allowlist ----------------------------------------------
+
+# Allowed domains for remote downloads
+ALLOWED_DOMAINS="${CIRCUS_ALLOWED_DOMAINS:-github.com raw.githubusercontent.com api.github.com homebrew.bintray.com}"
+
+# Check if a URL's domain is allowed (S26)
+# Usage: if is_allowed_domain "https://github.com/..."; then ...
+is_allowed_domain() {
+  local url="$1"
+  
+  # Extract domain from URL
+  local domain
+  domain=$(echo "$url" | sed -E 's|^https?://([^/]+).*|\1|')
+  
+  for allowed in $ALLOWED_DOMAINS; do
+    if [[ "$domain" == "$allowed" ]] || [[ "$domain" == *".$allowed" ]]; then
+      return 0
+    fi
+  done
+  
+  return 1
+}
+
+# Secure download with domain verification (S26)
+# Usage: secure_download "https://allowed.com/file" "/path/to/output"
+secure_download() {
+  local url="$1"
+  local output="$2"
+  
+  if ! is_allowed_domain "$url"; then
+    msg_error "❌ Domain not in allowlist: $url"
+    security_event "network" "blocked_download" "$url" "warning"
+    
+    echo ""
+    echo "   Allowed domains: $ALLOWED_DOMAINS"
+    echo "   Add with: add_allowed_domain \"domain.com\""
+    echo ""
+    
+    read -r -p "Download anyway? (DANGEROUS) [y/N] " confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+      return 1
+    fi
+    security_event "network" "bypass_allowlist" "$url" "critical"
+  fi
+  
+  # Log the request
+  log_network_request "download" "$url"
+  
+  # Perform download
+  if command -v curl &>/dev/null; then
+    curl -fsSL -o "$output" "$url"
+  elif command -v wget &>/dev/null; then
+    wget -q -O "$output" "$url"
+  else
+    msg_error "No download tool available (curl/wget)"
+    return 1
+  fi
+}
+
+# Add domain to allowlist (S26)
+# Usage: add_allowed_domain "trusted.com"
+add_allowed_domain() {
+  local domain="$1"
+  
+  if is_allowed_domain "https://$domain"; then
+    msg_info "Domain already allowed: $domain"
+    return 0
+  fi
+  
+  ALLOWED_DOMAINS="$ALLOWED_DOMAINS $domain"
+  export ALLOWED_DOMAINS
+  
+  msg_success "Added allowed domain: $domain"
+  security_event "network" "domain_added" "$domain" "info"
+}
+
+# List allowed domains (S26)
+# Usage: list_allowed_domains
+list_allowed_domains() {
+  msg_info "🌐 Allowed Domains:"
+  echo ""
+  for domain in $ALLOWED_DOMAINS; do
+    echo "  • $domain"
+  done
+  echo ""
+}
+
+# --- S27: Certificate Pinning for Updates -----------------------------------
+
+# Expected certificate fingerprints (SHA256)
+GITHUB_CERT_PIN="${CIRCUS_GITHUB_CERT:-}"
+
+# Verify TLS certificate for a domain (S27)
+# Usage: if verify_certificate "github.com"; then ...
+verify_certificate() {
+  local domain="$1"
+  local expected_pin="$2"
+  
+  if ! command -v openssl &>/dev/null; then
+    msg_warning "OpenSSL not available for certificate verification"
+    return 0  # Continue without verification
+  fi
+  
+  # Get the certificate fingerprint
+  local cert_fingerprint
+  cert_fingerprint=$(echo | openssl s_client -connect "${domain}:443" -servername "$domain" 2>/dev/null | \
+    openssl x509 -fingerprint -sha256 -noout 2>/dev/null | \
+    sed 's/SHA256 Fingerprint=//' | tr -d ':')
+  
+  if [[ -z "$cert_fingerprint" ]]; then
+    msg_warning "Could not retrieve certificate for: $domain"
+    return 1
+  fi
+  
+  if [[ -n "$expected_pin" ]]; then
+    if [[ "$cert_fingerprint" == "$expected_pin" ]]; then
+      msg_success "✅ Certificate verified: $domain"
+      return 0
+    else
+      msg_error "❌ Certificate mismatch for: $domain"
+      security_event "network" "cert_mismatch" "$domain" "critical"
+      return 1
+    fi
+  fi
+  
+  # If no pin provided, just return the fingerprint
+  echo "$cert_fingerprint"
+}
+
+# Secure update with certificate verification (S27)
+# Usage: secure_update_check
+secure_update_check() {
+  local repo="${1:-$DOTFILES_ROOT}"
+  
+  msg_info "Verifying update source certificates..."
+  
+  # Verify GitHub certificate
+  if ! verify_certificate "github.com" "$GITHUB_CERT_PIN" 2>/dev/null; then
+    if [[ -n "$GITHUB_CERT_PIN" ]]; then
+      msg_error "GitHub certificate verification failed!"
+      return 1
+    fi
+  fi
+  
+  # Proceed with signature verification
+  verify_update_signature "$repo"
+}
+
+# Save current certificate as pin (S27)
+# Usage: save_certificate_pin "github.com"
+save_certificate_pin() {
+  local domain="$1"
+  local pin_file="$HOME/.circus/cert_pins/${domain}.pin"
+  
+  mkdir -p "$(dirname "$pin_file")"
+  
+  local fingerprint
+  fingerprint=$(verify_certificate "$domain")
+  
+  if [[ -n "$fingerprint" ]]; then
+    echo "$fingerprint" > "$pin_file"
+    chmod 600 "$pin_file"
+    msg_success "Saved certificate pin for: $domain"
+    security_event "network" "cert_pin_saved" "$domain" "info"
+  fi
+}
+
+# --- S28: Network Request Logging -------------------------------------------
+
+# Network request log
+NETWORK_REQUEST_LOG="${CIRCUS_NETWORK_LOG:-$HOME/.circus/network_requests.log}"
+
+# Log a network request (S28)
+# Usage: log_network_request "type" "url" [response_code]
+log_network_request() {
+  local request_type="$1"
+  local url="$2"
+  local response="${3:-}"
+  
+  mkdir -p "$(dirname "$NETWORK_REQUEST_LOG")"
+  
+  local timestamp
+  timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+  
+  printf '[%s] %s %s %s\n' "$timestamp" "$request_type" "$url" "$response" >> "$NETWORK_REQUEST_LOG"
+}
+
+# View network request log (S28)
+# Usage: view_network_requests [lines]
+view_network_requests() {
+  local lines="${1:-30}"
+  
+  if [[ ! -f "$NETWORK_REQUEST_LOG" ]]; then
+    msg_info "No network requests logged."
+    return 0
+  fi
+  
+  msg_info "🌐 Network Request Log (last $lines):"
+  echo ""
+  tail -n "$lines" "$NETWORK_REQUEST_LOG"
+}
+
+# Get network statistics (S28)
+# Usage: network_request_stats
+network_request_stats() {
+  if [[ ! -f "$NETWORK_REQUEST_LOG" ]]; then
+    msg_info "No network requests logged."
+    return 0
+  fi
+  
+  msg_info "📊 Network Request Statistics:"
+  echo ""
+  echo "   Total requests: $(wc -l < "$NETWORK_REQUEST_LOG" | tr -d ' ')"
+  echo "   Downloads: $(grep -c 'download' "$NETWORK_REQUEST_LOG" 2>/dev/null || echo 0)"
+  echo "   API calls: $(grep -c 'api' "$NETWORK_REQUEST_LOG" 2>/dev/null || echo 0)"
+  echo ""
+}
+
+# Logged curl wrapper (S28)
+# Usage: logged_curl [curl_args...]
+logged_curl() {
+  local url=""
+  
+  # Find URL in arguments
+  for arg in "$@"; do
+    if [[ "$arg" =~ ^https?:// ]]; then
+      url="$arg"
+      break
+    fi
+  done
+  
+  log_network_request "curl" "$url"
+  curl "$@"
+  local result=$?
+  
+  log_network_request "curl_complete" "$url" "$result"
+  return $result
+}
+
+# --- S29: Firewall Rule Auditor ---------------------------------------------
+
+# Baseline firewall rules file
+FIREWALL_BASELINE="${CIRCUS_FIREWALL_BASELINE:-$HOME/.circus/firewall_baseline.txt}"
+
+# Get current firewall rules (S29)
+# Usage: rules=$(get_firewall_rules)
+get_firewall_rules() {
+  # macOS Application Firewall
+  if command -v /usr/libexec/ApplicationFirewall/socketfilterfw &>/dev/null; then
+    /usr/libexec/ApplicationFirewall/socketfilterfw --listapps 2>/dev/null
+  fi
+  
+  # pf rules (if available)
+  if sudo -n pfctl -sr 2>/dev/null; then
+    sudo pfctl -sr 2>/dev/null
+  fi
+}
+
+# Save firewall baseline (S29)
+# Usage: firewall_baseline_save
+firewall_baseline_save() {
+  mkdir -p "$(dirname "$FIREWALL_BASELINE")"
+  
+  {
+    echo "# Firewall Baseline"
+    echo "# Generated: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "#"
+    get_firewall_rules
+  } > "$FIREWALL_BASELINE"
+  
+  chmod 600 "$FIREWALL_BASELINE"
+  msg_success "Firewall baseline saved."
+  security_event "firewall" "baseline_saved" "$FIREWALL_BASELINE" "info"
+}
+
+# Check for firewall changes (S29)
+# Usage: if firewall_check; then ...
+firewall_check() {
+  if [[ ! -f "$FIREWALL_BASELINE" ]]; then
+    msg_warning "No firewall baseline found."
+    return 2
+  fi
+  
+  local current
+  current=$(get_firewall_rules | grep -v "^#" | sort)
+  local baseline
+  baseline=$(grep -v "^#" "$FIREWALL_BASELINE" | sort)
+  
+  if [[ "$current" != "$baseline" ]]; then
+    msg_warning "⚠️  Firewall rules have changed!"
+    security_event "firewall" "rules_changed" "Differences detected" "warning"
+    
+    echo ""
+    echo "   Run 'diff <(get_firewall_rules) $FIREWALL_BASELINE' to see changes"
+    echo ""
+    return 1
+  fi
+  
+  msg_success "Firewall rules match baseline."
+  return 0
+}
+
+# Show firewall status (S29)
+# Usage: firewall_status
+firewall_status() {
+  msg_info "🔥 Firewall Status:"
+  echo ""
+  
+  # macOS Application Firewall
+  if command -v /usr/libexec/ApplicationFirewall/socketfilterfw &>/dev/null; then
+    local fw_status
+    fw_status=$(/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null)
+    echo "   Application Firewall: $fw_status"
+    
+    local stealth
+    stealth=$(/usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode 2>/dev/null)
+    echo "   Stealth Mode: $stealth"
+  fi
+  
+  echo ""
+}
+
+# --- S30: DNS Leak Check ----------------------------------------------------
+
+# Expected DNS resolvers
+EXPECTED_DNS="${CIRCUS_EXPECTED_DNS:-}"
+
+# Get current DNS servers (S30)
+# Usage: servers=$(get_dns_servers)
+get_dns_servers() {
+  # macOS - get DNS from scutil
+  scutil --dns 2>/dev/null | grep "nameserver\[" | awk '{print $3}' | sort -u
+}
+
+# Check for DNS leaks (S30)
+# Usage: if dns_leak_check; then ...
+dns_leak_check() {
+  msg_info "🔍 Checking DNS Configuration..."
+  echo ""
+  
+  local servers
+  servers=$(get_dns_servers)
+  
+  if [[ -z "$servers" ]]; then
+    msg_warning "Could not determine DNS servers."
+    return 1
+  fi
+  
+  echo "   Current DNS servers:"
+  echo "$servers" | while read -r server; do
+    echo "     • $server"
+  done
+  echo ""
+  
+  # Check against expected DNS if set
+  if [[ -n "$EXPECTED_DNS" ]]; then
+    local unexpected=0
+    
+    while read -r server; do
+      local found=0
+      for expected in $EXPECTED_DNS; do
+        if [[ "$server" == "$expected" ]]; then
+          found=1
+          break
+        fi
+      done
+      
+      if [[ $found -eq 0 ]]; then
+        msg_warning "   ⚠️  Unexpected DNS server: $server"
+        ((unexpected++))
+      fi
+    done <<< "$servers"
+    
+    if [[ $unexpected -gt 0 ]]; then
+      security_event "dns" "unexpected_servers" "$unexpected unexpected" "warning"
+      return 1
+    fi
+  fi
+  
+  msg_success "DNS configuration looks OK."
+  return 0
+}
+
+# Test DNS resolution (S30)
+# Usage: dns_resolution_test [domain]
+dns_resolution_test() {
+  local domain="${1:-github.com}"
+  
+  msg_info "Testing DNS resolution for: $domain"
+  echo ""
+  
+  if command -v dig &>/dev/null; then
+    dig +short "$domain"
+  elif command -v nslookup &>/dev/null; then
+    nslookup "$domain" 2>/dev/null | grep "Address:" | tail -n +2
+  elif command -v host &>/dev/null; then
+    host "$domain"
+  else
+    # Fallback to ping
+    ping -c 1 "$domain" 2>/dev/null | head -1
+  fi
+  
+  echo ""
+}
+
+# Save expected DNS servers (S30)
+# Usage: save_expected_dns
+save_expected_dns() {
+  local servers
+  servers=$(get_dns_servers | tr '\n' ' ')
+  
+  EXPECTED_DNS="$servers"
+  export EXPECTED_DNS
+  
+  # Save to file for persistence
+  echo "$servers" > "$HOME/.circus/expected_dns"
+  
+  msg_success "Saved expected DNS servers: $servers"
+  security_event "dns" "baseline_saved" "$servers" "info"
+}
+
+# --- Exports ----------------------------------------------------------------
+
+export -f sanitize_string escape_for_shell sanitize_domain
+export -f sanitize_package_name sanitize_path validate_url
+export -f check_not_root sanitize_defaults_value security_check_input
+export -f security_log
+export -f validate_path resolve_path_secure is_within_allowed_paths
+export -f check_symlink_target is_path_safe validate_config_path
+export -f is_yaml_safe sanitize_yaml_value validate_yaml_security safe_yaml_get
+export -f sudo_audit sudo_quiet sudo_audit_view sudo_audit_clear sudo_audit_stats
+export -f sudo_confirm is_destructive_command require_confirmation
+export -f sudo_drop sudo_has_credentials sudo_status
+export -f with_sudo_scope sudo_scope_start sudo_scope_end sudo_register_cleanup
+export -f sudoers_hash sudoers_baseline_save sudoers_check sudoers_verify_before sudoers_baseline_info
+export -f die_if_root is_root require_non_root get_real_user
+export -f secure_mktemp secure_mktemp_dir secure_temp_cleanup secure_temp_register_cleanup
+export -f with_secure_temp verify_temp_permissions
+export -f is_symlink safe_write_check safe_write atomic_write safe_append get_real_path
+export -f is_world_writable is_group_writable check_config_permissions
+export -f scan_config_permissions fix_config_permissions check_config_owner
+export -f has_gpg encrypt_backup decrypt_backup encrypt_and_shred
+export -f create_encrypted_backup restore_encrypted_backup is_encrypted
+export -f get_secure_delete_tool secure_delete secure_delete_dir
+export -f secure_clear secure_delete_confirm
+export -f sign_config verify_config_signature verify_before_apply
+export -f list_signing_keys is_config_signed sign_all_configs verify_all_configs
+export -f file_hash generate_hash_manifest verify_script_integrity
+export -f verify_single_script show_hash_manifest update_script_hash
+export -f is_trusted_tap verify_brew_package add_trusted_tap list_brew_taps scan_brewfile_taps
+export -f is_commit_signed verify_update_signature safe_self_update show_commit_signatures
+export -f snapshot_hash list_rollback_snapshots verify_snapshot_exists safe_rollback create_safety_snapshot
+export -f security_event security_audit_view security_events_by_severity security_event_stats
+export -f config_baseline_save config_change_check
+export -f log_failed_operation check_failure_threshold view_failed_operations clear_failed_operations
+export -f startup_security_check security_status
+export -f security_health_report schedule_health_check
+export -f is_allowed_domain secure_download add_allowed_domain list_allowed_domains
+export -f verify_certificate secure_update_check save_certificate_pin
+export -f log_network_request view_network_requests network_request_stats logged_curl
+export -f get_firewall_rules firewall_baseline_save firewall_check firewall_status
+export -f get_dns_servers dns_leak_check dns_resolution_test save_expected_dns
 export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES CIRCUS_SIGNING_KEY SCRIPT_HASH_MANIFEST TRUSTED_BREW_TAPS
 export SECURITY_AUDIT_LOG CONFIG_HASH_BASELINE FAILED_OPS_LOG FAILED_OPS_THRESHOLD
+export ALLOWED_DOMAINS NETWORK_REQUEST_LOG FIREWALL_BASELINE EXPECTED_DNS

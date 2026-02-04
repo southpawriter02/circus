@@ -238,6 +238,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `security_health_report()` - Comprehensive report
     - `schedule_health_check()` - Periodic checks
     - Markdown report with recommendations
+  - **S26 Remote URL Allowlist**:
+    - `is_allowed_domain()` - Domain verification
+    - `secure_download()` - Safe downloads
+    - `add_allowed_domain()` / `list_allowed_domains()`
+  - **S27 TLS Certificate Pinning**:
+    - `verify_certificate()` - Check fingerprints
+    - `secure_update_check()` - Verified updates
+    - `save_certificate_pin()` - Store pins
+  - **S28 Network Request Logging**:
+    - `log_network_request()` - Log all requests
+    - `view_network_requests()` - View log
+    - `logged_curl()` - Curl wrapper
+  - **S29 Firewall Rule Auditor**:
+    - `get_firewall_rules()` - Query rules
+    - `firewall_baseline_save()` / `firewall_check()`
+    - `firewall_status()` - Quick status
+  - **S30 DNS Leak Check**:
+    - `get_dns_servers()` - Query DNS config
+    - `dns_leak_check()` - Verify expected resolvers
+    - `save_expected_dns()` - Baseline DNS
 
 ## [1.5.2] - 2026-01-05
 
