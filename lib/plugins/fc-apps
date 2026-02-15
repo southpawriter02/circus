@@ -151,13 +151,13 @@ do_list() {
     msg_info "Packages (via $pm):"
     case "$pm" in
       apt)
-        dpkg --get-selections 2>/dev/null | grep -v deinstall | head -30
+        dpkg --get-selections 2>/dev/null | grep -v deinstall | head -30 || true
         ;;
       dnf)
-        dnf list installed 2>/dev/null | head -30
+        dnf list installed 2>/dev/null | head -30 || true
         ;;
       pacman)
-        pacman -Q 2>/dev/null | head -30
+        pacman -Q 2>/dev/null | head -30 || true
         ;;
     esac
   fi
@@ -186,7 +186,7 @@ do_install() {
       while IFS= read -r pkg || [[ -n "$pkg" ]]; do
         [[ -z "$pkg" || "$pkg" =~ ^# ]] && continue
         msg_info "Installing: $pkg"
-        os_package_install "$pkg"
+        os_install_package "$pkg"
       done < "$APPS_CONFIG_FILE"
       msg_success "Installation complete!"
     fi
@@ -259,7 +259,7 @@ do_add() {
         ;;
     esac
   else
-    os_package_install "$pkg_name" && msg_success "Installed: $pkg_name"
+    os_install_package "$pkg_name" && msg_success "Installed: $pkg_name"
   fi
 }
 
@@ -274,7 +274,7 @@ do_update() {
     "$brew_cmd" update && "$brew_cmd" upgrade
     msg_success "Homebrew packages updated!"
   else
-    os_package_update
+    os_update_packages
     msg_success "System packages updated!"
   fi
 }
@@ -299,13 +299,13 @@ do_search() {
     pm=$(os_get_package_manager)
     case "$pm" in
       apt)
-        apt-cache search "$query" | head -20
+        apt-cache search "$query" | head -20 || true
         ;;
       dnf)
-        dnf search "$query" 2>/dev/null | head -20
+        dnf search "$query" 2>/dev/null | head -20 || true
         ;;
       pacman)
-        pacman -Ss "$query" 2>/dev/null | head -20
+        pacman -Ss "$query" 2>/dev/null | head -20 || true
         ;;
     esac
   fi

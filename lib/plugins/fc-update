@@ -206,98 +206,112 @@ handle_dependencies() {
   fi
 }
 
-# --- Update Homebrew Packages -----------------------------------------------
+# --- Update Packages --------------------------------------------------------
 update_packages() {
-  local brew_cmd=${BREW_CMD:-brew}
+  if is_macos; then
+    local brew_cmd=${BREW_CMD:-brew}
 
-  if ! command -v "$brew_cmd" >/dev/null 2>&1; then
-    msg_error "Homebrew is not installed. Skipping package updates."
-    return 1
-  fi
-
-  echo ""
-  msg_info "=== Updating Homebrew Packages ==="
-  echo ""
-
-  if [ "$FLAG_DRY_RUN" = true ]; then
-    msg_info "[DRY-RUN] Would run: brew update"
-    msg_info "[DRY-RUN] Checking for outdated packages..."
-    echo ""
-    "$brew_cmd" outdated 2>/dev/null || true
-    echo ""
-    msg_info "[DRY-RUN] Would run: brew upgrade"
-    msg_info "[DRY-RUN] Would run: brew upgrade --cask"
-    return 0
-  fi
-
-  # Update Homebrew itself
-  msg_info "Updating Homebrew..."
-  if ! "$brew_cmd" update; then
-    msg_warning "Homebrew update encountered issues."
-  fi
-
-  # Check for outdated packages
-  local outdated
-  outdated=$("$brew_cmd" outdated 2>/dev/null || true)
-
-  if [ -z "$outdated" ]; then
-    msg_success "All Homebrew formulae are up to date."
-  else
-    msg_info "Outdated formulae:"
-    echo "$outdated"
-    echo ""
-    msg_info "Upgrading formulae..."
-    if "$brew_cmd" upgrade; then
-      msg_success "Homebrew formulae updated."
-    else
-      msg_warning "Some formulae may have failed to upgrade."
+    if ! command -v "$brew_cmd" >/dev/null 2>&1; then
+      msg_error "Homebrew is not installed. Skipping package updates."
+      return 1
     fi
-  fi
 
-  # Update casks
-  echo ""
-  msg_info "Checking for cask updates..."
-  local outdated_casks
-  outdated_casks=$("$brew_cmd" outdated --cask 2>/dev/null || true)
-
-  if [ -z "$outdated_casks" ]; then
-    msg_success "All Homebrew casks are up to date."
-  else
-    msg_info "Outdated casks:"
-    echo "$outdated_casks"
     echo ""
-    msg_info "Upgrading casks..."
-    if "$brew_cmd" upgrade --cask; then
-      msg_success "Homebrew casks updated."
-    else
-      msg_warning "Some casks may have failed to upgrade."
-    fi
-  fi
-
-  # Update Mac App Store apps if mas is available
-  local mas_cmd=${MAS_CMD:-mas}
-  if command -v "$mas_cmd" >/dev/null 2>&1; then
+    msg_info "=== Updating Homebrew Packages ==="
     echo ""
-    msg_info "Checking for Mac App Store updates..."
-    local outdated_mas
-    outdated_mas=$("$mas_cmd" outdated 2>/dev/null || true)
 
-    if [ -z "$outdated_mas" ]; then
-      msg_success "All Mac App Store apps are up to date."
-    else
-      msg_info "Outdated apps:"
-      echo "$outdated_mas"
+    if [ "$FLAG_DRY_RUN" = true ]; then
+      msg_info "[DRY-RUN] Would run: brew update"
+      msg_info "[DRY-RUN] Checking for outdated packages..."
       echo ""
-      msg_info "Upgrading Mac App Store apps..."
-      if "$mas_cmd" upgrade; then
-        msg_success "Mac App Store apps updated."
+      "$brew_cmd" outdated 2>/dev/null || true
+      echo ""
+      msg_info "[DRY-RUN] Would run: brew upgrade"
+      msg_info "[DRY-RUN] Would run: brew upgrade --cask"
+      return 0
+    fi
+
+    # Update Homebrew itself
+    msg_info "Updating Homebrew..."
+    if ! "$brew_cmd" update; then
+      msg_warning "Homebrew update encountered issues."
+    fi
+
+    # Check for outdated packages
+    local outdated
+    outdated=$("$brew_cmd" outdated 2>/dev/null || true)
+
+    if [ -z "$outdated" ]; then
+      msg_success "All Homebrew formulae are up to date."
+    else
+      msg_info "Outdated formulae:"
+      echo "$outdated"
+      echo ""
+      msg_info "Upgrading formulae..."
+      if "$brew_cmd" upgrade; then
+        msg_success "Homebrew formulae updated."
       else
-        msg_warning "Some apps may have failed to upgrade."
+        msg_warning "Some formulae may have failed to upgrade."
       fi
     fi
+
+    # Update casks
+    echo ""
+    msg_info "Checking for cask updates..."
+    local outdated_casks
+    outdated_casks=$("$brew_cmd" outdated --cask 2>/dev/null || true)
+
+    if [ -z "$outdated_casks" ]; then
+      msg_success "All Homebrew casks are up to date."
+    else
+      msg_info "Outdated casks:"
+      echo "$outdated_casks"
+      echo ""
+      msg_info "Upgrading casks..."
+      if "$brew_cmd" upgrade --cask; then
+        msg_success "Homebrew casks updated."
+      else
+        msg_warning "Some casks may have failed to upgrade."
+      fi
+    fi
+
+    # Update Mac App Store apps if mas is available
+    local mas_cmd=${MAS_CMD:-mas}
+    if command -v "$mas_cmd" >/dev/null 2>&1; then
+      echo ""
+      msg_info "Checking for Mac App Store updates..."
+      local outdated_mas
+      outdated_mas=$("$mas_cmd" outdated 2>/dev/null || true)
+
+      if [ -z "$outdated_mas" ]; then
+        msg_success "All Mac App Store apps are up to date."
+      else
+        msg_info "Outdated apps:"
+        echo "$outdated_mas"
+        echo ""
+        msg_info "Upgrading Mac App Store apps..."
+        if "$mas_cmd" upgrade; then
+          msg_success "Mac App Store apps updated."
+        else
+          msg_warning "Some apps may have failed to upgrade."
+        fi
+      fi
+    else
+      msg_info "mas-cli not installed. Skipping Mac App Store updates."
+      msg_info "Install with: brew install mas"
+    fi
   else
-    msg_info "mas-cli not installed. Skipping Mac App Store updates."
-    msg_info "Install with: brew install mas"
+    # Linux
+    echo ""
+    msg_info "=== Updating System Packages ==="
+    echo ""
+
+    if [ "$FLAG_DRY_RUN" = true ]; then
+      msg_info "[DRY-RUN] Would update system packages"
+      return 0
+    fi
+
+    os_update_packages
   fi
 
   echo ""

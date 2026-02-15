@@ -99,7 +99,11 @@ teardown() {
   assert_success
 
   # Check permissions are 600
-  perms=$(stat -f '%Lp' "$SYNC_CONFIG_FILE")
+  if [[ "$(uname)" == "Darwin" ]]; then
+    perms=$(stat -f '%Lp' "$SYNC_CONFIG_FILE")
+  else
+    perms=$(stat -c '%a' "$SYNC_CONFIG_FILE")
+  fi
   [ "$perms" = "600" ]
 }
 

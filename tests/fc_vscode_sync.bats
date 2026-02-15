@@ -101,7 +101,11 @@ teardown() {
   rm -f "$VSCODE_SYNC_CONFIG"
   run "$FC_COMMAND" fc-vscode-sync setup
   assert_success
-  perms=$(stat -f '%Lp' "$VSCODE_SYNC_CONFIG" 2>/dev/null || stat -c '%a' "$VSCODE_SYNC_CONFIG" 2>/dev/null)
+  if [[ "$(uname)" == "Darwin" ]]; then
+    perms=$(stat -f '%Lp' "$VSCODE_SYNC_CONFIG")
+  else
+    perms=$(stat -c '%a' "$VSCODE_SYNC_CONFIG")
+  fi
   [ "$perms" = "600" ]
 }
 

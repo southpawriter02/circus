@@ -15,13 +15,19 @@
 # --- Constants --------------------------------------------------------------
 
 # Allowed characters for package names (brew, cask, mas)
-readonly SECURITY_PACKAGE_PATTERN='^[a-zA-Z0-9][a-zA-Z0-9_@/.-]*$'
+if [[ -z "${SECURITY_PACKAGE_PATTERN:-}" ]]; then
+  readonly SECURITY_PACKAGE_PATTERN='^[a-zA-Z0-9][a-zA-Z0-9_@/.-]*$'
+fi
 
 # Allowed characters for macOS preference domains
-readonly SECURITY_DOMAIN_PATTERN='^[a-zA-Z0-9][a-zA-Z0-9._-]*$'
+if [[ -z "${SECURITY_DOMAIN_PATTERN:-}" ]]; then
+  readonly SECURITY_DOMAIN_PATTERN='^[a-zA-Z0-9][a-zA-Z0-9._-]*$'
+fi
 
 # Dangerous shell metacharacters to strip
-readonly SECURITY_DANGEROUS_CHARS='`$(){}[]|;&<>!\\*?~'
+if [[ -z "${SECURITY_DANGEROUS_CHARS:-}" ]]; then
+  readonly SECURITY_DANGEROUS_CHARS='`$(){}[]|;&<>!\\*?~'
+fi
 
 # --- Input Sanitization Functions -------------------------------------------
 
@@ -506,16 +512,18 @@ sanitize_defaults_value() {
 # --- YAML Injection Prevention (S02) ----------------------------------------
 
 # YAML injection patterns to detect
-readonly YAML_INJECTION_PATTERNS=(
-  '!!python'     # Python execution
-  '!!ruby'       # Ruby execution
-  '!!bash'       # Bash execution
-  '!!perl'       # Perl execution
-  '!include'     # File inclusion
-  '!ruby/object' # Ruby object instantiation
-  '{{.*}}'       # Template injection
-  '{%.*%}'       # Jinja2/template injection
-)
+if [[ -z "${YAML_INJECTION_PATTERNS:-}" ]]; then
+  readonly YAML_INJECTION_PATTERNS=(
+    '!!python'     # Python execution
+    '!!ruby'       # Ruby execution
+    '!!bash'       # Bash execution
+    '!!perl'       # Perl execution
+    '!include'     # File inclusion
+    '!ruby/object' # Ruby object instantiation
+    '{{.*}}'       # Template injection
+    '{%.*%}'       # Jinja2/template injection
+  )
+fi
 
 # Check YAML value for injection attempts
 # Usage: if is_yaml_safe "$value"; then ...

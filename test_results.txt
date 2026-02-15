@@ -1,0 +1,4670 @@
+1..780
+not ok 1 fc alfred --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_alfred.bats, line 28)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 2 fc alfred --help shows actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_alfred.bats, line 34)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 3 fc alfred --help shows available keywords
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_alfred.bats, line 42)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 4 fc alfred with no action shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_alfred.bats, line 51)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 5 fc-alfred plugin exists
+ok 6 fc-alfred plugin is executable
+ok 7 fc-alfred plugin sources init.sh
+ok 8 workflow source directory exists
+ok 9 workflow info.plist exists
+ok 10 workflow scripts directory exists
+ok 11 workflow fc-wrapper.sh exists
+ok 12 workflow fc-wrapper.sh is executable
+ok 13 wifi.sh script filter exists
+ok 14 wifi.sh script filter is executable
+ok 15 wifi.sh outputs valid JSON
+ok 16 bluetooth.sh script filter exists and is executable
+ok 17 bluetooth.sh outputs valid JSON
+ok 18 caffeine.sh script filter exists and is executable
+ok 19 caffeine.sh outputs valid JSON
+ok 20 dns.sh script filter exists and is executable
+ok 21 dns.sh outputs valid JSON
+ok 22 airdrop.sh script filter exists and is executable
+ok 23 disk.sh script filter exists and is executable
+ok 24 ssh.sh script filter exists and is executable
+ok 25 keychain.sh script filter exists and is executable
+ok 26 clipboard.sh script filter exists and is executable
+ok 27 fc-commands.sh script filter exists and is executable
+not ok 28 info.plist has correct bundle ID
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_alfred.bats, line 186)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 127
+# output : /home/jules/.nvm/versions/node/v22.22.0/lib/node_modules/bats/lib/bats-core/test_functions.bash: line 158: /usr/libexec/PlistBuddy: No such file or directory
+# --
+#
+not ok 29 info.plist has workflow name
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_alfred.bats, line 192)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 127
+# output : /home/jules/.nvm/versions/node/v22.22.0/lib/node_modules/bats/lib/bats-core/test_functions.bash: line 158: /usr/libexec/PlistBuddy: No such file or directory
+# --
+#
+not ok 30 info.plist has version
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_alfred.bats, line 198)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 127
+# output : /home/jules/.nvm/versions/node/v22.22.0/lib/node_modules/bats/lib/bats-core/test_functions.bash: line 158: /usr/libexec/PlistBuddy: No such file or directory
+# --
+#
+not ok 31 info.plist has description
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_alfred.bats, line 204)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 127
+# output : /home/jules/.nvm/versions/node/v22.22.0/lib/node_modules/bats/lib/bats-core/test_functions.bash: line 158: /usr/libexec/PlistBuddy: No such file or directory
+# --
+#
+not ok 32 fc alfred status runs and outputs status
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_alfred.bats, line 215)
+#   `assert_output --partial "Alfred"' failed
+#
+# -- output does not contain substring --
+# substring : Alfred
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 33 fc alfred status shows workflow check
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_alfred.bats, line 221)
+#   `assert_output --partial "Workflow"' failed
+#
+# -- output does not contain substring --
+# substring : Workflow
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 34 fc alfred unknown action fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_alfred.bats, line 231)
+#   `assert_output --partial "Unknown action"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown action
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 35 fc alfred unknown action shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_alfred.bats, line 237)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 36 fc fc-apps --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_apps.bats, line 55)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 37 fc fc-apps with no arguments shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_apps.bats, line 65)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 38 fc fc-apps --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_apps.bats, line 71)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 39 fc fc-apps --help shows configuration path
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_apps.bats, line 79)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 40 fc fc-apps setup creates config file
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_apps.bats, line 93)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 41 fc fc-apps setup shows next steps
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_apps.bats, line 102)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 42 fc fc-apps setup detects existing config
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_apps.bats, line 113)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 43 fc fc-apps list works when no config exists
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_apps.bats, line 125)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 44 fc fc-apps list shows empty config message
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_apps.bats, line 135)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 45 fc fc-apps install requires config
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 148)
+#   `assert_output --partial "No configuration file found"' failed
+#
+# -- output does not contain substring --
+# substring : No configuration file found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 46 fc fc-apps add requires type flag
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 158)
+#   `assert_output --partial "Application type required"' failed
+#
+# -- output does not contain substring --
+# substring : Application type required
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 47 fc fc-apps add --brew requires app name
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 164)
+#   `assert_output --partial "Application name required"' failed
+#
+# -- output does not contain substring --
+# substring : Application name required
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 48 fc fc-apps add --cask requires app name
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 170)
+#   `assert_output --partial "Application name required"' failed
+#
+# -- output does not contain substring --
+# substring : Application name required
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 49 fc fc-apps add --mas requires app name
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 176)
+#   `assert_output --partial "Application name required"' failed
+#
+# -- output does not contain substring --
+# substring : Application name required
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 50 fc fc-apps add --mas requires app id
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 182)
+#   `assert_output --partial "Mac App Store ID required"' failed
+#
+# -- output does not contain substring --
+# substring : Mac App Store ID required
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 51 fc fc-apps unknown subcommand fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 192)
+#   `assert_output --partial "Unknown subcommand"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown subcommand
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 52 fc fc-apps unknown subcommand shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 198)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 53 apps.conf.template exists
+ok 54 apps.conf.template has brew examples
+ok 55 apps.conf.template has cask examples
+ok 56 apps.conf.template has mas examples
+ok 57 apps.conf.template has usage instructions
+ok 58 base Brewfile includes mas
+not ok 59 fc fc-bootstrap --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 59)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 60 fc fc-bootstrap --help shows available options
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 68)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 61 fc fc-bootstrap --help shows phase descriptions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 79)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 62 fc fc-bootstrap --help shows configuration file path
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 91)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 63 bootstrap.conf.template exists
+ok 64 bootstrap.conf.template contains role settings
+ok 65 bootstrap.conf.template contains phase control settings
+ok 66 bootstrap.conf.template contains restore settings
+ok 67 bootstrap.conf.template contains git configuration
+ok 68 bootstrap.conf.template contains SSH configuration
+ok 69 bootstrap.conf.template contains unattended mode setting
+ok 70 bootstrap.conf.template contains security warning
+ok 71 preflight.sh phase script exists
+ok 72 homebrew.sh phase script exists
+ok 73 restore.sh phase script exists
+ok 74 dotfiles.sh phase script exists
+ok 75 apps.sh phase script exists
+ok 76 configure.sh phase script exists
+ok 77 health.sh phase script exists
+not ok 78 fc fc-bootstrap status works
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 194)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 79 fc fc-bootstrap status shows all phases
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 200)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 80 fc fc-bootstrap status shows configuration info
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 212)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 81 fc fc-bootstrap reset clears state directory
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 227)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 82 fc fc-bootstrap reset handles empty state gracefully
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 235)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 83 fc fc-bootstrap --dry-run doesn't execute phases
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 253)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 84 fc fc-bootstrap --dry-run shows what would be done
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 266)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 85 fc fc-bootstrap --skip preflight skips preflight phase
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 282)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 86 fc fc-bootstrap --no-restore skips restore phase
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 294)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 87 fc fc-bootstrap --only preflight runs only preflight phase
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 313)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 88 fc fc-bootstrap --role developer sets developer role
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 333)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 89 fc fc-bootstrap --role personal sets personal role
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 343)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 90 fc fc-bootstrap --role work sets work role
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 353)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 91 fc fc-bootstrap with unknown option shows error
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_bootstrap.bats, line 363)
+#   `assert_output --partial "Unknown option"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown option
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 92 fc fc-bootstrap marks phases as completed
+not ok 93 fc fc-bootstrap --force re-runs completed phases
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 399)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 94 fc fc-bootstrap skips already completed phases by default
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 415)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 95 fc fc-bootstrap resume continues from last incomplete phase
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 437)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 96 fc fc-clean --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_clean.bats, line 39)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 97 fc fc-clean --help shows options
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_clean.bats, line 48)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 98 fc fc-clean --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_clean.bats, line 56)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 99 fc fc-clean --help mentions Brewfile paths
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_clean.bats, line 63)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 100 fc fc-clean with no subcommand shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_clean.bats, line 70)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 101 fc fc-clean brew runs without error # skip Homebrew not installed
+ok 102 fc fc-clean brew shows installed count # skip Homebrew not installed
+ok 103 fc fc-clean brew shows defined count # skip Homebrew not installed
+ok 104 fc fc-clean brew shows orphaned count # skip Homebrew not installed
+ok 105 fc fc-clean brew --skip-deps works # skip Homebrew not installed
+ok 106 fc fc-clean casks runs without error # skip Homebrew not installed
+ok 107 fc fc-clean casks shows installed count # skip Homebrew not installed
+ok 108 fc fc-clean casks shows defined count # skip Homebrew not installed
+ok 109 fc fc-clean cask alias works # skip Homebrew not installed
+ok 110 fc fc-clean list runs without error # skip Homebrew not installed
+ok 111 fc fc-clean list --formula shows only formulae # skip Homebrew not installed
+ok 112 fc fc-clean list --cask shows only casks # skip Homebrew not installed
+ok 113 fc fc-clean list --formulae alias works # skip Homebrew not installed
+ok 114 fc fc-clean list --casks alias works # skip Homebrew not installed
+not ok 115 fc fc-clean unknown subcommand fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_clean.bats, line 233)
+#   `assert_output --partial "Unknown subcommand"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown subcommand
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 116 fc fc-clean unknown subcommand shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_clean.bats, line 239)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 117 fc fc-clean unknown option fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_clean.bats, line 245)
+#   `assert_output --partial "Unknown option"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown option
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 118 fc fc-clean --skip-deps brew works (flags before subcommand) # skip Homebrew not installed
+ok 119 fc fc-clean brew --skip-deps works (flags after subcommand) # skip Homebrew not installed
+ok 120 fc-clean plugin exists
+ok 121 fc-clean plugin is executable
+ok 122 fc-clean plugin sources init.sh
+ok 123 fc fc-clean brew suggests fc-apps add for adoption # skip Homebrew not installed
+ok 124 fc fc-clean casks suggests fc-apps add for adoption # skip Homebrew not installed
+not ok 125 Dispatcher: should display a dynamic help message with available plugins
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 28)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (12 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc [global options] <command> [command options]
+#
+#   [38;5;117m[INFO    ][0m Global Options:
+#     -i, --interactive  Launch interactive mode (requires fzf)
+#     --log-file <path>  Redirect all log output to the specified file.
+#     --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL).
+#     --silent           Suppress all output except critical errors.
+#
+#   [38;5;117m[INFO    ][0m A modular, plugin-based command-line utility for system management.
+#
+#   [38;5;117m[INFO    ][0m Available commands:
+#   find: invalid mode ‘+111’
+# --
+#
+ok 126 Dispatcher: should fail gracefully for an unknown command
+not ok 127 Plugin 'info': should run successfully
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 64)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 128 Plugin 'bluetooth': should run successfully when blueutil is present
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 85)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 129 Plugin 'bluetooth': should fail gracefully when blueutil is missing
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_commands.bats, line 97)
+#   `assert_output --partial "The 'blueutil' command is required but not found."' failed
+#
+# -- output does not contain substring --
+# substring : The 'blueutil' command is required but not found.
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 130 Plugin 'redis': should run successfully when brew is present
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 107)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 131 Plugin 'redis': should fail gracefully when brew is missing # skip Cannot easily mock 'command -v' for brew in this environment
+not ok 132 Plugin 'backup': should fail gracefully when rsync is missing
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_commands.bats, line 123)
+#   `assert_output --partial "This command requires 'rsync'. Please install it first."' failed
+#
+# -- output does not contain substring --
+# substring : This command requires 'rsync'. Please install it first.
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 133 Plugin 'sync': should fail gracefully when gpg is missing
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_commands.bats, line 132)
+#   `assert_output --partial "GPG is not installed."' failed
+#
+# -- output does not contain substring --
+# substring : GPG is not installed.
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 134 Plugin 'sync': should fail gracefully when rsync is missing
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_commands.bats, line 142)
+#   `assert_output --partial "This command requires 'rsync'. Please install it first."' failed
+#
+# -- output does not contain substring --
+# substring : This command requires 'rsync'. Please install it first.
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 135 Plugin 'sync': should run successfully when dependencies are present
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 155)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 136 Global Options: --log-file should create log file with messages
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 168)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (12 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc [global options] <command> [command options]
+#
+#   [38;5;117m[INFO    ][0m Global Options:
+#     -i, --interactive  Launch interactive mode (requires fzf)
+#     --log-file <path>  Redirect all log output to the specified file.
+#     --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL).
+#     --silent           Suppress all output except critical errors.
+#
+#   [38;5;117m[INFO    ][0m A modular, plugin-based command-line utility for system management.
+#
+#   [38;5;117m[INFO    ][0m Available commands:
+#   find: invalid mode ‘+111’
+# --
+#
+ok 137 Global Options: invalid --log-level should fail with helpful message
+not ok 138 Global Options: --silent should suppress info messages
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 189)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (8 lines):
+#
+#     -i, --interactive  Launch interactive mode (requires fzf)
+#     --log-file <path>  Redirect all log output to the specified file.
+#     --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL).
+#     --silent           Suppress all output except critical errors.
+#
+#
+#   find: invalid mode ‘+111’
+# --
+#
+not ok 139 Global Options: --help should show --silent option
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 196)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (12 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc [global options] <command> [command options]
+#
+#   [38;5;117m[INFO    ][0m Global Options:
+#     -i, --interactive  Launch interactive mode (requires fzf)
+#     --log-file <path>  Redirect all log output to the specified file.
+#     --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL).
+#     --silent           Suppress all output except critical errors.
+#
+#   [38;5;117m[INFO    ][0m A modular, plugin-based command-line utility for system management.
+#
+#   [38;5;117m[INFO    ][0m Available commands:
+#   find: invalid mode ‘+111’
+# --
+#
+not ok 140 Global Options: --help should show CRITICAL in --log-level description
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 203)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (12 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc [global options] <command> [command options]
+#
+#   [38;5;117m[INFO    ][0m Global Options:
+#     -i, --interactive  Launch interactive mode (requires fzf)
+#     --log-file <path>  Redirect all log output to the specified file.
+#     --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL).
+#     --silent           Suppress all output except critical errors.
+#
+#   [38;5;117m[INFO    ][0m A modular, plugin-based command-line utility for system management.
+#
+#   [38;5;117m[INFO    ][0m Available commands:
+#   find: invalid mode ‘+111’
+# --
+#
+not ok 141 fc context --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_context.bats, line 59)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 142 fc context with no arguments shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_context.bats, line 69)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 143 fc context --help shows subcommands
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_context.bats, line 75)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 144 fc context --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_context.bats, line 90)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 145 fc context list runs successfully
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_context.bats, line 102)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 146 fc context list shows create hint when no contexts
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_context.bats, line 110)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 147 fc context current runs successfully
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_context.bats, line 121)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 148 fc context current mentions no active context when none set
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_context.bats, line 129)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 149 fc context current shows list hint
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_context.bats, line 137)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 150 fc context switch requires context name (without fzf)
+# (in test file tests/fc_context.bats, line 150)
+#   `[[ "$status" -eq 0 ]] || [[ "$output" =~ "Usage" ]] || [[ "$output" =~ "No contexts" ]]' failed
+not ok 151 fc context switch fails for nonexistent context
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 156)
+#   `assert_output --partial "Context not found"' failed
+#
+# -- output does not contain substring --
+# substring : Context not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 152 fc context switch shows list hint for nonexistent context
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 162)
+#   `assert_output --partial "fc context list"' failed
+#
+# -- output does not contain substring --
+# substring : fc context list
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 153 fc context create validates context name format
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 173)
+#   `assert_output --partial "Invalid context name"' failed
+#
+# -- output does not contain substring --
+# substring : Invalid context name
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 154 fc context edit requires context name
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 183)
+#   `assert_output --partial "Usage: fc context edit"' failed
+#
+# -- output does not contain substring --
+# substring : Usage: fc context edit
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 155 fc context edit fails for nonexistent context
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 189)
+#   `assert_output --partial "Context not found"' failed
+#
+# -- output does not contain substring --
+# substring : Context not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 156 fc context delete requires context name
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 199)
+#   `assert_output --partial "Usage: fc context delete"' failed
+#
+# -- output does not contain substring --
+# substring : Usage: fc context delete
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 157 fc context delete fails for nonexistent context
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 205)
+#   `assert_output --partial "Context not found"' failed
+#
+# -- output does not contain substring --
+# substring : Context not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 158 fc context export requires context name
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 215)
+#   `assert_output --partial "Usage: fc context export"' failed
+#
+# -- output does not contain substring --
+# substring : Usage: fc context export
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 159 fc context export fails for nonexistent context
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 221)
+#   `assert_output --partial "Context not found"' failed
+#
+# -- output does not contain substring --
+# substring : Context not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 160 fc context import requires file path
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 231)
+#   `assert_output --partial "Usage: fc context import"' failed
+#
+# -- output does not contain substring --
+# substring : Usage: fc context import
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 161 fc context import fails for nonexistent file
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 237)
+#   `assert_output --partial "File not found"' failed
+#
+# -- output does not contain substring --
+# substring : File not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 162 fc context off runs successfully when no context active
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_context.bats, line 248)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 163 fc context shell requires context when none active
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 261)
+#   `assert_output --partial "No context specified"' failed
+#
+# -- output does not contain substring --
+# substring : No context specified
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 164 fc context shell fails for nonexistent context
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 267)
+#   `assert_output --partial "Context not found"' failed
+#
+# -- output does not contain substring --
+# substring : Context not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 165 fc context unknown subcommand fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 277)
+#   `assert_output --partial "Unknown subcommand"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown subcommand
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 166 fc context unknown subcommand shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_context.bats, line 283)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 167 context config template exists
+ok 168 context config template has required sections
+ok 169 context config template has documentation
+ok 170 fc context plugin is executable
+ok 171 fc context plugin sources init.sh
+ok 172 fc context plugin has usage function
+ok 173 fc context plugin has main function
+not ok 174 fc defaults --help displays usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 35)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 175 fc defaults -h displays usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 42)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 176 fc defaults with no arguments shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 48)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 177 fc defaults --help lists all subcommands
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 55)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 178 fc defaults --help shows --dry-run option
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 65)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 179 fc defaults --help shows example commands
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 72)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 180 fc defaults list runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 84)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 181 fc defaults list displays category headers
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 89)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 182 fc defaults list shows Finder tweaks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 97)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 183 fc defaults list shows Dock tweaks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 105)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 184 fc defaults list shows Screenshot tweaks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 113)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 185 fc defaults list shows Keyboard tweaks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 121)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 186 fc defaults list shows descriptions for each tweak
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 129)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 187 fc defaults list shows usage hint at the end
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 137)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 188 fc defaults status runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 147)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 189 fc defaults status shows column headers
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 152)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 190 fc defaults status displays tweaks with values
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 160)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 191 fc defaults status shows On/Off for boolean tweaks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 168)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 192 fc defaults apply without tweak name shows error
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_defaults.bats, line 181)
+#   `assert_output --partial "Please specify a tweak to apply"' failed
+#
+# -- output does not contain substring --
+# substring : Please specify a tweak to apply
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 193 fc defaults apply with invalid tweak name shows error
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_defaults.bats, line 187)
+#   `assert_output --partial "Unknown tweak"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown tweak
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 194 fc defaults apply --dry-run shows what would be done
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 193)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 195 fc defaults apply --dry-run does not require restart
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 202)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 196 fc defaults --dry-run apply works (flag before subcommand)
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 208)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 197 fc defaults apply --dry-run shows description
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 214)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 198 fc defaults apply --dry-run for dock tweak mentions Dock restart
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 220)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 199 fc defaults apply --dry-run for keyboard tweak has no restart
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 226)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 200 fc defaults reset without tweak name shows error
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_defaults.bats, line 238)
+#   `assert_output --partial "Please specify a tweak to reset"' failed
+#
+# -- output does not contain substring --
+# substring : Please specify a tweak to reset
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 201 fc defaults reset with invalid tweak name shows error
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_defaults.bats, line 244)
+#   `assert_output --partial "Unknown tweak"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown tweak
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 202 fc defaults reset --dry-run shows what would be done
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 249)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 203 fc defaults reset --dry-run shows restart command
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 257)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 204 fc defaults all --dry-run runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 267)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 205 fc defaults all --dry-run lists all tweaks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 272)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 206 fc defaults all --dry-run shows count of tweaks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 280)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 207 fc defaults all --dry-run mentions status command
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 287)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 208 fc defaults --dry-run all works (flag before subcommand)
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 293)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 209 fc defaults with unknown subcommand fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_defaults.bats, line 304)
+#   `assert_output --partial "Unknown subcommand: invalid-subcommand"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown subcommand: invalid-subcommand
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 210 fc defaults with unknown subcommand suggests help
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_defaults.bats, line 310)
+#   `assert_output --partial "fc defaults --help"' failed
+#
+# -- output does not contain substring --
+# substring : fc defaults --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 211 fc defaults list includes Safari tweaks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 319)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 212 fc defaults list includes System tweaks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 326)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 213 fc defaults list includes Terminal tweaks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 333)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 214 fc defaults list includes Text Input tweaks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 339)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 215 fc defaults list includes Trackpad tweaks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 346)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 216 fc defaults apply --dry-run handles bool type correctly
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 357)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 217 fc defaults apply --dry-run handles int type correctly
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 364)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 218 fc defaults apply --dry-run handles float type correctly
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 370)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 219 fc defaults apply --dry-run handles string type correctly
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 376)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 220 fc shows defaults in available commands
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 387)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (12 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc [global options] <command> [command options]
+#
+#   [38;5;117m[INFO    ][0m Global Options:
+#     -i, --interactive  Launch interactive mode (requires fzf)
+#     --log-file <path>  Redirect all log output to the specified file.
+#     --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL).
+#     --silent           Suppress all output except critical errors.
+#
+#   [38;5;117m[INFO    ][0m A modular, plugin-based command-line utility for system management.
+#
+#   [38;5;117m[INFO    ][0m Available commands:
+#   find: invalid mode ‘+111’
+# --
+#
+not ok 221 fc defaults can be invoked via dispatcher
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_defaults.bats, line 394)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 222 fc desktop --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_desktop.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 223 fc desktop --help shows actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_desktop.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 224 fc desktop --help shows options
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_desktop.bats, line 42)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 225 fc desktop with no action shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_desktop.bats, line 49)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 226 fc desktop status runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_desktop.bats, line 59)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 227 fc desktop unknown action fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_desktop.bats, line 66)
+#   `assert_output --partial "Unknown action"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown action
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 228 fc-desktop plugin exists
+ok 229 fc-desktop plugin is executable
+ok 230 fc-desktop plugin sources init.sh
+not ok 231 fc dns --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dns.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 232 fc dns --help shows actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dns.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 233 fc dns --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dns.bats, line 42)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 234 fc dns --help shows popular DNS providers
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dns.bats, line 50)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 235 fc dns --help mentions sudo requirement
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dns.bats, line 60)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 236 fc dns with no action shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dns.bats, line 66)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 237 fc dns unknown action fails
+ok 238 fc dns unknown action error message includes help hint
+ok 239 fc-dns plugin exists
+ok 240 fc-dns plugin is executable
+ok 241 fc-dns plugin sources init.sh
+ok 242 fc-dns plugin uses networksetup
+ok 243 fc-dns plugin handles get and status as aliases
+not ok 244 fc docker --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_docker.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 245 fc docker --help shows actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_docker.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 246 fc docker --help shows options
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_docker.bats, line 43)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 247 fc docker with no action shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_docker.bats, line 50)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 248 fc docker status fails gracefully without Docker # skip Docker is running, testing status command
+not ok 249 fc docker unknown action fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_docker.bats, line 74)
+#   `assert_output --partial "Unknown action"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown action
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 250 fc-docker plugin exists
+ok 251 fc-docker plugin is executable
+ok 252 fc-docker plugin sources init.sh
+not ok 253 fc fc-dotfiles --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dotfiles.bats, line 39)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 254 fc fc-dotfiles --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dotfiles.bats, line 48)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 255 fc fc-dotfiles with no arguments shows help
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dotfiles.bats, line 55)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 256 fc fc-dotfiles list runs successfully
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dotfiles.bats, line 65)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 257 fc fc-dotfiles list shows bash directory files
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dotfiles.bats, line 71)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 258 fc fc-dotfiles list shows git directory files
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dotfiles.bats, line 77)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 259 fc fc-dotfiles list shows zsh directory files
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_dotfiles.bats, line 83)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 260 fc fc-dotfiles add requires file argument
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_dotfiles.bats, line 94)
+#   `assert_output --partial "Usage:"' failed
+#
+# -- output does not contain substring --
+# substring : Usage:
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 261 fc fc-dotfiles add fails for nonexistent file
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_dotfiles.bats, line 100)
+#   `assert_output --partial "not found"' failed
+#
+# -- output does not contain substring --
+# substring : not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 262 fc fc-dotfiles add fails for symlink
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_dotfiles.bats, line 112)
+#   `assert_output --partial "already a symlink"' failed
+#
+# -- output does not contain substring --
+# substring : already a symlink
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 263 fc fc-dotfiles edit requires name argument
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_dotfiles.bats, line 122)
+#   `assert_output --partial "Usage:"' failed
+#
+# -- output does not contain substring --
+# substring : Usage:
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 264 fc fc-dotfiles edit fails for nonexistent dotfile
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_dotfiles.bats, line 128)
+#   `assert_output --partial "No dotfile found"' failed
+#
+# -- output does not contain substring --
+# substring : No dotfile found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 265 fc fc-dotfiles with unknown subcommand shows error
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_dotfiles.bats, line 138)
+#   `assert_output --partial "Unknown subcommand"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown subcommand
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 266 profiles directory exists
+ok 267 profiles/base directory exists
+ok 268 profiles/base/bash directory exists
+ok 269 profiles/base/git directory exists
+ok 270 profiles/base/zsh directory exists
+not ok 271 fc firewall --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_firewall.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 272 fc firewall --help shows basic actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_firewall.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 273 fc firewall --help shows app management actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_firewall.bats, line 41)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 274 fc firewall --help shows configuration actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_firewall.bats, line 51)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 275 fc firewall --help shows advanced options
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_firewall.bats, line 59)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 276 fc firewall with no action shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_firewall.bats, line 67)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 277 fc firewall add requires app path # skip macOS only
+ok 278 fc firewall add validates app exists # skip macOS only
+ok 279 fc firewall unknown action fails # skip macOS only
+ok 280 fc-firewall plugin exists
+ok 281 fc-firewall plugin is executable
+ok 282 fc-firewall plugin sources init.sh
+ok 283 fc-firewall contains socketfilterfw reference
+not ok 284 fc focus --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_focus.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 285 fc focus --help shows start action
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_focus.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 286 fc focus --help shows stop action
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_focus.bats, line 40)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 287 fc focus --help shows status action
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_focus.bats, line 46)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 288 fc focus --help shows setup action
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_focus.bats, line 52)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 289 fc focus --help shows duration formats
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_focus.bats, line 58)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 290 fc focus with no action shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_focus.bats, line 65)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 291 fc focus unknown action fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_focus.bats, line 72)
+#   `assert_output --partial "Unknown action"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown action
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 292 fc-focus plugin exists
+ok 293 fc-focus plugin is executable
+ok 294 fc-focus plugin sources init.sh
+ok 295 fc-focus contains hosts file handling
+ok 296 fc-focus contains focus markers
+not ok 297 fc healthcheck --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_healthcheck.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 298 fc healthcheck --help shows available checks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_healthcheck.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 299 fc healthcheck --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_healthcheck.bats, line 42)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 300 fc healthcheck --list shows available checks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_healthcheck.bats, line 49)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 301 fc healthcheck runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_healthcheck.bats, line 63)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 302 fc healthcheck shows summary
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_healthcheck.bats, line 69)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 303 fc healthcheck includes all four checks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_healthcheck.bats, line 75)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 304 fc healthcheck symlinks runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_healthcheck.bats, line 88)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 305 fc healthcheck deps runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_healthcheck.bats, line 94)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 306 fc healthcheck ssh runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_healthcheck.bats, line 100)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 307 fc healthcheck git runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_healthcheck.bats, line 106)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 308 fc healthcheck unknown check fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_healthcheck.bats, line 117)
+#   `assert_output --partial "Unknown check"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown check
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 309 fc healthcheck unknown check shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_healthcheck.bats, line 123)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 310 fc-healthcheck plugin exists
+ok 311 fc-healthcheck plugin is executable
+ok 312 fc-healthcheck plugin sources init.sh
+ok 313 fc-healthcheck plugin defines check functions
+not ok 314 fc history --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_history.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 315 fc history --help shows actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_history.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 316 fc history stats runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_history.bats, line 47)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 317 fc history top shows commands
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_history.bats, line 53)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 318 fc history unknown action fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_history.bats, line 60)
+#   `assert_output --partial "Unknown action"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown action
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 319 fc-history plugin exists
+ok 320 fc-history plugin is executable
+ok 321 fc-history plugin sources init.sh
+not ok 322 fc fc-maintenance --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 55)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 323 fc fc-maintenance --help shows options
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 64)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 324 fc fc-maintenance --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 72)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 325 fc fc-maintenance --help shows configuration path
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 79)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 326 fc fc-maintenance setup creates config file
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 93)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 327 fc fc-maintenance setup shows next steps
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 102)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 328 fc fc-maintenance setup detects existing config
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 113)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 329 fc fc-maintenance list shows available tasks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 123)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 330 fc fc-maintenance list shows brew-cleanup task
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 129)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 331 fc fc-maintenance list shows npm-cache task
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 135)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 332 fc fc-maintenance list shows trash task
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 141)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 333 fc fc-maintenance list shows enabled/disabled status
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 147)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 334 fc fc-maintenance list shows sudo requirement
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 153)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 335 fc fc-maintenance run requires task name
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_maintenance.bats, line 164)
+#   `assert_output --partial "Task name required"' failed
+#
+# -- output does not contain substring --
+# substring : Task name required
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 336 fc fc-maintenance run with unknown task fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_maintenance.bats, line 170)
+#   `assert_output --partial "Unknown task"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown task
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 337 fc fc-maintenance run with unknown task shows list hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_maintenance.bats, line 176)
+#   `assert_output --partial "fc fc-maintenance list"' failed
+#
+# -- output does not contain substring --
+# substring : fc fc-maintenance list
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 338 fc fc-maintenance run brew-cleanup --dry-run works
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 181)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 339 fc fc-maintenance --dry-run shows preview
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 192)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 340 fc fc-maintenance --dry-run does not execute tasks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 199)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 341 fc fc-maintenance --all includes more tasks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 207)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 342 fc fc-maintenance unknown subcommand fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_maintenance.bats, line 219)
+#   `assert_output --partial "Unknown subcommand"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown subcommand
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 343 fc fc-maintenance unknown subcommand shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_maintenance.bats, line 225)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 344 maintenance.conf.template exists
+ok 345 maintenance.conf.template has task configuration
+ok 346 maintenance.conf.template has LOG_RETENTION_DAYS
+ok 347 maintenance.conf.template has BREW_PRUNE_DAYS
+not ok 348 fc fc-maintenance run dns-flush --dry-run shows correct command
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 257)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 349 fc fc-maintenance run trash --dry-run works
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 264)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 350 fc fc-maintenance --include-trash --dry-run includes trash task
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 270)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 351 fc network --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_network.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 352 fc network --help shows actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_network.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 353 fc network status runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_network.bats, line 48)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 354 fc network info shows network configuration
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_network.bats, line 54)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 355 fc network unknown action fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_network.bats, line 61)
+#   `assert_output --partial "Unknown action"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown action
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 356 fc-network plugin exists
+ok 357 fc-network plugin is executable
+ok 358 fc-network plugin sources init.sh
+not ok 359 fc fc-profile --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_profile.bats, line 39)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 360 fc fc-profile with no arguments shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_profile.bats, line 48)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 361 fc fc-profile --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_profile.bats, line 54)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 362 fc fc-profile list shows available profiles header
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_profile.bats, line 65)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 363 fc fc-profile list shows work profile
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_profile.bats, line 71)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 364 fc fc-profile list shows personal profile
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_profile.bats, line 77)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 365 fc fc-profile list shows switch hint
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_profile.bats, line 83)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 366 fc fc-profile current runs successfully
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_profile.bats, line 93)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 367 fc fc-profile current mentions base dotfiles when no profile active
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_profile.bats, line 99)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 368 fc fc-profile switch requires profile argument
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_profile.bats, line 111)
+#   `assert_output --partial "Usage: fc fc-profile switch"' failed
+#
+# -- output does not contain substring --
+# substring : Usage: fc fc-profile switch
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 369 fc fc-profile switch fails for nonexistent profile
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_profile.bats, line 117)
+#   `assert_output --partial "Profile not found"' failed
+#
+# -- output does not contain substring --
+# substring : Profile not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 370 fc fc-profile switch fails for nonexistent profile with list hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_profile.bats, line 123)
+#   `assert_output --partial "fc fc-profile list"' failed
+#
+# -- output does not contain substring --
+# substring : fc fc-profile list
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 371 profiles/base directory exists
+ok 372 profiles/base/git directory exists
+ok 373 profiles/base/zsh directory exists
+ok 374 profiles/base/bash directory exists
+ok 375 profiles/work directory exists
+ok 376 profiles/personal directory exists
+ok 377 profiles/work has .gitconfig override
+ok 378 profiles/personal has .gitconfig override
+not ok 379 fc fc-profile unknown subcommand fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_profile.bats, line 169)
+#   `assert_output --partial "Unknown subcommand"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown subcommand
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 380 fc fc-profile unknown subcommand shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_profile.bats, line 175)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 381 fc raycast --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_raycast.bats, line 28)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 382 fc raycast --help shows actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_raycast.bats, line 34)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 383 fc raycast --help shows available commands
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_raycast.bats, line 42)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 384 fc raycast with no action shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_raycast.bats, line 51)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 385 fc-raycast plugin exists
+ok 386 fc-raycast plugin is executable
+ok 387 fc-raycast plugin sources init.sh
+ok 388 raycast scripts directory exists
+ok 389 fc-env.sh exists
+ok 390 fc-env.sh is executable
+ok 391 fc-env.sh has DOTFILES_ROOT placeholder
+ok 392 wifi-on.sh exists and is executable
+ok 393 wifi-on.sh has required Raycast metadata
+ok 394 wifi-off.sh exists and is executable
+ok 395 wifi-status.sh exists and is executable
+ok 396 bluetooth-on.sh exists and is executable
+ok 397 bluetooth-off.sh exists and is executable
+ok 398 bluetooth-status.sh exists and is executable
+ok 399 lock-screen.sh exists and is executable
+ok 400 lock-screen.sh uses silent mode
+ok 401 caffeine-on.sh exists and is executable
+ok 402 caffeine-off.sh exists and is executable
+ok 403 caffeine-30min.sh exists and is executable
+ok 404 caffeine-60min.sh exists and is executable
+ok 405 caffeine-status.sh exists and is executable
+ok 406 dns-status.sh exists and is executable
+ok 407 dns-cloudflare.sh exists and is executable
+ok 408 dns-google.sh exists and is executable
+ok 409 dns-quad9.sh exists and is executable
+ok 410 dns-clear.sh exists and is executable
+ok 411 airdrop-everyone.sh exists and is executable
+ok 412 airdrop-contacts.sh exists and is executable
+ok 413 airdrop-off.sh exists and is executable
+ok 414 airdrop-status.sh exists and is executable
+ok 415 system-info.sh exists and is executable
+ok 416 system-info.sh uses fullOutput mode
+ok 417 system-healthcheck.sh exists and is executable
+ok 418 system-healthcheck.sh uses fullOutput mode
+ok 419 disk-status.sh exists and is executable
+ok 420 disk-usage.sh exists and is executable
+ok 421 ssh-list.sh exists and is executable
+ok 422 ssh-copy-default.sh exists and is executable
+ok 423 clipboard-clear.sh exists and is executable
+ok 424 all scripts have Flying Circus package name
+ok 425 all scripts source fc-env.sh
+not ok 426 fc raycast status runs and outputs status
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_raycast.bats, line 326)
+#   `assert_output --partial "Raycast"' failed
+#
+# -- output does not contain substring --
+# substring : Raycast
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 427 fc raycast status shows scripts check
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_raycast.bats, line 332)
+#   `assert_output --partial "Scripts"' failed
+#
+# -- output does not contain substring --
+# substring : Scripts
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 428 fc raycast unknown action fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_raycast.bats, line 342)
+#   `assert_output --partial "Unknown action"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown action
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 429 fc raycast unknown action shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_raycast.bats, line 348)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 430 fc scaffold --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_scaffold.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 431 fc scaffold --help shows actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_scaffold.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 432 fc scaffold --help shows options
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_scaffold.bats, line 42)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 433 fc scaffold with no action shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_scaffold.bats, line 50)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 434 fc scaffold list shows templates
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_scaffold.bats, line 60)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 435 fc scaffold show python-cli shows details
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_scaffold.bats, line 66)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 436 fc scaffold show nonexistent fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_scaffold.bats, line 73)
+#   `assert_output --partial "not found"' failed
+#
+# -- output does not contain substring --
+# substring : not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 437 fc scaffold unknown action fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_scaffold.bats, line 79)
+#   `assert_output --partial "Unknown action"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown action
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 438 templates directory exists
+ok 439 projects templates directory exists
+ok 440 python-cli template exists
+ok 441 python-cli has template.conf
+ok 442 fc-scaffold plugin exists
+ok 443 fc-scaffold plugin is executable
+ok 444 fc-scaffold plugin sources init.sh
+not ok 445 fc fc-schedule --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_schedule.bats, line 63)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 446 fc fc-schedule with no arguments shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_schedule.bats, line 72)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 447 fc fc-schedule --help shows frequency options
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_schedule.bats, line 78)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 448 fc fc-schedule --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_schedule.bats, line 86)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 449 fc fc-schedule status works when not installed
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_schedule.bats, line 97)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 450 fc fc-schedule status shows status header
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_schedule.bats, line 104)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 451 fc fc-schedule install fails without sync config
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_schedule.bats, line 127)
+#   `assert_output --partial "fc-sync is not configured"' failed
+#
+# -- output does not contain substring --
+# substring : fc-sync is not configured
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 452 fc fc-schedule install with invalid frequency fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_schedule.bats, line 133)
+#   `assert_output --partial "Invalid frequency"' failed
+#
+# -- output does not contain substring --
+# substring : Invalid frequency
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 453 fc fc-schedule uninstall works when not installed
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_schedule.bats, line 142)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 454 fc fc-schedule unknown subcommand fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_schedule.bats, line 153)
+#   `assert_output --partial "Unknown subcommand"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown subcommand
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 455 fc fc-schedule unknown subcommand shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_schedule.bats, line 159)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 456 plist template exists
+ok 457 plist template contains required placeholders
+ok 458 plist template has correct label
+ok 459 plist template uses --no-confirm flag
+not ok 460 fc fc-sync --help shows --no-confirm option
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_schedule.bats, line 200)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 461 fc fc-sync --no-confirm is documented for automated use
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_schedule.bats, line 206)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 462 fc fc-secrets --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 67)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 463 fc fc-secrets --help shows backend types
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 79)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 464 fc fc-secrets --help shows configuration file path
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 87)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 465 fc fc-secrets --help shows 1Password backend
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 94)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 466 fc fc-secrets --help shows macOS Keychain backend
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 100)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 467 fc fc-secrets --help shows HashiCorp Vault backend
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 106)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 468 fc fc-secrets -h shows usage (short flag)
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 112)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 469 fc fc-secrets with no arguments shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 118)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 470 secrets.conf.template exists
+ok 471 secrets.conf.template contains 1Password examples
+ok 472 secrets.conf.template contains Keychain examples
+ok 473 secrets.conf.template contains Vault examples
+ok 474 secrets.conf.template contains env destination examples
+ok 475 secrets.conf.template contains file destination examples
+ok 476 secrets.conf.template contains security warning
+ok 477 op.sh backend plugin exists
+ok 478 keychain.sh backend plugin exists
+ok 479 vault.sh backend plugin exists
+ok 480 op.sh backend is executable
+ok 481 keychain.sh backend is executable
+ok 482 vault.sh backend is executable
+not ok 483 fc fc-secrets setup creates config file
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 201)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 484 fc fc-secrets setup sets correct permissions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 209)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 485 fc fc-secrets setup shows next steps
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 219)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 486 fc fc-secrets setup detects existing config
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 231)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 487 fc fc-secrets setup checks backend prerequisites
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 238)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 488 fc fc-secrets setup shows all backends
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 245)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 489 fc fc-secrets status shows backend status
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 257)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 490 fc fc-secrets status shows all three backends
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 263)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 491 fc fc-secrets status shows Keychain as authenticated # skip Keychain only available on macOS
+not ok 492 fc fc-secrets list shows configured secrets header
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 294)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 493 fc fc-secrets list shows table headers
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 306)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 494 fc fc-secrets list parses op:// entries
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 320)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 495 fc fc-secrets list parses keychain:// entries
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 334)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 496 fc fc-secrets list parses vault:// entries
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 347)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 497 fc fc-secrets list handles no config gracefully
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 355)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 498 fc fc-secrets list skips comment lines
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 370)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 499 fc fc-secrets list skips variable assignments
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 383)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 500 fc fc-secrets get requires URI argument
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_secrets.bats, line 395)
+#   `assert_output --partial "Please provide a secret URI"' failed
+#
+# -- output does not contain substring --
+# substring : Please provide a secret URI
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 501 fc fc-secrets get rejects unknown backend
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_secrets.bats, line 401)
+#   `assert_output --partial "Unknown backend"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown backend
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 502 fc fc-secrets get --help shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 406)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 503 fc fc-secrets get --help op shows 1Password help
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 415)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 504 fc fc-secrets get --help keychain shows Keychain help
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 421)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 505 fc fc-secrets get --help vault shows Vault help
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 427)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 506 fc fc-secrets get op:// requires op CLI
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_secrets.bats, line 439)
+#   `assert_output --partial "not installed"' failed
+#
+# -- output does not contain substring --
+# substring : not installed
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 507 fc fc-secrets get vault:// requires vault CLI
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_secrets.bats, line 449)
+#   `assert_output --partial "not installed"' failed
+#
+# -- output does not contain substring --
+# substring : not installed
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 508 fc fc-secrets verify requires config file
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_secrets.bats, line 460)
+#   `assert_output --partial "Configuration file not found"' failed
+#
+# -- output does not contain substring --
+# substring : Configuration file not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 509 fc fc-secrets verify shows verification header
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_secrets.bats, line 472)
+#   `assert_output --partial "Verifying secrets"' failed
+#
+# -- output does not contain substring --
+# substring : Verifying secrets
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 510 fc fc-secrets sync requires config file
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_secrets.bats, line 483)
+#   `assert_output --partial "Configuration file not found"' failed
+#
+# -- output does not contain substring --
+# substring : Configuration file not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 511 fc fc-secrets sync shows syncing header
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_secrets.bats, line 495)
+#   `assert_output --partial "Syncing secrets"' failed
+#
+# -- output does not contain substring --
+# substring : Syncing secrets
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 512 fc fc-secrets with unknown subcommand shows error
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_secrets.bats, line 505)
+#   `assert_output --partial "Unknown subcommand"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown subcommand
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 513 fc fc-secrets handles file destination with permissions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 520)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 514 fc fc-secrets handles env destination
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 532)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 515 fc fc-secrets handles multiple secrets from different backends
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_secrets.bats, line 546)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 516 fc ssh --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_ssh.bats, line 38)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 517 fc ssh --help shows all subcommands
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_ssh.bats, line 44)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 518 fc ssh --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_ssh.bats, line 53)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 519 fc ssh with no subcommand shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_ssh.bats, line 60)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 520 fc ssh generate --help shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_ssh.bats, line 70)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 521 fc ssh generate --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_ssh.bats, line 78)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 522 fc ssh add --help shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_ssh.bats, line 88)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 523 fc ssh add without key name fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_ssh.bats, line 95)
+#   `assert_output --partial "Usage:"' failed
+#
+# -- output does not contain substring --
+# substring : Usage:
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 524 fc ssh add with nonexistent key fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_ssh.bats, line 101)
+#   `assert_output --partial "not found"' failed
+#
+# -- output does not contain substring --
+# substring : not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 525 fc ssh copy --help shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_ssh.bats, line 110)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 526 fc ssh copy with nonexistent key fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_ssh.bats, line 117)
+#   `assert_output --partial "not found"' failed
+#
+# -- output does not contain substring --
+# substring : not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 527 fc ssh list --help shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_ssh.bats, line 126)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 528 fc ssh list runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_ssh.bats, line 132)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 529 fc ssh unknown subcommand fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_ssh.bats, line 143)
+#   `assert_output --partial "Unknown subcommand"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown subcommand
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 530 fc ssh unknown subcommand shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_ssh.bats, line 149)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 531 fc ssh generate unknown option fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_ssh.bats, line 155)
+#   `assert_output --partial "Unknown option"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown option
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 532 fc-ssh plugin exists
+ok 533 fc-ssh plugin is executable
+ok 534 fc-ssh plugin sources init.sh
+ok 535 fc-ssh plugin uses ssh-keygen
+ok 536 fc-ssh plugin uses ssh-add
+ok 537 fc-ssh plugin uses apple-use-keychain
+ok 538 fc-ssh-keygen plugin no longer exists
+not ok 539 fc fc-sync --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync.bats, line 47)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 540 fc fc-sync --help shows configuration file path
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync.bats, line 56)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 541 sync.conf.template exists
+ok 542 sync.conf.template contains required variables
+ok 543 sync.conf.template contains security warning
+not ok 544 fc fc-sync setup creates config file
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync.bats, line 91)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 545 fc fc-sync setup sets correct permissions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync.bats, line 99)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 546 fc fc-sync setup shows next steps
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync.bats, line 109)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 547 fc fc-sync setup detects existing config
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync.bats, line 122)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 548 fc fc-sync backup fails without GPG_RECIPIENT_ID
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 151)
+#   `assert_output --partial "GPG_RECIPIENT_ID is not configured"' failed
+#
+# -- output does not contain substring --
+# substring : GPG_RECIPIENT_ID is not configured
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 549 fc fc-sync backup fails with empty BACKUP_TARGETS
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 175)
+#   `assert_output --partial "BACKUP_TARGETS is empty"' failed
+#
+# -- output does not contain substring --
+# substring : BACKUP_TARGETS is empty
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 550 fc fc-sync with unknown subcommand shows error
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 185)
+#   `assert_output --partial "Unknown subcommand"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown subcommand
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 551 fc fc-sync backup requires gpg
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 198)
+#   `assert_output --partial "GPG is not installed"' failed
+#
+# -- output does not contain substring --
+# substring : GPG is not installed
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 552 fc fc-sync backup requires rsync
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 210)
+#   `assert_output --partial "rsync"' failed
+#
+# -- output does not contain substring --
+# substring : rsync
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 553 fc fc-sync --help shows remote subcommands
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync.bats, line 222)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 554 fc fc-sync --help mentions rclone
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync.bats, line 230)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 555 sync.conf.template contains remote storage variables
+not ok 556 fc fc-sync push requires rclone
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 245)
+#   `assert_output --partial "rclone is not installed"' failed
+#
+# -- output does not contain substring --
+# substring : rclone is not installed
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 557 fc fc-sync pull requires rclone
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 252)
+#   `assert_output --partial "rclone is not installed"' failed
+#
+# -- output does not contain substring --
+# substring : rclone is not installed
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 558 fc fc-sync list-remote requires rclone
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 259)
+#   `assert_output --partial "rclone is not installed"' failed
+#
+# -- output does not contain substring --
+# substring : rclone is not installed
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 559 fc fc-sync push fails without RCLONE_REMOTE configured
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 284)
+#   `assert_output --partial "RCLONE_REMOTE is not configured"' failed
+#
+# -- output does not contain substring --
+# substring : RCLONE_REMOTE is not configured
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 560 fc fc-sync push fails when local backup doesn't exist
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 314)
+#   `assert_output --partial "Local backup not found"' failed
+#
+# -- output does not contain substring --
+# substring : Local backup not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 561 fc fc-sync push fails with invalid remote name
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 342)
+#   `assert_output --partial "rclone remote 'nonexistent-remote' not found"' failed
+#
+# -- output does not contain substring --
+# substring : rclone remote 'nonexistent-remote' not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 562 backup backends directory exists
+ok 563 gpg backend file exists
+ok 564 restic backend file exists
+ok 565 borg backend file exists
+not ok 566 fc fc-sync --help shows available backends
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync_backends.bats, line 67)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 567 fc fc-sync --help shows backend descriptions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync_backends.bats, line 75)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 568 fc fc-sync --help mentions BACKUP_BACKEND config
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync_backends.bats, line 82)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 569 sync.conf.template contains BACKUP_BACKEND option
+ok 570 sync.conf.template contains Restic settings
+ok 571 sync.conf.template contains Borg settings
+ok 572 sync.conf.template contains BACKUP_EXCLUDES option
+not ok 573 fc fc-sync backup with invalid backend fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 133)
+#   `assert_output --partial "Unknown backup backend"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown backup backend
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 574 fc fc-sync backup with invalid backend shows available backends
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 148)
+#   `assert_output --partial "gpg"' failed
+#
+# -- output does not contain substring --
+# substring : gpg
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 575 gpg backend is default when BACKUP_BACKEND not set
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 177)
+#   `assert_output --partial "GPG_RECIPIENT_ID"' failed
+#
+# -- output does not contain substring --
+# substring : GPG_RECIPIENT_ID
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 576 restic backend requires restic command
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 199)
+#   `assert_output --partial "restic is not installed"' failed
+#
+# -- output does not contain substring --
+# substring : restic is not installed
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 577 restic backend requires RESTIC_REPOSITORY
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 220)
+#   `assert_output --partial "RESTIC_REPOSITORY is not configured"' failed
+#
+# -- output does not contain substring --
+# substring : RESTIC_REPOSITORY is not configured
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 578 restic backend requires RESTIC_PASSWORD_FILE
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 242)
+#   `assert_output --partial "RESTIC_PASSWORD_FILE"' failed
+#
+# -- output does not contain substring --
+# substring : RESTIC_PASSWORD_FILE
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 579 borg backend requires borg command
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 264)
+#   `assert_output --partial "borg is not installed"' failed
+#
+# -- output does not contain substring --
+# substring : borg is not installed
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 580 borg backend requires BORG_REPOSITORY
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 285)
+#   `assert_output --partial "BORG_REPOSITORY is not configured"' failed
+#
+# -- output does not contain substring --
+# substring : BORG_REPOSITORY is not configured
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 581 borg backend requires BORG_PASSPHRASE_FILE
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 307)
+#   `assert_output --partial "BORG_PASSPHRASE_FILE"' failed
+#
+# -- output does not contain substring --
+# substring : BORG_PASSPHRASE_FILE
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 582 fc fc-sync push with restic backend shows native remote info
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync_backends.bats, line 339)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 583 fc fc-sync push with borg backend shows native remote info
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync_backends.bats, line 371)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 584 fc theme --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_theme.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 585 fc theme --help shows actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_theme.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 586 fc theme with no action shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_theme.bats, line 42)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 587 fc theme list shows available themes
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_theme.bats, line 52)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 588 fc theme list shows dark theme
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_theme.bats, line 58)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 589 fc theme list shows light theme
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_theme.bats, line 64)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 590 fc theme current runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_theme.bats, line 70)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 591 fc theme apply nonexistent fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_theme.bats, line 76)
+#   `assert_output --partial "not found"' failed
+#
+# -- output does not contain substring --
+# substring : not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 592 fc theme unknown action fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_theme.bats, line 82)
+#   `assert_output --partial "Unknown action"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown action
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 593 themes directory exists
+ok 594 dark theme exists
+ok 595 light theme exists
+ok 596 dark theme has theme.conf
+ok 597 dark theme has colors.sh
+ok 598 fc-theme plugin exists
+ok 599 fc-theme plugin is executable
+not ok 600 fc uninstall --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_uninstall.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 601 fc uninstall --help shows actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_uninstall.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 602 fc uninstall --help shows options
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_uninstall.bats, line 40)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 603 fc uninstall with no action shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_uninstall.bats, line 47)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 604 fc uninstall scan runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_uninstall.bats, line 57)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 605 fc uninstall list nonexistent-app fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_uninstall.bats, line 64)
+#   `assert_output --partial "not found"' failed
+#
+# -- output does not contain substring --
+# substring : not found
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 606 fc uninstall without --force shows dry-run message # skip Safari not installed
+ok 607 fc-uninstall plugin exists
+ok 608 fc-uninstall plugin is executable
+ok 609 fc-uninstall plugin sources init.sh
+not ok 610 fc fc-update --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 37)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 611 fc fc-update --version shows version number
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 51)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 612 .version file exists at repository root
+ok 613 .version file contains valid semantic version
+ok 614 version_compare: equal versions return 0
+not ok 623 fc fc-update with unknown option shows error
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_update.bats, line 144)
+#   `assert_output --partial "Unknown option"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown option
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 624 migrations directory exists
+ok 625 migrations README.md exists
+ok 626 CHANGELOG.md exists
+ok 627 docs/UPDATING.md exists
+ok 628 docs/specs/fc-update.md documents new flags
+not ok 629 fc fc-update --help shows update target flags
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 186)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 630 fc fc-update --help shows Update Targets section
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 195)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 631 fc fc-update --help shows examples with new flags
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 201)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 632 fc fc-update --os flag is recognized
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 210)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 633 fc fc-update --packages flag is recognized
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 219)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 634 fc fc-update --self flag is recognized
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 228)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 635 fc fc-update --all flag runs all update types
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 237)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 636 fc fc-update with no flags defaults to --all
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 245)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 637 fc fc-update --dry-run with --packages shows outdated check
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 253)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 638 fc fc-update --dry-run with --os shows softwareupdate check
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 260)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 639 fc fc-update --dry-run with --self shows git pull preview
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 267)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 640 fc fc-update multiple target flags can be combined
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 274)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 641 fc vm --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vm.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 642 fc vm --help shows all actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vm.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 643 fc vm --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vm.bats, line 47)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 644 fc vm with no action shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vm.bats, line 55)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 645 fc vm unknown action fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_vm.bats, line 66)
+#   `assert_output --partial "Unknown action"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown action
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 646 fc vm unknown action shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_vm.bats, line 72)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 647 fc vm provider shows provider info
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vm.bats, line 78)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 648 fc vm provider invalid fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_vm.bats, line 84)
+#   `assert_output --partial "Unknown provider"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown provider
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 649 fc vm delete without name fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_vm.bats, line 94)
+#   `assert_output --partial "name required"' failed
+#
+# -- output does not contain substring --
+# substring : name required
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 650 fc vm create without name fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_vm.bats, line 100)
+#   `assert_output --partial "name required"' failed
+#
+# -- output does not contain substring --
+# substring : name required
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 651 fc-vm plugin exists
+ok 652 fc-vm plugin is executable
+ok 653 fc-vm plugin sources init.sh
+ok 654 vm_backends directory exists
+ok 655 lima backend exists
+ok 656 colima backend exists
+ok 657 lima backend has required functions
+ok 658 colima backend has required functions
+ok 659 vm.conf.template exists
+ok 660 vm.conf.template contains VM_PROVIDER
+not ok 661 fc vscode-sync --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 52)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 662 fc vscode-sync --help shows all subcommands
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 58)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 663 fc vscode-sync --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 67)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 664 fc vscode-sync --help shows config file location
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 73)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 665 fc vscode-sync with no subcommand shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 79)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 666 fc vscode-sync setup --help shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 89)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 667 fc vscode-sync setup creates config file
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 96)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 668 fc vscode-sync setup sets correct permissions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 103)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 669 fc vscode-sync setup detects existing config
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 113)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 670 fc vscode-sync setup checks prerequisites
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 120)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 671 fc vscode-sync up --help shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 130)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 672 fc vscode-sync up --help shows sync flags
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 136)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 673 fc vscode-sync down --help shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 147)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 674 fc vscode-sync down --help mentions backup
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 153)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 675 fc vscode-sync status --help shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_vscode_sync.bats, line 163)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 676 fc vscode-sync unknown subcommand fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_vscode_sync.bats, line 174)
+#   `assert_output --partial "Unknown subcommand"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown subcommand
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 677 fc vscode-sync unknown subcommand shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_vscode_sync.bats, line 180)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 678 fc vscode-sync up without auth fails (gist backend)
+ok 679 fc vscode-sync with unknown backend fails
+ok 680 fc vscode-sync down without gist ID fails (gist backend)
+ok 681 fc vscode-sync repo backend requires VSCODE_REPO_URL
+ok 682 fc-vscode-sync plugin exists
+ok 683 fc-vscode-sync plugin is executable
+ok 684 fc-vscode-sync plugin sources init.sh
+ok 685 fc-vscode-sync plugin uses code CLI
+ok 686 gist backend exists
+ok 687 repo backend exists
+ok 688 gist backend implements required functions
+ok 689 repo backend implements required functions
+ok 690 vscode-sync.conf.template exists
+ok 691 vscode-sync.conf.template contains backend selection
+ok 692 vscode-sync.conf.template contains gist settings
+ok 693 vscode-sync.conf.template contains sync flags
+ok 694 vscode-sync.conf.template contains security warning
+ok 695 vscode-sync.conf.template documents keychain usage
+not ok 696 fc wifi --help shows usage information
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_wifi.bats, line 27)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 697 fc wifi --help shows actions
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_wifi.bats, line 33)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 698 fc wifi --help shows examples
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_wifi.bats, line 41)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 699 fc wifi with no action shows usage
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_wifi.bats, line 49)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 700 fc wifi status runs without error # skip No Wi-Fi hardware found
+not ok 701 fc wifi unknown action fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_wifi.bats, line 72)
+#   `assert_output --partial "Unknown action"' failed
+#
+# -- output does not contain substring --
+# substring : Unknown action
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+not ok 702 fc wifi unknown action shows help hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_wifi.bats, line 78)
+#   `assert_output --partial "--help"' failed
+#
+# -- output does not contain substring --
+# substring : --help
+# output    : /app/lib/security.sh: line 18: SECURITY_PACKAGE_PATTERN: readonly variable
+# --
+#
+ok 703 fc-wifi plugin exists
+ok 704 fc-wifi plugin is executable
+ok 705 fc-wifi plugin sources init.sh
+ok 706 fc-wifi plugin uses networksetup
+ok 707 msg_info() should print an INFO message
+ok 708 msg_success() should print a SUCCESS message
+ok 709 msg_warning() should print a WARN message
+ok 710 msg_error() should print an ERROR message to stderr
+ok 711 msg_debug() should not print by default
+ok 712 msg_critical() should print a CRITICAL message to stderr
+ok 713 CONSOLE_LOG_LEVEL=WARN should only show WARN and above
+ok 714 CONSOLE_LOG_LEVEL=DEBUG should show all messages
+ok 715 LOG_FILE_PATH should write all messages to a file
+ok 716 CONSOLE_LOG_LEVEL=SUCCESS should filter DEBUG and INFO
+ok 717 CONSOLE_LOG_LEVEL=CRITICAL should filter everything except CRITICAL
+ok 718 LOG_FILE_PATH should write messages with correct timestamp format
+ok 719 LOG_FILE_PATH should append to existing log file
+ok 720 Log rotation should rotate when file exceeds max size
+ok 721 Log rotation should shift existing rotated files
+ok 722 Log rotation should not rotate when file is under max size
+ok 723 All 15 INSTALL_STAGES files exist
+ok 724 Stage 00: Preflight Checks - sources without error in dry-run
+ok 725 Stage 01: Introduction - sources without error in dry-run
+ok 726 Stage 02: Logging Setup - sources without error in dry-run
+
+The following warnings were encountered during tests:

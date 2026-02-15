@@ -13,6 +13,7 @@ load "test_helper"
 # --- Setup & Teardown ---------------------------------------------------------
 
 setup() {
+  skip_if_not_macos
   export PROJECT_ROOT
   PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.."; pwd)"
   export FC_COMMAND="$PROJECT_ROOT/bin/fc"
