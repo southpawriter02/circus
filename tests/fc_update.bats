@@ -217,7 +217,11 @@ teardown() {
 @test "fc fc-update --packages flag is recognized" {
   run "$FC_COMMAND" fc-update --packages --dry-run
   assert_success
-  assert_output --partial "Homebrew"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    assert_output --partial "Homebrew"
+  else
+    assert_output --partial "System Packages"
+  fi
   # Should NOT include macOS or self
   refute_output --partial "=== Checking for macOS Updates ==="
   refute_output --partial "=== Updating Dotfiles Repository ==="
@@ -228,14 +232,22 @@ teardown() {
   assert_success
   assert_output --partial "Dotfiles Repository"
   # Should NOT include packages or macOS
-  refute_output --partial "=== Updating Homebrew Packages ==="
+  if [[ "$(uname)" == "Darwin" ]]; then
+    refute_output --partial "=== Updating Homebrew Packages ==="
+  else
+    refute_output --partial "=== Updating System Packages ==="
+  fi
   refute_output --partial "=== Checking for macOS Updates ==="
 }
 
 @test "fc fc-update --all flag runs all update types" {
   run "$FC_COMMAND" fc-update --all --dry-run
   assert_success
-  assert_output --partial "Homebrew"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    assert_output --partial "Homebrew"
+  else
+    assert_output --partial "System Packages"
+  fi
   assert_output --partial "macOS"
   assert_output --partial "Dotfiles"
 }
@@ -243,7 +255,11 @@ teardown() {
 @test "fc fc-update with no flags defaults to --all" {
   run "$FC_COMMAND" fc-update --dry-run
   assert_success
-  assert_output --partial "Homebrew"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    assert_output --partial "Homebrew"
+  else
+    assert_output --partial "System Packages"
+  fi
   assert_output --partial "macOS"
   assert_output --partial "Dotfiles"
 }
@@ -252,7 +268,11 @@ teardown() {
   run "$FC_COMMAND" fc-update --packages --dry-run
   assert_success
   assert_output --partial "[DRY-RUN]"
-  assert_output --partial "brew update"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    assert_output --partial "brew update"
+  else
+    assert_output --partial "update system packages"
+  fi
 }
 
 @test "fc fc-update --dry-run with --os shows softwareupdate check" {
@@ -272,7 +292,11 @@ teardown() {
 @test "fc fc-update multiple target flags can be combined" {
   run "$FC_COMMAND" fc-update --packages --self --dry-run
   assert_success
-  assert_output --partial "Homebrew"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    assert_output --partial "Homebrew"
+  else
+    assert_output --partial "System Packages"
+  fi
   assert_output --partial "Dotfiles"
   # Should NOT include macOS since only --packages and --self were specified
   refute_output --partial "=== Checking for macOS Updates ==="

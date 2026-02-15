@@ -1,0 +1,2117 @@
+1..780
+ok 1 fc alfred --help shows usage information # skip Test only valid on macOS
+ok 2 fc alfred --help shows actions # skip Test only valid on macOS
+ok 3 fc alfred --help shows available keywords # skip Test only valid on macOS
+ok 4 fc alfred with no action shows usage # skip Test only valid on macOS
+ok 5 fc-alfred plugin exists # skip Test only valid on macOS
+ok 6 fc-alfred plugin is executable # skip Test only valid on macOS
+ok 7 fc-alfred plugin sources init.sh # skip Test only valid on macOS
+ok 8 workflow source directory exists # skip Test only valid on macOS
+ok 9 workflow info.plist exists # skip Test only valid on macOS
+ok 10 workflow scripts directory exists # skip Test only valid on macOS
+ok 11 workflow fc-wrapper.sh exists # skip Test only valid on macOS
+ok 12 workflow fc-wrapper.sh is executable # skip Test only valid on macOS
+ok 13 wifi.sh script filter exists # skip Test only valid on macOS
+ok 14 wifi.sh script filter is executable # skip Test only valid on macOS
+ok 15 wifi.sh outputs valid JSON # skip Test only valid on macOS
+ok 16 bluetooth.sh script filter exists and is executable # skip Test only valid on macOS
+ok 17 bluetooth.sh outputs valid JSON # skip Test only valid on macOS
+ok 18 caffeine.sh script filter exists and is executable # skip Test only valid on macOS
+ok 19 caffeine.sh outputs valid JSON # skip Test only valid on macOS
+ok 20 dns.sh script filter exists and is executable # skip Test only valid on macOS
+ok 21 dns.sh outputs valid JSON # skip Test only valid on macOS
+ok 22 airdrop.sh script filter exists and is executable # skip Test only valid on macOS
+ok 23 disk.sh script filter exists and is executable # skip Test only valid on macOS
+ok 24 ssh.sh script filter exists and is executable # skip Test only valid on macOS
+ok 25 keychain.sh script filter exists and is executable # skip Test only valid on macOS
+ok 26 clipboard.sh script filter exists and is executable # skip Test only valid on macOS
+ok 27 fc-commands.sh script filter exists and is executable # skip Test only valid on macOS
+ok 28 info.plist has correct bundle ID # skip Test only valid on macOS
+ok 29 info.plist has workflow name # skip Test only valid on macOS
+ok 30 info.plist has version # skip Test only valid on macOS
+ok 31 info.plist has description # skip Test only valid on macOS
+ok 32 fc alfred status runs and outputs status # skip Test only valid on macOS
+ok 33 fc alfred status shows workflow check # skip Test only valid on macOS
+ok 34 fc alfred unknown action fails # skip Test only valid on macOS
+ok 35 fc alfred unknown action shows help hint # skip Test only valid on macOS
+not ok 36 fc fc-apps --help shows usage information
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 56)
+#   `assert_output --partial "Usage: fc fc-apps"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   Usage: fc fc-apps
+# output (19 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc apps <subcommand> [options]
+#
+#   [38;5;117m[INFO    ][0m Manage application installations via package manager.
+#
+#   [38;5;117m[INFO    ][0m Subcommands:
+#     setup               - Create configuration file from template
+#     list                - Show configured apps and their status
+#     install             - Install all apps from configuration
+#     add <name>          - Add and install a package
+#     update              - Update all installed packages
+#     search <name>       - Search for a package
+#
+#   [38;5;117m[INFO    ][0m Examples:
+#     fc apps setup
+#     fc apps add git
+#     fc apps update
+#     fc apps search python
+#
+#   [38;5;117m[INFO    ][0m Linux (ubuntu): Uses apt
+# --
+#
+not ok 37 fc fc-apps with no arguments shows usage
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 66)
+#   `assert_output --partial "Usage: fc fc-apps"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   Usage: fc fc-apps
+# output (19 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc apps <subcommand> [options]
+#
+#   [38;5;117m[INFO    ][0m Manage application installations via package manager.
+#
+#   [38;5;117m[INFO    ][0m Subcommands:
+#     setup               - Create configuration file from template
+#     list                - Show configured apps and their status
+#     install             - Install all apps from configuration
+#     add <name>          - Add and install a package
+#     update              - Update all installed packages
+#     search <name>       - Search for a package
+#
+#   [38;5;117m[INFO    ][0m Examples:
+#     fc apps setup
+#     fc apps add git
+#     fc apps update
+#     fc apps search python
+#
+#   [38;5;117m[INFO    ][0m Linux (ubuntu): Uses apt
+# --
+#
+not ok 38 fc fc-apps --help shows examples
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 73)
+#   `assert_output --partial "fc fc-apps setup"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   fc fc-apps setup
+# output (19 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc apps <subcommand> [options]
+#
+#   [38;5;117m[INFO    ][0m Manage application installations via package manager.
+#
+#   [38;5;117m[INFO    ][0m Subcommands:
+#     setup               - Create configuration file from template
+#     list                - Show configured apps and their status
+#     install             - Install all apps from configuration
+#     add <name>          - Add and install a package
+#     update              - Update all installed packages
+#     search <name>       - Search for a package
+#
+#   [38;5;117m[INFO    ][0m Examples:
+#     fc apps setup
+#     fc apps add git
+#     fc apps update
+#     fc apps search python
+#
+#   [38;5;117m[INFO    ][0m Linux (ubuntu): Uses apt
+# --
+#
+not ok 39 fc fc-apps --help shows configuration path
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 80)
+#   `assert_output --partial "Configuration:"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   Configuration:
+# output (19 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc apps <subcommand> [options]
+#
+#   [38;5;117m[INFO    ][0m Manage application installations via package manager.
+#
+#   [38;5;117m[INFO    ][0m Subcommands:
+#     setup               - Create configuration file from template
+#     list                - Show configured apps and their status
+#     install             - Install all apps from configuration
+#     add <name>          - Add and install a package
+#     update              - Update all installed packages
+#     search <name>       - Search for a package
+#
+#   [38;5;117m[INFO    ][0m Examples:
+#     fc apps setup
+#     fc apps add git
+#     fc apps update
+#     fc apps search python
+#
+#   [38;5;117m[INFO    ][0m Linux (ubuntu): Uses apt
+# --
+#
+ok 40 fc fc-apps setup creates config file
+ok 41 fc fc-apps setup shows next steps
+ok 42 fc fc-apps setup detects existing config
+not ok 43 fc fc-apps list works when no config exists
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_apps.bats, line 125)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 141
+# output (34 lines):
+#   [38;5;117m[INFO    ][0m Installed Packages
+#   ==================
+#
+#   [38;5;117m[INFO    ][0m Packages (via apt):
+#   adduser						install
+#   adwaita-icon-theme				install
+#   apt						install
+#   apt-transport-https				install
+#   apt-utils					install
+#   aspnetcore-runtime-10.0				install
+#   aspnetcore-runtime-8.0				install
+#   aspnetcore-targeting-pack-10.0			install
+#   aspnetcore-targeting-pack-8.0			install
+#   at-spi2-common					install
+#   autoconf					install
+#   automake					install
+#   autotools-dev					install
+#   base-files					install
+#   base-passwd					install
+#   bash						install
+#   bind9-dnsutils					install
+#   bind9-host					install
+#   bind9-libs:amd64				install
+#   binutils					install
+#   binutils-common:amd64				install
+#   binutils-x86-64-linux-gnu			install
+#   bsdutils					install
+#   build-essential					install
+#   bzip2						install
+#   ca-certificates					install
+#   ca-certificates-java				install
+#   ccache						install
+#   clang						install
+#   clang-18					install
+# --
+#
+not ok 44 fc fc-apps list shows empty config message
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_apps.bats, line 135)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 141
+# output (34 lines):
+#   [38;5;117m[INFO    ][0m Installed Packages
+#   ==================
+#
+#   [38;5;117m[INFO    ][0m Packages (via apt):
+#   adduser						install
+#   adwaita-icon-theme				install
+#   apt						install
+#   apt-transport-https				install
+#   apt-utils					install
+#   aspnetcore-runtime-10.0				install
+#   aspnetcore-runtime-8.0				install
+#   aspnetcore-targeting-pack-10.0			install
+#   aspnetcore-targeting-pack-8.0			install
+#   at-spi2-common					install
+#   autoconf					install
+#   automake					install
+#   autotools-dev					install
+#   base-files					install
+#   base-passwd					install
+#   bash						install
+#   bind9-dnsutils					install
+#   bind9-host					install
+#   bind9-libs:amd64				install
+#   binutils					install
+#   binutils-common:amd64				install
+#   binutils-x86-64-linux-gnu			install
+#   bsdutils					install
+#   build-essential					install
+#   bzip2						install
+#   ca-certificates					install
+#   ca-certificates-java				install
+#   ccache						install
+#   clang						install
+#   clang-18					install
+# --
+#
+not ok 45 fc fc-apps install requires config
+# (from function `assert_failure' in file tests/helpers/bats-assert/src/assert_failure.bash, line 66,
+#  in test file tests/fc_apps.bats, line 147)
+#   `assert_failure' failed
+#
+# -- command succeeded, but it was expected to fail --
+# output (2 lines):
+#   [38;5;117m[INFO    ][0m No configuration file found.
+#   [38;5;117m[INFO    ][0m Run 'fc apps setup' to create one.
+# --
+#
+not ok 46 fc fc-apps add requires type flag
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 158)
+#   `assert_output --partial "Application type required"' failed
+#
+# -- output does not contain substring --
+# substring : Application type required
+# output    : [38;5;196m[ERROR   ][0m Package name required. Usage: fc apps add <package>
+# --
+#
+not ok 47 fc fc-apps add --brew requires app name
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 164)
+#   `assert_output --partial "Application name required"' failed
+#
+# -- output does not contain substring --
+# substring : Application name required
+# output    :
+# --
+#
+not ok 48 fc fc-apps add --cask requires app name
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 170)
+#   `assert_output --partial "Application name required"' failed
+#
+# -- output does not contain substring --
+# substring : Application name required
+# output    :
+# --
+#
+not ok 49 fc fc-apps add --mas requires app name
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 176)
+#   `assert_output --partial "Application name required"' failed
+#
+# -- output does not contain substring --
+# substring : Application name required
+# output    :
+# --
+#
+not ok 50 fc fc-apps add --mas requires app id
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_apps.bats, line 182)
+#   `assert_output --partial "Mac App Store ID required"' failed
+#
+# -- output does not contain substring --
+# substring : Mac App Store ID required
+# output    :
+# --
+#
+ok 51 fc fc-apps unknown subcommand fails
+ok 52 fc fc-apps unknown subcommand shows help hint
+ok 53 apps.conf.template exists
+ok 54 apps.conf.template has brew examples
+ok 55 apps.conf.template has cask examples
+ok 56 apps.conf.template has mas examples
+ok 57 apps.conf.template has usage instructions
+ok 58 base Brewfile includes mas
+ok 59 fc fc-bootstrap --help shows usage information
+ok 60 fc fc-bootstrap --help shows available options
+ok 61 fc fc-bootstrap --help shows phase descriptions
+ok 62 fc fc-bootstrap --help shows configuration file path
+ok 63 bootstrap.conf.template exists
+ok 64 bootstrap.conf.template contains role settings
+ok 65 bootstrap.conf.template contains phase control settings
+ok 66 bootstrap.conf.template contains restore settings
+ok 67 bootstrap.conf.template contains git configuration
+ok 68 bootstrap.conf.template contains SSH configuration
+ok 69 bootstrap.conf.template contains unattended mode setting
+ok 70 bootstrap.conf.template contains security warning
+ok 71 preflight.sh phase script exists
+ok 72 homebrew.sh phase script exists
+ok 73 restore.sh phase script exists
+ok 74 dotfiles.sh phase script exists
+ok 75 apps.sh phase script exists
+ok 76 configure.sh phase script exists
+ok 77 health.sh phase script exists
+ok 78 fc fc-bootstrap status works
+ok 79 fc fc-bootstrap status shows all phases
+ok 80 fc fc-bootstrap status shows configuration info
+ok 81 fc fc-bootstrap reset clears state directory
+ok 82 fc fc-bootstrap reset handles empty state gracefully
+not ok 83 fc fc-bootstrap --dry-run doesn't execute phases
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 253)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;117m[INFO    ][0m Loading configuration from /home/jules/.config/circus/bootstrap.conf
+# --
+#
+not ok 84 fc fc-bootstrap --dry-run shows what would be done
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 266)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;117m[INFO    ][0m Loading configuration from /home/jules/.config/circus/bootstrap.conf
+# --
+#
+not ok 85 fc fc-bootstrap --skip preflight skips preflight phase
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 282)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;117m[INFO    ][0m Loading configuration from /home/jules/.config/circus/bootstrap.conf
+# --
+#
+not ok 86 fc fc-bootstrap --no-restore skips restore phase
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 294)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;117m[INFO    ][0m Loading configuration from /home/jules/.config/circus/bootstrap.conf
+# --
+#
+not ok 87 fc fc-bootstrap --only preflight runs only preflight phase
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 313)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;117m[INFO    ][0m Loading configuration from /home/jules/.config/circus/bootstrap.conf
+# --
+#
+not ok 88 fc fc-bootstrap --role developer sets developer role
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 333)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;117m[INFO    ][0m Loading configuration from /home/jules/.config/circus/bootstrap.conf
+# --
+#
+not ok 89 fc fc-bootstrap --role personal sets personal role
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 343)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;117m[INFO    ][0m Loading configuration from /home/jules/.config/circus/bootstrap.conf
+# --
+#
+not ok 90 fc fc-bootstrap --role work sets work role
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 353)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;117m[INFO    ][0m Loading configuration from /home/jules/.config/circus/bootstrap.conf
+# --
+#
+ok 91 fc fc-bootstrap with unknown option shows error
+ok 92 fc fc-bootstrap marks phases as completed
+not ok 93 fc fc-bootstrap --force re-runs completed phases
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 399)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;117m[INFO    ][0m Loading configuration from /home/jules/.config/circus/bootstrap.conf
+# --
+#
+not ok 94 fc fc-bootstrap skips already completed phases by default
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 415)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;117m[INFO    ][0m Loading configuration from /home/jules/.config/circus/bootstrap.conf
+# --
+#
+not ok 95 fc fc-bootstrap resume continues from last incomplete phase
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_bootstrap.bats, line 437)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (4 lines):
+#   [38;5;117m[INFO    ][0m Resuming bootstrap...
+#
+#   [38;5;117m[INFO    ][0m Resuming from phase: Backup Restore
+#   [38;5;117m[INFO    ][0m Loading configuration from /home/jules/.config/circus/bootstrap.conf
+# --
+#
+ok 96 fc fc-clean --help shows usage information
+ok 97 fc fc-clean --help shows options
+ok 98 fc fc-clean --help shows examples
+ok 99 fc fc-clean --help mentions Brewfile paths
+ok 100 fc fc-clean with no subcommand shows usage
+ok 101 fc fc-clean brew runs without error # skip Homebrew not installed
+ok 102 fc fc-clean brew shows installed count # skip Homebrew not installed
+ok 103 fc fc-clean brew shows defined count # skip Homebrew not installed
+ok 104 fc fc-clean brew shows orphaned count # skip Homebrew not installed
+ok 105 fc fc-clean brew --skip-deps works # skip Homebrew not installed
+ok 106 fc fc-clean casks runs without error # skip Homebrew not installed
+ok 107 fc fc-clean casks shows installed count # skip Homebrew not installed
+ok 108 fc fc-clean casks shows defined count # skip Homebrew not installed
+ok 109 fc fc-clean cask alias works # skip Homebrew not installed
+ok 110 fc fc-clean list runs without error # skip Homebrew not installed
+ok 111 fc fc-clean list --formula shows only formulae # skip Homebrew not installed
+ok 112 fc fc-clean list --cask shows only casks # skip Homebrew not installed
+ok 113 fc fc-clean list --formulae alias works # skip Homebrew not installed
+ok 114 fc fc-clean list --casks alias works # skip Homebrew not installed
+ok 115 fc fc-clean unknown subcommand fails
+ok 116 fc fc-clean unknown subcommand shows help hint
+ok 117 fc fc-clean unknown option fails
+ok 118 fc fc-clean --skip-deps brew works (flags before subcommand) # skip Homebrew not installed
+ok 119 fc fc-clean brew --skip-deps works (flags after subcommand) # skip Homebrew not installed
+ok 120 fc-clean plugin exists
+ok 121 fc-clean plugin is executable
+ok 122 fc-clean plugin sources init.sh
+ok 123 fc fc-clean brew suggests fc-apps add for adoption # skip Homebrew not installed
+ok 124 fc fc-clean casks suggests fc-apps add for adoption # skip Homebrew not installed
+not ok 125 Dispatcher: should display a dynamic help message with available plugins
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 28)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (12 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc [global options] <command> [command options]
+#
+#   [38;5;117m[INFO    ][0m Global Options:
+#     -i, --interactive  Launch interactive mode (requires fzf)
+#     --log-file <path>  Redirect all log output to the specified file.
+#     --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL).
+#     --silent           Suppress all output except critical errors.
+#
+#   [38;5;117m[INFO    ][0m A modular, plugin-based command-line utility for system management.
+#
+#   [38;5;117m[INFO    ][0m Available commands:
+#   find: invalid mode ‘+111’
+# --
+#
+ok 126 Dispatcher: should fail gracefully for an unknown command
+not ok 127 Plugin 'info': should run successfully
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 64)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (14 lines):
+#
+#     ╔═══════════════════════════════════════════════════════════════╗
+#     ║                                                               ║
+#     ║   🎪  DOTFILES FLYING CIRCUS                                  ║
+#     ║       Version 1.6.0                                          ║
+#     ║                                                               ║
+#     ╚═══════════════════════════════════════════════════════════════╝
+#
+#   ╭──────────────────────────────────────────────────────────────╮
+#   │  🎯 Circus Status                                           │
+#   ╰──────────────────────────────────────────────────────────────╯
+#     Version:             ✅ 1.6.0
+#     Profile:             none
+#     Root:                /app
+# --
+#
+not ok 128 Plugin 'bluetooth': should run successfully when blueutil is present
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 85)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;196m[ERROR   ][0m fc bluetooth is only available on macOS
+# --
+#
+not ok 129 Plugin 'bluetooth': should fail gracefully when blueutil is missing
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_commands.bats, line 97)
+#   `assert_output --partial "The 'blueutil' command is required but not found."' failed
+#
+# -- output does not contain substring --
+# substring : The 'blueutil' command is required but not found.
+# output    : [38;5;196m[ERROR   ][0m fc bluetooth is only available on macOS
+# --
+#
+not ok 130 Plugin 'redis': should run successfully when brew is present
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_commands.bats, line 108)
+#   `assert_output --partial "redis    started"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   redis    started
+# output (2 lines):
+#   [38;5;117m[INFO    ][0m Checking Redis service status...
+#   [38;5;220m[WARN    ][0m Redis service not found or not running.
+# --
+#
+ok 131 Plugin 'redis': should fail gracefully when brew is missing # skip Cannot easily mock 'command -v' for brew in this environment
+not ok 132 Plugin 'backup': should fail gracefully when rsync is missing
+# (from function `assert_failure' in file tests/helpers/bats-assert/src/assert_failure.bash, line 66,
+#  in test file tests/fc_commands.bats, line 122)
+#   `assert_failure' failed
+#
+# -- command succeeded, but it was expected to fail --
+# output (11 lines):
+#   [38;5;117m[INFO    ][0m Starting dotfiles backup...
+#   [38;5;117m[INFO    ][0m Backup destination: /home/jules/Library/Mobile Documents/com~apple~CloudDocs/Backups/dotfiles-backup-2026-02-15-205337
+#
+#   [38;5;117m[INFO    ][0m   -> Backing up '.zshrc'...
+#   [38;5;220m[WARN    ][0m   -> Skipping '.zpreztorc' (does not exist).
+#   [38;5;117m[INFO    ][0m   -> Backing up '.gitconfig'...
+#   [38;5;220m[WARN    ][0m   -> Skipping '.gnupg' (does not exist).
+#
+#   [38;5;82m[SUCCESS ][0m Backup complete!
+#   [38;5;117m[INFO    ][0m Items backed up: 2
+#   [38;5;117m[INFO    ][0m Items skipped: 2
+# --
+#
+not ok 133 Plugin 'sync': should fail gracefully when gpg is missing
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_commands.bats, line 132)
+#   `assert_output --partial "GPG is not installed."' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   GPG is not installed.
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643935   Available: 24329119
+#   Inodes: Total: 6553600    Free: 6547815
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643935   Available: 24329119
+#   Inodes: Total: 6553600    Free: 6547815
+#   000")
+#   [38;5;196m[ERROR   ][0m GPG_RECIPIENT_ID is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure fc-sync:
+#   [38;5;117m[INFO    ][0m   1. Run setup:     fc fc-sync setup
+#   [38;5;117m[INFO    ][0m   2. Edit config:   $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)
+#   [38;5;196m[ERROR   ][0m Configuration required. See instructions above.
+# --
+#
+not ok 134 Plugin 'sync': should fail gracefully when rsync is missing
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_commands.bats, line 142)
+#   `assert_output --partial "This command requires 'rsync'. Please install it first."' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   This command requires 'rsync'. Please install it first.
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643933   Available: 24329117
+#   Inodes: Total: 6553600    Free: 6547812
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643933   Available: 24329117
+#   Inodes: Total: 6553600    Free: 6547812
+#   000")
+#   [38;5;196m[ERROR   ][0m GPG_RECIPIENT_ID is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure fc-sync:
+#   [38;5;117m[INFO    ][0m   1. Run setup:     fc fc-sync setup
+#   [38;5;117m[INFO    ][0m   2. Edit config:   $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)
+#   [38;5;196m[ERROR   ][0m Configuration required. See instructions above.
+# --
+#
+not ok 135 Plugin 'sync': should run successfully when dependencies are present
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 155)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643931   Available: 24329115
+#   Inodes: Total: 6553600    Free: 6547807
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643931   Available: 24329115
+#   Inodes: Total: 6553600    Free: 6547807
+#   000")
+#   [38;5;196m[ERROR   ][0m GPG_RECIPIENT_ID is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure fc-sync:
+#   [38;5;117m[INFO    ][0m   1. Run setup:     fc fc-sync setup
+#   [38;5;117m[INFO    ][0m   2. Edit config:   $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)
+#   [38;5;196m[ERROR   ][0m Configuration required. See instructions above.
+# --
+#
+not ok 136 Global Options: --log-file should create log file with messages
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 168)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (12 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc [global options] <command> [command options]
+#
+#   [38;5;117m[INFO    ][0m Global Options:
+#     -i, --interactive  Launch interactive mode (requires fzf)
+#     --log-file <path>  Redirect all log output to the specified file.
+#     --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL).
+#     --silent           Suppress all output except critical errors.
+#
+#   [38;5;117m[INFO    ][0m A modular, plugin-based command-line utility for system management.
+#
+#   [38;5;117m[INFO    ][0m Available commands:
+#   find: invalid mode ‘+111’
+# --
+#
+ok 137 Global Options: invalid --log-level should fail with helpful message
+not ok 138 Global Options: --silent should suppress info messages
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 189)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (8 lines):
+#
+#     -i, --interactive  Launch interactive mode (requires fzf)
+#     --log-file <path>  Redirect all log output to the specified file.
+#     --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL).
+#     --silent           Suppress all output except critical errors.
+#
+#
+#   find: invalid mode ‘+111’
+# --
+#
+not ok 139 Global Options: --help should show --silent option
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 196)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (12 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc [global options] <command> [command options]
+#
+#   [38;5;117m[INFO    ][0m Global Options:
+#     -i, --interactive  Launch interactive mode (requires fzf)
+#     --log-file <path>  Redirect all log output to the specified file.
+#     --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL).
+#     --silent           Suppress all output except critical errors.
+#
+#   [38;5;117m[INFO    ][0m A modular, plugin-based command-line utility for system management.
+#
+#   [38;5;117m[INFO    ][0m Available commands:
+#   find: invalid mode ‘+111’
+# --
+#
+not ok 140 Global Options: --help should show CRITICAL in --log-level description
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_commands.bats, line 203)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (12 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc [global options] <command> [command options]
+#
+#   [38;5;117m[INFO    ][0m Global Options:
+#     -i, --interactive  Launch interactive mode (requires fzf)
+#     --log-file <path>  Redirect all log output to the specified file.
+#     --log-level <lvl>  Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL).
+#     --silent           Suppress all output except critical errors.
+#
+#   [38;5;117m[INFO    ][0m A modular, plugin-based command-line utility for system management.
+#
+#   [38;5;117m[INFO    ][0m Available commands:
+#   find: invalid mode ‘+111’
+# --
+#
+ok 141 fc context --help shows usage information
+ok 142 fc context with no arguments shows usage
+ok 143 fc context --help shows subcommands
+ok 144 fc context --help shows examples
+ok 145 fc context list runs successfully
+ok 146 fc context list shows create hint when no contexts
+ok 147 fc context current runs successfully
+ok 148 fc context current mentions no active context when none set
+ok 149 fc context current shows list hint
+ok 150 fc context switch requires context name (without fzf)
+ok 151 fc context switch fails for nonexistent context
+ok 152 fc context switch shows list hint for nonexistent context
+ok 153 fc context create validates context name format
+ok 154 fc context edit requires context name
+ok 155 fc context edit fails for nonexistent context
+ok 156 fc context delete requires context name
+ok 157 fc context delete fails for nonexistent context
+ok 158 fc context export requires context name
+ok 159 fc context export fails for nonexistent context
+ok 160 fc context import requires file path
+ok 161 fc context import fails for nonexistent file
+ok 162 fc context off runs successfully when no context active
+ok 163 fc context shell requires context when none active
+ok 164 fc context shell fails for nonexistent context
+ok 165 fc context unknown subcommand fails
+ok 166 fc context unknown subcommand shows help hint
+ok 167 context config template exists
+ok 168 context config template has required sections
+ok 169 context config template has documentation
+ok 170 fc context plugin is executable
+ok 171 fc context plugin sources init.sh
+ok 172 fc context plugin has usage function
+ok 173 fc context plugin has main function
+ok 174 fc defaults --help displays usage information # skip Test only valid on macOS
+ok 175 fc defaults -h displays usage information # skip Test only valid on macOS
+ok 176 fc defaults with no arguments shows usage # skip Test only valid on macOS
+ok 177 fc defaults --help lists all subcommands # skip Test only valid on macOS
+ok 178 fc defaults --help shows --dry-run option # skip Test only valid on macOS
+ok 179 fc defaults --help shows example commands # skip Test only valid on macOS
+ok 180 fc defaults list runs without error # skip Test only valid on macOS
+ok 181 fc defaults list displays category headers # skip Test only valid on macOS
+ok 182 fc defaults list shows Finder tweaks # skip Test only valid on macOS
+ok 183 fc defaults list shows Dock tweaks # skip Test only valid on macOS
+ok 184 fc defaults list shows Screenshot tweaks # skip Test only valid on macOS
+ok 185 fc defaults list shows Keyboard tweaks # skip Test only valid on macOS
+ok 186 fc defaults list shows descriptions for each tweak # skip Test only valid on macOS
+ok 187 fc defaults list shows usage hint at the end # skip Test only valid on macOS
+ok 188 fc defaults status runs without error # skip Test only valid on macOS
+ok 189 fc defaults status shows column headers # skip Test only valid on macOS
+ok 190 fc defaults status displays tweaks with values # skip Test only valid on macOS
+ok 191 fc defaults status shows On/Off for boolean tweaks # skip Test only valid on macOS
+ok 192 fc defaults apply without tweak name shows error # skip Test only valid on macOS
+ok 193 fc defaults apply with invalid tweak name shows error # skip Test only valid on macOS
+ok 194 fc defaults apply --dry-run shows what would be done # skip Test only valid on macOS
+ok 195 fc defaults apply --dry-run does not require restart # skip Test only valid on macOS
+ok 196 fc defaults --dry-run apply works (flag before subcommand) # skip Test only valid on macOS
+ok 197 fc defaults apply --dry-run shows description # skip Test only valid on macOS
+ok 198 fc defaults apply --dry-run for dock tweak mentions Dock restart # skip Test only valid on macOS
+ok 199 fc defaults apply --dry-run for keyboard tweak has no restart # skip Test only valid on macOS
+ok 200 fc defaults reset without tweak name shows error # skip Test only valid on macOS
+ok 201 fc defaults reset with invalid tweak name shows error # skip Test only valid on macOS
+ok 202 fc defaults reset --dry-run shows what would be done # skip Test only valid on macOS
+ok 203 fc defaults reset --dry-run shows restart command # skip Test only valid on macOS
+ok 204 fc defaults all --dry-run runs without error # skip Test only valid on macOS
+ok 205 fc defaults all --dry-run lists all tweaks # skip Test only valid on macOS
+ok 206 fc defaults all --dry-run shows count of tweaks # skip Test only valid on macOS
+ok 207 fc defaults all --dry-run mentions status command # skip Test only valid on macOS
+ok 208 fc defaults --dry-run all works (flag before subcommand) # skip Test only valid on macOS
+ok 209 fc defaults with unknown subcommand fails # skip Test only valid on macOS
+ok 210 fc defaults with unknown subcommand suggests help # skip Test only valid on macOS
+ok 211 fc defaults list includes Safari tweaks # skip Test only valid on macOS
+ok 212 fc defaults list includes System tweaks # skip Test only valid on macOS
+ok 213 fc defaults list includes Terminal tweaks # skip Test only valid on macOS
+ok 214 fc defaults list includes Text Input tweaks # skip Test only valid on macOS
+ok 215 fc defaults list includes Trackpad tweaks # skip Test only valid on macOS
+ok 216 fc defaults apply --dry-run handles bool type correctly # skip Test only valid on macOS
+ok 217 fc defaults apply --dry-run handles int type correctly # skip Test only valid on macOS
+ok 218 fc defaults apply --dry-run handles float type correctly # skip Test only valid on macOS
+ok 219 fc defaults apply --dry-run handles string type correctly # skip Test only valid on macOS
+ok 220 fc shows defaults in available commands # skip Test only valid on macOS
+ok 221 fc defaults can be invoked via dispatcher # skip Test only valid on macOS
+ok 222 fc desktop --help shows usage information
+ok 223 fc desktop --help shows actions
+ok 224 fc desktop --help shows options
+ok 225 fc desktop with no action shows usage
+ok 226 fc desktop status runs without error
+ok 227 fc desktop unknown action fails
+ok 228 fc-desktop plugin exists
+ok 229 fc-desktop plugin is executable
+ok 230 fc-desktop plugin sources init.sh
+ok 231 fc dns --help shows usage information # skip Test only valid on macOS
+ok 232 fc dns --help shows actions # skip Test only valid on macOS
+ok 233 fc dns --help shows examples # skip Test only valid on macOS
+ok 234 fc dns --help shows popular DNS providers # skip Test only valid on macOS
+ok 235 fc dns --help mentions sudo requirement # skip Test only valid on macOS
+ok 236 fc dns with no action shows usage # skip Test only valid on macOS
+ok 237 fc dns unknown action fails # skip Test only valid on macOS
+ok 238 fc dns unknown action error message includes help hint # skip Test only valid on macOS
+ok 239 fc-dns plugin exists # skip Test only valid on macOS
+ok 240 fc-dns plugin is executable # skip Test only valid on macOS
+ok 241 fc-dns plugin sources init.sh # skip Test only valid on macOS
+ok 242 fc-dns plugin uses networksetup # skip Test only valid on macOS
+ok 243 fc-dns plugin handles get and status as aliases # skip Test only valid on macOS
+ok 244 fc docker --help shows usage information
+ok 245 fc docker --help shows actions
+ok 246 fc docker --help shows options
+ok 247 fc docker with no action shows usage
+ok 248 fc docker status fails gracefully without Docker # skip Docker is running, testing status command
+ok 249 fc docker unknown action fails
+ok 250 fc-docker plugin exists
+ok 251 fc-docker plugin is executable
+ok 252 fc-docker plugin sources init.sh
+ok 253 fc fc-dotfiles --help shows usage information
+ok 254 fc fc-dotfiles --help shows examples
+ok 255 fc fc-dotfiles with no arguments shows help
+ok 256 fc fc-dotfiles list runs successfully
+ok 257 fc fc-dotfiles list shows bash directory files
+ok 258 fc fc-dotfiles list shows git directory files
+ok 259 fc fc-dotfiles list shows zsh directory files
+ok 260 fc fc-dotfiles add requires file argument
+ok 261 fc fc-dotfiles add fails for nonexistent file
+ok 262 fc fc-dotfiles add fails for symlink
+ok 263 fc fc-dotfiles edit requires name argument
+ok 264 fc fc-dotfiles edit fails for nonexistent dotfile
+ok 265 fc fc-dotfiles with unknown subcommand shows error
+ok 266 profiles directory exists
+ok 267 profiles/base directory exists
+ok 268 profiles/base/bash directory exists
+ok 269 profiles/base/git directory exists
+ok 270 profiles/base/zsh directory exists
+ok 271 fc firewall --help shows usage information # skip Test only valid on macOS
+ok 272 fc firewall --help shows basic actions # skip Test only valid on macOS
+ok 273 fc firewall --help shows app management actions # skip Test only valid on macOS
+ok 274 fc firewall --help shows configuration actions # skip Test only valid on macOS
+ok 275 fc firewall --help shows advanced options # skip Test only valid on macOS
+ok 276 fc firewall with no action shows usage # skip Test only valid on macOS
+ok 277 fc firewall add requires app path # skip Test only valid on macOS
+ok 278 fc firewall add validates app exists # skip Test only valid on macOS
+ok 279 fc firewall unknown action fails # skip Test only valid on macOS
+ok 280 fc-firewall plugin exists # skip Test only valid on macOS
+ok 281 fc-firewall plugin is executable # skip Test only valid on macOS
+ok 282 fc-firewall plugin sources init.sh # skip Test only valid on macOS
+ok 283 fc-firewall contains socketfilterfw reference # skip Test only valid on macOS
+ok 284 fc focus --help shows usage information
+ok 285 fc focus --help shows start action
+ok 286 fc focus --help shows stop action
+ok 287 fc focus --help shows status action
+ok 288 fc focus --help shows setup action
+ok 289 fc focus --help shows duration formats
+ok 290 fc focus with no action shows usage
+ok 291 fc focus unknown action fails
+ok 292 fc-focus plugin exists
+ok 293 fc-focus plugin is executable
+ok 294 fc-focus plugin sources init.sh
+ok 295 fc-focus contains hosts file handling
+ok 296 fc-focus contains focus markers
+ok 297 fc healthcheck --help shows usage information
+ok 298 fc healthcheck --help shows available checks
+ok 299 fc healthcheck --help shows examples
+ok 300 fc healthcheck --list shows available checks
+ok 301 fc healthcheck runs without error
+ok 302 fc healthcheck shows summary
+ok 303 fc healthcheck includes all four checks
+ok 304 fc healthcheck symlinks runs without error
+ok 305 fc healthcheck deps runs without error
+ok 306 fc healthcheck ssh runs without error
+ok 307 fc healthcheck git runs without error
+ok 308 fc healthcheck unknown check fails
+ok 309 fc healthcheck unknown check shows help hint
+ok 310 fc-healthcheck plugin exists
+ok 311 fc-healthcheck plugin is executable
+ok 312 fc-healthcheck plugin sources init.sh
+ok 313 fc-healthcheck plugin defines check functions
+ok 314 fc history --help shows usage information
+ok 315 fc history --help shows actions
+not ok 316 fc history stats runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_history.bats, line 47)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (3 lines):
+#   [38;5;117m[INFO    ][0m History Statistics
+#
+#   [38;5;220m[WARN    ][0m History file not found: /home/jules/.bash_history
+# --
+#
+ok 317 fc history top shows commands
+ok 318 fc history unknown action fails
+ok 319 fc-history plugin exists
+ok 320 fc-history plugin is executable
+ok 321 fc-history plugin sources init.sh
+not ok 322 fc fc-maintenance --help shows usage information
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_maintenance.bats, line 56)
+#   `assert_output --partial "Usage: fc fc-maintenance"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   Usage: fc fc-maintenance
+# output (23 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc maintenance [subcommand] [options]
+#
+#   [38;5;117m[INFO    ][0m Run routine system maintenance and cleanup tasks.
+#
+#   [38;5;117m[INFO    ][0m Subcommands:
+#     (none)              Run configured maintenance tasks
+#     list                List all available maintenance tasks
+#     run <task>          Run a specific maintenance task
+#
+#   [38;5;117m[INFO    ][0m Options:
+#     --all               Run all tasks
+#     --include-trash     Include trash emptying
+#     --dry-run           Show what would be done
+#
+#   [38;5;117m[INFO    ][0m Available tasks:
+#     pkg-cleanup         Clean up old package versions
+#     pkg-cache           Clear package manager cache
+#     npm-cache           Clear npm cache
+#     pip-cache           Clear pip cache
+#     user-logs           Clear old user log files
+#     system-logs         Clear system logs (sudo)
+#     dns-flush           Flush DNS cache
+#     trash               Empty the Trash
+# --
+#
+ok 323 fc fc-maintenance --help shows options
+not ok 324 fc fc-maintenance --help shows examples
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_maintenance.bats, line 73)
+#   `assert_output --partial "Examples:"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   Examples:
+# output (23 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc maintenance [subcommand] [options]
+#
+#   [38;5;117m[INFO    ][0m Run routine system maintenance and cleanup tasks.
+#
+#   [38;5;117m[INFO    ][0m Subcommands:
+#     (none)              Run configured maintenance tasks
+#     list                List all available maintenance tasks
+#     run <task>          Run a specific maintenance task
+#
+#   [38;5;117m[INFO    ][0m Options:
+#     --all               Run all tasks
+#     --include-trash     Include trash emptying
+#     --dry-run           Show what would be done
+#
+#   [38;5;117m[INFO    ][0m Available tasks:
+#     pkg-cleanup         Clean up old package versions
+#     pkg-cache           Clear package manager cache
+#     npm-cache           Clear npm cache
+#     pip-cache           Clear pip cache
+#     user-logs           Clear old user log files
+#     system-logs         Clear system logs (sudo)
+#     dns-flush           Flush DNS cache
+#     trash               Empty the Trash
+# --
+#
+not ok 325 fc fc-maintenance --help shows configuration path
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_maintenance.bats, line 80)
+#   `assert_output --partial "Configuration:"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   Configuration:
+# output (23 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc maintenance [subcommand] [options]
+#
+#   [38;5;117m[INFO    ][0m Run routine system maintenance and cleanup tasks.
+#
+#   [38;5;117m[INFO    ][0m Subcommands:
+#     (none)              Run configured maintenance tasks
+#     list                List all available maintenance tasks
+#     run <task>          Run a specific maintenance task
+#
+#   [38;5;117m[INFO    ][0m Options:
+#     --all               Run all tasks
+#     --include-trash     Include trash emptying
+#     --dry-run           Show what would be done
+#
+#   [38;5;117m[INFO    ][0m Available tasks:
+#     pkg-cleanup         Clean up old package versions
+#     pkg-cache           Clear package manager cache
+#     npm-cache           Clear npm cache
+#     pip-cache           Clear pip cache
+#     user-logs           Clear old user log files
+#     system-logs         Clear system logs (sudo)
+#     dns-flush           Flush DNS cache
+#     trash               Empty the Trash
+# --
+#
+not ok 326 fc fc-maintenance setup creates config file
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 93)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;196m[ERROR   ][0m Unknown subcommand: setup. Run 'fc maintenance --help' for usage.
+# --
+#
+not ok 327 fc fc-maintenance setup shows next steps
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 102)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;196m[ERROR   ][0m Unknown subcommand: setup. Run 'fc maintenance --help' for usage.
+# --
+#
+not ok 328 fc fc-maintenance setup detects existing config
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 113)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;196m[ERROR   ][0m Unknown subcommand: setup. Run 'fc maintenance --help' for usage.
+# --
+#
+ok 329 fc fc-maintenance list shows available tasks
+not ok 330 fc fc-maintenance list shows brew-cleanup task
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_maintenance.bats, line 130)
+#   `assert_output --partial "brew-cleanup"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   brew-cleanup
+# output (12 lines):
+#
+#   [38;5;117m[INFO    ][0m Available Maintenance Tasks
+#   ============================
+#
+#     pkg-cleanup          [enabled]
+#     pkg-cache            [enabled]
+#     npm-cache            [enabled]
+#     pip-cache            [enabled]
+#     user-logs            [enabled]
+#     system-logs          [disabled]
+#     dns-flush            [disabled]
+#     trash                [disabled]
+# --
+#
+ok 331 fc fc-maintenance list shows npm-cache task
+ok 332 fc fc-maintenance list shows trash task
+ok 333 fc fc-maintenance list shows enabled/disabled status
+not ok 334 fc fc-maintenance list shows sudo requirement
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_maintenance.bats, line 154)
+#   `assert_output --partial "requires sudo"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   requires sudo
+# output (12 lines):
+#
+#   [38;5;117m[INFO    ][0m Available Maintenance Tasks
+#   ============================
+#
+#     pkg-cleanup          [enabled]
+#     pkg-cache            [enabled]
+#     npm-cache            [enabled]
+#     pip-cache            [enabled]
+#     user-logs            [enabled]
+#     system-logs          [disabled]
+#     dns-flush            [disabled]
+#     trash                [disabled]
+# --
+#
+ok 335 fc fc-maintenance run requires task name
+ok 336 fc fc-maintenance run with unknown task fails
+not ok 337 fc fc-maintenance run with unknown task shows list hint
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_maintenance.bats, line 176)
+#   `assert_output --partial "fc fc-maintenance list"' failed
+#
+# -- output does not contain substring --
+# substring : fc fc-maintenance list
+# output    : [38;5;196m[ERROR   ][0m Unknown task: unknown-task. Run 'fc maintenance list' to see available tasks.
+# --
+#
+not ok 338 fc fc-maintenance run brew-cleanup --dry-run works
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 181)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;196m[ERROR   ][0m Unknown task: brew-cleanup. Run 'fc maintenance list' to see available tasks.
+# --
+#
+not ok 339 fc fc-maintenance --dry-run shows preview
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 192)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (6 lines):
+#
+#   [38;5;117m[INFO    ][0m [DRY-RUN] System Maintenance Preview
+#   ==================
+#
+#   [38;5;117m[INFO    ][0m Cleaning up old package versions...
+#   [38;5;117m[INFO    ][0m [DRY-RUN] Would run package cleanup
+# --
+#
+not ok 340 fc fc-maintenance --dry-run does not execute tasks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 199)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (6 lines):
+#
+#   [38;5;117m[INFO    ][0m [DRY-RUN] System Maintenance Preview
+#   ==================
+#
+#   [38;5;117m[INFO    ][0m Cleaning up old package versions...
+#   [38;5;117m[INFO    ][0m [DRY-RUN] Would run package cleanup
+# --
+#
+not ok 341 fc fc-maintenance --all includes more tasks
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 207)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (6 lines):
+#
+#   [38;5;117m[INFO    ][0m [DRY-RUN] System Maintenance Preview
+#   ==================
+#
+#   [38;5;117m[INFO    ][0m Cleaning up old package versions...
+#   [38;5;117m[INFO    ][0m [DRY-RUN] Would run package cleanup
+# --
+#
+ok 342 fc fc-maintenance unknown subcommand fails
+ok 343 fc fc-maintenance unknown subcommand shows help hint
+ok 344 maintenance.conf.template exists
+ok 345 maintenance.conf.template has task configuration
+ok 346 maintenance.conf.template has LOG_RETENTION_DAYS
+ok 347 maintenance.conf.template has BREW_PRUNE_DAYS
+not ok 348 fc fc-maintenance run dns-flush --dry-run shows correct command
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_maintenance.bats, line 258)
+#   `assert_output --partial "dscacheutil"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   dscacheutil
+# output (7 lines):
+#
+#   [38;5;117m[INFO    ][0m Running maintenance task: dns-flush
+#
+#   [38;5;117m[INFO    ][0m Flushing DNS cache...
+#   [38;5;117m[INFO    ][0m [DRY-RUN] Would flush DNS cache
+#
+#   [38;5;82m[SUCCESS ][0m Task complete: dns-flush
+# --
+#
+ok 349 fc fc-maintenance run trash --dry-run works
+not ok 350 fc fc-maintenance --include-trash --dry-run includes trash task
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_maintenance.bats, line 270)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (6 lines):
+#
+#   [38;5;117m[INFO    ][0m [DRY-RUN] System Maintenance Preview
+#   ==================
+#
+#   [38;5;117m[INFO    ][0m Cleaning up old package versions...
+#   [38;5;117m[INFO    ][0m [DRY-RUN] Would run package cleanup
+# --
+#
+ok 351 fc network --help shows usage information
+ok 352 fc network --help shows actions
+not ok 353 fc network status runs without error
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_network.bats, line 48)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (3 lines):
+#   [38;5;117m[INFO    ][0m Network Status
+#
+#     ✗ Local IP             Not connected
+# --
+#
+not ok 354 fc network info shows network configuration
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_network.bats, line 54)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output : [38;5;117m[INFO    ][0m Network Configuration
+# --
+#
+ok 355 fc network unknown action fails
+ok 356 fc-network plugin exists
+ok 357 fc-network plugin is executable
+ok 358 fc-network plugin sources init.sh
+not ok 359 fc fc-profile --help shows usage information
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_profile.bats, line 40)
+#   `assert_output --partial "Usage: fc fc-profile"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   Usage: fc fc-profile
+# output (16 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc profile <subcommand>
+#
+#   [38;5;117m[INFO    ][0m Manage dotfile profiles for environment-specific configurations.
+#
+#   [38;5;117m[INFO    ][0m Subcommands:
+#     list              - List available profiles
+#     current           - Show the current active profile
+#     switch <profile>  - Switch to a different profile
+#     create [name]     - Create a new profile (interactive wizard)
+#
+#   [38;5;117m[INFO    ][0m Examples:
+#     fc profile list
+#     fc profile current
+#     fc profile switch work
+#     fc profile create        # Interactive wizard
+#     fc profile create client # Create 'client' profile
+# --
+#
+not ok 360 fc fc-profile with no arguments shows usage
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_profile.bats, line 49)
+#   `assert_output --partial "Usage: fc fc-profile"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   Usage: fc fc-profile
+# output (16 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc profile <subcommand>
+#
+#   [38;5;117m[INFO    ][0m Manage dotfile profiles for environment-specific configurations.
+#
+#   [38;5;117m[INFO    ][0m Subcommands:
+#     list              - List available profiles
+#     current           - Show the current active profile
+#     switch <profile>  - Switch to a different profile
+#     create [name]     - Create a new profile (interactive wizard)
+#
+#   [38;5;117m[INFO    ][0m Examples:
+#     fc profile list
+#     fc profile current
+#     fc profile switch work
+#     fc profile create        # Interactive wizard
+#     fc profile create client # Create 'client' profile
+# --
+#
+not ok 361 fc fc-profile --help shows examples
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_profile.bats, line 56)
+#   `assert_output --partial "fc fc-profile switch work"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   fc fc-profile switch work
+# output (16 lines):
+#   [38;5;117m[INFO    ][0m Usage: fc profile <subcommand>
+#
+#   [38;5;117m[INFO    ][0m Manage dotfile profiles for environment-specific configurations.
+#
+#   [38;5;117m[INFO    ][0m Subcommands:
+#     list              - List available profiles
+#     current           - Show the current active profile
+#     switch <profile>  - Switch to a different profile
+#     create [name]     - Create a new profile (interactive wizard)
+#
+#   [38;5;117m[INFO    ][0m Examples:
+#     fc profile list
+#     fc profile current
+#     fc profile switch work
+#     fc profile create        # Interactive wizard
+#     fc profile create client # Create 'client' profile
+# --
+#
+ok 362 fc fc-profile list shows available profiles header
+ok 363 fc fc-profile list shows work profile
+ok 364 fc fc-profile list shows personal profile
+ok 365 fc fc-profile list shows switch hint
+ok 366 fc fc-profile current runs successfully
+ok 367 fc fc-profile current mentions base dotfiles when no profile active
+ok 368 fc fc-profile switch requires profile argument
+ok 369 fc fc-profile switch fails for nonexistent profile
+ok 370 fc fc-profile switch fails for nonexistent profile with list hint
+ok 371 profiles/base directory exists
+ok 372 profiles/base/git directory exists
+ok 373 profiles/base/zsh directory exists
+ok 374 profiles/base/bash directory exists
+ok 375 profiles/work directory exists
+ok 376 profiles/personal directory exists
+ok 377 profiles/work has .gitconfig override
+ok 378 profiles/personal has .gitconfig override
+ok 379 fc fc-profile unknown subcommand fails
+ok 380 fc fc-profile unknown subcommand shows help hint
+ok 381 fc raycast --help shows usage information # skip Test only valid on macOS
+ok 382 fc raycast --help shows actions # skip Test only valid on macOS
+ok 383 fc raycast --help shows available commands # skip Test only valid on macOS
+ok 384 fc raycast with no action shows usage # skip Test only valid on macOS
+ok 385 fc-raycast plugin exists # skip Test only valid on macOS
+ok 386 fc-raycast plugin is executable # skip Test only valid on macOS
+ok 387 fc-raycast plugin sources init.sh # skip Test only valid on macOS
+ok 388 raycast scripts directory exists # skip Test only valid on macOS
+ok 389 fc-env.sh exists # skip Test only valid on macOS
+ok 390 fc-env.sh is executable # skip Test only valid on macOS
+ok 391 fc-env.sh has DOTFILES_ROOT placeholder # skip Test only valid on macOS
+ok 392 wifi-on.sh exists and is executable # skip Test only valid on macOS
+ok 393 wifi-on.sh has required Raycast metadata # skip Test only valid on macOS
+ok 394 wifi-off.sh exists and is executable # skip Test only valid on macOS
+ok 395 wifi-status.sh exists and is executable # skip Test only valid on macOS
+ok 396 bluetooth-on.sh exists and is executable # skip Test only valid on macOS
+ok 397 bluetooth-off.sh exists and is executable # skip Test only valid on macOS
+ok 398 bluetooth-status.sh exists and is executable # skip Test only valid on macOS
+ok 399 lock-screen.sh exists and is executable # skip Test only valid on macOS
+ok 400 lock-screen.sh uses silent mode # skip Test only valid on macOS
+ok 401 caffeine-on.sh exists and is executable # skip Test only valid on macOS
+ok 402 caffeine-off.sh exists and is executable # skip Test only valid on macOS
+ok 403 caffeine-30min.sh exists and is executable # skip Test only valid on macOS
+ok 404 caffeine-60min.sh exists and is executable # skip Test only valid on macOS
+ok 405 caffeine-status.sh exists and is executable # skip Test only valid on macOS
+ok 406 dns-status.sh exists and is executable # skip Test only valid on macOS
+ok 407 dns-cloudflare.sh exists and is executable # skip Test only valid on macOS
+ok 408 dns-google.sh exists and is executable # skip Test only valid on macOS
+ok 409 dns-quad9.sh exists and is executable # skip Test only valid on macOS
+ok 410 dns-clear.sh exists and is executable # skip Test only valid on macOS
+ok 411 airdrop-everyone.sh exists and is executable # skip Test only valid on macOS
+ok 412 airdrop-contacts.sh exists and is executable # skip Test only valid on macOS
+ok 413 airdrop-off.sh exists and is executable # skip Test only valid on macOS
+ok 414 airdrop-status.sh exists and is executable # skip Test only valid on macOS
+ok 415 system-info.sh exists and is executable # skip Test only valid on macOS
+ok 416 system-info.sh uses fullOutput mode # skip Test only valid on macOS
+ok 417 system-healthcheck.sh exists and is executable # skip Test only valid on macOS
+ok 418 system-healthcheck.sh uses fullOutput mode # skip Test only valid on macOS
+ok 419 disk-status.sh exists and is executable # skip Test only valid on macOS
+ok 420 disk-usage.sh exists and is executable # skip Test only valid on macOS
+ok 421 ssh-list.sh exists and is executable # skip Test only valid on macOS
+ok 422 ssh-copy-default.sh exists and is executable # skip Test only valid on macOS
+ok 423 clipboard-clear.sh exists and is executable # skip Test only valid on macOS
+ok 424 all scripts have Flying Circus package name # skip Test only valid on macOS
+ok 425 all scripts source fc-env.sh # skip Test only valid on macOS
+ok 426 fc raycast status runs and outputs status # skip Test only valid on macOS
+ok 427 fc raycast status shows scripts check # skip Test only valid on macOS
+ok 428 fc raycast unknown action fails # skip Test only valid on macOS
+ok 429 fc raycast unknown action shows help hint # skip Test only valid on macOS
+ok 430 fc scaffold --help shows usage information
+ok 431 fc scaffold --help shows actions
+ok 432 fc scaffold --help shows options
+ok 433 fc scaffold with no action shows usage
+ok 434 fc scaffold list shows templates
+ok 435 fc scaffold show python-cli shows details
+ok 436 fc scaffold show nonexistent fails
+ok 437 fc scaffold unknown action fails
+ok 438 templates directory exists
+ok 439 projects templates directory exists
+ok 440 python-cli template exists
+ok 441 python-cli has template.conf
+ok 442 fc-scaffold plugin exists
+ok 443 fc-scaffold plugin is executable
+ok 444 fc-scaffold plugin sources init.sh
+ok 445 fc fc-schedule --help shows usage information
+ok 446 fc fc-schedule with no arguments shows usage
+ok 447 fc fc-schedule --help shows frequency options
+ok 448 fc fc-schedule --help shows examples
+ok 449 fc fc-schedule status works when not installed
+ok 450 fc fc-schedule status shows status header
+ok 451 fc fc-schedule install fails without sync config
+ok 452 fc fc-schedule install with invalid frequency fails
+ok 453 fc fc-schedule uninstall works when not installed
+ok 454 fc fc-schedule unknown subcommand fails
+ok 455 fc fc-schedule unknown subcommand shows help hint
+ok 456 plist template exists
+ok 457 plist template contains required placeholders
+ok 458 plist template has correct label
+ok 459 plist template uses --no-confirm flag
+ok 460 fc fc-sync --help shows --no-confirm option
+ok 461 fc fc-sync --no-confirm is documented for automated use
+ok 462 fc fc-secrets --help shows usage information
+ok 463 fc fc-secrets --help shows backend types
+ok 464 fc fc-secrets --help shows configuration file path
+ok 465 fc fc-secrets --help shows 1Password backend
+ok 466 fc fc-secrets --help shows macOS Keychain backend
+ok 467 fc fc-secrets --help shows HashiCorp Vault backend
+ok 468 fc fc-secrets -h shows usage (short flag)
+ok 469 fc fc-secrets with no arguments shows usage
+ok 470 secrets.conf.template exists
+ok 471 secrets.conf.template contains 1Password examples
+ok 472 secrets.conf.template contains Keychain examples
+ok 473 secrets.conf.template contains Vault examples
+ok 474 secrets.conf.template contains env destination examples
+ok 475 secrets.conf.template contains file destination examples
+ok 476 secrets.conf.template contains security warning
+ok 477 op.sh backend plugin exists
+ok 478 keychain.sh backend plugin exists
+ok 479 vault.sh backend plugin exists
+ok 480 op.sh backend is executable
+ok 481 keychain.sh backend is executable
+ok 482 vault.sh backend is executable
+ok 483 fc fc-secrets setup creates config file
+ok 484 fc fc-secrets setup sets correct permissions
+ok 485 fc fc-secrets setup shows next steps
+ok 486 fc fc-secrets setup detects existing config
+ok 487 fc fc-secrets setup checks backend prerequisites
+ok 488 fc fc-secrets setup shows all backends
+ok 489 fc fc-secrets status shows backend status
+ok 490 fc fc-secrets status shows all three backends
+ok 491 fc fc-secrets status shows Keychain as authenticated # skip Keychain only available on macOS
+ok 492 fc fc-secrets list shows configured secrets header
+ok 493 fc fc-secrets list shows table headers
+ok 494 fc fc-secrets list parses op:// entries
+ok 495 fc fc-secrets list parses keychain:// entries
+ok 496 fc fc-secrets list parses vault:// entries
+ok 497 fc fc-secrets list handles no config gracefully
+ok 498 fc fc-secrets list skips comment lines
+ok 499 fc fc-secrets list skips variable assignments
+ok 500 fc fc-secrets get requires URI argument
+ok 501 fc fc-secrets get rejects unknown backend
+ok 502 fc fc-secrets get --help shows usage
+ok 503 fc fc-secrets get --help op shows 1Password help
+ok 504 fc fc-secrets get --help keychain shows Keychain help
+ok 505 fc fc-secrets get --help vault shows Vault help
+ok 506 fc fc-secrets get op:// requires op CLI
+ok 507 fc fc-secrets get vault:// requires vault CLI
+ok 508 fc fc-secrets verify requires config file
+ok 509 fc fc-secrets verify shows verification header
+ok 510 fc fc-secrets sync requires config file
+ok 511 fc fc-secrets sync shows syncing header
+ok 512 fc fc-secrets with unknown subcommand shows error
+ok 513 fc fc-secrets handles file destination with permissions
+ok 514 fc fc-secrets handles env destination
+ok 515 fc fc-secrets handles multiple secrets from different backends
+ok 516 fc ssh --help shows usage information
+ok 517 fc ssh --help shows all subcommands
+ok 518 fc ssh --help shows examples
+ok 519 fc ssh with no subcommand shows usage
+ok 520 fc ssh generate --help shows usage
+ok 521 fc ssh generate --help shows examples
+ok 522 fc ssh add --help shows usage
+ok 523 fc ssh add without key name fails
+ok 524 fc ssh add with nonexistent key fails
+ok 525 fc ssh copy --help shows usage
+ok 526 fc ssh copy with nonexistent key fails
+ok 527 fc ssh list --help shows usage
+ok 528 fc ssh list runs without error
+ok 529 fc ssh unknown subcommand fails
+ok 530 fc ssh unknown subcommand shows help hint
+ok 531 fc ssh generate unknown option fails
+ok 532 fc-ssh plugin exists
+ok 533 fc-ssh plugin is executable
+ok 534 fc-ssh plugin sources init.sh
+ok 535 fc-ssh plugin uses ssh-keygen
+ok 536 fc-ssh plugin uses ssh-add
+ok 537 fc-ssh plugin uses apple-use-keychain
+ok 538 fc-ssh-keygen plugin no longer exists
+ok 539 fc fc-sync --help shows usage information
+ok 540 fc fc-sync --help shows configuration file path
+ok 541 sync.conf.template exists
+ok 542 sync.conf.template contains required variables
+ok 543 sync.conf.template contains security warning
+ok 544 fc fc-sync setup creates config file
+ok 545 fc fc-sync setup sets correct permissions
+ok 546 fc fc-sync setup shows next steps
+ok 547 fc fc-sync setup detects existing config
+ok 548 fc fc-sync backup fails without GPG_RECIPIENT_ID
+not ok 549 fc fc-sync backup fails with empty BACKUP_TARGETS
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 179)
+#   `assert_output --partial "BACKUP_TARGETS is empty"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   BACKUP_TARGETS is empty
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643061   Available: 24328245
+#   Inodes: Total: 6553600    Free: 6546922
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643061   Available: 24328245
+#   Inodes: Total: 6553600    Free: 6546922
+#   000")
+#   [38;5;196m[ERROR   ][0m GPG_RECIPIENT_ID is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure fc-sync:
+#   [38;5;117m[INFO    ][0m   1. Run setup:     fc fc-sync setup
+#   [38;5;117m[INFO    ][0m   2. Edit config:   $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)
+#   [38;5;196m[ERROR   ][0m Configuration required. See instructions above.
+# --
+#
+ok 550 fc fc-sync with unknown subcommand shows error
+ok 551 fc fc-sync backup requires gpg
+ok 552 fc fc-sync backup requires rsync
+ok 553 fc fc-sync --help shows remote subcommands
+ok 554 fc fc-sync --help mentions rclone
+ok 555 sync.conf.template contains remote storage variables
+ok 556 fc fc-sync push requires rclone
+ok 557 fc fc-sync pull requires rclone
+ok 558 fc fc-sync list-remote requires rclone
+ok 559 fc fc-sync push fails without RCLONE_REMOTE configured
+not ok 560 fc fc-sync push fails when local backup doesn't exist
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 318)
+#   `assert_output --partial "Local backup not found"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   Local backup not found
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643040   Available: 24328224
+#   Inodes: Total: 6553600    Free: 6546901
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643040   Available: 24328224
+#   Inodes: Total: 6553600    Free: 6546901
+#   000")
+#   [38;5;196m[ERROR   ][0m RCLONE_REMOTE is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure remote storage:
+#   [38;5;117m[INFO    ][0m   1. Configure rclone: rclone config
+#   [38;5;117m[INFO    ][0m   2. Edit: $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set RCLONE_REMOTE to your remote name
+#   [38;5;196m[ERROR   ][0m Remote storage not configured.
+# --
+#
+not ok 561 fc fc-sync push fails with invalid remote name
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync.bats, line 346)
+#   `assert_output --partial "rclone remote 'nonexistent-remote' not found"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   rclone remote 'nonexistent-remote' not found
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643037   Available: 24328221
+#   Inodes: Total: 6553600    Free: 6546899
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643037   Available: 24328221
+#   Inodes: Total: 6553600    Free: 6546899
+#   000")
+#   [38;5;196m[ERROR   ][0m RCLONE_REMOTE is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure remote storage:
+#   [38;5;117m[INFO    ][0m   1. Configure rclone: rclone config
+#   [38;5;117m[INFO    ][0m   2. Edit: $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set RCLONE_REMOTE to your remote name
+#   [38;5;196m[ERROR   ][0m Remote storage not configured.
+# --
+#
+ok 562 backup backends directory exists
+ok 563 gpg backend file exists
+ok 564 restic backend file exists
+ok 565 borg backend file exists
+ok 566 fc fc-sync --help shows available backends
+ok 567 fc fc-sync --help shows backend descriptions
+ok 568 fc fc-sync --help mentions BACKUP_BACKEND config
+ok 569 sync.conf.template contains BACKUP_BACKEND option
+ok 570 sync.conf.template contains Restic settings
+ok 571 sync.conf.template contains Borg settings
+ok 572 sync.conf.template contains BACKUP_EXCLUDES option
+not ok 573 fc fc-sync backup with invalid backend fails
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 133)
+#   `assert_output --partial "Unknown backup backend"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   Unknown backup backend
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643013   Available: 24328197
+#   Inodes: Total: 6553600    Free: 6546873
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643013   Available: 24328197
+#   Inodes: Total: 6553600    Free: 6546873
+#   000")
+#   [38;5;196m[ERROR   ][0m GPG_RECIPIENT_ID is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure fc-sync:
+#   [38;5;117m[INFO    ][0m   1. Run setup:     fc fc-sync setup
+#   [38;5;117m[INFO    ][0m   2. Edit config:   $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)
+#   [38;5;196m[ERROR   ][0m Configuration required. See instructions above.
+# --
+#
+ok 574 fc fc-sync backup with invalid backend shows available backends
+ok 575 gpg backend is default when BACKUP_BACKEND not set
+not ok 576 restic backend requires restic command
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 199)
+#   `assert_output --partial "restic is not installed"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   restic is not installed
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643007   Available: 24328191
+#   Inodes: Total: 6553600    Free: 6546867
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643007   Available: 24328191
+#   Inodes: Total: 6553600    Free: 6546867
+#   000")
+#   [38;5;196m[ERROR   ][0m GPG_RECIPIENT_ID is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure fc-sync:
+#   [38;5;117m[INFO    ][0m   1. Run setup:     fc fc-sync setup
+#   [38;5;117m[INFO    ][0m   2. Edit config:   $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)
+#   [38;5;196m[ERROR   ][0m Configuration required. See instructions above.
+# --
+#
+not ok 577 restic backend requires RESTIC_REPOSITORY
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 220)
+#   `assert_output --partial "RESTIC_REPOSITORY is not configured"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   RESTIC_REPOSITORY is not configured
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643003   Available: 24328187
+#   Inodes: Total: 6553600    Free: 6546864
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643003   Available: 24328187
+#   Inodes: Total: 6553600    Free: 6546864
+#   000")
+#   [38;5;196m[ERROR   ][0m GPG_RECIPIENT_ID is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure fc-sync:
+#   [38;5;117m[INFO    ][0m   1. Run setup:     fc fc-sync setup
+#   [38;5;117m[INFO    ][0m   2. Edit config:   $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)
+#   [38;5;196m[ERROR   ][0m Configuration required. See instructions above.
+# --
+#
+not ok 578 restic backend requires RESTIC_PASSWORD_FILE
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 242)
+#   `assert_output --partial "RESTIC_PASSWORD_FILE"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   RESTIC_PASSWORD_FILE
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643001   Available: 24328185
+#   Inodes: Total: 6553600    Free: 6546862
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25643001   Available: 24328185
+#   Inodes: Total: 6553600    Free: 6546862
+#   000")
+#   [38;5;196m[ERROR   ][0m GPG_RECIPIENT_ID is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure fc-sync:
+#   [38;5;117m[INFO    ][0m   1. Run setup:     fc fc-sync setup
+#   [38;5;117m[INFO    ][0m   2. Edit config:   $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)
+#   [38;5;196m[ERROR   ][0m Configuration required. See instructions above.
+# --
+#
+not ok 579 borg backend requires borg command
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 264)
+#   `assert_output --partial "borg is not installed"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   borg is not installed
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25642999   Available: 24328183
+#   Inodes: Total: 6553600    Free: 6546861
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25642999   Available: 24328183
+#   Inodes: Total: 6553600    Free: 6546861
+#   000")
+#   [38;5;196m[ERROR   ][0m GPG_RECIPIENT_ID is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure fc-sync:
+#   [38;5;117m[INFO    ][0m   1. Run setup:     fc fc-sync setup
+#   [38;5;117m[INFO    ][0m   2. Edit config:   $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)
+#   [38;5;196m[ERROR   ][0m Configuration required. See instructions above.
+# --
+#
+not ok 580 borg backend requires BORG_REPOSITORY
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 285)
+#   `assert_output --partial "BORG_REPOSITORY is not configured"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   BORG_REPOSITORY is not configured
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25642996   Available: 24328180
+#   Inodes: Total: 6553600    Free: 6546858
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25642996   Available: 24328180
+#   Inodes: Total: 6553600    Free: 6546858
+#   000")
+#   [38;5;196m[ERROR   ][0m GPG_RECIPIENT_ID is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure fc-sync:
+#   [38;5;117m[INFO    ][0m   1. Run setup:     fc fc-sync setup
+#   [38;5;117m[INFO    ][0m   2. Edit config:   $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)
+#   [38;5;196m[ERROR   ][0m Configuration required. See instructions above.
+# --
+#
+not ok 581 borg backend requires BORG_PASSPHRASE_FILE
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_sync_backends.bats, line 307)
+#   `assert_output --partial "BORG_PASSPHRASE_FILE"' failed
+#
+# -- output does not contain substring --
+# substring (1 lines):
+#   BORG_PASSPHRASE_FILE
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25642994   Available: 24328178
+#   Inodes: Total: 6553600    Free: 6546856
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25642994   Available: 24328178
+#   Inodes: Total: 6553600    Free: 6546856
+#   000")
+#   [38;5;196m[ERROR   ][0m GPG_RECIPIENT_ID is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure fc-sync:
+#   [38;5;117m[INFO    ][0m   1. Run setup:     fc fc-sync setup
+#   [38;5;117m[INFO    ][0m   2. Edit config:   $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set your GPG key ID (find with: gpg --list-keys --keyid-format LONG)
+#   [38;5;196m[ERROR   ][0m Configuration required. See instructions above.
+# --
+#
+not ok 582 fc fc-sync push with restic backend shows native remote info
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync_backends.bats, line 339)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25642990   Available: 24328174
+#   Inodes: Total: 6553600    Free: 6546853
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25642990   Available: 24328174
+#   Inodes: Total: 6553600    Free: 6546853
+#   000")
+#   [38;5;196m[ERROR   ][0m RCLONE_REMOTE is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure remote storage:
+#   [38;5;117m[INFO    ][0m   1. Configure rclone: rclone config
+#   [38;5;117m[INFO    ][0m   2. Edit: $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set RCLONE_REMOTE to your remote name
+#   [38;5;196m[ERROR   ][0m Remote storage not configured.
+# --
+#
+not ok 583 fc fc-sync push with borg backend shows native remote info
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_sync_backends.bats, line 371)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (18 lines):
+#   /app/lib/plugins/fc-sync: line 49: File: "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25642988   Available: 24328172
+#   Inodes: Total: 6553600    Free: 6546851
+#   000: syntax error in expression (error token is ": "/home/jules/.config/circus/sync.conf"
+#       ID: da25af3413c9cf39 Namelen: 256     Type: overlayfs
+#   Block size: 4096       Fundamental block size: 4096
+#   Blocks: Total: 25656558   Free: 25642988   Available: 24328172
+#   Inodes: Total: 6553600    Free: 6546851
+#   000")
+#   [38;5;196m[ERROR   ][0m RCLONE_REMOTE is not configured.
+#
+#   [38;5;117m[INFO    ][0m To configure remote storage:
+#   [38;5;117m[INFO    ][0m   1. Configure rclone: rclone config
+#   [38;5;117m[INFO    ][0m   2. Edit: $EDITOR /home/jules/.config/circus/sync.conf
+#   [38;5;117m[INFO    ][0m   3. Set RCLONE_REMOTE to your remote name
+#   [38;5;196m[ERROR   ][0m Remote storage not configured.
+# --
+#
+ok 584 fc theme --help shows usage information
+ok 585 fc theme --help shows actions
+ok 586 fc theme with no action shows usage
+ok 587 fc theme list shows available themes
+ok 588 fc theme list shows dark theme
+ok 589 fc theme list shows light theme
+ok 590 fc theme current runs without error
+ok 591 fc theme apply nonexistent fails
+ok 592 fc theme unknown action fails
+ok 593 themes directory exists
+ok 594 dark theme exists
+ok 595 light theme exists
+ok 596 dark theme has theme.conf
+ok 597 dark theme has colors.sh
+ok 598 fc-theme plugin exists
+ok 599 fc-theme plugin is executable
+ok 600 fc uninstall --help shows usage information
+ok 601 fc uninstall --help shows actions
+ok 602 fc uninstall --help shows options
+ok 603 fc uninstall with no action shows usage
+ok 604 fc uninstall scan runs without error
+ok 605 fc uninstall list nonexistent-app fails
+ok 606 fc uninstall without --force shows dry-run message # skip Safari not installed
+ok 607 fc-uninstall plugin exists
+ok 608 fc-uninstall plugin is executable
+ok 609 fc-uninstall plugin sources init.sh
+ok 610 fc fc-update --help shows usage information
+not ok 611 fc fc-update --version shows version number
+# (from function `assert_output' in file tests/helpers/bats-assert/src/assert_output.bash, line 186,
+#  in test file tests/fc_update.bats, line 53)
+#   `assert_output --partial "1.0.0"' failed
+#
+# -- output does not contain substring --
+# substring : 1.0.0
+# output    : Dotfiles Flying Circus v1.6.0
+# --
+#
+ok 612 .version file exists at repository root
+ok 613 .version file contains valid semantic version
+ok 614 version_compare: equal versions return 0
+ok 623 fc fc-update with unknown option shows error
+ok 624 migrations directory exists
+ok 625 migrations README.md exists
+ok 626 CHANGELOG.md exists
+ok 627 docs/UPDATING.md exists
+ok 628 docs/specs/fc-update.md documents new flags
+ok 629 fc fc-update --help shows update target flags
+ok 630 fc fc-update --help shows Update Targets section
+ok 631 fc fc-update --help shows examples with new flags
+ok 632 fc fc-update --os flag is recognized
+not ok 633 fc fc-update --packages flag is recognized
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 219)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (2 lines):
+#   [38;5;117m[INFO    ][0m [DRY-RUN] Starting update simulation...
+#   [38;5;196m[ERROR   ][0m Homebrew is not installed. Skipping package updates.
+# --
+#
+ok 634 fc fc-update --self flag is recognized
+not ok 635 fc fc-update --all flag runs all update types
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 237)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (2 lines):
+#   [38;5;117m[INFO    ][0m [DRY-RUN] Starting update simulation...
+#   [38;5;196m[ERROR   ][0m Homebrew is not installed. Skipping package updates.
+# --
+#
+not ok 636 fc fc-update with no flags defaults to --all
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 245)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (2 lines):
+#   [38;5;117m[INFO    ][0m [DRY-RUN] Starting update simulation...
+#   [38;5;196m[ERROR   ][0m Homebrew is not installed. Skipping package updates.
+# --
+#
+not ok 637 fc fc-update --dry-run with --packages shows outdated check
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 253)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (2 lines):
+#   [38;5;117m[INFO    ][0m [DRY-RUN] Starting update simulation...
+#   [38;5;196m[ERROR   ][0m Homebrew is not installed. Skipping package updates.
+# --
+#
+ok 638 fc fc-update --dry-run with --os shows softwareupdate check
+ok 639 fc fc-update --dry-run with --self shows git pull preview
+not ok 640 fc fc-update multiple target flags can be combined
+# (from function `assert_success' in file tests/helpers/bats-assert/src/assert_success.bash, line 42,
+#  in test file tests/fc_update.bats, line 274)
+#   `assert_success' failed
+#
+# -- command failed --
+# status : 1
+# output (2 lines):
+#   [38;5;117m[INFO    ][0m [DRY-RUN] Starting update simulation...
+#   [38;5;196m[ERROR   ][0m Homebrew is not installed. Skipping package updates.
+# --
+#
+ok 641 fc vm --help shows usage information
+ok 642 fc vm --help shows all actions
+ok 643 fc vm --help shows examples
+ok 644 fc vm with no action shows usage
+ok 645 fc vm unknown action fails
+ok 646 fc vm unknown action shows help hint
+ok 647 fc vm provider shows provider info
+ok 648 fc vm provider invalid fails
+ok 649 fc vm delete without name fails
+ok 650 fc vm create without name fails
+ok 651 fc-vm plugin exists
+ok 652 fc-vm plugin is executable
+ok 653 fc-vm plugin sources init.sh
+ok 654 vm_backends directory exists
+ok 655 lima backend exists
+ok 656 colima backend exists
+ok 657 lima backend has required functions
+ok 658 colima backend has required functions
+ok 659 vm.conf.template exists
+ok 660 vm.conf.template contains VM_PROVIDER
+ok 661 fc vscode-sync --help shows usage information
+ok 662 fc vscode-sync --help shows all subcommands
+ok 663 fc vscode-sync --help shows examples
+ok 664 fc vscode-sync --help shows config file location
+ok 665 fc vscode-sync with no subcommand shows usage
+ok 666 fc vscode-sync setup --help shows usage
+ok 667 fc vscode-sync setup creates config file
+ok 668 fc vscode-sync setup sets correct permissions
+ok 669 fc vscode-sync setup detects existing config
+ok 670 fc vscode-sync setup checks prerequisites
+ok 671 fc vscode-sync up --help shows usage
+ok 672 fc vscode-sync up --help shows sync flags
+ok 673 fc vscode-sync down --help shows usage
+ok 674 fc vscode-sync down --help mentions backup
+ok 675 fc vscode-sync status --help shows usage
+ok 676 fc vscode-sync unknown subcommand fails
+ok 677 fc vscode-sync unknown subcommand shows help hint
+ok 678 fc vscode-sync up without auth fails (gist backend)
+ok 679 fc vscode-sync with unknown backend fails
+ok 680 fc vscode-sync down without gist ID fails (gist backend)
+ok 681 fc vscode-sync repo backend requires VSCODE_REPO_URL
+ok 682 fc-vscode-sync plugin exists
+ok 683 fc-vscode-sync plugin is executable
+ok 684 fc-vscode-sync plugin sources init.sh
+ok 685 fc-vscode-sync plugin uses code CLI
+ok 686 gist backend exists
+ok 687 repo backend exists
+ok 688 gist backend implements required functions
+ok 689 repo backend implements required functions
+ok 690 vscode-sync.conf.template exists
+ok 691 vscode-sync.conf.template contains backend selection
+ok 692 vscode-sync.conf.template contains gist settings
+ok 693 vscode-sync.conf.template contains sync flags
+ok 694 vscode-sync.conf.template contains security warning
+ok 695 vscode-sync.conf.template documents keychain usage
+ok 696 fc wifi --help shows usage information # skip Test only valid on macOS
+ok 697 fc wifi --help shows actions # skip Test only valid on macOS
+ok 698 fc wifi --help shows examples # skip Test only valid on macOS
+ok 699 fc wifi with no action shows usage # skip Test only valid on macOS
+ok 700 fc wifi status runs without error # skip Test only valid on macOS
+ok 701 fc wifi unknown action fails # skip Test only valid on macOS
+ok 702 fc wifi unknown action shows help hint # skip Test only valid on macOS
+ok 703 fc-wifi plugin exists # skip Test only valid on macOS
+ok 704 fc-wifi plugin is executable # skip Test only valid on macOS
+ok 705 fc-wifi plugin sources init.sh # skip Test only valid on macOS
+ok 706 fc-wifi plugin uses networksetup # skip Test only valid on macOS
+ok 707 msg_info() should print an INFO message
+ok 708 msg_success() should print a SUCCESS message
+ok 709 msg_warning() should print a WARN message
+ok 710 msg_error() should print an ERROR message to stderr
+ok 711 msg_debug() should not print by default
+ok 712 msg_critical() should print a CRITICAL message to stderr
+ok 713 CONSOLE_LOG_LEVEL=WARN should only show WARN and above
+ok 714 CONSOLE_LOG_LEVEL=DEBUG should show all messages
+ok 715 LOG_FILE_PATH should write all messages to a file
+ok 716 CONSOLE_LOG_LEVEL=SUCCESS should filter DEBUG and INFO
+ok 717 CONSOLE_LOG_LEVEL=CRITICAL should filter everything except CRITICAL
+ok 718 LOG_FILE_PATH should write messages with correct timestamp format
+ok 719 LOG_FILE_PATH should append to existing log file
+ok 720 Log rotation should rotate when file exceeds max size
+ok 721 Log rotation should shift existing rotated files
+ok 722 Log rotation should not rotate when file is under max size
+ok 723 All 15 INSTALL_STAGES files exist
+ok 724 Stage 00: Preflight Checks - sources without error in dry-run
+ok 725 Stage 01: Introduction - sources without error in dry-run
+ok 726 Stage 02: Logging Setup - sources without error in dry-run
+
+The following warnings were encountered during tests:
+BW01: `run`'s command `/app/bin/fc fc-secrets verify` exited with code 127, indicating 'Command not found'. Use run's return code checks, e.g. `run -127`, to fix this message.
+      (from function `run' in file /home/jules/.nvm/versions/node/v22.22.0/lib/node_modules/bats/lib/bats-core/test_functions.bash, line 420,
+       in test file tests/fc_secrets.bats, line 474)
+BW01: `run`'s command `/app/bin/fc fc-secrets sync` exited with code 127, indicating 'Command not found'. Use run's return code checks, e.g. `run -127`, to fix this message.
+      (from function `run' in file /home/jules/.nvm/versions/node/v22.22.0/lib/node_modules/bats/lib/bats-core/test_functions.bash, line 420,
+       in test file tests/fc_secrets.bats, line 497)

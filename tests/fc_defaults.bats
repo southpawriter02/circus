@@ -19,6 +19,7 @@ load 'test_helper'
 
 # --- Test Setup ---------------------------------------------------------------
 setup() {
+  skip_if_not_macos
   # Define the path to the main fc executable.
   FC_COMMAND="$PROJECT_ROOT/bin/fc"
 

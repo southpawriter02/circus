@@ -45,7 +45,11 @@ BORG_COMPRESSION="zstd"
 # Load user configuration if it exists
 if [ -f "$SYNC_CONFIG_FILE" ]; then
   # Security check: warn if file is world-writable (check "other" bits)
-  perms=$(stat -f '%Lp' "$SYNC_CONFIG_FILE" 2>/dev/null || echo "000")
+  if is_macos; then
+    perms=$(stat -f '%Lp' "$SYNC_CONFIG_FILE" 2>/dev/null || echo "000")
+  else
+    perms=$(stat -c '%a' "$SYNC_CONFIG_FILE" 2>/dev/null || echo "000")
+  fi
   other_perms=$((perms % 10))  # Get the last digit (other permissions)
   if [ "$other_perms" -ge 2 ] 2>/dev/null; then
     msg_warning "Config file $SYNC_CONFIG_FILE is world-writable. Consider: chmod 600 $SYNC_CONFIG_FILE"

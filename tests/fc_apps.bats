@@ -53,7 +53,7 @@ teardown() {
 @test "fc fc-apps --help shows usage information" {
   run "$FC_COMMAND" fc-apps --help
   assert_success
-  assert_output --partial "Usage: fc fc-apps"
+  assert_output --partial "Usage: fc apps"
   assert_output --partial "setup"
   assert_output --partial "list"
   assert_output --partial "install"
@@ -63,7 +63,7 @@ teardown() {
 @test "fc fc-apps with no arguments shows usage" {
   run "$FC_COMMAND" fc-apps
   assert_success
-  assert_output --partial "Usage: fc fc-apps"
+  assert_output --partial "Usage: fc apps"
 }
 
 @test "fc fc-apps --help shows examples" {

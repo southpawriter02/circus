@@ -23,6 +23,21 @@ fi
 # ==============================================================================
 
 #
+# @description Get the system package manager
+#
+os_get_package_manager() {
+    if is_debian_based; then
+        echo "apt"
+    elif is_rhel_based; then
+        echo "dnf"
+    elif is_arch_based; then
+        echo "pacman"
+    else
+        echo "unknown"
+    fi
+}
+
+#
 # @description Install a package using the appropriate package manager
 # @param $@ Package names to install
 #
@@ -420,7 +435,7 @@ os_bluetooth_status() {
 }
 
 # Export all functions
-export -f os_install_package os_update_packages os_is_package_installed
+export -f os_get_package_manager os_install_package os_update_packages os_is_package_installed
 export -f os_clipboard_copy os_clipboard_paste os_clipboard_clear
 export -f os_get_wifi_interface os_wifi_on os_wifi_off os_wifi_status
 export -f os_set_dns os_clear_dns os_get_dns

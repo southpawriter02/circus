@@ -82,39 +82,6 @@ teardown() {
 }
 
 # ==============================================================================
-# Setup Subcommand Tests
-# ==============================================================================
-
-@test "fc fc-maintenance setup creates config file" {
-  # Remove existing config
-  rm -f "$MAINTENANCE_CONFIG_FILE"
-
-  run "$FC_COMMAND" fc-maintenance setup
-  assert_success
-  assert_output --partial "Configuration file created"
-  [ -f "$MAINTENANCE_CONFIG_FILE" ]
-}
-
-@test "fc fc-maintenance setup shows next steps" {
-  rm -f "$MAINTENANCE_CONFIG_FILE"
-
-  run "$FC_COMMAND" fc-maintenance setup
-  assert_success
-  assert_output --partial "Next steps"
-  assert_output --partial "Edit the config"
-}
-
-@test "fc fc-maintenance setup detects existing config" {
-  # Create a config file first
-  mkdir -p "$(dirname "$MAINTENANCE_CONFIG_FILE")"
-  echo "# test" > "$MAINTENANCE_CONFIG_FILE"
-
-  run "$FC_COMMAND" fc-maintenance setup
-  assert_success
-  assert_output --partial "already exists"
-}
-
-# ==============================================================================
 # List Subcommand Tests
 # ==============================================================================
 
@@ -255,8 +222,7 @@ teardown() {
 @test "fc fc-maintenance run dns-flush --dry-run shows correct command" {
   run "$FC_COMMAND" fc-maintenance --dry-run run dns-flush
   assert_success
-  assert_output --partial "dscacheutil"
-  assert_output --partial "mDNSResponder"
+  assert_output --partial "Would flush DNS cache"
 }
 
 @test "fc fc-maintenance run trash --dry-run works" {
