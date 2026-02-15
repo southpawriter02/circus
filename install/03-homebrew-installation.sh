@@ -96,13 +96,15 @@ run_brew_bundle() {
     msg_info "[Dry Run] Would run: brew bundle install --file=$brewfile_path"
     # Simulate progress for dry run
     echo ""
-    local i=0
-    while [[ $i -le $total_packages ]]; do
-      ui_progress_bar "$i" "$total_packages" 40 "Simulating"
-      i=$((i + 1))
-      sleep 0.05
-    done
-    ui_progress_bar_done
+    if [ "$INTERACTIVE_MODE" = true ]; then
+      local i=0
+      while [[ $i -le $total_packages ]]; do
+        ui_progress_bar "$i" "$total_packages" 40 "Simulating"
+        i=$((i + 1))
+        sleep 0.05
+      done
+      ui_progress_bar_done
+    fi
     printf "${UI_SUCCESS}${UI_ICON_SUCCESS}${UI_RESET} [Dry Run] Would install $total_packages packages\n"
   else
     # Run brew bundle with verbose output and parse progress
