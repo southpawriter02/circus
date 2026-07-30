@@ -150,8 +150,9 @@ run_migrations() {
         msg_info "[DRY-RUN] Would run migration: $filename"
       else
         msg_info "Running migration: $filename"
-        # shellcheck source=/dev/null
-        if ! source "$migration"; then
+        # `bash`, not `source`: a sourced migration runs in the updater's own
+        # shell, where it can redefine die/rm/msg_* for the rest of the run.
+        if ! bash "$migration"; then
           msg_error "Migration $filename failed!"
           return 1
         fi
@@ -390,14 +391,18 @@ update_self() {
   old_head=$(git rev-parse HEAD)
 
   if [ "$FLAG_DRY_RUN" = true ]; then
-    msg_info "[DRY-RUN] Would run: git pull --rebase"
+    msg_info "[DRY-RUN] Would run: git fetch && git merge --ff-only @{u}"
     # For dry-run, simulate the new head
     new_head=$(git rev-parse '@{u}' 2>/dev/null || echo "$old_head")
   else
-    msg_info "Pulling the latest version from the remote repository..."
-    if ! git pull --rebase; then
-      msg_error "The update failed. Please resolve any conflicts and then run 'git pull' manually."
-      # If the pull failed, try to restore the stash anyway
+    msg_info "Fetching the latest version from the remote repository..."
+    # fetch + merge --ff-only rather than pull --rebase: a fast-forward can only
+    # advance along existing upstream history, so a force-pushed remote fails
+    # visibly instead of silently replaying local commits onto rewritten history.
+    if ! git fetch --quiet || ! git merge --ff-only '@{u}'; then
+      msg_error "The update failed. Upstream may have diverged from your local branch."
+      msg_info "Inspect with: git log --oneline --graph HEAD @{u}"
+      # If the update failed, try to restore the stash anyway
       if [ "$stashed" = true ]; then
         git stash pop
       fi

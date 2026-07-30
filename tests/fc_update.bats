@@ -262,11 +262,14 @@ teardown() {
   assert_output --partial "softwareupdate"
 }
 
-@test "fc fc-update --dry-run with --self shows git pull preview" {
+@test "fc fc-update --dry-run with --self previews a fast-forward-only update" {
   run "$FC_COMMAND" fc-update --self --dry-run
   assert_success
   assert_output --partial "[DRY-RUN]"
-  assert_output --partial "git pull"
+  # Self-update fast-forwards rather than rebasing, so a force-pushed upstream
+  # fails visibly instead of silently rewriting local history.
+  assert_output --partial "merge --ff-only"
+  refute_output --partial "pull --rebase"
 }
 
 @test "fc fc-update multiple target flags can be combined" {
