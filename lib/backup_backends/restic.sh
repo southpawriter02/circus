@@ -84,6 +84,17 @@ backend_validate_config() {
   fi
 }
 
+#
+# Redact credentials before a repository URL is printed.
+#
+# The documented REST form is rest:https://user:pass@host/, and msg_info writes
+# through log() into $LOG_FILE_PATH — a file created at the ambient umask. Any
+# userinfo in the URL would otherwise be persisted in cleartext.
+#
+redact_repo() {
+  printf '%s' "${1//:\/\/*@/://***:***@}"
+}
+
 # Check if repository exists, initialize if not
 ensure_repository() {
   local restic_cmd=${RESTIC_CMD:-restic}
@@ -93,9 +104,9 @@ ensure_repository() {
       snapshots --json >/dev/null 2>&1; then
     msg_info "Repository not found. Initializing new repository..."
     if "$restic_cmd" -r "$RESTIC_REPOSITORY" --password-file "$RESTIC_PASSWORD_FILE" init; then
-      msg_success "Repository initialized at: $RESTIC_REPOSITORY"
+      msg_success "Repository initialized at: $(redact_repo "$RESTIC_REPOSITORY")"
     else
-      die "Failed to initialize restic repository at: $RESTIC_REPOSITORY"
+      die "Failed to initialize restic repository at: $(redact_repo "$RESTIC_REPOSITORY")"
     fi
   fi
 }
@@ -107,13 +118,15 @@ backend_do_backup() {
   ensure_repository
 
   msg_info "Creating restic backup..."
-  msg_info "  Repository: $RESTIC_REPOSITORY"
+  msg_info "  Repository: $(redact_repo "$RESTIC_REPOSITORY")"
 
   # Build the list of paths to backup
   local backup_paths=()
   for target in "${BACKUP_TARGETS[@]}"; do
     local expanded_target
-    eval expanded_target="$target"
+    # No eval: the value is already expanded at config-source time, so eval would
+    # re-parse it — a path containing a space runs its tail as a command.
+    expanded_target="${target/#\~/$HOME}"
     if [ -e "$expanded_target" ]; then
       backup_paths+=("$expanded_target")
       msg_info "  Including: $expanded_target"
@@ -170,7 +183,7 @@ backend_do_restore() {
   local restic_cmd=${RESTIC_CMD:-restic}
 
   msg_info "Restoring from restic backup..."
-  msg_info "  Repository: $RESTIC_REPOSITORY"
+  msg_info "  Repository: $(redact_repo "$RESTIC_REPOSITORY")"
 
   # Check if there are any snapshots
   local snapshot_count

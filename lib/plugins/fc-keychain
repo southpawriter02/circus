@@ -361,12 +361,18 @@ action_add() {
   
   echo ""
   
+  # The password is fed on stdin rather than passed as `-w "$password"`, which
+  # would expose it in the process table to every local user for the lifetime of
+  # the call. With no value, `security` prompts for the password and then for a
+  # confirmation, so the value is written twice.
   case "$kind_choice" in
     2)
-      security add-internet-password -s "$service" -a "$account" -w "$password" 2>/dev/null
+      printf '%s\n%s\n' "$password" "$password" \
+        | security add-internet-password -s "$service" -a "$account" -w 2>/dev/null
       ;;
     *)
-      security add-generic-password -s "$service" -a "$account" -w "$password" 2>/dev/null
+      printf '%s\n%s\n' "$password" "$password" \
+        | security add-generic-password -s "$service" -a "$account" -w 2>/dev/null
       ;;
   esac
   

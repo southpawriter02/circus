@@ -147,7 +147,11 @@ do_setup() {
   fi
 
   msg_info "Creating configuration directory..."
+  # 0700: this directory holds restic-password and borg-passphrase. The default
+  # umask would leave it 0755, making the secret filenames enumerable and
+  # removing the directory-level backstop if a chmod on a file is ever missed.
   mkdir -p "$config_dir"
+  chmod 700 "$config_dir"
 
   msg_info "Copying configuration template..."
   cp "$SYNC_CONFIG_TEMPLATE" "$SYNC_CONFIG_FILE"

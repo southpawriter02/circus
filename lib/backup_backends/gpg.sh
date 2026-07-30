@@ -75,7 +75,9 @@ backend_do_backup() {
   msg_info "Backing up critical files..."
   for target in "${BACKUP_TARGETS[@]}"; do
     local expanded_target
-    eval expanded_target="$target"
+    # No eval: the value is already expanded at config-source time, so eval would
+    # re-parse it — a path containing a space runs its tail as a command.
+    expanded_target="${target/#\~/$HOME}"
     if [ -e "$expanded_target" ]; then
       rsync -a "$expanded_target" "$temp_backup_dir/"
     fi
@@ -123,7 +125,7 @@ backend_do_restore() {
   for target in "${BACKUP_TARGETS[@]}"; do
     local backup_source="$temp_restore_dir/$(basename "$target")"
     local restore_dest
-    eval restore_dest="$target"
+    restore_dest="${target/#\~/$HOME}"
     if [ -e "$backup_source" ]; then
       rsync -a "$backup_source" "$(dirname "$restore_dest")"
     fi
