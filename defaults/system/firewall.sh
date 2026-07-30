@@ -32,31 +32,30 @@
 #
 # ==============================================================================
 
-# --- Sudo Check & Re-invocation ---------------------------------------------
-# This script needs to run as root to modify firewall settings.
-# If not running as root, it re-launches itself with sudo.
-if [ "$EUID" -ne 0 ] && [ "$DRY_RUN_MODE" = false ]; then
-  msg_info "Firewall configuration requires administrative privileges."
-  sudo "$0" "$@"
-  exit $?
-fi
+# --- Privilege Model ---------------------------------------------------------
+# This file is SOURCED by install/11-defaults-and-additional-configuration.sh,
+# so it must never re-invoke the installer. A previous `sudo "$0" "$@"` here ran
+# as `sudo ./install.sh` — `source` does not change `$0` — which re-executed the
+# entire installer as root from a relative, user-writable path.
+#
+# Instead, each privileged write elevates individually via run_sudo_defaults.
 
 # --- Main Logic -------------------------------------------------------------
 
 msg_info "Configuring macOS Application Firewall..."
 
 # A helper function to run `defaults write` commands or print them in dry run mode.
-# This version is for system-level domains that require sudo.
+# This version is for system-level domains, which require root.
 run_sudo_defaults() {
   local domain="$1"
   local key="$2"
   local type="$3"
   local value="$4"
 
-  if [ "$DRY_RUN_MODE" = true ]; then
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
     msg_info "[Dry Run] Would set Firewall preference: '$key' to '$value'"
   else
-    defaults write "$domain" "$key" "$type" "$value"
+    sudo defaults write "$domain" "$key" "$type" "$value"
   fi
 }
 

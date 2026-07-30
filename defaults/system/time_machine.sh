@@ -74,12 +74,16 @@
 # Source:       man tmutil
 # See also:     https://support.apple.com/en-us/104984
 
-# --- Sudo Check & Re-invocation ---------------------------------------------
-if [ "$EUID" -ne 0 ] && [ "$DRY_RUN_MODE" = false ]; then
-  msg_info "Time Machine configuration requires administrative privileges."
-  sudo "$0" "$@"
-  exit $?
-fi
+# --- Privilege Model ---------------------------------------------------------
+# This file is SOURCED by install/11-defaults-and-additional-configuration.sh,
+# so it must never re-invoke the installer. A previous `sudo "$0" "$@"` here ran
+# as `sudo ./install.sh` — `source` does not change `$0` — which re-executed the
+# entire installer as root from a relative, user-writable path.
+#
+# Running as root was also wrong for this file specifically: sudo resets HOME to
+# /var/root, so the "$HOME/..." exclusions below were applied to root's home
+# rather than the user's. Only `tmutil enable` actually needs root, and it
+# elevates on its own line.
 
 # --- Main Logic -------------------------------------------------------------
 
@@ -137,7 +141,7 @@ exclusions=(
 msg_info "Adding developer-focused exclusions to Time Machine..."
 
 for path in "${exclusions[@]}"; do
-  if [ "$DRY_RUN_MODE" = true ]; then
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
     msg_info "[Dry Run] Would add exclusion for: $path"
   else
     # The `tmutil addexclusion` command is idempotent. Running it multiple
@@ -165,10 +169,11 @@ done
 #               backups to actually occur.
 
 msg_info "Enabling automatic Time Machine backups..."
-if [ "$DRY_RUN_MODE" = true ]; then
-  msg_info "[Dry Run] Would run: tmutil enable"
+if [ "${DRY_RUN_MODE:-false}" = true ]; then
+  msg_info "[Dry Run] Would run: sudo tmutil enable"
 else
-  if tmutil enable; then
+  # Unlike addexclusion on user-owned paths, `tmutil enable` requires root.
+  if sudo tmutil enable; then
     msg_success "Automatic backups enabled."
   else
     msg_error "Failed to enable automatic backups. Is a backup disk connected?"
