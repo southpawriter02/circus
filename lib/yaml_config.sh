@@ -277,13 +277,47 @@ apply_environment() {
       value=$(yaml_get "$config_file" ".environment[$i].value")
       
       if [[ -n "$name" && "$name" != "null" ]]; then
-        echo "export $name=\"$value\""
+        if ! _yaml_is_identifier "$name"; then
+          # >&2 so the warning does not land inside the generated file.
+          msg_warning "Skipping invalid environment variable name: $name" >&2
+          security_log "warning" "Invalid env var name blocked" "$name" 2>/dev/null || true
+          continue
+        fi
+        [[ "$value" == "null" ]] && value=""
+        printf 'export %s=%q\n' "$name" "$value"
       fi
     done
     echo "$marker_end"
   } >> "$env_file"
   
   msg_success "Environment variables written to $env_file"
+}
+
+# --- Generated-Shell Safety --------------------------------------------------
+#
+# The functions below write files that every interactive shell sources
+# (~/.zshenv.local, ~/.aliases.local). YAML is data and may be authored
+# elsewhere — a shared role config, a downloaded profile — so values must never
+# be pasted into shell syntax verbatim. Names are checked against a strict
+# allowlist and values are emitted with printf %q, which produces a correctly
+# quoted shell word for any input, including quotes and newlines.
+
+# A plain shell identifier, for environment variable names.
+_yaml_is_identifier() {
+  [[ "$1" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]
+}
+
+# Alias names additionally allow '-' and '.', which are common and safe.
+_yaml_is_alias_name() {
+  [[ "$1" =~ ^[A-Za-z_][A-Za-z0-9_.-]*$ ]]
+}
+
+# Collapse newlines so a value cannot break out of a generated comment line.
+_yaml_one_line() {
+  local s="$1"
+  s="${s//$'\r'/ }"
+  s="${s//$'\n'/ }"
+  printf '%s' "$s"
 }
 
 # --- Aliases ----------------------------------------------------------------
@@ -321,8 +355,17 @@ apply_aliases() {
       description=$(yaml_get "$config_file" ".aliases[$i].description")
       
       if [[ -n "$name" && "$name" != "null" ]]; then
-        [[ -n "$description" && "$description" != "null" ]] && echo "# $description"
-        echo "alias $name='$command'"
+        if ! _yaml_is_alias_name "$name"; then
+          # >&2 so the warning does not land inside the generated file.
+          msg_warning "Skipping invalid alias name: $name" >&2
+          security_log "warning" "Invalid alias name blocked" "$name" 2>/dev/null || true
+          continue
+        fi
+        [[ "$command" == "null" ]] && command=""
+        # A newline in the description would end the comment and turn the rest
+        # of the line into executable shell.
+        [[ -n "$description" && "$description" != "null" ]] && echo "# $(_yaml_one_line "$description")"
+        printf 'alias %s=%q\n' "$name" "$command"
       fi
     done
     echo "$marker_end"

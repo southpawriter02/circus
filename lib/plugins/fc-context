@@ -203,6 +203,27 @@ resolve_secrets() {
 }
 
 #
+# Append `export NAME=value` to the generated env file, safely.
+#
+# $CONTEXT_ENV_FILE is sourced by every interactive shell, and context files can
+# be shared or imported from elsewhere, so neither the name nor the value may be
+# pasted into shell syntax verbatim. Names must be plain identifiers; values are
+# quoted with printf %q, which is correct for any input including quotes and
+# newlines.
+#
+emit_context_export() {
+  local name="$1"
+  local value="$2"
+
+  if [[ ! "$name" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+    msg_warning "Skipping invalid variable name from context: $name" >&2
+    return 0
+  fi
+
+  printf 'export %s=%q\n' "$name" "$value" >> "$CONTEXT_ENV_FILE"
+}
+
+#
 # @description Generate the context environment file
 #
 generate_context_env() {
@@ -254,7 +275,7 @@ EOF
       local resolved_value
       resolved_value=$(resolve_secrets "$value")
 
-      echo "export ${var_name}=\"${resolved_value}\"" >> "$CONTEXT_ENV_FILE"
+      emit_context_export "$var_name" "$resolved_value"
     fi
   done < "$context_file"
 
@@ -268,25 +289,25 @@ EOF
   if [[ -n "$node_version" ]]; then
     echo "" >> "$CONTEXT_ENV_FILE"
     echo "# Node.js version" >> "$CONTEXT_ENV_FILE"
-    echo "export FC_CONTEXT_NODE_VERSION=\"$node_version\"" >> "$CONTEXT_ENV_FILE"
+    emit_context_export FC_CONTEXT_NODE_VERSION "$node_version"
   fi
 
   if [[ -n "$python_version" ]]; then
     echo "" >> "$CONTEXT_ENV_FILE"
     echo "# Python version" >> "$CONTEXT_ENV_FILE"
-    echo "export FC_CONTEXT_PYTHON_VERSION=\"$python_version\"" >> "$CONTEXT_ENV_FILE"
+    emit_context_export FC_CONTEXT_PYTHON_VERSION "$python_version"
   fi
 
   if [[ -n "$go_version" ]]; then
     echo "" >> "$CONTEXT_ENV_FILE"
     echo "# Go version" >> "$CONTEXT_ENV_FILE"
-    echo "export FC_CONTEXT_GO_VERSION=\"$go_version\"" >> "$CONTEXT_ENV_FILE"
+    emit_context_export FC_CONTEXT_GO_VERSION "$go_version"
   fi
 
   if [[ -n "$ruby_version" ]]; then
     echo "" >> "$CONTEXT_ENV_FILE"
     echo "# Ruby version" >> "$CONTEXT_ENV_FILE"
-    echo "export FC_CONTEXT_RUBY_VERSION=\"$ruby_version\"" >> "$CONTEXT_ENV_FILE"
+    emit_context_export FC_CONTEXT_RUBY_VERSION "$ruby_version"
   fi
 
   # Add Git identity
@@ -297,16 +318,16 @@ EOF
   if [[ -n "$git_name" || -n "$git_email" ]]; then
     echo "" >> "$CONTEXT_ENV_FILE"
     echo "# Git identity" >> "$CONTEXT_ENV_FILE"
-    [[ -n "$git_name" ]] && echo "export GIT_AUTHOR_NAME=\"$git_name\"" >> "$CONTEXT_ENV_FILE"
-    [[ -n "$git_name" ]] && echo "export GIT_COMMITTER_NAME=\"$git_name\"" >> "$CONTEXT_ENV_FILE"
-    [[ -n "$git_email" ]] && echo "export GIT_AUTHOR_EMAIL=\"$git_email\"" >> "$CONTEXT_ENV_FILE"
-    [[ -n "$git_email" ]] && echo "export GIT_COMMITTER_EMAIL=\"$git_email\"" >> "$CONTEXT_ENV_FILE"
+    [[ -n "$git_name" ]] && emit_context_export GIT_AUTHOR_NAME "$git_name"
+    [[ -n "$git_name" ]] && emit_context_export GIT_COMMITTER_NAME "$git_name"
+    [[ -n "$git_email" ]] && emit_context_export GIT_AUTHOR_EMAIL "$git_email"
+    [[ -n "$git_email" ]] && emit_context_export GIT_COMMITTER_EMAIL "$git_email"
   fi
 
   # Add context tracking variable
   echo "" >> "$CONTEXT_ENV_FILE"
   echo "# Context tracking" >> "$CONTEXT_ENV_FILE"
-  echo "export FC_ACTIVE_CONTEXT=\"$context_name\"" >> "$CONTEXT_ENV_FILE"
+  emit_context_export FC_ACTIVE_CONTEXT "$context_name"
 
   echo "" >> "$CONTEXT_ENV_FILE"
   echo "$CONTEXT_MARKER_END" >> "$CONTEXT_ENV_FILE"
@@ -361,7 +382,10 @@ run_activation_command() {
 
   if [[ -n "$on_activate" ]]; then
     echo "  Running activation command..."
-    eval "$on_activate"
+    # `bash -c --` rather than `eval`: the hook runs in a child shell, so it
+    # cannot redefine functions or clobber state in this process. It is still
+    # arbitrary code by design, which is why do_import shows it and asks first.
+    bash -c -- "$on_activate"
   fi
 }
 
@@ -526,7 +550,8 @@ do_off() {
     on_deactivate=$(get_context_value "$context_file" "ON_DEACTIVATE")
     if [[ -n "$on_deactivate" ]]; then
       echo "  Running deactivation command..."
-      eval "$on_deactivate"
+      # See activate_context: child shell, not eval in this process.
+      bash -c -- "$on_deactivate"
     fi
   fi
 
@@ -822,6 +847,27 @@ do_import() {
     read -rp "Context '$context_name' already exists. Overwrite? [y/N] " confirm
     if [[ ! "$confirm" =~ ^[Yy] ]]; then
       msg_info "Cancelled."
+      return 0
+    fi
+  fi
+
+  # ON_ACTIVATE / ON_DEACTIVATE are executed verbatim on every `fc context
+  # switch` and `fc context off`. Context files are meant to be shared, so show
+  # these hooks and get explicit consent rather than importing them silently.
+  local hook_activate hook_deactivate
+  hook_activate=$(get_context_value "$import_file" "ON_ACTIVATE")
+  hook_deactivate=$(get_context_value "$import_file" "ON_DEACTIVATE")
+
+  if [[ -n "$hook_activate" || -n "$hook_deactivate" ]]; then
+    echo ""
+    msg_warning "This context runs commands when activated or deactivated:"
+    [[ -n "$hook_activate" ]]   && echo "  ON_ACTIVATE:   $hook_activate"
+    [[ -n "$hook_deactivate" ]] && echo "  ON_DEACTIVATE: $hook_deactivate"
+    echo ""
+    msg_info "These run as you, with your privileges. Only accept them from a source you trust."
+    read -rp "Import anyway? [y/N] " hook_confirm
+    if [[ ! "$hook_confirm" =~ ^[Yy] ]]; then
+      msg_info "Cancelled. Nothing was imported."
       return 0
     fi
   fi
