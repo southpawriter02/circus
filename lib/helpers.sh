@@ -271,7 +271,61 @@ run_sudo() {
   sudo "$@"
 }
 
-export -f run_defaults run_sudo
+#
+# @description
+#   Download an installer script over hardened HTTPS into a file, optionally
+#   verifying its SHA-256, so the caller can run it from disk instead of piping
+#   it straight into a shell.
+#
+#   Transport hardening: --proto '=https' and --proto-redir '=https' stop a
+#   redirect from downgrading to plain HTTP; -f turns a 404 or captive-portal
+#   page into a failure rather than saving the error body as if it were the
+#   script; --tlsv1.2 sets a floor on the negotiated protocol.
+#
+#   Note on scope: HTTPS authenticates the host, not the content. Upstream can
+#   still change what lives at that URL at any time. Pinning a checksum is what
+#   actually fixes that, so when no pin is supplied this prints the observed
+#   digest and says plainly that it is running unverified.
+#
+# @param $1 URL to fetch.
+# @param $2 Output path (caller owns creation and cleanup).
+# @param $3 Optional expected SHA-256. When set, a mismatch fails closed.
+#
+fetch_verified_script() {
+  local url="$1"
+  local out="$2"
+  local expected="${3:-}"
+
+  if ! curl --proto '=https' --proto-redir '=https' --tlsv1.2 -fsSL -o "$out" "$url"; then
+    msg_error "Failed to download: $url"
+    return 1
+  fi
+
+  if [ ! -s "$out" ]; then
+    msg_error "Downloaded an empty file from: $url"
+    return 1
+  fi
+
+  local actual
+  actual=$(shasum -a 256 "$out" | awk '{print $1}')
+
+  if [ -n "$expected" ]; then
+    if [ "$actual" != "$expected" ]; then
+      msg_error "Checksum mismatch for $url"
+      msg_error "  expected: $expected"
+      msg_error "  actual:   $actual"
+      return 1
+    fi
+    msg_success "Checksum verified: $(basename "$url")"
+  else
+    msg_warning "No checksum pinned for $(basename "$url") — running it unverified."
+    msg_info "  sha256: $actual"
+  fi
+
+  return 0
+}
+
+export -f run_defaults run_sudo fetch_verified_script
 
 # ------------------------------------------------------------------------------
 # SECTION: VERSION COMPARISON FUNCTIONS

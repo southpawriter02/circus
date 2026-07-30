@@ -42,7 +42,22 @@ install_homebrew() {
   msg_info "Installing Homebrew..."
   msg_info "This may require your password."
 
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  # Fetch to a file and run it from disk rather than piping curl into bash, so
+  # the payload can be checksum-verified. Pin CIRCUS_HOMEBREW_INSTALLER_SHA256
+  # to make this fail closed on an unexpected digest.
+  local installer
+  installer=$(mktemp) || return 1
+
+  if ! fetch_verified_script \
+      "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh" \
+      "$installer" "${CIRCUS_HOMEBREW_INSTALLER_SHA256:-}"; then
+    rm -f "$installer"
+    msg_error "Homebrew installation aborted."
+    return 1
+  fi
+
+  /bin/bash "$installer"
+  rm -f "$installer"
 
   # Add Homebrew to PATH for Apple Silicon
   if [ -f "/opt/homebrew/bin/brew" ]; then

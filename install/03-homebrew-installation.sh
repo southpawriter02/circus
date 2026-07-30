@@ -199,10 +199,22 @@ main() {
     else
       ui_spinner_start "Installing Homebrew (this may take a few minutes)..."
 
-      # Run Homebrew installation
-      local install_output
-      install_output=$(/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 2>&1)
-      local install_result=$?
+      # Fetch the installer to a file and run it from disk rather than piping
+      # curl into bash, so the payload can be checksum-verified before it
+      # executes. Pin CIRCUS_HOMEBREW_INSTALLER_SHA256 to fail closed.
+      local installer install_output install_result
+      installer=$(mktemp)
+
+      if fetch_verified_script \
+          "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh" \
+          "$installer" "${CIRCUS_HOMEBREW_INSTALLER_SHA256:-}"; then
+        install_output=$(/bin/bash "$installer" 2>&1)
+        install_result=$?
+      else
+        install_output="Installer download or checksum verification failed."
+        install_result=1
+      fi
+      rm -f "$installer"
 
       if [[ $install_result -eq 0 ]]; then
         ui_spinner_stop "success" "Homebrew installed successfully"
