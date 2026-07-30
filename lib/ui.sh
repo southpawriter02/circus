@@ -211,6 +211,13 @@ ui_repeat() {
   local char="$1"
   local count="$2"
   local result=""
+  # `local i` is load-bearing. Without it this assignment escapes into the
+  # caller's scope, and `i` is the obvious name for a caller's loop counter.
+  # ui_progress_bar calls ui_repeat twice per frame, so a caller looping on `i`
+  # had its counter overwritten with the bar's fill width every iteration —
+  # turning `while [[ $i -le $total ]]` into a fixed-point oscillation that
+  # never terminated.
+  local i
   for ((i=0; i<count; i++)); do result+="$char"; done
   echo -n "$result"
 }
@@ -611,6 +618,7 @@ ui_stages_print() {
   # Calculate how many stages per row (aim for 3 per row)
   local cols=3
   local col_width=$(( (width - 2) / cols ))
+  local c
 
   local i=0
   while [[ $i -lt $total ]]; do
@@ -682,6 +690,11 @@ ui_table() {
   shift
   local headers="${1:-}"
   shift
+
+  # Declared local so the loops below cannot clobber a caller's variables of the
+  # same name — see the note in ui_repeat for what that costs when it happens.
+  local i row status w
+  local widths cols
 
   # Parse column widths
   IFS=',' read -ra widths <<< "$widths_str"
@@ -785,6 +798,7 @@ ui_select() {
   echo ""
 
   local i=1
+  local opt
   for opt in "${options[@]}"; do
     printf "  ${UI_PRIMARY}%d)${UI_RESET} %s\n" "$i" "$opt"
     ((i++))
@@ -813,6 +827,7 @@ ui_multiselect() {
   local prompt="${1:-Select options (space to toggle):}"
   shift
   local options=("$@")
+  local opt num
 
   if [[ "$UI_HAS_GUM" == "true" ]] && [[ -t 0 ]] && [[ -t 1 ]]; then
     local selected=()
