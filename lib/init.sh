@@ -13,6 +13,17 @@
 #
 # ==============================================================================
 
+# --- Re-entrancy Guard --------------------------------------------------------
+
+# `bin/fc` sources this file and then sources a plugin into the same shell, and
+# every plugin sources it again. Without this guard the second pass re-runs the
+# `readonly` declarations in the libraries below, which fails under `set -e` and
+# kills the process before the plugin body ever runs.
+if [ -n "${_CIRCUS_INIT_DONE:-}" ]; then
+  return 0
+fi
+_CIRCUS_INIT_DONE=1
+
 # --- Define Global Constants ------------------------------------------------
 
 # The absolute path to the root of the dotfiles repository.

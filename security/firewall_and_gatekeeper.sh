@@ -20,7 +20,7 @@ if [ "$DRY_RUN_MODE" = true ]; then
 else
   # We use our existing `fc` command to enable the firewall.
   # The `fc-firewall` script already handles sudo and messaging.
-  "$DOTFILES_DIR/bin/fc" firewall on
+  "$DOTFILES_ROOT/bin/fc" firewall on
 fi
 
 # --- Gatekeeper -------------------------------------------------------------

@@ -28,7 +28,7 @@
 #   1. Open iTerm2 manually first to create default preferences
 #   2. Go to Preferences > General > Preferences
 #   3. Check "Load preferences from a custom folder or URL"
-#   4. Select the folder: $DOTFILES_DIR/etc/iterm2
+#   4. Select the folder: $DOTFILES_ROOT/etc/iterm2
 #   5. Check "Save changes to folder when iTerm2 quits"
 #
 # NOTES:
@@ -45,7 +45,7 @@ main() {
   # --- Configuration ---
   # Path to the directory containing iTerm2 preferences to sync.
   # This directory should contain com.googlecode.iterm2.plist or similar.
-  local custom_prefs_dir="$DOTFILES_DIR/etc/iterm2"
+  local custom_prefs_dir="$DOTFILES_ROOT/etc/iterm2"
 
   # ==============================================================================
   # iTerm2 Preferences Configuration
@@ -73,7 +73,7 @@ main() {
   #               file to this location.
   # Default:      (none - uses ~/Library/Preferences)
   # Possible:     Any valid directory path
-  # Set to:       $DOTFILES_DIR/etc/iterm2
+  # Set to:       $DOTFILES_ROOT/etc/iterm2
   # Reference:    iTerm2 > Preferences > General > Preferences
   # Tip:          Commit the preferences file to your dotfiles repo
   #               to sync settings across machines

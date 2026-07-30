@@ -26,8 +26,8 @@
 #     https://code.visualstudio.com/docs/editor/command-line
 #
 # FILES:
-#   $DOTFILES_DIR/etc/vscode/extensions.txt - List of extensions to install
-#   $DOTFILES_DIR/etc/vscode/settings.json  - User settings to symlink
+#   $DOTFILES_ROOT/etc/vscode/extensions.txt - List of extensions to install
+#   $DOTFILES_ROOT/etc/vscode/settings.json  - User settings to symlink
 #
 # PATHS:
 #   Settings target: ~/Library/Application Support/Code/User/settings.json
@@ -54,8 +54,8 @@ main() {
   fi
 
   # --- Configuration ---
-  local extensions_file="$DOTFILES_DIR/etc/vscode/extensions.txt"
-  local settings_source="$DOTFILES_DIR/etc/vscode/settings.json"
+  local extensions_file="$DOTFILES_ROOT/etc/vscode/extensions.txt"
+  local settings_source="$DOTFILES_ROOT/etc/vscode/settings.json"
   local settings_target_dir="$HOME/Library/Application Support/Code/User"
   local settings_target_file="$settings_target_dir/settings.json"
 

@@ -116,7 +116,13 @@ run_preflight_check() {
     fi
   fi
 
-  return "$check_result"
+  # Deliberately return success. The check's outcome is already recorded in
+  # CHECK_RESULTS / CHECKS_FAILED / CRITICAL_FAILURES, and display_preflight_summary
+  # decides whether to abort from those. Propagating the failure here instead
+  # trips `set -e` in the caller's loop, so a single non-critical warning (no
+  # Homebrew, low battery, offline) would kill the installer before the summary
+  # ever printed.
+  return 0
 }
 
 #

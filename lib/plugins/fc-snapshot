@@ -15,8 +15,8 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 source "$DOTFILES_ROOT/lib/snapshot.sh"
 
-# --- Configuration ----------------------------------------------------------
-readonly SNAPSHOT_CONFIG="$HOME/.config/circus/snapshot.conf"
+# SNAPSHOT_CONFIG and friends come from lib/snapshot.sh above; re-declaring the
+# readonly here aborts the plugin under `set -e`.
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {

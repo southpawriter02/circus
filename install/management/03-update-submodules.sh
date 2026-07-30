@@ -15,7 +15,7 @@
 main() {
   # First, check if a .gitmodules file exists in the root of the repository.
   # If it doesn't, there are no submodules to manage.
-  if [ ! -f "$DOTFILES_DIR/.gitmodules" ]; then
+  if [ ! -f "$DOTFILES_ROOT/.gitmodules" ]; then
     msg_info "No submodules found to initialize."
     return 0
   fi

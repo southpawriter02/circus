@@ -14,7 +14,9 @@
 # SECTION: SCRIPT SETUP & ROBUSTNESS
 # ------------------------------------------------------------------------------
 
-set -eo pipefail
+# `-E` (errtrace) is required for the ERR trap below to be inherited by shell
+# functions. Without it every stage failure inside `main()` exits silently.
+set -Eeo pipefail
 
 # ------------------------------------------------------------------------------
 # SECTION: LOGGING CONFIGURATION & SETUP
@@ -195,6 +197,81 @@ prompt_for_confirmation() {
 }
 
 export -f prompt_for_confirmation
+
+# ------------------------------------------------------------------------------
+# SECTION: SYSTEM MUTATION WRAPPERS
+# ------------------------------------------------------------------------------
+# Canonical definitions of the two wrappers that scripts across `system/`,
+# `defaults/` and `roles/` call to change machine state. Both honor DRY_RUN_MODE
+# so that dry-run coverage lives in one place rather than being re-implemented
+# (and forgotten) per file.
+#
+# Individual `defaults/**` scripts still define their own local `run_defaults`,
+# which shadows this one for the remainder of the sourcing shell. These
+# definitions exist so that the ~24 files calling the helpers WITHOUT defining
+# them — notably everything under `system/macos/`, which aborts stage 4 of the
+# installer — have something to call.
+
+#
+# @description
+#   Writes a macOS user preference, honoring dry-run mode.
+#
+#   Accepts an optional leading `write` verb and an optional `-currentHost`
+#   flag, both of which appear at existing call sites:
+#
+#     run_defaults <domain> <key> <type> <value>
+#     run_defaults write <domain> <key> <type> <value>
+#     run_defaults -currentHost <domain> <key> <type> <value>
+#
+run_defaults() {
+  local host_args=()
+
+  # Strip the optional verb / flag prefixes in any order.
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      write)        shift ;;
+      -currentHost) host_args=(-currentHost); shift ;;
+      *)            break ;;
+    esac
+  done
+
+  if [ "$#" -lt 4 ]; then
+    msg_error "run_defaults: expected <domain> <key> <type> <value>, got: $*"
+    return 1
+  fi
+
+  local domain="$1" key="$2" type="$3" value="$4"
+
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
+    msg_info "[Dry Run] Would set ${domain} '${key}' to '${value}'"
+    return 0
+  fi
+
+  defaults "${host_args[@]}" write "$domain" "$key" "$type" "$value"
+}
+
+#
+# @description
+#   Runs a command under sudo, honoring dry-run mode. Returns the command's
+#   exit status so callers can branch on success.
+#
+# @param $@ The command and arguments to run.
+#
+run_sudo() {
+  if [ "$#" -eq 0 ]; then
+    msg_error "run_sudo: no command given"
+    return 1
+  fi
+
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
+    msg_info "[Dry Run] Would run: sudo $*"
+    return 0
+  fi
+
+  sudo "$@"
+}
+
+export -f run_defaults run_sudo
 
 # ------------------------------------------------------------------------------
 # SECTION: VERSION COMPARISON FUNCTIONS
