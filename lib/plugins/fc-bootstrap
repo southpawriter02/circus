@@ -412,7 +412,7 @@ print_completion_report() {
   for phase_def in "${BOOTSTRAP_PHASES[@]}"; do
     IFS=':' read -r id _ _ <<< "$phase_def"
     if phase_completed "$id"; then
-      ((completed++))
+      completed=$((completed + 1))
     fi
   done
 
@@ -458,7 +458,7 @@ run_bootstrap() {
 
   for phase_def in "${BOOTSTRAP_PHASES[@]}"; do
     IFS=':' read -r id name desc <<< "$phase_def"
-    ((phase_count++))
+    phase_count=$((phase_count + 1))
 
     echo ""
     echo "═══════════════════════════════════════════════════════════════════"

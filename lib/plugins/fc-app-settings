@@ -192,7 +192,7 @@ do_apply() {
             cat_name=$(basename "$dir")
             echo "  Applying $cat_name/$name..."
             if bash "$script" 2>/dev/null; then
-              ((count++))
+              count=$((count + 1))
             fi
           fi
         done
@@ -221,7 +221,7 @@ do_apply() {
         name=$(basename "$script" .sh)
         echo "  Applying $name..."
         if bash "$script" 2>/dev/null; then
-          ((count++))
+          count=$((count + 1))
         fi
       fi
     done

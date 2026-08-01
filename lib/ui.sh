@@ -801,7 +801,7 @@ ui_select() {
   local opt
   for opt in "${options[@]}"; do
     printf "  ${UI_PRIMARY}%d)${UI_RESET} %s\n" "$i" "$opt"
-    ((i++))
+    i=$((i + 1))
   done
 
   echo ""
@@ -863,7 +863,7 @@ ui_multiselect() {
       selected_status+=("0")
       printf "  ${UI_MUTED}[ ]${UI_RESET} ${UI_PRIMARY}%d)${UI_RESET} %s\n" "$i" "$opt"
     fi
-    ((i++))
+    i=$((i + 1))
   done
 
   echo ""

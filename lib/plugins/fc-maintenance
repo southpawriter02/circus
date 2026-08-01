@@ -383,49 +383,49 @@ do_maintenance() {
   # Run pkg-cleanup if enabled
   if [[ "${TASK_PKG_CLEANUP:-true}" == "true" ]] || [ "$FLAG_ALL" = true ]; then
     task_pkg_cleanup
-    ((tasks_run++))
+    tasks_run=$((tasks_run + 1))
     echo ""
   fi
   
   # Run pkg-cache if enabled
   if [[ "${TASK_PKG_CACHE:-true}" == "true" ]] || [ "$FLAG_ALL" = true ]; then
     task_pkg_cache
-    ((tasks_run++))
+    tasks_run=$((tasks_run + 1))
     echo ""
   fi
   
   # Run npm-cache if enabled
   if [[ "${TASK_NPM_CACHE:-true}" == "true" ]] || [ "$FLAG_ALL" = true ]; then
     task_npm_cache
-    ((tasks_run++))
+    tasks_run=$((tasks_run + 1))
     echo ""
   fi
   
   # Run pip-cache if enabled
   if [[ "${TASK_PIP_CACHE:-true}" == "true" ]] || [ "$FLAG_ALL" = true ]; then
     task_pip_cache
-    ((tasks_run++))
+    tasks_run=$((tasks_run + 1))
     echo ""
   fi
   
   # Run xcode-derived if enabled (macOS only)
   if is_macos && { [[ "${TASK_XCODE_DERIVED:-true}" == "true" ]] || [ "$FLAG_ALL" = true ]; }; then
     task_xcode_derived
-    ((tasks_run++))
+    tasks_run=$((tasks_run + 1))
     echo ""
   fi
   
   # Run user-logs if enabled
   if [[ "${TASK_USER_LOGS:-true}" == "true" ]] || [ "$FLAG_ALL" = true ]; then
     task_user_logs
-    ((tasks_run++))
+    tasks_run=$((tasks_run + 1))
     echo ""
   fi
   
   # Run trash if explicitly requested
   if [ "$FLAG_INCLUDE_TRASH" = true ] || [ "$FLAG_ALL" = true ]; then
     task_trash
-    ((tasks_run++))
+    tasks_run=$((tasks_run + 1))
     echo ""
   fi
   

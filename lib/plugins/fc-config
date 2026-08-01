@@ -154,7 +154,7 @@ do_list() {
       local role_name
       role_name=$(basename "$(dirname "$config")")
       echo "  📁 roles/$role_name/config.yaml"
-      ((found++))
+      found=$((found + 1))
     fi
   done
   

@@ -121,9 +121,10 @@ sanitize_path() {
     return 1
   fi
   
-  # Check for null bytes (attack vector)
-  if [[ "$path" == *$'\0'* ]]; then
-    msg_warning "Security: Null byte in path"
+  # Reject control characters. See validate_path for why the previous
+  # null-byte test matched every string instead of none.
+  if [[ "$path" =~ [[:cntrl:]] ]]; then
+    msg_warning "Security: Invalid control character in path"
     return 1
   fi
   
@@ -187,10 +188,16 @@ validate_path() {
     return 1
   fi
   
-  # Check for null bytes (can bypass extension checks)
-  if [[ "$path" == *$'\0'* ]]; then
-    security_log "critical" "Null byte injection attempt" "$path"
-    msg_error "Security: Null byte detected in path"
+  # Reject control characters, including any attempt at a null byte.
+  #
+  # This previously tested [[ "$path" == *$'\0'* ]]. Bash strings cannot hold a
+  # NUL, so $'\0' expands to the empty string and the pattern became `**` —
+  # which matches every input. The guard therefore rejected ALL paths, making
+  # validate_path incapable of ever succeeding and silently disabling the ~100
+  # lines of allowlist and symlink logic below it.
+  if [[ "$path" =~ [[:cntrl:]] ]]; then
+    security_log "critical" "Control character in path" "$path"
+    msg_error "Security: Invalid control character in path"
     return 1
   fi
   
@@ -255,9 +262,16 @@ resolve_path_secure() {
         # Skip empty and current dir
         ;;
       '..')
-        # Go up one level (remove last element)
+        # Go up one level (remove last element).
+        #
+        # Indexed explicitly rather than with parts[-1]: negative subscripts
+        # need bash >= 4.3, and macOS ships bash 3.2, where that form is a
+        # "bad array subscript" error. Under `2>/dev/null` the element was then
+        # never removed, so '..' segments were silently DROPPED instead of
+        # popped — and a traversal like $HOME/../../etc/passwd normalised to an
+        # allowed path.
         if [[ ${#parts[@]} -gt 0 ]]; then
-          unset 'parts[-1]'
+          unset "parts[$(( ${#parts[@]} - 1 ))]"
         fi
         ;;
       *)
@@ -273,7 +287,22 @@ resolve_path_secure() {
   
   # Fix: properly join with /
   printf -v resolved '/%s' "${parts[@]}"
-  
+
+  # The normalisation above is purely lexical, so a symlinked DIRECTORY in the
+  # middle of the path stays invisible: with `ln -s /etc ~/link`, the path
+  # ~/link/passwd normalises to itself and passes an allowlist check on $HOME
+  # while actually opening /etc/passwd. Resolve the parent physically so the
+  # allowlist sees the real destination.
+  local parent base physical
+  parent=$(dirname "$resolved")
+  base=$(basename "$resolved")
+  if [[ -d "$parent" ]]; then
+    physical=$(cd -P "$parent" 2>/dev/null && pwd -P)
+    if [[ -n "$physical" ]]; then
+      resolved="${physical%/}/$base"
+    fi
+  fi
+
   echo "$resolved"
 }
 
@@ -283,10 +312,16 @@ is_within_allowed_paths() {
   local path="$1"
   
   for allowed in "${SECURITY_ALLOWED_PATHS[@]}"; do
-    # Expand any variables in allowed path
-    allowed=$(eval echo "$allowed" 2>/dev/null)
-    
-    if [[ -n "$allowed" ]] && [[ "$path" == "$allowed"* ]]; then
+    # No `eval echo "$allowed"` here. The array is built from $HOME and
+    # $DOTFILES_ROOT, which are already expanded, so the eval bought nothing —
+    # but it executed anything they contained, meaning a checkout directory
+    # named with $(...) was command execution inside the security library. It
+    # also word-split and glob-expanded paths containing spaces or `*`.
+    #
+    # Match on a path-component boundary, not a bare prefix: "$path" == "$allowed"*
+    # accepted /Users/ryanevil/x as being inside /Users/ryan, and /tmpfoo as
+    # being inside /tmp.
+    if [[ -n "$allowed" ]] && { [[ "$path" == "$allowed" ]] || [[ "$path" == "$allowed"/* ]]; }; then
       return 0
     fi
   done
@@ -603,7 +638,7 @@ validate_yaml_security() {
     if grep -q "$pattern" "$config_file" 2>/dev/null; then
       msg_error "Security: Dangerous YAML pattern found: $pattern"
       security_log "critical" "Dangerous YAML pattern in config" "$pattern in $config_file"
-      ((issues++))
+      issues=$((issues + 1))
     fi
   done
   
@@ -611,7 +646,7 @@ validate_yaml_security() {
   if grep -E '\$\(|`.*`' "$config_file" 2>/dev/null | grep -v '^#' | grep -q .; then
     msg_error "Security: Shell command found in YAML values"
     security_log "critical" "Shell commands in YAML config" "$config_file"
-    ((issues++))
+    issues=$((issues + 1))
   fi
   
   if [[ $issues -gt 0 ]]; then
@@ -976,12 +1011,12 @@ with_sudo_scope() {
 SUDO_SCOPE_DEPTH=0
 
 sudo_scope_start() {
-  ((SUDO_SCOPE_DEPTH++))
+  SUDO_SCOPE_DEPTH=$((SUDO_SCOPE_DEPTH + 1))
   security_log "info" "Sudo scope started" "depth=$SUDO_SCOPE_DEPTH"
 }
 
 sudo_scope_end() {
-  ((SUDO_SCOPE_DEPTH--))
+  SUDO_SCOPE_DEPTH=$((SUDO_SCOPE_DEPTH - 1))
   
   # Only drop credentials when we exit the outermost scope
   if [[ $SUDO_SCOPE_DEPTH -le 0 ]]; then
@@ -1007,24 +1042,42 @@ SUDOERS_BASELINE="${CIRCUS_SUDOERS_BASELINE:-$HOME/.circus/sudoers_baseline}"
 # Usage: sudoers_hash
 # Returns SHA256 hash of /etc/sudoers and /etc/sudoers.d/* combined
 sudoers_hash() {
-  local hash_input=""
-  
-  # Hash main sudoers file
-  if [[ -r /etc/sudoers ]]; then
-    hash_input+=$(sudo cat /etc/sudoers 2>/dev/null | shasum -a 256)
+  # The original used `[[ -r /etc/sudoers ]]` to guard a `sudo cat`. That file
+  # is 0440 root:wheel, so -r is ALWAYS false for the non-root user this
+  # framework requires; the cat never ran and the function returned the SHA-256
+  # of an empty line — the same constant on every machine, for ever. An attacker
+  # adding a NOPASSWD rule could not change it, so every caller reported
+  # "unchanged since baseline" regardless.
+  #
+  # Two things are needed to make this real: read through sudo, and fail closed
+  # when the read does not actually succeed. Note that piping a FAILED `sudo cat`
+  # into shasum still yields a valid-looking digest (of empty input), so the
+  # content itself has to be captured and checked rather than streamed.
+
+  # Require a usable credential up front rather than prompting once per file.
+  if ! sudo -n true 2>/dev/null; then
+    return 1
   fi
-  
-  # Hash sudoers.d directory contents
+
+  local main_content
+  main_content=$(sudo -n cat /etc/sudoers 2>/dev/null) || return 1
+  [[ -n "$main_content" ]] || return 1
+
+  local hash_input
+  hash_input=$(printf '%s' "$main_content" | shasum -a 256 | awk '{print $1}')
+
   if [[ -d /etc/sudoers.d ]]; then
+    local file content
     for file in /etc/sudoers.d/*; do
-      if [[ -f "$file" && -r "$file" ]]; then
-        hash_input+=$(sudo cat "$file" 2>/dev/null | shasum -a 256)
-      fi
+      [[ -e "$file" ]] || continue
+      content=$(sudo -n cat "$file" 2>/dev/null) || return 1
+      # Include the filename so adding or removing a drop-in changes the hash,
+      # and separate fields so {"ab","c"} cannot collide with {"a","bc"}.
+      hash_input+="|$(basename "$file"):$(printf '%s' "$content" | shasum -a 256 | awk '{print $1}')"
     done
   fi
-  
-  # Return combined hash
-  echo "$hash_input" | shasum -a 256 | awk '{print $1}'
+
+  printf '%s' "$hash_input" | shasum -a 256 | awk '{print $1}'
 }
 
 # Save current sudoers hash as baseline (S09)
@@ -1033,10 +1086,13 @@ sudoers_baseline_save() {
   mkdir -p "$(dirname "$SUDOERS_BASELINE")" 2>/dev/null
   
   local current_hash
-  current_hash=$(sudoers_hash)
-  
+  # `|| true` so a non-zero from sudoers_hash (no sudo credential, unreadable
+  # sudoers) reaches the emptiness check below instead of tripping `set -e`.
+  current_hash=$(sudoers_hash) || true
+
   if [[ -z "$current_hash" ]]; then
-    msg_error "Failed to calculate sudoers hash"
+    msg_error "Failed to calculate sudoers hash — refusing to write a baseline."
+    msg_info "This needs a valid sudo credential; try 'sudo -v' first."
     return 1
   fi
   
@@ -1064,13 +1120,20 @@ sudoers_check() {
   
   local baseline_hash current_hash
   baseline_hash=$(grep "^hash=" "$SUDOERS_BASELINE" 2>/dev/null | cut -d= -f2)
-  current_hash=$(sudoers_hash)
-  
+  current_hash=$(sudoers_hash) || true
+
   if [[ -z "$baseline_hash" ]]; then
     msg_error "Invalid baseline file"
     return 2
   fi
-  
+
+  # "Could not read sudoers" must not be reported as "unchanged". Return the
+  # distinct can-not-verify status so callers do not treat it as a clean check.
+  if [[ -z "$current_hash" ]]; then
+    msg_warning "Could not read sudoers to verify it (needs a sudo credential)."
+    return 2
+  fi
+
   if [[ "$current_hash" == "$baseline_hash" ]]; then
     return 0  # Unchanged
   else
@@ -1447,14 +1510,14 @@ check_config_permissions() {
   if is_world_writable "$file"; then
     msg_warning "⚠️  Config file is WORLD-WRITABLE: $file (perms: $perms)"
     security_log "warning" "World-writable config file" "$file ($perms)"
-    ((warnings++))
+    warnings=$((warnings + 1))
   fi
   
   # Check group-writable
   if is_group_writable "$file"; then
     msg_warning "⚠️  Config file is group-writable: $file (perms: $perms)"
     security_log "info" "Group-writable config file" "$file ($perms)"
-    ((warnings++))
+    warnings=$((warnings + 1))
   fi
   
   # Check for recommended permissions (600 or 644)
@@ -1482,7 +1545,7 @@ scan_config_permissions() {
   
   while IFS= read -r -d '' file; do
     if ! check_config_permissions "$file"; then
-      ((issues++))
+      issues=$((issues + 1))
     fi
   done < <(find "$dir" -name "*.$ext" -print0 2>/dev/null)
   
@@ -1830,7 +1893,7 @@ secure_delete_dir() {
   # First, securely delete all files
   while IFS= read -r -d '' file; do
     if ! secure_delete "$file" "$passes"; then
-      ((errors++))
+      errors=$((errors + 1))
     fi
   done < <(find "$dir" -type f -print0 2>/dev/null)
   
@@ -2072,9 +2135,9 @@ sign_all_configs() {
   
   while IFS= read -r -d '' file; do
     if sign_config "$file" "$key"; then
-      ((signed++))
+      signed=$((signed + 1))
     else
-      ((failed++))
+      failed=$((failed + 1))
     fi
   done < <(find "$dir" -name "*.yaml" -o -name "*.yml" | tr '\n' '\0')
   
@@ -2099,13 +2162,13 @@ verify_all_configs() {
   while IFS= read -r -d '' file; do
     if [[ -f "${file}.sig" ]]; then
       if verify_config_signature "$file" "${file}.sig"; then
-        ((verified++))
+        verified=$((verified + 1))
       else
-        ((invalid++))
+        invalid=$((invalid + 1))
       fi
     else
       msg_info "Unsigned: $file"
-      ((unsigned++))
+      unsigned=$((unsigned + 1))
     fi
   done < <(find "$dir" -name "*.yaml" -o -name "*.yml" | tr '\n' '\0')
   
@@ -2203,7 +2266,7 @@ verify_script_integrity() {
     
     if [[ ! -f "$full_path" ]]; then
       msg_warning "  MISSING: $file_path"
-      ((missing++))
+      missing=$((missing + 1))
       continue
     fi
     
@@ -2211,10 +2274,10 @@ verify_script_integrity() {
     current_hash=$(file_hash "$full_path")
     
     if [[ "$current_hash" == "$stored_hash" ]]; then
-      ((verified++))
+      verified=$((verified + 1))
     else
       msg_error "  MODIFIED: $file_path"
-      ((modified++))
+      modified=$((modified + 1))
     fi
   done < "$manifest"
   
@@ -2429,17 +2492,21 @@ scan_brewfile_taps() {
   msg_info "Scanning Brewfile for taps: $brewfile"
   echo ""
   
-  grep "^tap " "$brewfile" | while read -r line; do
+  # Process substitution, not a pipe: `grep ... | while` runs the loop body in a
+  # SUBSHELL, so the counter incremented there was discarded and the parent
+  # always saw 0. This function printed "untrusted" warnings and then returned
+  # success, so any CI gate wired to its exit code passed unconditionally.
+  while read -r line; do
     local tap
     tap=$(echo "$line" | awk '{print $2}' | tr -d '"'"'")
-    
+
     if is_trusted_tap "$tap"; then
       echo "  ✅ $tap"
     else
       echo "  ⚠️  $tap (untrusted)"
-      ((untrusted++))
+      untrusted=$((untrusted + 1))
     fi
-  done
+  done < <(grep "^tap " "$brewfile")
   
   echo ""
   [[ $untrusted -eq 0 ]]
@@ -2452,8 +2519,31 @@ scan_brewfile_taps() {
 is_commit_signed() {
   local commit="${1:-HEAD}"
   local repo="${2:-.}"
-  
-  git -C "$repo" log -1 --show-signature "$commit" 2>/dev/null | grep -q "Good signature"
+
+  # Use git's machine-readable signature status, NOT a grep of --show-signature.
+  #
+  # --show-signature prints the commit MESSAGE into the same stream, so a commit
+  # whose body merely contained the line
+  #     gpg: Good signature from "Trusted Maintainer <...>"
+  # passed this check while git itself reported the commit as unsigned. The grep
+  # was also locale-dependent: gpg localises "Good signature", so a non-English
+  # LC_MESSAGES made every commit read as unsigned.
+  #
+  # %G? is one of: G good, U good-but-untrusted, B bad, E cannot check,
+  # N no signature.
+  local status
+  status=$(git -C "$repo" log -1 --format='%G?' "$commit" 2>/dev/null)
+  [[ "$status" == "G" || "$status" == "U" ]] || return 1
+
+  # A valid signature from ANY key in the keyring is not the same as a signature
+  # from the maintainer. When a fingerprint is pinned, require it to match.
+  if [[ -n "${CIRCUS_TRUSTED_SIGNING_FPR:-}" ]]; then
+    local signer
+    signer=$(git -C "$repo" log -1 --format='%GF' "$commit" 2>/dev/null)
+    [[ "$signer" == "$CIRCUS_TRUSTED_SIGNING_FPR" ]] || return 1
+  fi
+
+  return 0
 }
 
 # Verify git commit signature before update (S19)
@@ -2804,7 +2894,7 @@ config_change_check() {
     if [[ "$current_hash" != "$stored_hash" ]]; then
       msg_warning "  ⚠️  MODIFIED: $file_path"
       security_event "config" "modified" "$file_path" "warning"
-      ((modified++))
+      modified=$((modified + 1))
     fi
   done < "$CONFIG_HASH_BASELINE"
   
@@ -2907,14 +2997,14 @@ startup_security_check() {
   # Check 1: Not running as root
   if is_root; then
     msg_error "⛔ Running as root!"
-    ((issues++))
+    issues=$((issues + 1))
   fi
   
   # Check 2: Config file permissions
   if [[ -f "$HOME/.circus/config.yaml" ]]; then
     if is_world_writable "$HOME/.circus/config.yaml"; then
       msg_warning "⚠️  Config file is world-writable"
-      ((issues++))
+      issues=$((issues + 1))
     fi
   fi
   
@@ -2922,7 +3012,7 @@ startup_security_check() {
   if [[ -f "$SCRIPT_HASH_MANIFEST" ]]; then
     if ! verify_script_integrity "$DOTFILES_ROOT" "$SCRIPT_HASH_MANIFEST" 2>/dev/null; then
       msg_warning "⚠️  Script integrity check failed"
-      ((issues++))
+      issues=$((issues + 1))
     fi
   fi
   
@@ -2930,7 +3020,7 @@ startup_security_check() {
   if [[ -f "$SUDOERS_BASELINE" ]]; then
     if ! sudoers_check 2>/dev/null; then
       msg_warning "⚠️  sudoers file has been modified"
-      ((issues++))
+      issues=$((issues + 1))
     fi
   fi
   
@@ -2938,7 +3028,7 @@ startup_security_check() {
   if [[ -f "$CONFIG_HASH_BASELINE" ]]; then
     if ! config_change_check "$DOTFILES_ROOT" 2>/dev/null; then
       msg_warning "⚠️  Config files have been modified"
-      ((issues++))
+      issues=$((issues + 1))
     fi
   fi
   
@@ -3549,7 +3639,7 @@ dns_leak_check() {
       
       if [[ $found -eq 0 ]]; then
         msg_warning "   ⚠️  Unexpected DNS server: $server"
-        ((unexpected++))
+        unexpected=$((unexpected + 1))
       fi
     done <<< "$servers"
     

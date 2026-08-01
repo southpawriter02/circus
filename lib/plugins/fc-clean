@@ -188,7 +188,7 @@ display_orphaned_list() {
 
   while IFS= read -r pkg; do
     if [ -n "$pkg" ]; then
-      ((count++))
+      count=$((count + 1))
       printf "  %3d. %s\\n" "$count" "$pkg"
     fi
   done <<< "$packages"
@@ -222,9 +222,9 @@ remove_packages() {
     for pkg in "${pkg_array[@]}"; do
       msg_info "Removing $pkg..."
       if [ "$pkg_type" = "cask" ]; then
-        "$brew_cmd" uninstall --cask "$pkg" 2>/dev/null && ((removed++))
+        "$brew_cmd" uninstall --cask "$pkg" 2>/dev/null && removed=$((removed + 1))
       else
-        "$brew_cmd" uninstall "$pkg" 2>/dev/null && ((removed++))
+        "$brew_cmd" uninstall "$pkg" 2>/dev/null && removed=$((removed + 1))
       fi
     done
   else
@@ -250,9 +250,9 @@ remove_packages() {
         local pkg="${pkg_array[$((idx-1))]}"
         msg_info "Removing $pkg..."
         if [ "$pkg_type" = "cask" ]; then
-          "$brew_cmd" uninstall --cask "$pkg" 2>/dev/null && ((removed++))
+          "$brew_cmd" uninstall --cask "$pkg" 2>/dev/null && removed=$((removed + 1))
         else
-          "$brew_cmd" uninstall "$pkg" 2>/dev/null && ((removed++))
+          "$brew_cmd" uninstall "$pkg" 2>/dev/null && removed=$((removed + 1))
         fi
       fi
     done

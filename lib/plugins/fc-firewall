@@ -371,7 +371,7 @@ do_apply_rules() {
   local line_num=0
   
   while IFS= read -r line || [[ -n "$line" ]]; do
-    ((line_num++))
+    line_num=$((line_num + 1))
     
     # Skip comments and empty lines
     [[ "$line" =~ ^[[:space:]]*# ]] && continue
@@ -389,14 +389,14 @@ do_apply_rules() {
     # Validate action
     if [[ "$action" != "allow" && "$action" != "block" ]]; then
       msg_warning "Line $line_num: Invalid action '$action' (use allow/block)"
-      ((fail_count++))
+      fail_count=$((fail_count + 1))
       continue
     fi
     
     # Check if app exists
     if [[ ! -e "$app_path" ]]; then
       msg_warning "Line $line_num: App not found: $app_path"
-      ((fail_count++))
+      fail_count=$((fail_count + 1))
       continue
     fi
     
@@ -406,20 +406,20 @@ do_apply_rules() {
         sudo "$FIREWALL_TOOL" --add "$app_path" >/dev/null 2>&1
         if sudo "$FIREWALL_TOOL" --unblockapp "$app_path" >/dev/null 2>&1; then
           echo "  ✅ Allow: $(basename "$app_path")"
-          ((success_count++))
+          success_count=$((success_count + 1))
         else
           echo "  ❌ Failed: $(basename "$app_path")"
-          ((fail_count++))
+          fail_count=$((fail_count + 1))
         fi
         ;;
       block)
         sudo "$FIREWALL_TOOL" --add "$app_path" >/dev/null 2>&1
         if sudo "$FIREWALL_TOOL" --blockapp "$app_path" >/dev/null 2>&1; then
           echo "  🚫 Block: $(basename "$app_path")"
-          ((success_count++))
+          success_count=$((success_count + 1))
         else
           echo "  ❌ Failed: $(basename "$app_path")"
-          ((fail_count++))
+          fail_count=$((fail_count + 1))
         fi
         ;;
     esac

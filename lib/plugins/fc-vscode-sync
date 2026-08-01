@@ -222,7 +222,7 @@ collect_local_files() {
     local settings_file="$VSCODE_USER_DIR/settings.json"
     if [ -f "$settings_file" ]; then
       cp "$settings_file" "$temp_dir/settings.json"
-      ((files_collected++))
+      files_collected=$((files_collected + 1))
     fi
   fi
 
@@ -231,7 +231,7 @@ collect_local_files() {
     local keybindings_file="$VSCODE_USER_DIR/keybindings.json"
     if [ -f "$keybindings_file" ]; then
       cp "$keybindings_file" "$temp_dir/keybindings.json"
-      ((files_collected++))
+      files_collected=$((files_collected + 1))
     fi
   fi
 
@@ -240,7 +240,7 @@ collect_local_files() {
     local tasks_file="$VSCODE_USER_DIR/tasks.json"
     if [ -f "$tasks_file" ]; then
       cp "$tasks_file" "$temp_dir/tasks.json"
-      ((files_collected++))
+      files_collected=$((files_collected + 1))
     fi
   fi
 
@@ -249,7 +249,7 @@ collect_local_files() {
     local launch_file="$VSCODE_USER_DIR/launch.json"
     if [ -f "$launch_file" ]; then
       cp "$launch_file" "$temp_dir/launch.json"
-      ((files_collected++))
+      files_collected=$((files_collected + 1))
     fi
   fi
 
@@ -258,7 +258,7 @@ collect_local_files() {
     local snippets_dir="$VSCODE_USER_DIR/snippets"
     if [ -d "$snippets_dir" ] && [ "$(ls -A "$snippets_dir" 2>/dev/null)" ]; then
       cp -r "$snippets_dir" "$temp_dir/snippets"
-      ((files_collected++))
+      files_collected=$((files_collected + 1))
     fi
   fi
 
@@ -266,7 +266,7 @@ collect_local_files() {
   if [ "$SYNC_EXTENSIONS" = true ]; then
     "$code_cmd" --list-extensions > "$temp_dir/extensions.txt" 2>/dev/null
     if [ -s "$temp_dir/extensions.txt" ]; then
-      ((files_collected++))
+      files_collected=$((files_collected + 1))
     else
       rm -f "$temp_dir/extensions.txt"
     fi
@@ -293,7 +293,7 @@ apply_remote_files() {
     fi
     cp "$temp_dir/settings.json" "$target"
     msg_success "Applied settings.json"
-    ((files_applied++))
+    files_applied=$((files_applied + 1))
   fi
 
   # keybindings.json
@@ -305,7 +305,7 @@ apply_remote_files() {
     fi
     cp "$temp_dir/keybindings.json" "$target"
     msg_success "Applied keybindings.json"
-    ((files_applied++))
+    files_applied=$((files_applied + 1))
   fi
 
   # tasks.json
@@ -316,7 +316,7 @@ apply_remote_files() {
     fi
     cp "$temp_dir/tasks.json" "$target"
     msg_success "Applied tasks.json"
-    ((files_applied++))
+    files_applied=$((files_applied + 1))
   fi
 
   # launch.json
@@ -327,7 +327,7 @@ apply_remote_files() {
     fi
     cp "$temp_dir/launch.json" "$target"
     msg_success "Applied launch.json"
-    ((files_applied++))
+    files_applied=$((files_applied + 1))
   fi
 
   # snippets directory
@@ -339,7 +339,7 @@ apply_remote_files() {
     fi
     cp -r "$temp_dir/snippets" "$target"
     msg_success "Applied snippets"
-    ((files_applied++))
+    files_applied=$((files_applied + 1))
   fi
 
   # extensions
@@ -352,10 +352,10 @@ apply_remote_files() {
       [ -z "$extension" ] && continue
 
       if "$code_cmd" --install-extension "$extension" --force >/dev/null 2>&1; then
-        ((ext_count++))
+        ext_count=$((ext_count + 1))
       else
         msg_warning "Failed to install: $extension"
-        ((ext_failed++))
+        ext_failed=$((ext_failed + 1))
       fi
     done < "$temp_dir/extensions.txt"
 
@@ -365,7 +365,7 @@ apply_remote_files() {
     if [ $ext_failed -gt 0 ]; then
       msg_warning "$ext_failed extension(s) failed to install"
     fi
-    ((files_applied++))
+    files_applied=$((files_applied + 1))
   fi
 
   echo "$files_applied"
