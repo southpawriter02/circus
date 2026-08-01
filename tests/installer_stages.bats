@@ -246,9 +246,13 @@ teardown() {
 # Note: These tests don't need the full installer environment, so they
 # restore HOME before running to avoid conflicts with the temp HOME.
 
+# These tests assert on text emitted through msg_info / msg_error, but
+# setup_installer_test exports CONSOLE_LOG_LEVEL=5 (CRITICAL only) to keep the
+# stage tests quiet — which filters that text out entirely. Pass a permissive
+# level for the invocations whose output is the thing under test.
 @test "install.sh displays help message with --help flag" {
   # Use a fresh shell with original HOME to avoid test environment conflicts
-  run env HOME="$ORIGINAL_HOME" "$PROJECT_ROOT/install.sh" --help
+  run env HOME="$ORIGINAL_HOME" CONSOLE_LOG_LEVEL=1 "$PROJECT_ROOT/install.sh" --help
   assert_success
   assert_output --partial "Usage: ./install.sh"
   assert_output --partial "--role"
@@ -257,7 +261,7 @@ teardown() {
 }
 
 @test "install.sh validates role names" {
-  run env HOME="$ORIGINAL_HOME" "$PROJECT_ROOT/install.sh" --role invalid_role
+  run env HOME="$ORIGINAL_HOME" CONSOLE_LOG_LEVEL=1 "$PROJECT_ROOT/install.sh" --role invalid_role
   assert_failure
   assert_output --partial "Invalid role"
 }
@@ -265,13 +269,13 @@ teardown() {
 @test "install.sh accepts valid roles" {
   # Just check it parses the role without immediate error
   # We use --help after to exit cleanly without running stages
-  run env HOME="$ORIGINAL_HOME" "$PROJECT_ROOT/install.sh" --role developer --help
+  run env HOME="$ORIGINAL_HOME" CONSOLE_LOG_LEVEL=1 "$PROJECT_ROOT/install.sh" --role developer --help
   assert_success
   assert_output --partial "Usage:"
 }
 
 @test "install.sh validates privacy profiles" {
-  run env HOME="$ORIGINAL_HOME" "$PROJECT_ROOT/install.sh" --privacy-profile invalid
+  run env HOME="$ORIGINAL_HOME" CONSOLE_LOG_LEVEL=1 "$PROJECT_ROOT/install.sh" --privacy-profile invalid
   assert_failure
   assert_output --partial "Invalid privacy profile"
 }
@@ -282,7 +286,7 @@ teardown() {
 }
 
 @test "install.sh validates log level names" {
-  run env HOME="$ORIGINAL_HOME" "$PROJECT_ROOT/install.sh" --log-level INVALID
+  run env HOME="$ORIGINAL_HOME" CONSOLE_LOG_LEVEL=1 "$PROJECT_ROOT/install.sh" --log-level INVALID
   assert_failure
   assert_output --partial "Invalid log level"
 }

@@ -18,6 +18,9 @@ setup() {
   PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
   export FC_COMMAND="$PROJECT_ROOT/bin/fc"
 
+  # Isolate HOME so this file cannot read or write the real ~/.config/circus.
+  setup_isolated_home
+
   # Create a temporary directory for test files
   export TEST_TEMP_DIR
   TEST_TEMP_DIR=$(mktemp -d)
@@ -36,6 +39,9 @@ setup() {
 }
 
 teardown() {
+  # Restore the real HOME and remove the temporary one.
+  teardown_isolated_home
+
   # Clean up temporary directory
   if [ -d "$TEST_TEMP_DIR" ]; then
     rm -rf "$TEST_TEMP_DIR"

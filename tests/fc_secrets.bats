@@ -18,7 +18,10 @@ setup() {
   PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
   export FC_COMMAND="$PROJECT_ROOT/bin/fc"
 
-  # Save original config if it exists
+  # Isolate HOME before any $HOME-derived path below is computed. SECRETS_ENV_FILE
+  # otherwise points at the developer's real ~/.zshenv.local.
+  setup_isolated_home
+
   export SECRETS_CONFIG_FILE="$HOME/.config/circus/secrets.conf"
   export SECRETS_ENV_FILE="$HOME/.zshenv.local"
 
@@ -56,6 +59,9 @@ teardown() {
     rm -rf "$BATS_MOCK_BINDIR"
     mkdir -p "$BATS_MOCK_BINDIR"
   fi
+
+  # Restore the real HOME and remove the temporary one.
+  teardown_isolated_home
 }
 
 # ==============================================================================

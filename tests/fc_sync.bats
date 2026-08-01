@@ -18,7 +18,10 @@ setup() {
   PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
   export FC_COMMAND="$PROJECT_ROOT/bin/fc"
 
-  # Save original config if it exists
+  # Isolate HOME before any $HOME-derived path below is computed, so these tests
+  # cannot read or write the developer's real ~/.config/circus.
+  setup_isolated_home
+
   export SYNC_CONFIG_FILE="$HOME/.config/circus/sync.conf"
   if [ -f "$SYNC_CONFIG_FILE" ]; then
     cp "$SYNC_CONFIG_FILE" "$SYNC_CONFIG_FILE.bats_backup"
@@ -36,6 +39,9 @@ teardown() {
     rm -rf "$BATS_MOCK_BINDIR"
     mkdir -p "$BATS_MOCK_BINDIR"
   fi
+
+  # Restore the real HOME and remove the temporary one.
+  teardown_isolated_home
 }
 
 # ==============================================================================

@@ -17,6 +17,9 @@ setup() {
   PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
   export FC_COMMAND="$PROJECT_ROOT/bin/fc"
 
+  # Isolate HOME so this file cannot read or write the real ~/.config/circus.
+  setup_isolated_home
+
   # Save original config if exists
   export VSCODE_SYNC_CONFIG="$HOME/.config/circus/vscode-sync.conf"
   if [ -f "$VSCODE_SYNC_CONFIG" ]; then
@@ -29,6 +32,9 @@ setup() {
 }
 
 teardown() {
+  # Restore the real HOME and remove the temporary one.
+  teardown_isolated_home
+
   # Restore original config
   if [ -f "$VSCODE_SYNC_CONFIG.bats_backup" ]; then
     mv "$VSCODE_SYNC_CONFIG.bats_backup" "$VSCODE_SYNC_CONFIG"
