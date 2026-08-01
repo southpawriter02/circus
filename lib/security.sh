@@ -2400,11 +2400,22 @@ TRUSTED_BREW_TAPS="${TRUSTED_BREW_TAPS:-homebrew/core homebrew/cask homebrew/bun
 # Usage: if is_trusted_tap "user/tap"; then ...
 is_trusted_tap() {
   local tap="$1"
-  
+
+  # Any tap under the `homebrew/` org is official (core, cask, bundle, services,
+  # cask-fonts, cask-versions, …). Matching the org rather than enumerating
+  # names avoids flagging official taps the hardcoded list predates — the repo's
+  # own Brewfile uses homebrew/cask-fonts, which was not in it.
+  #
+  # The pattern is anchored on the slash so `homebrew-evil/x` and
+  # `nothomebrew/x` do not match, and a tap name may not contain a further '/'.
+  if [[ "$tap" == homebrew/* && "$tap" != */*/* ]]; then
+    return 0
+  fi
+
   for trusted in $TRUSTED_BREW_TAPS; do
     [[ "$tap" == "$trusted" ]] && return 0
   done
-  
+
   return 1
 }
 

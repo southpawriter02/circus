@@ -152,6 +152,25 @@ do_update() {
     return 0
   fi
   
+  # Verify the incoming commit's signature when a maintainer fingerprint is
+  # pinned. Enforced only when CIRCUS_TRUSTED_SIGNING_FPR is set, because
+  # requiring it unconditionally would break every repo that does not sign; but
+  # when it IS set, an unsigned or wrongly-signed commit is refused outright
+  # rather than downgraded to a prompt.
+  if [[ -n "${CIRCUS_TRUSTED_SIGNING_FPR:-}" ]]; then
+    if is_commit_signed "origin/main" "$DOTFILES_ROOT"; then
+      msg_success "Signature verified against pinned key ${CIRCUS_TRUSTED_SIGNING_FPR:0:16}…"
+    else
+      msg_error "origin/main is not signed by the pinned key. Refusing to update."
+      msg_info "Pinned: $CIRCUS_TRUSTED_SIGNING_FPR"
+      msg_info "Inspect with: git -C $DOTFILES_ROOT log -1 --format='%G? %GF' origin/main"
+      return 1
+    fi
+  else
+    msg_warning "No signing key pinned — the incoming commits are unverified."
+    msg_info "Set CIRCUS_TRUSTED_SIGNING_FPR to require a signature from a specific key."
+  fi
+
   # Confirm before executing remote code. The repository is symlinked into the
   # user's shell startup, so applying an update runs whatever arrived above.
   if ! ui_confirm "Apply these $commits_behind commit(s)?" "N"; then
