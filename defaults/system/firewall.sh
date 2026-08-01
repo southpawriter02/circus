@@ -44,8 +44,8 @@
 
 msg_info "Configuring macOS Application Firewall..."
 
-# A helper function to run `defaults write` commands or print them in dry run mode.
-# This version is for system-level domains, which require root.
+# run_socketfilterfw is defined canonically in lib/helpers.sh.
+
 run_sudo_defaults() {
   local domain="$1"
   local key="$2"
@@ -148,7 +148,7 @@ run_sudo_defaults() {
 #               - Profile domain: com.apple.applicationfirewall
 #               - Key: EnableFirewall (true/false)
 #               - Key: BlockAllIncoming (true/false)
-run_sudo_defaults "/Library/Preferences/com.apple.alf" "globalstate" "-int" "1"
+run_socketfilterfw "Firewall enabled" --setglobalstate on
 
 # --- Enable Stealth Mode ---
 # Key:          stealthenabled
@@ -166,7 +166,7 @@ run_sudo_defaults "/Library/Preferences/com.apple.alf" "globalstate" "-int" "1"
 # Security:     Stealth mode provides defense-in-depth by making your Mac
 #               invisible to casual network scans. However, this may prevent
 #               legitimate services (like network discovery) from working.
-run_sudo_defaults "/Library/Preferences/com.apple.alf" "stealthenabled" "-int" "1"
+run_socketfilterfw "Stealth mode enabled" --setstealthmode on
 
 # --- Enable Logging ---
 # Key:          loggingenabled
@@ -182,7 +182,7 @@ run_sudo_defaults "/Library/Preferences/com.apple.alf" "stealthenabled" "-int" "
 # Source:       https://support.apple.com/en-us/102445
 # Note:         View logs with: log show --predicate 'subsystem == "com.apple.alf"'
 #               or check /var/log/appfirewall.log on older macOS versions.
-run_sudo_defaults "/Library/Preferences/com.apple.alf" "loggingenabled" "-int" "1"
+run_socketfilterfw "Firewall logging enabled" --setloggingmode on
 
 # --- Allow Signed Applications Automatically ---
 # Key:          allowsignedenabled
@@ -196,7 +196,7 @@ run_sudo_defaults "/Library/Preferences/com.apple.alf" "loggingenabled" "-int" "
 # Set to:       1 (allow signed apps for convenience)
 # UI Location:  System Settings > Network > Firewall > Options > Automatically allow built-in software
 # Source:       https://support.apple.com/en-us/102445
-run_sudo_defaults "/Library/Preferences/com.apple.alf" "allowsignedenabled" "-int" "1"
+run_socketfilterfw "Signed apps allowed automatically" --setallowsigned on
 
 # --- Allow Downloaded Signed Applications ---
 # Key:          allowdownloadsignedenabled
@@ -210,21 +210,27 @@ run_sudo_defaults "/Library/Preferences/com.apple.alf" "allowsignedenabled" "-in
 # Set to:       1 (allow signed downloads for usability)
 # UI Location:  System Settings > Network > Firewall > Options > Automatically allow downloaded signed software
 # Source:       https://support.apple.com/en-us/102445
-run_sudo_defaults "/Library/Preferences/com.apple.alf" "allowdownloadsignedenabled" "-int" "1"
+run_socketfilterfw "Signed downloaded apps allowed automatically" --setallowsignedapp on
 
 
 # ==============================================================================
 # Apply Changes
 # ==============================================================================
 
-# Changes to the firewall require a restart of the service.
-if [ "$DRY_RUN_MODE" = true ]; then
-  msg_info "[Dry Run] Would restart the firewall service to apply changes."
-else
-  msg_info "Restarting firewall service to apply changes..."
-  # Unload and reload the launchd agent for the firewall.
-  launchctl unload /System/Library/LaunchDaemons/com.apple.alf.agent.plist
-  launchctl load /System/Library/LaunchDaemons/com.apple.alf.agent.plist
+# No service restart is needed.
+#
+# socketfilterfw applies changes to the running firewall immediately. The
+# previous code unloaded and reloaded /System/Library/LaunchDaemons/com.apple.alf.agent.plist,
+# which SIP blocks on current macOS — and which, had it succeeded, would have
+# left a window with the firewall agent unloaded entirely. It was only needed
+# because the settings were written straight to the plist behind the service's
+# back; that is no longer the case.
+
+# Report the state the firewall is actually in, rather than assuming.
+if [ "${DRY_RUN_MODE:-false}" = true ]; then
+  msg_info "[Dry Run] Would report the resulting firewall state."
+elif [ -x /usr/libexec/ApplicationFirewall/socketfilterfw ]; then
+  msg_info "Firewall state: $(/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null)"
 fi
 
 msg_success "Firewall configuration complete."

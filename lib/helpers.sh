@@ -325,7 +325,43 @@ fetch_verified_script() {
   return 0
 }
 
-export -f run_defaults run_sudo fetch_verified_script
+#
+# @description
+#   Apply a macOS Application Firewall setting through socketfilterfw.
+#
+#   Writing /Library/Preferences/com.apple.alf directly goes behind cfprefsd's
+#   back: the running firewall does not pick the change up, and socketfilterfw
+#   can overwrite it later — so scripts reported "firewall configured" over a
+#   firewall whose state had not changed.
+#
+# @param $1 Human-readable description, used in the success/warning message.
+# @param $2 socketfilterfw flag, e.g. --setglobalstate.
+# @param $3 Value, e.g. on/off.
+#
+run_socketfilterfw() {
+  local description="$1"
+  local flag="$2"
+  local value="$3"
+  local fw=/usr/libexec/ApplicationFirewall/socketfilterfw
+
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
+    msg_info "[Dry Run] Would run: sudo $fw $flag $value"
+    return 0
+  fi
+
+  if [ ! -x "$fw" ]; then
+    msg_warning "socketfilterfw not found; cannot configure: $description"
+    return 1
+  fi
+
+  if sudo "$fw" "$flag" "$value" >/dev/null 2>&1; then
+    msg_success "$description"
+  else
+    msg_warning "Could not apply: $description"
+  fi
+}
+
+export -f run_defaults run_sudo run_socketfilterfw fetch_verified_script
 
 # ------------------------------------------------------------------------------
 # SECTION: VERSION COMPARISON FUNCTIONS

@@ -24,9 +24,14 @@ main() {
   fi
 
   # Check if there are any .sh files to source.
-  local sh_files
-  sh_files=$(find "$security_dir" -name "*.sh" 2>/dev/null)
-  if [ -z "$sh_files" ]; then
+  # NUL-delimited: `for file in $(find ...)` split on whitespace, so a checkout
+  # path containing a space sourced nothing while still reporting success.
+  local sh_files_arr=()
+  while IFS= read -r -d '' _f; do
+    sh_files_arr+=("$_f")
+  done < <(find "$security_dir" -name "*.sh" -print0 2>/dev/null)
+
+  if [ ${#sh_files_arr[@]} -eq 0 ]; then
     msg_info "No security configuration scripts found in '$security_dir'. Skipping."
     return 0
   fi
@@ -34,7 +39,7 @@ main() {
   msg_info "Applying security configurations from '$security_dir'..."
 
   # Loop through all .sh files in the directory and source them.
-  for file in $sh_files; do
+  for file in "${sh_files_arr[@]}"; do
     if [ -f "$file" ]; then
       msg_info "Running configuration script: '$file'..."
       # shellcheck source=/dev/null

@@ -14,16 +14,22 @@ main() {
 
   # --- Configuration ---
   local git_profile_dir="$DOTFILES_ROOT/profiles/base/git"
-  declare -A files_to_symlink
-  files_to_symlink["$git_profile_dir/.gitconfig"]="$HOME/.gitconfig"
-  files_to_symlink["$git_profile_dir/.gitignore_global"]="$HOME/.gitignore_global"
-  files_to_symlink["$git_profile_dir/.gitattributes"]="$HOME/.gitattributes"
-  files_to_symlink["$git_profile_dir/.githelpers"]="$HOME/.githelpers"
+  # Indexed array of "source|target" rather than an associative array: bash 3.2
+  # (the macOS system bash) has no `declare -A`, and this stage is sourced by an
+  # installer that may well be running under it.
+  local files_to_symlink=(
+    "$git_profile_dir/.gitconfig|$HOME/.gitconfig"
+    "$git_profile_dir/.gitignore_global|$HOME/.gitignore_global"
+    "$git_profile_dir/.gitattributes|$HOME/.gitattributes"
+    "$git_profile_dir/.githelpers|$HOME/.githelpers"
+  )
 
   # --- Symlinking ---
   msg_info "Symlinking Git configuration files..."
-  for source_file in "${!files_to_symlink[@]}"; do
-    local target_file="${files_to_symlink[$source_file]}"
+  local entry source_file target_file
+  for entry in "${files_to_symlink[@]}"; do
+    source_file="${entry%%|*}"
+    target_file="${entry##*|}"
     if [ "$DRY_RUN_MODE" = true ]; then
       msg_info "[Dry Run] Would symlink '$source_file' to '$target_file'"
     else

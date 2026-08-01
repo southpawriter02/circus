@@ -60,8 +60,24 @@ backend_do_backup() {
   local mktemp_cmd=${MKTEMP_CMD:-mktemp}
   local gpg_cmd=${GPG_CMD:-gpg}
 
+  # Check mktemp. Unchecked, a failure left $temp_backup_dir EMPTY, turning the
+  # rsync below into `rsync -a "$HOME/.ssh" "/"` — copying private keys to the
+  # filesystem root.
   local temp_backup_dir
-  temp_backup_dir=$($mktemp_cmd -d)
+  temp_backup_dir=$($mktemp_cmd -d) || die "Could not create a temporary backup directory."
+  if [ -z "$temp_backup_dir" ] || [ ! -d "$temp_backup_dir" ]; then
+    die "Could not create a temporary backup directory."
+  fi
+
+  # Clean up on ANY exit path, not just success.
+  #
+  # BACKUP_TARGETS defaults to ~/.ssh and ~/.gnupg, and the rsync below stages
+  # them here UNENCRYPTED. Previously the only `rm -rf` was after a successful
+  # gpg run, so an expired recipient key, a full disk, or Ctrl-C left plaintext
+  # private keys sitting in the temp directory indefinitely — where Time Machine
+  # and this project's own APFS snapshots would then pick them up.
+  trap 'rm -rf "$temp_backup_dir"' EXIT INT TERM
+
   msg_info "Created temporary backup directory: $temp_backup_dir"
 
   msg_info "Creating application inventory..."
@@ -85,10 +101,30 @@ backend_do_backup() {
 
   msg_info "Creating and encrypting backup archive..."
   local final_archive_path="$BACKUP_DEST_DIR/$BACKUP_ARCHIVE_NAME"
-  "$tar_cmd" -czf - -C "$temp_backup_dir" . | "$gpg_cmd" -e -r "$GPG_RECIPIENT_ID" -o "$final_archive_path"
+
+  # Write to a temporary name and move into place only on success.
+  #
+  # `gpg -o "$final_archive_path"` truncates the target the moment it opens it,
+  # so a failure partway through destroyed the previous backup and left a
+  # truncated file in its place — the worst possible outcome for a backup tool.
+  local staged_archive="${final_archive_path}.incomplete"
+  rm -f "$staged_archive"
+
+  if ! "$tar_cmd" -czf - -C "$temp_backup_dir" . | "$gpg_cmd" -e -r "$GPG_RECIPIENT_ID" -o "$staged_archive"; then
+    rm -f "$staged_archive"
+    die "Backup failed during archive/encrypt. The previous backup is untouched."
+  fi
+
+  if [ ! -s "$staged_archive" ]; then
+    rm -f "$staged_archive"
+    die "Backup produced an empty archive. The previous backup is untouched."
+  fi
+
+  mv "$staged_archive" "$final_archive_path"
 
   msg_info "Cleaning up temporary files..."
   rm -rf "$temp_backup_dir"
+  trap - EXIT INT TERM
 
   msg_success "Encrypted backup created at: $final_archive_path"
 }
@@ -105,7 +141,16 @@ backend_do_restore() {
   fi
 
   local temp_restore_dir
-  temp_restore_dir=$(mktemp -d)
+  temp_restore_dir=$(mktemp -d) || die "Could not create a temporary restore directory."
+  if [ -z "$temp_restore_dir" ] || [ ! -d "$temp_restore_dir" ]; then
+    die "Could not create a temporary restore directory."
+  fi
+
+  # The archive is DECRYPTED into this directory, so without a trap an
+  # interrupted or failed restore leaves the plaintext contents — including
+  # ~/.ssh and ~/.gnupg — on disk indefinitely.
+  trap 'rm -rf "$temp_restore_dir"' EXIT INT TERM
+
   msg_info "Decrypting backup... You may be prompted for your GPG passphrase."
 
   # The `set -e` option in helpers.sh will cause the script to exit if gpg fails.
@@ -133,6 +178,7 @@ backend_do_restore() {
 
   msg_info "Cleaning up temporary files..."
   rm -rf "$temp_restore_dir"
+  trap - EXIT INT TERM
 
   msg_success "System restoration complete."
 }

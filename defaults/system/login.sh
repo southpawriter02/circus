@@ -214,7 +214,20 @@ run_defaults "com.apple.loginwindow" "GuestEnabled" "-bool" "false"
 #               - Any Mac that could be physically accessed by others
 # Note:         This command deletes the key if it exists; || true prevents
 #               error if the key is already absent.
-sudo defaults delete "com.apple.loginwindow" "autoLoginUser" 2>/dev/null || true
+# The absolute plist path is required. `sudo defaults delete com.apple.loginwindow`
+# resolves the bare domain against ROOT's own preference store
+# (/var/root/Library/Preferences), not the system one — so this silently did
+# nothing and automatic login stayed enabled, while `|| true` hid the failure.
+# defaults/profiles/lockdown.sh:171 already uses the correct form.
+sudo defaults delete /Library/Preferences/com.apple.loginwindow autoLoginUser 2>/dev/null || true
+
+# Verify rather than assume: `defaults delete` on an absent key is also a
+# no-op, so read the value back and say plainly if it is still set.
+if sudo defaults read /Library/Preferences/com.apple.loginwindow autoLoginUser >/dev/null 2>&1; then
+  msg_warning "Automatic login is STILL enabled. Disable it in System Settings > Users & Groups."
+else
+  msg_success "Automatic login is disabled."
+fi
 
 # ==============================================================================
 # Login Window Message

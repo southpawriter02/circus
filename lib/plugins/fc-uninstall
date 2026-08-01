@@ -136,6 +136,27 @@ get_size() {
   fi
 }
 
+#
+# Emit one record describing a file to remove.
+#
+# Format is TYPE<TAB>SIZE<TAB>PATH, NUL-terminated. Two deliberate choices:
+#
+#   * The path goes LAST, so `read -r type size path` puts everything remaining
+#     into $path — even if the path itself contains a tab.
+#   * Records are NUL-terminated, so a newline in a filename cannot split one
+#     record into two.
+#
+# The previous format was TYPE:PATH:SIZE parsed with `IFS=: read -r type path
+# size`. ':' is legal in APFS filenames, so a path containing one shifted the
+# fields: "APP:/Applications/:Evil.app:1.2G" parsed to path="/Applications/",
+# which was then displayed in the confirmation prompt and passed to `rm -rf`.
+#
+emit_record() {
+  local type="$1"
+  local path="$2"
+  printf '%s\t%s\t%s\0' "$type" "$(get_size "$path")" "$path"
+}
+
 # Find all files associated with an app
 find_app_files() {
   local app_path="$1"
@@ -148,61 +169,61 @@ find_app_files() {
   
   # App bundle itself
   if [[ -d "$app_path" ]]; then
-    echo "APP:$app_path:$(get_size "$app_path")"
+    emit_record "APP" "$app_path"
   fi
   
   # Preferences
   for plist in "$HOME/Library/Preferences/${bundle_id}"* "$HOME/Library/Preferences/${bundle_id}."*; do
     if [[ -e "$plist" ]]; then
-      echo "PREF:$plist:$(get_size "$plist")"
+      emit_record "PREF" "$plist"
     fi
   done
   
   # Caches
   if [[ -d "$HOME/Library/Caches/${bundle_id}" ]]; then
-    echo "CACHE:$HOME/Library/Caches/${bundle_id}:$(get_size "$HOME/Library/Caches/${bundle_id}")"
+    emit_record "CACHE" "$HOME/Library/Caches/${bundle_id}"
   fi
   
   # Also check app name in caches
   if [[ -d "$HOME/Library/Caches/${app_name}" ]]; then
-    echo "CACHE:$HOME/Library/Caches/${app_name}:$(get_size "$HOME/Library/Caches/${app_name}")"
+    emit_record "CACHE" "$HOME/Library/Caches/${app_name}"
   fi
   
   # Application Support
   if [[ -d "$HOME/Library/Application Support/${app_name}" ]]; then
-    echo "SUPPORT:$HOME/Library/Application Support/${app_name}:$(get_size "$HOME/Library/Application Support/${app_name}")"
+    emit_record "SUPPORT" "$HOME/Library/Application Support/${app_name}"
   fi
   
   # Containers (sandboxed apps)
   if [[ -d "$HOME/Library/Containers/${bundle_id}" ]]; then
-    echo "CONTAINER:$HOME/Library/Containers/${bundle_id}:$(get_size "$HOME/Library/Containers/${bundle_id}")"
+    emit_record "CONTAINER" "$HOME/Library/Containers/${bundle_id}"
   fi
   
   # Group Containers
   for container in "$HOME/Library/Group Containers/"*"${bundle_id}"*; do
     if [[ -d "$container" ]]; then
-      echo "GROUP:$container:$(get_size "$container")"
+      emit_record "GROUP" "$container"
     fi
   done
   
   # Saved Application State
   if [[ -d "$HOME/Library/Saved Application State/${bundle_id}.savedState" ]]; then
-    echo "STATE:$HOME/Library/Saved Application State/${bundle_id}.savedState:$(get_size "$HOME/Library/Saved Application State/${bundle_id}.savedState")"
+    emit_record "STATE" "$HOME/Library/Saved Application State/${bundle_id}.savedState"
   fi
   
   # HTTP Storages
   if [[ -d "$HOME/Library/HTTPStorages/${bundle_id}" ]]; then
-    echo "HTTP:$HOME/Library/HTTPStorages/${bundle_id}:$(get_size "$HOME/Library/HTTPStorages/${bundle_id}")"
+    emit_record "HTTP" "$HOME/Library/HTTPStorages/${bundle_id}"
   fi
   
   # WebKit
   if [[ -d "$HOME/Library/WebKit/${bundle_id}" ]]; then
-    echo "WEBKIT:$HOME/Library/WebKit/${bundle_id}:$(get_size "$HOME/Library/WebKit/${bundle_id}")"
+    emit_record "WEBKIT" "$HOME/Library/WebKit/${bundle_id}"
   fi
   
   # Logs
   if [[ -d "$HOME/Library/Logs/${app_name}" ]]; then
-    echo "LOGS:$HOME/Library/Logs/${app_name}:$(get_size "$HOME/Library/Logs/${app_name}")"
+    emit_record "LOGS" "$HOME/Library/Logs/${app_name}"
   fi
 }
 
@@ -248,7 +269,8 @@ action_list() {
   printf "  %-12s %-50s %10s\n" "----" "----" "----"
   
   local total_count=0
-  while IFS=: read -r type path size; do
+  # NUL-terminated TYPE<TAB>SIZE<TAB>PATH; path last so it absorbs any tabs.
+  while IFS=$'\t' read -r -d '' type size path; do
     local short_path="${path/#$HOME/~}"
     if [[ ${#short_path} -gt 48 ]]; then
       short_path="...${short_path: -45}"
@@ -356,7 +378,8 @@ action_uninstall() {
   
   # Collect files to remove
   declare -a files_to_remove
-  while IFS=: read -r type path size; do
+  # NUL-terminated TYPE<TAB>SIZE<TAB>PATH; path last so it absorbs any tabs.
+  while IFS=$'\t' read -r -d '' type size path; do
     if $keep_prefs && [[ "$type" == "PREF" ]]; then
       continue
     fi
