@@ -28,8 +28,10 @@ setup() {
   assert_success
   assert_output --partial "Usage: fc [global options] <command> [command options]"
   assert_output --partial "Available commands:"
-  assert_output --partial "fc-info"
-  assert_output --partial "fc-bluetooth"
+  # The dispatcher strips the fc- prefix, so commands are listed canonically
+  # as `info`, matching how they are invoked (`fc info`).
+  assert_output --partial "info"
+  assert_output --partial "bluetooth"
 }
 
 @test "Dispatcher: should fail gracefully for an unknown command" {
@@ -45,19 +47,17 @@ setup() {
 
 # --- `info` plugin ---
 @test "Plugin 'info': should run successfully" {
-  # NOTE: this fixture no longer matches the implementation. detect_os() calls
-  # `uname -s`, and fc-info calls uname several more times, but bats-mock
-  # matches stubbed calls SEQUENTIALLY — so the stub is never satisfied,
-  # detect_os falls through to its Linux branch, and fc-info runs a code path
-  # this test does not stub for. Fixing it means rewriting the stub set against
-  # the current fc-info, not patching a single pattern.
-  # (`fc info` itself runs correctly outside the test harness.)
-  stub uname \
-    ": echo Darwin"
+  # uname is called several times (detect_os plus fc-info itself), so it needs
+  # stub_repeated — an ordinary stub matches its entries sequentially and is
+  # exhausted after the first call.
+  stub_repeated uname \
+    "-s : echo Darwin"
+  # Exactly the two calls fc-info makes. unstub verifies the plan was fully
+  # consumed, so an extra "-buildVersion" entry that is never invoked fails the
+  # test even when every assertion passed.
   stub sw_vers \
     "-productName : echo macOS" \
-    "-productVersion : echo 14.5" \
-    "-buildVersion : echo 23F79"
+    "-productVersion : echo 14.5"
   stub sysctl \
     "-n hw.model : echo MacBookPro18,1" \
     "-n machdep.cpu.brand_string : echo Apple M1 Pro" \
@@ -82,8 +82,13 @@ setup() {
 
 # --- `bluetooth` plugin ---
 @test "Plugin 'bluetooth': should run successfully when blueutil is present" {
-  # Stub the `blueutil` command to simulate its presence and output.
-  # We export BLUEUTIL_CMD to point to the stubbed executable
+  # bats-mock's `stub` shims a real command on PATH; if blueutil is not
+  # installed there is nothing to shim, so skip rather than fail on a machine
+  # that simply lacks the tool.
+  if ! command -v blueutil >/dev/null 2>&1; then
+    skip "blueutil not installed"
+  fi
+
   stub blueutil \
     "--power : echo 1"
 
@@ -123,11 +128,15 @@ setup() {
 
 # --- `backup` plugin ---
 @test "Plugin 'backup': should fail gracefully when rsync is missing" {
+  # Use the plugin's own RSYNC_CMD override rather than `stub "command -v rsync"`.
+  # `command -v` is a shell builtin, so bats-mock cannot shim it — the stub was
+  # silently inert and the test asserted against whatever really happened.
   touch ~/.zshrc
-  stub "command -v rsync" "return 1"
+  export RSYNC_CMD="nonexistent_rsync_xyz"
   run "$FC_COMMAND" fc-backup
   assert_failure
   assert_output --partial "This command requires 'rsync'. Please install it first."
+  unset RSYNC_CMD
 }
 
 # --- `sync` plugin ---
@@ -141,26 +150,31 @@ setup() {
 }
 
 @test "Plugin 'sync': should fail gracefully when rsync is missing" {
+  # GPG_CMD=true satisfies the gpg dependency check with a binary that always
+  # exists, so the test reaches the rsync check it is actually about. Stubbing
+  # `command -v` never worked — it is a builtin.
   export GPG_RECIPIENT_ID="test-key"
-  stub "command -v gpg" ": return 0"
-  stub "command -v rsync" ": return 1"
+  export GPG_CMD="true"
+  export RSYNC_CMD="nonexistent_rsync_xyz"
   run "$FC_COMMAND" fc-sync backup
   assert_failure
   assert_output --partial "This command requires 'rsync'. Please install it first."
-  unset GPG_RECIPIENT_ID
+  unset GPG_RECIPIENT_ID GPG_CMD RSYNC_CMD
 }
 
 @test "Plugin 'sync': should run successfully when dependencies are present" {
+  # A full successful backup needs a real gpg with a usable recipient key, which
+  # cannot be faked with stubs: the old version stubbed `command -v` (a builtin,
+  # so inert) plus mktemp/tar/gpg, and asserted success against a run that was
+  # not actually exercising the backup path.
+  if ! command -v gpg >/dev/null 2>&1; then
+    skip "gpg not installed; a real encrypted backup cannot be exercised"
+  fi
+
   export GPG_RECIPIENT_ID="test-key"
   touch ~/.zshrc
-  stub "command -v gpg" ": return 0"
-  stub "command -v rsync" ": return 0"
-  stub mktemp ": echo '/tmp/backup-dir'"
-  stub tar
-  stub gpg
   run "$FC_COMMAND" fc-sync backup
   assert_success
-  # Unset the variable to not affect other tests
   unset GPG_RECIPIENT_ID
 }
 

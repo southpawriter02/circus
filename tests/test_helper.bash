@@ -48,6 +48,18 @@ teardown() {
     rm -rf "$BATS_MOCK_BINDIR"
     mkdir -p "$BATS_MOCK_BINDIR"
   fi
+
+  # Also clear the stub PLAN and RUN files, not just the shim directory.
+  #
+  # `stub` APPENDS its expectations to "${BATS_MOCK_TMPDIR}/<prog>-stub-plan",
+  # and BATS_MOCK_TMPDIR is BATS_TMPDIR — shared across the whole run and
+  # persisting between runs. Removing only the bindir let those plans accumulate
+  # (brew-stub-plan reached ~1KB of stale expectations), so binstub matched a
+  # leftover entry instead of the current one, exited 1, and stubbed tests
+  # failed for reasons unrelated to the code under test.
+  if [ -n "${BATS_MOCK_TMPDIR:-}" ] && [ -d "$BATS_MOCK_TMPDIR" ]; then
+    rm -f "$BATS_MOCK_TMPDIR"/*-stub-plan "$BATS_MOCK_TMPDIR"/*-stub-run 2>/dev/null || true
+  fi
 }
 
 # ==============================================================================
@@ -189,6 +201,18 @@ teardown_installer_test() {
   if [ -d "$BATS_MOCK_BINDIR" ]; then
     rm -rf "$BATS_MOCK_BINDIR"
     mkdir -p "$BATS_MOCK_BINDIR"
+  fi
+
+  # Also clear the stub PLAN and RUN files, not just the shim directory.
+  #
+  # `stub` APPENDS its expectations to "${BATS_MOCK_TMPDIR}/<prog>-stub-plan",
+  # and BATS_MOCK_TMPDIR is BATS_TMPDIR — shared across the whole run and
+  # persisting between runs. Removing only the bindir let those plans accumulate
+  # (brew-stub-plan reached ~1KB of stale expectations), so binstub matched a
+  # leftover entry instead of the current one, exited 1, and stubbed tests
+  # failed for reasons unrelated to the code under test.
+  if [ -n "${BATS_MOCK_TMPDIR:-}" ] && [ -d "$BATS_MOCK_TMPDIR" ]; then
+    rm -f "$BATS_MOCK_TMPDIR"/*-stub-plan "$BATS_MOCK_TMPDIR"/*-stub-run 2>/dev/null || true
   fi
 }
 
