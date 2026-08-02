@@ -457,7 +457,7 @@ main() {
       action_delete "$@"
       ;;
     *)
-      die "Unknown action '$action'. Run 'fc fc-keychain --help' for available actions."
+      die "Unknown action '$action'. Run 'fc keychain --help' for available actions."
       ;;
   esac
 }

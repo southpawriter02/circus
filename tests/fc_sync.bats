@@ -48,16 +48,16 @@ teardown() {
 # Help and Usage Tests
 # ==============================================================================
 
-@test "fc fc-sync --help shows usage information" {
+@test "fc sync --help shows usage information" {
   run "$FC_COMMAND" fc-sync --help
   assert_success
-  assert_output --partial "Usage: fc fc-sync"
+  assert_output --partial "Usage: fc sync"
   assert_output --partial "setup"
   assert_output --partial "backup"
   assert_output --partial "restore"
 }
 
-@test "fc fc-sync --help shows configuration file path" {
+@test "fc sync --help shows configuration file path" {
   run "$FC_COMMAND" fc-sync --help
   assert_success
   assert_output --partial "Configuration:"
@@ -91,7 +91,7 @@ teardown() {
 # Setup Command Tests
 # ==============================================================================
 
-@test "fc fc-sync setup creates config file" {
+@test "fc sync setup creates config file" {
   rm -f "$SYNC_CONFIG_FILE"
   run "$FC_COMMAND" fc-sync setup
   assert_success
@@ -99,7 +99,7 @@ teardown() {
   assert_output --partial "Configuration file created"
 }
 
-@test "fc fc-sync setup sets correct permissions" {
+@test "fc sync setup sets correct permissions" {
   rm -f "$SYNC_CONFIG_FILE"
   run "$FC_COMMAND" fc-sync setup
   assert_success
@@ -109,7 +109,7 @@ teardown() {
   [ "$perms" = "600" ]
 }
 
-@test "fc fc-sync setup shows next steps" {
+@test "fc sync setup shows next steps" {
   rm -f "$SYNC_CONFIG_FILE"
   run "$FC_COMMAND" fc-sync setup
   assert_success
@@ -118,7 +118,7 @@ teardown() {
   assert_output --partial "gpg --list-keys"
 }
 
-@test "fc fc-sync setup detects existing config" {
+@test "fc sync setup detects existing config" {
   # Make sure config exists
   mkdir -p "$(dirname "$SYNC_CONFIG_FILE")"
   touch "$SYNC_CONFIG_FILE"
@@ -133,7 +133,7 @@ teardown() {
 # Configuration Validation Tests
 # ==============================================================================
 
-@test "fc fc-sync backup fails without GPG_RECIPIENT_ID" {
+@test "fc sync backup fails without GPG_RECIPIENT_ID" {
   # Create config without GPG_RECIPIENT_ID
   mkdir -p "$(dirname "$SYNC_CONFIG_FILE")"
   cat > "$SYNC_CONFIG_FILE" << 'EOF'
@@ -157,7 +157,7 @@ EOF
   assert_output --partial "GPG_RECIPIENT_ID is not configured"
 }
 
-@test "fc fc-sync backup fails with empty BACKUP_TARGETS" {
+@test "fc sync backup fails with empty BACKUP_TARGETS" {
   # Create config with empty BACKUP_TARGETS
   mkdir -p "$(dirname "$SYNC_CONFIG_FILE")"
   cat > "$SYNC_CONFIG_FILE" << 'EOF'
@@ -185,7 +185,7 @@ EOF
 # Unknown Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-sync with unknown subcommand shows error" {
+@test "fc sync with unknown subcommand shows error" {
   run "$FC_COMMAND" fc-sync unknown-command
   assert_failure
   assert_output --partial "Unknown subcommand"
@@ -195,7 +195,7 @@ EOF
 # Dependency Check Tests
 # ==============================================================================
 
-@test "fc fc-sync backup requires gpg" {
+@test "fc sync backup requires gpg" {
   # Override GPG_CMD to a non-existent command
   export GPG_CMD="nonexistent-gpg-command"
 
@@ -204,7 +204,7 @@ EOF
   assert_output --partial "GPG is not installed"
 }
 
-@test "fc fc-sync backup requires rsync" {
+@test "fc sync backup requires rsync" {
   # Override RSYNC_CMD to a non-existent command
   # Need to have gpg available first
   export RSYNC_CMD="nonexistent-rsync-command"
@@ -223,7 +223,7 @@ EOF
 # Remote Storage Tests
 # ==============================================================================
 
-@test "fc fc-sync --help shows remote subcommands" {
+@test "fc sync --help shows remote subcommands" {
   run "$FC_COMMAND" fc-sync --help
   assert_success
   assert_output --partial "push"
@@ -231,7 +231,7 @@ EOF
   assert_output --partial "list-remote"
 }
 
-@test "fc fc-sync --help mentions rclone" {
+@test "fc sync --help mentions rclone" {
   run "$FC_COMMAND" fc-sync --help
   assert_success
   assert_output --partial "rclone"
@@ -244,28 +244,28 @@ EOF
   assert_output --partial "RCLONE_REMOTE_PATH"
 }
 
-@test "fc fc-sync push requires rclone" {
+@test "fc sync push requires rclone" {
   export RCLONE_CMD="nonexistent-rclone-command"
   run "$FC_COMMAND" fc-sync push
   assert_failure
   assert_output --partial "rclone is not installed"
 }
 
-@test "fc fc-sync pull requires rclone" {
+@test "fc sync pull requires rclone" {
   export RCLONE_CMD="nonexistent-rclone-command"
   run "$FC_COMMAND" fc-sync pull
   assert_failure
   assert_output --partial "rclone is not installed"
 }
 
-@test "fc fc-sync list-remote requires rclone" {
+@test "fc sync list-remote requires rclone" {
   export RCLONE_CMD="nonexistent-rclone-command"
   run "$FC_COMMAND" fc-sync list-remote
   assert_failure
   assert_output --partial "rclone is not installed"
 }
 
-@test "fc fc-sync push fails without RCLONE_REMOTE configured" {
+@test "fc sync push fails without RCLONE_REMOTE configured" {
   # Create config without RCLONE_REMOTE
   mkdir -p "$(dirname "$SYNC_CONFIG_FILE")"
   cat > "$SYNC_CONFIG_FILE" << 'EOF'
@@ -290,7 +290,7 @@ MOCK
   assert_output --partial "RCLONE_REMOTE is not configured"
 }
 
-@test "fc fc-sync push fails when local backup doesn't exist" {
+@test "fc sync push fails when local backup doesn't exist" {
   mkdir -p "$(dirname "$SYNC_CONFIG_FILE")"
   cat > "$SYNC_CONFIG_FILE" << 'EOF'
 GPG_RECIPIENT_ID="test-key"
@@ -320,7 +320,7 @@ MOCK
   assert_output --partial "Local backup not found"
 }
 
-@test "fc fc-sync push fails with invalid remote name" {
+@test "fc sync push fails with invalid remote name" {
   mkdir -p "$(dirname "$SYNC_CONFIG_FILE")"
   cat > "$SYNC_CONFIG_FILE" << 'EOF'
 GPG_RECIPIENT_ID="test-key"

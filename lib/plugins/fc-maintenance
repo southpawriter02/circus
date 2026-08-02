@@ -19,6 +19,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 # --- Configuration -----------------------------------------------------------
 
 readonly MAINTENANCE_CONFIG_FILE="$HOME/.config/circus/maintenance.conf"
+readonly MAINTENANCE_CONFIG_TEMPLATE="$DOTFILES_ROOT/lib/templates/maintenance.conf.template"
 
 # Default configuration
 TASK_PKG_CLEANUP=true
@@ -56,6 +57,7 @@ usage() {
   echo ""
   msg_info "Subcommands:"
   echo "  (none)              Run configured maintenance tasks"
+  echo "  setup               Create the configuration file from template"
   echo "  list                List all available maintenance tasks"
   echo "  run <task>          Run a specific maintenance task"
   echo ""
@@ -78,6 +80,13 @@ usage() {
     echo "  spotlight-rebuild   Rebuild Spotlight index (sudo)"
   fi
   echo ""
+  msg_info "Examples:"
+  echo "  fc maintenance setup"
+  echo "  fc maintenance --dry-run"
+  echo "  fc maintenance --all"
+  echo "  fc maintenance run pkg-cleanup"
+  echo ""
+  msg_info "Configuration: $MAINTENANCE_CONFIG_FILE"
   exit 0
 }
 
@@ -336,26 +345,93 @@ task_trash() {
 
 # --- Command Logic -----------------------------------------------------------
 
+#
+# @description Create the maintenance configuration file from the template.
+#
+do_setup() {
+  if [ -f "$MAINTENANCE_CONFIG_FILE" ]; then
+    msg_info "Configuration file already exists: $MAINTENANCE_CONFIG_FILE"
+    echo ""
+    msg_info "Edit it with: \$EDITOR $MAINTENANCE_CONFIG_FILE"
+    return 0
+  fi
+
+  local config_dir
+  config_dir=$(dirname "$MAINTENANCE_CONFIG_FILE")
+  mkdir -p "$config_dir"
+  chmod 700 "$config_dir" 2>/dev/null || true
+
+  if [ -f "$MAINTENANCE_CONFIG_TEMPLATE" ]; then
+    cp "$MAINTENANCE_CONFIG_TEMPLATE" "$MAINTENANCE_CONFIG_FILE"
+  else
+    # Fall back to a minimal config so setup still works from a partial checkout.
+    cat > "$MAINTENANCE_CONFIG_FILE" << 'EOF'
+# fc-maintenance configuration
+# Set a task to true to include it in a default `fc maintenance` run.
+
+TASK_PKG_CLEANUP=true
+TASK_PKG_CACHE=true
+TASK_NPM_CACHE=true
+TASK_PIP_CACHE=true
+TASK_USER_LOGS=true
+
+# Destructive or disruptive — opt in deliberately.
+TASK_SYSTEM_LOGS=false
+TASK_DNS_FLUSH=false
+TASK_TRASH=false
+EOF
+  fi
+
+  chmod 600 "$MAINTENANCE_CONFIG_FILE" 2>/dev/null || true
+
+  msg_success "Configuration file created: $MAINTENANCE_CONFIG_FILE"
+  echo ""
+  msg_info "Next steps:"
+  msg_info "  1. Edit the config: \$EDITOR $MAINTENANCE_CONFIG_FILE"
+  msg_info "  2. Preview it:      fc maintenance --dry-run"
+  msg_info "  3. Run it:          fc maintenance"
+}
+
+#
+# @description Tasks that need root, and are therefore annotated in `list`.
+#
+task_requires_sudo() {
+  case "$1" in
+    system-logs) return 0 ;;
+    *)           return 1 ;;
+  esac
+}
+
 do_list() {
   echo ""
   msg_info "Available Maintenance Tasks"
   echo "============================"
   echo ""
-  
+
   local tasks=("pkg-cleanup" "pkg-cache" "npm-cache" "pip-cache" "user-logs" "system-logs" "dns-flush" "trash")
   if is_macos; then
     tasks+=("xcode-derived" "spotlight-rebuild")
   fi
-  
+
   for task in "${tasks[@]}"; do
     local enabled="disabled"
     local var_name="TASK_$(echo "$task" | tr '[:lower:]-' '[:upper:]_')"
     if [[ "${!var_name:-false}" == "true" ]]; then
       enabled="enabled"
     fi
-    printf "  %-20s [%s]\n" "$task" "$enabled"
+
+    # Flag the tasks that will prompt for a password, so the list makes clear
+    # which ones escalate before you run them.
+    local note=""
+    if task_requires_sudo "$task"; then
+      note="  (requires sudo)"
+    fi
+
+    printf "  %-20s [%s]%s\n" "$task" "$enabled" "$note"
   done
-  
+
+  echo ""
+  msg_info "Configuration: $MAINTENANCE_CONFIG_FILE"
   echo ""
 }
 
@@ -526,6 +602,9 @@ main() {
   set -- ${positional[@]+"${positional[@]}"}
 
   case "$subcommand" in
+    setup)
+      do_setup
+      ;;
     list)
       do_list
       ;;

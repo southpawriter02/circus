@@ -59,7 +59,7 @@ teardown() {
 @test "fc fc-maintenance --help shows usage information" {
   run "$FC_COMMAND" fc-maintenance --help
   assert_success
-  assert_output --partial "Usage: fc fc-maintenance"
+  assert_output --partial "Usage: fc maintenance"
   assert_output --partial "setup"
   assert_output --partial "list"
   assert_output --partial "run"
@@ -77,7 +77,7 @@ teardown() {
   run "$FC_COMMAND" fc-maintenance --help
   assert_success
   assert_output --partial "Examples:"
-  assert_output --partial "fc fc-maintenance --dry-run"
+  assert_output --partial "fc maintenance --dry-run"
 }
 
 @test "fc fc-maintenance --help shows configuration path" {

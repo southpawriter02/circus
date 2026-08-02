@@ -68,10 +68,10 @@ teardown() {
 # Help and Usage Tests
 # ==============================================================================
 
-@test "fc fc-secrets --help shows usage information" {
+@test "fc secrets --help shows usage information" {
   run "$FC_COMMAND" fc-secrets --help
   assert_success
-  assert_output --partial "Usage: fc fc-secrets"
+  assert_output --partial "Usage: fc secrets"
   assert_output --partial "setup"
   assert_output --partial "sync"
   assert_output --partial "get"
@@ -80,7 +80,7 @@ teardown() {
   assert_output --partial "verify"
 }
 
-@test "fc fc-secrets --help shows backend types" {
+@test "fc secrets --help shows backend types" {
   run "$FC_COMMAND" fc-secrets --help
   assert_success
   assert_output --partial "op://"
@@ -88,41 +88,41 @@ teardown() {
   assert_output --partial "vault://"
 }
 
-@test "fc fc-secrets --help shows configuration file path" {
+@test "fc secrets --help shows configuration file path" {
   run "$FC_COMMAND" fc-secrets --help
   assert_success
   assert_output --partial "Configuration:"
   assert_output --partial "secrets.conf"
 }
 
-@test "fc fc-secrets --help shows 1Password backend" {
+@test "fc secrets --help shows 1Password backend" {
   run "$FC_COMMAND" fc-secrets --help
   assert_success
   assert_output --partial "1Password"
 }
 
-@test "fc fc-secrets --help shows macOS Keychain backend" {
+@test "fc secrets --help shows macOS Keychain backend" {
   run "$FC_COMMAND" fc-secrets --help
   assert_success
   assert_output --partial "Keychain"
 }
 
-@test "fc fc-secrets --help shows HashiCorp Vault backend" {
+@test "fc secrets --help shows HashiCorp Vault backend" {
   run "$FC_COMMAND" fc-secrets --help
   assert_success
   assert_output --partial "Vault"
 }
 
-@test "fc fc-secrets -h shows usage (short flag)" {
+@test "fc secrets -h shows usage (short flag)" {
   run "$FC_COMMAND" fc-secrets -h
   assert_success
-  assert_output --partial "Usage: fc fc-secrets"
+  assert_output --partial "Usage: fc secrets"
 }
 
-@test "fc fc-secrets with no arguments shows usage" {
+@test "fc secrets with no arguments shows usage" {
   run "$FC_COMMAND" fc-secrets
   assert_success
-  assert_output --partial "Usage: fc fc-secrets"
+  assert_output --partial "Usage: fc secrets"
 }
 
 # ==============================================================================
@@ -201,7 +201,7 @@ teardown() {
 # Setup Command Tests
 # ==============================================================================
 
-@test "fc fc-secrets setup creates config file" {
+@test "fc secrets setup creates config file" {
   rm -f "$SECRETS_CONFIG_FILE"
   run "$FC_COMMAND" fc-secrets setup
   assert_success
@@ -209,7 +209,7 @@ teardown() {
   assert_output --partial "Configuration file created"
 }
 
-@test "fc fc-secrets setup sets correct permissions" {
+@test "fc secrets setup sets correct permissions" {
   rm -f "$SECRETS_CONFIG_FILE"
   run "$FC_COMMAND" fc-secrets setup
   assert_success
@@ -219,7 +219,7 @@ teardown() {
   [ "$perms" = "600" ]
 }
 
-@test "fc fc-secrets setup shows next steps" {
+@test "fc secrets setup shows next steps" {
   rm -f "$SECRETS_CONFIG_FILE"
   run "$FC_COMMAND" fc-secrets setup
   assert_success
@@ -227,7 +227,7 @@ teardown() {
   assert_output --partial "Edit the config file"
 }
 
-@test "fc fc-secrets setup detects existing config" {
+@test "fc secrets setup detects existing config" {
   # Make sure config exists
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   touch "$SECRETS_CONFIG_FILE"
@@ -238,14 +238,14 @@ teardown() {
   assert_output --partial "already exists"
 }
 
-@test "fc fc-secrets setup checks backend prerequisites" {
+@test "fc secrets setup checks backend prerequisites" {
   rm -f "$SECRETS_CONFIG_FILE"
   run "$FC_COMMAND" fc-secrets setup
   assert_success
   assert_output --partial "Checking backend prerequisites"
 }
 
-@test "fc fc-secrets setup shows all backends" {
+@test "fc secrets setup shows all backends" {
   rm -f "$SECRETS_CONFIG_FILE"
   run "$FC_COMMAND" fc-secrets setup
   assert_success
@@ -258,13 +258,13 @@ teardown() {
 # Status Command Tests
 # ==============================================================================
 
-@test "fc fc-secrets status shows backend status" {
+@test "fc secrets status shows backend status" {
   run "$FC_COMMAND" fc-secrets status
   assert_success
   assert_output --partial "Backend status"
 }
 
-@test "fc fc-secrets status shows all three backends" {
+@test "fc secrets status shows all three backends" {
   run "$FC_COMMAND" fc-secrets status
   assert_success
   assert_output --partial "1Password"
@@ -272,7 +272,7 @@ teardown() {
   assert_output --partial "Vault"
 }
 
-@test "fc fc-secrets status shows Keychain as authenticated" {
+@test "fc secrets status shows Keychain as authenticated" {
   # Keychain should always be "authenticated" on macOS
   if [ "$(uname)" = "Darwin" ]; then
     run "$FC_COMMAND" fc-secrets status
@@ -288,7 +288,7 @@ teardown() {
 # List Command Tests
 # ==============================================================================
 
-@test "fc fc-secrets list shows configured secrets header" {
+@test "fc secrets list shows configured secrets header" {
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   cat > "$SECRETS_CONFIG_FILE" << 'EOF'
 # Test config
@@ -301,7 +301,7 @@ EOF
   assert_output --partial "Configured secrets"
 }
 
-@test "fc fc-secrets list shows table headers" {
+@test "fc secrets list shows table headers" {
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   cat > "$SECRETS_CONFIG_FILE" << 'EOF'
 "op://Personal/test/token" "env:TEST_TOKEN"
@@ -315,7 +315,7 @@ EOF
   assert_output --partial "Destination"
 }
 
-@test "fc fc-secrets list parses op:// entries" {
+@test "fc secrets list parses op:// entries" {
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   cat > "$SECRETS_CONFIG_FILE" << 'EOF'
 "op://Personal/github/token" "env:GITHUB_TOKEN"
@@ -329,7 +329,7 @@ EOF
   assert_output --partial "env:GITHUB_TOKEN"
 }
 
-@test "fc fc-secrets list parses keychain:// entries" {
+@test "fc secrets list parses keychain:// entries" {
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   cat > "$SECRETS_CONFIG_FILE" << 'EOF'
 "keychain://api-service/production" "env:API_KEY"
@@ -342,7 +342,7 @@ EOF
   assert_output --partial "api-service/production"
 }
 
-@test "fc fc-secrets list parses vault:// entries" {
+@test "fc secrets list parses vault:// entries" {
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   cat > "$SECRETS_CONFIG_FILE" << 'EOF'
 "vault://secret/data/app#api_key" "env:APP_KEY"
@@ -355,15 +355,15 @@ EOF
   assert_output --partial "secret/data/app"
 }
 
-@test "fc fc-secrets list handles no config gracefully" {
+@test "fc secrets list handles no config gracefully" {
   rm -f "$SECRETS_CONFIG_FILE"
   run "$FC_COMMAND" fc-secrets list
   assert_success
   assert_output --partial "No configuration file found"
-  assert_output --partial "fc fc-secrets setup"
+  assert_output --partial "fc secrets setup"
 }
 
-@test "fc fc-secrets list skips comment lines" {
+@test "fc secrets list skips comment lines" {
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   cat > "$SECRETS_CONFIG_FILE" << 'EOF'
 # This is a comment
@@ -377,7 +377,7 @@ EOF
   refute_output --partial "This is a comment"
 }
 
-@test "fc fc-secrets list skips variable assignments" {
+@test "fc secrets list skips variable assignments" {
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   cat > "$SECRETS_CONFIG_FILE" << 'EOF'
 VAULT_ADDR="https://vault.example.com"
@@ -395,19 +395,19 @@ EOF
 # Get Command Tests
 # ==============================================================================
 
-@test "fc fc-secrets get requires URI argument" {
+@test "fc secrets get requires URI argument" {
   run "$FC_COMMAND" fc-secrets get
   assert_failure
   assert_output --partial "Please provide a secret URI"
 }
 
-@test "fc fc-secrets get rejects unknown backend" {
+@test "fc secrets get rejects unknown backend" {
   run "$FC_COMMAND" fc-secrets get "unknown://path/to/secret"
   assert_failure
   assert_output --partial "Unknown backend"
 }
 
-@test "fc fc-secrets get --help shows usage" {
+@test "fc secrets get --help shows usage" {
   run "$FC_COMMAND" fc-secrets get --help
   assert_success
   assert_output --partial "Fetches a single secret"
@@ -416,25 +416,25 @@ EOF
   assert_output --partial "vault://"
 }
 
-@test "fc fc-secrets get --help op shows 1Password help" {
+@test "fc secrets get --help op shows 1Password help" {
   run "$FC_COMMAND" fc-secrets get --help op
   assert_success
   assert_output --partial "1Password"
 }
 
-@test "fc fc-secrets get --help keychain shows Keychain help" {
+@test "fc secrets get --help keychain shows Keychain help" {
   run "$FC_COMMAND" fc-secrets get --help keychain
   assert_success
   assert_output --partial "Keychain"
 }
 
-@test "fc fc-secrets get --help vault shows Vault help" {
+@test "fc secrets get --help vault shows Vault help" {
   run "$FC_COMMAND" fc-secrets get --help vault
   assert_success
   assert_output --partial "Vault"
 }
 
-@test "fc fc-secrets get op:// requires op CLI" {
+@test "fc secrets get op:// requires op CLI" {
   # Mock op as non-existent
   export PATH="$BATS_MOCK_BINDIR:$PATH"
   mkdir -p "$BATS_MOCK_BINDIR"
@@ -445,7 +445,7 @@ EOF
   assert_output --partial "not installed"
 }
 
-@test "fc fc-secrets get vault:// requires vault CLI" {
+@test "fc secrets get vault:// requires vault CLI" {
   # Mock vault as non-existent
   export PATH="$BATS_MOCK_BINDIR:$PATH"
   mkdir -p "$BATS_MOCK_BINDIR"
@@ -459,14 +459,14 @@ EOF
 # Verify Command Tests
 # ==============================================================================
 
-@test "fc fc-secrets verify requires config file" {
+@test "fc secrets verify requires config file" {
   rm -f "$SECRETS_CONFIG_FILE"
   run "$FC_COMMAND" fc-secrets verify
   assert_failure
   assert_output --partial "Configuration file not found"
 }
 
-@test "fc fc-secrets verify shows verification header" {
+@test "fc secrets verify shows verification header" {
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   cat > "$SECRETS_CONFIG_FILE" << 'EOF'
 "op://Personal/test/token" "env:TEST_TOKEN"
@@ -482,14 +482,14 @@ EOF
 # Sync Command Tests
 # ==============================================================================
 
-@test "fc fc-secrets sync requires config file" {
+@test "fc secrets sync requires config file" {
   rm -f "$SECRETS_CONFIG_FILE"
   run "$FC_COMMAND" fc-secrets sync
   assert_failure
   assert_output --partial "Configuration file not found"
 }
 
-@test "fc fc-secrets sync shows syncing header" {
+@test "fc secrets sync shows syncing header" {
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   cat > "$SECRETS_CONFIG_FILE" << 'EOF'
 "op://Personal/test/token" "env:TEST_TOKEN"
@@ -505,7 +505,7 @@ EOF
 # Unknown Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-secrets with unknown subcommand shows error" {
+@test "fc secrets with unknown subcommand shows error" {
   run "$FC_COMMAND" fc-secrets unknown-command
   assert_failure
   assert_output --partial "Unknown subcommand"
@@ -515,7 +515,7 @@ EOF
 # Config File Parsing Tests
 # ==============================================================================
 
-@test "fc fc-secrets handles file destination with permissions" {
+@test "fc secrets handles file destination with permissions" {
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   cat > "$SECRETS_CONFIG_FILE" << 'EOF'
 "op://Personal/cert/tls" "~/.config/app/tls.crt" "644"
@@ -527,7 +527,7 @@ EOF
   assert_output --partial ".config/app/tls.crt"
 }
 
-@test "fc fc-secrets handles env destination" {
+@test "fc secrets handles env destination" {
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   cat > "$SECRETS_CONFIG_FILE" << 'EOF'
 "op://Personal/api/key" "env:API_KEY"
@@ -539,7 +539,7 @@ EOF
   assert_output --partial "env:API_KEY"
 }
 
-@test "fc fc-secrets handles multiple secrets from different backends" {
+@test "fc secrets handles multiple secrets from different backends" {
   mkdir -p "$(dirname "$SECRETS_CONFIG_FILE")"
   cat > "$SECRETS_CONFIG_FILE" << 'EOF'
 "op://Personal/github/token" "env:GITHUB_TOKEN"

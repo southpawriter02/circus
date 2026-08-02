@@ -34,16 +34,16 @@ teardown() {
 # Help and Usage Tests
 # ==============================================================================
 
-@test "fc fc-clean --help shows usage information" {
+@test "fc clean --help shows usage information" {
   run "$FC_COMMAND" fc-clean --help
   assert_success
-  assert_output --partial "Usage: fc fc-clean"
+  assert_output --partial "Usage: fc clean"
   assert_output --partial "brew"
   assert_output --partial "casks"
   assert_output --partial "list"
 }
 
-@test "fc fc-clean --help shows options" {
+@test "fc clean --help shows options" {
   run "$FC_COMMAND" fc-clean --help
   assert_success
   assert_output --partial "--remove"
@@ -51,21 +51,21 @@ teardown() {
   assert_output --partial "--skip-deps"
 }
 
-@test "fc fc-clean --help shows examples" {
+@test "fc clean --help shows examples" {
   run "$FC_COMMAND" fc-clean --help
   assert_success
   assert_output --partial "Examples:"
-  assert_output --partial "fc fc-clean brew"
+  assert_output --partial "fc clean brew"
 }
 
-@test "fc fc-clean --help mentions Brewfile paths" {
+@test "fc clean --help mentions Brewfile paths" {
   run "$FC_COMMAND" fc-clean --help
   assert_success
   assert_output --partial "Brewfile"
   assert_output --partial "apps.conf"
 }
 
-@test "fc fc-clean with no subcommand shows usage" {
+@test "fc clean with no subcommand shows usage" {
   run "$FC_COMMAND" fc-clean
   assert_success
   assert_output --partial "Usage:"
@@ -75,7 +75,7 @@ teardown() {
 # Brew Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-clean brew runs without error" {
+@test "fc clean brew runs without error" {
   # Skip if brew is not installed
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
@@ -86,7 +86,7 @@ teardown() {
   assert_output --partial "Scanning for orphaned Homebrew formulae"
 }
 
-@test "fc fc-clean brew shows installed count" {
+@test "fc clean brew shows installed count" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -96,7 +96,7 @@ teardown() {
   assert_output --partial "Installed formulae:"
 }
 
-@test "fc fc-clean brew shows defined count" {
+@test "fc clean brew shows defined count" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -106,7 +106,7 @@ teardown() {
   assert_output --partial "Defined in Brewfiles:"
 }
 
-@test "fc fc-clean brew shows orphaned count" {
+@test "fc clean brew shows orphaned count" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -116,7 +116,7 @@ teardown() {
   assert_output --partial "Orphaned formulae:"
 }
 
-@test "fc fc-clean brew --skip-deps works" {
+@test "fc clean brew --skip-deps works" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -130,7 +130,7 @@ teardown() {
 # Casks Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-clean casks runs without error" {
+@test "fc clean casks runs without error" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -140,7 +140,7 @@ teardown() {
   assert_output --partial "Scanning for orphaned Homebrew casks"
 }
 
-@test "fc fc-clean casks shows installed count" {
+@test "fc clean casks shows installed count" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -150,7 +150,7 @@ teardown() {
   assert_output --partial "Installed casks:"
 }
 
-@test "fc fc-clean casks shows defined count" {
+@test "fc clean casks shows defined count" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -160,7 +160,7 @@ teardown() {
   assert_output --partial "Defined in Brewfiles:"
 }
 
-@test "fc fc-clean cask alias works" {
+@test "fc clean cask alias works" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -174,7 +174,7 @@ teardown() {
 # List Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-clean list runs without error" {
+@test "fc clean list runs without error" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -183,7 +183,7 @@ teardown() {
   assert_success
 }
 
-@test "fc fc-clean list --formula shows only formulae" {
+@test "fc clean list --formula shows only formulae" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -194,7 +194,7 @@ teardown() {
   refute_output --partial "# Orphaned casks"
 }
 
-@test "fc fc-clean list --cask shows only casks" {
+@test "fc clean list --cask shows only casks" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -205,7 +205,7 @@ teardown() {
   refute_output --partial "# Orphaned formulae"
 }
 
-@test "fc fc-clean list --formulae alias works" {
+@test "fc clean list --formulae alias works" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -214,7 +214,7 @@ teardown() {
   assert_success
 }
 
-@test "fc fc-clean list --casks alias works" {
+@test "fc clean list --casks alias works" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -227,19 +227,19 @@ teardown() {
 # Error Handling Tests
 # ==============================================================================
 
-@test "fc fc-clean unknown subcommand fails" {
+@test "fc clean unknown subcommand fails" {
   run "$FC_COMMAND" fc-clean unknown_subcommand
   assert_failure
   assert_output --partial "Unknown subcommand"
 }
 
-@test "fc fc-clean unknown subcommand shows help hint" {
+@test "fc clean unknown subcommand shows help hint" {
   run "$FC_COMMAND" fc-clean unknown_subcommand
   assert_failure
   assert_output --partial "--help"
 }
 
-@test "fc fc-clean unknown option fails" {
+@test "fc clean unknown option fails" {
   run "$FC_COMMAND" fc-clean brew --unknown-option
   assert_failure
   assert_output --partial "Unknown option"
@@ -249,7 +249,7 @@ teardown() {
 # Flag Position Tests
 # ==============================================================================
 
-@test "fc fc-clean --skip-deps brew works (flags before subcommand)" {
+@test "fc clean --skip-deps brew works (flags before subcommand)" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -259,7 +259,7 @@ teardown() {
   assert_output --partial "Scanning"
 }
 
-@test "fc fc-clean brew --skip-deps works (flags after subcommand)" {
+@test "fc clean brew --skip-deps works (flags after subcommand)" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -290,7 +290,7 @@ teardown() {
 # Integration Tests
 # ==============================================================================
 
-@test "fc fc-clean brew suggests fc-apps add for adoption" {
+@test "fc clean brew suggests fc-apps add for adoption" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
@@ -298,15 +298,15 @@ teardown() {
   run "$FC_COMMAND" fc-clean brew
   assert_success
   # Should mention how to add packages to Brewfile
-  assert_output --partial "fc fc-apps add"
+  assert_output --partial "fc apps add"
 }
 
-@test "fc fc-clean casks suggests fc-apps add for adoption" {
+@test "fc clean casks suggests fc-apps add for adoption" {
   if ! command -v brew >/dev/null 2>&1; then
     skip "Homebrew not installed"
   fi
 
   run "$FC_COMMAND" fc-clean casks
   assert_success
-  assert_output --partial "fc fc-apps add"
+  assert_output --partial "fc apps add"
 }

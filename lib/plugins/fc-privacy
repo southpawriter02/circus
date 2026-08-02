@@ -390,7 +390,7 @@ main() {
       action_reset "$1"
       ;;
     *)
-      die "Unknown action '$action'. Run 'fc fc-privacy --help' for available actions."
+      die "Unknown action '$action'. Run 'fc privacy --help' for available actions."
       ;;
   esac
 }

@@ -5,7 +5,7 @@
 # DESCRIPTION:  User application configuration for fc-apps.
 #               This file uses Brewfile syntax and is processed by `brew bundle`.
 #
-# USAGE:        fc fc-apps install
+# USAGE:        fc apps install
 #
 # ==============================================================================
 

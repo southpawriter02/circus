@@ -30,7 +30,7 @@ readonly WEEKLY_INTERVAL=604800
 # --- Usage Information -------------------------------------------------------
 
 usage() {
-  msg_info "Usage: fc fc-schedule <subcommand> [options]"
+  msg_info "Usage: fc schedule <subcommand> [options]"
   echo ""
   msg_info "Manage scheduled automatic backups using macOS launchd."
   echo ""
@@ -44,10 +44,10 @@ usage() {
   echo "  --frequency <daily|weekly>  - Backup frequency (default: daily)"
   echo ""
   msg_info "Examples:"
-  echo "  fc fc-schedule install                     # Daily backups"
-  echo "  fc fc-schedule install --frequency weekly  # Weekly backups"
-  echo "  fc fc-schedule status                      # Check status"
-  echo "  fc fc-schedule uninstall                   # Remove schedule"
+  echo "  fc schedule install                     # Daily backups"
+  echo "  fc schedule install --frequency weekly  # Weekly backups"
+  echo "  fc schedule status                      # Check status"
+  echo "  fc schedule uninstall                   # Remove schedule"
   exit 0
 }
 
@@ -75,7 +75,7 @@ validate_sync_config() {
     msg_error "fc-sync is not configured."
     echo ""
     msg_info "Before scheduling backups, you need to set up fc-sync:"
-    msg_info "  1. Run: fc fc-sync setup"
+    msg_info "  1. Run: fc sync setup"
     msg_info "  2. Edit: \$EDITOR $SYNC_CONFIG_FILE"
     msg_info "  3. Set your GPG_RECIPIENT_ID"
     die "Please configure fc-sync first."
@@ -171,7 +171,7 @@ do_install() {
       msg_info "Scheduled backup is already installed and running."
       msg_info "Current frequency: $(get_installed_frequency)"
       echo ""
-      msg_info "To change settings, uninstall first: fc fc-schedule uninstall"
+      msg_info "To change settings, uninstall first: fc schedule uninstall"
       return 0
     else
       msg_warning "Plist file exists but is not loaded. Reinstalling..."
@@ -217,8 +217,8 @@ do_install() {
     msg_info "Backup frequency: $frequency"
     msg_info "Log file: $LOG_FILE"
     echo ""
-    msg_info "Use 'fc fc-schedule status' to check the schedule."
-    msg_info "Use 'fc fc-schedule run' to trigger a backup now."
+    msg_info "Use 'fc schedule status' to check the schedule."
+    msg_info "Use 'fc schedule run' to trigger a backup now."
   else
     rm -f "$PLIST_DEST"
     die "Failed to load launchd agent. Check system logs for details."
@@ -279,7 +279,7 @@ do_status() {
     echo "  Installed:  No"
     echo ""
     msg_info "To install scheduled backups, run:"
-    echo "  fc fc-schedule install"
+    echo "  fc schedule install"
   fi
   echo ""
 }
@@ -319,7 +319,7 @@ main() {
       do_run
       ;;
     *)
-      die "Unknown subcommand: $subcommand. Run 'fc fc-schedule --help' for usage."
+      die "Unknown subcommand: $subcommand. Run 'fc schedule --help' for usage."
       ;;
   esac
 }

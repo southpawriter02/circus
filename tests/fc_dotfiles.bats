@@ -34,23 +34,23 @@ teardown() {
 # Help and Usage Tests
 # ==============================================================================
 
-@test "fc fc-dotfiles --help shows usage information" {
+@test "fc dotfiles --help shows usage information" {
   run "$FC_COMMAND" fc-dotfiles --help
   assert_success
-  assert_output --partial "Usage: fc fc-dotfiles"
+  assert_output --partial "Usage: fc dotfiles"
   assert_output --partial "add"
   assert_output --partial "list"
   assert_output --partial "edit"
 }
 
-@test "fc fc-dotfiles --help shows examples" {
+@test "fc dotfiles --help shows examples" {
   run "$FC_COMMAND" fc-dotfiles --help
   assert_success
   assert_output --partial "Examples:"
   assert_output --partial ".vimrc"
 }
 
-@test "fc fc-dotfiles with no arguments shows help" {
+@test "fc dotfiles with no arguments shows help" {
   run "$FC_COMMAND" fc-dotfiles
   assert_success
   assert_output --partial "Usage:"
@@ -60,25 +60,25 @@ teardown() {
 # List Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-dotfiles list runs successfully" {
+@test "fc dotfiles list runs successfully" {
   run "$FC_COMMAND" fc-dotfiles list
   assert_success
   assert_output --partial "Managed dotfiles:"
 }
 
-@test "fc fc-dotfiles list shows bash directory files" {
+@test "fc dotfiles list shows bash directory files" {
   run "$FC_COMMAND" fc-dotfiles list
   assert_success
   assert_output --partial "bash/"
 }
 
-@test "fc fc-dotfiles list shows git directory files" {
+@test "fc dotfiles list shows git directory files" {
   run "$FC_COMMAND" fc-dotfiles list
   assert_success
   assert_output --partial "git/"
 }
 
-@test "fc fc-dotfiles list shows zsh directory files" {
+@test "fc dotfiles list shows zsh directory files" {
   run "$FC_COMMAND" fc-dotfiles list
   assert_success
   assert_output --partial "zsh/"
@@ -88,19 +88,19 @@ teardown() {
 # Add Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-dotfiles add requires file argument" {
+@test "fc dotfiles add requires file argument" {
   run "$FC_COMMAND" fc-dotfiles add
   assert_failure
   assert_output --partial "Usage:"
 }
 
-@test "fc fc-dotfiles add fails for nonexistent file" {
+@test "fc dotfiles add fails for nonexistent file" {
   run "$FC_COMMAND" fc-dotfiles add /nonexistent/file/path
   assert_failure
   assert_output --partial "not found"
 }
 
-@test "fc fc-dotfiles add fails for symlink" {
+@test "fc dotfiles add fails for symlink" {
   # Create a symlink to test
   local test_file="$TEST_TEMP_DIR/testfile"
   local test_link="$TEST_TEMP_DIR/testlink"
@@ -116,13 +116,13 @@ teardown() {
 # Edit Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-dotfiles edit requires name argument" {
+@test "fc dotfiles edit requires name argument" {
   run "$FC_COMMAND" fc-dotfiles edit
   assert_failure
   assert_output --partial "Usage:"
 }
 
-@test "fc fc-dotfiles edit fails for nonexistent dotfile" {
+@test "fc dotfiles edit fails for nonexistent dotfile" {
   run "$FC_COMMAND" fc-dotfiles edit "nonexistent_dotfile_xyz123"
   assert_failure
   assert_output --partial "No dotfile found"
@@ -132,7 +132,7 @@ teardown() {
 # Unknown Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-dotfiles with unknown subcommand shows error" {
+@test "fc dotfiles with unknown subcommand shows error" {
   run "$FC_COMMAND" fc-dotfiles unknown-subcommand
   assert_failure
   assert_output --partial "Unknown subcommand"

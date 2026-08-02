@@ -525,7 +525,7 @@ main() {
       action_health "$@"
       ;;
     *)
-      die "Unknown action '$action'. Run 'fc fc-disk --help' for available actions."
+      die "Unknown action '$action'. Run 'fc disk --help' for available actions."
       ;;
   esac
 }
