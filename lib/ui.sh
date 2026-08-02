@@ -1071,7 +1071,25 @@ ui_cleanup() {
   fi
 }
 
-trap ui_cleanup EXIT
+# Compose with any EXIT trap already installed rather than replacing it.
+#
+# Bash traps do not chain: a bare `trap ui_cleanup EXIT` silently discards the
+# caller's handler. Because this library is sourced into other processes, that
+# had real consequences — it discarded bats' own EXIT trap, so failing tests
+# reported nothing at all and showed up as "Executed N instead of expected M";
+# and sudo_drop / secure_temp_cleanup in lib/security.sh overwrite each other
+# the same way, leaving only whichever registered last.
+_ui_prev_exit_trap=$(trap -p EXIT)
+if [ -n "$_ui_prev_exit_trap" ]; then
+  # `trap -p EXIT` prints: trap -- 'command' EXIT
+  _ui_prev_exit_cmd=${_ui_prev_exit_trap#trap -- \'}
+  _ui_prev_exit_cmd=${_ui_prev_exit_cmd%\' EXIT}
+  trap "ui_cleanup; ${_ui_prev_exit_cmd}" EXIT
+  unset _ui_prev_exit_cmd
+else
+  trap ui_cleanup EXIT
+fi
+unset _ui_prev_exit_trap
 
 #
 # Hide cursor (useful during animations)

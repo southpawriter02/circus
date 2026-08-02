@@ -414,15 +414,32 @@ validate_url() {
     fi
   fi
   
-  # Basic hostname validation
-  local hostname
-  hostname=$(echo "$url" | sed 's|^https\?://||; s|/.*||; s|:.*||')
-  
-  if [[ -z "$hostname" ]] || [[ "$hostname" == *" "* ]]; then
+  # Hostname validation, done with a bash regex rather than sed.
+  #
+  # The previous extraction was:
+  #   hostname=$(echo "$url" | sed 's|^https\?://||; s|/.*||; s|:.*||')
+  #
+  # BSD sed (what macOS ships) does not support `\?` in a BRE, so the first
+  # substitution never fired. `s|/.*||` then truncated at the "//", leaving
+  # "https:", and `s|:.*||` reduced that to the literal string "https" — the
+  # same value for every input. Every check below was therefore evaluated
+  # against a constant, and `https://evil.com|whoami` passed. The behaviour also
+  # differed silently under GNU sed.
+  #
+  # Match the whole URL instead: scheme, host, optional port, optional path.
+  # The host is restricted to letters, digits, dots and hyphens, so spaces,
+  # pipes, quotes, backslashes and newlines cannot appear in it.
+  if [[ ! "$url" =~ ^https?://([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)*)(:[0-9]{1,5})?(/[^[:space:]]*)?$ ]]; then
+    msg_warning "Security: Invalid or malformed URL: $url"
+    return 1
+  fi
+
+  local hostname="${BASH_REMATCH[1]}"
+  if [[ -z "$hostname" ]]; then
     msg_warning "Security: Invalid hostname in URL: $url"
     return 1
   fi
-  
+
   return 0
 }
 
@@ -713,18 +730,45 @@ security_check_input() {
 
 # Log security events (for audit trail)
 # Usage: security_log "warning" "Blocked malicious input" "$input"
+#
+# Create a log directory and file with restrictive permissions BEFORE anything
+# is written to them.
+#
+# These logs record sudo command lines, security events, config paths and full
+# request URLs. Created under the ambient umask they came out 0644 — readable by
+# every local user, and by anything that later backs up or syncs $HOME.
+#
+_secure_log_init() {
+  local log_file="$1"
+  local dir
+  dir=$(dirname "$log_file")
+
+  mkdir -p "$dir" 2>/dev/null || true
+  chmod 700 "$dir" 2>/dev/null || true
+
+  if [ ! -e "$log_file" ]; then
+    (umask 077; : >> "$log_file") 2>/dev/null || true
+  fi
+  chmod 600 "$log_file" 2>/dev/null || true
+}
+
 security_log() {
   local level="$1"
   local message="$2"
   local context="$3"
-  
+
   local log_file="${CIRCUS_SECURITY_LOG:-$HOME/.circus/security.log}"
   local timestamp
   timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-  
-  # Create log directory if needed
-  mkdir -p "$(dirname "$log_file")" 2>/dev/null
-  
+
+  _secure_log_init "$log_file"
+
+  # Strip control characters from caller-supplied text. Package names and paths
+  # reach this function verbatim, so a newline would let an attacker forge
+  # additional log lines.
+  message=${message//[$'\n\r\t']/ }
+  context=${context//[$'\n\r\t']/ }
+
   # Append to log
   echo "[$timestamp] [$level] $message${context:+ | context: $context}" >> "$log_file"
 }
@@ -748,7 +792,7 @@ sudo_audit() {
   local pwd_dir="${PWD:-unknown}"
   
   # Create log directory if needed
-  mkdir -p "$(dirname "$SUDO_AUDIT_LOG")" 2>/dev/null
+  _secure_log_init "$SUDO_AUDIT_LOG"
   
   # Log the sudo invocation BEFORE executing
   {
@@ -2769,7 +2813,7 @@ security_event() {
   local details="$3"
   local severity="${4:-info}"
   
-  mkdir -p "$(dirname "$SECURITY_AUDIT_LOG")"
+  _secure_log_init "$SECURITY_AUDIT_LOG"
   
   local timestamp
   timestamp=$(date '+%Y-%m-%d %H:%M:%S')
@@ -2931,7 +2975,7 @@ log_failed_operation() {
   local category="$1"
   local details="$2"
   
-  mkdir -p "$(dirname "$FAILED_OPS_LOG")"
+  _secure_log_init "$FAILED_OPS_LOG"
   
   local timestamp
   timestamp=$(date '+%Y-%m-%d %H:%M:%S')
@@ -3460,7 +3504,7 @@ log_network_request() {
   local url="$2"
   local response="${3:-}"
   
-  mkdir -p "$(dirname "$NETWORK_REQUEST_LOG")"
+  _secure_log_init "$NETWORK_REQUEST_LOG"
   
   local timestamp
   timestamp=$(date '+%Y-%m-%d %H:%M:%S')
