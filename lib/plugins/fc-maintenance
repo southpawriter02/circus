@@ -271,6 +271,20 @@ task_system_logs() {
     return 0
   fi
   
+  # Confirm before destroying system logs.
+  #
+  # This runs `sudo rm -rf /var/log/*` — irreversible, and it destroys the
+  # record of anything that happened on the machine. It previously ran with no
+  # prompt and no audit entry, which also made it a convenient way for anything
+  # running as the user to erase evidence. Now that --all reaches this task,
+  # asking first matters more.
+  if [ "${FLAG_ASSUME_YES:-false}" != true ]; then
+    if ! ui_confirm "Permanently delete system logs in /var/log?" "N"; then
+      msg_info "Skipped clearing system logs."
+      return 0
+    fi
+  fi
+
   if is_macos; then
     sudo rm -rf /var/log/*.log /var/log/*.gz 2>/dev/null
   else
@@ -422,6 +436,22 @@ do_maintenance() {
     echo ""
   fi
   
+  # DNS flush and system logs were defined and advertised by `fc maintenance
+  # list`, but never invoked here — so `--all` silently skipped two of the eight
+  # tasks it claimed to run. Both default to disabled, so a plain run is
+  # unchanged; they only execute when enabled in config or asked for by --all.
+  if [[ "${TASK_DNS_FLUSH:-false}" == "true" ]] || [ "$FLAG_ALL" = true ]; then
+    task_dns_flush
+    tasks_run=$((tasks_run + 1))
+    echo ""
+  fi
+
+  if [[ "${TASK_SYSTEM_LOGS:-false}" == "true" ]] || [ "$FLAG_ALL" = true ]; then
+    task_system_logs
+    tasks_run=$((tasks_run + 1))
+    echo ""
+  fi
+
   # Run trash if explicitly requested
   if [ "$FLAG_INCLUDE_TRASH" = true ] || [ "$FLAG_ALL" = true ]; then
     task_trash
