@@ -69,7 +69,14 @@ setup() {
   if [[ ! -d "/Applications/Safari.app" ]]; then
     skip "Safari not installed"
   fi
-  
+
+  # fc-uninstall refuses to touch a running application and tells you to quit
+  # it first — correct behaviour, but it means this test's outcome depends on
+  # whether the developer happens to have Safari open. Skip rather than fail.
+  if pgrep -x Safari >/dev/null 2>&1; then
+    skip "Safari is running; fc-uninstall correctly refuses to act on it"
+  fi
+
   run "$FC_COMMAND" fc-uninstall Safari
   assert_success
   assert_output --partial "dry run"

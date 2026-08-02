@@ -45,6 +45,13 @@ setup() {
 
 # --- `info` plugin ---
 @test "Plugin 'info': should run successfully" {
+  # NOTE: this fixture no longer matches the implementation. detect_os() calls
+  # `uname -s`, and fc-info calls uname several more times, but bats-mock
+  # matches stubbed calls SEQUENTIALLY — so the stub is never satisfied,
+  # detect_os falls through to its Linux branch, and fc-info runs a code path
+  # this test does not stub for. Fixing it means rewriting the stub set against
+  # the current fc-info, not patching a single pattern.
+  # (`fc info` itself runs correctly outside the test harness.)
   stub uname \
     ": echo Darwin"
   stub sw_vers \
