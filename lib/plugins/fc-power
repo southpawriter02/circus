@@ -142,8 +142,41 @@ do_switch() {
         custom_settings=$(grep "^\[$profile\]" -A 100 "$POWER_CONFIG" 2>/dev/null | tail -n +2 | sed '/^\[/,$d')
         if [[ -n "$custom_settings" ]]; then
           msg_info "Applying custom profile: $profile"
-          eval "$custom_settings"
-          msg_success "Custom profile applied."
+
+          # Apply each line as an argument vector rather than eval'ing the block.
+          #
+          # power.conf is not permission-checked, and `eval "$custom_settings"`
+          # ran its entire contents as shell — so anything able to write that
+          # file got arbitrary code execution. Custom profiles are documented
+          # (see do_save) as pmset commands, so each line is split into words
+          # and only pmset is allowed to run. run_sudo honours DRY_RUN_MODE.
+          local applied=0
+          local line trimmed
+          local -a cmd_args
+          while IFS= read -r line; do
+            trimmed="${line#"${line%%[![:space:]]*}"}"
+            [[ -z "$trimmed" || "$trimmed" == \#* ]] && continue
+
+            read -ra cmd_args <<< "$trimmed"
+            # Tolerate a leading `sudo` in the file; run_sudo adds it back.
+            [[ "${cmd_args[0]:-}" == "sudo" ]] && cmd_args=("${cmd_args[@]:1}")
+
+            if [[ "${cmd_args[0]:-}" != "pmset" ]]; then
+              msg_warning "Skipping unsupported line in profile '$profile': $trimmed"
+              continue
+            fi
+
+            run_sudo "${cmd_args[@]}"
+            applied=$((applied + 1))
+          done <<< "$custom_settings"
+
+          if [[ $applied -eq 0 ]]; then
+            msg_warning "Profile '$profile' contained no pmset commands to apply."
+            msg_info "Add lines like: pmset -a displaysleep 10"
+            return 1
+          fi
+
+          msg_success "Custom profile applied ($applied setting(s))."
           return 0
         fi
       fi

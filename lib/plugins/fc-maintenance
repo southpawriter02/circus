@@ -469,10 +469,32 @@ main() {
     do_maintenance
     return
   fi
-  
+
   local subcommand="$1"
   shift
-  
+
+  # Parse flags that appear AFTER the subcommand too.
+  #
+  # The loop above stops at the first non-flag, so `fc maintenance run trash
+  # --dry-run` — the natural ordering — left FLAG_DRY_RUN=false and the task
+  # really ran: `rm -rf "${trash_dir:?}"/*`, or for system-logs,
+  # `sudo rm -rf /var/log/*.log`. A --dry-run that deletes is the worst kind of
+  # bug, so trailing flags are consumed here and anything unrecognised is
+  # rejected rather than silently ignored.
+  local positional=()
+  local arg
+  for arg in "$@"; do
+    case "$arg" in
+      --dry-run)       FLAG_DRY_RUN=true ;;
+      --all)           FLAG_ALL=true ;;
+      --include-trash) FLAG_INCLUDE_TRASH=true ;;
+      --help)          usage ;;
+      --*)             die "Unknown option: $arg. Run 'fc maintenance --help' for usage." ;;
+      *)               positional+=("$arg") ;;
+    esac
+  done
+  set -- ${positional[@]+"${positional[@]}"}
+
   case "$subcommand" in
     list)
       do_list

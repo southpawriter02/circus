@@ -191,8 +191,11 @@ do_install() {
       msg_success "Installation complete!"
     fi
   else
-    msg_info "No configuration file found."
+    # Return non-zero: this is a failure to do the requested work, and exiting 0
+    # meant no caller or script could tell that nothing was installed.
+    msg_error "No configuration file found."
     msg_info "Run 'fc apps setup' to create one."
+    return 1
   fi
 }
 

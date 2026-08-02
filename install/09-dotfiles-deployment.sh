@@ -29,9 +29,32 @@ symlink_with_backup() {
     return 0
   fi
 
+  # Nothing to do if the correct symlink is already in place.
+  #
+  # Without this, every re-run backed up a link this function had itself created
+  # and made a new one — accumulating ~/.zshrc.backup-<timestamp> files on each
+  # install, and copies of the oh-my-zsh custom plugin directory *inside* the
+  # directory oh-my-zsh scans for plugins, where they then get loaded. Two runs
+  # in the same second also collided on the timestamp.
+  if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$source" ]; then
+    msg_info "Already linked: $dest -> $source"
+    return 0
+  fi
+
   if [ -e "$dest" ] || [ -L "$dest" ]; then
     local backup_path
     backup_path="${dest}.backup-$(date +%Y%m%d%H%M%S)"
+
+    # Timestamps have one-second resolution, so never clobber an existing
+    # backup: find a free suffix instead.
+    if [ -e "$backup_path" ]; then
+      local n=1
+      while [ -e "${backup_path}.${n}" ]; do
+        n=$((n + 1))
+      done
+      backup_path="${backup_path}.${n}"
+    fi
+
     msg_info "Backing up existing file at $dest to $backup_path"
     mv "$dest" "$backup_path"
   fi
