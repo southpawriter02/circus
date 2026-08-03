@@ -1,12 +1,19 @@
-#!/bin/sh
+# shellcheck shell=bash
 
 # ==============================================================================
 #
-# FILE:         .shell_functions
+# FILE:         common.functions.sh
 #
-# DESCRIPTION:  This file is dedicated to defining custom shell functions that
-#               are written in a POSIX-compliant way to ensure they work
-#               across different shells (e.g., Bash and Zsh).
+# DESCRIPTION:  Custom shell functions loaded into interactive shells by
+#               circus.plugin.zsh.
+#
+# NOTE:         This file is SOURCED, never executed — it is not executable and
+#               deliberately has no shebang. It previously carried `#!/bin/sh`
+#               and claimed POSIX compliance, which was inaccurate: the
+#               functions use `local`, which is not POSIX. The shells that
+#               actually load this file (zsh, and bash for the tests) both
+#               support it, so the directive above tells shellcheck to analyse
+#               it as bash rather than warn on every `local`.
 #
 # ==============================================================================
 
@@ -16,7 +23,7 @@
 # @param $1 The name of the directory to create.
 #
 mkcd() {
-  mkdir -p "$1" && cd "$1"
+  mkdir -p "$1" && cd "$1" || return 1
 }
 
 #
@@ -25,12 +32,29 @@ mkcd() {
 # @param $1 The number of directories to go up (defaults to 1).
 #
 up() {
-  local count=${1:-1}
-  local path=""
-  for i in $(seq 1 $count); do
-    path="$path../"
+  # NOT named `path`, and no `seq`.
+  #
+  # This file is loaded by zsh, where `path` is the array tied to $PATH — so
+  # `local path=""` blanked PATH for the duration of the function, and the very
+  # next command (`seq`, which is not on macOS anyway) failed with "command not
+  # found". The function never moved anywhere. It worked only under bash.
+  local levels="${1:-1}"
+  local target=""
+  local i=1
+
+  case "$levels" in
+    ''|*[!0-9]*)
+      echo "up: argument must be a positive integer" >&2
+      return 1
+      ;;
+  esac
+
+  while [ "$i" -le "$levels" ]; do
+    target="${target}../"
+    i=$((i + 1))
   done
-  cd "$path"
+
+  cd "$target" || return 1
 }
 
 #

@@ -213,7 +213,9 @@ run_defaults "com.apple.Safari" "DefaultPageZoom" "-float" "1"
 # Source:       https://support.apple.com/guide/safari/general-ibrw1002/mac
 # Note:         Use "Ask for each download" in the UI for more control.
 #               The path should be an absolute path or ~ for home directory.
-run_defaults "com.apple.Safari" "DownloadsPath" "-string" "~/Downloads"
+# "~/Downloads" in quotes is literal — Safari would be pointed at a folder
+# actually named "~". $HOME expands.
+run_defaults "com.apple.Safari" "DownloadsPath" "-string" "$HOME/Downloads"
 
 
 msg_success "Safari settings applied."

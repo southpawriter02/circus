@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ==============================================================================
 # Debugging Environment Variables
 #
@@ -151,7 +152,7 @@ debug_run() {
 
 # Enable Node.js debugging for a command
 node_debug() {
-    NODE_DEBUG=* "$@"
+    NODE_DEBUG='*' "$@"   # quoted: an unquoted * is literal in an assignment
 }
 
 # Enable Python verbose for a command

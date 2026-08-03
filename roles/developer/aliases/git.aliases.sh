@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ==============================================================================
 # Git Aliases
 #
@@ -166,7 +167,8 @@ gfix() {
 gissue() {
     local issue="$1"
     local desc="${2:-feature}"
-    local branch="feature/${issue}-$(echo "$desc" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')"
+    local branch
+    branch="feature/${issue}-$(echo "$desc" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')"
     git checkout -b "$branch"
 }
 
@@ -251,7 +253,8 @@ gpr() {
         echo "Usage: gpr <issue-number> [description]"
         return 1
     fi
-    local branch="fix/${issue}-$(echo "$desc" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')"
+    local branch
+    branch="fix/${issue}-$(echo "$desc" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')"
     git checkout -b "$branch"
     echo "Created branch: $branch"
 }

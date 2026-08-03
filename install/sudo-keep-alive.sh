@@ -76,6 +76,11 @@ sudo_keepalive_start() {
   if [ -n "$prev_trap" ]; then
     prev_cmd=${prev_trap#trap -- \'}
     prev_cmd=${prev_cmd%\' EXIT}
+    # SC2064 disabled deliberately: the trap must capture the CURRENT value of
+    # the path variable, because the variable is local and will be gone by the
+    # time the trap fires. Single quotes would defer expansion and clean up
+    # nothing.
+    # shellcheck disable=SC2064
     trap "sudo_keepalive_stop; ${prev_cmd}" EXIT
   else
     trap 'sudo_keepalive_stop' EXIT

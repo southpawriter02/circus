@@ -171,6 +171,10 @@ should_ignore() {
   
   # Check custom ignore patterns
   for pattern in "${IGNORE_PATTERNS[@]}"; do
+    # SC2053 disabled: $pattern is a GLOB from IGNORE_PATTERNS and must stay
+    # unquoted so that == performs pattern matching rather than a literal
+    # string comparison. That is the entire purpose of this loop.
+    # shellcheck disable=SC2053
     if [[ "$basename" == $pattern ]]; then
       return 0
     fi

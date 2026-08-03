@@ -308,7 +308,8 @@ run_phase() {
   fi
 
   # Check if phase should be skipped
-  local skip_var="SKIP_PHASE_$(echo "$phase_id" | tr '[:lower:]' '[:upper:]')"
+  local skip_var
+  skip_var="SKIP_PHASE_$(echo "$phase_id" | tr '[:lower:]' '[:upper:]')"
   if [ "${!skip_var}" = true ]; then
     msg_info "Skipping phase: $phase_name"
     return 0

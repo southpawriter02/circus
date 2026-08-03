@@ -390,9 +390,13 @@ version_compare() {
     return 0
   fi
 
-  # Split versions into arrays
+  # Split versions into arrays.
+  # SC2206 disabled deliberately: splitting on IFS='.' is exactly what is wanted
+  # here, and the inputs are already validated as dotted version numbers.
   local IFS='.'
+  # shellcheck disable=SC2206
   local -a v1_parts=($v1)
+  # shellcheck disable=SC2206
   local -a v2_parts=($v2)
 
   # Compare each part

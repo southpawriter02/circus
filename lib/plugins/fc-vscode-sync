@@ -526,6 +526,9 @@ do_up() {
   # Create temp directory for files
   local temp_dir
   temp_dir=$(mktemp -d)
+  # SC2064 disabled: the trap must capture the CURRENT value of the temp
+  # directory, which is local and gone by the time the trap fires.
+  # shellcheck disable=SC2064
   trap "rm -rf '$temp_dir'" EXIT
 
   # Collect files
@@ -570,6 +573,9 @@ do_down() {
   # Create temp directory for files
   local temp_dir
   temp_dir=$(mktemp -d)
+  # SC2064 disabled: the trap must capture the CURRENT value of the temp
+  # directory, which is local and gone by the time the trap fires.
+  # shellcheck disable=SC2064
   trap "rm -rf '$temp_dir'" EXIT
 
   # Pull from backend
@@ -609,6 +615,9 @@ do_status() {
   local local_dir remote_dir
   local_dir=$(mktemp -d)
   remote_dir=$(mktemp -d)
+  # SC2064 disabled: the trap must capture the CURRENT value of the temp
+  # directory, which is local and gone by the time the trap fires.
+  # shellcheck disable=SC2064
   trap "rm -rf '$local_dir' '$remote_dir'" EXIT
 
   # Collect local files

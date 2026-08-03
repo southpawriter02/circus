@@ -1084,6 +1084,11 @@ if [ -n "$_ui_prev_exit_trap" ]; then
   # `trap -p EXIT` prints: trap -- 'command' EXIT
   _ui_prev_exit_cmd=${_ui_prev_exit_trap#trap -- \'}
   _ui_prev_exit_cmd=${_ui_prev_exit_cmd%\' EXIT}
+  # SC2064 disabled deliberately: the trap must capture the CURRENT value of
+  # the path variable, because the variable is local and will be gone by the
+  # time the trap fires. Single quotes would defer expansion and clean up
+  # nothing.
+  # shellcheck disable=SC2064
   trap "ui_cleanup; ${_ui_prev_exit_cmd}" EXIT
   unset _ui_prev_exit_cmd
 else

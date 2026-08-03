@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# SC1083 disabled: `@{u}` is git's revision syntax for "the upstream of the
+# current branch". The braces are literal on purpose and are not a brace
+# expansion.
+# shellcheck disable=SC1083
+
 # ==============================================================================
 #
 # FILE:         update

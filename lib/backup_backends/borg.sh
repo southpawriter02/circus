@@ -157,7 +157,8 @@ backend_do_backup() {
   fi
 
   # Create archive name with timestamp
-  local archive_name="circus-$(date +%Y%m%d-%H%M%S)"
+  local archive_name
+  archive_name="circus-$(date +%Y%m%d-%H%M%S)"
 
   # Run the backup
   if "$borg_cmd" create \

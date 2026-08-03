@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ==============================================================================
 # Security Agent Configuration
 #
@@ -8,7 +9,8 @@
 
 # GPG TTY for passphrase prompts
 # Required for GPG to display pinentry dialogs in the terminal
-export GPG_TTY=$(tty)
+export GPG_TTY
+GPG_TTY=$(tty)
 
 # GnuPG home directory
 # Can be overridden to use a custom keyring location

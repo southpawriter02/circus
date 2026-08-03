@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ==============================================================================
 # Personal Environment Variables
 #
@@ -220,14 +221,16 @@ personal-dirs() {
 
 # Quick screenshot with timestamp
 screenshot() {
-    local filename="${SCREENSHOT_DIR}/screenshot-$(date +%Y%m%d-%H%M%S).png"
+    local filename
+    filename="${SCREENSHOT_DIR}/screenshot-$(date +%Y%m%d-%H%M%S).png"
     screencapture -x "$filename"
     echo "Screenshot saved: $filename"
 }
 
 # Screenshot with selection
 screenshot-select() {
-    local filename="${SCREENSHOT_DIR}/screenshot-$(date +%Y%m%d-%H%M%S).png"
+    local filename
+    filename="${SCREENSHOT_DIR}/screenshot-$(date +%Y%m%d-%H%M%S).png"
     screencapture -i "$filename"
     echo "Screenshot saved: $filename"
 }

@@ -69,7 +69,8 @@ msg_info "Checking FileVault status..."
 
 # Check current FileVault status
 if command -v fdesetup &>/dev/null; then
-  local fv_status
+  # No `local` here: this file is SOURCED, so these statements run at top level
+  # where `local` is a hard error under set -e.
   fv_status=$(fdesetup status 2>/dev/null)
   
   if echo "$fv_status" | grep -q "FileVault is On"; then

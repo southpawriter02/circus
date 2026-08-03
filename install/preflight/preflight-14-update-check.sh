@@ -19,7 +19,9 @@ main() {
   # Get the directory of the current script and navigate to the project root.
   local script_dir
   script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  cd "$script_dir/../.."
+  # `|| return 1`: an unchecked cd would leave the git commands below running in
+  # whatever directory the caller happened to be in.
+  cd "$script_dir/../.." || return 1
 
   # Fetch the latest changes from the remote repository.
   # We redirect output to /dev/null to keep the output clean.

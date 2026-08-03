@@ -52,6 +52,11 @@ vscode_backend_push() {
   clone_dir=$(mktemp -d)
 
   # Ensure cleanup on exit
+  # SC2064 disabled deliberately: the trap must capture the CURRENT value of
+  # the path variable, because the variable is local and will be gone by the
+  # time the trap fires. Single quotes would defer expansion and clean up
+  # nothing.
+  # shellcheck disable=SC2064
   trap "rm -rf '$clone_dir'" RETURN
 
   msg_info "Cloning repository..."
@@ -95,7 +100,8 @@ vscode_backend_push() {
   msg_info "Committing changes..."
   git add -A
 
-  local commit_msg="Update VS Code settings ($(date +%Y-%m-%d\ %H:%M))"
+  local commit_msg
+  commit_msg="Update VS Code settings ($(date +%Y-%m-%d\ %H:%M))"
   git commit -m "$commit_msg" || {
     msg_info "No changes to commit"
     return 0
@@ -123,6 +129,11 @@ vscode_backend_pull() {
   clone_dir=$(mktemp -d)
 
   # Ensure cleanup on exit
+  # SC2064 disabled deliberately: the trap must capture the CURRENT value of
+  # the path variable, because the variable is local and will be gone by the
+  # time the trap fires. Single quotes would defer expansion and clean up
+  # nothing.
+  # shellcheck disable=SC2064
   trap "rm -rf '$clone_dir'" RETURN
 
   msg_info "Cloning repository..."

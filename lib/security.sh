@@ -851,9 +851,10 @@ sudo_audit_clear() {
     
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
       # Archive before clearing
-      local archive="${SUDO_AUDIT_LOG}.$(date +%Y%m%d_%H%M%S).bak"
+      local archive
+      archive="${SUDO_AUDIT_LOG}.$(date +%Y%m%d_%H%M%S).bak"
       cp "$SUDO_AUDIT_LOG" "$archive"
-      > "$SUDO_AUDIT_LOG"
+      : > "$SUDO_AUDIT_LOG"   # `:` so this is a truncation, not a bare redirect
       msg_success "Audit log cleared. Backup: $archive"
     else
       msg_info "Cancelled."
@@ -2765,7 +2766,8 @@ safe_rollback() {
   security_log "critical" "APFS rollback initiated" "$snapshot"
   
   # Create a pre-rollback snapshot first
-  local pre_rollback_name="pre-rollback-$(date +%Y%m%d-%H%M%S)"
+  local pre_rollback_name
+  pre_rollback_name="pre-rollback-$(date +%Y%m%d-%H%M%S)"
   msg_info "Creating pre-rollback snapshot: $pre_rollback_name"
   
   tmutil localsnapshot 2>/dev/null
@@ -2786,7 +2788,8 @@ safe_rollback() {
 # Usage: create_safety_snapshot "pre-config-change"
 create_safety_snapshot() {
   local name="${1:-pre-change}"
-  local full_name="circus-$name-$(date +%Y%m%d-%H%M%S)"
+  local full_name
+  full_name="circus-$name-$(date +%Y%m%d-%H%M%S)"
   
   msg_info "Creating safety snapshot: $full_name"
   
@@ -2996,12 +2999,33 @@ check_failure_threshold() {
     return 0
   fi
   
-  # Count recent failures in category
-  local cutoff
-  cutoff=$(date -v-${window_minutes}M '+%Y-%m-%d %H:%M:%S' 2>/dev/null || date '+%Y-%m-%d %H:%M:%S')
-  
-  local count
-  count=$(grep "$category:" "$FAILED_OPS_LOG" | tail -n 20 | wc -l | tr -d ' ')
+  # Count failures in this category within the last $window_minutes.
+  #
+  # The window was previously computed into `cutoff` and then never used — the
+  # count was just "the last 20 matching lines, ever". So after 5 lifetime
+  # failures the alert fired on every subsequent call, permanently, and a burst
+  # of recent failures looked identical to five spread over a year.
+  #
+  # `date -v` is BSD-only and `date -d` is GNU-only, so try both.
+  local cutoff_epoch now_epoch
+  now_epoch=$(date '+%s')
+  cutoff_epoch=$(( now_epoch - window_minutes * 60 ))
+
+  local count=0
+  local line ts line_epoch
+  while IFS= read -r line; do
+    # Entries are written as: [YYYY-MM-DD HH:MM:SS] category: details
+    ts="${line#\[}"
+    ts="${ts%%\]*}"
+    [[ -n "$ts" ]] || continue
+
+    line_epoch=$(date -j -f '%Y-%m-%d %H:%M:%S' "$ts" '+%s' 2>/dev/null \
+              || date -d "$ts" '+%s' 2>/dev/null) || continue
+
+    if [[ "$line_epoch" -ge "$cutoff_epoch" ]]; then
+      count=$((count + 1))
+    fi
+  done < <(grep "$category:" "$FAILED_OPS_LOG" 2>/dev/null || true)
   
   if [[ $count -ge $FAILED_OPS_THRESHOLD ]]; then
     msg_error "⚠️  ALERT: $count failed $category operations detected!"

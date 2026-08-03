@@ -209,7 +209,8 @@ action_usage() {
   du -sh "$target_path"/* 2>/dev/null | sort -hr | while read -r size name; do
     count=$((count + 1))
     if [[ $count -le $max_items ]]; then
-      local basename=$(basename "$name")
+      local basename
+      basename=$(basename "$name")
       if [[ -d "$name" ]]; then
         printf "  %8s  %s/\n" "$size" "$basename"
       else
@@ -219,7 +220,8 @@ action_usage() {
   done
   
   echo "  --------"
-  local total=$(du -sh "$target_path" 2>/dev/null | awk '{print $1}')
+  local total
+  total=$(du -sh "$target_path" 2>/dev/null | awk '{print $1}')
   printf "  %8s  Total\n" "$total"
   echo ""
 }
@@ -275,8 +277,10 @@ action_cleanup() {
   
   # User Caches
   if [[ -d "$HOME/Library/Caches" ]]; then
-    local size=$(get_dir_size "$HOME/Library/Caches")
-    local bytes=$(get_dir_size_bytes "$HOME/Library/Caches")
+    local size
+    size=$(get_dir_size "$HOME/Library/Caches")
+    local bytes
+    bytes=$(get_dir_size_bytes "$HOME/Library/Caches")
     if [[ $bytes -gt 0 ]]; then
       idx=$((idx + 1))
       cleanup_names[$idx]="User Caches"
@@ -288,10 +292,13 @@ action_cleanup() {
   
   # Homebrew Cache
   if command -v brew &>/dev/null; then
-    local brew_cache=$(brew --cache 2>/dev/null)
+    local brew_cache
+    brew_cache=$(brew --cache 2>/dev/null)
     if [[ -d "$brew_cache" ]]; then
-      local size=$(get_dir_size "$brew_cache")
-      local bytes=$(get_dir_size_bytes "$brew_cache")
+      local size
+      size=$(get_dir_size "$brew_cache")
+      local bytes
+      bytes=$(get_dir_size_bytes "$brew_cache")
       if [[ $bytes -gt 0 ]]; then
         idx=$((idx + 1))
         cleanup_names[$idx]="Homebrew Cache"
@@ -304,8 +311,10 @@ action_cleanup() {
   
   # Xcode DerivedData
   if [[ -d "$HOME/Library/Developer/Xcode/DerivedData" ]]; then
-    local size=$(get_dir_size "$HOME/Library/Developer/Xcode/DerivedData")
-    local bytes=$(get_dir_size_bytes "$HOME/Library/Developer/Xcode/DerivedData")
+    local size
+    size=$(get_dir_size "$HOME/Library/Developer/Xcode/DerivedData")
+    local bytes
+    bytes=$(get_dir_size_bytes "$HOME/Library/Developer/Xcode/DerivedData")
     if [[ $bytes -gt 0 ]]; then
       idx=$((idx + 1))
       cleanup_names[$idx]="Xcode DerivedData"
@@ -317,8 +326,10 @@ action_cleanup() {
   
   # npm Cache
   if [[ -d "$HOME/.npm/_cacache" ]]; then
-    local size=$(get_dir_size "$HOME/.npm/_cacache")
-    local bytes=$(get_dir_size_bytes "$HOME/.npm/_cacache")
+    local size
+    size=$(get_dir_size "$HOME/.npm/_cacache")
+    local bytes
+    bytes=$(get_dir_size_bytes "$HOME/.npm/_cacache")
     if [[ $bytes -gt 0 ]]; then
       idx=$((idx + 1))
       cleanup_names[$idx]="npm Cache"
@@ -330,8 +341,10 @@ action_cleanup() {
   
   # pip Cache
   if [[ -d "$HOME/Library/Caches/pip" ]]; then
-    local size=$(get_dir_size "$HOME/Library/Caches/pip")
-    local bytes=$(get_dir_size_bytes "$HOME/Library/Caches/pip")
+    local size
+    size=$(get_dir_size "$HOME/Library/Caches/pip")
+    local bytes
+    bytes=$(get_dir_size_bytes "$HOME/Library/Caches/pip")
     if [[ $bytes -gt 0 ]]; then
       idx=$((idx + 1))
       cleanup_names[$idx]="pip Cache"
@@ -343,8 +356,10 @@ action_cleanup() {
   
   # User Logs
   if [[ -d "$HOME/Library/Logs" ]]; then
-    local size=$(get_dir_size "$HOME/Library/Logs")
-    local bytes=$(get_dir_size_bytes "$HOME/Library/Logs")
+    local size
+    size=$(get_dir_size "$HOME/Library/Logs")
+    local bytes
+    bytes=$(get_dir_size_bytes "$HOME/Library/Logs")
     if [[ $bytes -gt 0 ]]; then
       idx=$((idx + 1))
       cleanup_names[$idx]="User Logs"
@@ -356,8 +371,10 @@ action_cleanup() {
   
   # Trash
   if [[ -d "$HOME/.Trash" ]]; then
-    local size=$(get_dir_size "$HOME/.Trash")
-    local bytes=$(get_dir_size_bytes "$HOME/.Trash")
+    local size
+    size=$(get_dir_size "$HOME/.Trash")
+    local bytes
+    bytes=$(get_dir_size_bytes "$HOME/.Trash")
     if [[ $bytes -gt 0 ]]; then
       idx=$((idx + 1))
       cleanup_names[$idx]="Trash"
@@ -369,8 +386,10 @@ action_cleanup() {
   
   # iOS Device Support
   if [[ -d "$HOME/Library/Developer/Xcode/iOS DeviceSupport" ]]; then
-    local size=$(get_dir_size "$HOME/Library/Developer/Xcode/iOS DeviceSupport")
-    local bytes=$(get_dir_size_bytes "$HOME/Library/Developer/Xcode/iOS DeviceSupport")
+    local size
+    size=$(get_dir_size "$HOME/Library/Developer/Xcode/iOS DeviceSupport")
+    local bytes
+    bytes=$(get_dir_size_bytes "$HOME/Library/Developer/Xcode/iOS DeviceSupport")
     if [[ $bytes -gt 0 ]]; then
       idx=$((idx + 1))
       cleanup_names[$idx]="iOS Device Support"
@@ -403,6 +422,9 @@ action_cleanup() {
   declare -a to_clean
   if [[ "$selection" == "all" ]]; then
     for i in $(seq 1 $idx); do
+      # SC2206 disabled: $i is a loop integer from seq; there is nothing to
+      # word-split or glob.
+      # shellcheck disable=SC2206
       to_clean+=($i)
     done
   else
@@ -440,9 +462,11 @@ action_cleanup() {
       
       if [[ "$name" == "Trash" ]]; then
         # Use osascript to empty trash properly
-        osascript -e 'tell app "Finder" to empty trash' 2>/dev/null || rm -rf "$path"/* 2>/dev/null
+        # "${path:?}" — if $path were ever empty this would expand to `rm -rf /*`.
+        # The :? form makes the shell abort instead.
+        osascript -e 'tell app "Finder" to empty trash' 2>/dev/null || rm -rf "${path:?}"/* 2>/dev/null
       else
-        rm -rf "$path"/* 2>/dev/null
+        rm -rf "${path:?}"/* 2>/dev/null
       fi
       
       total_freed=$((total_freed + bytes))
@@ -460,7 +484,8 @@ action_health() {
   echo ""
   
   # Get primary disk info
-  local disk_info=$(diskutil info disk0 2>/dev/null)
+  local disk_info
+  disk_info=$(diskutil info disk0 2>/dev/null)
   
   if [[ -z "$disk_info" ]]; then
     msg_warning "Could not retrieve disk information."
@@ -468,9 +493,12 @@ action_health() {
   fi
   
   # Extract key information
-  local disk_name=$(echo "$disk_info" | grep "Device / Media Name:" | sed 's/.*: *//')
-  local disk_size=$(echo "$disk_info" | grep "Disk Size:" | sed 's/.*: *//' | cut -d'(' -f1)
-  local smart_status=$(echo "$disk_info" | grep "SMART Status:" | sed 's/.*: *//')
+  local disk_name
+  disk_name=$(echo "$disk_info" | grep "Device / Media Name:" | sed 's/.*: *//')
+  local disk_size
+  disk_size=$(echo "$disk_info" | grep "Disk Size:" | sed 's/.*: *//' | cut -d'(' -f1)
+  local smart_status
+  smart_status=$(echo "$disk_info" | grep "SMART Status:" | sed 's/.*: *//')
   
   echo "  Disk:         disk0"
   echo "  Name:         ${disk_name:-Unknown}"

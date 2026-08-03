@@ -226,6 +226,9 @@ action_clean() {
   # Stop all containers if hard mode
   if $hard_mode; then
     msg_info "Stopping all containers..."
+    # SC2046 disabled: docker takes a LIST of container IDs, so the word
+    # splitting is intended. Quoting would pass them as one argument.
+    # shellcheck disable=SC2046
     docker stop $(docker ps -q) 2>/dev/null || true
   fi
   

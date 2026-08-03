@@ -168,7 +168,8 @@ backend_do_restore() {
 
   msg_info "Restoring critical files..."
   for target in "${BACKUP_TARGETS[@]}"; do
-    local backup_source="$temp_restore_dir/$(basename "$target")"
+    local backup_source
+    backup_source="$temp_restore_dir/$(basename "$target")"
     local restore_dest
     restore_dest="${target/#\~/$HOME}"
     if [ -e "$backup_source" ]; then

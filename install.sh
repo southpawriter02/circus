@@ -188,13 +188,15 @@ main() {
 
       # Mark stage as active and record start time
       ui_stage_start
-      local stage_start_time=$(date +%s)
+      local stage_start_time
+      stage_start_time=$(date +%s)
 
       # Execute the stage
       source "$stage_path"
 
       # Calculate duration and mark complete
-      local stage_end_time=$(date +%s)
+      local stage_end_time
+      stage_end_time=$(date +%s)
       local stage_duration=$((stage_end_time - stage_start_time))
       ui_stage_complete
       ui_stage_complete_msg "$stage_title" "success" "$stage_duration"

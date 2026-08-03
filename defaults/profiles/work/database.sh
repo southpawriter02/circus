@@ -65,7 +65,8 @@ main() {
 
   # --- Create Default User ---
   # Create a user with the same name as the current macOS user.
-  local current_user=$(whoami)
+  local current_user
+  current_user=$(whoami)
   msg_info "Ensuring PostgreSQL user '$current_user' exists..."
   if [ "$DRY_RUN_MODE" = true ]; then
     msg_info "[Dry Run] Would check for and create PostgreSQL user: $current_user"

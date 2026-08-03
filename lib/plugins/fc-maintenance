@@ -415,7 +415,8 @@ do_list() {
 
   for task in "${tasks[@]}"; do
     local enabled="disabled"
-    local var_name="TASK_$(echo "$task" | tr '[:lower:]-' '[:upper:]_')"
+    local var_name
+    var_name="TASK_$(echo "$task" | tr '[:lower:]-' '[:upper:]_')"
     if [[ "${!var_name:-false}" == "true" ]]; then
       enabled="enabled"
     fi
@@ -442,7 +443,8 @@ do_run_task() {
     die "Task name required. Run 'fc maintenance list' to see available tasks."
   fi
   
-  local func_name="task_$(echo "$task_name" | tr '-' '_')"
+  local func_name
+  func_name="task_$(echo "$task_name" | tr '-' '_')"
   
   if ! declare -f "$func_name" >/dev/null 2>&1; then
     die "Unknown task: $task_name. Run 'fc maintenance list' to see available tasks."

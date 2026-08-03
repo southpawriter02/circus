@@ -4,9 +4,17 @@
 #
 # FILE:         static_analysis.bats
 #
-# DESCRIPTION:  This test file uses the `shellcheck` static analysis tool to
-#               find common bugs and vulnerabilities in all shell scripts
-#               within the repository.
+# DESCRIPTION:  Runs shellcheck across the repository's shell scripts.
+#
+#               This test was previously `skip`ped unconditionally, with the
+#               note "failing with a large number of errors that are out of
+#               scope". It is enabled now that those findings have been dealt
+#               with: the genuine ones were fixed, and the handful of
+#               intentional patterns carry inline `# shellcheck disable`
+#               directives explaining why.
+#
+#               Severity and repo-wide suppressions live in .shellcheckrc so
+#               that this test and the CI job enforce exactly the same rules.
 #
 # ==============================================================================
 
@@ -15,27 +23,37 @@ load 'test_helper'
 # --- Test Cases ---
 
 @test "All shell scripts should pass static analysis" {
-  skip "Skipping static analysis test. It is failing with a large number of errors that are out of scope for the current task."
-  # First, check if shellcheck is installed.
   if ! command -v shellcheck >/dev/null 2>&1; then
-    skip "shellcheck not found. Please install it via Homebrew."
+    skip "shellcheck not found. Install it with: brew install shellcheck"
   fi
 
-  # Find all shell scripts in the project. This includes:
-  # - .sh files
-  # - .bash files
-  # - .bats files
-  # - The `fc` command, which has no extension.
-  # We exclude the .git directory from the search.
-  local scripts
-  scripts=$(find "$PROJECT_ROOT" -path "$PROJECT_ROOT/.git" -prune -o -type f \( -name "*.sh" -o -name "*.bash" -o -name "*.bats" -o -name "fc" \) -print)
+  cd "$PROJECT_ROOT" || fail "could not enter \$PROJECT_ROOT"
 
-  # Run shellcheck on all found scripts.
-  # The `-x` flag makes shellcheck follow `source` statements.
-  run shellcheck -x $scripts
+  # Build the file list with git, NUL-delimited.
+  #
+  # The previous version used `find` and then passed an unquoted $scripts to
+  # shellcheck. That split on whitespace, so every path containing a space —
+  # etc/alfred/workflows/Flying Circus/... — was passed as two nonexistent
+  # filenames. shellcheck reported "does not exist" for those and silently
+  # analysed nothing for them.
+  #
+  # Two exclusions:
+  #   topics/*             - zsh, which shellcheck cannot parse (SC1071)
+  #   lib/plugins/template - a scaffold containing deliberate placeholders
+  local files=()
+  local f
+  while IFS= read -r -d '' f; do
+    case "$f" in
+      topics/*|lib/plugins/template) continue ;;
+    esac
+    files+=("$f")
+  done < <(git ls-files -z '*.sh' 'lib/plugins/fc-*' 'bin/*')
 
-  # If shellcheck finds any issues, it will exit with a non-zero status code.
-  # `assert_success` will catch this and fail the test, displaying the
-  # shellcheck output.
+  [ "${#files[@]}" -gt 0 ] || fail "no shell scripts found to analyse"
+
+  # -S warning matches the CI job. .shellcheckrc supplies the disables.
+  run shellcheck -S warning -f gcc "${files[@]}"
+
+  # Any finding fails the test and prints shellcheck's output.
   assert_success
 }
