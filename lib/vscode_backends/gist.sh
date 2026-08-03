@@ -234,12 +234,9 @@ save_gist_id_to_config() {
   if [ -f "$VSCODE_CONFIG_FILE" ]; then
     # Check if VSCODE_GIST_ID line exists
     if grep -q "^VSCODE_GIST_ID=" "$VSCODE_CONFIG_FILE"; then
-      # Update existing line
-      if [[ "$(uname)" == "Darwin" ]]; then
-        sed -i '' "s|^VSCODE_GIST_ID=.*|VSCODE_GIST_ID=\"$gist_id\"|" "$VSCODE_CONFIG_FILE"
-      else
-        sed -i "s|^VSCODE_GIST_ID=.*|VSCODE_GIST_ID=\"$gist_id\"|" "$VSCODE_CONFIG_FILE"
-      fi
+      # Update existing line. sed_inplace picks the right -i spelling for the
+      # platform, so the uname branch that used to be here is redundant.
+      sed_inplace "s|^VSCODE_GIST_ID=.*|VSCODE_GIST_ID=\"$gist_id\"|" "$VSCODE_CONFIG_FILE"
     else
       # Append new line
       echo "VSCODE_GIST_ID=\"$gist_id\"" >> "$VSCODE_CONFIG_FILE"

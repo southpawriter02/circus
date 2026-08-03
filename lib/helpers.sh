@@ -361,7 +361,34 @@ run_socketfilterfw() {
   fi
 }
 
-export -f run_defaults run_sudo run_socketfilterfw fetch_verified_script
+#
+# @description
+#   Portable in-place sed.
+#
+#   BSD sed (what macOS ships) requires an argument to -i, so the idiom is
+#   `sed -i '' 's/x/y/' file`. GNU sed (Linux) must NOT have one: it reads the
+#   '' as the script and then treats the real script as a filename, failing with
+#   "can't read s/x/y/: No such file or directory".
+#
+#   The repository claims Linux support, so every in-place edit has to go
+#   through this rather than hardcoding one platform's spelling.
+#
+# @param $1 The sed script, e.g. 's/foo/bar/'
+# @param $@ One or more files to edit in place.
+#
+sed_inplace() {
+  local script="$1"
+  shift
+
+  # GNU sed understands --version; BSD sed does not.
+  if sed --version >/dev/null 2>&1; then
+    sed -i -e "$script" "$@"
+  else
+    sed -i '' -e "$script" "$@"
+  fi
+}
+
+export -f run_defaults run_sudo run_socketfilterfw fetch_verified_script sed_inplace
 
 # ------------------------------------------------------------------------------
 # SECTION: VERSION COMPARISON FUNCTIONS

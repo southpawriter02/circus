@@ -2425,7 +2425,7 @@ update_script_hash() {
   # Check if entry exists
   if grep -q "  $rel_path$" "$manifest"; then
     # Update existing entry
-    sed -i '' "s|^[a-f0-9]*  $rel_path$|$new_hash  $rel_path|" "$manifest"
+    sed_inplace "s|^[a-f0-9]*  $rel_path$|$new_hash  $rel_path|" "$manifest"
     msg_success "Updated hash: $rel_path"
   else
     # Add new entry

@@ -172,7 +172,7 @@ do_install() {
   # Update DOTFILES_ROOT in wrapper script
   local wrapper_script="$dest_dir/scripts/fc-wrapper.sh"
   if [[ -f "$wrapper_script" ]]; then
-    sed -i '' "s|__DOTFILES_ROOT__|$DOTFILES_ROOT|g" "$wrapper_script"
+    sed_inplace "s|__DOTFILES_ROOT__|$DOTFILES_ROOT|g" "$wrapper_script"
     chmod +x "$wrapper_script"
   fi
 

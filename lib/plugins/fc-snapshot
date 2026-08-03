@@ -188,7 +188,7 @@ do_auto() {
       mkdir -p "$(dirname "$SNAPSHOT_CONFIG")"
       if [[ -f "$SNAPSHOT_CONFIG" ]]; then
         if grep -q "SNAPSHOT_AUTO_ENABLED" "$SNAPSHOT_CONFIG"; then
-          sed -i '' 's/SNAPSHOT_AUTO_ENABLED=.*/SNAPSHOT_AUTO_ENABLED=true/' "$SNAPSHOT_CONFIG"
+          sed_inplace 's/SNAPSHOT_AUTO_ENABLED=.*/SNAPSHOT_AUTO_ENABLED=true/' "$SNAPSHOT_CONFIG"
         else
           echo "SNAPSHOT_AUTO_ENABLED=true" >> "$SNAPSHOT_CONFIG"
         fi
@@ -203,7 +203,7 @@ do_auto() {
       mkdir -p "$(dirname "$SNAPSHOT_CONFIG")"
       if [[ -f "$SNAPSHOT_CONFIG" ]]; then
         if grep -q "SNAPSHOT_AUTO_ENABLED" "$SNAPSHOT_CONFIG"; then
-          sed -i '' 's/SNAPSHOT_AUTO_ENABLED=.*/SNAPSHOT_AUTO_ENABLED=false/' "$SNAPSHOT_CONFIG"
+          sed_inplace 's/SNAPSHOT_AUTO_ENABLED=.*/SNAPSHOT_AUTO_ENABLED=false/' "$SNAPSHOT_CONFIG"
         else
           echo "SNAPSHOT_AUTO_ENABLED=false" >> "$SNAPSHOT_CONFIG"
         fi
