@@ -50,7 +50,10 @@ main() {
   if ! command -v code >/dev/null 2>&1; then
     msg_warning "Visual Studio Code command-line tool 'code' not found. Skipping."
     msg_info "Please ensure VS Code is installed and the 'Shell Command: Install 'code' command in PATH' has been run."
-    return 1
+    # `return 0`: an optional dependency being absent is a SKIP, not a failure.
+    # These files are sourced by installer stage 11 under `set -e`, so returning 1
+    # aborted the whole installation at this point on any machine without the VS Code 'code' CLI.
+    return 0
   fi
 
   # --- Configuration ---

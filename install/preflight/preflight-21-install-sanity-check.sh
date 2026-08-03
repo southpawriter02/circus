@@ -45,19 +45,41 @@ main() {
     "preflight-20-conflicting-processes-check.sh"
   )
 
-  # Iterate through the preflight checks and execute them.
-  for check in "${PREFLIGHT_CHECKS[@]}"; do
-    # Source the preflight check script from the same directory.
-    # shellcheck source=/dev/null
-    source "$script_dir/$check"
+  # Verify the check suite is intact — do NOT re-execute it.
+  #
+  # This used to source and run all 20 other checks and `return 1` if ANY of
+  # them returned non-zero. Two things were wrong with that:
+  #
+  #   * It inverted the severity model. 00-preflight-checks.sh already runs every
+  #     check and classifies each as critical or warning-only. Re-running them
+  #     here treated a warning — no network, an unset LANG — as a CRITICAL
+  #     failure, so the installer refused to proceed on machines that the
+  #     framework had just decided were fine.
+  #   * It ran every check twice, including the ones that prompt.
+  #
+  # What is genuinely worth checking at this point is that the check suite
+  # itself is present and parseable, which is what "sanity" should mean here.
+  local missing=0
+  local unparseable=0
+  local check
 
-    # Check the exit code of the preflight check.
-    if [ $? -ne 0 ]; then
-      # If the exit code is not 0, it means the check failed. In this case,
-      # we exit the sanity check with an error.
-      return 1
+  for check in "${PREFLIGHT_CHECKS[@]}"; do
+    if [ ! -f "$script_dir/$check" ]; then
+      msg_error "Preflight check script is missing: $check"
+      missing=$((missing + 1))
+      continue
+    fi
+
+    if ! bash -n "$script_dir/$check" 2>/dev/null; then
+      msg_error "Preflight check script has a syntax error: $check"
+      unparseable=$((unparseable + 1))
     fi
   done
+
+  if [ "$missing" -gt 0 ] || [ "$unparseable" -gt 0 ]; then
+    msg_error "Preflight suite is incomplete: $missing missing, $unparseable unparseable."
+    return 1
+  fi
 
   # If all the preflight checks passed, exit with a success status.
   msg_success "All preflight checks passed!"

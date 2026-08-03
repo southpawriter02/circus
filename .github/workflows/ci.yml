@@ -1,0 +1,150 @@
+# ==============================================================================
+#
+# FILE:         .github/workflows/ci.yml
+#
+# DESCRIPTION:  Continuous integration for the Dotfiles Flying Circus.
+#
+#               Each job here exists because its absence let a specific class of
+#               breakage ship unnoticed:
+#
+#               smoke      - `fc` once exited 1 for all 56 commands (a readonly
+#                            re-declaration under `set -e`) and nothing caught
+#                            it, because the bats suite invoked plugins as files
+#                            rather than through bin/fc.
+#               tests      - the suite could not complete at all: one plugin
+#                            hung it, and 13 tests failed invisibly because a
+#                            bare `trap ... EXIT` in lib/ui.sh clobbered the trap
+#                            bats uses to report results.
+#               installer  - `install.sh` aborted at stage 4 of 15 calling a
+#                            helper that was never defined.
+#               shellcheck - the in-repo gate (tests/static_analysis.bats) was
+#                            skipped unconditionally.
+#               hygiene    - tests used to write into $HOME and overwrite a
+#                            tracked source file on every run.
+#
+# ==============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: All fc commands load
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Deliberately does NOT install anything: this must pass on a machine with
+      # only what macOS ships, which is where the original breakage lived.
+      - name: Every plugin must respond to --help
+        run: |
+          set -uo pipefail
+          failed=0
+          total=0
+          for plugin in lib/plugins/fc-*; do
+            [ -d "$plugin" ] && continue
+            name="$(basename "$plugin" | sed 's/^fc-//')"
+            total=$((total + 1))
+            if ! ./bin/fc "$name" --help >/dev/null 2>&1; then
+              echo "::error file=$plugin::fc $name --help exited non-zero"
+              ./bin/fc "$name" --help 2>&1 | head -5 || true
+              failed=$((failed + 1))
+            fi
+          done
+          echo "$((total - failed))/$total plugins load cleanly"
+          [ "$failed" -eq 0 ]
+
+      # macOS ships bash 3.2, and install.sh sources its stages, so the starting
+      # interpreter is what matters. A `declare -A` in a critical preflight check
+      # once aborted the installer at stage 0 on every fresh Mac.
+      - name: Parse every script under bash 3.2
+        run: |
+          set -uo pipefail
+          /bin/bash --version | head -1
+          errs=0
+          while IFS= read -r f; do
+            [ -f "$f" ] || continue
+            if ! /bin/bash -n "$f" 2>/dev/null; then
+              echo "::error file=$f::not parseable by bash 3.2"
+              errs=$((errs + 1))
+            fi
+          done < <(git ls-files '*.sh' 'lib/plugins/fc-*' 'bin/*')
+          echo "bash 3.2 syntax errors: $errs"
+          [ "$errs" -eq 0 ]
+
+  tests:
+    name: bats suite
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install bats-core
+        # Only the runner; the helper libraries are vendored in tests/helpers.
+        run: brew install bats-core
+
+      - name: Run the suite
+        run: bats tests/
+
+      # The suite used to leave a borg backup config and AUTO_CONFIRM=true in the
+      # developer's real ~/.config/circus, and overwrite a 108-line source file.
+      - name: Tests must not modify the working tree
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::the test suite modified tracked files"
+            git status --porcelain
+            git --no-pager diff | head -50
+            exit 1
+          fi
+          echo "working tree clean"
+
+      - name: Tests must not write into $HOME
+        run: |
+          # Anything the suite creates here means HOME isolation was bypassed.
+          if [ -e "$HOME/.config/circus/sync.conf" ] || [ -e "$HOME/.zshenv.local" ]; then
+            echo "::error::the test suite wrote into \$HOME"
+            ls -la "$HOME/.config/circus" 2>/dev/null || true
+            exit 1
+          fi
+          echo "\$HOME clean"
+
+  installer:
+    name: install.sh --dry-run
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # A dry run must complete all 15 stages without changing the machine.
+      # This is the job that would have caught the stage-4 abort, and it is also
+      # the regression test for dry-run integrity: energy.sh once ran 17 real
+      # `sudo pmset` calls during a "dry" run.
+      - name: Dry run must reach the end
+        run: ./install.sh --dry-run --non-interactive --log-level INFO
+
+  shellcheck:
+    name: shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      # Severity and suppressions come from .shellcheckrc so that this job and
+      # tests/static_analysis.bats enforce exactly the same thing.
+      - name: Run shellcheck
+        run: |
+          set -uo pipefail
+          # shellcheck reads .shellcheckrc from the working directory.
+          git ls-files '*.sh' 'lib/plugins/fc-*' 'bin/*' \
+            | grep -v '^lib/plugins/template$' \
+            | xargs shellcheck -f gcc

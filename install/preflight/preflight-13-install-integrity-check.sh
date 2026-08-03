@@ -21,11 +21,15 @@ main() {
 
   #
   # CUSTOMIZATION:
-  # If you modify any of the preflight scripts, you will need to update their
-  # checksums in this associative array. You can generate new checksums using:
+  # This check is CRITICAL, so editing any preflight script below without
+  # updating its checksum here will block the installer entirely. Regenerate the
+  # entries with (works on macOS and Linux — macOS has no sha256sum):
   #
-  #   cd install/preflight && for f in preflight-*.sh; do
-  #     echo "CHECKSUMS[\"$f\"]=\"$(sha256sum "$f" | cut -d' ' -f1)\"";
+  #   cd install/preflight
+  #   for f in preflight-*.sh; do
+  #     [ "$f" = preflight-13-install-integrity-check.sh ] && continue
+  #     printf '    "%s|%s"\n' "$f" \
+  #       "$(shasum -a 256 "$f" 2>/dev/null | awk '{print $1}' || sha256sum "$f" | awk '{print $1}')"
   #   done
   #
   # Note: This script (preflight-13) is not included since it cannot verify itself.
@@ -54,7 +58,7 @@ main() {
     "preflight-18-icloud-check.sh|b2379ee7b8bfa2a4dee230c5d7feae98d509c4dd23432cd8e7713a3095e3f8a8"
     "preflight-19-terminal-type-check.sh|01d6aaf8afdfb990147daa5339a089abfe1f42b77d2c83fa9fe521bffc5aa346"
     "preflight-20-conflicting-processes-check.sh|a654b882d7731f9e25e5786c77ef8bc6c991dd019f8cb0522aa31e292ca23904"
-    "preflight-21-install-sanity-check.sh|ec0f107ad1df237eef6703bc38bf3337e5fedfba77581575fd1d9ecd7b823425"
+    "preflight-21-install-sanity-check.sh|a3562a057cbe33f6953d7f6a10bd2179f0ff1479f7ac031177cf968271738b59"
 
   )
   # A flag to track if any integrity issues are found.

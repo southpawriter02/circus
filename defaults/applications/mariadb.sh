@@ -47,7 +47,10 @@ main() {
   # Verify that MariaDB is installed
   if ! command -v mariadb >/dev/null 2>&1; then
     msg_warning "\`mariadb\` command not found. Skipping MariaDB configuration."
-    return 1
+    # `return 0`: an optional dependency being absent is a SKIP, not a failure.
+    # These files are sourced by installer stage 11 under `set -e`, so returning 1
+    # aborted the whole installation at this point on any machine without mariadb.
+    return 0
   fi
 
   # ==============================================================================

@@ -53,7 +53,10 @@ main() {
   if [ ! -d "$docker_settings_dir" ]; then
     msg_warning "Docker settings directory not found. Skipping configuration."
     msg_info "Please run Docker Desktop at least once to create its settings."
-    return 1
+    # `return 0`: an optional dependency being absent is a SKIP, not a failure.
+    # These files are sourced by installer stage 11 under `set -e`, so returning 1
+    # aborted the whole installation at this point on any machine without the Docker settings directory.
+    return 0
   fi
 
   # ==============================================================================

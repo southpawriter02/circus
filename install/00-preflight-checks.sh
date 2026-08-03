@@ -79,7 +79,19 @@ run_preflight_check() {
 
   # Source the script in a subshell to capture the result
   # Redirect output to suppress msg_* output during check
+  # `|| true` on the assignment, and errexit/ERR disabled inside the subshell.
+  #
+  # A preflight check returning non-zero is its NORMAL way of reporting a
+  # problem — 14 of the 21 do it. But the subshell inherits helpers.sh's
+  # `set -e` and ERR trap, so the trap called error_handler -> exit 1 the moment
+  # a check failed. That killed the subshell before `echo "EXIT_CODE:$?"` could
+  # run, and the failed assignment then tripped errexit in the caller. The
+  # result: `./install.sh --dry-run` aborted outright at the first check that
+  # reported anything — for example "Locale & Encoding" on a machine without
+  # LANG set — instead of showing a warning and continuing.
   check_output=$(
+    set +e
+    trap - ERR
     # Override msg functions to be silent during check
     msg_info() { :; }
     msg_success() { :; }
@@ -89,7 +101,7 @@ run_preflight_check() {
     export -f msg_info msg_success msg_warning msg_error msg_debug
     source "$script_path" 2>&1
     echo "EXIT_CODE:$?"
-  )
+  ) || true
 
   # Extract exit code from output
   check_result=$(echo "$check_output" | grep "EXIT_CODE:" | cut -d: -f2)
@@ -185,9 +197,14 @@ main() {
     run_preflight_check "$script_name" "$display_name" "$is_critical"
   done
 
-  # Display summary
-  display_preflight_summary
-  local summary_result=$?
+  # Display summary.
+  #
+  # display_preflight_summary returns non-zero BY DESIGN when a critical check
+  # failed — that is the signal the `if` below acts on. As a bare command it
+  # tripped errexit first, so the installer aborted with a generic CRITICAL
+  # banner instead of printing "Cannot proceed" and offering the override.
+  local summary_result=0
+  display_preflight_summary || summary_result=$?
 
   # Handle critical failures
   if [[ $summary_result -ne 0 ]]; then

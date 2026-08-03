@@ -56,7 +56,10 @@ main() {
   local alfred_prefs_domain="com.runningwithcrayons.Alfred-Preferences"
   if ! defaults domains | grep -q "$alfred_prefs_domain"; then
     msg_warning "Alfred preferences not found. Is Alfred installed and has it been run at least once?"
-    return 1
+    # `return 0`: Alfred not being installed is a SKIP, not a failure. This file
+    # is sourced by installer stage 11 under `set -e`, so returning 1 aborted the
+    # whole installation for anyone who does not use Alfred.
+    return 0
   fi
 
   # --- Configuration ---
