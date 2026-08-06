@@ -30,26 +30,28 @@
 #
 # ==============================================================================
 
-# --- Sudo Check & Re-invocation ---------------------------------------------
-if [ "$EUID" -ne 0 ] && [ "$DRY_RUN_MODE" = false ]; then
-  msg_info "System setup requires administrative privileges."
-  sudo "$0" "$@"
-  exit $?
-fi
+# --- Privilege Model ---------------------------------------------------------
+# This file is SOURCED by install/11-defaults-and-additional-configuration.sh,
+# so it must never re-invoke the installer. A previous `sudo "$0" "$@"` here ran
+# as `sudo ./install.sh` — `source` does not change `$0` — which re-executed the
+# entire installer as root from a relative, user-writable path.
+#
+# Instead, each systemsetup call elevates individually via run_systemsetup below.
 
 # --- Main Logic -------------------------------------------------------------
 
 msg_info "Configuring core system settings with systemsetup..."
 
 # A helper function to run `systemsetup` commands or print them in dry run mode.
+# systemsetup requires root, so each invocation is elevated individually.
 run_systemsetup() {
   local command_args=("$@")
   local description="${command_args[0]}"
 
-  if [ "$DRY_RUN_MODE" = true ]; then
-    msg_info "[Dry Run] Would run: systemsetup ${command_args[*]}"
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
+    msg_info "[Dry Run] Would run: sudo systemsetup ${command_args[*]}"
   else
-    if systemsetup "${command_args[@]}"; then
+    if sudo systemsetup "${command_args[@]}"; then
       msg_success "System setting configured: ${description}"
     else
       msg_error "Failed to configure system setting: ${description}"

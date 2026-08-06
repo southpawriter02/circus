@@ -18,6 +18,9 @@ setup() {
   PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
   export FC_COMMAND="$PROJECT_ROOT/bin/fc"
 
+  # Isolate HOME so this file cannot read or write the real ~/.config/circus.
+  setup_isolated_home
+
   # Create a temporary directory for test files
   export TEST_TEMP_DIR
   TEST_TEMP_DIR=$(mktemp -d)
@@ -32,6 +35,9 @@ setup() {
 }
 
 teardown() {
+  # Restore the real HOME and remove the temporary one.
+  teardown_isolated_home
+
   # Clean up temporary directory
   if [ -d "$TEST_TEMP_DIR" ]; then
     rm -rf "$TEST_TEMP_DIR"
@@ -53,7 +59,7 @@ teardown() {
 @test "fc fc-maintenance --help shows usage information" {
   run "$FC_COMMAND" fc-maintenance --help
   assert_success
-  assert_output --partial "Usage: fc fc-maintenance"
+  assert_output --partial "Usage: fc maintenance"
   assert_output --partial "setup"
   assert_output --partial "list"
   assert_output --partial "run"
@@ -71,7 +77,7 @@ teardown() {
   run "$FC_COMMAND" fc-maintenance --help
   assert_success
   assert_output --partial "Examples:"
-  assert_output --partial "fc fc-maintenance --dry-run"
+  assert_output --partial "fc maintenance --dry-run"
 }
 
 @test "fc fc-maintenance --help shows configuration path" {
@@ -124,10 +130,12 @@ teardown() {
   assert_output --partial "Available Maintenance Tasks"
 }
 
-@test "fc fc-maintenance list shows brew-cleanup task" {
+# The brew-* task names became OS-agnostic pkg-* names in 1883309, when Linux
+# support was added; these tests were not updated at the time.
+@test "fc fc-maintenance list shows pkg-cleanup task" {
   run "$FC_COMMAND" fc-maintenance list
   assert_success
-  assert_output --partial "brew-cleanup"
+  assert_output --partial "pkg-cleanup"
 }
 
 @test "fc fc-maintenance list shows npm-cache task" {
@@ -173,14 +181,17 @@ teardown() {
 @test "fc fc-maintenance run with unknown task shows list hint" {
   run "$FC_COMMAND" fc-maintenance run unknown-task
   assert_failure
-  assert_output --partial "fc fc-maintenance list"
+  # The plugin prints the canonical invocation, `fc maintenance list`, not the
+  # `fc fc-maintenance` form used to invoke it here.
+  assert_output --partial "fc maintenance list"
 }
 
-@test "fc fc-maintenance run brew-cleanup --dry-run works" {
-  run "$FC_COMMAND" fc-maintenance --dry-run run brew-cleanup
+@test "fc fc-maintenance run pkg-cleanup --dry-run works" {
+  run "$FC_COMMAND" fc-maintenance --dry-run run pkg-cleanup
   assert_success
   assert_output --partial "[DRY-RUN]"
-  assert_output --partial "brew cleanup"
+  # The message is package-manager agnostic since the Linux support work.
+  assert_output --partial "package cleanup"
 }
 
 # ==============================================================================
@@ -252,11 +263,14 @@ teardown() {
 # Integration Tests
 # ==============================================================================
 
-@test "fc fc-maintenance run dns-flush --dry-run shows correct command" {
+@test "fc fc-maintenance run dns-flush --dry-run previews the flush" {
   run "$FC_COMMAND" fc-maintenance --dry-run run dns-flush
   assert_success
-  assert_output --partial "dscacheutil"
-  assert_output --partial "mDNSResponder"
+  assert_output --partial "[DRY-RUN]"
+  # Asserts behaviour, not a platform-specific binary: DNS clearing goes through
+  # os_clear_dns since the cross-platform work, so `dscacheutil` is no longer
+  # named here and asserting it would fail on Linux.
+  assert_output --partial "DNS"
 }
 
 @test "fc fc-maintenance run trash --dry-run works" {

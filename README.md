@@ -30,7 +30,7 @@
 The **Dotfiles Flying Circus** is a comprehensive macOS (and Linux!) automation framework that:
 
 - 🔧 **Configures everything** — 55+ defaults scripts covering system, interface, accessibility, and apps
-- 🛡️ **Enterprise-grade security** — 30 security features protecting against privilege escalation, command injection, and more
+- 🛡️ **Security controls** — hardening against privilege escalation, command injection and untrusted code, with each control's status stated plainly ([see the table](#-security-hardening))
 - 🔐 **Hardens your Mac** — Firewall, FileVault, privacy permissions, APFS snapshots, and security audits
 - 📦 **Installs your tools** — Homebrew packages, casks, and App Store apps with verified taps
 - 🎯 **Role-based setup** — Different configs for `developer`, `personal`, or `work` machines
@@ -61,7 +61,7 @@ The **Dotfiles Flying Circus** is a comprehensive macOS (and Linux!) automation 
 <details open>
 <summary><strong>🛡️ Complete Security Framework (30 Features)</strong></summary>
 
-This release introduces a comprehensive security hardening library (`lib/security.sh`) with 30 features across 6 categories:
+This release introduces a security hardening library (`lib/security.sh`) covering 6 categories. Some controls are wired in by default and some are available but not yet called — the [Security Hardening](#-security-hardening) table gives the status of each:
 
 | Category | Features | Highlights |
 |----------|----------|------------|
@@ -382,7 +382,7 @@ graph TB
 | [📖 Commands Reference](COMMANDS.md) | Complete `fc` command documentation (40+ commands) |
 | [🏛️ Architecture](ARCHITECTURE.md) | System design and philosophy |
 | [👥 Roles Guide](ROLES.md) | Role-based installation explained |
-| [🛡️ Security Hardening](ROADMAP.md#-security-hardening-priority-0---critical) | 30 security features (S01-S30) |
+| [🛡️ Security Hardening](ROADMAP.md#-security-hardening-priority-0---critical) | Security controls S01-S30, with per-control status |
 | [🔐 Privacy Profiles](defaults/profiles/README.md) | Security profile options |
 | [🔧 macOS Defaults](defaults/README.md) | 55+ defaults scripts documented |
 | [💾 Backup Backends](docs/BACKUP_BACKENDS.md) | GPG, Restic, and Borg options |
@@ -411,85 +411,99 @@ Choose your security level:
 
 ## 🛡️ Security Hardening
 
-The framework includes **30 enterprise-grade security features** in `lib/security.sh`:
+`lib/security.sh` implements a set of hardening controls. **Not all of them are
+active**, and the table below says which is which — a control that looks enabled
+but isn't is worse than one you know you have to turn on.
+
+| Status | Meaning |
+|--------|---------|
+| ✅ **Active** | Wired into the code paths that need it. You get this by default. |
+| 🔌 **Available** | Implemented and tested, but not called from anywhere yet. Opt in by calling it, or wire it into your own scripts. |
+| ⚠️ **Limited** | Present, but does not deliver what its name suggests. Read the note before relying on it. |
 
 <details>
 <summary><strong>Input Validation & Sanitization (S01-S05)</strong></summary>
 
-| Feature | Description |
-|---------|-------------|
-| **Path Traversal Guard** | Validates file paths to prevent `../` and symlink attacks |
-| **YAML Injection Prevention** | Sanitizes YAML values before `defaults write` or `eval` |
-| **Command Injection Filter** | Escapes/validates all user inputs passed to shell commands |
-| **URL Validation** | Validates remote URLs, enforces HTTPS |
-| **Package Name Allowlist** | Validates brew/cask/mas package names |
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Path Traversal Guard** | ✅ Active | Resolves paths physically (so intermediate symlinks cannot escape), rejects control characters, and enforces an allowlist on component boundaries. Used by `fc config` and `fc config-audit`. |
+| **YAML Injection Prevention** | ✅ Active | Generated shell (`~/.aliases.local`, `~/.zshenv.local`) is emitted with `printf %q` and identifier-checked names, so a YAML value cannot become code. |
+| **Command Injection Filter** | ⚠️ Limited | `sanitize_string` is a denylist and is bypassable (removed tokens can be reassembled). Do not rely on it as a boundary — quote with `printf %q` instead. |
+| **URL Validation** | 🔌 Available | `validate_url` enforces an `https://` scheme and a well-formed host. |
+| **Package Name Allowlist** | ✅ Active | brew/cask/mas names from YAML are validated before use. |
 
 </details>
 
 <details>
 <summary><strong>Privilege Escalation Protection (S06-S10)</strong></summary>
 
-| Feature | Description |
-|---------|-------------|
-| **Sudo Audit Logging** | Logs all `sudo` invocations with timestamp and result |
-| **Sudo Prompt Confirmation** | Requires `--yes` for destructive operations |
-| **Privilege Drop After Use** | Invalidates sudo credentials immediately after use |
-| **sudoers Integrity Check** | Detects modifications to `/etc/sudoers` |
-| **Root Execution Block** | Refuses to run framework as root |
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Sudo Audit Logging** | ⚠️ Limited | `sudo_audit` logs the commands it wraps, but only a handful of the framework's `sudo` calls go through it. Most do not appear in the audit log. |
+| **Sudo Prompt Confirmation** | 🔌 Available | `sudo_confirm` prompts for destructive commands. Its pattern list is a denylist — it catches `rm -rf` but not `rm -fr`. |
+| **Privilege Drop After Use** | 🔌 Available | `sudo_drop` invalidates the cached credential. Note `sudo -k` affects the whole terminal session, not just the script. |
+| **sudoers Integrity Check** | 🔌 Available | Hashes `/etc/sudoers` and `/etc/sudoers.d/*` and compares against a saved baseline. Requires a sudo credential and **fails closed** without one. |
+| **Root Execution Block** | ✅ Active | `fc` refuses to run as root. |
 
 </details>
 
 <details>
 <summary><strong>File System Security (S11-S15)</strong></summary>
 
-| Feature | Description |
-|---------|-------------|
-| **Secure Temp Files** | Uses `mktemp` with 0600 permissions |
-| **Symlink Attack Prevention** | Checks paths before writing (TOCTOU protection) |
-| **Config File Permissions** | Warns if config files are world-writable |
-| **Backup Encryption** | GPG AES256 encryption for sensitive backups |
-| **Secure Delete for Secrets** | Multi-pass overwrite before deletion |
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Secure Temp Files** | 🔌 Available | `secure_mktemp` creates 0600 files. Call it via `with_secure_temp`; the tracking array is not populated when it is used in a `$( )` subshell. |
+| **Symlink Attack Prevention** | 🔌 Available | `safe_write_check` inspects the destination's parent before writing. |
+| **Config File Permissions** | 🔌 Available | Warns when config files are group- or world-accessible. |
+| **Backup Encryption** | ✅ Active | GPG, restic and borg backends all encrypt, and each **fails closed** on a missing key or passphrase rather than writing plaintext. |
+| **Secure Delete for Secrets** | ⚠️ Limited | Overwrite-then-delete does **not** reliably destroy data on APFS: it is copy-on-write, so overwrites land on new blocks and the originals survive — and snapshots pin them. Treat this as `rm`, not as erasure. Use FileVault and destroy the key. |
 
 </details>
 
 <details>
 <summary><strong>Integrity & Authenticity (S16-S20)</strong></summary>
 
-| Feature | Description |
-|---------|-------------|
-| **Config File Signing** | GPG-signs config files with detached signatures |
-| **Script Integrity Hashes** | SHA256 manifest to detect tampering |
-| **Homebrew Tap Verification** | Only allows packages from verified taps |
-| **Self-Update Signature Check** | Verifies git commits are GPG-signed |
-| **Rollback Verification** | Verifies APFS snapshot integrity before restore |
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Config File Signing** | 🔌 Available (opt-in pinning) | `verify_config_signature` checks the signature via gpg's machine-readable status output. A bare `gpg --verify` succeeds for **any** key in your keyring, so set `CIRCUS_TRUSTED_SIGNING_FPR` to require *your* fingerprint; unset, this proves a file was signed, not who signed it. |
+| **Script Integrity Hashes** | 🔌 Available | SHA-256 manifest over tracked scripts. Detects modification of known files; will not notice a newly added one. |
+| **Homebrew Tap Verification** | ✅ Active | Brewfiles are scanned before `brew bundle` runs. Taps under the `homebrew/` org are trusted; anything else prompts. Tapping runs third-party formula code, so this is a real execution boundary. |
+| **Self-Update Signature Check** | ✅ Active (opt-in) | `fc self-update` verifies the incoming commit with git's own `%G?`/`%GF`. Set `CIRCUS_TRUSTED_SIGNING_FPR` to a fingerprint to **enforce** it; unset, it warns that commits are unverified. |
+| **Rollback Verification** | 🔌 Available | Confirms a snapshot exists before restoring. |
 
 </details>
 
 <details>
 <summary><strong>Monitoring & Detection (S21-S25)</strong></summary>
 
-| Feature | Description |
-|---------|-------------|
-| **Security Event Logging** | Structured logging to `~/.circus/security_audit.log` |
-| **Config Change Detection** | Alerts on unexpected configuration changes |
-| **Failed Operation Alerting** | Tracks failures, alerts on threshold exceeded |
-| **Startup Security Checks** | Automated audit on framework start |
-| **Periodic Health Reports** | Comprehensive security health reports |
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Security Event Logging** | ✅ Active | Structured logging to `~/.circus/`. Log files are created `0600` inside a `0700` directory, so they are not readable by other local users. |
+| **Config Change Detection** | 🔌 Available | Compares tracked config files against a saved baseline. |
+| **Failed Operation Alerting** | 🔌 Available | Counts failures in a category within a time window (default 10 minutes) and alerts past a threshold. |
+| **Startup Security Checks** | 🔌 Available | Runs the audit set on demand; not invoked automatically at startup. |
+| **Periodic Health Reports** | 🔌 Available | Generates a report when called; nothing schedules it. |
 
 </details>
 
 <details>
 <summary><strong>Network Security (S26-S30)</strong></summary>
 
-| Feature | Description |
-|---------|-------------|
-| **Remote URL Allowlist** | Domain verification for downloads |
-| **TLS Certificate Pinning** | Pins certificates for update URLs |
-| **Network Request Logging** | Logs all network requests made by `fc` |
-| **Firewall Rule Auditor** | Baseline and verify firewall rules |
-| **DNS Leak Detection** | Verifies expected DNS resolvers |
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Remote URL Allowlist** | 🔌 Available | Host allowlist for downloads. Note it follows redirects without re-checking the final host. |
+| **TLS Certificate Pinning** | ⚠️ Limited | Probes the certificate on a *separate* connection from the one that transfers data, and continues when OpenSSL is unavailable. It does not bind the transfer. Prefer `curl --pinnedpubkey`. |
+| **Network Request Logging** | 🔌 Available | Logs requests made through `logged_curl`. URLs are recorded verbatim, so credentials in a URL would be written to disk. |
+| **Firewall Rule Auditor** | 🔌 Available | Baselines and diffs firewall rules. |
+| **DNS Leak Detection** | ⚠️ Limited | Compares the *configured* resolvers against a baseline. It cannot detect an actual leak (queries escaping a VPN, DoH inside a browser), and is macOS-only. |
 
 </details>
+
+**Installer transport.** Bootstrap installers (Homebrew, Oh My Zsh) are downloaded
+to disk over pinned-HTTPS (`--proto '=https' --proto-redir '=https'`) and run from
+a file rather than piped into a shell. Set `CIRCUS_HOMEBREW_INSTALLER_SHA256` or
+`CIRCUS_OHMYZSH_INSTALLER_SHA256` to a digest to enforce a checksum — unset, the
+observed digest is printed and the script runs unverified.
 
 ---
 

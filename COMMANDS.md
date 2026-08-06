@@ -21,7 +21,7 @@ Orchestrate the complete setup of a new machine. Runs a series of phases to inst
 **Usage:**
 
 ```bash
-fc fc-bootstrap [subcommand] [options]
+fc bootstrap [subcommand] [options]
 ```
 
 **Subcommands:**
@@ -54,22 +54,22 @@ fc fc-bootstrap [subcommand] [options]
 
 ```bash
 # Interactive bootstrap wizard
-fc fc-bootstrap
+fc bootstrap
 
 # Check what's been configured
-fc fc-bootstrap status
+fc bootstrap status
 
 # Preview without making changes
-fc fc-bootstrap --dry-run
+fc bootstrap --dry-run
 
 # Resume after interruption
-fc fc-bootstrap resume
+fc bootstrap resume
 
 # Run only the configure phase
-fc fc-bootstrap --only configure --force
+fc bootstrap --only configure --force
 
 # Unattended setup (with bootstrap.conf configured)
-AUTO_CONFIRM=true fc fc-bootstrap
+AUTO_CONFIRM=true fc bootstrap
 ```
 
 **Configuration:**
@@ -331,7 +331,7 @@ fc dns clear
 - Setting or clearing DNS requires administrator (sudo) password
 - The active network service is automatically detected
 - Multiple DNS servers provide redundancy
-- To flush the DNS cache, use `fc fc-maintenance run dns-flush`
+- To flush the DNS cache, use `fc maintenance run dns-flush`
 
 ---
 
@@ -528,7 +528,7 @@ Unified secrets management command that integrates with multiple secrets manager
 **Usage:**
 
 ```bash
-fc fc-secrets <subcommand> [options]
+fc secrets <subcommand> [options]
 ```
 
 **Subcommands:**
@@ -584,22 +584,22 @@ Secrets are configured in `~/.config/circus/secrets.conf`:
 
 ```bash
 # Initial setup
-fc fc-secrets setup
+fc secrets setup
 
 # Sync all configured secrets
-fc fc-secrets sync
+fc secrets sync
 
 # Get a single secret (for scripting)
-API_KEY=$(fc fc-secrets get op://Work/api/key)
+API_KEY=$(fc secrets get op://Work/api/key)
 
 # Check backend status
-fc fc-secrets status
+fc secrets status
 
 # Verify all secrets are accessible
-fc fc-secrets verify
+fc secrets verify
 
 # List configured secrets
-fc fc-secrets list
+fc secrets list
 ```
 
 **Full Documentation:** See `docs/SECRETS.md` for complete backend setup and configuration details.
@@ -819,7 +819,7 @@ Manage scheduled automatic backups using macOS's native launchd service. This pr
 **Usage:**
 
 ```bash
-fc fc-schedule <subcommand> [options]
+fc schedule <subcommand> [options]
 ```
 
 **Subcommands:**
@@ -835,19 +835,19 @@ fc fc-schedule <subcommand> [options]
 
 ```bash
 # Install daily scheduled backups
-fc fc-schedule install
+fc schedule install
 
 # Install weekly backups instead
-fc fc-schedule install --frequency weekly
+fc schedule install --frequency weekly
 
 # Check the schedule status
-fc fc-schedule status
+fc schedule status
 
 # Manually run a backup
-fc fc-schedule run
+fc schedule run
 
 # Remove scheduled backups
-fc fc-schedule uninstall
+fc schedule uninstall
 ```
 
 ### How It Works
@@ -859,7 +859,7 @@ The `fc schedule` command uses macOS's launchd to run `fc sync backup` automatic
 3. Output is logged to `~/.circus/logs/backup.log`
 
 **Prerequisites:**
-- You must configure `fc sync` first (run `fc fc-sync setup`)
+- You must configure `fc sync` first (run `fc sync setup`)
 - GPG must be configured with your key ID
 
 ---
@@ -871,7 +871,7 @@ Manage application installations via Homebrew and Mac App Store. Define your app
 **Usage:**
 
 ```bash
-fc fc-apps <subcommand> [options]
+fc apps <subcommand> [options]
 ```
 
 **Subcommands:**
@@ -889,19 +889,19 @@ fc fc-apps <subcommand> [options]
 
 ```bash
 # Create configuration file
-fc fc-apps setup
+fc apps setup
 
 # Add apps to configuration and install them
-fc fc-apps add --cask visual-studio-code
-fc fc-apps add --cask slack
-fc fc-apps add --brew ripgrep
-fc fc-apps add --mas "Xcode" 497799835
+fc apps add --cask visual-studio-code
+fc apps add --cask slack
+fc apps add --brew ripgrep
+fc apps add --mas "Xcode" 497799835
 
 # Check what's configured and installed
-fc fc-apps list
+fc apps list
 
 # Install all configured apps
-fc fc-apps install
+fc apps install
 ```
 
 ### Configuration File
@@ -1175,7 +1175,7 @@ Manage dotfiles tracked by the Dotfiles Flying Circus. Add new files to the repo
 **Usage:**
 
 ```bash
-fc fc-dotfiles <subcommand> [options]
+fc dotfiles <subcommand> [options]
 ```
 
 **Subcommands:**
@@ -1187,18 +1187,18 @@ fc fc-dotfiles <subcommand> [options]
 
 ```bash
 # Add your vim config to the repository
-fc fc-dotfiles add ~/.vimrc
+fc dotfiles add ~/.vimrc
 
 # List all tracked dotfiles and their status
-fc fc-dotfiles list
+fc dotfiles list
 
 # Edit your git config
-fc fc-dotfiles edit .gitconfig
+fc dotfiles edit .gitconfig
 ```
 
 ### Adding a Dotfile
 
-When you run `fc fc-dotfiles add`, the command will:
+When you run `fc dotfiles add`, the command will:
 
 1. Prompt you to select a target subdirectory (bash, git, zsh, etc.)
 2. Move the file to `profiles/base/<subdir>/`
@@ -1215,7 +1215,7 @@ Manage dotfile profiles for switching between different configurations (e.g., wo
 **Usage:**
 
 ```bash
-fc fc-profile <subcommand>
+fc profile <subcommand>
 ```
 
 **Subcommands:**
@@ -1227,16 +1227,16 @@ fc fc-profile <subcommand>
 
 ```bash
 # List available profiles
-fc fc-profile list
+fc profile list
 
 # See current profile
-fc fc-profile current
+fc profile current
 
 # Switch to work profile
-fc fc-profile switch work
+fc profile switch work
 
 # Switch to personal profile
-fc fc-profile switch personal
+fc profile switch personal
 ```
 
 ### How Profiles Work
@@ -1265,7 +1265,7 @@ cat > profiles/myprofile/.gitconfig << 'EOF'
 EOF
 
 # Switch to your new profile
-fc fc-profile switch myprofile
+fc profile switch myprofile
 ```
 
 See `docs/PROFILES.md` for detailed documentation on the profile system.
@@ -1481,7 +1481,7 @@ Run routine system maintenance and cleanup tasks. This provides automated batch 
 **Usage:**
 
 ```bash
-fc fc-maintenance [subcommand] [options]
+fc maintenance [subcommand] [options]
 ```
 
 **Subcommands:**
@@ -1500,22 +1500,22 @@ fc fc-maintenance [subcommand] [options]
 
 ```bash
 # Run default maintenance tasks
-fc fc-maintenance
+fc maintenance
 
 # Preview what would be done
-fc fc-maintenance --dry-run
+fc maintenance --dry-run
 
 # Run all tasks including disabled ones
-fc fc-maintenance --all
+fc maintenance --all
 
 # List available tasks
-fc fc-maintenance list
+fc maintenance list
 
 # Run a specific task
-fc fc-maintenance run dns-flush
+fc maintenance run dns-flush
 
 # Include trash emptying
-fc fc-maintenance --include-trash
+fc maintenance --include-trash
 ```
 
 ### Available Tasks
@@ -1549,7 +1549,7 @@ LOG_RETENTION_DAYS=7
 BREW_PRUNE_DAYS=30
 ```
 
-Run `fc fc-maintenance setup` to create the configuration file from the template.
+Run `fc maintenance setup` to create the configuration file from the template.
 
 ---
 
@@ -1560,7 +1560,7 @@ Find and remove orphaned Homebrew packages—packages that are installed but not
 **Usage:**
 
 ```bash
-fc fc-clean <subcommand> [options]
+fc clean <subcommand> [options]
 ```
 
 **Subcommands:**
@@ -1577,22 +1577,22 @@ fc fc-clean <subcommand> [options]
 
 ```bash
 # Show orphaned formulae
-fc fc-clean brew
+fc clean brew
 
 # Interactively remove orphaned formulae
-fc fc-clean brew --remove
+fc clean brew --remove
 
 # Show orphaned casks
-fc fc-clean casks
+fc clean casks
 
 # List all orphaned packages (for scripting)
-fc fc-clean list
+fc clean list
 
 # List only orphaned formulae
-fc fc-clean list --formula
+fc clean list --formula
 
 # Exclude dependencies from results
-fc fc-clean brew --skip-deps
+fc clean brew --skip-deps
 ```
 
 ### How It Works
@@ -1618,8 +1618,8 @@ When you find orphaned packages, you have two choices:
 
 **Adopt the package** (add to your Brewfile):
 ```bash
-fc fc-apps add --brew <package-name>
-fc fc-apps add --cask <package-name>
+fc apps add --brew <package-name>
+fc apps add --cask <package-name>
 ```
 
 **Remove the package**:
@@ -1628,7 +1628,7 @@ fc fc-apps add --cask <package-name>
 brew uninstall <package-name>
 
 # Interactive removal of multiple packages
-fc fc-clean brew --remove
+fc clean brew --remove
 ```
 
 ---

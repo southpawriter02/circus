@@ -197,22 +197,33 @@ action_preview() {
   echo ""
   
   if [[ -f "$colors_file" ]]; then
-    # Source the colors temporarily
-    source "$colors_file"
-    
-    # Show color swatches
+    # PARSE the theme file; do not source it.
+    #
+    # `source "$colors_file"` executed the theme as shell code — in a command
+    # documented as showing a theme "without applying" it. Themes are meant to
+    # be shareable, so previewing one should never run it.
+    #
+    # The old code also sourced to no purpose: the swatches below it printed
+    # ANSI colours 0-7, which are the terminal's palette, not the theme's. The
+    # values read here are the theme's actual colours.
     echo "  Color palette:"
     echo ""
-    
-    # Display color blocks using ANSI codes
-    for i in {0..7}; do
-      printf "\033[4${i}m  \033[0m"
-    done
-    echo ""
-    for i in {0..7}; do
-      printf "\033[10${i}m  \033[0m"
-    done
-    echo ""
+
+    local line name value r g b
+    while IFS= read -r line; do
+      # Match: [export] THEME_NAME="#rrggbb"
+      [[ "$line" =~ ^[[:space:]]*(export[[:space:]]+)?(THEME_[A-Z_]+)=\"?\#([0-9a-fA-F]{6})\"?[[:space:]]*$ ]] || continue
+      name="${BASH_REMATCH[2]}"
+      value="${BASH_REMATCH[3]}"
+
+      # 24-bit ANSI swatch. Terminals without truecolor just show no block,
+      # and the hex value is printed regardless.
+      r=$((16#${value:0:2}))
+      g=$((16#${value:2:2}))
+      b=$((16#${value:4:2}))
+      printf "  \033[48;2;%d;%d;%dm    \033[0m  %-18s #%s\n" "$r" "$g" "$b" "$name" "$value"
+    done < "$colors_file"
+
     echo ""
   fi
   

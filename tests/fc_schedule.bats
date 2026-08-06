@@ -18,6 +18,9 @@ setup() {
   PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
   export FC_COMMAND="$PROJECT_ROOT/bin/fc"
 
+  # Isolate HOME so this file cannot read or write the real ~/.config/circus.
+  setup_isolated_home
+
   # Create a temporary directory for test files
   export TEST_TEMP_DIR
   TEST_TEMP_DIR=$(mktemp -d)
@@ -36,6 +39,9 @@ setup() {
 }
 
 teardown() {
+  # Restore the real HOME and remove the temporary one.
+  teardown_isolated_home
+
   # Clean up temporary directory
   if [ -d "$TEST_TEMP_DIR" ]; then
     rm -rf "$TEST_TEMP_DIR"
@@ -58,22 +64,22 @@ teardown() {
 # Help and Usage Tests
 # ==============================================================================
 
-@test "fc fc-schedule --help shows usage information" {
+@test "fc schedule --help shows usage information" {
   run "$FC_COMMAND" fc-schedule --help
   assert_success
-  assert_output --partial "Usage: fc fc-schedule"
+  assert_output --partial "Usage: fc schedule"
   assert_output --partial "install"
   assert_output --partial "uninstall"
   assert_output --partial "status"
 }
 
-@test "fc fc-schedule with no arguments shows usage" {
+@test "fc schedule with no arguments shows usage" {
   run "$FC_COMMAND" fc-schedule
   assert_success
-  assert_output --partial "Usage: fc fc-schedule"
+  assert_output --partial "Usage: fc schedule"
 }
 
-@test "fc fc-schedule --help shows frequency options" {
+@test "fc schedule --help shows frequency options" {
   run "$FC_COMMAND" fc-schedule --help
   assert_success
   assert_output --partial "--frequency"
@@ -81,25 +87,25 @@ teardown() {
   assert_output --partial "weekly"
 }
 
-@test "fc fc-schedule --help shows examples" {
+@test "fc schedule --help shows examples" {
   run "$FC_COMMAND" fc-schedule --help
   assert_success
   assert_output --partial "Examples:"
-  assert_output --partial "fc fc-schedule install"
+  assert_output --partial "fc schedule install"
 }
 
 # ==============================================================================
 # Status Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-schedule status works when not installed" {
+@test "fc schedule status works when not installed" {
   run "$FC_COMMAND" fc-schedule status
   assert_success
   assert_output --partial "Installed:  No"
-  assert_output --partial "fc fc-schedule install"
+  assert_output --partial "fc schedule install"
 }
 
-@test "fc fc-schedule status shows status header" {
+@test "fc schedule status shows status header" {
   run "$FC_COMMAND" fc-schedule status
   assert_success
   assert_output --partial "Scheduled Backup Status"
@@ -109,7 +115,7 @@ teardown() {
 # Install Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-schedule install fails without sync config" {
+@test "fc schedule install fails without sync config" {
   # Temporarily move the config file
   local config_file="$HOME/.config/circus/sync.conf"
   if [ -f "$config_file" ]; then
@@ -127,7 +133,7 @@ teardown() {
   assert_output --partial "fc-sync is not configured"
 }
 
-@test "fc fc-schedule install with invalid frequency fails" {
+@test "fc schedule install with invalid frequency fails" {
   run "$FC_COMMAND" fc-schedule install --frequency monthly
   assert_failure
   assert_output --partial "Invalid frequency"
@@ -137,7 +143,7 @@ teardown() {
 # Uninstall Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-schedule uninstall works when not installed" {
+@test "fc schedule uninstall works when not installed" {
   run "$FC_COMMAND" fc-schedule uninstall
   assert_success
   assert_output --partial "not installed"
@@ -147,13 +153,13 @@ teardown() {
 # Error Handling Tests
 # ==============================================================================
 
-@test "fc fc-schedule unknown subcommand fails" {
+@test "fc schedule unknown subcommand fails" {
   run "$FC_COMMAND" fc-schedule unknown_subcommand
   assert_failure
   assert_output --partial "Unknown subcommand"
 }
 
-@test "fc fc-schedule unknown subcommand shows help hint" {
+@test "fc schedule unknown subcommand shows help hint" {
   run "$FC_COMMAND" fc-schedule unknown_subcommand
   assert_failure
   assert_output --partial "--help"
@@ -195,13 +201,13 @@ teardown() {
 # fc-sync --no-confirm Tests
 # ==============================================================================
 
-@test "fc fc-sync --help shows --no-confirm option" {
+@test "fc sync --help shows --no-confirm option" {
   run "$FC_COMMAND" fc-sync --help
   assert_success
   assert_output --partial "--no-confirm"
 }
 
-@test "fc fc-sync --no-confirm is documented for automated use" {
+@test "fc sync --no-confirm is documented for automated use" {
   run "$FC_COMMAND" fc-sync --help
   assert_success
   assert_output --partial "automated"

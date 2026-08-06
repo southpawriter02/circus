@@ -98,14 +98,14 @@ msg_info "Configuring energy and power management settings..."
 # UI Location:  System Settings > Displays > Advanced > Battery
 # Source:       man pmset
 # Note:         The display can wake instantly on any input (keyboard, mouse).
-sudo pmset -b displaysleep 5
+run_sudo pmset -b displaysleep 5
 
 # --- Display Sleep Timeout (AC Power) ---
 # Command:      pmset -c displaysleep
 # Description:  Time in minutes before the display sleeps when on AC power.
 # Default:      10 minutes
 # Set to:       15 minutes (comfortable for desk work)
-sudo pmset -c displaysleep 15
+run_sudo pmset -c displaysleep 15
 
 # ==============================================================================
 # System Sleep
@@ -117,7 +117,7 @@ sudo pmset -c displaysleep 15
 #               Set to 0 to disable sleep (not recommended for battery).
 # Default:      10 minutes
 # Set to:       10 minutes (preserve battery when idle)
-sudo pmset -b sleep 10
+run_sudo pmset -b sleep 10
 
 # --- System Sleep Timeout (AC Power) ---
 # Command:      pmset -c sleep
@@ -125,7 +125,7 @@ sudo pmset -b sleep 10
 #               Set to 0 to disable sleep entirely.
 # Default:      0 (never sleep on AC)
 # Set to:       0 (stay awake when plugged in)
-sudo pmset -c sleep 0
+run_sudo pmset -c sleep 0
 
 # ==============================================================================
 # Hard Disk Sleep
@@ -138,7 +138,7 @@ sudo pmset -c sleep 0
 #               Note: SSDs don't spin down but this affects external HDDs.
 # Default:      10 minutes
 # Set to:       10 minutes
-sudo pmset -a disksleep 10
+run_sudo pmset -a disksleep 10
 
 # ==============================================================================
 # Wake Features
@@ -151,14 +151,14 @@ sudo pmset -a disksleep 10
 # Default:      1 (enabled on AC)
 # Options:      0 = Disabled, 1 = Enabled
 # Set to:       1 (enable for remote access when on AC)
-sudo pmset -c womp 1
+run_sudo pmset -c womp 1
 
 # --- Wake on Network Access (Battery) ---
 # Command:      pmset -b womp
 # Description:  Wake on LAN is typically disabled on battery to save power.
 # Default:      0 (disabled on battery)
 # Set to:       0 (keep disabled to save battery)
-sudo pmset -b womp 0
+run_sudo pmset -b womp 0
 
 # ==============================================================================
 # Power Nap
@@ -172,14 +172,14 @@ sudo pmset -b womp 0
 # Options:      0 = Disabled, 1 = Enabled
 # Set to:       0 (save battery, disable Power Nap on battery)
 # Source:       https://support.apple.com/en-us/HT204032
-sudo pmset -b powernap 0
+run_sudo pmset -b powernap 0
 
 # --- Power Nap (AC Power) ---
 # Command:      pmset -c powernap
 # Description:  Allow Mac to perform background tasks while sleeping on AC.
 # Default:      1 (enabled on AC)
 # Set to:       1 (enable on AC for background sync)
-sudo pmset -c powernap 1
+run_sudo pmset -c powernap 1
 
 # ==============================================================================
 # Hibernation Mode
@@ -196,7 +196,7 @@ sudo pmset -c powernap 1
 #   25 = Hibernate after standby delay (deep sleep)
 # Set to:       3 (safe sleep - best balance for laptops)
 # Note:         Desktops should use 0
-sudo pmset -a hibernatemode 3
+run_sudo pmset -a hibernatemode 3
 
 # ==============================================================================
 # Standby
@@ -209,21 +209,21 @@ sudo pmset -a hibernatemode 3
 # Default:      1 (enabled)
 # Options:      0 = Disabled, 1 = Enabled
 # Set to:       1 (enable for power savings on long sleep)
-sudo pmset -a standby 1
+run_sudo pmset -a standby 1
 
 # --- Standby Delay (High Battery) ---
 # Command:      pmset -a standbydelayhigh
 # Description:  Seconds to wait before entering standby when battery > 50%.
 # Default:      86400 (24 hours)
 # Set to:       86400 (24 hours - only hibernate after very long sleep)
-sudo pmset -a standbydelayhigh 86400
+run_sudo pmset -a standbydelayhigh 86400
 
 # --- Standby Delay (Low Battery) ---
 # Command:      pmset -a standbydelaylow
 # Description:  Seconds to wait before entering standby when battery < 50%.
 # Default:      10800 (3 hours)
 # Set to:       10800 (3 hours)
-sudo pmset -a standbydelaylow 10800
+run_sudo pmset -a standbydelaylow 10800
 
 # ==============================================================================
 # Additional Power Settings
@@ -236,7 +236,7 @@ sudo pmset -a standbydelaylow 10800
 # Default:      2 (automatic switching)
 # Options:      0 = Integrated only, 1 = Discrete only, 2 = Automatic
 # Set to:       2 (automatic - best balance)
-sudo pmset -a gpuswitch 2
+run_sudo pmset -a gpuswitch 2
 
 # --- TCP Keep Alive ---
 # Command:      pmset -a tcpkeepalive
@@ -244,7 +244,7 @@ sudo pmset -a gpuswitch 2
 # Default:      1 (enabled)
 # Options:      0 = Disabled, 1 = Enabled
 # Set to:       1 (keep connections for notifications)
-sudo pmset -a tcpkeepalive 1
+run_sudo pmset -a tcpkeepalive 1
 
 # ==============================================================================
 # Lid & Wake Behavior
@@ -260,7 +260,7 @@ sudo pmset -a tcpkeepalive 1
 # Set to:       1 (natural wake behavior)
 # UI Location:  Not directly in UI (terminal only)
 # Source:       man pmset
-sudo pmset -a lidwake 1
+run_sudo pmset -a lidwake 1
 
 # --- Reduce Brightness on Battery ---
 # Command:      pmset -b lessbright
@@ -272,7 +272,7 @@ sudo pmset -a lidwake 1
 # Set to:       1 (save battery with reduced brightness)
 # UI Location:  System Settings > Battery > Low Power Mode (similar effect)
 # Note:         This is a subtle brightness reduction, not full dimming.
-sudo pmset -b lessbright 1
+run_sudo pmset -b lessbright 1
 
 # --- Prevent Idle Sleep When Display Off ---
 # Command:      pmset -a sleep

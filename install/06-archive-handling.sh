@@ -57,11 +57,13 @@ main() {
   #   - The key is the filename of the archive (e.g., "my-fonts.zip").
   #   - The value is the absolute path to the extraction directory.
   #   - The script supports .zip and .tar.gz/.tgz files.
-  declare -A EXTRACTION_MAP
+  # Entries are "archive-name|extraction-target". An indexed array rather than
+  # `declare -A`, which bash 3.2 (the macOS system bash) does not support.
+  local EXTRACTION_MAP=()
   #
   # Example entries (uncomment and customize to use):
-  # EXTRACTION_MAP["fonts.zip"]="$HOME/Library/Fonts"
-  # EXTRACTION_MAP["wallpapers.tar.gz"]="$HOME/Pictures/Wallpapers"
+  # EXTRACTION_MAP+=("fonts.zip|$HOME/Library/Fonts")
+  # EXTRACTION_MAP+=("wallpapers.tar.gz|$HOME/Pictures/Wallpapers")
 
   # --- Pre-checks -------------------------------------------------------------
   # Check if the archive directory exists. If not, there's nothing to do.
@@ -79,9 +81,11 @@ main() {
   # --- Extraction Logic -------------------------------------------------------
   msg_info "Processing bundled archives..."
 
-  for archive_name in "${!EXTRACTION_MAP[@]}"; do
+  local map_entry archive_name target_dir
+  for map_entry in "${EXTRACTION_MAP[@]}"; do
+    archive_name="${map_entry%%|*}"
+    target_dir="${map_entry#*|}"
     local archive_path="$ARCHIVE_DIR/$archive_name"
-    local target_dir="${EXTRACTION_MAP[$archive_name]}"
 
     # Verify that the archive file actually exists before trying to extract it.
     if [ ! -f "$archive_path" ]; then

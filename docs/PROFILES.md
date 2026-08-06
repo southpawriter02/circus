@@ -39,7 +39,7 @@ Additional directories in `profiles/` (e.g., `work/`, `personal/`) contain overr
 ### List Available Profiles
 
 ```bash
-fc fc-profile list
+fc profile list
 ```
 
 Shows all available profiles and indicates which one is currently active.
@@ -47,7 +47,7 @@ Shows all available profiles and indicates which one is currently active.
 ### View Current Profile
 
 ```bash
-fc fc-profile current
+fc profile current
 ```
 
 Shows which profile is currently active and what files it overrides.
@@ -55,8 +55,8 @@ Shows which profile is currently active and what files it overrides.
 ### Switch Profiles
 
 ```bash
-fc fc-profile switch work
-fc fc-profile switch personal
+fc profile switch work
+fc profile switch personal
 ```
 
 Switches to the specified profile by:
@@ -88,7 +88,7 @@ After switching, restart your shell or run `source ~/.zshrc` to apply changes.
 3. Switch to your new profile:
 
    ```bash
-   fc fc-profile switch myprofile
+   fc profile switch myprofile
    ```
 
 ## How Layering Works
@@ -163,5 +163,5 @@ There's currently no "no profile" mode. To use only base dotfiles, create an emp
 
 ```bash
 mkdir -p profiles/base-only
-fc fc-profile switch base-only
+fc profile switch base-only
 ```

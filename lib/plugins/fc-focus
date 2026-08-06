@@ -23,7 +23,11 @@ source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 # --- Configuration ----------------------------------------------------------
 readonly FOCUS_CONFIG="$HOME/.config/circus/focus.conf"
 readonly HOSTS_FILE="/etc/hosts"
-readonly HOSTS_BACKUP="/tmp/hosts.focus.backup.$$"
+# Deliberately NOT in /tmp and NOT PID-derived. /tmp is world-writable, so a
+# predictable name there let any local user pre-plant a symlink and turn the
+# `sudo cp` below into an arbitrary root-owned write. The PID also differs
+# between `focus on` and `focus off`, so the old path could never be found again.
+readonly HOSTS_BACKUP="$HOME/.config/circus/hosts.backup"
 readonly FOCUS_STATE_FILE="$HOME/.config/circus/.focus_active"
 
 # Focus markers in hosts file
@@ -189,27 +193,48 @@ get_focus_end_time() {
 
 # --- Hosts File Management --------------------------------------------------
 
+#
+# Atomically install a new /etc/hosts from a file this user owns.
+#
+# `install` sets the destination's mode and ownership explicitly, so a tampered
+# source file cannot carry unexpected permissions onto /etc/hosts.
+#
+install_hosts() {
+  local src="$1"
+  sudo install -m 0644 -o root -g wheel "$src" "$HOSTS_FILE"
+}
+
 backup_hosts() {
-  if ! sudo cp "$HOSTS_FILE" "$HOSTS_BACKUP"; then
+  mkdir -p "$(dirname "$HOSTS_BACKUP")"
+  chmod 700 "$(dirname "$HOSTS_BACKUP")" 2>/dev/null || true
+
+  # /etc/hosts is world-readable, so reading it needs no elevation. Doing this
+  # unprivileged also keeps the backup owned by the user rather than root.
+  if ! cp "$HOSTS_FILE" "$HOSTS_BACKUP"; then
     die "Failed to backup hosts file."
   fi
+  chmod 600 "$HOSTS_BACKUP"
 }
 
 restore_hosts() {
   if [[ -f "$HOSTS_BACKUP" ]]; then
-    if sudo cp "$HOSTS_BACKUP" "$HOSTS_FILE"; then
+    if install_hosts "$HOSTS_BACKUP"; then
       rm -f "$HOSTS_BACKUP"
+      # Without this the previously blocked sites stay blocked until the
+      # resolver cache expires.
+      flush_dns_cache
       return 0
     fi
   fi
-  
+
   # Fallback: remove focus block from hosts
   remove_focus_block
 }
 
 add_focus_block() {
-  local temp_hosts="/tmp/hosts.focus.new.$$"
-  
+  local temp_hosts
+  temp_hosts=$(mktemp) || return 1
+
   # Create new hosts content
   {
     # Copy existing hosts without any previous focus blocks
@@ -224,8 +249,8 @@ add_focus_block() {
     done
     echo "$FOCUS_MARKER_END"
   } > "$temp_hosts"
-  
-  if sudo cp "$temp_hosts" "$HOSTS_FILE"; then
+
+  if install_hosts "$temp_hosts"; then
     rm -f "$temp_hosts"
     # Flush DNS cache
     flush_dns_cache
@@ -237,14 +262,15 @@ add_focus_block() {
 }
 
 remove_focus_block() {
-  local temp_hosts="/tmp/hosts.focus.clean.$$"
-  
+  local temp_hosts
+  temp_hosts=$(mktemp) || return 1
+
   # Remove focus block lines
   grep -v "$FOCUS_MARKER_START" "$HOSTS_FILE" 2>/dev/null | \
     grep -v "$FOCUS_MARKER_END" | \
     grep -v "# focus-mode-block" > "$temp_hosts"
-  
-  if sudo cp "$temp_hosts" "$HOSTS_FILE"; then
+
+  if install_hosts "$temp_hosts"; then
     rm -f "$temp_hosts"
     flush_dns_cache
     return 0

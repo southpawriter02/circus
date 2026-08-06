@@ -84,21 +84,39 @@ get_primary_interface() {
 
 # Get local IP address
 get_local_ip() {
-  local iface
+  local iface ip
   iface=$(get_primary_interface)
-  if [[ -n "$iface" ]]; then
-    ipconfig getifaddr "$iface" 2>/dev/null
+  [[ -n "$iface" ]] || return 0
+
+  # `|| true` — `ipconfig getifaddr` exits non-zero when the interface has no
+  # IPv4 lease, which under `set -e` aborted `fc network status` entirely
+  # instead of reporting "Not connected".
+  ip=$(ipconfig getifaddr "$iface" 2>/dev/null) || ip=""
+
+  # Fall back to ifconfig: `ipconfig getifaddr` only understands interfaces with
+  # a DHCP/BootP lease, so it returns nothing for tunnels. When a VPN is up the
+  # primary interface is typically a utunN, and the address has to be read
+  # directly.
+  if [[ -z "$ip" ]]; then
+    ip=$(ifconfig "$iface" 2>/dev/null | awk '/inet /{print $2; exit}') || ip=""
   fi
+
+  printf '%s' "$ip"
 }
 
 # Get gateway IP
 get_gateway() {
-  route -n get default 2>/dev/null | grep 'gateway:' | awk '{print $2}'
+  # `|| true` — on a VPN-only or link-local route table there is no `gateway:`
+  # line, so grep exits 1 and, under `set -eo pipefail`, aborted the caller
+  # rather than simply reporting no gateway.
+  route -n get default 2>/dev/null | grep 'gateway:' | awk '{print $2}' || true
 }
 
 # Get DNS servers
 get_dns_servers() {
-  scutil --dns 2>/dev/null | grep 'nameserver\[' | awk '{print $3}' | head -3 | tr '\n' ' '
+  # `|| true`: grep exits 1 when no resolvers are configured; that is an empty
+  # result, not an error.
+  scutil --dns 2>/dev/null | grep 'nameserver\[' | awk '{print $3}' | head -3 | tr '\n' ' ' || true
 }
 
 # Get active network service name
@@ -106,7 +124,9 @@ get_network_service() {
   local iface
   iface=$(get_primary_interface)
   if [[ -n "$iface" ]]; then
-    networksetup -listnetworkserviceorder | grep -A1 "$iface" | head -1 | sed 's/^([0-9]*) //'
+    # `|| true`: a tunnel interface has no entry in the service order list, so
+    # grep exits 1 and would otherwise abort the caller.
+    networksetup -listnetworkserviceorder 2>/dev/null | grep -A1 "$iface" | head -1 | sed 's/^([0-9]*) //' || true
   fi
 }
 

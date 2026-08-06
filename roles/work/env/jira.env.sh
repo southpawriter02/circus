@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ==============================================================================
 # Jira & Atlassian Environment Variables
 #

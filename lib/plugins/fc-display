@@ -161,10 +161,27 @@ do_apply_layout() {
   fi
   
   msg_info "Applying layout: $name"
-  
-  # Execute the displayplacer command
-  eval "$layout_cmd"
-  
+
+  # Run the saved command as an argument vector, not through eval.
+  #
+  # $layout_cmd comes from displays.conf. `eval` re-parsed it, so anything in
+  # that file — which is not permission-checked — ran as arbitrary shell. A
+  # saved layout is a displayplacer invocation, so splitting it into words and
+  # executing it directly preserves the intent without a shell in the middle.
+  local -a layout_args
+  read -ra layout_args <<< "$layout_cmd"
+
+  if [[ ${#layout_args[@]} -eq 0 ]]; then
+    die "Layout '$name' is empty."
+  fi
+
+  # Only ever run the display tool, whatever the file claims.
+  if [[ "${layout_args[0]}" != "displayplacer" ]]; then
+    die "Layout '$name' does not invoke displayplacer; refusing to run it."
+  fi
+
+  "${layout_args[@]}"
+
   msg_success "Layout '$name' applied."
 }
 

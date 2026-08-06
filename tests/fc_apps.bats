@@ -18,6 +18,9 @@ setup() {
   PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
   export FC_COMMAND="$PROJECT_ROOT/bin/fc"
 
+  # Isolate HOME so this file cannot read or write the real ~/.config/circus.
+  setup_isolated_home
+
   # Create a temporary directory for test files
   export TEST_TEMP_DIR
   TEST_TEMP_DIR=$(mktemp -d)
@@ -32,6 +35,9 @@ setup() {
 }
 
 teardown() {
+  # Restore the real HOME and remove the temporary one.
+  teardown_isolated_home
+
   # Clean up temporary directory
   if [ -d "$TEST_TEMP_DIR" ]; then
     rm -rf "$TEST_TEMP_DIR"
@@ -53,7 +59,7 @@ teardown() {
 @test "fc fc-apps --help shows usage information" {
   run "$FC_COMMAND" fc-apps --help
   assert_success
-  assert_output --partial "Usage: fc fc-apps"
+  assert_output --partial "Usage: fc apps"
   assert_output --partial "setup"
   assert_output --partial "list"
   assert_output --partial "install"
@@ -63,15 +69,15 @@ teardown() {
 @test "fc fc-apps with no arguments shows usage" {
   run "$FC_COMMAND" fc-apps
   assert_success
-  assert_output --partial "Usage: fc fc-apps"
+  assert_output --partial "Usage: fc apps"
 }
 
 @test "fc fc-apps --help shows examples" {
   run "$FC_COMMAND" fc-apps --help
   assert_success
   assert_output --partial "Examples:"
-  assert_output --partial "fc fc-apps setup"
-  assert_output --partial "fc fc-apps add --cask"
+  assert_output --partial "fc apps setup"
+  assert_output --partial "fc apps add --cask"
 }
 
 @test "fc fc-apps --help shows configuration path" {
@@ -124,7 +130,7 @@ teardown() {
   run "$FC_COMMAND" fc-apps list
   assert_success
   assert_output --partial "No configuration file found"
-  assert_output --partial "fc fc-apps setup"
+  assert_output --partial "fc apps setup"
 }
 
 @test "fc fc-apps list shows empty config message" {
@@ -222,7 +228,7 @@ teardown() {
 }
 
 @test "apps.conf.template has usage instructions" {
-  run grep "fc fc-apps install" "$PROJECT_ROOT/lib/templates/apps.conf.template"
+  run grep "fc apps install" "$PROJECT_ROOT/lib/templates/apps.conf.template"
   assert_success
 }
 

@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# SC2088 disabled: the "~/.ssh" occurrences below are user-facing MESSAGE text,
+# not paths being operated on. Displaying "~/.ssh" is what a reader expects;
+# the actual filesystem access uses "$HOME/.ssh".
+# shellcheck disable=SC2088
+
 # ==============================================================================
 #
 # FILE:         fc-healthcheck
@@ -68,15 +73,15 @@ print_result() {
   case "$status" in
     pass)
       printf "  ${UI_SUCCESS}✓${UI_RESET} %-22s %s\n" "$name" "$message"
-      ((PASSED++))
+      PASSED=$((PASSED + 1))
       ;;
     warn)
       printf "  ${UI_WARNING}⚠${UI_RESET} %-22s %s\n" "$name" "$message"
-      ((WARNINGS++))
+      WARNINGS=$((WARNINGS + 1))
       ;;
     fail)
       printf "  ${UI_ERROR}✗${UI_RESET} %-22s %s\n" "$name" "$message"
-      ((FAILED++))
+      FAILED=$((FAILED + 1))
       ;;
   esac
 }

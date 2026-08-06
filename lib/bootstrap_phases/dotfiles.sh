@@ -59,7 +59,8 @@ deploy_config_dir() {
   if [ -d "$config_source" ]; then
     # Link each config directory/file
     for item in "$config_source"/*; do
-      local name=$(basename "$item")
+      local name
+      name=$(basename "$item")
       local target="$HOME/.config/$name"
 
       # Skip if already a symlink to the right place

@@ -91,11 +91,12 @@ msg_info "Configuring firewall for maximum protection..."
 # Security:     Maximum protection against network-based attacks
 # Impact:       May break screen sharing, file sharing, and some apps
 # Value:        2 = Block all incoming connections
-run_sudo_defaults "/Library/Preferences/com.apple.alf" "globalstate" "-int" "2"
+run_socketfilterfw "Firewall enabled" --setglobalstate on
+run_socketfilterfw "Blocking all incoming connections" --setblockall on
 
 # --- Enable Signed Application Check ---
 # Block all applications that are not signed from accepting incoming connections
-run_sudo_defaults "/Library/Preferences/com.apple.alf" "allowsignedenabled" "-int" "1"
+run_socketfilterfw "Signed apps allowed automatically" --setallowsigned on
 
 # ==============================================================================
 # SECTION: Screen Lock - Aggressive Timeout

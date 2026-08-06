@@ -94,7 +94,9 @@ secrets_backend_authenticate() {
       echo -n "LDAP Password: "
       read -rs password
       echo ""
-      if "$vault_cmd" login -method=ldap username="$username" password="$password" 2>/dev/null; then
+      # password=- makes Vault read the value from stdin instead of argv, where
+      # `ps` would expose it to every local user. Same for token=- below.
+      if printf '%s' "$password" | "$vault_cmd" login -method=ldap username="$username" password=- 2>/dev/null; then
         return 0
       fi
       ;;
@@ -102,7 +104,7 @@ secrets_backend_authenticate() {
       echo -n "GitHub Personal Access Token: "
       read -rs gh_token
       echo ""
-      if "$vault_cmd" login -method=github token="$gh_token" 2>/dev/null; then
+      if printf '%s' "$gh_token" | "$vault_cmd" login -method=github token=- 2>/dev/null; then
         return 0
       fi
       ;;

@@ -30,19 +30,25 @@ usage() {
   echo ""
   msg_info "Subcommands:"
   echo "  setup               - Create configuration file from template"
-  echo "  list                - Show configured apps and their status"
+  echo "  list                - Show configured apps from apps.conf"
+  echo "  installed           - Show what is currently installed"
   echo "  install             - Install all apps from configuration"
-  echo "  add <name>          - Add and install a package"
+  echo "  add [--type] <name> - Add and install an application"
   echo "  update              - Update all installed packages"
   echo "  search <name>       - Search for a package"
+  echo ""
+  msg_info "Application Types:"
+  echo "  --brew <name>       - Homebrew formula (CLI tool, the default)"
   if is_macos; then
-    echo "  add --cask <name>   - Add and install a Homebrew cask"
-    echo "  add --mas <n> <id>  - Add and install a Mac App Store app"
+    echo "  --cask <name>       - Homebrew cask (GUI application)"
+    echo "  --mas <name> <id>   - Mac App Store application"
   fi
   echo ""
   msg_info "Examples:"
   echo "  fc apps setup"
   echo "  fc apps add git"
+  echo "  fc apps add --cask visual-studio-code"
+  echo "  fc apps add --mas \"Xcode\" 497799835"
   echo "  fc apps update"
   echo "  fc apps search python"
   echo ""
@@ -50,7 +56,9 @@ usage() {
     local distro
     distro=$(detect_distro)
     msg_info "Linux ($distro): Uses $(os_get_package_manager)"
+    echo ""
   fi
+  msg_info "Configuration: $APPS_CONFIG_FILE"
   exit 0
 }
 
@@ -132,12 +140,60 @@ EOF
 }
 
 do_list() {
+  # Report what is CONFIGURED, not what happens to be installed.
+  #
+  # `fc apps list` previously dumped the first 20-30 packages the package
+  # manager knew about, which had nothing to do with apps.conf and gave no way
+  # to see what `fc apps install` would actually do.
+  if ! has_config; then
+    msg_info "No configuration file found."
+    msg_info "Run 'fc apps setup' to create one."
+    return 0
+  fi
+
+  local entries=()
+  local line trimmed
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    trimmed="${line#"${line%%[![:space:]]*}"}"
+    [[ -z "$trimmed" || "$trimmed" == \#* ]] && continue
+    entries+=("$trimmed")
+  done < "$APPS_CONFIG_FILE"
+
+  if [[ ${#entries[@]} -eq 0 ]]; then
+    msg_info "No applications configured."
+    msg_info "Add one with: fc apps add --cask <name>"
+    return 0
+  fi
+
+  msg_info "Configured Applications"
+  echo "======================="
+  echo ""
+  printf "  %-8s %s\n" "TYPE" "NAME"
+  printf "  %-8s %s\n" "----" "----"
+
+  local entry etype ename
+  for entry in "${entries[@]}"; do
+    etype="${entry%% *}"
+    ename="${entry#* }"
+    # Strip the Brewfile quoting for display.
+    ename="${ename%\"}"; ename="${ename#\"}"
+    printf "  %-8s %s\n" "$etype" "$ename"
+  done
+
+  echo ""
+  msg_info "${#entries[@]} application(s) configured. Install them with: fc apps install"
+}
+
+#
+# @description Show what the package manager currently has installed.
+#
+do_installed() {
   check_package_manager
-  
+
   msg_info "Installed Packages"
   echo "=================="
   echo ""
-  
+
   if is_macos; then
     local brew_cmd=${BREW_CMD:-brew}
     msg_info "Homebrew Formulae:"
@@ -191,8 +247,11 @@ do_install() {
       msg_success "Installation complete!"
     fi
   else
-    msg_info "No configuration file found."
+    # Return non-zero: this is a failure to do the requested work, and exiting 0
+    # meant no caller or script could tell that nothing was installed.
+    msg_error "No configuration file found."
     msg_info "Run 'fc apps setup' to create one."
+    return 1
   fi
 }
 
@@ -204,25 +263,29 @@ do_add() {
   # Parse arguments
   while [[ $# -gt 0 ]]; do
     case "$1" in
+      # `shift` returns non-zero when there is nothing left to shift, which
+      # under `set -e` aborted the whole plugin before the validation below
+      # could report what was missing — `fc apps add --brew` died with a
+      # generic CRITICAL instead of "Application name required".
       --brew)
         pkg_type="brew"
-        shift
+        shift || true
         pkg_name="${1:-}"
-        shift
+        shift || true
         ;;
       --cask)
         pkg_type="cask"
-        shift
+        shift || true
         pkg_name="${1:-}"
-        shift
+        shift || true
         ;;
       --mas)
         pkg_type="mas"
-        shift
+        shift || true
         pkg_name="${1:-}"
-        shift
+        shift || true
         mas_id="${1:-}"
-        shift
+        shift || true
         ;;
       *)
         if [[ -z "$pkg_name" ]]; then
@@ -233,14 +296,26 @@ do_add() {
     esac
   done
   
-  if [[ -z "$pkg_name" ]]; then
-    die "Package name required. Usage: fc apps add <package>"
+  # Validate the typed form before doing any work, so the failure names the
+  # thing that is actually missing rather than a generic "package name".
+  if [[ -z "$pkg_type" && -z "$pkg_name" ]]; then
+    die "Application type required. Usage: fc apps add [--brew|--cask|--mas] <name>"
   fi
-  
+
+  if [[ -z "$pkg_name" ]]; then
+    die "Application name required. Usage: fc apps add --$pkg_type <name>"
+  fi
+
+  # A Mac App Store entry is identified by its numeric ID; the name alone is
+  # not enough to install it.
+  if [[ "$pkg_type" == "mas" && -z "$mas_id" ]]; then
+    die "Mac App Store ID required. Usage: fc apps add --mas \"Name\" 123456"
+  fi
+
   check_package_manager
-  
+
   msg_info "Installing $pkg_name..."
-  
+
   if is_macos; then
     local brew_cmd=${BREW_CMD:-brew}
     case "$pkg_type" in
@@ -248,9 +323,6 @@ do_add() {
         "$brew_cmd" install --cask "$pkg_name" && msg_success "Installed: $pkg_name"
         ;;
       mas)
-        if [[ -z "$mas_id" ]]; then
-          die "Mac App Store ID required. Usage: fc apps add --mas \"Name\" 123456"
-        fi
         local mas_cmd=${MAS_CMD:-mas}
         "$mas_cmd" install "$mas_id" && msg_success "Installed: $pkg_name"
         ;;
@@ -261,6 +333,39 @@ do_add() {
   else
     os_package_install "$pkg_name" && msg_success "Installed: $pkg_name"
   fi
+
+  # Record the app in the config so `fc apps install` can reproduce it on
+  # another machine. Entries use Brewfile syntax, matching the template.
+  record_app_in_config "$pkg_type" "$pkg_name" "$mas_id"
+}
+
+#
+# @description Append an entry to apps.conf if it is not already present.
+# @param $1 type (brew|cask|mas, empty means brew)
+# @param $2 application name
+# @param $3 Mac App Store ID (mas only)
+#
+record_app_in_config() {
+  local pkg_type="${1:-brew}"
+  local pkg_name="$2"
+  local mas_id="${3:-}"
+
+  [[ -z "$pkg_type" ]] && pkg_type="brew"
+  [[ -f "$APPS_CONFIG_FILE" ]] || return 0
+
+  local entry
+  case "$pkg_type" in
+    mas)  entry=$(printf 'mas "%s", id: %s' "$pkg_name" "$mas_id") ;;
+    cask) entry=$(printf 'cask "%s"' "$pkg_name") ;;
+    *)    entry=$(printf 'brew "%s"' "$pkg_name") ;;
+  esac
+
+  if grep -qF "$entry" "$APPS_CONFIG_FILE" 2>/dev/null; then
+    return 0
+  fi
+
+  printf '%s\n' "$entry" >> "$APPS_CONFIG_FILE"
+  msg_info "Recorded in $APPS_CONFIG_FILE"
 }
 
 do_update() {
@@ -327,6 +432,9 @@ main() {
       ;;
     list)
       do_list
+      ;;
+    installed)
+      do_installed
       ;;
     install)
       do_install

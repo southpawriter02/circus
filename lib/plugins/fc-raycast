@@ -142,7 +142,7 @@ do_install() {
   # Update DOTFILES_ROOT in fc-env.sh
   local env_script="$SCRIPTS_INSTALL_DIR/fc-env.sh"
   if [[ -f "$env_script" ]]; then
-    sed -i '' "s|__DOTFILES_ROOT__|$DOTFILES_ROOT|g" "$env_script"
+    sed_inplace "s|__DOTFILES_ROOT__|$DOTFILES_ROOT|g" "$env_script"
   fi
 
   # Make all scripts executable

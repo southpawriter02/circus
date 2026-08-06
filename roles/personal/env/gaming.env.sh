@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ==============================================================================
 # Gaming Environment Variables
 #
@@ -149,7 +150,8 @@ game-overlay() {
 
 # Quick screenshot (requires screencapture)
 game-screenshot() {
-    local filename="${GAME_CAPTURE_DIR}/screenshot-$(date +%Y%m%d-%H%M%S).png"
+    local filename
+    filename="${GAME_CAPTURE_DIR}/screenshot-$(date +%Y%m%d-%H%M%S).png"
     screencapture -x "$filename"
     echo "Screenshot saved: $filename"
 }

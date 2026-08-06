@@ -270,7 +270,33 @@ fi
   read -r confirm
   
   if [[ "$confirm" == "y" ]] || [[ "$confirm" == "Y" ]]; then
-    echo "$integration_code" >> "$shell_rc"
+    # Write inside a marker block, replacing any previous one.
+    #
+    # This used to append unconditionally, so running `fc history setup` twice
+    # added the whole widget — including `zle -N` and `bindkey "^R"` — to
+    # ~/.zshrc a second time. lib/yaml_config.sh already uses this marker
+    # pattern for the same reason.
+    local marker_start="# === CIRCUS HISTORY START ==="
+    local marker_end="# === CIRCUS HISTORY END ==="
+
+    if [[ -f "$shell_rc" ]] && grep -qF "$marker_start" "$shell_rc"; then
+      msg_info "Replacing the existing Circus history block in $shell_rc..."
+      # Rebuild without sed -i, which needs different syntax on BSD and GNU.
+      local tmp_rc
+      tmp_rc=$(mktemp) || die "Could not create a temporary file."
+      awk -v s="$marker_start" -v e="$marker_end" '
+        $0 == s {skip=1} skip {if ($0 == e) skip=0; next} {print}
+      ' "$shell_rc" > "$tmp_rc"
+      cat "$tmp_rc" > "$shell_rc"
+      rm -f "$tmp_rc"
+    fi
+
+    {
+      printf '%s\n' "$marker_start"
+      printf '%s\n' "$integration_code"
+      printf '%s\n' "$marker_end"
+    } >> "$shell_rc"
+
     msg_success "Added to $shell_rc"
     msg_info "Restart your shell or run: source $shell_rc"
   else

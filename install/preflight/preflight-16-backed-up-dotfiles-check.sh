@@ -10,43 +10,10 @@
 #
 # ==============================================================================
 
-#
-# Asks the user a yes/no question.
-#
-# @param string $1 The question to ask the user.
-# @param string $2 The default response (optional). Should be 'Y' or 'N'.
-#
-# @return 0 for "yes", 1 for "no".
-#
-ask() {
-  # http://djm.me/ask
-  while true; do
-    if [ "${2:-}" = "Y" ]; then
-      prompt="Y/n"
-      default=Y
-    elif [ "${2:-}" = "N" ]; then
-      prompt="y/N"
-      default=N
-    else
-      prompt="y/n"
-      default=
-    fi
+# NOTE: the interactive `ask()` helper that used to live here was removed.
+# Preflight checks run inside a captured subshell, so a prompt is invisible
+# to the user — see main() below.
 
-    # Ask the question
-    read -p "$1 [$prompt] " REPLY
-
-    # Default?
-    if [ -z "$REPLY" ]; then
-      REPLY=$default
-    fi
-
-    # Check if the reply is valid
-    case "$REPLY" in
-      Y*|y*) return 0 ;;
-      N*|n*) return 1 ;;
-    esac
-  done
-}
 
 #
 # The main logic of the script.
@@ -62,16 +29,21 @@ main() {
   msg_info "Checking for backed up dotfiles..."
 
   if [ -d "$BACKUP_DIR" ]; then
+    # Report only. This check must NOT prompt, and must NOT delete anything.
+    #
+    # Preflight checks are executed inside `check_output=$( ... 2>&1 )` by
+    # 00-preflight-checks.sh, which captures both stdout and stderr. `read -p`
+    # writes its prompt to stderr, so the question was swallowed into the
+    # capture and never shown: the installer appeared to hang on a blank line,
+    # and whatever the user typed blind was fed to `rm -rf "$BACKUP_DIR"` —
+    # an unrecoverable delete of their dotfiles backup, gated on a question they
+    # could not see.
+    #
+    # A check reports; it does not take destructive action on the user's behalf.
     msg_warning "An existing dotfiles backup was found at: $BACKUP_DIR"
-    if ask "Do you want to overwrite the existing backup?" N; then
-      msg_info "Overwriting the existing backup..."
-      rm -rf "$BACKUP_DIR"
-      msg_success "The existing backup has been overwritten."
-      return 0
-    else
-      msg_error "Please manually remove the existing backup and try again."
-      return 1
-    fi
+    msg_info "Nothing has been changed. If you want a fresh backup, remove it yourself:"
+    msg_info "  rm -rf \"$BACKUP_DIR\""
+    return 0
   fi
 
   msg_success "No existing dotfiles backup was found."

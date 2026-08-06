@@ -23,7 +23,7 @@ readonly KNOWN_SUBDIRS=("bash" "git" "jetbrains" "sh" "zsh")
 # --- Usage Information -------------------------------------------------------
 
 usage() {
-  msg_info "Usage: fc fc-dotfiles <subcommand> [options]"
+  msg_info "Usage: fc dotfiles <subcommand> [options]"
   echo ""
   msg_info "Manage dotfiles tracked by the Dotfiles Flying Circus."
   echo ""
@@ -33,9 +33,9 @@ usage() {
   echo "  edit <name>    - Edit a managed dotfile in \$EDITOR"
   echo ""
   msg_info "Examples:"
-  echo "  fc fc-dotfiles add ~/.vimrc"
-  echo "  fc fc-dotfiles list"
-  echo "  fc fc-dotfiles edit .gitconfig"
+  echo "  fc dotfiles add ~/.vimrc"
+  echo "  fc dotfiles list"
+  echo "  fc dotfiles edit .gitconfig"
   exit 0
 }
 
@@ -96,7 +96,7 @@ do_edit() {
   local search_name="$1"
 
   if [ -z "$search_name" ]; then
-    die "Usage: fc fc-dotfiles edit <name>"
+    die "Usage: fc dotfiles edit <name>"
   fi
 
   local editor="${EDITOR:-vim}"
@@ -127,7 +127,7 @@ do_add() {
   local source_path="$1"
 
   if [ -z "$source_path" ]; then
-    die "Usage: fc fc-dotfiles add <file>\n\nExample: fc fc-dotfiles add ~/.vimrc"
+    die "Usage: fc dotfiles add <file>\n\nExample: fc dotfiles add ~/.vimrc"
   fi
 
   # Expand ~ and $HOME
@@ -168,6 +168,13 @@ do_add() {
         read -rp "Enter new subdirectory name: " subdir
         if [ -z "$subdir" ]; then
           die "Subdirectory name cannot be empty"
+        fi
+        # This value is used unchecked as "$PROFILES_DIR/$subdir" for mkdir -p,
+        # mv and ln -s below. A name like ../../ would move a real dotfile out
+        # of the repository and symlink it somewhere unexpected -- a typo is as
+        # likely to cause that as malice. Restrict it to a single plain name.
+        if [[ ! "$subdir" =~ ^[A-Za-z0-9._-]+$ ]] || [[ "$subdir" == .* ]]; then
+          die "Invalid subdirectory name: $subdir\n\nUse letters, numbers, dots, hyphens and underscores only (no '/' and no leading '.')."
         fi
       fi
       break
@@ -225,7 +232,7 @@ main() {
       do_add "$@"
       ;;
     *)
-      die "Unknown subcommand: $subcommand. Run 'fc fc-dotfiles --help' for usage."
+      die "Unknown subcommand: $subcommand. Run 'fc dotfiles --help' for usage."
       ;;
   esac
 }

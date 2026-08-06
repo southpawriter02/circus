@@ -6,13 +6,13 @@
 
 ```bash
 # Interactive mode (recommended for first-time setup)
-fc fc-bootstrap
+fc bootstrap
 
 # Check what's been configured
-fc fc-bootstrap status
+fc bootstrap status
 
 # Preview what would be done without making changes
-fc fc-bootstrap --dry-run
+fc bootstrap --dry-run
 ```
 
 ## Features
@@ -39,7 +39,7 @@ fc fc-bootstrap --dry-run
 ## Usage
 
 ```bash
-fc fc-bootstrap [subcommand] [options]
+fc bootstrap [subcommand] [options]
 ```
 
 ### Subcommands
@@ -154,7 +154,7 @@ USE_GUM=false
 
 ```bash
 # Start the interactive wizard
-fc fc-bootstrap
+fc bootstrap
 
 # Follow the prompts to:
 # 1. Select your role (developer, personal, work)
@@ -166,7 +166,7 @@ fc fc-bootstrap
 ### Check Status
 
 ```bash
-fc fc-bootstrap status
+fc bootstrap status
 ```
 
 Output:
@@ -185,41 +185,41 @@ Output:
 ### Resume After Interruption
 
 ```bash
-fc fc-bootstrap resume
+fc bootstrap resume
 ```
 
 ### Skip Specific Phases
 
 ```bash
 # Skip the restore phase
-fc fc-bootstrap --skip restore
+fc bootstrap --skip restore
 
 # Skip multiple phases
-fc fc-bootstrap --skip restore --skip apps
+fc bootstrap --skip restore --skip apps
 ```
 
 ### Run Only One Phase
 
 ```bash
 # Re-run only the configure phase
-fc fc-bootstrap --only configure --force
+fc bootstrap --only configure --force
 ```
 
 ### Dry Run
 
 ```bash
 # See what would happen without making changes
-fc fc-bootstrap --dry-run
+fc bootstrap --dry-run
 ```
 
 ### Unattended Setup
 
 ```bash
 # Configure bootstrap.conf first, then:
-fc fc-bootstrap
+fc bootstrap
 
 # Or for fully automated setup in a script:
-AUTO_CONFIRM=true fc fc-bootstrap
+AUTO_CONFIRM=true fc bootstrap
 ```
 
 ## Roles
@@ -262,7 +262,7 @@ Bootstrap state is stored in `~/.circus/bootstrap/`:
 
 ```bash
 # Start fresh
-fc fc-bootstrap reset
+fc bootstrap reset
 ```
 
 ## Integration with fc sync
@@ -275,10 +275,10 @@ If you have a backup created with `fc sync backup`, the bootstrap process can re
 
 ```bash
 # Pull backup from remote before bootstrapping
-fc fc-sync pull
+fc sync pull
 
 # Then run bootstrap
-fc fc-bootstrap
+fc bootstrap
 ```
 
 ## Troubleshooting
@@ -288,7 +288,7 @@ fc fc-bootstrap
 1. Check the error message
 2. Run the phase again with `--force`:
    ```bash
-   fc fc-bootstrap --only <phase> --force
+   fc bootstrap --only <phase> --force
    ```
 
 ### Homebrew installation fails
@@ -301,7 +301,7 @@ Ensure you have:
 
 1. Check backup location: `ls ~/circus_backup.tar.gz.gpg`
 2. If using remote: verify rclone configuration
-3. Or skip: `fc fc-bootstrap --no-restore`
+3. Or skip: `fc bootstrap --no-restore`
 
 ### SSH key generation prompts for passphrase
 

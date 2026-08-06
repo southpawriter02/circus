@@ -111,7 +111,11 @@ text|Text Input|Text and typing settings
 # Returns the full definition line or empty if not found
 get_tweak() {
   local name="$1"
-  echo "$TWEAKS_DATA" | grep "^${name}|" | head -1
+  # `|| true`: grep exits 1 when the tweak is not found, which is an ordinary
+  # outcome here — callers detect it from the empty output. Under
+  # `set -eo pipefail` it instead aborted the plugin, so `fc defaults apply
+  # <unknown>` died with a generic CRITICAL rather than "Unknown tweak".
+  echo "$TWEAKS_DATA" | grep "^${name}|" | head -1 || true
 }
 
 # Parse a tweak definition string into variables
@@ -139,14 +143,17 @@ get_current_value() {
   local key="$2"
   local default_val="$3"
 
+  # A preference that has never been set is the normal case, and `defaults read`
+  # exits non-zero for it. Assigning in a bare command substitution meant
+  # `set -e` aborted before the `$?` check below could run, so `fc defaults
+  # status` died on the first unset key it encountered.
   local value
-  value=$(defaults read "$domain" "$key" 2>/dev/null)
-
-  if [ $? -ne 0 ]; then
+  if ! value=$(defaults read "$domain" "$key" 2>/dev/null); then
     echo "$default_val"
-  else
-    echo "$value"
+    return 0
   fi
+
+  echo "$value"
 }
 
 # Format boolean for display
@@ -526,11 +533,16 @@ main() {
     status)
       cmd_status
       ;;
+    # `|| exit $?` rather than a bare call: these return non-zero for an
+    # unknown tweak, which is a reported, handled outcome. As a bare command it
+    # tripped the ERR trap, so a clean "Unknown tweak" message was followed by a
+    # spurious "An unexpected error occurred" banner. In a || list the exit
+    # status is preserved without the trap firing.
     apply)
-      cmd_apply "${args[1]:-}"
+      cmd_apply "${args[1]:-}" || exit $?
       ;;
     reset)
-      cmd_reset "${args[1]:-}"
+      cmd_reset "${args[1]:-}" || exit $?
       ;;
     all)
       cmd_all

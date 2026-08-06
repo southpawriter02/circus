@@ -50,7 +50,7 @@ check_critical_components() {
     msg_success "Homebrew: Installed"
   else
     msg_error "Homebrew: Not found"
-    ((issues++))
+    issues=$((issues + 1))
   fi
 
   # Check Git
@@ -60,7 +60,7 @@ check_critical_components() {
     msg_success "Git: $git_version"
   else
     msg_error "Git: Not found"
-    ((issues++))
+    issues=$((issues + 1))
   fi
 
   # Check Git configuration
@@ -72,7 +72,7 @@ check_critical_components() {
     msg_success "Git identity: $git_name <$git_email>"
   else
     msg_warning "Git identity: Not fully configured"
-    ((issues++))
+    issues=$((issues + 1))
   fi
 
   # Check SSH key
@@ -80,7 +80,7 @@ check_critical_components() {
     msg_success "SSH key: Found"
   else
     msg_warning "SSH key: Not found"
-    ((issues++))
+    issues=$((issues + 1))
   fi
 
   # Check shell configuration
@@ -88,7 +88,7 @@ check_critical_components() {
     msg_success "Shell config: Found"
   else
     msg_warning "Shell config: Not found"
-    ((issues++))
+    issues=$((issues + 1))
   fi
 
   # Check circus config directory
@@ -96,7 +96,7 @@ check_critical_components() {
     msg_success "Circus config: Found"
   else
     msg_warning "Circus config: Not found"
-    ((issues++))
+    issues=$((issues + 1))
   fi
 
   echo ""

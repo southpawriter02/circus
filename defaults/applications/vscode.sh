@@ -26,8 +26,8 @@
 #     https://code.visualstudio.com/docs/editor/command-line
 #
 # FILES:
-#   $DOTFILES_DIR/etc/vscode/extensions.txt - List of extensions to install
-#   $DOTFILES_DIR/etc/vscode/settings.json  - User settings to symlink
+#   $DOTFILES_ROOT/etc/vscode/extensions.txt - List of extensions to install
+#   $DOTFILES_ROOT/etc/vscode/settings.json  - User settings to symlink
 #
 # PATHS:
 #   Settings target: ~/Library/Application Support/Code/User/settings.json
@@ -50,12 +50,15 @@ main() {
   if ! command -v code >/dev/null 2>&1; then
     msg_warning "Visual Studio Code command-line tool 'code' not found. Skipping."
     msg_info "Please ensure VS Code is installed and the 'Shell Command: Install 'code' command in PATH' has been run."
-    return 1
+    # `return 0`: an optional dependency being absent is a SKIP, not a failure.
+    # These files are sourced by installer stage 11 under `set -e`, so returning 1
+    # aborted the whole installation at this point on any machine without the VS Code 'code' CLI.
+    return 0
   fi
 
   # --- Configuration ---
-  local extensions_file="$DOTFILES_DIR/etc/vscode/extensions.txt"
-  local settings_source="$DOTFILES_DIR/etc/vscode/settings.json"
+  local extensions_file="$DOTFILES_ROOT/etc/vscode/extensions.txt"
+  local settings_source="$DOTFILES_ROOT/etc/vscode/settings.json"
   local settings_target_dir="$HOME/Library/Application Support/Code/User"
   local settings_target_file="$settings_target_dir/settings.json"
 

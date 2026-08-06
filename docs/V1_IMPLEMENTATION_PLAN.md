@@ -519,7 +519,7 @@ export DOCKER_CONFIG="${DOCKER_CONFIG:-$HOME/.docker}"
 # Cloud CLI Configuration
 #
 # Note: Credentials should NOT be stored here.
-# Use `fc fc-secrets` or cloud CLI login commands.
+# Use `fc secrets` or cloud CLI login commands.
 # ==============================================================================
 
 # AWS
@@ -1138,9 +1138,9 @@ Update the shell profile to load role-specific settings.
 **Tasks**:
 - [ ] Update `.zprofile` to load role env files
 - [ ] Update `.zshrc` to load role aliases
-- [ ] Create `fc fc-profile` hook for defaults
-- [ ] Test `fc fc-profile switch developer` works
-- [ ] Test `fc fc-profile switch work` works
+- [ ] Create `fc profile` hook for defaults
+- [ ] Test `fc profile switch developer` works
+- [ ] Test `fc profile switch work` works
 - [ ] Document role customization
 
 ---
@@ -1250,7 +1250,7 @@ Before declaring v1.0 complete:
 - [ ] Developer role has git aliases loading
 - [ ] Work role has proxy template
 - [ ] Personal role has relaxed settings
-- [ ] `fc fc-profile switch` works correctly
+- [ ] `fc profile switch` works correctly
 
 ### Documentation
 - [ ] defaults/README.md shows 100% complete

@@ -15,7 +15,10 @@ main() {
   # --- Prerequisite Check ---
   if ! command -v psql >/dev/null 2>&1; then
     msg_warning "`psql` command not found. Skipping PostgreSQL configuration."
-    return 1
+    # `return 0`: an optional dependency being absent is a SKIP, not a failure.
+    # These files are sourced by installer stage 11 under `set -e`, so returning 1
+    # aborted the whole installation at this point on any machine without psql.
+    return 0
   fi
 
   # --- Configuration ---
@@ -62,7 +65,8 @@ main() {
 
   # --- Create Default User ---
   # Create a user with the same name as the current macOS user.
-  local current_user=$(whoami)
+  local current_user
+  current_user=$(whoami)
   msg_info "Ensuring PostgreSQL user '$current_user' exists..."
   if [ "$DRY_RUN_MODE" = true ]; then
     msg_info "[Dry Run] Would check for and create PostgreSQL user: $current_user"

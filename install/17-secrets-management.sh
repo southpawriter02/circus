@@ -39,9 +39,22 @@ configure_git_with_token() {
   # --- Secure Token Storage ---
 
   # 1. Configure Git to use the macOS Keychain for credential storage.
-  #    This is a one-time setup that makes Git use the helper.
-  git config --global credential.helper osxkeychain
-  msg_info "Configured Git to use the macOS Keychain for credential storage."
+  #
+  #    Write to ~/.gitconfig.local, NOT --global.
+  #
+  #    Stage 10 symlinks ~/.gitconfig to profiles/base/git/.gitconfig inside this
+  #    repository, so `git config --global` follows that symlink and edits a
+  #    TRACKED file. That already happened once and was committed — the
+  #    [credential] section ended up in version control. It also left the working
+  #    tree dirty, so the next `install.sh` run stopped at the
+  #    uncommitted-changes check in stage 6.
+  #
+  #    The main .gitconfig includes .gitconfig.local precisely for machine-local
+  #    settings like this one.
+  local local_gitconfig="$HOME/.gitconfig.local"
+  touch "$local_gitconfig"
+  git config --file "$local_gitconfig" credential.helper osxkeychain
+  msg_info "Configured Git to use the macOS Keychain (via $local_gitconfig)."
 
   # 2. Securely store the fetched token in the Keychain.
   #    We pipe the credentials to the `git credential-osxkeychain` helper.

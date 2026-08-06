@@ -52,7 +52,7 @@ usage() {
   echo "  --role <name>            Specify the role to install (e.g., developer)."
   echo "  --privacy-profile <lvl>  Set privacy/security level (standard, privacy, lockdown)."
   echo "  --dry-run                Run the installer without making any changes."
-  echo "  --force                  Force re-running of already completed stages."
+  echo "  --force                  Continue past critical preflight failures (not recommended)."
   echo "  --non-interactive        Run the installer without prompting for confirmation."
   echo "  --log-file <path>        Redirect all log output to the specified file."
   echo "  --log-level <lvl>        Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL)."
@@ -188,13 +188,15 @@ main() {
 
       # Mark stage as active and record start time
       ui_stage_start
-      local stage_start_time=$(date +%s)
+      local stage_start_time
+      stage_start_time=$(date +%s)
 
       # Execute the stage
       source "$stage_path"
 
       # Calculate duration and mark complete
-      local stage_end_time=$(date +%s)
+      local stage_end_time
+      stage_end_time=$(date +%s)
       local stage_duration=$((stage_end_time - stage_start_time))
       ui_stage_complete
       ui_stage_complete_msg "$stage_title" "success" "$stage_duration"

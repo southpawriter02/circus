@@ -112,8 +112,20 @@ parse_arguments() {
         shift
         ;;
       --skip)
-        local skip_var="SKIP_PHASE_$(echo "$2" | tr '[:lower:]' '[:upper:]')"
-        eval "$skip_var=true"
+        # Validate before building a variable name from user input, then assign
+        # with printf -v instead of eval.
+        #
+        # `eval "$skip_var=true"` executed whatever the argument expanded to:
+        # `--skip 'x=1;/tmp/pwn;#'` ran /tmp/pwn. printf -v assigns to a name
+        # without re-parsing, and the regex means the name can only ever be a
+        # plain identifier.
+        if [[ ! "${2:-}" =~ ^[A-Za-z][A-Za-z0-9_-]*$ ]]; then
+          die "Invalid phase name for --skip: ${2:-<missing>}"
+        fi
+        local skip_phase skip_var
+        skip_phase=$(printf '%s' "$2" | tr '[:lower:]-' '[:upper:]_')
+        skip_var="SKIP_PHASE_${skip_phase}"
+        printf -v "$skip_var" '%s' "true"
         shift 2
         ;;
       --only)
@@ -296,7 +308,8 @@ run_phase() {
   fi
 
   # Check if phase should be skipped
-  local skip_var="SKIP_PHASE_$(echo "$phase_id" | tr '[:lower:]' '[:upper:]')"
+  local skip_var
+  skip_var="SKIP_PHASE_$(echo "$phase_id" | tr '[:lower:]' '[:upper:]')"
   if [ "${!skip_var}" = true ]; then
     msg_info "Skipping phase: $phase_name"
     return 0
@@ -412,7 +425,7 @@ print_completion_report() {
   for phase_def in "${BOOTSTRAP_PHASES[@]}"; do
     IFS=':' read -r id _ _ <<< "$phase_def"
     if phase_completed "$id"; then
-      ((completed++))
+      completed=$((completed + 1))
     fi
   done
 
@@ -458,7 +471,7 @@ run_bootstrap() {
 
   for phase_def in "${BOOTSTRAP_PHASES[@]}"; do
     IFS=':' read -r id name desc <<< "$phase_def"
-    ((phase_count++))
+    phase_count=$((phase_count + 1))
 
     echo ""
     echo "═══════════════════════════════════════════════════════════════════"

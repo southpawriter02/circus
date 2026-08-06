@@ -90,7 +90,8 @@ symlink_with_backup() {
 
   # If destination exists and is not a symlink, back it up
   if [ -e "$dest" ] && [ ! -L "$dest" ]; then
-    local backup_path="${dest}.backup-$(date +%Y%m%d%H%M%S)"
+    local backup_path
+    backup_path="${dest}.backup-$(date +%Y%m%d%H%M%S)"
     msg_info "  Backing up existing file to $(basename "$backup_path")"
     mv "$dest" "$backup_path"
   fi
@@ -203,7 +204,7 @@ do_list() {
   done <<< "$profiles"
 
   echo ""
-  msg_info "Use 'fc fc-profile switch <name>' to switch profiles."
+  msg_info "Use 'fc profile switch <name>' to switch profiles."
 }
 
 do_current() {
@@ -214,7 +215,7 @@ do_current() {
     msg_info "No profile is currently active."
     msg_info "Only base dotfiles are in use."
     msg_info ""
-    msg_info "Use 'fc fc-profile list' to see available profiles."
+    msg_info "Use 'fc profile list' to see available profiles."
   else
     msg_info "Current profile: $current"
 
@@ -238,14 +239,14 @@ do_switch() {
   local target_profile="$1"
 
   if [ -z "$target_profile" ]; then
-    die "Usage: fc fc-profile switch <profile>\n\nRun 'fc fc-profile list' to see available profiles."
+    die "Usage: fc profile switch <profile>\n\nRun 'fc profile list' to see available profiles."
   fi
 
   local profile_dir="$PROFILES_DIR/$target_profile"
 
   # Validate profile exists
   if [ ! -d "$profile_dir" ]; then
-    die "Profile not found: $target_profile\n\nRun 'fc fc-profile list' to see available profiles."
+    die "Profile not found: $target_profile\n\nRun 'fc profile list' to see available profiles."
   fi
 
   local current

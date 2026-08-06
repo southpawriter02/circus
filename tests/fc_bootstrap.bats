@@ -18,7 +18,10 @@ setup() {
   PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
   export FC_COMMAND="$PROJECT_ROOT/bin/fc"
 
-  # Save original config and state if they exist
+  # Isolate HOME before any $HOME-derived path below is computed. Without this a
+  # test run left AUTO_CONFIRM=true in the developer's real bootstrap.conf.
+  setup_isolated_home
+
   export BOOTSTRAP_CONFIG_FILE="$HOME/.config/circus/bootstrap.conf"
   export BOOTSTRAP_STATE_DIR="$HOME/.circus/bootstrap"
 
@@ -48,6 +51,9 @@ teardown() {
     rm -rf "$BATS_MOCK_BINDIR"
     mkdir -p "$BATS_MOCK_BINDIR"
   fi
+
+  # Restore the real HOME and remove the temporary one.
+  teardown_isolated_home
 }
 
 # ==============================================================================

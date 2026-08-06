@@ -75,7 +75,7 @@ run_defaults -currentHost "com.apple.screensaver" "idleTime" "-int" "300"
 # Enable with: sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
 msg_info "Checking firewall status..."
 if ! /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate | grep -q "enabled"; then
-    msg_warn "Firewall is not enabled. Enable with: sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on"
+    msg_warning "Firewall is not enabled. Enable with: sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on"
 fi
 
 # --- Block All Incoming Connections ---
@@ -334,7 +334,7 @@ run_defaults "com.apple.loginwindow" "SHOWFULLNAME" "-bool" "true"
 # Note: Controlled via spctl, not defaults
 msg_info "Checking Gatekeeper status..."
 if spctl --status 2>/dev/null | grep -q "disabled"; then
-    msg_warn "Gatekeeper is DISABLED. Enable with: sudo spctl --master-enable"
+    msg_warning "Gatekeeper is DISABLED. Enable with: sudo spctl --master-enable"
 else
     msg_success "Gatekeeper is enabled."
 fi

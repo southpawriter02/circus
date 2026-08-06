@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ==============================================================================
 #
 # FILE:         docker.aliases.sh
@@ -73,9 +74,16 @@ dnuke() {
     echo "This will remove ALL Docker resources (containers, images, volumes, networks)!"
     read -r "?Are you sure? [y/N] " confirm
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        # SC2046 disabled deliberately for this block: docker takes a LIST of
+        # container/image IDs, so the word splitting here is the point. Quoting
+        # would pass every ID as a single argument.
+        # shellcheck disable=SC2046
         docker stop $(docker ps -aq) 2>/dev/null
+        # shellcheck disable=SC2046
         docker rm $(docker ps -aq) 2>/dev/null
+        # shellcheck disable=SC2046
         docker rmi $(docker images -q) -f 2>/dev/null
+        # shellcheck disable=SC2046
         docker volume rm $(docker volume ls -q) 2>/dev/null
         docker network prune -f
         docker system prune -af --volumes

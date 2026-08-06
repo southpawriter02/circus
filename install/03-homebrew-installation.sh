@@ -84,6 +84,28 @@ run_brew_bundle() {
     return 0
   fi
 
+  # Verify any third-party taps BEFORE installing.
+  #
+  # `brew tap` clones a third-party repository and `brew install` then executes
+  # that repo's Ruby formula code, so an untrusted tap is arbitrary code
+  # execution. scan_brewfile_taps checks each `tap` line against
+  # TRUSTED_BREW_TAPS and returns non-zero if any are unrecognised.
+  if declare -f scan_brewfile_taps >/dev/null 2>&1; then
+    if ! scan_brewfile_taps "$brewfile_path"; then
+      msg_warning "$brewfile_type Brewfile declares taps outside the trusted list."
+      msg_info "Review them above. Add reviewed taps with add_trusted_tap, or remove them."
+
+      if [ "${INTERACTIVE_MODE:-true}" = true ] && [ "${FORCE_MODE:-false}" != true ]; then
+        if ! ui_confirm "Continue installing from this Brewfile anyway?" "N"; then
+          msg_error "Skipped $brewfile_type Brewfile due to untrusted taps."
+          return 1
+        fi
+      else
+        msg_warning "Non-interactive run — continuing, but this was not reviewed."
+      fi
+    fi
+  fi
+
   # Display summary
   display_brewfile_summary "$brewfile_path" "$brewfile_type"
 
@@ -199,10 +221,22 @@ main() {
     else
       ui_spinner_start "Installing Homebrew (this may take a few minutes)..."
 
-      # Run Homebrew installation
-      local install_output
-      install_output=$(/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 2>&1)
-      local install_result=$?
+      # Fetch the installer to a file and run it from disk rather than piping
+      # curl into bash, so the payload can be checksum-verified before it
+      # executes. Pin CIRCUS_HOMEBREW_INSTALLER_SHA256 to fail closed.
+      local installer install_output install_result
+      installer=$(mktemp)
+
+      if fetch_verified_script \
+          "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh" \
+          "$installer" "${CIRCUS_HOMEBREW_INSTALLER_SHA256:-}"; then
+        install_output=$(/bin/bash "$installer" 2>&1)
+        install_result=$?
+      else
+        install_output="Installer download or checksum verification failed."
+        install_result=1
+      fi
+      rm -f "$installer"
 
       if [[ $install_result -eq 0 ]]; then
         ui_spinner_stop "success" "Homebrew installed successfully"

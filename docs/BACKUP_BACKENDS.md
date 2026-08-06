@@ -61,9 +61,9 @@ RCLONE_REMOTE_PATH="circus-backups"
 ```
 
 Use these commands for remote operations:
-- `fc fc-sync push` - Upload to remote
-- `fc fc-sync pull` - Download from remote
-- `fc fc-sync list-remote` - List remote backups
+- `fc sync push` - Upload to remote
+- `fc sync pull` - Download from remote
+- `fc sync list-remote` - List remote backups
 
 ### Pros & Cons
 
@@ -122,7 +122,7 @@ BACKUP_TARGETS=(
 
 2. Run your first backup (the repository will be initialized automatically):
    ```bash
-   fc fc-sync backup
+   fc sync backup
    ```
 
 ### Remote Storage
@@ -217,7 +217,7 @@ BACKUP_TARGETS=(
 
 2. Run your first backup (the repository will be initialized automatically):
    ```bash
-   fc fc-sync backup
+   fc sync backup
    ```
 
 3. **Important**: Export your repository key for disaster recovery:
@@ -309,7 +309,7 @@ Changing backends means starting a new backup set. Your existing backups remain 
 
 1. Update `BACKUP_BACKEND` in your config
 2. Configure the new backend's settings
-3. Run `fc fc-sync backup` to create your first backup with the new backend
+3. Run `fc sync backup` to create your first backup with the new backend
 
 **Tip**: Keep your old backend's configuration commented out in case you need to restore from old backups:
 

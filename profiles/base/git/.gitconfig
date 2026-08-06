@@ -33,7 +33,8 @@
   s = status -s
 
   # List all aliases
-  aliases = config --get-regexp ^alias\.
+  # Quoted, and the backslash doubled. Unquoted, git reads `\.` as an invalid
+  # escape and rejects the line with "bad config line" — which invalidates the
+  # WHOLE file, so every setting above and below it was silently inert.
+  aliases = "config --get-regexp ^alias\\."
 
-[credential]
-  helper = osxkeychain

@@ -1,0 +1,38 @@
+# ==============================================================================
+#
+# FILE:         .shellcheckrc
+#
+# DESCRIPTION:  Shared shellcheck configuration. Both the CI job and the in-repo
+#               gate (tests/static_analysis.bats) read this file, so they always
+#               enforce exactly the same rules.
+#
+#               Everything disabled below is disabled because it is WRONG for
+#               this codebase, not because it was inconvenient. Findings that
+#               were genuine have been fixed rather than suppressed — that pass
+#               turned up a Safari download path set to a folder literally named
+#               "~", a `local` at top level in a sourced file, a rate-limit
+#               window that was computed and never applied, and an `up()`
+#               function that blanked $PATH in zsh.
+#
+# ==============================================================================
+
+# Report warnings and above. Style/info findings are mostly noise here and would
+# make the gate too loud to keep enabled — which is how it ended up skipped
+# before.
+severity=warning
+
+# SC2034 — "appears unused".
+#
+# lib/ui.sh alone accounts for ~27 of these: it defines the colour, icon and
+# box-drawing constants that every other file consumes, and shellcheck cannot
+# see across files. Keeping this on would mean annotating a large table of
+# constants that are demonstrably in use.
+disable=SC2034
+
+# SC1090 / SC1091 — "can't follow non-constant source" / "not specified as input".
+#
+# Inherent to the plugin architecture: bin/fc sources a plugin chosen at runtime,
+# and the backends are selected from config. These paths cannot be resolved
+# statically, and the alternative is a `source=` directive on every dynamic
+# source in the repo.
+disable=SC1090,SC1091

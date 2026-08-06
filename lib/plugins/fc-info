@@ -63,7 +63,17 @@ get_disk_usage() {
 # Get battery status (macOS)
 get_battery_status() {
   if is_macos && command -v pmset &>/dev/null; then
-    pmset -g batt 2>/dev/null | grep -o '[0-9]*%' | head -1
+    # On a desktop Mac there is no battery percentage to find, so `grep -o`
+    # matches nothing and exits 1. Under `set -eo pipefail` that failed the whole
+    # pipeline and tripped the ERR trap, aborting `fc info` entirely — the
+    # absence of a battery is not an error.
+    local pct
+    pct=$(pmset -g batt 2>/dev/null | grep -o '[0-9]*%' | head -1) || pct=""
+    if [[ -n "$pct" ]]; then
+      echo "$pct"
+    else
+      echo "N/A"
+    fi
   else
     echo "N/A"
   fi
@@ -136,7 +146,7 @@ EOF
   
   # Count plugins
   local plugin_count
-  plugin_count=$(find "$DOTFILES_ROOT/lib/plugins" -maxdepth 1 -type f -perm +111 2>/dev/null | wc -l | tr -d ' ')
+  plugin_count=$(find "$DOTFILES_ROOT/lib/plugins" -maxdepth 1 -type f -perm -u+x 2>/dev/null | wc -l | tr -d ' ')
   print_item "Plugins" "$plugin_count available"
 
   if [[ "$short_mode" == true ]]; then

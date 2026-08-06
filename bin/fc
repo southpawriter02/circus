@@ -42,8 +42,10 @@ usage() {
   msg_info "A modular, plugin-based command-line utility for system management."
   echo ""
   msg_info "Available commands:"
-  # Use -perm for macOS compatibility (-executable is a GNU extension)
-  find "$PLUGIN_DIR" -maxdepth 1 -type f -perm +111 -exec basename {} \; | sed 's/^fc-//' | sort
+  # -perm -u+x works on both BSD and GNU find. The previous `-perm +111` was
+  # removed from GNU findutils in 4.5.12, so this errored on Linux and `fc --help`
+  # listed no commands at all (the comment here used to claim the opposite).
+  find "$PLUGIN_DIR" -maxdepth 1 -type f -perm -u+x -exec basename {} \; | sed 's/^fc-//' | sort
   echo ""
   msg_info "Run 'fc <command> --help' for more information on a specific command."
   msg_info "Run 'fc -i' for interactive mode."

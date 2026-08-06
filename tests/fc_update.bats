@@ -47,10 +47,14 @@ teardown() {
 # ==============================================================================
 
 @test "fc fc-update --version shows version number" {
+  # Read the expected version from .version instead of hardcoding it, so this
+  # does not have to be edited on every release.
+  local expected
+  expected=$(tr -d '[:space:]' < "$PROJECT_ROOT/.version")
   run "$FC_COMMAND" fc-update --version
   assert_success
   assert_output --partial "Dotfiles Flying Circus v"
-  assert_output --partial "1.0.0"
+  assert_output --partial "$expected"
 }
 
 @test ".version file exists at repository root" {
@@ -67,34 +71,49 @@ teardown() {
 # ==============================================================================
 # Version Comparison Helper Tests
 # ==============================================================================
+#
+# Two things these tests must respect:
+#
+# 1. Do NOT `source lib/init.sh` into the test body. It pulls in helpers.sh's
+#    `set -Eeo pipefail` and ERR trap, and that trap calls `exit 1`. A failing
+#    assertion then kills the test process before bats can record a result, so
+#    the failure is reported as "Executed N instead of expected M" rather than as
+#    a failing test. Eight tests in this file were invisible for that reason.
+#
+# 2. version_compare and version_in_range return non-zero as DATA (like `cmp`),
+#    so they must be called inside a conditional. Called bare under `set -e`,
+#    the shell exits before `echo $?` ever runs.
+#
+# The `if ...; then echo 0; else echo $?; fi` form satisfies both: `set -e` is
+# suppressed inside the condition, and the else branch still sees the real code.
+
+# Emit the exit status of a helper invocation without tripping `set -e`.
+version_status() {
+  run bash -c "source '$PROJECT_ROOT/lib/helpers.sh'; if $1; then echo 0; else echo \$?; fi"
+}
 
 @test "version_compare: equal versions return 0" {
-  source "$PROJECT_ROOT/lib/init.sh"
-  run bash -c "source '$PROJECT_ROOT/lib/helpers.sh'; version_compare '1.0.0' '1.0.0'; echo \$?"
+  version_status "version_compare '1.0.0' '1.0.0'"
   assert_output "0"
 }
 
 @test "version_compare: first greater returns 1" {
-  source "$PROJECT_ROOT/lib/init.sh"
-  run bash -c "source '$PROJECT_ROOT/lib/helpers.sh'; version_compare '2.0.0' '1.0.0'; echo \$?"
+  version_status "version_compare '2.0.0' '1.0.0'"
   assert_output "1"
 }
 
 @test "version_compare: first less returns 2" {
-  source "$PROJECT_ROOT/lib/init.sh"
-  run bash -c "source '$PROJECT_ROOT/lib/helpers.sh'; version_compare '1.0.0' '2.0.0'; echo \$?"
+  version_status "version_compare '1.0.0' '2.0.0'"
   assert_output "2"
 }
 
 @test "version_compare: minor version comparison works" {
-  source "$PROJECT_ROOT/lib/init.sh"
-  run bash -c "source '$PROJECT_ROOT/lib/helpers.sh'; version_compare '1.2.0' '1.1.0'; echo \$?"
+  version_status "version_compare '1.2.0' '1.1.0'"
   assert_output "1"
 }
 
 @test "version_compare: patch version comparison works" {
-  source "$PROJECT_ROOT/lib/init.sh"
-  run bash -c "source '$PROJECT_ROOT/lib/helpers.sh'; version_compare '1.0.1' '1.0.0'; echo \$?"
+  version_status "version_compare '1.0.1' '1.0.0'"
   assert_output "1"
 }
 
@@ -103,23 +122,20 @@ teardown() {
 # ==============================================================================
 
 @test "version_in_range: migration in upgrade path returns 0" {
-  source "$PROJECT_ROOT/lib/init.sh"
   # Upgrading from 1.0.0 to 1.2.0, migration 1.0.0->1.1.0 should run
-  run bash -c "source '$PROJECT_ROOT/lib/helpers.sh'; version_in_range '1.0.0' '1.1.0' '1.0.0' '1.2.0'; echo \$?"
+  version_status "version_in_range '1.0.0' '1.1.0' '1.0.0' '1.2.0'"
   assert_output "0"
 }
 
 @test "version_in_range: migration before upgrade path returns 1" {
-  source "$PROJECT_ROOT/lib/init.sh"
   # Upgrading from 1.1.0 to 1.2.0, migration 1.0.0->1.1.0 should NOT run
-  run bash -c "source '$PROJECT_ROOT/lib/helpers.sh'; version_in_range '1.0.0' '1.1.0' '1.1.0' '1.2.0'; echo \$?"
+  version_status "version_in_range '1.0.0' '1.1.0' '1.1.0' '1.2.0'"
   assert_output "1"
 }
 
 @test "version_in_range: migration after upgrade path returns 1" {
-  source "$PROJECT_ROOT/lib/init.sh"
   # Upgrading from 1.0.0 to 1.1.0, migration 1.2.0->1.3.0 should NOT run
-  run bash -c "source '$PROJECT_ROOT/lib/helpers.sh'; version_in_range '1.2.0' '1.3.0' '1.0.0' '1.1.0'; echo \$?"
+  version_status "version_in_range '1.2.0' '1.3.0' '1.0.0' '1.1.0'"
   assert_output "1"
 }
 
@@ -128,10 +144,14 @@ teardown() {
 # ==============================================================================
 
 @test "get_current_version returns version from .version file" {
-  source "$PROJECT_ROOT/lib/init.sh"
+  # Compare against .version itself rather than a hardcoded literal. This test
+  # asserted "1.0.0" while the file said 1.6.0, so it broke on the first release
+  # after it was written — and the failure was invisible (see the note above).
+  local expected
+  expected=$(tr -d '[:space:]' < "$PROJECT_ROOT/.version")
   run bash -c "source '$PROJECT_ROOT/lib/helpers.sh'; export DOTFILES_ROOT='$PROJECT_ROOT'; get_current_version"
   assert_success
-  assert_output "1.0.0"
+  assert_output "$expected"
 }
 
 # ==============================================================================
@@ -262,11 +282,14 @@ teardown() {
   assert_output --partial "softwareupdate"
 }
 
-@test "fc fc-update --dry-run with --self shows git pull preview" {
+@test "fc fc-update --dry-run with --self previews a fast-forward-only update" {
   run "$FC_COMMAND" fc-update --self --dry-run
   assert_success
   assert_output --partial "[DRY-RUN]"
-  assert_output --partial "git pull"
+  # Self-update fast-forwards rather than rebasing, so a force-pushed upstream
+  # fails visibly instead of silently rewriting local history.
+  assert_output --partial "merge --ff-only"
+  refute_output --partial "pull --rebase"
 }
 
 @test "fc fc-update multiple target flags can be combined" {

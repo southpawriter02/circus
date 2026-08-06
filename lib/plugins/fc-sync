@@ -104,7 +104,7 @@ validate_remote_config() {
 
 # --- Usage Information ---
 usage() {
-  msg_info "Usage: fc fc-sync [options] <subcommand>"
+  msg_info "Usage: fc sync [options] <subcommand>"
   echo ""
   msg_info "Manages the encrypted backup and restoration of system state."
   echo ""
@@ -147,7 +147,11 @@ do_setup() {
   fi
 
   msg_info "Creating configuration directory..."
+  # 0700: this directory holds restic-password and borg-passphrase. The default
+  # umask would leave it 0755, making the secret filenames enumerable and
+  # removing the directory-level backstop if a chmod on a file is ever missed.
   mkdir -p "$config_dir"
+  chmod 700 "$config_dir"
 
   msg_info "Copying configuration template..."
   cp "$SYNC_CONFIG_TEMPLATE" "$SYNC_CONFIG_FILE"
@@ -191,7 +195,7 @@ do_push() {
     elif [ "$BACKUP_BACKEND" = "borg" ]; then
       msg_info "  Set BORG_REPOSITORY to a remote path (e.g., ssh://user@host/path)"
     fi
-    msg_info "Then run 'fc fc-sync backup' to back up directly to remote."
+    msg_info "Then run 'fc sync backup' to back up directly to remote."
     return 0
   fi
 
@@ -203,7 +207,7 @@ do_push() {
   local_archive_path=$(backend_get_archive_path)
 
   if [ ! -f "$local_archive_path" ]; then
-    die "Local backup not found at: $local_archive_path. Run 'fc fc-sync backup' first."
+    die "Local backup not found at: $local_archive_path. Run 'fc sync backup' first."
   fi
 
   local remote_dest="$RCLONE_REMOTE:$RCLONE_REMOTE_PATH/"
@@ -225,7 +229,7 @@ do_pull() {
     msg_info "Backend '$(backend_get_name)' has native remote support."
     echo ""
     msg_info "Configure your remote destination in the backend-specific settings,"
-    msg_info "then run 'fc fc-sync restore' to restore directly from remote."
+    msg_info "then run 'fc sync restore' to restore directly from remote."
     return 0
   fi
 
@@ -351,7 +355,7 @@ main() {
       do_list_remote
       ;;
     *)
-      die "Unknown subcommand: $subcommand. Run 'fc fc-sync --help' for available subcommands."
+      die "Unknown subcommand: $subcommand. Run 'fc sync --help' for available subcommands."
       ;;
   esac
 }

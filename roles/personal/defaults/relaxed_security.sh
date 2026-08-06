@@ -30,15 +30,29 @@
 # ==============================================================================
 
 run_defaults() {
+  # Accept an optional leading -currentHost flag.
+  #
+  # Without this, `run_defaults -currentHost com.apple.screensaver idleTime -int 600`
+  # bound domain="-currentHost", key="com.apple.screensaver", type="idleTime",
+  # value="-int" — and dropped the actual timeout. The emitted command was
+  # `defaults write -currentHost com.apple.screensaver idleTime -int` with no
+  # value, so the screen-lock timeout was never set in any role, while the
+  # summary at the end of this file still reported it as applied.
+  local host_args=()
+  if [ "${1:-}" = "-currentHost" ]; then
+    host_args=(-currentHost)
+    shift
+  fi
+
   local domain="$1"
   local key="$2"
   local type="$3"
   local value="$4"
 
-  if [ "$DRY_RUN_MODE" = true ]; then
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
     msg_info "[Dry Run] Would set Personal Security preference: '$key' to '$value'"
   else
-    defaults write "$domain" "$key" "$type" "$value"
+    defaults "${host_args[@]}" write "$domain" "$key" "$type" "$value"
   fi
 }
 
@@ -224,7 +238,7 @@ msg_info "  Avoid 'Anywhere' - it significantly reduces security"
 # --- Ensure Gatekeeper is Enabled ---
 msg_info "Checking Gatekeeper status..."
 if spctl --status 2>/dev/null | grep -q "disabled"; then
-    msg_warn "Gatekeeper is DISABLED. Consider enabling: sudo spctl --master-enable"
+    msg_warning "Gatekeeper is DISABLED. Consider enabling: sudo spctl --master-enable"
 else
     msg_success "Gatekeeper is enabled (good!)."
 fi

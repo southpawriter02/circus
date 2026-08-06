@@ -272,8 +272,13 @@ main() {
   select_role_interactive
 
   # --- Prompt for Confirmation ----------------------------------------------
+  #
+  # `ask`, not `ui_confirm` directly: ask() honours --non-interactive, and this
+  # call bypassed it. With --non-interactive the prompt was still shown, read
+  # got EOF from a non-tty stdin, and the installer reported "aborted by user" —
+  # so an unattended or scripted run could never get past stage 1.
   echo ""
-  if ui_confirm "Do you want to proceed with the installation?" "N"; then
+  if ask "Do you want to proceed with the installation?" "N"; then
     echo ""
     printf "${UI_SUCCESS}${UI_ICON_SUCCESS}${UI_RESET} ${UI_SUCCESS}${UI_BOLD}Installation confirmed. Let's begin!${UI_RESET}\n"
     echo ""

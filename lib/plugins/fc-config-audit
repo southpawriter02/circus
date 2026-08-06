@@ -68,10 +68,10 @@ audit_brew_formulae() {
     if [[ -n "$formula" && "$formula" != "null" ]]; then
       if echo "$installed" | grep -qw "$formula"; then
         echo "  ✅ $formula"
-        ((AUDIT_OK++))
+        AUDIT_OK=$((AUDIT_OK + 1))
       else
         echo "  ❌ $formula (MISSING)"
-        ((AUDIT_DRIFT++))
+        AUDIT_DRIFT=$((AUDIT_DRIFT + 1))
       fi
     fi
   done
@@ -100,10 +100,10 @@ audit_brew_casks() {
     if [[ -n "$cask" && "$cask" != "null" ]]; then
       if echo "$installed" | grep -qw "$cask"; then
         echo "  ✅ $cask"
-        ((AUDIT_OK++))
+        AUDIT_OK=$((AUDIT_OK + 1))
       else
         echo "  ❌ $cask (MISSING)"
-        ((AUDIT_DRIFT++))
+        AUDIT_DRIFT=$((AUDIT_DRIFT + 1))
       fi
     fi
   done
@@ -123,7 +123,7 @@ audit_mas_apps() {
   
   if ! command -v mas &>/dev/null; then
     echo "  ⚠️  mas-cli not installed (skipping)"
-    ((AUDIT_SKIPPED++))
+    AUDIT_SKIPPED=$((AUDIT_SKIPPED + 1))
     return 0
   fi
   
@@ -139,10 +139,10 @@ audit_mas_apps() {
     if [[ -n "$app_id" && "$app_id" != "null" ]]; then
       if echo "$installed" | grep -q "^$app_id"; then
         echo "  ✅ $app_name ($app_id)"
-        ((AUDIT_OK++))
+        AUDIT_OK=$((AUDIT_OK + 1))
       else
         echo "  ❌ $app_name ($app_id) (MISSING)"
-        ((AUDIT_DRIFT++))
+        AUDIT_DRIFT=$((AUDIT_DRIFT + 1))
       fi
     fi
   done
@@ -173,7 +173,7 @@ audit_defaults() {
       
       if [[ -z "$actual_value" ]]; then
         echo "  ❌ $domain.$key (NOT SET, expected: $expected_value)"
-        ((AUDIT_DRIFT++))
+        AUDIT_DRIFT=$((AUDIT_DRIFT + 1))
       else
         # Normalize boolean values for comparison
         local normalized_expected="$expected_value"
@@ -186,10 +186,10 @@ audit_defaults() {
         
         if [[ "$normalized_actual" == "$normalized_expected" ]]; then
           echo "  ✅ $domain.$key = $actual_value"
-          ((AUDIT_OK++))
+          AUDIT_OK=$((AUDIT_OK + 1))
         else
           echo "  ❌ $domain.$key (expected: $expected_value, actual: $actual_value)"
-          ((AUDIT_DRIFT++))
+          AUDIT_DRIFT=$((AUDIT_DRIFT + 1))
         fi
       fi
     fi
@@ -219,13 +219,13 @@ audit_environment() {
       
       if [[ -z "$actual_value" ]]; then
         echo "  ❌ $name (NOT SET, expected: $expected_value)"
-        ((AUDIT_DRIFT++))
+        AUDIT_DRIFT=$((AUDIT_DRIFT + 1))
       elif [[ "$actual_value" == "$expected_value" ]]; then
         echo "  ✅ $name = $actual_value"
-        ((AUDIT_OK++))
+        AUDIT_OK=$((AUDIT_OK + 1))
       else
         echo "  ⚠️  $name (expected: $expected_value, actual: $actual_value)"
-        ((AUDIT_DRIFT++))
+        AUDIT_DRIFT=$((AUDIT_DRIFT + 1))
       fi
     fi
   done
@@ -248,7 +248,7 @@ audit_aliases() {
   
   if [[ ! -f "$alias_file" ]]; then
     echo "  ⚠️  Alias file not found: $alias_file"
-    ((AUDIT_SKIPPED++))
+    AUDIT_SKIPPED=$((AUDIT_SKIPPED + 1))
     return 0
   fi
   
@@ -260,10 +260,10 @@ audit_aliases() {
     if [[ -n "$name" && "$name" != "null" ]]; then
       if grep -q "alias $name=" "$alias_file" 2>/dev/null; then
         echo "  ✅ $name"
-        ((AUDIT_OK++))
+        AUDIT_OK=$((AUDIT_OK + 1))
       else
         echo "  ❌ $name (NOT DEFINED)"
-        ((AUDIT_DRIFT++))
+        AUDIT_DRIFT=$((AUDIT_DRIFT + 1))
       fi
     fi
   done

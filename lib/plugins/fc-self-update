@@ -152,11 +152,45 @@ do_update() {
     return 0
   fi
   
-  # Pull changes
-  msg_info "Pulling changes..."
-  if ! git -C "$DOTFILES_ROOT" pull --rebase origin main; then
-    msg_error "Pull failed. You may need to resolve conflicts manually."
-    msg_info "Run 'git -C $DOTFILES_ROOT status' to see the issue."
+  # Verify the incoming commit's signature when a maintainer fingerprint is
+  # pinned. Enforced only when CIRCUS_TRUSTED_SIGNING_FPR is set, because
+  # requiring it unconditionally would break every repo that does not sign; but
+  # when it IS set, an unsigned or wrongly-signed commit is refused outright
+  # rather than downgraded to a prompt.
+  if [[ -n "${CIRCUS_TRUSTED_SIGNING_FPR:-}" ]]; then
+    if is_commit_signed "origin/main" "$DOTFILES_ROOT"; then
+      msg_success "Signature verified against pinned key ${CIRCUS_TRUSTED_SIGNING_FPR:0:16}…"
+    else
+      msg_error "origin/main is not signed by the pinned key. Refusing to update."
+      msg_info "Pinned: $CIRCUS_TRUSTED_SIGNING_FPR"
+      msg_info "Inspect with: git -C $DOTFILES_ROOT log -1 --format='%G? %GF' origin/main"
+      return 1
+    fi
+  else
+    msg_warning "No signing key pinned — the incoming commits are unverified."
+    msg_info "Set CIRCUS_TRUSTED_SIGNING_FPR to require a signature from a specific key."
+  fi
+
+  # Confirm before executing remote code. The repository is symlinked into the
+  # user's shell startup, so applying an update runs whatever arrived above.
+  if ! ui_confirm "Apply these $commits_behind commit(s)?" "N"; then
+    msg_info "Update cancelled. Nothing was changed."
+    return 0
+  fi
+
+  # Apply changes.
+  #
+  # `merge --ff-only` rather than `pull --rebase`: fast-forward can only advance
+  # HEAD along the history that was just displayed and reviewed above. A rebase
+  # would silently replay local commits onto a rewritten upstream, so a
+  # force-push could change history the user already approved. --ff-only turns
+  # that case into a visible failure instead.
+  msg_info "Applying changes..."
+  if ! git -C "$DOTFILES_ROOT" merge --ff-only origin/main; then
+    msg_error "Fast-forward failed — upstream history diverged from your local branch."
+    msg_info "This is worth looking at before proceeding: the remote may have been"
+    msg_info "force-pushed, or you have local commits on top of main."
+    msg_info "Inspect with: git -C $DOTFILES_ROOT log --oneline --graph HEAD origin/main"
     return 1
   fi
   
@@ -213,20 +247,31 @@ run_migrations() {
     return 0
   fi
   
-  # Find and run migrations between versions
+  # Find and run migrations between versions.
+  #
+  # Only files named vX_to_vY.sh are considered, and only when the upgrade path
+  # actually covers that range. Previously this loop ran EVERY executable file
+  # in migrations/ on every update, regardless of version — so any script that
+  # landed in that directory executed unconditionally.
   local migration_count=0
-  
-  for migration in "$MIGRATIONS_DIR"/*.sh; do
-    if [[ -f "$migration" ]] && [[ -x "$migration" ]]; then
-      local migration_name
-      migration_name=$(basename "$migration")
-      
-      msg_info "  Running migration: $migration_name"
-      if bash "$migration"; then
-        ((migration_count++))
-      else
-        msg_warning "  Migration $migration_name had issues (non-fatal)"
-      fi
+
+  for migration in "$MIGRATIONS_DIR"/v*_to_v*.sh; do
+    [[ -f "$migration" ]] || continue
+
+    local migration_name from_ver to_ver
+    migration_name=$(basename "$migration" .sh)
+    from_ver=${migration_name%%_to_*}; from_ver=${from_ver#v}
+    to_ver=${migration_name##*_to_};   to_ver=${to_ver#v}
+
+    if ! version_in_range "$from_ver" "$to_ver" "$old_version" "$new_version"; then
+      continue
+    fi
+
+    msg_info "  Running migration: $migration_name"
+    if bash "$migration"; then
+      migration_count=$((migration_count + 1))
+    else
+      msg_warning "  Migration $migration_name had issues (non-fatal)"
     fi
   done
   

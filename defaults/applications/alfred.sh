@@ -29,7 +29,7 @@
 #   1. Open Alfred Preferences (⌘,)
 #   2. Go to Advanced tab
 #   3. Click "Set preferences folder..."
-#   4. Select the folder: $DOTFILES_DIR/etc/alfred
+#   4. Select the folder: $DOTFILES_ROOT/etc/alfred
 #   5. Alfred will copy current preferences to this folder
 #
 # WHAT GETS SYNCED:
@@ -56,13 +56,16 @@ main() {
   local alfred_prefs_domain="com.runningwithcrayons.Alfred-Preferences"
   if ! defaults domains | grep -q "$alfred_prefs_domain"; then
     msg_warning "Alfred preferences not found. Is Alfred installed and has it been run at least once?"
-    return 1
+    # `return 0`: Alfred not being installed is a SKIP, not a failure. This file
+    # is sourced by installer stage 11 under `set -e`, so returning 1 aborted the
+    # whole installation for anyone who does not use Alfred.
+    return 0
   fi
 
   # --- Configuration ---
   # Path to the directory containing Alfred preferences to sync.
   # This directory should contain Alfred's preference files and workflows.
-  local sync_folder="$DOTFILES_DIR/etc/alfred"
+  local sync_folder="$DOTFILES_ROOT/etc/alfred"
 
   # ==============================================================================
   # Alfred Preferences Configuration
@@ -75,7 +78,7 @@ main() {
   #               Alfred settings across multiple machines.
   # Default:      (none - uses ~/Library/Application Support/Alfred)
   # Possible:     Any valid directory path
-  # Set to:       $DOTFILES_DIR/etc/alfred
+  # Set to:       $DOTFILES_ROOT/etc/alfred
   # Reference:    Alfred Preferences > Advanced > Set preferences folder
   # Note:         Alfred will create necessary files in this folder
   #               if they don't exist

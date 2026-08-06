@@ -51,6 +51,21 @@ vscode_backend_validate_config() {
   return 0
 }
 
+#
+# Call the GitHub API with the token supplied through a curl config on stdin.
+#
+# Passing it as -H "Authorization: Bearer $token" puts the token in argv, where
+# `ps` exposes it to every local user for the duration of the request. A
+# gist- or repo-scoped PAT is worth protecting from that.
+#
+# Usage: gh_api_curl "$token" [curl args...]
+#
+gh_api_curl() {
+  local tok="$1"
+  shift
+  printf 'header = "Authorization: Bearer %s"\n' "$tok" | curl -s -K - "$@"
+}
+
 # Push local files to gist
 # Arguments: temp_dir containing files to push
 vscode_backend_push() {
@@ -67,8 +82,7 @@ vscode_backend_push() {
     msg_info "Creating new private gist..."
 
     local response
-    response=$(curl -s -X POST \
-      -H "Authorization: Bearer $token" \
+    response=$(gh_api_curl "$token" -X POST \
       -H "Accept: application/vnd.github.v3+json" \
       -H "Content-Type: application/json" \
       -d "{\"description\":\"$VSCODE_GIST_DESCRIPTION\",\"public\":false,\"files\":$files_json}" \
@@ -94,8 +108,7 @@ vscode_backend_push() {
     msg_info "Updating gist $VSCODE_GIST_ID..."
 
     local response
-    response=$(curl -s -X PATCH \
-      -H "Authorization: Bearer $token" \
+    response=$(gh_api_curl "$token" -X PATCH \
       -H "Accept: application/vnd.github.v3+json" \
       -H "Content-Type: application/json" \
       -d "{\"files\":$files_json}" \
@@ -129,8 +142,7 @@ vscode_backend_pull() {
   msg_info "Fetching gist $VSCODE_GIST_ID..."
 
   local response
-  response=$(curl -s \
-    -H "Authorization: Bearer $token" \
+  response=$(gh_api_curl "$token" \
     -H "Accept: application/vnd.github.v3+json" \
     "https://api.github.com/gists/$VSCODE_GIST_ID")
 
@@ -222,12 +234,9 @@ save_gist_id_to_config() {
   if [ -f "$VSCODE_CONFIG_FILE" ]; then
     # Check if VSCODE_GIST_ID line exists
     if grep -q "^VSCODE_GIST_ID=" "$VSCODE_CONFIG_FILE"; then
-      # Update existing line
-      if [[ "$(uname)" == "Darwin" ]]; then
-        sed -i '' "s|^VSCODE_GIST_ID=.*|VSCODE_GIST_ID=\"$gist_id\"|" "$VSCODE_CONFIG_FILE"
-      else
-        sed -i "s|^VSCODE_GIST_ID=.*|VSCODE_GIST_ID=\"$gist_id\"|" "$VSCODE_CONFIG_FILE"
-      fi
+      # Update existing line. sed_inplace picks the right -i spelling for the
+      # platform, so the uname branch that used to be here is redundant.
+      sed_inplace "s|^VSCODE_GIST_ID=.*|VSCODE_GIST_ID=\"$gist_id\"|" "$VSCODE_CONFIG_FILE"
     else
       # Append new line
       echo "VSCODE_GIST_ID=\"$gist_id\"" >> "$VSCODE_CONFIG_FILE"

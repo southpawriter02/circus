@@ -67,16 +67,16 @@ msg_info "Configuring firewall settings..."
 # --- Enable Firewall ---
 # Enable the macOS Application Level Firewall with per-app control
 # Reference: System Preferences > Security & Privacy > Firewall
-run_sudo_defaults "/Library/Preferences/com.apple.alf" "globalstate" "-int" "1"
+run_socketfilterfw "Firewall enabled" --setglobalstate on
 
 # --- Enable Stealth Mode ---
 # Prevent the Mac from responding to network probing requests (ICMP ping, port scans)
 # This makes the Mac harder to detect on a network
-run_sudo_defaults "/Library/Preferences/com.apple.alf" "stealthenabled" "-int" "1"
+run_socketfilterfw "Stealth mode enabled" --setstealthmode on
 
 # --- Enable Logging ---
 # Log firewall activity for security auditing
-run_sudo_defaults "/Library/Preferences/com.apple.alf" "loggingenabled" "-int" "1"
+run_socketfilterfw "Firewall logging enabled" --setloggingmode on
 
 # ==============================================================================
 # SECTION: Screen Lock Configuration

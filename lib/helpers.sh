@@ -14,7 +14,9 @@
 # SECTION: SCRIPT SETUP & ROBUSTNESS
 # ------------------------------------------------------------------------------
 
-set -eo pipefail
+# `-E` (errtrace) is required for the ERR trap below to be inherited by shell
+# functions. Without it every stage failure inside `main()` exits silently.
+set -Eeo pipefail
 
 # ------------------------------------------------------------------------------
 # SECTION: LOGGING CONFIGURATION & SETUP
@@ -102,7 +104,22 @@ error_handler() {
 trap 'error_handler ${LINENO} ${BASH_SOURCE[0]}' ERR
 
 die() {
-  log "$LOG_LEVEL_ERROR" "$1"
+  # Call sites write "\n" inside the message to mean a line break, e.g.
+  #   die "Profile not found: $p\n\nRun 'fc profile list' to see available."
+  # log() emits its argument verbatim, so those reached the user as the two
+  # literal characters \n. Log the first line at ERROR, then print the rest
+  # unprefixed -- the remainder is follow-up guidance, not additional errors,
+  # and tagging every hint line [ERROR] misrepresents what went wrong.
+  #
+  # Only the \n sequence is translated. Using printf '%b' would also expand
+  # \t and \\ anywhere in the string, including inside interpolated paths.
+  local msg="$1"
+  local first="${msg%%\\n*}"
+  log "$LOG_LEVEL_ERROR" "$first"
+  if [ "$first" != "$msg" ]; then
+    local rest="${msg#*\\n}"
+    printf '%s\n' "${rest//\\n/$'\n'}" >&2
+  fi
   exit 1
 }
 
@@ -197,6 +214,198 @@ prompt_for_confirmation() {
 export -f prompt_for_confirmation
 
 # ------------------------------------------------------------------------------
+# SECTION: SYSTEM MUTATION WRAPPERS
+# ------------------------------------------------------------------------------
+# Canonical definitions of the two wrappers that scripts across `system/`,
+# `defaults/` and `roles/` call to change machine state. Both honor DRY_RUN_MODE
+# so that dry-run coverage lives in one place rather than being re-implemented
+# (and forgotten) per file.
+#
+# Individual `defaults/**` scripts still define their own local `run_defaults`,
+# which shadows this one for the remainder of the sourcing shell. These
+# definitions exist so that the ~24 files calling the helpers WITHOUT defining
+# them — notably everything under `system/macos/`, which aborts stage 4 of the
+# installer — have something to call.
+
+#
+# @description
+#   Writes a macOS user preference, honoring dry-run mode.
+#
+#   Accepts an optional leading `write` verb and an optional `-currentHost`
+#   flag, both of which appear at existing call sites:
+#
+#     run_defaults <domain> <key> <type> <value>
+#     run_defaults write <domain> <key> <type> <value>
+#     run_defaults -currentHost <domain> <key> <type> <value>
+#
+run_defaults() {
+  local host_args=()
+
+  # Strip the optional verb / flag prefixes in any order.
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      write)        shift ;;
+      -currentHost) host_args=(-currentHost); shift ;;
+      *)            break ;;
+    esac
+  done
+
+  if [ "$#" -lt 4 ]; then
+    msg_error "run_defaults: expected <domain> <key> <type> <value>, got: $*"
+    return 1
+  fi
+
+  local domain="$1" key="$2" type="$3" value="$4"
+
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
+    msg_info "[Dry Run] Would set ${domain} '${key}' to '${value}'"
+    return 0
+  fi
+
+  defaults "${host_args[@]}" write "$domain" "$key" "$type" "$value"
+}
+
+#
+# @description
+#   Runs a command under sudo, honoring dry-run mode. Returns the command's
+#   exit status so callers can branch on success.
+#
+# @param $@ The command and arguments to run.
+#
+run_sudo() {
+  if [ "$#" -eq 0 ]; then
+    msg_error "run_sudo: no command given"
+    return 1
+  fi
+
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
+    msg_info "[Dry Run] Would run: sudo $*"
+    return 0
+  fi
+
+  sudo "$@"
+}
+
+#
+# @description
+#   Download an installer script over hardened HTTPS into a file, optionally
+#   verifying its SHA-256, so the caller can run it from disk instead of piping
+#   it straight into a shell.
+#
+#   Transport hardening: --proto '=https' and --proto-redir '=https' stop a
+#   redirect from downgrading to plain HTTP; -f turns a 404 or captive-portal
+#   page into a failure rather than saving the error body as if it were the
+#   script; --tlsv1.2 sets a floor on the negotiated protocol.
+#
+#   Note on scope: HTTPS authenticates the host, not the content. Upstream can
+#   still change what lives at that URL at any time. Pinning a checksum is what
+#   actually fixes that, so when no pin is supplied this prints the observed
+#   digest and says plainly that it is running unverified.
+#
+# @param $1 URL to fetch.
+# @param $2 Output path (caller owns creation and cleanup).
+# @param $3 Optional expected SHA-256. When set, a mismatch fails closed.
+#
+fetch_verified_script() {
+  local url="$1"
+  local out="$2"
+  local expected="${3:-}"
+
+  if ! curl --proto '=https' --proto-redir '=https' --tlsv1.2 -fsSL -o "$out" "$url"; then
+    msg_error "Failed to download: $url"
+    return 1
+  fi
+
+  if [ ! -s "$out" ]; then
+    msg_error "Downloaded an empty file from: $url"
+    return 1
+  fi
+
+  local actual
+  actual=$(shasum -a 256 "$out" | awk '{print $1}')
+
+  if [ -n "$expected" ]; then
+    if [ "$actual" != "$expected" ]; then
+      msg_error "Checksum mismatch for $url"
+      msg_error "  expected: $expected"
+      msg_error "  actual:   $actual"
+      return 1
+    fi
+    msg_success "Checksum verified: $(basename "$url")"
+  else
+    msg_warning "No checksum pinned for $(basename "$url") — running it unverified."
+    msg_info "  sha256: $actual"
+  fi
+
+  return 0
+}
+
+#
+# @description
+#   Apply a macOS Application Firewall setting through socketfilterfw.
+#
+#   Writing /Library/Preferences/com.apple.alf directly goes behind cfprefsd's
+#   back: the running firewall does not pick the change up, and socketfilterfw
+#   can overwrite it later — so scripts reported "firewall configured" over a
+#   firewall whose state had not changed.
+#
+# @param $1 Human-readable description, used in the success/warning message.
+# @param $2 socketfilterfw flag, e.g. --setglobalstate.
+# @param $3 Value, e.g. on/off.
+#
+run_socketfilterfw() {
+  local description="$1"
+  local flag="$2"
+  local value="$3"
+  local fw=/usr/libexec/ApplicationFirewall/socketfilterfw
+
+  if [ "${DRY_RUN_MODE:-false}" = true ]; then
+    msg_info "[Dry Run] Would run: sudo $fw $flag $value"
+    return 0
+  fi
+
+  if [ ! -x "$fw" ]; then
+    msg_warning "socketfilterfw not found; cannot configure: $description"
+    return 1
+  fi
+
+  if sudo "$fw" "$flag" "$value" >/dev/null 2>&1; then
+    msg_success "$description"
+  else
+    msg_warning "Could not apply: $description"
+  fi
+}
+
+#
+# @description
+#   Portable in-place sed.
+#
+#   BSD sed (what macOS ships) requires an argument to -i, so the idiom is
+#   `sed -i '' 's/x/y/' file`. GNU sed (Linux) must NOT have one: it reads the
+#   '' as the script and then treats the real script as a filename, failing with
+#   "can't read s/x/y/: No such file or directory".
+#
+#   The repository claims Linux support, so every in-place edit has to go
+#   through this rather than hardcoding one platform's spelling.
+#
+# @param $1 The sed script, e.g. 's/foo/bar/'
+# @param $@ One or more files to edit in place.
+#
+sed_inplace() {
+  local script="$1"
+  shift
+
+  # GNU sed understands --version; BSD sed does not.
+  if sed --version >/dev/null 2>&1; then
+    sed -i -e "$script" "$@"
+  else
+    sed -i '' -e "$script" "$@"
+  fi
+}
+
+export -f run_defaults run_sudo run_socketfilterfw fetch_verified_script sed_inplace
+
+# ------------------------------------------------------------------------------
 # SECTION: VERSION COMPARISON FUNCTIONS
 # ------------------------------------------------------------------------------
 
@@ -223,9 +432,13 @@ version_compare() {
     return 0
   fi
 
-  # Split versions into arrays
+  # Split versions into arrays.
+  # SC2206 disabled deliberately: splitting on IFS='.' is exactly what is wanted
+  # here, and the inputs are already validated as dotted version numbers.
   local IFS='.'
+  # shellcheck disable=SC2206
   local -a v1_parts=($v1)
+  # shellcheck disable=SC2206
   local -a v2_parts=($v2)
 
   # Compare each part

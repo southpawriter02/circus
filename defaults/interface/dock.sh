@@ -200,7 +200,11 @@ main() {
   if ! command -v dockutil >/dev/null 2>&1; then
     msg_warning "\`dockutil\` command not found. Skipping Dock configuration."
     msg_info "Please ensure \`dockutil\` is installed, for example by adding it to the Brewfile."
-    return 1
+    # `return 0`: an optional tool being absent is a skip, not a failure. This
+    # file is sourced by stage 11 under `set -e`, so returning 1 here aborted the
+    # entire installer at the Dock step on any machine without dockutil — which
+    # includes every machine where Homebrew has not run yet.
+    return 0
   fi
 
   # ==============================================================================

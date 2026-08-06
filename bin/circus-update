@@ -4,9 +4,20 @@
 #
 # FILE:         bin/circus-update
 #
-# DESCRIPTION:  This script is designed to be run automatically by a launchd
-#               agent to keep the system up-to-date. It updates the dotfiles
-#               repository and all Homebrew packages.
+# DESCRIPTION:  This script is run automatically by a launchd agent. It CHECKS
+#               for available updates and reports them. It deliberately does
+#               not apply anything.
+#
+#               Why notify-only: this repository is symlinked into the user's
+#               shell startup (~/.zshrc and the oh-my-zsh custom plugin dir),
+#               so `git pull` here is equivalent to executing whatever the
+#               remote currently contains — unattended, daily, as the user.
+#               A compromised remote would reach every machine within 24 hours
+#               with no human in the loop. `brew upgrade` has the same shape,
+#               running third-party formula code unattended.
+#
+#               Applying updates is now an explicit, interactive action:
+#                   fc self-update
 #
 # ==============================================================================
 
@@ -24,29 +35,69 @@ mkdir -p "$(dirname "$LOG_FILE_PATH")"
 
 # --- Main Logic -------------------------------------------------------------
 main() {
-  msg_info "Starting scheduled update process..."
+  msg_info "Starting scheduled update CHECK (nothing will be applied)..."
 
-  # --- 1. Update Dotfiles Repository ---
-  msg_info "Updating the dotfiles repository..."
+  local repo_updates=0
+  local brew_updates=0
+
+  # --- 1. Check the dotfiles repository ---
   if [ -d "$DOTFILES_ROOT/.git" ]; then
-    cd "$DOTFILES_ROOT"
-    git pull
-    cd - >/dev/null # Go back to previous directory silently
+    # fetch only: updates remote-tracking refs, never the working tree.
+    if git -C "$DOTFILES_ROOT" fetch --quiet origin 2>/dev/null; then
+      local upstream
+      upstream=$(git -C "$DOTFILES_ROOT" rev-parse --abbrev-ref '@{u}' 2>/dev/null || echo "")
+
+      if [ -n "$upstream" ]; then
+        repo_updates=$(git -C "$DOTFILES_ROOT" rev-list --count "HEAD..$upstream" 2>/dev/null || echo 0)
+
+        if [ "$repo_updates" -gt 0 ]; then
+          msg_info "$repo_updates new commit(s) available on $upstream:"
+          git -C "$DOTFILES_ROOT" log --oneline "HEAD..$upstream" | sed 's/^/  /'
+        else
+          msg_info "Dotfiles repository is up to date."
+        fi
+      else
+        msg_info "No upstream configured for the current branch; skipping repo check."
+      fi
+    else
+      msg_warning "Could not reach the remote. Skipping repository check."
+    fi
   else
     msg_warning "Dotfiles repository not found at $DOTFILES_ROOT. Skipping."
   fi
 
-  # --- 2. Update Homebrew ---
-  msg_info "Updating Homebrew and upgrading packages..."
+  # --- 2. Check Homebrew ---
   if command -v brew >/dev/null 2>&1; then
-    brew update
-    brew upgrade
-    brew cleanup
+    # `brew update` refreshes formula metadata only; it does not upgrade packages.
+    brew update >/dev/null 2>&1 || msg_warning "brew update failed."
+
+    local outdated
+    outdated=$(brew outdated --quiet 2>/dev/null || echo "")
+
+    if [ -n "$outdated" ]; then
+      brew_updates=$(printf '%s\n' "$outdated" | grep -c . || true)
+      msg_info "$brew_updates outdated Homebrew package(s):"
+      printf '%s\n' "$outdated" | sed 's/^/  /'
+    else
+      msg_info "Homebrew packages are up to date."
+    fi
   else
     msg_warning "Homebrew command not found. Skipping."
   fi
 
-  msg_success "Scheduled update process complete."
+  # --- 3. Report ---
+  if [ "$repo_updates" -gt 0 ] || [ "$brew_updates" -gt 0 ]; then
+    local summary="Circus: $repo_updates repo update(s), $brew_updates package update(s) available."
+    msg_success "$summary"
+    msg_info "Apply them with: fc self-update   (repo)   |   brew upgrade   (packages)"
+
+    # Best-effort desktop notification; never fail the check because of it.
+    if command -v notify_info >/dev/null 2>&1; then
+      notify_info "$summary" 2>/dev/null || true
+    fi
+  else
+    msg_success "Everything is up to date."
+  fi
 }
 
 main "$@"

@@ -14,9 +14,11 @@ main() {
 
   # --- Configuration ---
   local jetbrains_profile_dir="$DOTFILES_ROOT/profiles/base/jetbrains"
-  declare -A files_to_symlink
-  files_to_symlink["$jetbrains_profile_dir/.ideavimrc"]="$HOME/.ideavimrc"
-  files_to_symlink["$jetbrains_profile_dir/ide-scripting.js"]="$HOME/.config/JetBrains/ide-scripting.js"
+  # Indexed "source|target" array — bash 3.2 has no associative arrays.
+  local files_to_symlink=(
+    "$jetbrains_profile_dir/.ideavimrc|$HOME/.ideavimrc"
+    "$jetbrains_profile_dir/ide-scripting.js|$HOME/.config/JetBrains/ide-scripting.js"
+  )
 
   # --- Directory Creation for ide-scripting.js ---
   local jetbrains_config_dir="$HOME/.config/JetBrains"
@@ -31,8 +33,10 @@ main() {
 
   # --- Symlinking ---
   msg_info "Symlinking JetBrains configuration files..."
-  for source_file in "${!files_to_symlink[@]}"; do
-    local target_file="${files_to_symlink[$source_file]}"
+  local entry source_file target_file
+  for entry in "${files_to_symlink[@]}"; do
+    source_file="${entry%%|*}"
+    target_file="${entry##*|}"
     if [ "$DRY_RUN_MODE" = true ]; then
       msg_info "[Dry Run] Would symlink '$source_file' to '$target_file'"
     else

@@ -77,7 +77,7 @@ EOF
     jq ".snapshots += [$entry]" "$SNAPSHOT_METADATA" > "$temp_file" && mv "$temp_file" "$SNAPSHOT_METADATA"
   else
     # Fallback: simple JSON manipulation
-    sed -i '' 's/\]$/,'"$(echo "$entry" | tr '\n' ' ')"']/' "$SNAPSHOT_METADATA" 2>/dev/null || true
+    sed_inplace 's/\]$/,'"$(echo "$entry" | tr '\n' ' ')"']/' "$SNAPSHOT_METADATA" 2>/dev/null || true
   fi
 }
 
@@ -192,7 +192,7 @@ snapshot_delete_all() {
   if command -v jq &>/dev/null; then
     jq -r '.snapshots[].timestamp' "$SNAPSHOT_METADATA" 2>/dev/null | while read -r ts; do
       if sudo tmutil deletelocalsnapshots "$ts" 2>/dev/null; then
-        ((count++))
+        count=$((count + 1))
       fi
     done
   fi

@@ -23,10 +23,26 @@ main() {
 
   msg_info "The installer will now download and run the official Homebrew installation script."
 
-  # Download and execute the official Homebrew installation script.
-  # The `NONINTERACTIVE=1` environment variable is used to run the script
-  # without user prompts, which is suitable for an automated installer.
-  if NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+  # Download the official Homebrew installer to a file, then run it from disk.
+  # Piping curl straight into bash means the code is executed as it arrives,
+  # with no opportunity to verify it. Set CIRCUS_HOMEBREW_INSTALLER_SHA256 to
+  # pin the expected digest; fetch_verified_script fails closed on a mismatch.
+  local installer
+  installer=$(mktemp) || return 1
+
+  if ! fetch_verified_script \
+      "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh" \
+      "$installer" "${CIRCUS_HOMEBREW_INSTALLER_SHA256:-}"; then
+    rm -f "$installer"
+    msg_error "Homebrew installation aborted."
+    return 1
+  fi
+
+  NONINTERACTIVE=1 /bin/bash "$installer"
+  local rc=$?
+  rm -f "$installer"
+
+  if [ $rc -eq 0 ]; then
     msg_success "Homebrew installed successfully."
   else
     msg_error "Homebrew installation failed."

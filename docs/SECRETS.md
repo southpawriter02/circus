@@ -6,16 +6,16 @@ The `fc secrets` command provides unified secrets management across multiple bac
 
 ```bash
 # Initial setup - creates config file and checks prerequisites
-fc fc-secrets setup
+fc secrets setup
 
 # Edit the configuration file
 $EDITOR ~/.config/circus/secrets.conf
 
 # Sync all configured secrets to their destinations
-fc fc-secrets sync
+fc secrets sync
 
 # Fetch a single secret (prints to stdout)
-fc fc-secrets get op://Personal/github/token
+fc secrets get op://Personal/github/token
 ```
 
 ## Backends
@@ -36,8 +36,8 @@ op://vault/item/section/field
 
 **Examples:**
 ```bash
-fc fc-secrets get op://Personal/github.com/token
-fc fc-secrets get op://Work/AWS/access_key_id
+fc secrets get op://Personal/github.com/token
+fc secrets get op://Work/AWS/access_key_id
 ```
 
 ### macOS Keychain (`keychain://`)
@@ -55,8 +55,8 @@ keychain://service/account
 
 **Examples:**
 ```bash
-fc fc-secrets get keychain://api-service/production
-fc fc-secrets get keychain://database/myapp
+fc secrets get keychain://api-service/production
+fc secrets get keychain://database/myapp
 ```
 
 ### HashiCorp Vault (`vault://`)
@@ -75,8 +75,8 @@ vault://path/to/secret#field
 
 **Examples:**
 ```bash
-fc fc-secrets get vault://secret/data/myapp#api_key
-fc fc-secrets get vault://secret/data/database#password
+fc secrets get vault://secret/data/myapp#api_key
+fc secrets get vault://secret/data/database#password
 ```
 
 ## Configuration
@@ -126,7 +126,7 @@ VAULT_ADDR="https://vault.example.com:8200"
 Creates the configuration file and checks backend prerequisites.
 
 ```bash
-fc fc-secrets setup
+fc secrets setup
 ```
 
 ### `sync`
@@ -134,7 +134,7 @@ fc fc-secrets setup
 Syncs all configured secrets to their destinations.
 
 ```bash
-fc fc-secrets sync
+fc secrets sync
 ```
 
 Environment variables are written to `~/.zshenv.local` in a managed section:
@@ -152,18 +152,18 @@ export AWS_ACCESS_KEY_ID="AKIA..."
 Fetches a single secret and prints to stdout.
 
 ```bash
-fc fc-secrets get op://Personal/github/token
-fc fc-secrets get keychain://api-service/key
-fc fc-secrets get vault://secret/data/app#field
+fc secrets get op://Personal/github/token
+fc secrets get keychain://api-service/key
+fc secrets get vault://secret/data/app#field
 ```
 
 Use this for scripting or piping:
 ```bash
 # Use in a script
-API_KEY=$(fc fc-secrets get op://Work/api/key)
+API_KEY=$(fc secrets get op://Work/api/key)
 
 # Pipe to clipboard
-fc fc-secrets get op://Personal/password | pbcopy
+fc secrets get op://Personal/password | pbcopy
 ```
 
 ### `list`
@@ -171,7 +171,7 @@ fc fc-secrets get op://Personal/password | pbcopy
 Lists all configured secrets and their destinations.
 
 ```bash
-fc fc-secrets list
+fc secrets list
 ```
 
 ### `status`
@@ -179,7 +179,7 @@ fc fc-secrets list
 Shows authentication status for each backend.
 
 ```bash
-fc fc-secrets status
+fc secrets status
 ```
 
 ### `verify`
@@ -187,12 +187,12 @@ fc fc-secrets status
 Verifies all configured secrets are accessible (dry-run).
 
 ```bash
-fc fc-secrets verify
+fc secrets verify
 ```
 
 ## Environment File Management
 
-When using `env:` destinations, secrets are written to `~/.zshenv.local` with managed section markers. This allows `fc fc-secrets sync` to update secrets without affecting your other environment variables.
+When using `env:` destinations, secrets are written to `~/.zshenv.local` with managed section markers. This allows `fc secrets sync` to update secrets without affecting your other environment variables.
 
 To load the secrets in your shell, add to your `.zshrc`:
 ```bash
@@ -270,7 +270,7 @@ Combine with `fc schedule` to periodically refresh secrets:
 
 Get backend-specific help:
 ```bash
-fc fc-secrets get --help op
-fc fc-secrets get --help keychain
-fc fc-secrets get --help vault
+fc secrets get --help op
+fc secrets get --help keychain
+fc secrets get --help vault
 ```

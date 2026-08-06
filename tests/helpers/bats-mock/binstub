@@ -65,6 +65,10 @@ for line in "${lines[@]}"; do
     # In the future, use a sed script to split while
     # respecting quoting.
     set -f
+    # Splitting on whitespace is the point: the plan stores one stub's expected
+    # arguments as a single space-separated string. `set -f` above already
+    # disables globbing for the split itself.
+    # shellcheck disable=SC2206
     patterns=($patterns)
     set +f
     arguments=("$@")
@@ -75,6 +79,11 @@ for line in "${lines[@]}"; do
       pattern="${patterns[$i]}"
       argument="${arguments[$i]}"
 
+      # $pattern is unquoted on purpose: stub plans use globs, so
+      # `stub brew "install *"` is expected to match any package. Quoting would
+      # make every pattern literal and break matching across the suite.
+      # The directive must sit above the whole `case`, not above a branch.
+      # shellcheck disable=SC2254
       case "$argument" in
         $pattern ) ;;
         * ) result=1 ;;

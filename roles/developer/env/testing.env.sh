@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ==============================================================================
 # Testing Environment Variables
 #

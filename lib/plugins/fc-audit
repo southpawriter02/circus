@@ -537,7 +537,7 @@ main() {
       action_firewall
       ;;
     *)
-      die "Unknown action '$action'. Run 'fc fc-audit --help' for available actions."
+      die "Unknown action '$action'. Run 'fc audit --help' for available actions."
       ;;
   esac
 }

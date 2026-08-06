@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ==============================================================================
 # Java Configuration
 #
@@ -9,7 +10,8 @@
 # Auto-detect JAVA_HOME using macOS java_home utility
 # This finds the default JDK installed on the system
 if [[ -x /usr/libexec/java_home ]] && /usr/libexec/java_home &>/dev/null; then
-    export JAVA_HOME=$(/usr/libexec/java_home)
+    export JAVA_HOME
+    JAVA_HOME=$(/usr/libexec/java_home)
 fi
 
 # To use a specific Java version:

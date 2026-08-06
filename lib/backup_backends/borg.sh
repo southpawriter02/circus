@@ -86,8 +86,11 @@ backend_validate_config() {
 
 # Set up borg environment (passphrase)
 setup_borg_env() {
-  export BORG_PASSPHRASE
-  BORG_PASSPHRASE=$(cat "$BORG_PASSPHRASE_FILE")
+  # BORG_PASSCOMMAND rather than BORG_PASSPHRASE: an exported passphrase is
+  # inherited by every child process this script spawns (date, wc, ssh for
+  # remote repos), is visible in /proc/<pid>/environ on Linux, and lands in any
+  # core dump. With PASSCOMMAND only borg itself reads the file.
+  export BORG_PASSCOMMAND="cat $BORG_PASSPHRASE_FILE"
 
   # Disable interactive prompts
   export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
@@ -130,7 +133,9 @@ backend_do_backup() {
   local backup_paths=()
   for target in "${BACKUP_TARGETS[@]}"; do
     local expanded_target
-    eval expanded_target="$target"
+    # No eval: the value is already expanded at config-source time, so eval would
+    # re-parse it — a path containing a space runs its tail as a command.
+    expanded_target="${target/#\~/$HOME}"
     if [ -e "$expanded_target" ]; then
       backup_paths+=("$expanded_target")
       msg_info "  Including: $expanded_target"
@@ -152,7 +157,8 @@ backend_do_backup() {
   fi
 
   # Create archive name with timestamp
-  local archive_name="circus-$(date +%Y%m%d-%H%M%S)"
+  local archive_name
+  archive_name="circus-$(date +%Y%m%d-%H%M%S)"
 
   # Run the backup
   if "$borg_cmd" create \

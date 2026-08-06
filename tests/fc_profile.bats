@@ -34,66 +34,66 @@ teardown() {
 # Help and Usage Tests
 # ==============================================================================
 
-@test "fc fc-profile --help shows usage information" {
+@test "fc profile --help shows usage information" {
   run "$FC_COMMAND" fc-profile --help
   assert_success
-  assert_output --partial "Usage: fc fc-profile"
+  assert_output --partial "Usage: fc profile"
   assert_output --partial "list"
   assert_output --partial "current"
   assert_output --partial "switch"
 }
 
-@test "fc fc-profile with no arguments shows usage" {
+@test "fc profile with no arguments shows usage" {
   run "$FC_COMMAND" fc-profile
   assert_success
-  assert_output --partial "Usage: fc fc-profile"
+  assert_output --partial "Usage: fc profile"
 }
 
-@test "fc fc-profile --help shows examples" {
+@test "fc profile --help shows examples" {
   run "$FC_COMMAND" fc-profile --help
   assert_success
   assert_output --partial "Examples:"
-  assert_output --partial "fc fc-profile switch work"
+  assert_output --partial "fc profile switch work"
 }
 
 # ==============================================================================
 # List Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-profile list shows available profiles header" {
+@test "fc profile list shows available profiles header" {
   run "$FC_COMMAND" fc-profile list
   assert_success
   assert_output --partial "Available profiles"
 }
 
-@test "fc fc-profile list shows work profile" {
+@test "fc profile list shows work profile" {
   run "$FC_COMMAND" fc-profile list
   assert_success
   assert_output --partial "work"
 }
 
-@test "fc fc-profile list shows personal profile" {
+@test "fc profile list shows personal profile" {
   run "$FC_COMMAND" fc-profile list
   assert_success
   assert_output --partial "personal"
 }
 
-@test "fc fc-profile list shows switch hint" {
+@test "fc profile list shows switch hint" {
   run "$FC_COMMAND" fc-profile list
   assert_success
-  assert_output --partial "fc fc-profile switch"
+  assert_output --partial "fc profile switch"
 }
 
 # ==============================================================================
 # Current Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-profile current runs successfully" {
+@test "fc profile current runs successfully" {
   run "$FC_COMMAND" fc-profile current
   assert_success
 }
 
-@test "fc fc-profile current mentions base dotfiles when no profile active" {
+@test "fc profile current mentions base dotfiles when no profile active" {
   # This assumes no profile is active (which is the default state)
   run "$FC_COMMAND" fc-profile current
   assert_success
@@ -105,22 +105,22 @@ teardown() {
 # Switch Subcommand Tests
 # ==============================================================================
 
-@test "fc fc-profile switch requires profile argument" {
+@test "fc profile switch requires profile argument" {
   run "$FC_COMMAND" fc-profile switch
   assert_failure
-  assert_output --partial "Usage: fc fc-profile switch"
+  assert_output --partial "Usage: fc profile switch"
 }
 
-@test "fc fc-profile switch fails for nonexistent profile" {
+@test "fc profile switch fails for nonexistent profile" {
   run "$FC_COMMAND" fc-profile switch nonexistent_profile_xyz123
   assert_failure
   assert_output --partial "Profile not found"
 }
 
-@test "fc fc-profile switch fails for nonexistent profile with list hint" {
+@test "fc profile switch fails for nonexistent profile with list hint" {
   run "$FC_COMMAND" fc-profile switch nonexistent_profile_xyz123
   assert_failure
-  assert_output --partial "fc fc-profile list"
+  assert_output --partial "fc profile list"
 }
 
 # ==============================================================================
@@ -163,13 +163,13 @@ teardown() {
 # Error Handling Tests
 # ==============================================================================
 
-@test "fc fc-profile unknown subcommand fails" {
+@test "fc profile unknown subcommand fails" {
   run "$FC_COMMAND" fc-profile unknown_subcommand
   assert_failure
   assert_output --partial "Unknown subcommand"
 }
 
-@test "fc fc-profile unknown subcommand shows help hint" {
+@test "fc profile unknown subcommand shows help hint" {
   run "$FC_COMMAND" fc-profile unknown_subcommand
   assert_failure
   assert_output --partial "--help"

@@ -213,7 +213,7 @@ do_enable() {
   mkdir -p "$(dirname "$NOTIFY_CONFIG")"
   
   if [[ -f "$NOTIFY_CONFIG" ]]; then
-    sed -i '' 's/NOTIFY_ENABLED=.*/NOTIFY_ENABLED=true/' "$NOTIFY_CONFIG" 2>/dev/null || \
+    sed_inplace 's/NOTIFY_ENABLED=.*/NOTIFY_ENABLED=true/' "$NOTIFY_CONFIG" 2>/dev/null || \
       echo "NOTIFY_ENABLED=true" >> "$NOTIFY_CONFIG"
   else
     echo "NOTIFY_ENABLED=true" > "$NOTIFY_CONFIG"
@@ -226,7 +226,7 @@ do_disable() {
   mkdir -p "$(dirname "$NOTIFY_CONFIG")"
   
   if [[ -f "$NOTIFY_CONFIG" ]]; then
-    sed -i '' 's/NOTIFY_ENABLED=.*/NOTIFY_ENABLED=false/' "$NOTIFY_CONFIG" 2>/dev/null || \
+    sed_inplace 's/NOTIFY_ENABLED=.*/NOTIFY_ENABLED=false/' "$NOTIFY_CONFIG" 2>/dev/null || \
       echo "NOTIFY_ENABLED=false" >> "$NOTIFY_CONFIG"
   else
     echo "NOTIFY_ENABLED=false" > "$NOTIFY_CONFIG"

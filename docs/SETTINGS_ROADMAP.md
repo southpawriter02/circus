@@ -319,9 +319,9 @@ The **settings layer** needs work:
 
 ### v1.4.0 Success Criteria
 
-- [ ] `fc fc-profile switch developer` applies dev env + defaults
+- [ ] `fc profile switch developer` applies dev env + defaults
 - [ ] Work role includes proxy configuration for corporate networks
-- [ ] Role switching is seamless via existing `fc fc-profile` command
+- [ ] Role switching is seamless via existing `fc profile` command
 
 ---
 
