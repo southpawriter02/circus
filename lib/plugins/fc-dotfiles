@@ -169,6 +169,13 @@ do_add() {
         if [ -z "$subdir" ]; then
           die "Subdirectory name cannot be empty"
         fi
+        # This value is used unchecked as "$PROFILES_DIR/$subdir" for mkdir -p,
+        # mv and ln -s below. A name like ../../ would move a real dotfile out
+        # of the repository and symlink it somewhere unexpected -- a typo is as
+        # likely to cause that as malice. Restrict it to a single plain name.
+        if [[ ! "$subdir" =~ ^[A-Za-z0-9._-]+$ ]] || [[ "$subdir" == .* ]]; then
+          die "Invalid subdirectory name: $subdir\n\nUse letters, numbers, dots, hyphens and underscores only (no '/' and no leading '.')."
+        fi
       fi
       break
     fi

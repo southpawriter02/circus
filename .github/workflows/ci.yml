@@ -153,6 +153,11 @@ jobs:
           #
           # -S warning matches tests/static_analysis.bats; .shellcheckrc holds
           # the disables so both enforce the same rules.
-          git ls-files -z '*.sh' 'lib/plugins/fc-*' 'bin/*' \
-            | tr '\0' '\n' | grep -vE '^topics/|^lib/plugins/template$' | tr '\n' '\0' \
+          # The test harness is in scope: an unlinted bug in stub.bash once
+          # made every mock in the suite inert without failing anything.
+          git ls-files -z '*.sh' '*.bash' 'lib/plugins/fc-*' 'bin/*' \
+            'tests/helpers/bats-mock/stub' 'tests/helpers/bats-mock/binstub' \
+            | tr '\0' '\n' \
+            | grep -vE '^topics/|^lib/plugins/template$|^tests/helpers/bats-(assert|support|core)/' \
+            | tr '\n' '\0' \
             | xargs -0 shellcheck -S warning -f gcc

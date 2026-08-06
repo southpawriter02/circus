@@ -2080,15 +2080,36 @@ verify_config_signature() {
     return 1
   fi
   
-  if gpg --verify "$sig_file" "$file" 2>/dev/null; then
-    msg_success "✅ Signature valid: $file"
-    security_log "info" "Config signature verified" "$file"
-    return 0
-  else
+  # --status-fd 1 gives machine-readable output. Parsing gpg's human-readable
+  # stderr instead would be locale-dependent, the same trap that made
+  # is_commit_signed read every commit as unsigned under a non-English
+  # LC_MESSAGES. --verify writes nothing else to stdout, so this is unambiguous.
+  local gpg_status
+  if ! gpg_status=$(gpg --status-fd 1 --verify "$sig_file" "$file" 2>/dev/null); then
     msg_error "❌ INVALID SIGNATURE: $file"
     security_log "critical" "Config signature INVALID" "$file"
     return 1
   fi
+
+  # A valid signature from ANY key in the keyring is not the same as a signature
+  # from you. Without this, anyone whose key you have imported -- or who gets you
+  # to import one -- can sign a malicious config and pass the check. When a
+  # fingerprint is pinned, require the signer to match it.
+  if [[ -n "${CIRCUS_TRUSTED_SIGNING_FPR:-}" ]]; then
+    local signer
+    signer=$(printf '%s\n' "$gpg_status" | awk '/^\[GNUPG:\] VALIDSIG /{print $3; exit}')
+    if [[ "$signer" != "$CIRCUS_TRUSTED_SIGNING_FPR" ]]; then
+      msg_error "❌ UNTRUSTED SIGNER: $file"
+      msg_info "   signed by: ${signer:-unknown}"
+      msg_info "   expected:  $CIRCUS_TRUSTED_SIGNING_FPR"
+      security_log "critical" "Config signed by untrusted key" "$file (signer=${signer:-unknown})"
+      return 1
+    fi
+  fi
+
+  msg_success "✅ Signature valid: $file"
+  security_log "info" "Config signature verified" "$file"
+  return 0
 }
 
 # Verify signature before applying config (S16)

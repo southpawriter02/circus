@@ -213,7 +213,14 @@ main() {
     printf "${UI_MUTED}Please resolve the critical issues above and try again.${UI_RESET}\n"
     echo ""
 
-    if [[ "${INTERACTIVE_MODE:-true}" == "true" ]] && [[ "${FORCE_MODE:-false}" != "true" ]]; then
+    # --force means "continue anyway, don't ask me". It used to be ANDed into
+    # the interactive test, which sent it to the `else` below -- so passing
+    # --force made the installer abort outright, removing the very escape hatch
+    # it exists to automate. It has to be checked on its own, first.
+    if [[ "${FORCE_MODE:-false}" == "true" ]]; then
+      msg_warning "Continuing despite critical failures (--force)."
+      return 0
+    elif [[ "${INTERACTIVE_MODE:-true}" == "true" ]]; then
       if ui_confirm "Would you like to continue anyway? (Not recommended)" "N"; then
         msg_warning "Continuing despite critical failures..."
         return 0
@@ -221,6 +228,8 @@ main() {
         exit 1
       fi
     else
+      # Non-interactive with no --force: nobody is there to make the call, so
+      # fail closed rather than install onto a machine that failed preflight.
       exit 1
     fi
   fi

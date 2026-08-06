@@ -42,8 +42,10 @@ main() {
   for file in "${sh_files_arr[@]}"; do
     if [ -f "$file" ]; then
       msg_info "Running configuration script: '$file'..."
+      # See the note in 11-defaults-and-additional-configuration.sh: one script
+      # failing must not abort the stage. Failures are surfaced, not silenced.
       # shellcheck source=/dev/null
-      source "$file"
+      source "$file" || msg_warning "Security script did not complete: '$file' (continuing)."
     fi
   done
 

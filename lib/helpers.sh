@@ -104,7 +104,22 @@ error_handler() {
 trap 'error_handler ${LINENO} ${BASH_SOURCE[0]}' ERR
 
 die() {
-  log "$LOG_LEVEL_ERROR" "$1"
+  # Call sites write "\n" inside the message to mean a line break, e.g.
+  #   die "Profile not found: $p\n\nRun 'fc profile list' to see available."
+  # log() emits its argument verbatim, so those reached the user as the two
+  # literal characters \n. Log the first line at ERROR, then print the rest
+  # unprefixed -- the remainder is follow-up guidance, not additional errors,
+  # and tagging every hint line [ERROR] misrepresents what went wrong.
+  #
+  # Only the \n sequence is translated. Using printf '%b' would also expand
+  # \t and \\ anywhere in the string, including inside interpolated paths.
+  local msg="$1"
+  local first="${msg%%\\n*}"
+  log "$LOG_LEVEL_ERROR" "$first"
+  if [ "$first" != "$msg" ]; then
+    local rest="${msg#*\\n}"
+    printf '%s\n' "${rest//\\n/$'\n'}" >&2
+  fi
   exit 1
 }
 

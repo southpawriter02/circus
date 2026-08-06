@@ -44,10 +44,19 @@ load 'test_helper'
   local f
   while IFS= read -r -d '' f; do
     case "$f" in
+      # Vendored upstream libraries: not ours to fix, and their findings would
+      # drown out ours. bats-mock is NOT excluded -- we patch it.
       topics/*|lib/plugins/template) continue ;;
+      tests/helpers/bats-assert/*|tests/helpers/bats-support/*|tests/helpers/bats-core/*) continue ;;
     esac
     files+=("$f")
-  done < <(git ls-files -z '*.sh' 'lib/plugins/fc-*' 'bin/*')
+  #
+  # The test harness is in scope too. It was omitted at first, and that is
+  # exactly where an unlinted defect cost the most: an `echo` in stub.bash
+  # appended a newline to a variable-name prefix, so every stub in the suite
+  # exported a name the stub binary never read and silently did nothing.
+  done < <(git ls-files -z '*.sh' '*.bash' 'lib/plugins/fc-*' 'bin/*' \
+             'tests/helpers/bats-mock/stub' 'tests/helpers/bats-mock/binstub')
 
   [ "${#files[@]}" -gt 0 ] || fail "no shell scripts found to analyse"
 

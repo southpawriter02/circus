@@ -52,8 +52,16 @@ source_defaults_from_dir() {
   for file in "${sh_files[@]}"; do
     if [ -f "$file" ]; then
       msg_info "Running configuration script: '$file'..."
+      # One optional app's config must not abort the whole installation.
+      #
+      # These scripts configure apps that may simply not be installed -- which
+      # is the normal case on a fresh Mac. Bare `source "$file"` under
+      # `set -Eeo pipefail` let any one of them take down the entire run: a
+      # missing nvm ended the installer before it reached the ~30 scripts
+      # queued behind it. `|| ...` also suspends errexit for the sourced
+      # script, so a failing step inside one no longer aborts either.
       # shellcheck source=/dev/null
-      source "$file"
+      source "$file" || msg_warning "Configuration script did not complete: '$file' (continuing)."
     fi
   done
 }

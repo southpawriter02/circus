@@ -52,7 +52,7 @@ usage() {
   echo "  --role <name>            Specify the role to install (e.g., developer)."
   echo "  --privacy-profile <lvl>  Set privacy/security level (standard, privacy, lockdown)."
   echo "  --dry-run                Run the installer without making any changes."
-  echo "  --force                  Force re-running of already completed stages."
+  echo "  --force                  Continue past critical preflight failures (not recommended)."
   echo "  --non-interactive        Run the installer without prompting for confirmation."
   echo "  --log-file <path>        Redirect all log output to the specified file."
   echo "  --log-level <lvl>        Set the console log level (DEBUG, INFO, WARN, ERROR, CRITICAL)."

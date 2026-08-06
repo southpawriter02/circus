@@ -14,7 +14,10 @@
 # This sets a global variable that points to the root of our project.
 # This is useful for sourcing scripts and accessing files within our tests.
 
-export PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
+# Declared and assigned separately: `export X="$(...)"` always succeeds with the
+# export's status, so a failing cd would leave PROJECT_ROOT empty and unnoticed.
+PROJECT_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
+export PROJECT_ROOT
 
 # --- Load Support Libraries ---
 # This loads the BATS support libraries, giving us access to powerful
@@ -127,7 +130,10 @@ teardown_isolated_home() {
 #
 setup_installer_test() {
   # Create a temporary HOME directory to avoid polluting the real one
-  export INSTALLER_TEST_HOME=$(mktemp -d)
+  # Separate assignment so a failing mktemp is caught here rather than silently
+  # setting HOME="" below, which would point the tests at the real home.
+  INSTALLER_TEST_HOME=$(mktemp -d) || return 1
+  export INSTALLER_TEST_HOME
   export ORIGINAL_HOME="$HOME"
   export HOME="$INSTALLER_TEST_HOME"
 

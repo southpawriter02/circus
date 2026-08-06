@@ -465,7 +465,7 @@ but isn't is worse than one you know you have to turn on.
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **Config File Signing** | ⚠️ Limited | `gpg --verify` succeeds for **any** key in your keyring, so this proves a file was signed, not that *you* signed it. Pin a fingerprint before relying on it. |
+| **Config File Signing** | 🔌 Available (opt-in pinning) | `verify_config_signature` checks the signature via gpg's machine-readable status output. A bare `gpg --verify` succeeds for **any** key in your keyring, so set `CIRCUS_TRUSTED_SIGNING_FPR` to require *your* fingerprint; unset, this proves a file was signed, not who signed it. |
 | **Script Integrity Hashes** | 🔌 Available | SHA-256 manifest over tracked scripts. Detects modification of known files; will not notice a newly added one. |
 | **Homebrew Tap Verification** | ✅ Active | Brewfiles are scanned before `brew bundle` runs. Taps under the `homebrew/` org are trusted; anything else prompts. Tapping runs third-party formula code, so this is a real execution boundary. |
 | **Self-Update Signature Check** | ✅ Active (opt-in) | `fc self-update` verifies the incoming commit with git's own `%G?`/`%GF`. Set `CIRCUS_TRUSTED_SIGNING_FPR` to a fingerprint to **enforce** it; unset, it warns that commits are unverified. |
@@ -478,9 +478,9 @@ but isn't is worse than one you know you have to turn on.
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **Security Event Logging** | ✅ Active | Structured logging to `~/.circus/`. Note these logs are created with the ambient umask and may be world-readable. |
+| **Security Event Logging** | ✅ Active | Structured logging to `~/.circus/`. Log files are created `0600` inside a `0700` directory, so they are not readable by other local users. |
 | **Config Change Detection** | 🔌 Available | Compares tracked config files against a saved baseline. |
-| **Failed Operation Alerting** | ⚠️ Limited | The time window is computed but never applied, so this counts failures for all time rather than recently. |
+| **Failed Operation Alerting** | 🔌 Available | Counts failures in a category within a time window (default 10 minutes) and alerts past a threshold. |
 | **Startup Security Checks** | 🔌 Available | Runs the audit set on demand; not invoked automatically at startup. |
 | **Periodic Health Reports** | 🔌 Available | Generates a report when called; nothing schedules it. |
 
