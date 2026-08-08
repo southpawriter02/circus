@@ -72,8 +72,24 @@ main() {
   # --- Symlink Core Configuration Files ---
   msg_info "Deploying core shell configuration..."
 
-  # 1. Deploy the main .zshrc file.
-  symlink_with_backup "$DOTFILES_ROOT/profiles/base/zsh/zshrc.symlink" "$HOME/.zshrc"
+  # 1. Deploy core configuration files by finding all *.symlink files.
+  #    This searches profiles/base and profiles/$INSTALL_ROLE (if set).
+  local dotfiles_dirs=("$DOTFILES_ROOT/profiles/base")
+  if [ -n "$INSTALL_ROLE" ] && [ -d "$DOTFILES_ROOT/profiles/$INSTALL_ROLE" ]; then
+    dotfiles_dirs+=("$DOTFILES_ROOT/profiles/$INSTALL_ROLE")
+  fi
+
+  for dir in "${dotfiles_dirs[@]}"; do
+    msg_info "Searching for dotfiles in: $dir"
+    while IFS= read -r source_file; do
+      local filename=$(basename "$source_file")
+      # Strip .symlink extension and prepend a dot
+      local target_name=".${filename%.symlink}"
+      local target_file="$HOME/$target_name"
+
+      symlink_with_backup "$source_file" "$target_file"
+    done < <(find "$dir" -name "*.symlink")
+  done
 
   # 2. Deploy the custom Oh My Zsh plugin.
   #    This requires the ~/.oh-my-zsh/custom/plugins directory to exist.
