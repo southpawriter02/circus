@@ -15,10 +15,18 @@
 
 # --- Re-entrancy Guard --------------------------------------------------------
 
-# `bin/fc` sources this file and then sources a plugin into the same shell, and
-# every plugin sources it again. Without this guard the second pass re-runs the
-# `readonly` declarations in the libraries below, which fails under `set -e` and
-# kills the process before the plugin body ever runs.
+# Sourcing this file twice in one shell re-runs the `readonly` declarations in
+# the libraries below, which fails under the `set -e` that helpers.sh enables and
+# kills the process.
+#
+# This originally guarded `bin/fc`, which sourced the chosen plugin into its own
+# shell after having already sourced this file — so every plugin's own
+# `source ../init.sh` was a second pass. bin/fc now `exec`s the plugin instead,
+# giving it a fresh process where this variable is unset (it is deliberately not
+# exported), so that path no longer relies on the guard.
+#
+# It is still load-bearing for the bats helpers: setup_installer_test sources
+# this file once per test case within a single shell.
 if [ -n "${_CIRCUS_INIT_DONE:-}" ]; then
   return 0
 fi

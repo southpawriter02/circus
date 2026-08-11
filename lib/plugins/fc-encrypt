@@ -193,10 +193,22 @@ action_file() {
   fi
   
   echo ""
-  
+
   if $delete_original; then
-    rm -f "$input_path"
-    msg_success "Original file deleted."
+    # Verify the ciphertext before destroying the only copy of the plaintext.
+    # A tool can exit 0 having written nothing useful (a full disk truncates the
+    # output), and --delete is unrecoverable.
+    if [[ ! -s "$output_path" ]]; then
+      die "Refusing to delete the original: $output_path is missing or empty."
+    fi
+
+    # secure_delete (S15), not `rm -f`. This is the plaintext of something the
+    # user just chose to encrypt, so unlinking it while the contents stay on
+    # disk defeats the point of the command. secure_delete overwrites first,
+    # using srm/shred where available and a dd fallback otherwise.
+    if ! secure_delete "$input_path"; then
+      die "Could not securely delete $input_path. The encrypted copy is at $output_path."
+    fi
   else
     msg_info "Original file preserved: $input_path"
   fi
@@ -350,8 +362,16 @@ action_folder() {
   echo ""
   
   if $delete_original; then
-    rm -rf "$input_path"
-    msg_success "Original folder deleted."
+    # See action_file(): verify the archive before destroying the originals.
+    if [[ ! -s "$output_path" ]]; then
+      die "Refusing to delete the original: $output_path is missing or empty."
+    fi
+
+    # secure_delete_dir (S15) rather than `rm -rf`, for the same reason: these
+    # are the plaintext files the user just encrypted.
+    if ! secure_delete_dir "$input_path"; then
+      die "Could not securely delete $input_path. The encrypted copy is at $output_path."
+    fi
   else
     msg_info "Original folder preserved: $input_path"
   fi

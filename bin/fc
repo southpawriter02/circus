@@ -120,11 +120,22 @@ fi
 # Check if the plugin script exists and is executable.
 if [ -x "$PLUGIN_SCRIPT" ]; then
   shift
-  # We use `source` instead of `exec` here to ensure that the script runs
-  # in the current shell environment, which is critical for the `bats-mock`
-  # testing framework to work correctly. `exec` replaces the current process,
-  # which would cause the mock environment to be lost.
-  source "$PLUGIN_SCRIPT" "$@"
+  # `exec`, not `source`.
+  #
+  # This used to source the plugin, with the note that `exec` "would cause the
+  # mock environment to be lost". That was never true: bats-mock works purely
+  # through PATH and exported variables — stub() symlinks a shim into
+  # $BATS_MOCK_BINDIR (prepended to PATH) and exports <PROG>_STUB_PLAN. Both
+  # survive exec and any subprocess, and every test invokes this script as an
+  # external command via `run "$FC_COMMAND"` regardless.
+  #
+  # Sourcing had real costs. Every plugin sources lib/init.sh itself, so a
+  # sourced plugin re-sourced it on top of the copy bin/fc had already loaded,
+  # re-declaring its readonly constants — which is how `fc` once exited 1 for
+  # all 56 commands. It also meant no plugin could enable `set -euo pipefail`
+  # without imposing it on the dispatcher, and forced every plugin to `exit`
+  # rather than `return`.
+  exec "$PLUGIN_SCRIPT" "$@"
 else
   die "Unknown command '$SUBCOMMAND'. Run 'fc --help' to see a list of available commands."
 fi

@@ -41,6 +41,46 @@ setup() {
   assert_output --partial "Unknown command 'this-command-does-not-exist'"
 }
 
+# --- Plugins run as their own process -----------------------------------------
+#
+# bin/fc used to `source` the chosen plugin, justified by a claim that `exec`
+# "would cause the mock environment to be lost". That was never true: bats-mock
+# is purely PATH- and environment-based (stub() symlinks a shim into
+# $BATS_MOCK_BINDIR and exports <PROG>_STUB_PLAN), and both survive exec — as
+# does every test here, which invokes bin/fc as an external command anyway.
+#
+# Sourcing meant every plugin's own `source ../init.sh` landed in a shell that
+# had already sourced it, re-running its `readonly` declarations; that is how
+# `fc` once exited 1 for all 56 commands. It also prevented any plugin from
+# setting shell options without imposing them on the dispatcher.
+
+@test "Dispatcher: should exec plugins rather than source them" {
+  run grep -E '^\s*exec "\$PLUGIN_SCRIPT"' "$PROJECT_ROOT/bin/fc"
+  assert_success
+
+  # The specific regression: sourcing the plugin back into the dispatcher.
+  run grep -E '^\s*source "\$PLUGIN_SCRIPT"' "$PROJECT_ROOT/bin/fc"
+  assert_failure
+}
+
+@test "Dispatcher: init.sh re-entrancy guard must not be exported" {
+  # exec gives the plugin a fresh process in which it runs its own
+  # `source ../init.sh`. That only initialises the environment if the guard is
+  # absent — exporting _CIRCUS_INIT_DONE would make init.sh return early in
+  # every plugin, leaving them with no helpers, no UI and no security library.
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1; export -p"
+  refute_output --partial "_CIRCUS_INIT_DONE"
+}
+
+@test "Dispatcher: should propagate a plugin's exit status" {
+  # Success and failure must both survive the exec boundary.
+  run "$FC_COMMAND" info
+  assert_success
+
+  run "$FC_COMMAND" dns not-a-real-action
+  assert_failure
+}
+
 # ------------------------------------------------------------------------------
 # Tests for Core Plugin Success and Failure Cases
 # ------------------------------------------------------------------------------

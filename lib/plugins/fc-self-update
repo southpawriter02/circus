@@ -15,7 +15,6 @@ source "$(dirname "${BASH_SOURCE[0]}")/../init.sh"
 
 # --- Configuration ----------------------------------------------------------
 readonly MIGRATIONS_DIR="$DOTFILES_ROOT/migrations"
-readonly VERSION_FILE="$DOTFILES_ROOT/VERSION"
 
 # --- Help and Usage ---------------------------------------------------------
 usage() {
@@ -39,16 +38,37 @@ usage() {
 
 # --- Helper Functions -------------------------------------------------------
 
-get_current_version() {
-  if [[ -f "$VERSION_FILE" ]]; then
-    cat "$VERSION_FILE"
-  else
-    git -C "$DOTFILES_ROOT" describe --tags --always 2>/dev/null || echo "unknown"
-  fi
-}
+# get_current_version() is NOT defined here.
+#
+# It used to be, reading a "$DOTFILES_ROOT/VERSION" file that does not exist in
+# this repository — the version file is `.version`. Because this plugin sources
+# init.sh (and therefore helpers.sh) before defining its own functions, that
+# local definition shadowed the correct helpers.sh:get_current_version() and
+# every caller silently fell through to `git describe`, yielding
+# "v1.6.0-23-ga56d307" where "1.6.0" was meant.
+#
+# That broke run_migrations: version_in_range() feeds these strings to
+# version_compare(), which splits on '.' and compares parts numerically, so a
+# describe string made migration selection meaningless. It also made
+# `fc self-update --check` disagree with `fc info` about the current version.
+#
+# helpers.sh:get_current_version() reads .version and falls back to "0.0.0".
 
+# Read the version the remote is offering, in the same format as the local one,
+# so the two are comparable both on screen and in version_in_range().
 get_remote_version() {
-  git -C "$DOTFILES_ROOT" fetch --tags --quiet 2>/dev/null
+  git -C "$DOTFILES_ROOT" fetch --tags --quiet 2>/dev/null || true
+
+  # Prefer the tracked .version file, mirroring get_current_version(). Assigned
+  # separately: `$(git show ... | tr)` exits with tr's status, which is 0 even
+  # when the git side failed, so the emptiness check is what detects failure.
+  local remote_version
+  remote_version=$(git -C "$DOTFILES_ROOT" show origin/main:.version 2>/dev/null | tr -d '[:space:]')
+  if [[ -n "$remote_version" ]]; then
+    echo "$remote_version"
+    return 0
+  fi
+
   git -C "$DOTFILES_ROOT" describe --tags origin/main 2>/dev/null || \
     git -C "$DOTFILES_ROOT" rev-parse --short origin/main 2>/dev/null || echo "unknown"
 }
@@ -59,6 +79,30 @@ has_uncommitted_changes() {
 
 get_commits_behind() {
   git -C "$DOTFILES_ROOT" rev-list HEAD..origin/main --count 2>/dev/null || echo "0"
+}
+
+#
+# @description
+#   Restore a stash created by this run, on every path that leaves do_update.
+#
+#   The previous restore was guarded by `has_uncommitted_changes`, which is
+#   false immediately after a successful `stash push` — that is the whole point
+#   of stashing. So the pop never ran and the user's work was left sitting in
+#   the stash with only a success message on screen. The early returns
+#   (already-up-to-date, cancelled at the prompt, refused signature, failed
+#   fast-forward) did not attempt a restore at all.
+#
+# @param $1 "true" if this run created a stash
+#
+restore_stash_if_any() {
+  [[ "$1" == "true" ]] || return 0
+
+  echo ""
+  msg_info "Restoring stashed changes..."
+  if ! git -C "$DOTFILES_ROOT" stash pop --quiet 2>/dev/null; then
+    msg_warning "Could not auto-restore your stashed changes."
+    msg_info "They are safe — recover them with: git -C $DOTFILES_ROOT stash pop"
+  fi
 }
 
 # --- Actions ----------------------------------------------------------------
@@ -107,6 +151,10 @@ do_update() {
   msg_info "Starting self-update..."
   echo ""
   
+  # Tracks whether WE created a stash, so the restore below can be driven by
+  # what actually happened rather than by re-inspecting the working tree.
+  local stashed=false
+
   # Check for uncommitted changes
   if has_uncommitted_changes; then
     if [[ "$force" != "true" ]]; then
@@ -118,7 +166,12 @@ do_update() {
     else
       msg_info "Stashing uncommitted changes..."
       if [[ "$dry_run" != "true" ]]; then
-        git -C "$DOTFILES_ROOT" stash push -m "fc-self-update auto-stash $(date +%Y%m%d-%H%M%S)"
+        if git -C "$DOTFILES_ROOT" stash push -m "fc-self-update auto-stash $(date +%Y%m%d-%H%M%S)"; then
+          stashed=true
+        else
+          msg_error "Could not stash your changes. Refusing to continue."
+          return 1
+        fi
       fi
     fi
   fi
@@ -135,13 +188,21 @@ do_update() {
   
   if [[ "$commits_behind" -eq 0 ]]; then
     msg_success "Already up to date!"
+    restore_stash_if_any "$stashed"
     return 0
   fi
-  
+
   # Get current version for migrations
   local old_version
   old_version=$(get_current_version)
-  
+
+  # The commit we are updating FROM. Recorded as a SHA rather than reusing
+  # $old_version: the version strings are semver read from .version, and
+  # `git diff 1.6.0..1.7.0` is not a valid revision range (the tags are v-
+  # prefixed), so the Brewfile check below would silently match nothing.
+  local old_sha
+  old_sha=$(git -C "$DOTFILES_ROOT" rev-parse HEAD)
+
   # Show what will be updated
   msg_info "Changes to apply ($commits_behind commits):"
   git -C "$DOTFILES_ROOT" log HEAD..origin/main --oneline | sed 's/^/  /'
@@ -164,6 +225,7 @@ do_update() {
       msg_error "origin/main is not signed by the pinned key. Refusing to update."
       msg_info "Pinned: $CIRCUS_TRUSTED_SIGNING_FPR"
       msg_info "Inspect with: git -C $DOTFILES_ROOT log -1 --format='%G? %GF' origin/main"
+      restore_stash_if_any "$stashed"
       return 1
     fi
   else
@@ -175,6 +237,7 @@ do_update() {
   # user's shell startup, so applying an update runs whatever arrived above.
   if ! ui_confirm "Apply these $commits_behind commit(s)?" "N"; then
     msg_info "Update cancelled. Nothing was changed."
+    restore_stash_if_any "$stashed"
     return 0
   fi
 
@@ -191,6 +254,7 @@ do_update() {
     msg_info "This is worth looking at before proceeding: the remote may have been"
     msg_info "force-pushed, or you have local commits on top of main."
     msg_info "Inspect with: git -C $DOTFILES_ROOT log --oneline --graph HEAD origin/main"
+    restore_stash_if_any "$stashed"
     return 1
   fi
   
@@ -208,23 +272,20 @@ do_update() {
   if [[ "$no_deps" != "true" ]]; then
     msg_info "Checking for new dependencies..."
     
-    # Check if Brewfile changed
-    if git -C "$DOTFILES_ROOT" diff "$old_version..$new_version" --name-only 2>/dev/null | grep -q "Brewfile"; then
+    # Check if Brewfile changed, over the commit range we just fast-forwarded
+    # across. This used to diff "$old_version..$new_version" — semver strings
+    # from .version, which are not revisions (the tags are v-prefixed), so the
+    # diff errored into /dev/null and new dependencies were never installed.
+    if git -C "$DOTFILES_ROOT" diff "$old_sha" HEAD --name-only 2>/dev/null | grep -q "Brewfile"; then
       msg_info "Brewfile changed. Installing new dependencies..."
       if command -v brew &>/dev/null; then
         brew bundle --file="$DOTFILES_ROOT/Brewfile" --no-lock 2>/dev/null || true
       fi
     fi
   fi
-  
-  # Pop stashed changes if we stashed
-  if [[ "$force" == "true" ]] && has_uncommitted_changes; then
-    echo ""
-    msg_info "Restoring stashed changes..."
-    git -C "$DOTFILES_ROOT" stash pop --quiet 2>/dev/null || \
-      msg_warning "Could not auto-restore stash. Run 'git stash pop' manually."
-  fi
-  
+
+  restore_stash_if_any "$stashed"
+
   echo ""
   msg_success "Update complete!"
   echo ""

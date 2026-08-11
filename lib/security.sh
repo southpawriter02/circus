@@ -3334,42 +3334,15 @@ schedule_health_check() {
 }
 
 # --- Exports ----------------------------------------------------------------
-
-export -f sanitize_string escape_for_shell sanitize_domain
-export -f sanitize_package_name sanitize_path validate_url
-export -f check_not_root sanitize_defaults_value security_check_input
-export -f security_log
-export -f validate_path resolve_path_secure is_within_allowed_paths
-export -f check_symlink_target is_path_safe validate_config_path
-export -f is_yaml_safe sanitize_yaml_value validate_yaml_security safe_yaml_get
-export -f sudo_audit sudo_quiet sudo_audit_view sudo_audit_clear sudo_audit_stats
-export -f sudo_confirm is_destructive_command require_confirmation
-export -f sudo_drop sudo_has_credentials sudo_status
-export -f with_sudo_scope sudo_scope_start sudo_scope_end sudo_register_cleanup
-export -f sudoers_hash sudoers_baseline_save sudoers_check sudoers_verify_before sudoers_baseline_info
-export -f die_if_root is_root require_non_root get_real_user
-export -f secure_mktemp secure_mktemp_dir secure_temp_cleanup secure_temp_register_cleanup
-export -f with_secure_temp verify_temp_permissions
-export -f is_symlink safe_write_check safe_write atomic_write safe_append get_real_path
-export -f is_world_writable is_group_writable check_config_permissions
-export -f scan_config_permissions fix_config_permissions check_config_owner
-export -f has_gpg encrypt_backup decrypt_backup encrypt_and_shred
-export -f create_encrypted_backup restore_encrypted_backup is_encrypted
-export -f get_secure_delete_tool secure_delete secure_delete_dir
-export -f secure_clear secure_delete_confirm
-export -f sign_config verify_config_signature verify_before_apply
-export -f list_signing_keys is_config_signed sign_all_configs verify_all_configs
-export -f file_hash generate_hash_manifest verify_script_integrity
-export -f verify_single_script show_hash_manifest update_script_hash
-export -f is_trusted_tap verify_brew_package add_trusted_tap list_brew_taps scan_brewfile_taps
-export -f is_commit_signed verify_update_signature safe_self_update show_commit_signatures
-export -f snapshot_hash list_rollback_snapshots verify_snapshot_exists safe_rollback create_safety_snapshot
-export -f security_event security_audit_view security_events_by_severity security_event_stats
-export -f config_baseline_save config_change_check
-export -f log_failed_operation check_failure_threshold view_failed_operations clear_failed_operations
-export -f startup_security_check security_status
-export -f security_health_report schedule_health_check
-
+#
+# All `export -f` declarations live in the single block at the END of this file.
+#
+# There used to be a second, earlier block here, exporting 115 of the 134
+# functions. It predated the S26-S30 sections below, and when those were
+# appended they brought their own export block that re-declared everything —
+# leaving 34 of the 73 export lines as exact duplicates. Keeping two blocks
+# meant a new function had to be added to whichever one the author happened to
+# find, and only the tail block is guaranteed to run after every definition.
 # --- S26: Remote URL Allowlist ----------------------------------------------
 
 # Allowed domains for remote downloads
