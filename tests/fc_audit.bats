@@ -843,3 +843,73 @@ LOG
   assert_success
   assert_output --partial "download failed"
 }
+
+# ==============================================================================
+# Redundant controls: removed or folded into the canonical implementation
+# ==============================================================================
+
+@test "add_allowed_domain no longer exists" {
+  # It appended to an in-process variable and nothing else, so a domain added
+  # from the command line vanished when the command exited. Its only mention
+  # was inside secure_download's error text telling the user to run it.
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               declare -F add_allowed_domain"
+  assert_failure
+}
+
+@test "no export names a function that does not exist" {
+  # Removing a function without removing its `export -f` would make init.sh
+  # fail for every plugin.
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               missing=0
+               for fn in \$(grep -hoE '^export -f .*' '$PROJECT_ROOT/lib/security.sh' \
+                            | sed 's/^export -f //' | tr ' ' '\n' | sort -u); do
+                 [ -n \"\$fn\" ] || continue
+                 declare -F \"\$fn\" >/dev/null 2>&1 || { echo \"MISSING: \$fn\"; missing=1; }
+               done
+               exit \$missing"
+  assert_success
+}
+
+@test "CIRCUS_ALLOWED_DOMAINS remains the supported way to extend the allowlist" {
+  CIRCUS_ALLOWED_DOMAINS="github.com internal.example.com" run "$FC_COMMAND" audit domains
+  assert_success
+  assert_output --partial "internal.example.com"
+}
+
+@test "encrypt_and_shred preserves the plaintext when encryption fails" {
+  # The property that matters: the original must survive anything short of a
+  # verified successful encryption. Exercised here via the no-GPG path.
+  printf 'SECRET-MUST-SURVIVE\n' > "$AUDIT_TMP/secret.txt"
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               encrypt_and_shred '$AUDIT_TMP/secret.txt' '$AUDIT_TMP/secret.txt.gpg' >/dev/null 2>&1"
+  assert_failure
+  assert [ -f "$AUDIT_TMP/secret.txt" ]
+  run cat "$AUDIT_TMP/secret.txt"
+  assert_output "SECRET-MUST-SURVIVE"
+}
+
+@test "encrypt_and_shred delegates shredding to secure_delete" {
+  # It used to carry its own srm/shred/dd cascade, which was WEAKER than the
+  # dedicated implementation: a single zero pass, versus secure_delete's random
+  # passes followed by a zero pass. Two implementations of one primitive also
+  # meant a fix to the other would have missed this copy.
+  run bash -c "sed -n '/^encrypt_and_shred()/,/^}/p' '$PROJECT_ROOT/lib/security.sh' \
+               | grep -vE '^[[:space:]]*#' | grep -E '(srm|shred|gshred) \"|dd if='"
+  assert_failure
+
+  run bash -c "sed -n '/^encrypt_and_shred()/,/^}/p' '$PROJECT_ROOT/lib/security.sh' \
+               | grep -E 'secure_delete \"\\\$input\"'"
+  assert_success
+}
+
+@test "encrypt_and_shred verifies the ciphertext before shredding" {
+  # An encryptor can exit 0 having written nothing useful; this deletion is
+  # unrecoverable. Same defect that existed in `fc encrypt --delete`.
+  run bash -c "sed -n '/^encrypt_and_shred()/,/^}/p' '$PROJECT_ROOT/lib/security.sh' \
+               | grep -E '! -s \"\\\$output\"'"
+  assert_success
+}

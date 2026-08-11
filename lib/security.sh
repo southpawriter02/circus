@@ -1762,24 +1762,36 @@ decrypt_backup() {
 encrypt_and_shred() {
   local input="$1"
   local output="${2:-${input}.gpg}"
-  
-  if encrypt_backup "$input" "$output"; then
-    # Securely delete original
-    if command -v srm &>/dev/null; then
-      srm -z "$input"
-    elif command -v shred &>/dev/null; then
-      shred -u -z "$input"
-    else
-      # Fallback: overwrite with zeros, then delete
-      dd if=/dev/zero of="$input" bs=1k count=$(( $(stat -f%z "$input" 2>/dev/null || stat -c%s "$input" 2>/dev/null) / 1024 + 1 )) 2>/dev/null
-      rm -f "$input"
-    fi
-    msg_success "Original securely deleted: $input"
-    security_log "info" "Encrypted and shredded" "$input"
-    return 0
-  else
+
+  if ! encrypt_backup "$input" "$output"; then
     return 1
   fi
+
+  # Verify the ciphertext BEFORE destroying the only copy of the plaintext.
+  # encrypt_backup can exit 0 having written nothing useful — a full disk
+  # truncates the output — and this deletion is unrecoverable. The same defect
+  # existed in `fc encrypt --delete`.
+  if [[ ! -s "$output" ]]; then
+    msg_error "Refusing to shred $input: $output is missing or empty."
+    security_log "error" "Encrypt-and-shred aborted, bad ciphertext" "$input"
+    return 1
+  fi
+
+  # Delegate to secure_delete (S15) rather than re-implementing the shred.
+  #
+  # This used to carry its own srm/shred/dd cascade, which was WEAKER than the
+  # dedicated one: a single zero pass, where secure_delete does the configured
+  # number of random passes followed by a zero pass. Two implementations of the
+  # same security primitive also meant the weaker one could silently be the one
+  # in use, and only this copy would have been missed by a fix to the other.
+  if ! secure_delete "$input"; then
+    msg_error "Encrypted to $output, but could not securely delete $input."
+    security_log "error" "Encrypt-and-shred: secure delete failed" "$input"
+    return 1
+  fi
+
+  security_log "info" "Encrypted and shredded" "$input"
+  return 0
 }
 
 # Create encrypted backup archive (S14)
@@ -3476,22 +3488,20 @@ secure_download() {
   fetch_verified_script "$url" "$output" "$expected_sha"
 }
 
-# Add domain to allowlist (S26)
-# Usage: add_allowed_domain "trusted.com"
-add_allowed_domain() {
-  local domain="$1"
-  
-  if is_allowed_domain "https://$domain"; then
-    msg_info "Domain already allowed: $domain"
-    return 0
-  fi
-  
-  ALLOWED_DOMAINS="$ALLOWED_DOMAINS $domain"
-  export ALLOWED_DOMAINS
-  
-  msg_success "Added allowed domain: $domain"
-  security_event "network" "domain_added" "$domain" "info"
-}
+# add_allowed_domain() was removed (S26).
+#
+# It appended to the in-process ALLOWED_DOMAINS variable and nothing else, so a
+# domain "added" from the command line was gone the moment the command exited.
+# Nothing ever called it: its only mention was inside secure_download's error
+# text, which told the user to run it — advice that could not have worked twice
+# in a row even if the function had been reachable from a shell.
+#
+# CIRCUS_ALLOWED_DOMAINS is the supported mechanism and does persist, being an
+# environment variable the user controls:
+#
+#   CIRCUS_ALLOWED_DOMAINS="$CIRCUS_ALLOWED_DOMAINS internal.example.com"
+#
+# `fc audit domains` shows the effective list.
 
 # List allowed domains (S26)
 # Usage: list_allowed_domains
@@ -3924,7 +3934,7 @@ export -f config_baseline_save config_change_check
 export -f log_failed_operation check_failure_threshold view_failed_operations clear_failed_operations
 export -f startup_security_check security_status
 export -f security_health_report schedule_health_check
-export -f is_allowed_domain secure_download add_allowed_domain list_allowed_domains
+export -f is_allowed_domain secure_download list_allowed_domains
 export -f verify_certificate secure_update_check save_certificate_pin
 export -f log_network_request view_network_requests network_request_stats logged_curl
 export -f get_firewall_rules firewall_baseline_save firewall_check firewall_status

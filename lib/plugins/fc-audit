@@ -729,10 +729,10 @@ main() {
       # S26. Shows the effective download allowlist, including anything added
       # via CIRCUS_ALLOWED_DOMAINS.
       #
-      # add_allowed_domain is deliberately NOT exposed: it only mutates an
-      # in-process variable, so a change made from the command line would be
-      # gone the moment the command exited. CIRCUS_ALLOWED_DOMAINS is the
-      # mechanism that actually persists.
+      # There is deliberately no "add" action. The former add_allowed_domain
+      # only mutated an in-process variable, so a domain added from the command
+      # line vanished when the command exited; it has been removed.
+      # CIRCUS_ALLOWED_DOMAINS is the mechanism that persists.
       list_allowed_domains || exit $?
       ;;
 

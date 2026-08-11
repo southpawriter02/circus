@@ -153,7 +153,7 @@ jobs:
           #
           # -S warning matches tests/static_analysis.bats; .shellcheckrc holds
           # the disables so both enforce the same rules.
-          # The test harness is in scope: an unlinted bug in stub.bash once
+@2          # The test harness is in scope: an unlinted bug in stub.bash once
           # made every mock in the suite inert without failing anything.
           git ls-files -z '*.sh' '*.bash' 'lib/plugins/fc-*' 'bin/*' \
             'tests/helpers/bats-mock/stub' 'tests/helpers/bats-mock/binstub' \
