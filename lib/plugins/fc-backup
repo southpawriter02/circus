@@ -18,32 +18,171 @@ usage() {
   msg_info "Usage: fc backup"
   echo ""
   msg_info "Backs up essential dotfiles to a timestamped directory."
-  msg_info "The backup location and the list of files to back up are configurable"
-  msg_info "within this script."
+  echo ""
+  msg_info "Secrets:"
+  echo "  Items holding secrets (.gnupg, .ssh, .aws, .netrc, .npmrc, .pypirc,"
+  echo "  .docker) are NEVER written to the destination in plaintext. They are"
+  echo "  archived and encrypted with AES-256 in a single stream, so no decrypted"
+  echo "  copy is created on disk, and you are prompted for a passphrase."
+  echo ""
+  echo "  This matters because the default destination is iCloud Drive, which"
+  echo "  replicates to Apple's servers and to every Mac on the account."
+  echo ""
+  echo "  If neither gpg nor openssl is available the item is refused, not"
+  echo "  copied, and the command exits non-zero."
+  echo ""
+  msg_info "Restoring an encrypted item:"
+  echo "  gpg --decrypt .gnupg.tar.gz.gpg | tar -xzf - -C \"\$HOME\""
+  echo "  openssl enc -d -aes-256-cbc -pbkdf2 -in .gnupg.tar.gz.enc | tar -xzf - -C \"\$HOME\""
+  echo ""
+  msg_info "Configuration:"
+  echo "  CIRCUS_BACKUP_DIR    - Destination directory"
+  echo "                         (default: iCloud Drive/Backups)"
+  echo "  CIRCUS_BACKUP_ITEMS  - Space-separated list of items to back up,"
+  echo "                         relative to \$HOME"
+  echo "                         (default: .zshrc .zpreztorc .gitconfig .gnupg)"
+  echo "  RSYNC_CMD            - rsync binary to use (default: rsync)"
   echo ""
   exit 0
 }
 
+# --- Secret Handling ---------------------------------------------------------
+#
+# The destination is iCloud Drive. `rsync -a` of ~/.gnupg put a plaintext copy
+# of the user's private GPG keyring into a syncing cloud folder, where it is
+# replicated to Apple's servers and to every other Mac on the account. The same
+# applies to anything else in this list.
+#
+# These items are therefore never written to the destination in plaintext. They
+# are streamed straight from tar into a symmetric cipher, so no decrypted copy
+# is ever created on disk — not even a temporary one. (lib/security.sh's
+# create_encrypted_backup is deliberately NOT used: it tars to a temp file and
+# removes it with `rm -f`, leaving the plaintext recoverable.)
+#
+# If no cipher is available the item is REFUSED, not copied. Failing closed is
+# the point: a silent plaintext fallback would defeat the whole control.
+
+# Items whose contents are secrets, matched against the backup list. Adding one
+# of these to the backup list automatically routes it through encryption.
+_is_sensitive_item() {
+  case "$1" in
+    .gnupg|.ssh|.aws|.netrc|.npmrc|.pypirc|.docker) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# gpg preferred, openssl as fallback — matching fc-encrypt's tool selection.
+_backup_cipher() {
+  if command -v gpg &>/dev/null; then
+    echo "gpg"
+  elif command -v openssl &>/dev/null; then
+    echo "openssl"
+  else
+    echo "none"
+  fi
+}
+
+#
+# @description Archive and encrypt one sensitive item into the backup directory.
+# @param $1 The item name, relative to $HOME (e.g. ".gnupg")
+# @param $2 The backup destination directory
+# @return 0 on success; 1 if it could not be encrypted (never falls back to
+#         plaintext)
+#
+_backup_encrypted_item() {
+  local item="$1"
+  local backup_dir="$2"
+
+  local cipher
+  cipher=$(_backup_cipher)
+
+  if [ "$cipher" = "none" ]; then
+    msg_error "  -> REFUSING to back up '$item': it holds secrets and neither gpg nor openssl is available."
+    msg_info  "     Install one (brew install gnupg) or remove '$item' from the backup list."
+    return 1
+  fi
+
+  # Slashes would be read as a path by the shell; keep the name flat.
+  local safe_name="${item//\//_}"
+  local out
+  case "$cipher" in
+    gpg) out="$backup_dir/${safe_name}.tar.gz.gpg" ;;
+    *)   out="$backup_dir/${safe_name}.tar.gz.enc" ;;
+  esac
+
+  msg_info "  -> Encrypting '$item' (contains secrets)..."
+
+  # umask in a subshell so the ciphertext is created 0600 from the outset,
+  # rather than existing world-readable for the duration of the write.
+  #
+  # tar writes to stdout and the cipher reads stdin: the plaintext archive only
+  # ever exists in the pipe. `pipefail` (set in helpers.sh) means a tar failure
+  # here is not masked by a cipher that exits 0.
+  if ! (
+    umask 077
+    case "$cipher" in
+      gpg)
+        tar -czf - -C "$HOME" "$item" | gpg --symmetric --cipher-algo AES256 --output "$out"
+        ;;
+      openssl)
+        tar -czf - -C "$HOME" "$item" | openssl enc -aes-256-cbc -salt -pbkdf2 -out "$out"
+        ;;
+    esac
+  ); then
+    # A partial ciphertext is worse than none: it looks like a backup.
+    rm -f "$out"
+    msg_error "  -> Failed to encrypt '$item'. Nothing was written for it."
+    return 1
+  fi
+
+  # An encryptor can exit 0 having written nothing useful.
+  if [ ! -s "$out" ]; then
+    rm -f "$out"
+    msg_error "  -> Encryption of '$item' produced an empty file. Nothing was written for it."
+    return 1
+  fi
+
+  chmod 600 "$out"
+  msg_success "  -> Encrypted: $(basename "$out")"
+  return 0
+}
+
 # --- Main Logic -------------------------------------------------------------
 main() {
+  # --help is handled BEFORE the dependency check. The other way round, asking
+  # for help on a machine without rsync produced "This command requires
+  # 'rsync'", which is both unhelpful and a smoke-test failure waiting to
+  # happen: the CI job requires every plugin to answer --help on a bare macOS
+  # install. It passes today only because macOS happens to ship rsync.
+  #
+  # ${1:-} because main is called with no arguments in the common case.
+  if [ "${1:-}" = "--help" ]; then
+    usage
+  fi
+
   local rsync_cmd=${RSYNC_CMD:-rsync}
 
   if ! command -v "$rsync_cmd" &> /dev/null; then
     die "This command requires 'rsync'. Please install it first."
   fi
 
-  if [ "$1" == "--help" ]; then
-    usage
-  fi
-
   # --- Configuration --------------------------------------------------------
-  local BACKUP_LOCATION_BASE="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Backups"
-  local DOTFILES_TO_BACKUP=(
-    ".zshrc"
-    ".zpreztorc"
-    ".gitconfig"
-    ".gnupg"
-  )
+  # The usage text has always claimed these are configurable; until now they
+  # were hardcoded locals, so "configurable" meant "edit the source".
+  local BACKUP_LOCATION_BASE="${CIRCUS_BACKUP_DIR:-$HOME/Library/Mobile Documents/com~apple~CloudDocs/Backups}"
+
+  local DOTFILES_TO_BACKUP
+  if [ -n "${CIRCUS_BACKUP_ITEMS:-}" ]; then
+    # Space-separated, e.g. CIRCUS_BACKUP_ITEMS=".zshrc .gitconfig"
+    read -r -a DOTFILES_TO_BACKUP <<< "$CIRCUS_BACKUP_ITEMS"
+  else
+    DOTFILES_TO_BACKUP=(
+      ".zshrc"
+      ".zpreztorc"
+      ".gitconfig"
+      ".gnupg"
+    )
+  fi
 
   # --- Backup Process -------------------------------------------------------
   msg_info "Starting dotfiles backup..."
@@ -55,28 +194,64 @@ main() {
   local backup_dir="$BACKUP_LOCATION_BASE/dotfiles-backup-$timestamp"
   mkdir -p "$backup_dir"
 
+  # 0700 on the backup directory. Even with every secret encrypted, the file
+  # names alone disclose what the machine holds, and the default umask would
+  # leave this readable by other local accounts.
+  chmod 700 "$backup_dir"
+
   msg_info "Backup destination: $backup_dir"
   echo ""
 
   local items_backed_up=0
   local items_skipped=0
+  local items_failed=0
 
   for item in "${DOTFILES_TO_BACKUP[@]}"; do
     local source_path="$HOME/$item"
-    if [ -e "$source_path" ]; then
-      msg_info "  -> Backing up '$item'..."
-      rsync -a "$source_path" "$backup_dir/"
-      items_backed_up=$((items_backed_up + 1))
-    else
+    if [ ! -e "$source_path" ]; then
       msg_warning "  -> Skipping '$item' (does not exist)."
       items_skipped=$((items_skipped + 1))
+      continue
     fi
+
+    if _is_sensitive_item "$item"; then
+      # Encrypted, or not written at all — never plaintext into the destination.
+      if _backup_encrypted_item "$item" "$backup_dir"; then
+        items_backed_up=$((items_backed_up + 1))
+      else
+        items_failed=$((items_failed + 1))
+      fi
+      continue
+    fi
+
+    msg_info "  -> Backing up '$item'..."
+    # "$rsync_cmd", not a literal `rsync`. The RSYNC_CMD indirection above
+    # only ever gated: it checked $rsync_cmd exists and then invoked the
+    # system rsync regardless, so pointing RSYNC_CMD at another binary
+    # silently had no effect and the copy itself could not be stubbed in a
+    # test. That is why this plugin's only coverage was its failure path.
+    "$rsync_cmd" -a "$source_path" "$backup_dir/"
+    items_backed_up=$((items_backed_up + 1))
   done
 
   echo ""
-  msg_success "Backup complete!"
   msg_info "Items backed up: $items_backed_up"
   msg_info "Items skipped: $items_skipped"
+
+  if [ "$items_failed" -gt 0 ]; then
+    msg_info "Items failed: $items_failed"
+    echo ""
+    # Not "Backup complete!", and a non-zero exit. A backup that silently omits
+    # the secrets it was asked to protect must not report success.
+    #
+    # `die`, not `return 1`: returning non-zero from main trips the ERR trap
+    # helpers.sh installs, which reports a deliberate, already-explained refusal
+    # as "An unexpected error occurred on line N".
+    die "Backup finished with $items_failed item(s) NOT backed up.\nThe encrypted items above were not written. Nothing was stored in plaintext."
+  fi
+
+  echo ""
+  msg_success "Backup complete!"
 }
 
 main "$@"

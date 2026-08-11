@@ -171,7 +171,11 @@ setup() {
   # Use the plugin's own RSYNC_CMD override rather than `stub "command -v rsync"`.
   # `command -v` is a shell builtin, so bats-mock cannot shim it — the stub was
   # silently inert and the test asserted against whatever really happened.
-  touch ~/.zshrc
+  #
+  # This test file does not isolate HOME, and a `touch ~/.zshrc` here wrote into
+  # the developer's real home on every run. It was also unnecessary: the plugin
+  # exits at the rsync dependency check, before it reads any dotfile. The full
+  # backup flow is covered against an isolated HOME in fc_backup.bats.
   export RSYNC_CMD="nonexistent_rsync_xyz"
   run "$FC_COMMAND" fc-backup
   assert_failure
@@ -211,11 +215,20 @@ setup() {
     skip "gpg not installed; a real encrypted backup cannot be exercised"
   fi
 
+  # Isolate HOME for the duration: this is the one test here that reaches a real
+  # backup, and it previously ran `touch ~/.zshrc` and then `fc sync backup`
+  # against the developer's actual home. It is skipped on machines without gpg,
+  # so the damage was invisible locally and would only appear on a runner that
+  # has gpg installed.
+  setup_isolated_home
+  printf 'zshrc\n' > "$HOME/.zshrc"
+
   export GPG_RECIPIENT_ID="test-key"
-  touch ~/.zshrc
   run "$FC_COMMAND" fc-sync backup
   assert_success
   unset GPG_RECIPIENT_ID
+
+  teardown_isolated_home
 }
 
 # ------------------------------------------------------------------------------
