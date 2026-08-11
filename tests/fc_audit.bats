@@ -597,3 +597,249 @@ LOG
   assert_success
   assert [ -s "$AUDIT_TMP/fw_ok.txt" ]
 }
+
+# ==============================================================================
+# S07: interactive prompts must cancel cleanly, not crash
+# ==============================================================================
+#
+# helpers.sh runs with `set -e` and an ERR trap. At EOF — stdin closed, a pipe,
+# cron, CI — `read` returns non-zero, so every unguarded confirmation prompt in
+# the repository aborted with "An unexpected error occurred in ... on line N"
+# instead of cancelling. 23 prompts were affected, including every destructive
+# confirmation in lib/security.sh.
+#
+# They failed SAFE (nothing executed), but reported a crash rather than a
+# cancellation and returned a generic status, so a caller could not tell
+# "user declined" from "something broke".
+
+@test "sudo_confirm cancels cleanly when input is unavailable" {
+  # `trap - ERR` here covers the CANCELLATION SEMANTICS only: the right message
+  # and a non-zero status. It cannot observe the crash itself.
+  #
+  # Nothing in-process can. Leaving the trap set means sudo_confirm's own
+  # legitimate non-zero RETURN trips it in this wrapper, printing the string
+  # under test; and calling it inside an `if` or `||` makes bash suppress the
+  # trap throughout the function body, so the internal failure disappears too.
+  #
+  # The crash is covered instead by "fc snapshot delete cancels cleanly without
+  # a terminal", which crosses a real process boundary via bin/fc, and by "no
+  # interactive prompt in lib/ is left unguarded".
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               sudo_confirm 'test' rm -rf '$AUDIT_TMP/nonexistent-xyz' </dev/null 2>&1"
+  assert_output --partial "Operation cancelled"
+  refute_output --partial "unexpected error occurred"
+}
+
+@test "sudo_confirm refuses to execute when it cannot confirm" {
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               sudo_confirm 'test' rm -rf '$AUDIT_TMP/nonexistent-xyz' </dev/null >/dev/null 2>&1"
+  assert_failure
+}
+
+@test "is_destructive_command recognises destructive operations" {
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               for c in 'rm -rf /' 'diskutil eraseDisk' 'dd if=/dev/zero of=/dev/disk0'; do
+                 is_destructive_command \"\$c\" || exit 1
+               done"
+  assert_success
+}
+
+@test "is_destructive_command does not flag ordinary commands" {
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               is_destructive_command 'ls -la' && exit 1
+               is_destructive_command 'echo hello' && exit 1
+               exit 0"
+  assert_success
+}
+
+@test "ui_select returns at EOF instead of looping forever" {
+  # This read sits inside a `while true`. Ignoring its status would spin here
+  # forever — trading a crash for a hang, which is worse.
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               ui_select 'Pick' a b </dev/null 2>&1"
+  assert_failure
+  assert_output --partial "selection cancelled"
+}
+
+@test "fc snapshot delete cancels cleanly without a terminal" {
+  run bash -c "'$FC_COMMAND' snapshot delete 2026-01-01-000000 </dev/null 2>&1"
+  assert_output --partial "Cancelled"
+  refute_output --partial "unexpected error occurred"
+}
+
+@test "no interactive prompt in lib/ is left unguarded" {
+  # Every `read -p` must either be tolerant of a non-zero status (`|| true`,
+  # for terminal prompts where empty means "no") or handle it explicitly
+  # (`if ! read`, for prompts inside a loop).
+  run bash -c "git -C '$PROJECT_ROOT' grep -nE '(^|[^_a-zA-Z])read (-[a-zA-Z]+ )*-p ' -- lib \
+               | grep -v '|| true' | grep -v 'if ! read'"
+  assert_failure
+}
+
+# ==============================================================================
+# S08 / S11: EXIT traps must compose, not clobber
+# ==============================================================================
+#
+# Bash traps do not chain. lib/security.sh had two independent registrars
+# installing bare EXIT handlers — sudo_register_cleanup (drop cached sudo
+# credentials) and secure_temp_register_cleanup (remove temp files holding
+# secrets). Whichever ran second silently discarded the other, so registering
+# both meant one never fired: either credentials stayed cached or secrets stayed
+# on disk.
+#
+# lib/ui.sh had already hit this: a bare `trap ui_cleanup EXIT` discarded bats'
+# own EXIT trap, so failing tests reported nothing at all.
+
+@test "add_exit_trap preserves a handler that is already installed" {
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               trap 'echo caller' EXIT
+               add_exit_trap 'echo mine' EXIT
+               exit 0"
+  assert_success
+  assert_line --index 0 "mine"
+  assert_line --index 1 "caller"
+}
+
+@test "add_exit_trap installs a handler when none exists" {
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               trap - EXIT
+               add_exit_trap 'echo only' EXIT
+               exit 0"
+  assert_success
+  assert_output --partial "only"
+}
+
+@test "add_exit_trap does not stack duplicate registrations" {
+  # sudo_drop and secure_temp_cleanup are not idempotent, so running a handler
+  # twice is not harmless.
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               add_exit_trap 'echo once' EXIT
+               add_exit_trap 'echo once' EXIT
+               add_exit_trap 'echo once' EXIT
+               trap -p EXIT | grep -o 'echo once' | wc -l | tr -d ' '
+               trap - EXIT"
+  assert_success
+  assert_output "1"
+}
+
+@test "sudo and secure-temp cleanup both survive being registered together" {
+  # The regression: before composition, only the second registrar's handler
+  # remained, so one of the two cleanups silently never ran.
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               sudo_drop() { echo 'ran-sudo-drop'; }
+               secure_temp_cleanup() { echo 'ran-temp-cleanup'; }
+               sudo_register_cleanup >/dev/null 2>&1
+               secure_temp_register_cleanup >/dev/null 2>&1
+               exit 0"
+  assert_success
+  assert_output --partial "ran-sudo-drop"
+  assert_output --partial "ran-temp-cleanup"
+}
+
+@test "lib/security.sh registrars no longer install bare EXIT traps" {
+  run bash -c "grep -nE \"^\\s*trap '(sudo_drop|secure_temp_cleanup)'\" '$PROJECT_ROOT/lib/security.sh'"
+  assert_failure
+}
+
+# ==============================================================================
+# S13 repair, S19 signatures, S23 recorder  (resurrected controls)
+# ==============================================================================
+
+@test "fc audit permissions --fix repairs insecure config permissions" {
+  # S13's repair half. fix_config_permissions had no caller, so a scan could
+  # tell you a config was world-writable and offer no way to correct it.
+  mkdir -p "$AUDIT_TMP/cfg"
+  printf 'a: 1\n' > "$AUDIT_TMP/cfg/ww.yaml";   chmod 666 "$AUDIT_TMP/cfg/ww.yaml"
+  printf 'b: 2\n' > "$AUDIT_TMP/cfg/gw.yaml";   chmod 660 "$AUDIT_TMP/cfg/gw.yaml"
+  printf 'c: 3\n' > "$AUDIT_TMP/cfg/fine.yaml"; chmod 600 "$AUDIT_TMP/cfg/fine.yaml"
+
+  run "$FC_COMMAND" audit permissions "$AUDIT_TMP/cfg" --fix
+  assert_success
+  assert_output --partial "Repaired permissions on 2 file(s)"
+
+  run stat -f '%Sp' "$AUDIT_TMP/cfg/ww.yaml"
+  assert_output "-rw-------"
+  run stat -f '%Sp' "$AUDIT_TMP/cfg/gw.yaml"
+  assert_output "-rw-------"
+}
+
+@test "fc audit permissions --fix handles paths containing spaces" {
+  # The traversal is NUL-delimited so a spaced path is one record, matching
+  # scan_config_permissions' own find.
+  mkdir -p "$AUDIT_TMP/cfg2"
+  printf 'a: 1\n' > "$AUDIT_TMP/cfg2/has space.yaml"
+  chmod 666 "$AUDIT_TMP/cfg2/has space.yaml"
+
+  run "$FC_COMMAND" audit permissions "$AUDIT_TMP/cfg2" --fix
+  assert_success
+  run stat -f '%Sp' "$AUDIT_TMP/cfg2/has space.yaml"
+  assert_output "-rw-------"
+}
+
+@test "fc audit permissions --fix is idempotent" {
+  mkdir -p "$AUDIT_TMP/cfg3"
+  printf 'a: 1\n' > "$AUDIT_TMP/cfg3/x.yaml"; chmod 600 "$AUDIT_TMP/cfg3/x.yaml"
+
+  run "$FC_COMMAND" audit permissions "$AUDIT_TMP/cfg3" --fix
+  assert_success
+  assert_output --partial "Nothing needed repairing"
+}
+
+@test "fc audit permissions without --fix does not modify anything" {
+  mkdir -p "$AUDIT_TMP/cfg4"
+  printf 'a: 1\n' > "$AUDIT_TMP/cfg4/ww.yaml"; chmod 666 "$AUDIT_TMP/cfg4/ww.yaml"
+
+  run "$FC_COMMAND" audit permissions "$AUDIT_TMP/cfg4"
+  run stat -f '%Sp' "$AUDIT_TMP/cfg4/ww.yaml"
+  assert_output "-rw-rw-rw-"
+}
+
+@test "fc audit signatures reports commit signature status" {
+  # S19. show_commit_signatures had no caller, so there was no way to see which
+  # commits in your own checkout are signed.
+  run "$FC_COMMAND" audit signatures 3
+  assert_success
+  assert_output --partial "commits"
+}
+
+@test "a failed download is recorded to the failed-operations log" {
+  # S23. log_failed_operation had no caller, so the log `fc audit failures`
+  # reads was never written to — viewer and recorder were both dead, each
+  # making the other pointless.
+  run bash -c "CIRCUS_FAILED_OPS='$AUDIT_TMP/failed.log' bash -c '
+                 source \"$PROJECT_ROOT/lib/init.sh\" >/dev/null 2>&1
+                 set +e; trap - ERR
+                 fetch_verified_script https://raw.githubusercontent.com/no/such/path-xyz.sh \
+                   \"$AUDIT_TMP/nope.sh\" >/dev/null 2>&1'"
+  run grep -c "download failed" "$AUDIT_TMP/failed.log"
+  assert_success
+  assert [ "$output" -ge 1 ]
+}
+
+@test "a checksum mismatch is recorded to the failed-operations log" {
+  run bash -c "CIRCUS_FAILED_OPS='$AUDIT_TMP/failed2.log' bash -c '
+                 source \"$PROJECT_ROOT/lib/init.sh\" >/dev/null 2>&1
+                 set +e; trap - ERR
+                 fetch_verified_script https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh \
+                   \"$AUDIT_TMP/hb.sh\" deadbeef >/dev/null 2>&1'"
+  run grep -c "checksum mismatch" "$AUDIT_TMP/failed2.log"
+  assert_success
+  assert [ "$output" -ge 1 ]
+}
+
+@test "fc audit failures can read what the recorder wrote" {
+  # Closes the loop: recorder and viewer are both live.
+  printf '[2026-01-01 00:00:01] network: download failed: https://example.com/x\n' > "$CIRCUS_FAILED_OPS"
+  run "$FC_COMMAND" audit failures
+  assert_success
+  assert_output --partial "download failed"
+}

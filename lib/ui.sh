@@ -807,7 +807,15 @@ ui_select() {
   echo ""
   local choice
   while true; do
-    read -p "Enter choice [1-${#options[@]}]: " choice
+    # Handled explicitly rather than with `|| true`, because this read sits in a
+    # `while true`. At EOF read returns immediately with an empty value, so
+    # ignoring the status would spin here forever — trading a crash for a hang,
+    # which is worse. Returning non-zero lets the caller decide.
+    if ! read -p "Enter choice [1-${#options[@]}]: " choice; then
+      echo ""
+      printf "${UI_ERROR}No input available; selection cancelled.${UI_RESET}\n" >&2
+      return 1
+    fi
     if [[ "$choice" =~ ^[0-9]+$ ]] && [[ "$choice" -ge 1 ]] && [[ "$choice" -le ${#options[@]} ]]; then
       echo "${options[$((choice-1))]}"
       return
@@ -868,7 +876,11 @@ ui_multiselect() {
 
   echo ""
   printf "${UI_INFO}Enter numbers to toggle (comma-separated), then press Enter:${UI_RESET}\n"
-  read -p "> " toggles
+  # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+  # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+  # with "An unexpected error occurred" instead of cancelling cleanly. An
+  # empty answer is already treated as "no" below, which is the safe default.
+  read -p "> " toggles || true
 
   IFS=',' read -ra toggle_nums <<< "$toggles"
   for num in "${toggle_nums[@]}"; do
@@ -960,10 +972,18 @@ ui_input() {
   # Fallback
   local result
   if [[ -n "$default" ]]; then
-    read -p "$prompt [$default]: " result
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -p "$prompt [$default]: " result || true
     [[ -z "$result" ]] && result="$default"
   else
-    read -p "$prompt: " result
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -p "$prompt: " result || true
   fi
   echo "$result"
 }

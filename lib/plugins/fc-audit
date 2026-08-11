@@ -118,12 +118,14 @@ usage() {
   msg_info "Files and Packages:"
   echo "  permissions [d] - Scan a directory for insecure config permissions"
   echo "                    (S13, default: the repository's configs/)"
+  echo "                    Add --fix to repair what it finds"
   echo "  integrity       - Verify tracked scripts against the hash"
   echo "                    manifest (S17)"
   echo "  manifest        - Show the recorded script hash manifest (S17)"
   echo "  manifest-create - Record current script hashes as trusted (S17)"
   echo "  taps            - List Homebrew taps and flag untrusted ones (S18)"
   echo "  domains         - Show the download allowlist (S26)"
+  echo "  signatures [n]  - Show signature status of recent commits (S19)"
   echo "  health-report   - Full security health report in Markdown (S25)"
   echo ""
   msg_info "Examples:"
@@ -646,9 +648,49 @@ main() {
       # scan_config_permissions takes a MANDATORY directory; it has no default
       # and reports "Directory not found: " with an empty path when called
       # without one. Supply the repository's configs/ unless told otherwise.
-      local perm_dir="${1:-$DOTFILES_ROOT/configs}"
-      # Returns non-zero to report findings, which is a result, not a crash.
-      scan_config_permissions "$perm_dir" || exit $?
+      local perm_fix=false perm_dir=""
+      while [[ $# -gt 0 ]]; do
+        case "$1" in
+          --fix) perm_fix=true; shift ;;
+          *)     perm_dir="$1";  shift ;;
+        esac
+      done
+      perm_dir="${perm_dir:-$DOTFILES_ROOT/configs}"
+
+      if [[ "$perm_fix" != "true" ]]; then
+        # Returns non-zero to report findings, which is a result, not a crash.
+        scan_config_permissions "$perm_dir" || exit $?
+        exit 0
+      fi
+
+      # S13's repair half. fix_config_permissions had no caller, so a scan
+      # could tell you a config was world-readable and offer no way to correct
+      # it. Report first, then repair, so the user sees what changed.
+      [[ -d "$perm_dir" ]] || die "Directory not found: $perm_dir"
+      scan_config_permissions "$perm_dir" || true
+
+      # NUL-delimited, matching scan_config_permissions' own traversal, so a
+      # config path containing a space is one record rather than several.
+      local fixed=0
+      while IFS= read -r -d '' f; do
+        if ! check_config_permissions "$f" >/dev/null 2>&1; then
+          fix_config_permissions "$f" >/dev/null 2>&1 && fixed=$((fixed + 1))
+        fi
+      done < <(find "$perm_dir" -name "*.yaml" -print0 2>/dev/null)
+
+      echo ""
+      if [[ "$fixed" -gt 0 ]]; then
+        msg_success "Repaired permissions on $fixed file(s)."
+      else
+        msg_info "Nothing needed repairing."
+      fi
+      ;;
+
+    signatures)
+      # S19. show_commit_signatures had no caller, so there was no way to see
+      # which commits in your own checkout are signed — the question
+      # `fc self-update` answers only for the incoming tip.
+      show_commit_signatures "${1:-10}" || exit $?
       ;;
 
     integrity)

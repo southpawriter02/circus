@@ -146,7 +146,11 @@ vm_colima_delete() {
     fi
     
     msg_warning "This will delete profile '$name' and all its data."
-    read -r -p "Are you sure? [y/N] " response
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -r -p "Are you sure? [y/N] " response || true
     case "$response" in
         [yY][eE][sS]|[yY])
             msg_info "Deleting Colima profile '$name'..."

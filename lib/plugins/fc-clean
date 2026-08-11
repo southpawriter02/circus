@@ -316,7 +316,11 @@ do_brew() {
     echo "  - Enter 'none' or press Ctrl+C to cancel"
     echo ""
 
-    read -r -p "Select packages to remove: " selection
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -r -p "Select packages to remove: " selection || true
 
     if [ "$selection" = "none" ] || [ -z "$selection" ]; then
       msg_info "No packages removed."
@@ -382,7 +386,11 @@ do_casks() {
     echo "  - Enter 'none' or press Ctrl+C to cancel"
     echo ""
 
-    read -r -p "Select casks to remove: " selection
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -r -p "Select casks to remove: " selection || true
 
     if [ "$selection" = "none" ] || [ -z "$selection" ]; then
       msg_info "No casks removed."

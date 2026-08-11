@@ -207,7 +207,11 @@ export -f log msg_debug msg_info msg_success msg_warning msg_error msg_critical 
 prompt_for_confirmation() {
   if [ "$INTERACTIVE_MODE" = true ] && [ "${PARANOID_MODE:-false}" = false ]; then
     msg_info "$1"
-    read -p "Press Enter to continue..."
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -p "Press Enter to continue..." || true
   fi
 }
 
@@ -345,6 +349,14 @@ fetch_verified_script() {
     if declare -F log_network_request >/dev/null 2>&1; then
       log_network_request "download-failed" "$url" || true
     fi
+    # S23. log_failed_operation had no caller anywhere, so the failed-operations
+    # log that `fc audit failures` reads was never written to — the viewer and
+    # the recorder were both dead, each making the other pointless. A failed
+    # download of code that is about to be executed is exactly the kind of event
+    # worth being able to review after the fact.
+    if declare -F log_failed_operation >/dev/null 2>&1; then
+      log_failed_operation "network" "download failed: $url" || true
+    fi
     return 1
   fi
 
@@ -361,6 +373,12 @@ fetch_verified_script() {
       msg_error "Checksum mismatch for $url"
       msg_error "  expected: $expected"
       msg_error "  actual:   $actual"
+      if declare -F log_failed_operation >/dev/null 2>&1; then
+        log_failed_operation "integrity" "checksum mismatch: $url" || true
+      fi
+      if declare -F security_event >/dev/null 2>&1; then
+        security_event "integrity" "checksum_mismatch" "$url" "critical"
+      fi
       return 1
     fi
     msg_success "Checksum verified: $(basename "$url")"
@@ -553,3 +571,63 @@ get_current_version() {
 }
 
 export -f version_compare version_in_range get_current_version
+
+# --- Trap Composition --------------------------------------------------------
+
+#
+# @description
+#   Add a handler to a trap without discarding whatever is already installed.
+#
+#   Bash traps do not chain: `trap foo EXIT` silently replaces any existing
+#   EXIT handler. Because these libraries are sourced into other processes,
+#   that has already caused real damage — a bare `trap ui_cleanup EXIT` in
+#   lib/ui.sh discarded bats' own EXIT trap, so failing tests reported nothing
+#   and appeared as "Executed N instead of expected M".
+#
+#   lib/security.sh had two independent registrars doing the same thing:
+#   sudo_register_cleanup (drop sudo credentials) and
+#   secure_temp_register_cleanup (remove temp files holding secrets). Whichever
+#   ran second silently won, so registering both meant one of them never fired
+#   — either credentials stayed cached or secrets stayed on disk.
+#
+# @param $1 The command to run
+# @param $@ The signals to attach it to (default: EXIT)
+#
+# @example
+#   add_exit_trap 'sudo_drop' EXIT INT TERM
+#
+add_exit_trap() {
+  local handler="$1"
+  shift
+  local signals=("$@")
+  [ ${#signals[@]} -eq 0 ] && signals=("EXIT")
+
+  local sig
+  for sig in "${signals[@]}"; do
+    local existing prev_cmd
+    existing=$(trap -p "$sig")
+
+    if [ -n "$existing" ]; then
+      # `trap -p SIG` prints: trap -- 'command' SIG
+      prev_cmd=${existing#trap -- \'}
+      prev_cmd=${prev_cmd%\' "$sig"}
+
+      # Already registered: do not stack duplicates. Registering twice would
+      # run the handler twice, and sudo_drop/secure_temp_cleanup are not
+      # required to be idempotent.
+      case "$prev_cmd" in
+        *"$handler"*) continue ;;
+      esac
+
+      # SC2064 disabled deliberately: the composed command must capture the
+      # CURRENT text of the previous handler, not defer expansion to trap time.
+      # shellcheck disable=SC2064
+      trap "${handler}; ${prev_cmd}" "$sig"
+    else
+      # shellcheck disable=SC2064
+      trap "${handler}" "$sig"
+    fi
+  done
+}
+
+export -f add_exit_trap

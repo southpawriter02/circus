@@ -280,7 +280,11 @@ do_disable() {
   require_sudo "Disable automatic backups"
   
   msg_warning "Disabling automatic backups means your data won't be protected."
-  read -p "Are you sure? (y/N) " -n 1 -r
+  # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+  # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+  # with "An unexpected error occurred" instead of cancelling cleanly. An
+  # empty answer is already treated as "no" below, which is the safe default.
+  read -p "Are you sure? (y/N) " -n 1 -r || true
   echo ""
   
   if [[ $REPLY =~ ^[Yy]$ ]]; then

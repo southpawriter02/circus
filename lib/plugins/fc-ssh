@@ -142,7 +142,10 @@ do_generate() {
   # Prompt for email if not provided
   if [ -z "$email" ]; then
     msg_info "Please enter the email address to associate with your new SSH key:"
-    read -r -p "> " email
+    # `|| true`: at EOF read returns non-zero, and set -e plus the ERR trap turned
+    # that into "An unexpected error occurred" instead of the clear message below.
+    # An empty answer is already handled.
+    read -r -p "> " email || true
     if [ -z "$email" ]; then
       die "Email address cannot be empty."
     fi
@@ -151,7 +154,11 @@ do_generate() {
   # Check if key already exists
   if [ -f "$key_path" ]; then
     msg_warning "SSH key already exists at $key_path"
-    read -r -p "Do you want to overwrite it? (y/n) " -n 1
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -r -p "Do you want to overwrite it? (y/n) " -n 1 || true
     echo ""
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
       die "Aborted by user."

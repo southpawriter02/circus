@@ -847,7 +847,11 @@ sudo_audit_clear() {
     count=$(grep -c "^Timestamp:" "$SUDO_AUDIT_LOG" 2>/dev/null || echo "0")
     
     msg_warning "This will clear $count sudo audit entries."
-    read -r -p "Are you sure? [y/N] " confirm
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -r -p "Are you sure? [y/N] " confirm || true
     
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
       # Archive before clearing
@@ -941,7 +945,11 @@ sudo_confirm() {
     echo ""
     
     # Require typing 'yes' for destructive operations
-    read -r -p "Type 'yes' to confirm, or anything else to cancel: " confirm
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -r -p "Type 'yes' to confirm, or anything else to cancel: " confirm || true
     
     if [[ "$confirm" != "yes" ]]; then
       msg_info "Operation cancelled."
@@ -989,7 +997,11 @@ require_confirmation() {
     echo ""
     msg_warning "$message"
     echo ""
-    read -r -p "Continue? [y/N] " confirm
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -r -p "Continue? [y/N] " confirm || true
     
     if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
       msg_info "Operation cancelled."
@@ -1074,7 +1086,11 @@ sudo_scope_end() {
 # Register cleanup on script exit (call once at script start)
 # Usage: sudo_register_cleanup
 sudo_register_cleanup() {
-  trap 'sudo_drop' EXIT INT TERM
+  # add_exit_trap, not a bare `trap`: this and secure_temp_register_cleanup
+  # both registered EXIT handlers, and bash traps do not chain — whichever ran
+  # second silently discarded the other, so either sudo credentials stayed
+  # cached or temp files holding secrets stayed on disk.
+  add_exit_trap 'sudo_drop' EXIT INT TERM
   security_log "info" "Sudo cleanup trap registered" ""
 }
 
@@ -1215,7 +1231,11 @@ sudoers_verify_before() {
     
     security_log "critical" "Sudoers integrity check FAILED" "$description"
     
-    read -r -p "Continue anyway? [y/N] " confirm
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -r -p "Continue anyway? [y/N] " confirm || true
     if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
       msg_info "Operation aborted."
       return 1
@@ -1330,7 +1350,9 @@ secure_temp_cleanup() {
 # Register automatic temp file cleanup on script exit
 # Usage: secure_temp_register_cleanup (call once at script start)
 secure_temp_register_cleanup() {
-  trap 'secure_temp_cleanup' EXIT INT TERM
+  # See sudo_register_cleanup: composed rather than bare, so these two
+  # registrars no longer clobber each other or ui_cleanup.
+  add_exit_trap 'secure_temp_cleanup' EXIT INT TERM
 }
 
 # Create a temp file that auto-cleans on subshell exit
@@ -2021,7 +2043,11 @@ secure_delete_confirm() {
   echo "   This will permanently and irrecoverably delete this file."
   echo ""
   
-  read -r -p "Type 'DELETE' to confirm: " confirm
+  # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+  # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+  # with "An unexpected error occurred" instead of cancelling cleanly. An
+  # empty answer is already treated as "no" below, which is the safe default.
+  read -r -p "Type 'DELETE' to confirm: " confirm || true
   
   if [[ "$confirm" != "DELETE" ]]; then
     msg_info "Operation cancelled."
@@ -2148,7 +2174,11 @@ verify_before_apply() {
     echo "   To sign: sign_config \"$file\""
     echo ""
     
-    read -r -p "Apply unsigned config? [y/N] " confirm
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -r -p "Apply unsigned config? [y/N] " confirm || true
     if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
       msg_info "Operation cancelled."
       return 1
@@ -2172,7 +2202,11 @@ verify_before_apply() {
     echo "   This could indicate tampering."
     echo ""
     
-    read -r -p "Apply anyway? (DANGEROUS) [y/N] " confirm
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -r -p "Apply anyway? (DANGEROUS) [y/N] " confirm || true
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
       security_log "critical" "Applied config with INVALID signature" "$file"
       "$@"
@@ -2696,7 +2730,11 @@ verify_update_signature() {
     echo "   This could indicate unauthorized changes."
     echo ""
     
-    read -r -p "Apply update anyway? (DANGEROUS) [y/N] " confirm
+    # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+    # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+    # with "An unexpected error occurred" instead of cancelling cleanly. An
+    # empty answer is already treated as "no" below, which is the safe default.
+    read -r -p "Apply update anyway? (DANGEROUS) [y/N] " confirm || true
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
       security_log "critical" "Applied unsigned update" "$remote_head"
       return 0
@@ -2810,7 +2848,11 @@ safe_rollback() {
   echo "   All changes made after this snapshot will be LOST."
   echo ""
   
-  read -r -p "Type 'ROLLBACK' to confirm: " confirm
+  # `|| true`: at EOF (stdin closed, a pipe, cron) `read` returns non-zero,
+  # and helpers.sh runs with set -e plus an ERR trap — so this prompt aborted
+  # with "An unexpected error occurred" instead of cancelling cleanly. An
+  # empty answer is already treated as "no" below, which is the safe default.
+  read -r -p "Type 'ROLLBACK' to confirm: " confirm || true
   
   if [[ "$confirm" != "ROLLBACK" ]]; then
     msg_info "Operation cancelled."
