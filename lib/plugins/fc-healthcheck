@@ -49,6 +49,7 @@ usage() {
   echo "  deps        Check if Brewfile dependencies are installed"
   echo "  ssh         Check SSH directory and key permissions"
   echo "  git         Check git user name and email"
+  echo "  security    Show security posture summary (S24)"
   echo ""
   msg_info "Options:"
   echo "  --help      Show this help message"
@@ -355,6 +356,16 @@ run_single_check() {
       echo ""
       check_git || true
       ;;
+    security)
+      # S24. security_status was defined and exported in lib/security.sh with
+      # no caller anywhere in the repository.
+      #
+      # Deliberately NOT added to run_all_checks: it prints its own summary and
+      # does not touch the PASSED/WARNINGS/FAILED counters, so folding it into
+      # the "all checks" run would report a summary that silently omits it.
+      echo ""
+      security_status || true
+      ;;
     *)
       die "Unknown check: $check_name. Use 'fc healthcheck --help' to see available checks."
       ;;
@@ -372,6 +383,7 @@ list_checks() {
   echo "  deps        Check if Brewfile dependencies are installed"
   echo "  ssh         Check SSH directory and key permissions"
   echo "  git         Check git user name and email"
+  echo "  security    Show security posture summary (S24)"
   echo ""
   exit 0
 }

@@ -1265,7 +1265,12 @@ secure_mktemp() {
   local tmpfile
   
   # Create temp file
-  tmpfile=$(mktemp -t "${prefix}.XXXXXXXXXX") || {
+  # A full template rather than `mktemp -t`. BSD mktemp treats the -t argument
+  # as a PREFIX and appends its own suffix, so an X-template passed there came
+  # out with the Xs intact: "circus.XXXXXXXXXX.HYsqJqiZhq". Names stayed unique,
+  # but they were misleading, and the same call means different things on BSD
+  # and GNU. A full path template behaves identically on both.
+  tmpfile=$(mktemp "${TMPDIR:-/tmp}/${prefix}.XXXXXXXXXX") || {
     msg_error "Failed to create secure temp file"
     return 1
   }
@@ -1291,7 +1296,8 @@ secure_mktemp_dir() {
   local tmpdir
   
   # Create temp directory
-  tmpdir=$(mktemp -d -t "${prefix}.XXXXXXXXXX") || {
+  # See secure_mktemp: a full template, not `mktemp -d -t`.
+  tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/${prefix}.XXXXXXXXXX") || {
     msg_error "Failed to create secure temp directory"
     return 1
   }
@@ -1417,8 +1423,12 @@ safe_write() {
     security_log "critical" "TOCTOU race condition detected" "$path"
     return 1
   fi
-  
-  echo "$content" > "$path"
+
+  # printf, not echo. `echo "$content"` consumes a leading -n/-e as an OPTION,
+  # so safe_write "-n" wrote a zero-byte file and silently discarded the
+  # content — a data-loss bug in a function whose whole purpose is writing
+  # safely.
+  printf '%s\n' "$content" > "$path"
 }
 
 # Atomic write to file (write to temp, then move) (S12)
@@ -1441,10 +1451,18 @@ atomic_write() {
     return 1
   }
   
-  chmod 600 "$tmpfile"
-  
-  # Write to temp file
-  echo "$content" > "$tmpfile" || {
+  # Preserve the destination's existing mode rather than forcing 600.
+  # Unconditionally chmod-ing meant atomic_write silently changed a 644 config
+  # to 600 as a side effect of updating it, which is a surprising thing for a
+  # "write this content" helper to do. New files still default to 600.
+  local target_mode="600"
+  if [[ -f "$path" ]]; then
+    target_mode=$(stat -f '%Lp' "$path" 2>/dev/null || stat -c '%a' "$path" 2>/dev/null || echo 600)
+  fi
+  chmod "$target_mode" "$tmpfile"
+
+  # Write to temp file. printf, not echo — see safe_write.
+  printf '%s\n' "$content" > "$tmpfile" || {
     rm -f "$tmpfile"
     return 1
   }
@@ -1468,8 +1486,9 @@ safe_append() {
   if ! safe_write_check "$path"; then
     return 1
   fi
-  
-  echo "$content" >> "$path"
+
+  # printf, not echo — see safe_write.
+  printf '%s\n' "$content" >> "$path"
 }
 
 # Get real path (resolving all symlinks) and verify safety
@@ -2273,7 +2292,14 @@ generate_hash_manifest() {
   fi
   
   mkdir -p "$(dirname "$output")"
-  
+
+  # S12: the manifest defines which script hashes are trusted. Writing through
+  # a symlink would let an attacker supply that definition.
+  if ! safe_write_check "$output"; then
+    msg_error "Refusing to write the hash manifest."
+    return 1
+  fi
+
   {
     echo "# Script Integrity Manifest"
     echo "# Generated: $(date '+%Y-%m-%d %H:%M:%S')"
@@ -2309,7 +2335,7 @@ verify_script_integrity() {
   
   if [[ ! -f "$manifest" ]]; then
     msg_warning "No hash manifest found: $manifest"
-    msg_info "Generate one with: generate_hash_manifest"
+    msg_info "Generate one with: fc audit manifest-create"
     return 2
   fi
   
@@ -2324,9 +2350,16 @@ verify_script_integrity() {
     [[ "$line" =~ ^# ]] && continue
     [[ -z "$line" ]] && continue
     
+    # Split on the TWO-space separator the manifest writer emits, not on
+    # whitespace. `awk '{print $2}'` took only the second field, so any tracked
+    # path containing a space was truncated at it — and this repository ships
+    # etc/alfred/workflows/Flying Circus/..., which came back as
+    # "etc/alfred/workflows/Flying". A freshly generated manifest failed its own
+    # verification immediately, reporting the tree as tampered with: the exact
+    # alarm this control exists to raise, fired on every single run.
     local stored_hash file_path
-    stored_hash=$(echo "$line" | awk '{print $1}')
-    file_path=$(echo "$line" | awk '{print $2}')
+    stored_hash="${line%%  *}"
+    file_path="${line#*  }"
     
     local full_path="$dir/$file_path"
     
@@ -2406,7 +2439,7 @@ show_hash_manifest() {
   
   if [[ ! -f "$manifest" ]]; then
     msg_info "No hash manifest found."
-    echo "   Generate with: generate_hash_manifest"
+    echo "   Generate with: fc audit manifest-create"
     return 0
   fi
   
@@ -2957,9 +2990,16 @@ config_change_check() {
     [[ "$line" =~ ^# ]] && continue
     [[ -z "$line" ]] && continue
     
+    # Split on the TWO-space separator the manifest writer emits, not on
+    # whitespace. `awk '{print $2}'` took only the second field, so any tracked
+    # path containing a space was truncated at it — and this repository ships
+    # etc/alfred/workflows/Flying Circus/..., which came back as
+    # "etc/alfred/workflows/Flying". A freshly generated manifest failed its own
+    # verification immediately, reporting the tree as tampered with: the exact
+    # alarm this control exists to raise, fired on every single run.
     local stored_hash file_path
-    stored_hash=$(echo "$line" | awk '{print $1}')
-    file_path=$(echo "$line" | awk '{print $2}')
+    stored_hash="${line%%  *}"
+    file_path="${line#*  }"
     
     local full_path="$dir/$file_path"
     
@@ -3280,7 +3320,7 @@ security_health_report() {
   report+="## Recommendations\n\n"
   
   if [[ ! -f "$SCRIPT_HASH_MANIFEST" ]]; then
-    report+="- [ ] Create script hash manifest: \`generate_hash_manifest\`\n"
+    report+="- [ ] Create script hash manifest: \`fc audit manifest-create\`\n"
   fi
   
   if [[ ! -f "$CONFIG_HASH_BASELINE" ]]; then
@@ -3371,35 +3411,27 @@ is_allowed_domain() {
 secure_download() {
   local url="$1"
   local output="$2"
-  
-  if ! is_allowed_domain "$url"; then
-    msg_error "❌ Domain not in allowlist: $url"
-    security_event "network" "blocked_download" "$url" "warning"
-    
-    echo ""
-    echo "   Allowed domains: $ALLOWED_DOMAINS"
-    echo "   Add with: add_allowed_domain \"domain.com\""
-    echo ""
-    
-    read -r -p "Download anyway? (DANGEROUS) [y/N] " confirm
-    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-      return 1
-    fi
-    security_event "network" "bypass_allowlist" "$url" "critical"
-  fi
-  
-  # Log the request
-  log_network_request "download" "$url"
-  
-  # Perform download
-  if command -v curl &>/dev/null; then
-    curl -fsSL -o "$output" "$url"
-  elif command -v wget &>/dev/null; then
-    wget -q -O "$output" "$url"
-  else
-    msg_error "No download tool available (curl/wget)"
+  local expected_sha="${3:-}"
+
+  # Delegates to helpers.sh:fetch_verified_script, which now carries the
+  # allowlist check and request logging this function used to own.
+  #
+  # This used to download on its own with a bare `curl -fsSL`, which was WEAKER
+  # than the path already in use for installer scripts: no HTTPS enforcement
+  # (so a plain-http redirect was followed), no TLS floor, and no checksum
+  # verification. Keeping a second, laxer downloader would have meant the
+  # "secure" one was the less safe of the two.
+  #
+  # It also prompted with a bare `read` when a domain was not allowed, which
+  # hangs forever under an unattended install or a scheduled job — the two
+  # situations where downloading unreviewed code matters most. There is no
+  # prompt now: not on the allowlist means refused.
+  if ! declare -F fetch_verified_script >/dev/null 2>&1; then
+    msg_error "fetch_verified_script is unavailable; cannot download safely."
     return 1
   fi
+
+  fetch_verified_script "$url" "$output" "$expected_sha"
 }
 
 # Add domain to allowlist (S26)
@@ -3605,6 +3637,14 @@ get_firewall_rules() {
 # Usage: firewall_baseline_save
 firewall_baseline_save() {
   mkdir -p "$(dirname "$FIREWALL_BASELINE")"
+
+  # S12. This file is what `fc firewall audit` compares against, so a symlink
+  # planted here would let an attacker choose the "trusted" rule set — and the
+  # drift detector would then certify their changes as matching baseline.
+  if ! safe_write_check "$FIREWALL_BASELINE"; then
+    msg_error "Refusing to write the firewall baseline."
+    return 1
+  fi
   
   {
     echo "# Firewall Baseline"
@@ -3636,7 +3676,13 @@ firewall_check() {
     security_event "firewall" "rules_changed" "Differences detected" "warning"
     
     echo ""
-    echo "   Run 'diff <(get_firewall_rules) $FIREWALL_BASELINE' to see changes"
+    # A runnable command. This used to suggest
+    #   diff <(get_firewall_rules) "$FIREWALL_BASELINE"
+    # which cannot work in the shell the user is reading it from:
+    # get_firewall_rules is an internal function of this library, not a command
+    # on their PATH.
+    echo "   See what changed:"
+    echo "     diff <(fc firewall rules) \"$FIREWALL_BASELINE\""
     echo ""
     return 1
   fi
@@ -3667,8 +3713,26 @@ firewall_status() {
 
 # --- S30: DNS Leak Check ----------------------------------------------------
 
-# Expected DNS resolvers
+# Expected DNS resolvers.
+#
+# CIRCUS_EXPECTED_DNS overrides; otherwise the baseline recorded by
+# save_expected_dns is read from disk. Previously only the environment variable
+# was consulted, so the file save_expected_dns wrote was never read back by
+# anything: the baseline was write-only and dns_leak_check's comparison could
+# not fire unless the caller happened to export the variable by hand.
 EXPECTED_DNS="${CIRCUS_EXPECTED_DNS:-}"
+EXPECTED_DNS_FILE="${CIRCUS_EXPECTED_DNS_FILE:-$HOME/.circus/expected_dns}"
+
+# Resolve the expected DNS set: environment first, then the saved baseline.
+_expected_dns() {
+  if [[ -n "$EXPECTED_DNS" ]]; then
+    printf '%s' "$EXPECTED_DNS"
+    return 0
+  fi
+  if [[ -f "$EXPECTED_DNS_FILE" ]]; then
+    tr '\n' ' ' < "$EXPECTED_DNS_FILE"
+  fi
+}
 
 # Get current DNS servers (S30)
 # Usage: servers=$(get_dns_servers)
@@ -3697,13 +3761,16 @@ dns_leak_check() {
   done
   echo ""
   
-  # Check against expected DNS if set
-  if [[ -n "$EXPECTED_DNS" ]]; then
+  # Check against the expected set: environment override, else saved baseline.
+  local expected_dns
+  expected_dns=$(_expected_dns)
+
+  if [[ -n "$expected_dns" ]]; then
     local unexpected=0
-    
+
     while read -r server; do
       local found=0
-      for expected in $EXPECTED_DNS; do
+      for expected in $expected_dns; do
         if [[ "$server" == "$expected" ]]; then
           found=1
           break
@@ -3753,13 +3820,28 @@ dns_resolution_test() {
 save_expected_dns() {
   local servers
   servers=$(get_dns_servers | tr '\n' ' ')
-  
+
+  if [[ -z "$servers" ]]; then
+    msg_error "Could not determine any DNS servers; nothing saved."
+    return 1
+  fi
+
   EXPECTED_DNS="$servers"
   export EXPECTED_DNS
-  
-  # Save to file for persistence
-  echo "$servers" > "$HOME/.circus/expected_dns"
-  
+
+  # mkdir -p first. Without it this redirect fails outright whenever ~/.circus
+  # does not exist yet, which is the normal state before an install has run.
+  # firewall_baseline_save already did this; this one did not.
+  mkdir -p "$(dirname "$EXPECTED_DNS_FILE")"
+
+  # S12: same reasoning as the firewall baseline — this is what the leak check
+  # compares against.
+  if ! safe_write_check "$EXPECTED_DNS_FILE"; then
+    msg_error "Refusing to write the expected-DNS baseline."
+    return 1
+  fi
+  printf '%s\n' "$servers" > "$EXPECTED_DNS_FILE"
+
   msg_success "Saved expected DNS servers: $servers"
   security_event "dns" "baseline_saved" "$servers" "info"
 }

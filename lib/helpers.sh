@@ -311,8 +311,40 @@ fetch_verified_script() {
   local out="$2"
   local expected="${3:-}"
 
+  # Domain allowlist (S26) and request logging (S28).
+  #
+  # These live in lib/security.sh, which init.sh sources AFTER this file, so
+  # they are resolved at call time rather than at definition time — and guarded
+  # with `declare -F` so helpers.sh stays usable on its own.
+  #
+  # Both controls existed and had no caller: is_allowed_domain gated nothing,
+  # and the network log that `fc audit network` reads was never written to. This
+  # is the one place in the repository that downloads code and then executes it,
+  # so it is exactly where they belong.
+  #
+  # Fails closed. CIRCUS_ALLOWED_DOMAINS extends the list for legitimate hosts.
+  if declare -F is_allowed_domain >/dev/null 2>&1; then
+    if ! is_allowed_domain "$url"; then
+      msg_error "Refusing to download from a domain that is not on the allowlist:"
+      msg_error "  $url"
+      msg_info  "Allowed: ${ALLOWED_DOMAINS:-<unset>}"
+      msg_info  "Extend with: CIRCUS_ALLOWED_DOMAINS=\"\$CIRCUS_ALLOWED_DOMAINS example.com\""
+      if declare -F security_event >/dev/null 2>&1; then
+        security_event "network" "blocked_download" "$url" "warning"
+      fi
+      return 1
+    fi
+  fi
+
+  if declare -F log_network_request >/dev/null 2>&1; then
+    log_network_request "download" "$url" || true
+  fi
+
   if ! curl --proto '=https' --proto-redir '=https' --tlsv1.2 -fsSL -o "$out" "$url"; then
     msg_error "Failed to download: $url"
+    if declare -F log_network_request >/dev/null 2>&1; then
+      log_network_request "download-failed" "$url" || true
+    fi
     return 1
   fi
 

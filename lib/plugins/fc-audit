@@ -101,9 +101,36 @@ usage() {
   echo "  gatekeeper      - Check Gatekeeper status"
   echo "  firewall        - Check firewall status"
   echo ""
+  msg_info "Security Event Log (S21):"
+  echo "  events [n]      - Show the last n security events (default 50)"
+  echo "  events-by <sev> - Filter events by severity"
+  echo "                    (info, warning, error, critical)"
+  echo "  event-stats     - Summarise recorded security events"
+  echo ""
+  msg_info "Failed Operations (S23):"
+  echo "  failures [n]    - Show the last n failed operations (default 20)"
+  echo "  clear-failures  - Clear the failed operations log"
+  echo ""
+  msg_info "Network Requests (S28):"
+  echo "  network [n]     - Show the last n logged network requests (default 30)"
+  echo "  network-stats   - Summarise logged network requests"
+  echo ""
+  msg_info "Files and Packages:"
+  echo "  permissions [d] - Scan a directory for insecure config permissions"
+  echo "                    (S13, default: the repository's configs/)"
+  echo "  integrity       - Verify tracked scripts against the hash"
+  echo "                    manifest (S17)"
+  echo "  manifest        - Show the recorded script hash manifest (S17)"
+  echo "  manifest-create - Record current script hashes as trusted (S17)"
+  echo "  taps            - List Homebrew taps and flag untrusted ones (S18)"
+  echo "  domains         - Show the download allowlist (S26)"
+  echo "  health-report   - Full security health report in Markdown (S25)"
+  echo ""
   msg_info "Examples:"
-  echo "  fc audit run          # Full audit with score"
-  echo "  fc audit quick        # Fast 4-check summary"
+  echo "  fc audit run              # Full audit with score"
+  echo "  fc audit quick            # Fast 4-check summary"
+  echo "  fc audit events 100       # Last 100 security events"
+  echo "  fc audit events-by critical"
   echo ""
   exit 0
 }
@@ -157,26 +184,46 @@ check_gatekeeper() {
 check_firewall() {
   local status
   status=$(/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null)
-  if echo "$status" | grep -qi "enabled"; then
-    echo "enabled"
-    return 0
-  else
-    echo "disabled"
-    return 1
-  fi
+
+  # Match on the state NUMBER, not the word "enabled". socketfilterfw reports
+  # three states and only one of them contains that word:
+  #
+  #   State = 0  "Firewall is disabled. (State = 0)"
+  #   State = 1  "Firewall is enabled. (State = 1)"
+  #   State = 2  "Firewall is blocking all non-essential incoming connections."
+  #
+  # State 2 is the STRICTEST setting, and the old `grep -qi enabled` reported it
+  # as disabled — so a machine locked down to block-all was told its firewall
+  # was off, and (because this returns non-zero) the audit then aborted.
+  case "$status" in
+    *"State = 1"*|*"State = 2"*)
+      echo "enabled"
+      return 0
+      ;;
+  esac
+
+  echo "disabled"
+  return 1
 }
 
 # Check stealth mode
 check_stealth() {
   local status
   status=$(/usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode 2>/dev/null)
-  if echo "$status" | grep -qi "enabled"; then
-    echo "enabled"
-    return 0
-  else
-    echo "disabled"
-    return 1
-  fi
+
+  # Same defect as check_firewall: socketfilterfw reports stealth mode as
+  # "Firewall stealth mode is on" / "... is off". Neither string contains
+  # "enabled", so `grep -qi enabled` reported stealth as disabled even when it
+  # was on.
+  case "$status" in
+    *" on"*|*"State = 1"*)
+      echo "enabled"
+      return 0
+      ;;
+  esac
+
+  echo "disabled"
+  return 1
 }
 
 # Check auto login
@@ -251,7 +298,14 @@ action_run() {
   
   total=$((total + 1))
   local sip_status
-  sip_status=$(check_sip)
+  # `|| true` on every check_* capture below.
+  #
+  # These helpers report a BAD finding by returning non-zero, and helpers.sh
+  # runs with `set -e` plus an ERR trap. So a failing assignment aborted the
+  # whole audit with "an unexpected error occurred" — meaning `fc audit run`
+  # and `fc audit quick` crashed precisely when they had something to warn
+  # about, and only completed on a machine where every single check passed.
+  sip_status=$(check_sip) || true
   if [[ "$sip_status" == "enabled" ]]; then
     passed=$((passed + 1))
     echo "  ✓ System Integrity Protection (SIP)     Enabled"
@@ -261,7 +315,7 @@ action_run() {
   
   total=$((total + 1))
   local fv_status
-  fv_status=$(check_filevault)
+  fv_status=$(check_filevault) || true
   if [[ "$fv_status" == "enabled" ]]; then
     passed=$((passed + 1))
     echo "  ✓ FileVault Disk Encryption             Enabled"
@@ -274,7 +328,7 @@ action_run() {
   
   total=$((total + 1))
   local gk_status
-  gk_status=$(check_gatekeeper)
+  gk_status=$(check_gatekeeper) || true
   if [[ "$gk_status" == "enabled" ]]; then
     passed=$((passed + 1))
     echo "  ✓ Gatekeeper                            Enabled"
@@ -284,7 +338,7 @@ action_run() {
   
   total=$((total + 1))
   local fw_status
-  fw_status=$(check_firewall)
+  fw_status=$(check_firewall) || true
   if [[ "$fw_status" == "enabled" ]]; then
     passed=$((passed + 1))
     echo "  ✓ Application Firewall                  Enabled"
@@ -297,7 +351,7 @@ action_run() {
   
   total=$((total + 1))
   local pw_status
-  pw_status=$(check_password_sleep)
+  pw_status=$(check_password_sleep) || true
   if [[ "$pw_status" == "required" ]]; then
     passed=$((passed + 1))
     echo "  ✓ Password Required After Sleep         Yes"
@@ -307,7 +361,7 @@ action_run() {
   
   total=$((total + 1))
   local auto_status
-  auto_status=$(check_auto_login)
+  auto_status=$(check_auto_login) || true
   if [[ "$auto_status" == "disabled" ]]; then
     passed=$((passed + 1))
     echo "  ✓ Automatic Login                       Disabled"
@@ -320,7 +374,7 @@ action_run() {
   
   total=$((total + 1))
   local stealth_status
-  stealth_status=$(check_stealth)
+  stealth_status=$(check_stealth) || true
   if [[ "$stealth_status" == "enabled" ]]; then
     passed=$((passed + 1))
     echo "  ✓ Firewall Stealth Mode                 Enabled"
@@ -330,7 +384,7 @@ action_run() {
   
   total=$((total + 1))
   local ssh_status
-  ssh_status=$(check_remote_login)
+  ssh_status=$(check_remote_login) || true
   if [[ "$ssh_status" == "disabled" ]]; then
     passed=$((passed + 1))
     echo "  ✓ Remote Login (SSH)                    Disabled"
@@ -362,7 +416,7 @@ action_quick() {
   local all_good=true
   
   local sip_status
-  sip_status=$(check_sip)
+  sip_status=$(check_sip) || true
   if [[ "$sip_status" == "enabled" ]]; then
     echo "  SIP:        ✓ Enabled"
   else
@@ -371,7 +425,7 @@ action_quick() {
   fi
   
   local fv_status
-  fv_status=$(check_filevault)
+  fv_status=$(check_filevault) || true
   if [[ "$fv_status" == "enabled" ]] || [[ "$fv_status" == "encrypting" ]]; then
     echo "  FileVault:  ✓ Enabled"
   else
@@ -380,7 +434,7 @@ action_quick() {
   fi
   
   local gk_status
-  gk_status=$(check_gatekeeper)
+  gk_status=$(check_gatekeeper) || true
   if [[ "$gk_status" == "enabled" ]]; then
     echo "  Gatekeeper: ✓ Enabled"
   else
@@ -389,7 +443,7 @@ action_quick() {
   fi
   
   local fw_status
-  fw_status=$(check_firewall)
+  fw_status=$(check_firewall) || true
   if [[ "$fw_status" == "enabled" ]]; then
     echo "  Firewall:   ✓ Enabled"
   else
@@ -536,6 +590,115 @@ main() {
     firewall)
       action_firewall
       ;;
+
+    # --- Log viewers (S21, S23, S28) ----------------------------------------
+    #
+    # These delegate to lib/security.sh. Every one of them was defined and
+    # exported there with no caller anywhere in the repository: the logs were
+    # being written by security_event/log_failed_operation, and nothing could
+    # read them back. A security log nobody can read is not an audit trail.
+    #
+    # `|| exit $?` throughout, because helpers.sh installs a `trap ... ERR`
+    # that rewrites any non-zero return as "an unexpected error occurred".
+
+    events)
+      security_audit_view "${1:-50}" || exit $?
+      ;;
+
+    events-by)
+      if [[ -z "${1:-}" ]]; then
+        die "Please specify a severity: info, warning, error or critical.\n\nExample: fc audit events-by critical"
+      fi
+      # Distinguish "no matching events" from a genuine failure: grep exits 1
+      # when it matches nothing, which is an ordinary result here.
+      local matches
+      matches=$(security_events_by_severity "$1" || true)
+      if [[ -z "$matches" ]]; then
+        msg_info "No '$1' events recorded."
+      else
+        printf '%s\n' "$matches"
+      fi
+      ;;
+
+    event-stats)
+      security_event_stats || exit $?
+      ;;
+
+    failures)
+      view_failed_operations "${1:-20}" || exit $?
+      ;;
+
+    clear-failures)
+      clear_failed_operations || exit $?
+      ;;
+
+    network)
+      view_network_requests "${1:-30}" || exit $?
+      ;;
+
+    network-stats)
+      network_request_stats || exit $?
+      ;;
+
+    # --- Files and packages (S13, S17, S18, S25) ----------------------------
+
+    permissions)
+      # scan_config_permissions takes a MANDATORY directory; it has no default
+      # and reports "Directory not found: " with an empty path when called
+      # without one. Supply the repository's configs/ unless told otherwise.
+      local perm_dir="${1:-$DOTFILES_ROOT/configs}"
+      # Returns non-zero to report findings, which is a result, not a crash.
+      scan_config_permissions "$perm_dir" || exit $?
+      ;;
+
+    integrity)
+      # 0 = all match, 1 = a script changed, 2 = no manifest recorded yet.
+      local rc=0
+      verify_script_integrity || rc=$?
+      if [[ "$rc" -eq 2 ]]; then
+        echo ""
+        msg_info "No manifest recorded yet. Create one with: fc audit manifest-create"
+        echo ""
+      fi
+      exit "$rc"
+      ;;
+
+    manifest)
+      show_hash_manifest || exit $?
+      ;;
+
+    manifest-create)
+      # Records the current hashes as the trusted set. Without this action the
+      # manifest could not be created at all: generate_hash_manifest had no
+      # caller anywhere, so `integrity` had nothing to compare against and the
+      # whole of S17 was unreachable.
+      generate_hash_manifest "${1:-$DOTFILES_ROOT}" || exit $?
+      ;;
+
+    taps)
+      list_brew_taps || exit $?
+      if [[ -f "$DOTFILES_ROOT/Brewfile" ]]; then
+        echo ""
+        scan_brewfile_taps "$DOTFILES_ROOT/Brewfile" || exit $?
+      fi
+      ;;
+
+    domains)
+      # S26. Shows the effective download allowlist, including anything added
+      # via CIRCUS_ALLOWED_DOMAINS.
+      #
+      # add_allowed_domain is deliberately NOT exposed: it only mutates an
+      # in-process variable, so a change made from the command line would be
+      # gone the moment the command exited. CIRCUS_ALLOWED_DOMAINS is the
+      # mechanism that actually persists.
+      list_allowed_domains || exit $?
+      ;;
+
+    health-report)
+      # Optional output path; prints to stdout when omitted.
+      security_health_report "${1:-}" || exit $?
+      ;;
+
     *)
       die "Unknown action '$action'. Run 'fc audit --help' for available actions."
       ;;

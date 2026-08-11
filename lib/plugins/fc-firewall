@@ -48,6 +48,11 @@ usage() {
   echo "  export          Export current rules to stdout"
   echo "  setup           Create configuration file template"
   echo ""
+  msg_info "Auditing (S29):"
+  echo "  baseline        Record current rules as the trusted baseline"
+  echo "  audit           Compare current rules against the baseline"
+  echo "  rules           Print the raw rule set used for comparison"
+  echo ""
   msg_info "Advanced Options:"
   echo "  stealth-on      Enable stealth mode (don't respond to probes)"
   echo "  stealth-off     Disable stealth mode"
@@ -447,6 +452,39 @@ do_export() {
 }
 
 # --- Main Logic -------------------------------------------------------------
+# --- Auditing (S29) ---------------------------------------------------------
+
+do_baseline() {
+  echo ""
+  msg_info "Recording current firewall rules as the trusted baseline..."
+  echo ""
+  firewall_baseline_save
+  echo ""
+  msg_info "Check for drift later with: fc firewall audit"
+  echo ""
+}
+
+do_audit() {
+  echo ""
+  firewall_status
+  # firewall_check distinguishes three outcomes, and they must not be collapsed:
+  #   0 = matches baseline, 1 = drift detected, 2 = no baseline recorded yet.
+  # Exiting non-zero on drift is what makes this usable from a scheduled job.
+  local rc=0
+  firewall_check || rc=$?
+
+  case "$rc" in
+    0) return 0 ;;
+    2)
+      echo ""
+      msg_info "Record one with: fc firewall baseline"
+      echo ""
+      return 2
+      ;;
+    *) return 1 ;;
+  esac
+}
+
 main() {
   check_macos
   check_firewall_tool
@@ -475,6 +513,19 @@ main() {
     apply-rules)  do_apply_rules ;;
     export)       do_export ;;
     setup)        do_setup ;;
+
+    # Auditing (S29). These delegate to lib/security.sh rather than
+    # reimplementing drift detection here. The functions existed, were
+    # exported, and had no caller anywhere in the repository — the control was
+    # written and then never reachable from the command line.
+    baseline)     do_baseline ;;
+    # `|| exit $?` rather than a bare call: helpers.sh installs a `trap ... ERR`
+    # that turns any non-zero return into error_handler's exit 1. A bare
+    # `do_audit` therefore collapsed its three distinct statuses (0 match,
+    # 1 drift, 2 no baseline) into 1, which is exactly the distinction a
+    # scheduled job needs. Inside an OR list the trap does not fire.
+    audit)        do_audit || exit $? ;;
+    rules)        get_firewall_rules || exit $? ;;
     
     # Advanced
     stealth-on)   do_stealth_on ;;

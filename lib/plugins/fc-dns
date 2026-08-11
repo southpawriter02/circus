@@ -50,6 +50,11 @@ usage() {
   echo "  get             - Show the current DNS servers."
   echo "  set <ip>...     - Set one or more custom DNS servers."
   echo "  clear           - Clear custom DNS servers, reverting to default."
+  echo ""
+  msg_info "Auditing (S30):"
+  echo "  baseline        - Record current resolvers as the expected set"
+  echo "  leak-check      - Warn if resolvers differ from the expected set"
+  echo "  test [domain]   - Resolve a domain (default: github.com)"
   echo "  status          - Alias for 'get'."
   echo ""
   msg_info "Examples:"
@@ -73,23 +78,59 @@ usage() {
 # --- Helper Functions -------------------------------------------------------
 
 # Get the name of the active network service (macOS only)
+#
+# The device behind the default route is NOT always a hardware port. With any
+# VPN or tunnel up it is a utun* interface, which appears in no hardware-port
+# listing. The previous version piped that lookup straight through grep, and
+# helpers.sh runs with `pipefail`, so the non-matching grep failed the whole
+# pipeline, tripped the ERR trap, and every `fc dns` action — get, set and
+# clear alike — aborted with "An unexpected error occurred on line 89" for
+# anyone connected to a VPN.
+#
+# So: try the mapping, and fall back rather than fail.
 get_active_network_service() {
-  if is_macos; then
-    # Find the active network service based on the default route
-    local active_device
-    active_device=$(route -n get default 2>/dev/null | grep 'interface' | awk '{print $2}')
-    
-    if [[ -n "$active_device" ]]; then
-      # Map device to network service name
-      networksetup -listallhardwareports | grep -B1 "Device: $active_device" | grep "Hardware Port:" | sed 's/Hardware Port: //'
-    else
-      # Fallback: try Wi-Fi first, then Ethernet
-      echo "Wi-Fi"
-    fi
-  else
-    # Linux: return empty (not used)
+  if ! is_macos; then
+    # Linux: not used.
     echo ""
+    return 0
   fi
+
+  local active_device=""
+  active_device=$(route -n get default 2>/dev/null | awk '/interface:/ {print $2}') || true
+
+  local service=""
+  if [[ -n "$active_device" ]]; then
+    # `|| true` on each stage: "no match" is an expected outcome here, not an
+    # error, and must not propagate under pipefail.
+    service=$(networksetup -listallhardwareports 2>/dev/null \
+      | grep -B1 "Device: $active_device" \
+      | grep "Hardware Port:" \
+      | sed 's/Hardware Port: //' || true)
+  fi
+
+  # Tunnel interface, or no default route at all: fall back to the first
+  # configured service that currently holds an IP address, which is the one
+  # whose DNS settings the user actually means.
+  if [[ -z "$service" ]]; then
+    local candidate
+    while IFS= read -r candidate; do
+      # Skip the listing's header line and disabled-service markers.
+      case "$candidate" in
+        ''|An\ asterisk*|\**) continue ;;
+      esac
+      if networksetup -getinfo "$candidate" 2>/dev/null | grep -qE '^IP address: [0-9]'; then
+        service="$candidate"
+        break
+      fi
+    done < <(networksetup -listallnetworkservices 2>/dev/null || true)
+  fi
+
+  # Last resort, preserving the original intent.
+  if [[ -z "$service" ]]; then
+    service="Wi-Fi"
+  fi
+
+  echo "$service"
 }
 
 # --- Main Logic -------------------------------------------------------------
@@ -134,6 +175,28 @@ main() {
       msg_info "Clearing DNS servers..."
       os_clear_dns "$service"
       msg_success "DNS servers have been cleared. System will use DHCP-provided servers."
+      ;;
+
+    # --- Auditing (S30) -----------------------------------------------------
+    #
+    # These delegate to lib/security.sh. The functions were written, exported
+    # and never called from anywhere, so the leak check had no way to be run.
+    #
+    # `|| exit $?` because helpers.sh installs a `trap ... ERR` that converts
+    # any non-zero return into error_handler's exit 1; a bare call would report
+    # "an unexpected error occurred" for a detected leak, and lose the status a
+    # scheduled job needs.
+    leak-check)
+      dns_leak_check || exit $?
+      ;;
+
+    baseline)
+      save_expected_dns || exit $?
+      msg_info "Check for drift later with: fc dns leak-check"
+      ;;
+
+    test)
+      dns_resolution_test "${1:-}" || exit $?
       ;;
 
     *)
