@@ -3645,26 +3645,21 @@ network_request_stats() {
   echo ""
 }
 
-# Logged curl wrapper (S28)
-# Usage: logged_curl [curl_args...]
-logged_curl() {
-  local url=""
-  
-  # Find URL in arguments
-  for arg in "$@"; do
-    if [[ "$arg" =~ ^https?:// ]]; then
-      url="$arg"
-      break
-    fi
-  done
-  
-  log_network_request "curl" "$url"
-  curl "$@"
-  local result=$?
-  
-  log_network_request "curl_complete" "$url" "$result"
-  return $result
-}
+# logged_curl() was removed (S28).
+#
+# It was a bare `curl "$@"` with a log line either side: no domain allowlist, no
+# HTTPS enforcement, no TLS floor, no checksum. Its own URL detection accepted
+# `http://` as readily as `https://`.
+#
+# Nothing ever called it, and that was the danger rather than the reassurance:
+# it lived in the security library under a name implying it was the safe way to
+# make a request, so the obvious thing for a future caller to do was reach for
+# it and quietly bypass every network control this file provides.
+#
+# The logging it existed for is now done where it matters, by
+# helpers.sh:fetch_verified_script — the one place that downloads code and then
+# executes it. That path also enforces the allowlist, pins the scheme to HTTPS,
+# sets a TLS floor and verifies a checksum. `fc audit network` reads the log.
 
 # --- S29: Firewall Rule Auditor ---------------------------------------------
 
@@ -3936,7 +3931,7 @@ export -f startup_security_check security_status
 export -f security_health_report schedule_health_check
 export -f is_allowed_domain secure_download list_allowed_domains
 export -f verify_certificate secure_update_check save_certificate_pin
-export -f log_network_request view_network_requests network_request_stats logged_curl
+export -f log_network_request view_network_requests network_request_stats
 export -f get_firewall_rules firewall_baseline_save firewall_check firewall_status
 export -f get_dns_servers dns_leak_check dns_resolution_test save_expected_dns
 export SUDO_AUDIT_LOG SUDO_SCOPE_DEPTH SUDOERS_BASELINE SECURE_TEMP_FILES CIRCUS_SIGNING_KEY SCRIPT_HASH_MANIFEST TRUSTED_BREW_TAPS

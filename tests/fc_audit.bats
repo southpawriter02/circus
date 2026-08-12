@@ -913,3 +913,33 @@ LOG
                | grep -E '! -s \"\\\$output\"'"
   assert_success
 }
+
+@test "logged_curl no longer exists" {
+  # A bare `curl "$@"` with a log line either side: no allowlist, no HTTPS
+  # enforcement, no TLS floor, no checksum, and its URL detection accepted
+  # http:// as readily as https://.
+  #
+  # Nothing called it, which was the danger rather than the reassurance — it sat
+  # in the security library under a name implying it was the safe way to make a
+  # request, so reaching for it would have bypassed every network control here.
+  run bash -c "source '$PROJECT_ROOT/lib/init.sh' >/dev/null 2>&1
+               set +e; trap - ERR
+               declare -F logged_curl"
+  assert_failure
+}
+
+@test "network logging survives on the protected download path" {
+  # Removing logged_curl must not remove the capability it was documented for.
+  # fetch_verified_script logs, and additionally enforces the allowlist, pins
+  # the scheme to HTTPS, sets a TLS floor and verifies a checksum.
+  run bash -c "sed -n '/^fetch_verified_script()/,/^}/p' '$PROJECT_ROOT/lib/helpers.sh' \
+               | grep -E 'log_network_request'"
+  assert_success
+}
+
+@test "no remaining curl invocation in lib/security.sh bypasses the guarded path" {
+  # secure_download delegates; logged_curl is gone. Any new bare curl here would
+  # be a second, unguarded network path.
+  run bash -c "grep -vE '^[[:space:]]*#' '$PROJECT_ROOT/lib/security.sh' | grep -E '(^|[^_[:alnum:]-])curl[[:space:]]'"
+  assert_failure
+}
