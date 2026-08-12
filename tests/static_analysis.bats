@@ -179,16 +179,38 @@ load 'test_helper'
 
     while IFS=: read -r ln _; do
       [ -n "$ln" ] || continue
-      local start=$((ln - 12))
+      # 40 lines, not 12. A guard commonly sits at the top of an if/else whose
+      # body runs long: auto_updates.sh puts `launchctl load` inside the else of
+      # a DRY_RUN_MODE check ~16 lines above, and a 12-line window reported it
+      # as unguarded. The window only has to be wide enough to reach the
+      # enclosing check; a file with no guard at all is caught regardless.
+      local start=$((ln - 40))
       [ "$start" -lt 1 ] && start=1
       # A guard is DRY_RUN_MODE appearing as CODE in the enclosing block just
       # above. Comment lines are stripped first: the explanation sitting above a
       # guarded call names DRY_RUN_MODE in prose, and counting that made this
       # check pass against an unguarded call — verified by mutation.
-      if ! sed -n "${start},${ln}p" "$file" | grep -vE '^[[:space:]]*#' | grep -q 'DRY_RUN_MODE'; then
+      if ! sed -n "${start},${ln}p" "$file" | grep -vE '^[[:space:]]*#' \
+           | grep -qE 'DRY_RUN_MODE|run_sudo|run_defaults|run_socketfilterfw'; then
         offenders+="  $file:$ln"$'\n'
       fi
-    done < <(grep -nE '^[[:space:]]*(sudo |defaults write|defaults delete|systemsetup |pmset |spctl |launchctl |chflags |nvram )' "$file" 2>/dev/null)
+      # Matches the command ANYWHERE on the line, not just at the start.
+      # `if sudo tmutil enable; then` and `x=$(sudo ...)` are both shapes this
+      # tree actually uses, and a line-anchored pattern silently skipped them —
+      # so the check passed while three files went unexamined.
+      #
+      # The leading [^_[:alnum:]-] guard means run_sudo/run_defaults do NOT
+      # match: those ARE the dry-run-aware wrappers.
+      #
+      # Comment lines are filtered AFTER numbering, not before: numbering a
+      # pre-filtered stream yields line numbers that do not correspond to the
+      # file, so the guard lookup below would read the wrong lines entirely.
+      #
+      # Message text is excluded — several files legitimately print advice like
+      # "Use 'sudo systemsetup -settimezone ...'" without running anything.
+    done < <(grep -nE '(^|[^_[:alnum:]-])(sudo|defaults write|defaults delete|systemsetup|pmset|spctl|launchctl|chflags|nvram)[[:space:]]' "$file" 2>/dev/null \
+             | grep -vE '^[0-9]+:[[:space:]]*#' \
+             | grep -vE 'msg_info|msg_warning|msg_success|msg_error|echo ')
 
   done < <(find "$PROJECT_ROOT/defaults" -path '*/profiles/*' -prune -o -name '*.sh' -print | sed "s|$PROJECT_ROOT/||")
 

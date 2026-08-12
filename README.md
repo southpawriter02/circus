@@ -418,7 +418,7 @@ but isn't is worse than one you know you have to turn on.
 | Status | Meaning |
 |--------|---------|
 | ✅ **Active** | Wired into the code paths that need it. You get this by default. |
-| 🔌 **Available** | Implemented and tested, but not called from anywhere yet. Opt in by calling it, or wire it into your own scripts. |
+| 🔌 **Available** | Implemented, but not called from anywhere yet. Opt in by calling it, or wire it into your own scripts. Coverage varies — a control marked Available is not necessarily exercised by the test suite. |
 | ⚠️ **Limited** | Present, but does not deliver what its name suggests. Read the note before relying on it. |
 
 <details>
@@ -453,8 +453,8 @@ but isn't is worse than one you know you have to turn on.
 | Feature | Status | Description |
 |---------|--------|-------------|
 | **Secure Temp Files** | 🔌 Available | `secure_mktemp` creates 0600 files. Call it via `with_secure_temp`; the tracking array is not populated when it is used in a `$( )` subshell. |
-| **Symlink Attack Prevention** | 🔌 Available | `safe_write_check` inspects the destination's parent before writing. |
-| **Config File Permissions** | 🔌 Available | Warns when config files are group- or world-accessible. |
+| **Symlink Attack Prevention** | ✅ Active | `safe_write_check` inspects the destination's parent before writing. Applied to the files that define trusted state — the firewall baseline, the expected-DNS baseline and the script hash manifest — so a symlink planted at one of them cannot redirect what the auditors compare against. |
+| **Config File Permissions** | ✅ Active | Warns when config files are group- or world-accessible: `fc audit permissions [dir]`. Add `--fix` to repair them to 0600. |
 | **Backup Encryption** | ✅ Active | GPG, restic and borg backends all encrypt, and each **fails closed** on a missing key or passphrase rather than writing plaintext. |
 | **Secure Delete for Secrets** | ⚠️ Limited | Overwrite-then-delete does **not** reliably destroy data on APFS: it is copy-on-write, so overwrites land on new blocks and the originals survive — and snapshots pin them. Treat this as `rm`, not as erasure. Use FileVault and destroy the key. |
 
@@ -466,7 +466,7 @@ but isn't is worse than one you know you have to turn on.
 | Feature | Status | Description |
 |---------|--------|-------------|
 | **Config File Signing** | 🔌 Available (opt-in pinning) | `verify_config_signature` checks the signature via gpg's machine-readable status output. A bare `gpg --verify` succeeds for **any** key in your keyring, so set `CIRCUS_TRUSTED_SIGNING_FPR` to require *your* fingerprint; unset, this proves a file was signed, not who signed it. |
-| **Script Integrity Hashes** | 🔌 Available | SHA-256 manifest over tracked scripts. Detects modification of known files; will not notice a newly added one. |
+| **Script Integrity Hashes** | ✅ Active | SHA-256 manifest over tracked scripts: `fc audit manifest-create` records it, `fc audit integrity` verifies. Detects modification of known files; will not notice a newly added one. |
 | **Homebrew Tap Verification** | ✅ Active | Brewfiles are scanned before `brew bundle` runs. Taps under the `homebrew/` org are trusted; anything else prompts. Tapping runs third-party formula code, so this is a real execution boundary. |
 | **Self-Update Signature Check** | ✅ Active (opt-in) | `fc self-update` verifies the incoming commit with git's own `%G?`/`%GF`. Set `CIRCUS_TRUSTED_SIGNING_FPR` to a fingerprint to **enforce** it; unset, it warns that commits are unverified. |
 | **Rollback Verification** | 🔌 Available | Confirms a snapshot exists before restoring. |
@@ -478,11 +478,11 @@ but isn't is worse than one you know you have to turn on.
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **Security Event Logging** | ✅ Active | Structured logging to `~/.circus/`. Log files are created `0600` inside a `0700` directory, so they are not readable by other local users. |
+| **Security Event Logging** | ✅ Active | Structured logging to `~/.circus/`, readable with `fc audit events`, `fc audit events-by <severity>` and `fc audit event-stats`. Log files are created `0600` inside a `0700` directory, so they are not readable by other local users. |
 | **Config Change Detection** | 🔌 Available | Compares tracked config files against a saved baseline. |
-| **Failed Operation Alerting** | 🔌 Available | Counts failures in a category within a time window (default 10 minutes) and alerts past a threshold. |
-| **Startup Security Checks** | 🔌 Available | Runs the audit set on demand; not invoked automatically at startup. |
-| **Periodic Health Reports** | 🔌 Available | Generates a report when called; nothing schedules it. |
+| **Failed Operation Alerting** | ✅ Active | Failed and checksum-mismatched downloads are recorded; read them with `fc audit failures`. Counts failures in a category within a time window (default 10 minutes) and alerts past a threshold. |
+| **Startup Security Checks** | ✅ Active | `fc healthcheck security` runs the audit set on demand. Still not invoked automatically at startup, despite the name. |
+| **Periodic Health Reports** | ✅ Active | `fc audit health-report` generates a Markdown report. Nothing schedules it, so "periodic" is still aspirational. |
 
 </details>
 
@@ -491,11 +491,11 @@ but isn't is worse than one you know you have to turn on.
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **Remote URL Allowlist** | 🔌 Available | Host allowlist for downloads. Note it follows redirects without re-checking the final host. |
+| **Remote URL Allowlist** | ✅ Active | Enforced on the installer download path (`fetch_verified_script`); a host outside the list is refused, not prompted. Extend with `CIRCUS_ALLOWED_DOMAINS`; inspect with `fc audit domains`. Note it follows redirects without re-checking the final host. |
 | **TLS Certificate Pinning** | ⚠️ Limited | Probes the certificate on a *separate* connection from the one that transfers data, and continues when OpenSSL is unavailable. It does not bind the transfer. Prefer `curl --pinnedpubkey`. |
-| **Network Request Logging** | 🔌 Available | Logs requests made through `logged_curl`. URLs are recorded verbatim, so credentials in a URL would be written to disk. |
-| **Firewall Rule Auditor** | 🔌 Available | Baselines and diffs firewall rules. |
-| **DNS Leak Detection** | ⚠️ Limited | Compares the *configured* resolvers against a baseline. It cannot detect an actual leak (queries escaping a VPN, DoH inside a browser), and is macOS-only. |
+| **Network Request Logging** | ✅ Active | Downloads through `fetch_verified_script` are logged; read them with `fc audit network`. URLs are recorded verbatim, so credentials in a URL would be written to disk. |
+| **Firewall Rule Auditor** | ✅ Active | `fc firewall baseline` records the trusted rule set, `fc firewall audit` diffs against it (exit 0 match, 1 drift, 2 no baseline). |
+| **DNS Leak Detection** | ⚠️ Limited | `fc dns baseline` records the expected resolvers, `fc dns leak-check` compares against them (exit 1 on a mismatch). It compares the *configured* resolvers only: it cannot detect an actual leak (queries escaping a VPN, DoH inside a browser), and is macOS-only. |
 
 </details>
 
