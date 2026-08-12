@@ -244,3 +244,42 @@ load 'test_helper'
   assert_success
   assert [ "$output" -ge 1 ]
 }
+
+# ==============================================================================
+# README accuracy
+# ==============================================================================
+#
+# The README's status table distinguishes controls that are wired into a command
+# (✅ Active) from ones that exist but nothing calls (🔌 Available). That
+# distinction is only useful while it is true, and it drifts silently: a control
+# gets wired up and the table still says Available, or a table entry names a
+# command that was renamed or never existed.
+#
+# This checks the half that is mechanically verifiable — every `fc <command>`
+# the README mentions must actually resolve to a plugin.
+
+@test "every fc command named in the README exists as a plugin" {
+  cd "$PROJECT_ROOT" || fail "could not enter \$PROJECT_ROOT"
+
+  local missing=""
+  local cmd
+
+  # Pull `fc <subcommand>` out of the README, take the subcommand, dedupe.
+  while IFS= read -r cmd; do
+    [ -n "$cmd" ] || continue
+    # Skip the dispatcher's own flags.
+    case "$cmd" in
+      -*|'') continue ;;
+    esac
+    if [ ! -x "lib/plugins/fc-$cmd" ]; then
+      missing+="  fc $cmd"$'\n'
+    fi
+  done < <(grep -ohE '\bfc [a-z][a-z0-9-]*' README.md \
+           | awk '{print $2}' | sort -u)
+
+  if [ -n "$missing" ]; then
+    echo "README references commands with no matching plugin:" >&2
+    printf '%s' "$missing" >&2
+    return 1
+  fi
+}
