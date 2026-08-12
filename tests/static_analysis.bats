@@ -264,18 +264,19 @@ load 'test_helper'
   local missing=""
   local cmd
 
-  # Pull `fc <subcommand>` out of the README, take the subcommand, dedupe.
+  # Only inside inline code spans: `fc audit permissions`. Prose such as
+  # "Run 'fc <command> --help'" mentions fc followed by a placeholder word, and
+  # matching bare text would flag `fc command` / `fc commands` as missing.
   while IFS= read -r cmd; do
     [ -n "$cmd" ] || continue
-    # Skip the dispatcher's own flags.
     case "$cmd" in
       -*|'') continue ;;
     esac
     if [ ! -x "lib/plugins/fc-$cmd" ]; then
       missing+="  fc $cmd"$'\n'
     fi
-  done < <(grep -ohE '\bfc [a-z][a-z0-9-]*' README.md \
-           | awk '{print $2}' | sort -u)
+  done < <(grep -ohE '`fc [a-z][a-z0-9-]*' README.md \
+           | sed 's/^`fc //' | sort -u)
 
   if [ -n "$missing" ]; then
     echo "README references commands with no matching plugin:" >&2
