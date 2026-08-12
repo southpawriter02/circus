@@ -219,14 +219,30 @@ run_defaults "com.apple.loginwindow" "GuestEnabled" "-bool" "false"
 # (/var/root/Library/Preferences), not the system one — so this silently did
 # nothing and automatic login stayed enabled, while `|| true` hid the failure.
 # defaults/profiles/lockdown.sh:171 already uses the correct form.
-sudo defaults delete /Library/Preferences/com.apple.loginwindow autoLoginUser 2>/dev/null || true
-
-# Verify rather than assume: `defaults delete` on an absent key is also a
-# no-op, so read the value back and say plainly if it is still set.
-if sudo defaults read /Library/Preferences/com.apple.loginwindow autoLoginUser >/dev/null 2>&1; then
-  msg_warning "Automatic login is STILL enabled. Disable it in System Settings > Users & Groups."
+# DRY_RUN_MODE is honoured here explicitly.
+#
+# Every other preference in this file goes through run_defaults(), which checks
+# the flag itself. These two lines are the only ones that call sudo directly, so
+# they were the only mutation in the whole defaults/ tree that a dry run
+# actually performed: `./install.sh --dry-run` deleted the system autoLoginUser
+# key for real. That is the same class of defect the CI file records for
+# energy.sh, which once ran 17 real `sudo pmset` calls during a "dry" run.
+#
+# The read-back is guarded too. It changes nothing, but it is a `sudo` call, so
+# on an unattended dry run it either blocks on a password prompt or fails —
+# neither of which a dry run should do.
+if [ "${DRY_RUN_MODE:-false}" = true ]; then
+  msg_info "[Dry Run] Would disable automatic login (delete autoLoginUser from the loginwindow plist)"
 else
-  msg_success "Automatic login is disabled."
+  sudo defaults delete /Library/Preferences/com.apple.loginwindow autoLoginUser 2>/dev/null || true
+
+  # Verify rather than assume: `defaults delete` on an absent key is also a
+  # no-op, so read the value back and say plainly if it is still set.
+  if sudo defaults read /Library/Preferences/com.apple.loginwindow autoLoginUser >/dev/null 2>&1; then
+    msg_warning "Automatic login is STILL enabled. Disable it in System Settings > Users & Groups."
+  else
+    msg_success "Automatic login is disabled."
+  fi
 fi
 
 # ==============================================================================

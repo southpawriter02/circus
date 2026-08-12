@@ -151,3 +151,74 @@ load 'test_helper'
     return 1
   fi
 }
+
+# ==============================================================================
+# Dry-run integrity of the defaults/ tree
+# ==============================================================================
+#
+# install/11-defaults-and-additional-configuration.sh sources every
+# defaults/**/*.sh except defaults/profiles/, so anything mutating at the top
+# level of one of those files runs during `./install.sh --dry-run`.
+#
+# The CI file already records this class of defect: energy.sh once made 17 real
+# `sudo pmset` calls during a "dry" run. The installer job only asserts the dry
+# run exits 0, so a mutation that succeeds is indistinguishable from one that
+# was correctly skipped.
+#
+# Most files route through run_defaults(), which checks the flag itself. The
+# exception was defaults/system/login.sh, whose direct `sudo defaults delete`
+# really did remove the system autoLoginUser key on every dry run.
+
+@test "no mutating command in the sourced defaults tree escapes a dry-run guard" {
+  cd "$PROJECT_ROOT" || fail "could not enter \$PROJECT_ROOT"
+
+  local offenders=""
+
+  while IFS= read -r file; do
+    [ -f "$file" ] || continue
+
+    while IFS=: read -r ln _; do
+      [ -n "$ln" ] || continue
+      local start=$((ln - 12))
+      [ "$start" -lt 1 ] && start=1
+      # A guard is DRY_RUN_MODE appearing as CODE in the enclosing block just
+      # above. Comment lines are stripped first: the explanation sitting above a
+      # guarded call names DRY_RUN_MODE in prose, and counting that made this
+      # check pass against an unguarded call — verified by mutation.
+      if ! sed -n "${start},${ln}p" "$file" | grep -vE '^[[:space:]]*#' | grep -q 'DRY_RUN_MODE'; then
+        offenders+="  $file:$ln"$'\n'
+      fi
+    done < <(grep -nE '^[[:space:]]*(sudo |defaults write|defaults delete|systemsetup |pmset |spctl |launchctl |chflags |nvram )' "$file" 2>/dev/null)
+
+  done < <(find "$PROJECT_ROOT/defaults" -path '*/profiles/*' -prune -o -name '*.sh' -print | sed "s|$PROJECT_ROOT/||")
+
+  if [ -n "$offenders" ]; then
+    echo "mutating commands reachable from a dry run without a DRY_RUN_MODE guard:" >&2
+    printf '%s' "$offenders" >&2
+    echo "route these through run_defaults/run_sudo, or guard them explicitly" >&2
+    return 1
+  fi
+}
+
+@test "defaults/system/login.sh guards its direct sudo calls" {
+  # The specific regression, named so a failure points at the cause.
+  cd "$PROJECT_ROOT" || fail "could not enter \$PROJECT_ROOT"
+  # Comments stripped — the rationale above the guard names DRY_RUN_MODE too.
+  run bash -c "grep -vE '^[[:space:]]*#' defaults/system/login.sh | grep -c 'DRY_RUN_MODE'"
+  assert_success
+  assert [ "$output" -ge 1 ]
+}
+
+@test "run_defaults and run_sudo both honour DRY_RUN_MODE" {
+  # These are the two helpers the defaults tree relies on for dry-run safety;
+  # if either stops checking the flag, the whole tree silently starts mutating.
+  cd "$PROJECT_ROOT" || fail "could not enter \$PROJECT_ROOT"
+
+  run bash -c "sed -n '/^run_defaults()/,/^}/p' lib/helpers.sh | grep -vE '^[[:space:]]*#' | grep -c 'DRY_RUN_MODE'"
+  assert_success
+  assert [ "$output" -ge 1 ]
+
+  run bash -c "sed -n '/^run_sudo()/,/^}/p' lib/helpers.sh | grep -vE '^[[:space:]]*#' | grep -c 'DRY_RUN_MODE'"
+  assert_success
+  assert [ "$output" -ge 1 ]
+}

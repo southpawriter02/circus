@@ -51,18 +51,23 @@ apply_default_profile() {
   msg_info "Applying default power profile..."
   
   # Reset to macOS defaults
-  sudo pmset -a displaysleep 10
-  sudo pmset -a disksleep 10
-  sudo pmset -a sleep 0
-  sudo pmset -a womp 1           # Wake on network access
-  sudo pmset -a powernap 1       # Power Nap on
+  # run_sudo, not a bare `sudo`. run_sudo honours DRY_RUN_MODE; a bare sudo
+  # does not. The custom-profile path further down already used it, so the
+  # same command mutated through two paths — one inert under a dry run and
+  # one not — depending on whether the profile was built in or user-defined.
+  # It also makes these calls stubbable, which is why they had no tests.
+  run_sudo pmset -a displaysleep 10
+  run_sudo pmset -a disksleep 10
+  run_sudo pmset -a sleep 0
+  run_sudo pmset -a womp 1           # Wake on network access
+  run_sudo pmset -a powernap 1       # Power Nap on
   
   # Battery-specific
-  sudo pmset -b lowpowermode 0   # Low power mode off on battery
-  sudo pmset -b lessbright 1     # Slightly dim on battery
+  run_sudo pmset -b lowpowermode 0   # Low power mode off on battery
+  run_sudo pmset -b lessbright 1     # Slightly dim on battery
   
   # Charger-specific
-  sudo pmset -c lowpowermode 0   # Low power mode off on charger
+  run_sudo pmset -c lowpowermode 0   # Low power mode off on charger
   
   msg_success "Default profile applied."
 }
@@ -71,16 +76,16 @@ apply_battery_saver_profile() {
   msg_info "Applying battery-saver profile..."
   
   # Aggressive power saving
-  sudo pmset -a displaysleep 2   # Display sleep after 2 min
-  sudo pmset -a disksleep 5      # Disk sleep after 5 min
-  sudo pmset -a sleep 10         # System sleep after 10 min
-  sudo pmset -a womp 0           # Disable wake on network
-  sudo pmset -a powernap 0       # Disable Power Nap
+  run_sudo pmset -a displaysleep 2   # Display sleep after 2 min
+  run_sudo pmset -a disksleep 5      # Disk sleep after 5 min
+  run_sudo pmset -a sleep 10         # System sleep after 10 min
+  run_sudo pmset -a womp 0           # Disable wake on network
+  run_sudo pmset -a powernap 0       # Disable Power Nap
   
   # Battery-specific
-  sudo pmset -b lowpowermode 1   # Enable low power mode
-  sudo pmset -b lessbright 1     # Dim display on battery
-  sudo pmset -b halfdim 1        # Half brightness before sleep
+  run_sudo pmset -b lowpowermode 1   # Enable low power mode
+  run_sudo pmset -b lessbright 1     # Dim display on battery
+  run_sudo pmset -b halfdim 1        # Half brightness before sleep
   
   msg_success "Battery-saver profile applied."
   msg_info "Tip: Display will dim quickly to save power."
@@ -90,16 +95,16 @@ apply_max_performance_profile() {
   msg_info "Applying max-performance profile..."
   
   # Performance settings
-  sudo pmset -a displaysleep 0   # Never sleep display
-  sudo pmset -a disksleep 0      # Never sleep disk
-  sudo pmset -a sleep 0          # Never sleep system
-  sudo pmset -a womp 1           # Wake on network
-  sudo pmset -a powernap 1       # Power Nap enabled
+  run_sudo pmset -a displaysleep 0   # Never sleep display
+  run_sudo pmset -a disksleep 0      # Never sleep disk
+  run_sudo pmset -a sleep 0          # Never sleep system
+  run_sudo pmset -a womp 1           # Wake on network
+  run_sudo pmset -a powernap 1       # Power Nap enabled
   
   # Disable power saving
-  sudo pmset -a lowpowermode 0   # Disable low power mode
-  sudo pmset -a lessbright 0     # Don't dim on battery
-  sudo pmset -a halfdim 0        # No half-dim
+  run_sudo pmset -a lowpowermode 0   # Disable low power mode
+  run_sudo pmset -a lessbright 0     # Don't dim on battery
+  run_sudo pmset -a halfdim 0        # No half-dim
   
   msg_success "Max-performance profile applied."
   msg_warning "Battery will drain faster. Consider plugging in."
@@ -109,9 +114,9 @@ apply_presentation_profile() {
   msg_info "Applying presentation profile..."
   
   # Prevent interruptions
-  sudo pmset -a displaysleep 0   # Never sleep display
-  sudo pmset -a disksleep 0      # Never sleep disk
-  sudo pmset -a sleep 0          # Never sleep system
+  run_sudo pmset -a displaysleep 0   # Never sleep display
+  run_sudo pmset -a disksleep 0      # Never sleep disk
+  run_sudo pmset -a sleep 0          # Never sleep system
   
   # Keep current performance settings
   
