@@ -146,6 +146,7 @@ main() {
     "04-macos-system-settings.sh|macOS Settings|Applying system preferences and defaults"
     "05-oh-my-zsh-installation.sh|Oh My Zsh|Installing shell framework and plugins"
     "06-repository-management.sh|Repository Sync|Updating repository and submodules"
+    "backup-dotfiles.sh|Backup Dotfiles|Backing up existing configuration"
     "09-dotfiles-deployment.sh|Dotfiles Deployment|Deploying configuration files"
     "10-git-configuration.sh|Git Configuration|Setting up Git preferences"
     "11-defaults-and-additional-configuration.sh|Additional Config|Applying additional settings"
